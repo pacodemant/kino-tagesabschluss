@@ -477,10 +477,7 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
           width: 110,
           child: TextField(
             controller: _quantityControllers[item.id],
-            keyboardType: const TextInputType.numberWithOptions(
-              decimal: false,
-              signed: false,
-            ),
+            keyboardType: TextInputType.number,
             textInputAction: TextInputAction.done,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 20),
@@ -538,6 +535,7 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 20),
                     inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
                       CentCurrencyInputFormatter(),
                     ],
                     decoration: const InputDecoration(
@@ -603,6 +601,7 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 18),
                       inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly,
                         CentCurrencyInputFormatter(),
                       ],
                       decoration: const InputDecoration(

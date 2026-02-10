@@ -1,0 +1,7 @@
+Codex Run <NUMMER>: <TITEL>
+
+Kontext:
+<kurz, 2–3 Sätze>
+
+Aufgabe:
+<konkret, testbar>
