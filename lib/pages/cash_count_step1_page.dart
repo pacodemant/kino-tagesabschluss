@@ -1,112 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-class CentCurrencyInputFormatter extends TextInputFormatter {
-  static final RegExp _nonDigits = RegExp(r'[^0-9]');
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final String digits = newValue.text.replaceAll(_nonDigits, '');
-    if (digits.isEmpty) {
-      return const TextEditingValue(
-        text: '',
-        selection: TextSelection.collapsed(offset: 0),
-      );
-    }
-
-    final int cents = int.tryParse(digits) ?? 0;
-    final int euros = cents ~/ 100;
-    final String centsPart = (cents % 100).toString().padLeft(2, '0');
-    final String formatted = '$euros,$centsPart €';
-
-    return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
-  }
-}
-
-class CashLineItem {
-  const CashLineItem({
-    required this.id,
-    required this.label,
-    required this.unitValueCents,
-  });
-
-  final String id;
-  final String label;
-  final int unitValueCents;
-}
-
-class EnvelopeEntry {
-  const EnvelopeEntry({required this.label, required this.amountCents});
-
-  final String label;
-  final int amountCents;
-
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{'label': label, 'amountCents': amountCents};
-  }
-
-  static EnvelopeEntry fromJson(Map<String, dynamic> json) {
-    return EnvelopeEntry(
-      label: json['label'] as String? ?? '',
-      amountCents: (json['amountCents'] as num?)?.toInt() ?? 0,
-    );
-  }
-}
-
-class CashCountDraft {
-  const CashCountDraft({
-    required this.quantities,
-    required this.envelopes,
-    required this.looseCoinsCents,
-  });
-
-  final Map<String, int> quantities;
-  final List<EnvelopeEntry> envelopes;
-  final int looseCoinsCents;
-
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'quantities': quantities,
-      'envelopes': envelopes.map((EnvelopeEntry e) => e.toJson()).toList(),
-      'looseCoinsCents': looseCoinsCents,
-    };
-  }
-
-  static CashCountDraft fromJson(Map<String, dynamic> json) {
-    final Map<String, int> parsedQuantities = <String, int>{};
-    final Object? quantitiesRaw = json['quantities'];
-    if (quantitiesRaw is Map<String, dynamic>) {
-      for (final MapEntry<String, dynamic> entry in quantitiesRaw.entries) {
-        parsedQuantities[entry.key] = (entry.value as num?)?.toInt() ?? 0;
-      }
-    }
-
-    final List<EnvelopeEntry> parsedEnvelopes = <EnvelopeEntry>[];
-    final Object? envelopesRaw = json['envelopes'];
-    if (envelopesRaw is List<dynamic>) {
-      for (final dynamic item in envelopesRaw) {
-        if (item is Map<String, dynamic>) {
-          parsedEnvelopes.add(EnvelopeEntry.fromJson(item));
-        }
-      }
-    }
-
-    return CashCountDraft(
-      quantities: parsedQuantities,
-      envelopes: parsedEnvelopes,
-      looseCoinsCents: (json['looseCoinsCents'] as num?)?.toInt() ?? 0,
-    );
-  }
-}
+import 'package:kino_bar_app/models/cash_count_draft.dart';
+import 'package:kino_bar_app/models/cash_line_item.dart';
+import 'package:kino_bar_app/storage/local_store.dart';
+import 'package:kino_bar_app/widgets/int_input_field.dart';
+import 'package:kino_bar_app/widgets/money_cents_field.dart';
 
 class CashCountStep1Args {
   const CashCountStep1Args({required this.cinemaId, required this.cinemaName});
@@ -194,25 +91,21 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
   }
 
   Future<void> _loadInitialData() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final int loadedChangeTarget =
-        prefs.getInt('change_target_cents_${widget.cinemaId}') ?? 20000;
+    final int loadedChangeTarget = await LocalStore.loadChangeTargetCents(
+      widget.cinemaId,
+    );
 
-    final String? savedDraftRaw = prefs.getString(_draftKey());
-    if (savedDraftRaw != null) {
-      try {
-        final Map<String, dynamic> parsed =
-            jsonDecode(savedDraftRaw) as Map<String, dynamic>;
-        final CashCountDraft draft = CashCountDraft.fromJson(parsed);
-        for (final CashLineItem item in _allCountItems) {
-          _quantities[item.id] = draft.quantities[item.id] ?? 0;
-        }
-        _looseCoinsCents = draft.looseCoinsCents;
-        _applyEnvelopeDraft(draft.envelopes);
-      } catch (_) {
-        _looseCoinsCents = 0;
-        _clearEnvelopeFields();
+    final CashCountDraft? draft = await LocalStore.loadCashCountDraft(
+      cinemaId: widget.cinemaId,
+      isoDate: _isoDateToday(),
+    );
+
+    if (draft != null) {
+      for (final CashLineItem item in _allCountItems) {
+        _quantities[item.id] = draft.quantities[item.id] ?? 0;
       }
+      _looseCoinsCents = draft.looseCoinsCents;
+      _applyEnvelopeDraft(draft.envelopes);
     }
 
     _syncControllersFromState();
@@ -244,7 +137,7 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
     for (final EnvelopeEntry envelope in envelopeDraft) {
       _envelopes.add(envelope);
       _envelopeAmountControllers.add(
-        TextEditingController(text: _formatCentsForDisplay(envelope.amountCents)),
+        TextEditingController(text: _formatEuro(envelope.amountCents)),
       );
       _envelopeLabelControllers.add(TextEditingController(text: envelope.label));
     }
@@ -261,14 +154,10 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
     }
 
     final String looseCoinsText =
-        _looseCoinsCents == 0 ? '' : _formatCentsForDisplay(_looseCoinsCents);
+        _looseCoinsCents == 0 ? '' : _formatEuro(_looseCoinsCents);
     if (_looseCoinsController.text != looseCoinsText) {
       _looseCoinsController.text = looseCoinsText;
     }
-  }
-
-  String _draftKey() {
-    return 'draft_closure_${widget.cinemaId}_${_isoDateToday()}';
   }
 
   String _isoDateToday() {
@@ -280,13 +169,17 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
   }
 
   Future<void> _saveDraft() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
     final CashCountDraft draft = CashCountDraft(
       quantities: Map<String, int>.from(_quantities),
       envelopes: List<EnvelopeEntry>.from(_envelopes),
       looseCoinsCents: _looseCoinsCents,
     );
-    await prefs.setString(_draftKey(), jsonEncode(draft.toJson()));
+
+    await LocalStore.saveCashCountDraft(
+      cinemaId: widget.cinemaId,
+      isoDate: _isoDateToday(),
+      draft: draft,
+    );
   }
 
   void _onQuantityChanged(CashLineItem item, String value) {
@@ -361,10 +254,6 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
       return 0;
     }
     return int.tryParse(digitsOnly) ?? 0;
-  }
-
-  String _formatCentsForDisplay(int cents) {
-    return _formatEuro(cents);
   }
 
   int _sumGroup(List<CashLineItem> items) {
@@ -475,20 +364,8 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
         ),
         SizedBox(
           width: 110,
-          child: TextField(
-            controller: _quantityControllers[item.id],
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 20),
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly,
-            ],
-            decoration: const InputDecoration(
-              hintText: '0',
-              isDense: true,
-              border: OutlineInputBorder(),
-            ),
+          child: IntInputField(
+            controller: _quantityControllers[item.id]!,
             onChanged: (String value) => _onQuantityChanged(item, value),
           ),
         ),
@@ -528,22 +405,11 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
                 ),
                 SizedBox(
                   width: 160,
-                  child: TextField(
+                  child: MoneyCentsField(
                     controller: _looseCoinsController,
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.done,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 20),
-                    inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly,
-                      CentCurrencyInputFormatter(),
-                    ],
-                    decoration: const InputDecoration(
-                      hintText: '0,00 €',
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                    ),
                     onChanged: _onLooseCoinsChanged,
+                    fontSize: 20,
+                    hintText: '0,00 €',
                   ),
                 ),
               ],
@@ -594,23 +460,13 @@ class _CashCountStepPageState extends State<CashCountStepPage> {
                   const SizedBox(width: 8),
                   SizedBox(
                     width: 140,
-                    child: TextField(
+                    child: MoneyCentsField(
                       controller: _envelopeAmountControllers[i],
-                      keyboardType: TextInputType.number,
-                      textInputAction: TextInputAction.done,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 18),
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly,
-                        CentCurrencyInputFormatter(),
-                      ],
-                      decoration: const InputDecoration(
-                        labelText: 'Betrag €',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
                       onChanged: (String value) =>
                           _onEnvelopeAmountChanged(i, value),
+                      fontSize: 18,
+                      hintText: '0,00 €',
+                      labelText: 'Betrag €',
                     ),
                   ),
                   IconButton(
