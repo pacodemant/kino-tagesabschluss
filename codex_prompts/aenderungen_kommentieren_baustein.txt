@@ -1,0 +1,33 @@
+ZUSATZ – CODE-KOMMENTARE (verbindlich):
+
+Alle neu erstellten oder wesentlich geänderten Code-Elemente
+müssen direkt im Code kommentiert werden.
+
+Kommentierregeln:
+- Kommentare sind kurz, sachlich und beschreibend
+- Fokus: „Was macht dieses Element?“ und ggf. „Warum so?“
+- Keine Selbstverständlichkeiten (z. B. „setzt eine Variable“)
+- Keine Lehrbuch-Erklärungen
+- Keine Kommentare zu trivialem Flutter-Standardcode
+
+Mindestens kommentieren:
+- jede neue Klasse (1–2 Zeilen)
+- jede ausgelagerte Funktion mit fachlicher Bedeutung
+- Widgets mit nicht offensichtlicher Aufgabe
+- Berechnungslogik (insbesondere Geld/Barbestand)
+- Stellen, an denen bewusst vereinfacht oder eingeschränkt wurde (MVP)
+
+Stil:
+- Sprache: Deutsch
+- Ton: nüchtern, erklärend
+- Zielgruppe: Entwickler mit Grundkenntnissen, kein Flutter-Experte
+
+Beispiel (Stilrichtlinie):
+
+// Repräsentiert einen Zwischenstand der Bargeldzählung,
+// bevor der Tagesabschluss final berechnet wird.
+class CashCountDraft { ... }
+
+Am Ende deiner Antwort:
+- Kein zusätzlicher Erklärungstext zu den Kommentaren
+- Nur der bestehende GIT-REMINDER folgt

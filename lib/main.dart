@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/models/cinema.dart';
-import 'package:kino_bar_app/pages/cash_count_step1_page.dart';
-import 'package:kino_bar_app/pages/cinema_selection_page.dart';
-import 'package:kino_bar_app/pages/placeholder_page.dart';
-import 'package:kino_bar_app/pages/start_menu_page.dart';
-import 'package:kino_bar_app/pages/startup_gate_page.dart';
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
+import 'package:kino_bar_app/pages/platzhalter_seite.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/pages/startpruefung_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(const MeineApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MeineApp extends StatelessWidget {
+  const MeineApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,65 +21,65 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
       ),
-      initialRoute: StartupGatePage.routeName,
+      initialRoute: StartpruefungSeite.routenName,
       routes: <String, WidgetBuilder>{
-        StartupGatePage.routeName: (_) => const StartupGatePage(),
-        CinemaSelectionPage.routeName: (_) => const CinemaSelectionPage(),
-        CashCountStep2PlaceholderPage.routeName: (_) =>
-            const CashCountStep2PlaceholderPage(),
+        StartpruefungSeite.routenName: (_) => const StartpruefungSeite(),
+        KinoauswahlSeite.routenName: (_) => const KinoauswahlSeite(),
+        TagesabschlussSchritt2PlatzhalterSeite.routenName: (_) =>
+            const TagesabschlussSchritt2PlatzhalterSeite(),
       },
       onGenerateRoute: (RouteSettings settings) {
-        if (settings.name == StartMenuPage.routeName) {
-          final Object? arg = settings.arguments;
-          if (arg is! String) {
+        if (settings.name == StartmenueSeite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! String) {
             return MaterialPageRoute<void>(
-              builder: (_) => const CinemaSelectionPage(),
+              builder: (_) => const KinoauswahlSeite(),
               settings: const RouteSettings(
-                name: CinemaSelectionPage.routeName,
+                name: KinoauswahlSeite.routenName,
               ),
             );
           }
 
-          final Cinema? cinema = CinemaRepository.byId(arg);
-          if (cinema == null) {
+          final Kino? kino = KinoRepository.nachId(argument);
+          if (kino == null) {
             return MaterialPageRoute<void>(
-              builder: (_) => const CinemaSelectionPage(),
+              builder: (_) => const KinoauswahlSeite(),
               settings: const RouteSettings(
-                name: CinemaSelectionPage.routeName,
+                name: KinoauswahlSeite.routenName,
               ),
             );
           }
 
           return MaterialPageRoute<void>(
-            builder: (_) => StartMenuPage(cinema: cinema),
+            builder: (_) => StartmenueSeite(kino: kino),
             settings: settings,
           );
         }
 
-        if (settings.name == CashCountStepPage.routeName) {
-          final Object? arg = settings.arguments;
-          if (arg is! CashCountStep1Args) {
+        if (settings.name == TagesabschlussSchritt1Seite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussSchritt1Argumente) {
             return MaterialPageRoute<void>(
-              builder: (_) => const CinemaSelectionPage(),
+              builder: (_) => const KinoauswahlSeite(),
               settings: const RouteSettings(
-                name: CinemaSelectionPage.routeName,
+                name: KinoauswahlSeite.routenName,
               ),
             );
           }
 
           return MaterialPageRoute<void>(
-            builder: (_) => CashCountStepPage(
-              cinemaId: arg.cinemaId,
-              cinemaName: arg.cinemaName,
+            builder: (_) => TagesabschlussSchritt1Seite(
+              kinoId: argument.kinoId,
+              kinoName: argument.kinoName,
             ),
             settings: settings,
           );
         }
 
-        if (settings.name == PlaceholderPage.routeName) {
-          final String title = settings.arguments as String? ?? 'Platzhalter';
+        if (settings.name == PlatzhalterSeite.routenName) {
+          final String titel = settings.arguments as String? ?? 'Platzhalter';
           return MaterialPageRoute<void>(
-            builder: (_) => PlaceholderPage(title: title),
+            builder: (_) => PlatzhalterSeite(titel: titel),
             settings: settings,
           );
         }

@@ -1,65 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CentCurrencyInputFormatter extends TextInputFormatter {
-  static final RegExp _nonDigits = RegExp(r'[^0-9]');
+class CentWaehrungsEingabeFormatter extends TextInputFormatter {
+  static final RegExp _nichtZiffern = RegExp(r'[^0-9]');
 
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final String digits = newValue.text.replaceAll(_nonDigits, '');
-    if (digits.isEmpty) {
+    final String ziffern = newValue.text.replaceAll(_nichtZiffern, '');
+    if (ziffern.isEmpty) {
       return const TextEditingValue(
         text: '',
         selection: TextSelection.collapsed(offset: 0),
       );
     }
 
-    final int cents = int.tryParse(digits) ?? 0;
-    final int euros = cents ~/ 100;
-    final String centsPart = (cents % 100).toString().padLeft(2, '0');
-    final String formatted = '$euros,$centsPart €';
+    final int cent = int.tryParse(ziffern) ?? 0;
+    final int euro = cent ~/ 100;
+    final String centTeil = (cent % 100).toString().padLeft(2, '0');
+    final String formatiert = '$euro,$centTeil €';
 
     return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
+      text: formatiert,
+      selection: TextSelection.collapsed(offset: formatiert.length),
     );
   }
 }
 
-class MoneyCentsField extends StatelessWidget {
-  const MoneyCentsField({
+class BetragCentEingabefeld extends StatelessWidget {
+  const BetragCentEingabefeld({
     super.key,
-    required this.controller,
+    required this.textController,
     required this.onChanged,
-    required this.fontSize,
-    required this.hintText,
+    required this.schriftgroesse,
+    required this.hinweisText,
     this.labelText,
   });
 
-  final TextEditingController controller;
+  final TextEditingController textController;
   final ValueChanged<String> onChanged;
-  final double fontSize;
-  final String hintText;
+  final double schriftgroesse;
+  final String hinweisText;
   final String? labelText;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
+      controller: textController,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.done,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: fontSize),
+      style: TextStyle(fontSize: schriftgroesse),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.digitsOnly,
-        CentCurrencyInputFormatter(),
+        CentWaehrungsEingabeFormatter(),
       ],
       decoration: InputDecoration(
         labelText: labelText,
-        hintText: hintText,
+        hintText: hinweisText,
         isDense: true,
         border: const OutlineInputBorder(),
       ),

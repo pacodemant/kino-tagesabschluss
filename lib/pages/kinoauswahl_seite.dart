@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/models/cinema.dart';
-import 'package:kino_bar_app/pages/start_menu_page.dart';
-import 'package:kino_bar_app/storage/local_store.dart';
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
-class CinemaSelectionPage extends StatefulWidget {
-  const CinemaSelectionPage({super.key});
+class KinoauswahlSeite extends StatefulWidget {
+  const KinoauswahlSeite({super.key});
 
-  static const String routeName = '/cinema-selection';
+  static const String routenName = '/cinema-selection';
 
   @override
-  State<CinemaSelectionPage> createState() => _CinemaSelectionPageState();
+  State<KinoauswahlSeite> createState() => _KinoauswahlSeiteState();
 }
 
-class _CinemaSelectionPageState extends State<CinemaSelectionPage> {
-  Future<void> _selectCinema(String cinemaId) async {
-    await LocalStore.saveActiveCinemaId(cinemaId);
+class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
+  Future<void> _waehleKino(String kinoId) async {
+    await LokalerSpeicher.speichereAktiveKinoId(kinoId);
     if (!mounted) {
       return;
     }
     Navigator.of(
       context,
-    ).pushReplacementNamed(StartMenuPage.routeName, arguments: cinemaId);
+    ).pushReplacementNamed(StartmenueSeite.routenName, arguments: kinoId);
   }
 
   @override
@@ -40,10 +40,10 @@ class _CinemaSelectionPageState extends State<CinemaSelectionPage> {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 16),
-            for (final Cinema cinema in CinemaRepository.cinemas) ...<Widget>[
+            for (final Kino kino in KinoRepository.kinos) ...<Widget>[
               ElevatedButton(
-                onPressed: () => _selectCinema(cinema.id),
-                child: Text(cinema.name),
+                onPressed: () => _waehleKino(kino.id),
+                child: Text(kino.name),
               ),
               const SizedBox(height: 12),
             ],
