@@ -481,13 +481,15 @@ class UmschlagVoransichtDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size bildschirm = MediaQuery.sizeOf(context);
-    final double maxBreite = bildschirm.width > 700
-        ? 680
-        : bildschirm.width - 24;
+    final bool istPortrait = bildschirm.height > bildschirm.width;
+    const double umschlagLayoutBreite = 680;
     return Dialog(
       insetPadding: const EdgeInsets.all(12),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxBreite, maxHeight: bildschirm.height * 0.9),
+        constraints: BoxConstraints(
+          maxWidth: bildschirm.width - 24,
+          maxHeight: bildschirm.height * 0.9,
+        ),
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
           child: Column(
@@ -512,83 +514,102 @@ class UmschlagVoransichtDialog extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: <Widget>[
-                            _baueZeile(
-                              label: 'KINO SOLL',
-                              wert: _formatiereEuro(kinoSollCent),
-                            ),
-                            _baueZeile(
-                              label: '+ BISTRO SOLL',
-                              wert: _formatiereEuro(bistroSollCent),
-                            ),
-                            _baueZeile(
-                              label: '- Ausgaben',
-                              wert: _formatiereEuro(ausgabenCent),
-                            ),
-                            const Divider(),
-                            _baueZeile(
-                              label: '= Gesamt SOLL',
-                              wert: _formatiereEuro(gesamtSollCent),
-                              hervorheben: true,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+              if (istPortrait)
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'Für beste Lesbarkeit: Gerät drehen.',
+                    style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: <Widget>[
-                            _baueZeile(
-                              label: '+ EC IST',
-                              wert: _formatiereEuro(ecIstCent),
-                            ),
-                            _baueZeile(
-                              label: '+ BAR IST',
-                              wert: _formatiereEuro(barIstCent),
-                            ),
-                            const Divider(),
-                            _baueZeile(
-                              label: '= Gesamt IST',
-                              wert: _formatiereEuro(gesamtIstCent),
-                              hervorheben: true,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
+                ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: umschlagLayoutBreite,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      _baueZeile(
-                        label: 'Differenz',
-                        wert: _formatiereEuroMitVorzeichen(differenzCent),
-                        hervorheben: true,
-                        wertFarbe: differenzCent < 0 ? Colors.red : null,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  children: <Widget>[
+                                    _baueZeile(
+                                      label: 'KINO SOLL',
+                                      wert: _formatiereEuro(kinoSollCent),
+                                    ),
+                                    _baueZeile(
+                                      label: '+ BISTRO SOLL',
+                                      wert: _formatiereEuro(bistroSollCent),
+                                    ),
+                                    _baueZeile(
+                                      label: '- Ausgaben',
+                                      wert: _formatiereEuro(ausgabenCent),
+                                    ),
+                                    const Divider(),
+                                    _baueZeile(
+                                      label: '= Gesamt SOLL',
+                                      wert: _formatiereEuro(gesamtSollCent),
+                                      hervorheben: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Card(
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  children: <Widget>[
+                                    _baueZeile(
+                                      label: '+ EC IST',
+                                      wert: _formatiereEuro(ecIstCent),
+                                    ),
+                                    _baueZeile(
+                                      label: '+ BAR IST',
+                                      wert: _formatiereEuro(barIstCent),
+                                    ),
+                                    const Divider(),
+                                    _baueZeile(
+                                      label: '= Gesamt IST',
+                                      wert: _formatiereEuro(gesamtIstCent),
+                                      hervorheben: true,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      _baueZeile(label: 'Haus', wert: kinoName),
-                      _baueZeile(label: 'Datum', wert: datum),
-                      _baueZeile(
-                        label: 'Differenz im Anfangsbestand',
-                        wert: _formatiereEuro(differenzAnfangsbestandCent),
+                      const SizedBox(height: 8),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            children: <Widget>[
+                              _baueZeile(
+                                label: 'Differenz',
+                                wert: _formatiereEuroMitVorzeichen(differenzCent),
+                                hervorheben: true,
+                                wertFarbe: differenzCent < 0 ? Colors.red : null,
+                              ),
+                              _baueZeile(label: 'Haus', wert: kinoName),
+                              _baueZeile(label: 'Datum', wert: datum),
+                              _baueZeile(
+                                label: 'Differenz im Anfangsbestand',
+                                wert: _formatiereEuro(differenzAnfangsbestandCent),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
