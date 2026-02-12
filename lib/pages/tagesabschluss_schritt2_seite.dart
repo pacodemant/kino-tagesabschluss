@@ -485,100 +485,101 @@ class UmschlagVoransichtDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size bildschirm = MediaQuery.sizeOf(context);
     final bool istPortrait = bildschirm.height > bildschirm.width;
-    const double umschlagLayoutBreite = 680;
+    const double umschlagMaxBreite = 680;
     const double umschlagLayoutHoehe = 360;
-
-    final Widget umschlagInhalt = SizedBox(
-      width: umschlagLayoutBreite,
-      height: umschlagLayoutHoehe,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: <Widget>[
-                        _baueZeile(
-                          label: 'KINO SOLL',
-                          wert: _formatiereEuro(kinoSollCent),
-                        ),
-                        _baueZeile(
-                          label: '+ BISTRO SOLL',
-                          wert: _formatiereEuro(bistroSollCent),
-                        ),
-                        _baueZeile(
-                          label: '- Ausgaben',
-                          wert: _formatiereEuro(ausgabenCent),
-                        ),
-                        const Divider(),
-                        _baueZeile(
-                          label: '= Gesamt SOLL',
-                          wert: _formatiereEuro(gesamtSollCent),
-                          hervorheben: true,
-                        ),
-                      ],
+    Widget baueUmschlagInhalt(double layoutBreite) {
+      return SizedBox(
+        width: layoutBreite,
+        height: umschlagLayoutHoehe,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          _baueZeile(
+                            label: 'KINO SOLL',
+                            wert: _formatiereEuro(kinoSollCent),
+                          ),
+                          _baueZeile(
+                            label: '+ BISTRO SOLL',
+                            wert: _formatiereEuro(bistroSollCent),
+                          ),
+                          _baueZeile(
+                            label: '- Ausgaben',
+                            wert: _formatiereEuro(ausgabenCent),
+                          ),
+                          const Divider(),
+                          _baueZeile(
+                            label: '= Gesamt SOLL',
+                            wert: _formatiereEuro(gesamtSollCent),
+                            hervorheben: true,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Column(
-                      children: <Widget>[
-                        _baueZeile(
-                          label: '+ EC IST',
-                          wert: _formatiereEuro(ecIstCent),
-                        ),
-                        _baueZeile(
-                          label: '+ BAR IST',
-                          wert: _formatiereEuro(barIstCent),
-                        ),
-                        const Divider(),
-                        _baueZeile(
-                          label: '= Gesamt IST',
-                          wert: _formatiereEuro(gesamtIstCent),
-                          hervorheben: true,
-                        ),
-                      ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          _baueZeile(
+                            label: '+ EC IST',
+                            wert: _formatiereEuro(ecIstCent),
+                          ),
+                          _baueZeile(
+                            label: '+ BAR IST',
+                            wert: _formatiereEuro(barIstCent),
+                          ),
+                          const Divider(),
+                          _baueZeile(
+                            label: '= Gesamt IST',
+                            wert: _formatiereEuro(gesamtIstCent),
+                            hervorheben: true,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: <Widget>[
-                  _baueZeile(
-                    label: 'Differenz',
-                    wert: _formatiereEuroMitVorzeichen(differenzCent),
-                    hervorheben: true,
-                    wertFarbe: differenzCent < 0 ? Colors.red : null,
-                  ),
-                  _baueZeile(
-                    label: 'Differenz im Anfangsbestand',
-                    wert: _formatiereEuro(differenzAnfangsbestandCent),
-                    kursiv: true,
-                  ),
-                  _baueZeile(label: 'Datum', wert: datum),
-                ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: <Widget>[
+                    _baueZeile(
+                      label: 'Differenz',
+                      wert: _formatiereEuroMitVorzeichen(differenzCent),
+                      hervorheben: true,
+                      wertFarbe: differenzCent < 0 ? Colors.red : null,
+                    ),
+                    _baueZeile(
+                      label: 'Differenz im Anfangsbestand',
+                      wert: _formatiereEuro(differenzAnfangsbestandCent),
+                      kursiv: true,
+                    ),
+                    _baueZeile(label: 'Datum', wert: datum),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
 
     return Dialog(
       insetPadding: const EdgeInsets.all(12),
@@ -612,12 +613,28 @@ class UmschlagVoransichtDialog extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Expanded(
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  alignment: Alignment.topCenter,
-                  child: istPortrait
-                      ? RotatedBox(quarterTurns: 1, child: umschlagInhalt)
-                      : umschlagInhalt,
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    final double layoutBreite = constraints.maxWidth < umschlagMaxBreite
+                        ? constraints.maxWidth
+                        : umschlagMaxBreite;
+                    if (istPortrait) {
+                      return FittedBox(
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topCenter,
+                        child: RotatedBox(
+                          quarterTurns: 1,
+                          child: baueUmschlagInhalt(layoutBreite),
+                        ),
+                      );
+                    }
+                    return SingleChildScrollView(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: baueUmschlagInhalt(layoutBreite),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
