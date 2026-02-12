@@ -25,8 +25,6 @@ class MeineApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         StartpruefungSeite.routenName: (_) => const StartpruefungSeite(),
         KinoauswahlSeite.routenName: (_) => const KinoauswahlSeite(),
-        TagesabschlussSchritt2PlatzhalterSeite.routenName: (_) =>
-            const TagesabschlussSchritt2PlatzhalterSeite(),
       },
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == StartmenueSeite.routenName) {
@@ -71,6 +69,28 @@ class MeineApp extends StatelessWidget {
             builder: (_) => TagesabschlussSchritt1Seite(
               kinoId: argument.kinoId,
               kinoName: argument.kinoName,
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == TagesabschlussSchritt2Seite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussSchritt2Argumente) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          return MaterialPageRoute<void>(
+            builder: (_) => TagesabschlussSchritt2Seite(
+              kinoId: argument.kinoId,
+              kinoName: argument.kinoName,
+              barBestandAbzglWechselgeldCent:
+                  argument.barBestandAbzglWechselgeldCent,
             ),
             settings: settings,
           );
