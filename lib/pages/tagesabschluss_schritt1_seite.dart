@@ -111,6 +111,10 @@ class _TagesabschlussSchritt1SeiteState
 
   int _wechselgeldSollwertCent = 20000;
   bool _laedt = true;
+  bool _scheineAufgeklappt = false;
+  bool _loseMuenzenAufgeklappt = false;
+  bool _rollenAufgeklappt = false;
+  bool _umschlaegeAufgeklappt = false;
 
   List<Kassenzeile> get _alleStueckzahlZeilen => <Kassenzeile>[
     ..._scheine,
@@ -402,29 +406,21 @@ class _TagesabschlussSchritt1SeiteState
     Navigator.of(context).pushNamed(TagesabschlussSchritt2PlatzhalterSeite.routenName);
   }
 
-  Widget _baueGruppe(String titel, List<Kassenzeile> zeilen) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(titel, style: const TextStyle(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 10),
-            for (final Kassenzeile zeile in zeilen) ...<Widget>[
-              _baueZeilenEintrag(zeile),
-              const SizedBox(height: 8),
-            ],
-            const SizedBox(height: 4),
-            Text(
-              'Zwischensumme: ${_formatiereEuro(_summeGruppe(zeilen))}',
-              textAlign: TextAlign.right,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ],
+  Widget _baueGruppenInhalt(List<Kassenzeile> zeilen) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        for (final Kassenzeile zeile in zeilen) ...<Widget>[
+          _baueZeilenEintrag(zeile),
+          const SizedBox(height: 8),
+        ],
+        const SizedBox(height: 4),
+        Text(
+          'Zwischensumme: ${_formatiereEuro(_summeGruppe(zeilen))}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-      ),
+      ],
     );
   }
 
@@ -457,122 +453,202 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueLoseMuenzenGruppe() {
+  Widget _baueLoseMuenzenInhalt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        for (final Kassenzeile zeile in _loseMuenzarten) ...<Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  zeile.bezeichnung,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
+              SizedBox(
+                width: 160,
+                child: BetragCentEingabefeld(
+                  textController: _loseMuenzenController[zeile.id]!,
+                  onChanged: (String wert) =>
+                      _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+                  schriftgroesse: 20,
+                  hinweisText: '0,00 €',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+        const SizedBox(height: 8),
+        Text(
+          'Zwischensumme: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _baueUmschlagInhalt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        if (_umschlaege.isEmpty) const Text('Noch keine Umschläge erfasst.'),
+        for (int i = 0; i < _umschlaege.length; i++) ...<Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  controller: _umschlagBezeichnungController[i],
+                  textInputAction: TextInputAction.next,
+                  decoration: const InputDecoration(
+                    labelText: 'Label (optional)',
+                    border: OutlineInputBorder(),
+                    isDense: true,
+                  ),
+                  onChanged: (String wert) =>
+                      _beiUmschlagBezeichnungGeaendert(i, wert),
+                ),
+              ),
+              const SizedBox(width: 8),
+              SizedBox(
+                width: 140,
+                child: BetragCentEingabefeld(
+                  textController: _umschlagBetragController[i],
+                  onChanged: (String wert) =>
+                      _beiUmschlagBetragGeaendert(i, wert),
+                  schriftgroesse: 18,
+                  hinweisText: '0,00 €',
+                  labelText: 'Betrag €',
+                ),
+              ),
+              IconButton(
+                onPressed: () => _umschlagEntfernen(i),
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'Umschlag entfernen',
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: _umschlagHinzufuegen,
+            icon: const Icon(Icons.add),
+            label: const Text('Umschlag hinzufügen'),
+          ),
+        ),
+        Text(
+          'Zwischensumme: ${_formatiereEuro(_umschlagSummeCent)}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _baueEinklappbarenBereich({
+    required String titel,
+    required int gesamtbetragCent,
+    required bool aufgeklappt,
+    required VoidCallback beimUmschalten,
+    required Widget inhalt,
+  }) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const Text(
-              'B) Lose Münzen',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 10),
-            for (final Kassenzeile zeile in _loseMuenzarten) ...<Widget>[
-              Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          InkWell(
+            onTap: beimUmschalten,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
                 children: <Widget>[
                   Expanded(
                     child: Text(
-                      zeile.bezeichnung,
-                      style: const TextStyle(fontSize: 16),
+                      titel,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
-                  SizedBox(
-                    width: 160,
-                    child: BetragCentEingabefeld(
-                      textController: _loseMuenzenController[zeile.id]!,
-                      onChanged: (String wert) =>
-                          _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-                      schriftgroesse: 20,
-                      hinweisText: '0,00 €',
-                    ),
+                  Text(
+                    _formatiereEuro(gesamtbetragCent),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
+                  const SizedBox(width: 8),
+                  Icon(aufgeklappt ? Icons.expand_less : Icons.expand_more),
                 ],
               ),
-              const SizedBox(height: 8),
-            ],
-            const SizedBox(height: 8),
-            Text(
-              'Zwischensumme: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
-              textAlign: TextAlign.right,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+          if (aufgeklappt) ...<Widget>[
+            const Divider(height: 1),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: inhalt,
             ),
           ],
-        ),
+        ],
       ),
     );
   }
 
+  Widget _baueScheineGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'A) Scheine',
+      gesamtbetragCent: _summeGruppe(_scheine),
+      aufgeklappt: _scheineAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _scheineAufgeklappt = !_scheineAufgeklappt;
+        });
+      },
+      inhalt: _baueGruppenInhalt(_scheine),
+    );
+  }
+
+  Widget _baueLoseMuenzenGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'B) Lose Münzen',
+      gesamtbetragCent: _loseMuenzenGesamtCent,
+      aufgeklappt: _loseMuenzenAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _loseMuenzenAufgeklappt = !_loseMuenzenAufgeklappt;
+        });
+      },
+      inhalt: _baueLoseMuenzenInhalt(),
+    );
+  }
+
+  Widget _baueRollenGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'C) Rollen',
+      gesamtbetragCent: _summeGruppe(_rollen),
+      aufgeklappt: _rollenAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _rollenAufgeklappt = !_rollenAufgeklappt;
+        });
+      },
+      inhalt: _baueGruppenInhalt(_rollen),
+    );
+  }
+
   Widget _baueUmschlagGruppe() {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const Text(
-              'D) Umschläge',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            if (_umschlaege.isEmpty) const Text('Noch keine Umschläge erfasst.'),
-            for (int i = 0; i < _umschlaege.length; i++) ...<Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      controller: _umschlagBezeichnungController[i],
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(
-                        labelText: 'Label (optional)',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                      onChanged: (String wert) =>
-                          _beiUmschlagBezeichnungGeaendert(i, wert),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 140,
-                    child: BetragCentEingabefeld(
-                      textController: _umschlagBetragController[i],
-                      onChanged: (String wert) =>
-                          _beiUmschlagBetragGeaendert(i, wert),
-                      schriftgroesse: 18,
-                      hinweisText: '0,00 €',
-                      labelText: 'Betrag €',
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => _umschlagEntfernen(i),
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: 'Umschlag entfernen',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-            ],
-            Align(
-              alignment: Alignment.centerLeft,
-              child: OutlinedButton.icon(
-                onPressed: _umschlagHinzufuegen,
-                icon: const Icon(Icons.add),
-                label: const Text('Umschlag hinzufügen'),
-              ),
-            ),
-            Text(
-              'Zwischensumme: ${_formatiereEuro(_umschlagSummeCent)}',
-              textAlign: TextAlign.right,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ],
-        ),
-      ),
+    return _baueEinklappbarenBereich(
+      titel: 'D) Umschläge',
+      gesamtbetragCent: _umschlagSummeCent,
+      aufgeklappt: _umschlaegeAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _umschlaegeAufgeklappt = !_umschlaegeAufgeklappt;
+        });
+      },
+      inhalt: _baueUmschlagInhalt(),
     );
   }
 
@@ -649,9 +725,9 @@ class _TagesabschlussSchritt1SeiteState
               child: ListView(
                 padding: const EdgeInsets.all(12),
                 children: <Widget>[
-                  _baueGruppe('A) Scheine', _scheine),
+                  _baueScheineGruppe(),
                   _baueLoseMuenzenGruppe(),
-                  _baueGruppe('C) Rollen', _rollen),
+                  _baueRollenGruppe(),
                   _baueUmschlagGruppe(),
                   _baueZusammenfassung(),
                 ],
