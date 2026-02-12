@@ -512,12 +512,10 @@ class UmschlagVoransichtDialog extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 4),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  SizedBox(
-                    width: maxBreite > 560 ? (maxBreite - 28) / 2 : maxBreite,
+                  Expanded(
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(12),
@@ -546,8 +544,8 @@ class UmschlagVoransichtDialog extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: maxBreite > 560 ? (maxBreite - 28) / 2 : maxBreite,
+                  const SizedBox(width: 12),
+                  Expanded(
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(12),
