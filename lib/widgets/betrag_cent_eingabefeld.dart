@@ -20,7 +20,7 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
     final int cent = int.tryParse(ziffern) ?? 0;
     final int euro = cent ~/ 100;
     final String centTeil = (cent % 100).toString().padLeft(2, '0');
-    final String formatiert = '$euro,$centTeil €';
+    final String formatiert = '$euro,$centTeil';
 
     return TextEditingValue(
       text: formatiert,
@@ -47,6 +47,10 @@ class BetragCentEingabefeld extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String bereinigterHinweisText = hinweisText
+        .replaceAll(' €', '')
+        .replaceAll('€', '');
+
     return TextField(
       controller: textController,
       keyboardType: TextInputType.number,
@@ -59,7 +63,8 @@ class BetragCentEingabefeld extends StatelessWidget {
       ],
       decoration: InputDecoration(
         labelText: labelText,
-        hintText: hinweisText,
+        hintText: bereinigterHinweisText,
+        suffixText: '€',
         isDense: true,
         border: const OutlineInputBorder(),
       ),

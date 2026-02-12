@@ -203,7 +203,7 @@ class _TagesabschlussSchritt1SeiteState
     for (final UmschlagEintrag eintrag in umschlagEntwurf) {
       _umschlaege.add(eintrag);
       _umschlagBetragController.add(
-        TextEditingController(text: _formatiereEuro(eintrag.betragCent)),
+        TextEditingController(text: _formatiereEuroEingabe(eintrag.betragCent)),
       );
       _umschlagBezeichnungController.add(
         TextEditingController(text: eintrag.bezeichnung),
@@ -224,7 +224,9 @@ class _TagesabschlussSchritt1SeiteState
     for (final Kassenzeile zeile in _loseMuenzarten) {
       final int betragCent = _loseMuenzenNachArtCent[zeile.id] ?? 0;
       final TextEditingController controller = _loseMuenzenController[zeile.id]!;
-      final String text = betragCent == 0 ? '' : _formatiereEuro(betragCent);
+      final String text = betragCent == 0
+          ? ''
+          : _formatiereEuroEingabe(betragCent);
       if (controller.text != text) {
         controller.text = text;
       }
@@ -368,6 +370,14 @@ class _TagesabschlussSchritt1SeiteState
     final int euro = absolut ~/ 100;
     final String centTeil = (absolut % 100).toString().padLeft(2, '0');
     return '$vorzeichen$euro,$centTeil €';
+  }
+
+  String _formatiereEuroEingabe(int cent) {
+    final String vorzeichen = cent < 0 ? '-' : '';
+    final int absolut = cent.abs();
+    final int euro = absolut ~/ 100;
+    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
+    return '$vorzeichen$euro,$centTeil';
   }
 
   Future<void> _weiterZuSchritt2() async {
