@@ -5,6 +5,7 @@ import 'package:kino_bar_app/pages/platzhalter_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/startpruefung_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
