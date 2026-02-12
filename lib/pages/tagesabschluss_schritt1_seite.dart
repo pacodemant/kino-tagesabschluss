@@ -85,10 +85,23 @@ class _TagesabschlussSchritt1SeiteState
     ),
   ];
 
+  static const List<Kassenzeile> _loseMuenzarten = <Kassenzeile>[
+    Kassenzeile(id: 'coin_2e', bezeichnung: '2 €', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_1e', bezeichnung: '1 €', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_50c', bezeichnung: '50 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_20c', bezeichnung: '20 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_10c', bezeichnung: '10 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_5c', bezeichnung: '5 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_2c', bezeichnung: '2 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_1c', bezeichnung: '1 ct', einzelwertCent: 0),
+  ];
+
   final Map<String, int> _stueckzahlen = <String, int>{};
   final Map<String, TextEditingController> _stueckzahlController =
       <String, TextEditingController>{};
-  final TextEditingController _loseMuenzenController = TextEditingController();
+  final Map<String, int> _loseMuenzenNachArtCent = <String, int>{};
+  final Map<String, TextEditingController> _loseMuenzenController =
+      <String, TextEditingController>{};
 
   final List<UmschlagEintrag> _umschlaege = <UmschlagEintrag>[];
   final List<TextEditingController> _umschlagBetragController =
@@ -97,7 +110,6 @@ class _TagesabschlussSchritt1SeiteState
       <TextEditingController>[];
 
   int _wechselgeldSollwertCent = 20000;
-  int _loseMuenzenCent = 0;
   bool _laedt = true;
 
   List<Kassenzeile> get _alleStueckzahlZeilen => <Kassenzeile>[
@@ -112,6 +124,10 @@ class _TagesabschlussSchritt1SeiteState
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
     }
+    for (final Kassenzeile zeile in _loseMuenzarten) {
+      _loseMuenzenNachArtCent[zeile.id] = 0;
+      _loseMuenzenController[zeile.id] = TextEditingController();
+    }
     _ladeInitialeDaten();
   }
 
@@ -120,7 +136,9 @@ class _TagesabschlussSchritt1SeiteState
     for (final TextEditingController controller in _stueckzahlController.values) {
       controller.dispose();
     }
-    _loseMuenzenController.dispose();
+    for (final TextEditingController controller in _loseMuenzenController.values) {
+      controller.dispose();
+    }
     for (final TextEditingController controller in _umschlagBetragController) {
       controller.dispose();
     }
@@ -144,7 +162,10 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
         _stueckzahlen[zeile.id] = entwurf.stueckzahlen[zeile.id] ?? 0;
       }
-      _loseMuenzenCent = entwurf.loseMuenzenCent;
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] =
+            entwurf.loseMuenzenNachArtCent[zeile.id] ?? 0;
+      }
       _uebernehmeUmschlagEntwurf(entwurf.umschlaege);
     }
 
@@ -195,10 +216,13 @@ class _TagesabschlussSchritt1SeiteState
       }
     }
 
-    final String loseMuenzenText =
-        _loseMuenzenCent == 0 ? '' : _formatiereEuro(_loseMuenzenCent);
-    if (_loseMuenzenController.text != loseMuenzenText) {
-      _loseMuenzenController.text = loseMuenzenText;
+    for (final Kassenzeile zeile in _loseMuenzarten) {
+      final int betragCent = _loseMuenzenNachArtCent[zeile.id] ?? 0;
+      final TextEditingController controller = _loseMuenzenController[zeile.id]!;
+      final String text = betragCent == 0 ? '' : _formatiereEuro(betragCent);
+      if (controller.text != text) {
+        controller.text = text;
+      }
     }
   }
 
@@ -214,7 +238,7 @@ class _TagesabschlussSchritt1SeiteState
     final KassenstandEntwurf entwurf = KassenstandEntwurf(
       stueckzahlen: Map<String, int>.from(_stueckzahlen),
       umschlaege: List<UmschlagEintrag>.from(_umschlaege),
-      loseMuenzenCent: _loseMuenzenCent,
+      loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
     );
 
     await LokalerSpeicher.speichereKassenstandEntwurf(
@@ -232,9 +256,9 @@ class _TagesabschlussSchritt1SeiteState
     _speichereEntwurf();
   }
 
-  void _beiLoseMuenzenGeaendert(String wert) {
+  void _beiLoseMuenzartBetragGeaendert(String muenzartId, String wert) {
     setState(() {
-      _loseMuenzenCent = _parseCentZiffern(wert);
+      _loseMuenzenNachArtCent[muenzartId] = _parseCentZiffern(wert);
     });
     _speichereEntwurf();
   }
@@ -317,9 +341,17 @@ class _TagesabschlussSchritt1SeiteState
 
   int get _kassenbestandGesamtCent {
     return _summeGruppe(_scheine) +
-        _loseMuenzenCent +
+        _loseMuenzenGesamtCent +
         _summeGruppe(_rollen) +
         _umschlagSummeCent;
+  }
+
+  int get _loseMuenzenGesamtCent {
+    int summe = 0;
+    for (final int betragCent in _loseMuenzenNachArtCent.values) {
+      summe += betragCent;
+    }
+    return summe;
   }
 
   int get _barumsatzBereinigtCent =>
@@ -438,28 +470,32 @@ class _TagesabschlussSchritt1SeiteState
               style: TextStyle(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 10),
-            Row(
-              children: <Widget>[
-                const Expanded(
-                  child: Text(
-                    'Betrag',
-                    style: TextStyle(fontSize: 16),
+            for (final Kassenzeile zeile in _loseMuenzarten) ...<Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      zeile.bezeichnung,
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 160,
-                  child: BetragCentEingabefeld(
-                    textController: _loseMuenzenController,
-                    onChanged: _beiLoseMuenzenGeaendert,
-                    schriftgroesse: 20,
-                    hinweisText: '0,00 €',
+                  SizedBox(
+                    width: 160,
+                    child: BetragCentEingabefeld(
+                      textController: _loseMuenzenController[zeile.id]!,
+                      onChanged: (String wert) =>
+                          _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+                      schriftgroesse: 20,
+                      hinweisText: '0,00 €',
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
             const SizedBox(height: 8),
             Text(
-              'Zwischensumme: ${_formatiereEuro(_loseMuenzenCent)}',
+              'Zwischensumme: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
               textAlign: TextAlign.right,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),

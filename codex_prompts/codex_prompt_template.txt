@@ -1,0 +1,45 @@
+Codex Run <NUMMER>: <Kurzbeschreibung des Ziels>
+
+Kontext:
+Kurzbeschreibung des aktuellen Stands.
+Was existiert bereits?
+Welche Datei/Seite ist betroffen?
+Was soll NICHT neu gedacht werden?
+
+Ziel:
+In 1–3 klaren Sätzen beschreiben,
+was am Ende konkret anders sein soll.
+
+Verbindliche fachliche Regeln:
+
+1. …
+2. …
+3. …
+
+Technische Vorgaben:
+
+- Interne Berechnung weiterhin in Cent
+- Keine neuen Packages
+- Keine Architekturänderungen
+- Bestehende Modelle nur erweitern, nicht ersetzen
+- Bestehende Benennungen nicht ändern
+
+Nicht erlaubt:
+
+- Kein Refactoring außerhalb des betroffenen Bereichs
+- Keine Umbenennung von Dateien/Klassen
+- Keine UI-Umbauten außerhalb des beschriebenen Abschnitts
+- Keine Logikänderung außerhalb der Zieldefinition
+
+Erwartetes Ergebnis:
+
+- Kurz beschreiben, wie es danach aussieht
+- Welche Dateien voraussichtlich angepasst werden
+
+Abschluss:
+Liste kurz die geänderten Dateien.
+
+GIT-REMINDER:
+git status
+git add .
+git commit -m "Codex Run <NUMMER>: <Kurzbeschreibung>"
