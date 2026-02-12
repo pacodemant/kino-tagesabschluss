@@ -566,12 +566,12 @@ class UmschlagVoransichtDialog extends StatelessWidget {
                     hervorheben: true,
                     wertFarbe: differenzCent < 0 ? Colors.red : null,
                   ),
-                  _baueZeile(label: 'Datum', wert: datum),
                   _baueZeile(
                     label: 'Differenz im Anfangsbestand',
                     wert: _formatiereEuro(differenzAnfangsbestandCent),
                     kursiv: true,
                   ),
+                  _baueZeile(label: 'Datum', wert: datum),
                 ],
               ),
             ),
