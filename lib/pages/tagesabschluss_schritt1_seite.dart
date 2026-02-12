@@ -406,7 +406,7 @@ class _TagesabschlussSchritt1SeiteState
     Navigator.of(context).pushNamed(TagesabschlussSchritt2PlatzhalterSeite.routenName);
   }
 
-  Widget _baueGruppenInhalt(List<Kassenzeile> zeilen) {
+  Widget _baueGruppenInhalt(List<Kassenzeile> zeilen, String gesamtbetragLabel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -416,7 +416,7 @@ class _TagesabschlussSchritt1SeiteState
         ],
         const SizedBox(height: 4),
         Text(
-          'Zwischensumme: ${_formatiereEuro(_summeGruppe(zeilen))}',
+          '$gesamtbetragLabel: ${_formatiereEuro(_summeGruppe(zeilen))}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -482,7 +482,7 @@ class _TagesabschlussSchritt1SeiteState
         ],
         const SizedBox(height: 8),
         Text(
-          'Zwischensumme: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
+          'Gesamtbetrag Lose Münzen: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -542,7 +542,7 @@ class _TagesabschlussSchritt1SeiteState
           ),
         ),
         Text(
-          'Zwischensumme: ${_formatiereEuro(_umschlagSummeCent)}',
+          'Gesamtbetrag Umschläge: ${_formatiereEuro(_umschlagSummeCent)}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -598,7 +598,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueScheineGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'A) Scheine',
+      titel: 'Scheine (Anzahl eingeben)',
       gesamtbetragCent: _summeGruppe(_scheine),
       aufgeklappt: _scheineAufgeklappt,
       beimUmschalten: () {
@@ -606,13 +606,13 @@ class _TagesabschlussSchritt1SeiteState
           _scheineAufgeklappt = !_scheineAufgeklappt;
         });
       },
-      inhalt: _baueGruppenInhalt(_scheine),
+      inhalt: _baueGruppenInhalt(_scheine, 'Gesamtbetrag Scheine'),
     );
   }
 
   Widget _baueLoseMuenzenGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'B) Lose Münzen',
+      titel: 'Lose Münzen (Betrag eingeben)',
       gesamtbetragCent: _loseMuenzenGesamtCent,
       aufgeklappt: _loseMuenzenAufgeklappt,
       beimUmschalten: () {
@@ -626,7 +626,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueRollenGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'C) Rollen',
+      titel: 'Rollen (Anzahl eingeben)',
       gesamtbetragCent: _summeGruppe(_rollen),
       aufgeklappt: _rollenAufgeklappt,
       beimUmschalten: () {
@@ -634,13 +634,13 @@ class _TagesabschlussSchritt1SeiteState
           _rollenAufgeklappt = !_rollenAufgeklappt;
         });
       },
-      inhalt: _baueGruppenInhalt(_rollen),
+      inhalt: _baueGruppenInhalt(_rollen, 'Gesamtbetrag Rollen'),
     );
   }
 
   Widget _baueUmschlagGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'D) Umschläge',
+      titel: 'Umschläge (Betrag eingeben)',
       gesamtbetragCent: _umschlagSummeCent,
       aufgeklappt: _umschlaegeAufgeklappt,
       beimUmschalten: () {
