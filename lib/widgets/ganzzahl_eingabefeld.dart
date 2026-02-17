@@ -10,6 +10,8 @@ class GanzzahlEingabefeld extends StatelessWidget {
     this.schriftgroesse = 20,
     this.textAusrichtung = TextAlign.center,
     this.textInputAction = TextInputAction.done,
+    this.focusNode,
+    this.onSubmitted,
   });
 
   final TextEditingController textController;
@@ -18,11 +20,14 @@ class GanzzahlEingabefeld extends StatelessWidget {
   final double schriftgroesse;
   final TextAlign textAusrichtung;
   final TextInputAction textInputAction;
+  final FocusNode? focusNode;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: textController,
+      focusNode: focusNode,
       keyboardType: TextInputType.number,
       textInputAction: textInputAction,
       textAlign: textAusrichtung,
@@ -36,6 +41,7 @@ class GanzzahlEingabefeld extends StatelessWidget {
         border: const OutlineInputBorder(),
       ),
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
     );
   }
 }

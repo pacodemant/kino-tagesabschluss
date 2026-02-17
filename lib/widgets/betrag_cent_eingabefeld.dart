@@ -37,6 +37,9 @@ class BetragCentEingabefeld extends StatelessWidget {
     required this.schriftgroesse,
     required this.hinweisText,
     this.labelText,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
   });
 
   final TextEditingController textController;
@@ -44,6 +47,9 @@ class BetragCentEingabefeld extends StatelessWidget {
   final double schriftgroesse;
   final String hinweisText;
   final String? labelText;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +59,9 @@ class BetragCentEingabefeld extends StatelessWidget {
 
     return TextField(
       controller: textController,
+      focusNode: focusNode,
       keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.done,
+      textInputAction: textInputAction,
       textAlign: TextAlign.center,
       style: TextStyle(fontSize: schriftgroesse),
       inputFormatters: <TextInputFormatter>[
@@ -69,6 +76,7 @@ class BetragCentEingabefeld extends StatelessWidget {
         border: const OutlineInputBorder(),
       ),
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
     );
   }
 }

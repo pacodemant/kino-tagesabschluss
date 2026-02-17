@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
@@ -100,15 +101,19 @@ class _TagesabschlussSchritt1SeiteState
   final Map<String, int> _stueckzahlen = <String, int>{};
   final Map<String, TextEditingController> _stueckzahlController =
       <String, TextEditingController>{};
+  final Map<String, FocusNode> _stueckzahlFocusNode = <String, FocusNode>{};
   final Map<String, int> _loseMuenzenNachArtCent = <String, int>{};
   final Map<String, TextEditingController> _loseMuenzenController =
       <String, TextEditingController>{};
+  final Map<String, FocusNode> _loseMuenzenFocusNode = <String, FocusNode>{};
 
   final List<UmschlagEintrag> _umschlaege = <UmschlagEintrag>[];
   final List<TextEditingController> _umschlagBetragController =
       <TextEditingController>[];
   final List<TextEditingController> _umschlagBezeichnungController =
       <TextEditingController>[];
+  final List<FocusNode> _umschlagBetragFocusNode = <FocusNode>[];
+  final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
 
   int _wechselgeldSollwertCent = 20000;
   bool _laedt = true;
@@ -128,27 +133,52 @@ class _TagesabschlussSchritt1SeiteState
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
+      final FocusNode focusNode = FocusNode();
+      focusNode.addListener(_beiFokusGeaendert);
+      _stueckzahlFocusNode[zeile.id] = focusNode;
     }
     for (final Kassenzeile zeile in _loseMuenzarten) {
       _loseMuenzenNachArtCent[zeile.id] = 0;
       _loseMuenzenController[zeile.id] = TextEditingController();
+      final FocusNode focusNode = FocusNode();
+      focusNode.addListener(_beiFokusGeaendert);
+      _loseMuenzenFocusNode[zeile.id] = focusNode;
     }
     _ladeInitialeDaten();
   }
 
   @override
   void dispose() {
-    for (final TextEditingController controller in _stueckzahlController.values) {
+    for (final TextEditingController controller
+        in _stueckzahlController.values) {
       controller.dispose();
     }
-    for (final TextEditingController controller in _loseMuenzenController.values) {
+    for (final FocusNode focusNode in _stueckzahlFocusNode.values) {
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
+    }
+    for (final TextEditingController controller
+        in _loseMuenzenController.values) {
       controller.dispose();
+    }
+    for (final FocusNode focusNode in _loseMuenzenFocusNode.values) {
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
     }
     for (final TextEditingController controller in _umschlagBetragController) {
       controller.dispose();
     }
-    for (final TextEditingController controller in _umschlagBezeichnungController) {
+    for (final TextEditingController controller
+        in _umschlagBezeichnungController) {
       controller.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBetragFocusNode) {
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
     }
     super.dispose();
   }
@@ -157,8 +187,8 @@ class _TagesabschlussSchritt1SeiteState
     final int geladenerWechselgeldSollwert =
         await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
 
-    final KassenstandEntwurf? entwurf = await LokalerSpeicher
-        .ladeKassenstandEntwurf(
+    final KassenstandEntwurf? entwurf =
+        await LokalerSpeicher.ladeKassenstandEntwurf(
           kinoId: widget.kinoId,
           isoDatum: _heutigesIsoDatum(),
         );
@@ -190,12 +220,23 @@ class _TagesabschlussSchritt1SeiteState
     for (final TextEditingController controller in _umschlagBetragController) {
       controller.dispose();
     }
-    for (final TextEditingController controller in _umschlagBezeichnungController) {
+    for (final TextEditingController controller
+        in _umschlagBezeichnungController) {
       controller.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBetragFocusNode) {
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
     }
     _umschlaege.clear();
     _umschlagBetragController.clear();
     _umschlagBezeichnungController.clear();
+    _umschlagBetragFocusNode.clear();
+    _umschlagBezeichnungFocusNode.clear();
   }
 
   void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) {
@@ -208,6 +249,12 @@ class _TagesabschlussSchritt1SeiteState
       _umschlagBezeichnungController.add(
         TextEditingController(text: eintrag.bezeichnung),
       );
+      final FocusNode betragFocusNode = FocusNode()
+        ..addListener(_beiFokusGeaendert);
+      final FocusNode bezeichnungFocusNode = FocusNode()
+        ..addListener(_beiFokusGeaendert);
+      _umschlagBetragFocusNode.add(betragFocusNode);
+      _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
     }
   }
 
@@ -223,7 +270,8 @@ class _TagesabschlussSchritt1SeiteState
 
     for (final Kassenzeile zeile in _loseMuenzarten) {
       final int betragCent = _loseMuenzenNachArtCent[zeile.id] ?? 0;
-      final TextEditingController controller = _loseMuenzenController[zeile.id]!;
+      final TextEditingController controller =
+          _loseMuenzenController[zeile.id]!;
       final String text = betragCent == 0
           ? ''
           : _formatiereEuroEingabe(betragCent);
@@ -275,6 +323,12 @@ class _TagesabschlussSchritt1SeiteState
       _umschlaege.add(const UmschlagEintrag(bezeichnung: '', betragCent: 0));
       _umschlagBetragController.add(TextEditingController());
       _umschlagBezeichnungController.add(TextEditingController());
+      final FocusNode betragFocusNode = FocusNode()
+        ..addListener(_beiFokusGeaendert);
+      final FocusNode bezeichnungFocusNode = FocusNode()
+        ..addListener(_beiFokusGeaendert);
+      _umschlagBetragFocusNode.add(betragFocusNode);
+      _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
     });
     _speichereEntwurf();
   }
@@ -288,6 +342,15 @@ class _TagesabschlussSchritt1SeiteState
       _umschlaege.removeAt(index);
       _umschlagBetragController.removeAt(index).dispose();
       _umschlagBezeichnungController.removeAt(index).dispose();
+      final FocusNode betragFocusNode = _umschlagBetragFocusNode.removeAt(
+        index,
+      );
+      final FocusNode bezeichnungFocusNode = _umschlagBezeichnungFocusNode
+          .removeAt(index);
+      betragFocusNode.removeListener(_beiFokusGeaendert);
+      bezeichnungFocusNode.removeListener(_beiFokusGeaendert);
+      betragFocusNode.dispose();
+      bezeichnungFocusNode.dispose();
     });
     _speichereEntwurf();
   }
@@ -327,6 +390,106 @@ class _TagesabschlussSchritt1SeiteState
       return 0;
     }
     return int.tryParse(nurZiffern) ?? 0;
+  }
+
+  List<FocusNode> _fokusReihenfolgeSchritt1() {
+    final List<FocusNode> reihenfolge = <FocusNode>[
+      ..._scheine.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
+      ..._loseMuenzarten.map(
+        (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
+      ),
+      ..._rollen.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
+    ];
+
+    for (int i = 0; i < _umschlaege.length; i++) {
+      reihenfolge.add(_umschlagBezeichnungFocusNode[i]);
+      reihenfolge.add(_umschlagBetragFocusNode[i]);
+    }
+    return reihenfolge;
+  }
+
+  bool _istLetztesFeldSchritt1(FocusNode focusNode) {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
+  }
+
+  void _beiFokusGeaendert() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  FocusNode? _naechstesFeldSchritt1(FocusNode focusNode) {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    final int index = reihenfolge.indexWhere(
+      (FocusNode kandidat) => identical(kandidat, focusNode),
+    );
+    if (index < 0 || index >= reihenfolge.length - 1) {
+      return null;
+    }
+    return reihenfolge[index + 1];
+  }
+
+  TextInputAction _textInputActionFuerSchritt1(FocusNode focusNode) {
+    return _istLetztesFeldSchritt1(focusNode)
+        ? TextInputAction.done
+        : TextInputAction.next;
+  }
+
+  void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) {
+    final FocusNode? naechstesFeld = _naechstesFeldSchritt1(focusNode);
+    if (naechstesFeld == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    FocusScope.of(context).requestFocus(naechstesFeld);
+  }
+
+  FocusNode? _aktivesFeldSchritt1() {
+    for (final FocusNode focusNode in _fokusReihenfolgeSchritt1()) {
+      if (focusNode.hasFocus) {
+        return focusNode;
+      }
+    }
+    return null;
+  }
+
+  Widget _baueIosTastaturLeiste() {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
+      return const SizedBox.shrink();
+    }
+    final double tastaturHoehe = MediaQuery.of(context).viewInsets.bottom;
+    if (tastaturHoehe <= 0) {
+      return const SizedBox.shrink();
+    }
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
+    if (aktivesFeld == null) {
+      return const SizedBox.shrink();
+    }
+    final FocusNode? naechstesFeld = _naechstesFeldSchritt1(aktivesFeld);
+    final bool istLetztesFeld = naechstesFeld == null;
+
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F7),
+        border: const Border(top: BorderSide(color: Color(0x14000000))),
+      ),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: () {
+            if (istLetztesFeld) {
+              FocusScope.of(context).unfocus();
+              return;
+            }
+            FocusScope.of(context).requestFocus(naechstesFeld);
+          },
+          child: Text(istLetztesFeld ? 'Fertig' : 'nächstes Feld'),
+        ),
+      ),
+    );
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) {
@@ -424,7 +587,10 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueGruppenInhalt(List<Kassenzeile> zeilen, String gesamtbetragLabel) {
+  Widget _baueGruppenInhalt(
+    List<Kassenzeile> zeilen,
+    String gesamtbetragLabel,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -445,6 +611,7 @@ class _TagesabschlussSchritt1SeiteState
   Widget _baueZeilenEintrag(Kassenzeile zeile) {
     final int stueckzahl = _stueckzahlen[zeile.id] ?? 0;
     final int zwischensumme = stueckzahl * zeile.einzelwertCent;
+    final FocusNode focusNode = _stueckzahlFocusNode[zeile.id]!;
 
     return Row(
       children: <Widget>[
@@ -455,7 +622,10 @@ class _TagesabschlussSchritt1SeiteState
           width: 110,
           child: GanzzahlEingabefeld(
             textController: _stueckzahlController[zeile.id]!,
+            focusNode: focusNode,
+            textInputAction: _textInputActionFuerSchritt1(focusNode),
             onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
+            onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
           ),
         ),
         const SizedBox(width: 10),
@@ -476,25 +646,34 @@ class _TagesabschlussSchritt1SeiteState
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         for (final Kassenzeile zeile in _loseMuenzarten) ...<Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  zeile.bezeichnung,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-              SizedBox(
-                width: 160,
-                child: BetragCentEingabefeld(
-                  textController: _loseMuenzenController[zeile.id]!,
-                  onChanged: (String wert) =>
-                      _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-                  schriftgroesse: 20,
-                  hinweisText: '0,00 €',
-                ),
-              ),
-            ],
+          Builder(
+            builder: (BuildContext _) {
+              final FocusNode focusNode = _loseMuenzenFocusNode[zeile.id]!;
+              return Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      zeile.bezeichnung,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 160,
+                    child: BetragCentEingabefeld(
+                      textController: _loseMuenzenController[zeile.id]!,
+                      focusNode: focusNode,
+                      textInputAction: _textInputActionFuerSchritt1(focusNode),
+                      onSubmitted: (_) =>
+                          _beiEingabeAbgeschlossenSchritt1(focusNode),
+                      onChanged: (String wert) =>
+                          _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+                      schriftgroesse: 20,
+                      hinweisText: '0,00 €',
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 8),
         ],
@@ -514,40 +693,59 @@ class _TagesabschlussSchritt1SeiteState
       children: <Widget>[
         if (_umschlaege.isEmpty) const Text('Noch keine Umschläge erfasst.'),
         for (int i = 0; i < _umschlaege.length; i++) ...<Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: TextField(
-                  controller: _umschlagBezeichnungController[i],
-                  textInputAction: TextInputAction.next,
-                  decoration: const InputDecoration(
-                    labelText: 'Label (optional)',
-                    border: OutlineInputBorder(),
-                    isDense: true,
+          Builder(
+            builder: (BuildContext _) {
+              final FocusNode bezeichnungFocusNode =
+                  _umschlagBezeichnungFocusNode[i];
+              final FocusNode betragFocusNode = _umschlagBetragFocusNode[i];
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _umschlagBezeichnungController[i],
+                      focusNode: bezeichnungFocusNode,
+                      textInputAction: _textInputActionFuerSchritt1(
+                        bezeichnungFocusNode,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Label (optional)',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
+                        bezeichnungFocusNode,
+                      ),
+                      onChanged: (String wert) =>
+                          _beiUmschlagBezeichnungGeaendert(i, wert),
+                    ),
                   ),
-                  onChanged: (String wert) =>
-                      _beiUmschlagBezeichnungGeaendert(i, wert),
-                ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 140,
-                child: BetragCentEingabefeld(
-                  textController: _umschlagBetragController[i],
-                  onChanged: (String wert) =>
-                      _beiUmschlagBetragGeaendert(i, wert),
-                  schriftgroesse: 18,
-                  hinweisText: '0,00 €',
-                  labelText: 'Betrag €',
-                ),
-              ),
-              IconButton(
-                onPressed: () => _umschlagEntfernen(i),
-                icon: const Icon(Icons.delete_outline),
-                tooltip: 'Umschlag entfernen',
-              ),
-            ],
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 140,
+                    child: BetragCentEingabefeld(
+                      textController: _umschlagBetragController[i],
+                      focusNode: betragFocusNode,
+                      textInputAction: _textInputActionFuerSchritt1(
+                        betragFocusNode,
+                      ),
+                      onSubmitted: (_) =>
+                          _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
+                      onChanged: (String wert) =>
+                          _beiUmschlagBetragGeaendert(i, wert),
+                      schriftgroesse: 18,
+                      hinweisText: '0,00 €',
+                      labelText: 'Betrag €',
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _umschlagEntfernen(i),
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Umschlag entfernen',
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 8),
         ],
@@ -604,10 +802,7 @@ class _TagesabschlussSchritt1SeiteState
           ),
           if (aufgeklappt) ...<Widget>[
             const Divider(height: 1),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: inhalt,
-            ),
+            Padding(padding: const EdgeInsets.all(12), child: inhalt),
           ],
         ],
       ),
@@ -730,37 +925,54 @@ class _TagesabschlussSchritt1SeiteState
     if (_laedt) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+    final bool istTastaturSichtbar =
+        MediaQuery.of(context).viewInsets.bottom > 0;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Tagesabschluss – Schritt 1/4: Bargeldzählung'),
       ),
-      body: SafeArea(
-        child: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Stack(
           children: <Widget>[
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.all(12),
+            SafeArea(
+              child: Column(
                 children: <Widget>[
-                  _baueScheineGruppe(),
-                  _baueLoseMuenzenGruppe(),
-                  _baueRollenGruppe(),
-                  _baueUmschlagGruppe(),
-                  _baueZusammenfassung(),
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.all(12),
+                      children: <Widget>[
+                        _baueScheineGruppe(),
+                        _baueLoseMuenzenGruppe(),
+                        _baueRollenGruppe(),
+                        _baueUmschlagGruppe(),
+                        _baueZusammenfassung(),
+                      ],
+                    ),
+                  ),
+                  if (!istTastaturSichtbar)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: _weiterZuSchritt2,
+                          child: const Text('Weiter zu Schritt 2'),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-              child: SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _weiterZuSchritt2,
-                  child: const Text('Weiter zu Schritt 2'),
-                ),
-              ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _baueIosTastaturLeiste(),
             ),
           ],
         ),
