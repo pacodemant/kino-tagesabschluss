@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
 class TagesabschlussSchritt2Argumente {
@@ -91,51 +92,40 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   int _parseCentZiffern(String wert) {
-    final String nurZiffern = wert.replaceAll(RegExp(r'[^0-9]'), '');
-    if (nurZiffern.isEmpty) {
-      return 0;
-    }
-    return int.tryParse(nurZiffern) ?? 0;
+    return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
 
   String _formatiereEuro(int cent) {
-    final String vorzeichen = cent < 0 ? '-' : '';
-    final int absolut = cent.abs();
-    final int euro = absolut ~/ 100;
-    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
-    return '$vorzeichen$euro,$centTeil €';
+    return TagesabschlussFormatierung.formatiereEuro(cent);
   }
 
   String _formatiereEuroMitVorzeichen(int cent) {
-    if (cent > 0) {
-      final int euro = cent ~/ 100;
-      final String centTeil = (cent % 100).toString().padLeft(2, '0');
-      return '+$euro,$centTeil €';
-    }
-    return _formatiereEuro(cent);
+    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
   }
 
   int get _ecUmsatzGesamtCent {
-    int summe = 0;
-    for (final int beleg in _ecBelegeCent) {
-      summe += beleg;
-    }
-    return summe;
+    return TagesabschlussBerechnung.summeCentBetraege(_ecBelegeCent);
   }
 
-  int get _gesamtSollCent => _kinoSollCent + _bistroSollCent - _ausgabenCent;
+  int get _gesamtSollCent => TagesabschlussBerechnung.gesamtSollCent(
+    kinoSollCent: _kinoSollCent,
+    bistroSollCent: _bistroSollCent,
+    ausgabenCent: _ausgabenCent,
+  );
 
-  int get _gesamtIstCent =>
-      _ecUmsatzGesamtCent + widget.barBestandAbzglWechselgeldCent;
+  int get _gesamtIstCent => TagesabschlussBerechnung.gesamtIstCent(
+    ecUmsatzGesamtCent: _ecUmsatzGesamtCent,
+    barBestandAbzglWechselgeldCent: widget.barBestandAbzglWechselgeldCent,
+  );
 
-  int get _differenzTagesabschlussCent => _gesamtIstCent - _gesamtSollCent;
+  int get _differenzTagesabschlussCent =>
+      TagesabschlussBerechnung.differenzTagesabschlussCent(
+        gesamtIstCent: _gesamtIstCent,
+        gesamtSollCent: _gesamtSollCent,
+      );
 
   String _heutigesDatumString() {
-    final DateTime jetzt = DateTime.now();
-    final String tag = jetzt.day.toString().padLeft(2, '0');
-    final String monat = jetzt.month.toString().padLeft(2, '0');
-    final String jahr = jetzt.year.toString();
-    return '$tag.$monat.$jahr';
+    return TagesabschlussFormatierung.deutschesDatum(DateTime.now());
   }
 
   void _zeigeUmschlagVoransicht() {
@@ -587,20 +577,11 @@ class UmschlagVoransichtDialog extends StatelessWidget {
   final int differenzAnfangsbestandCent;
 
   String _formatiereEuro(int cent) {
-    final String vorzeichen = cent < 0 ? '-' : '';
-    final int absolut = cent.abs();
-    final int euro = absolut ~/ 100;
-    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
-    return '$vorzeichen$euro,$centTeil €';
+    return TagesabschlussFormatierung.formatiereEuro(cent);
   }
 
   String _formatiereEuroMitVorzeichen(int cent) {
-    if (cent > 0) {
-      final int euro = cent ~/ 100;
-      final String centTeil = (cent % 100).toString().padLeft(2, '0');
-      return '+$euro,$centTeil €';
-    }
-    return _formatiereEuro(cent);
+    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
   }
 
   Widget _baueZeile({

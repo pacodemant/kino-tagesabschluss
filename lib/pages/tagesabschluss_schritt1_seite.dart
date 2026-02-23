@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
@@ -282,11 +283,7 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   String _heutigesIsoDatum() {
-    final DateTime jetzt = DateTime.now();
-    final String jahr = jetzt.year.toString().padLeft(4, '0');
-    final String monat = jetzt.month.toString().padLeft(2, '0');
-    final String tag = jetzt.day.toString().padLeft(2, '0');
-    return '$jahr-$monat-$tag';
+    return TagesabschlussFormatierung.heutigesIsoDatum(DateTime.now());
   }
 
   Future<void> _speichereEntwurf() async {
@@ -385,11 +382,7 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   int _parseCentZiffern(String wert) {
-    final String nurZiffern = wert.replaceAll(RegExp(r'[^0-9]'), '');
-    if (nurZiffern.isEmpty) {
-      return 0;
-    }
-    return int.tryParse(nurZiffern) ?? 0;
+    return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt1() {
@@ -493,54 +486,43 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) {
-    int summe = 0;
-    for (final Kassenzeile zeile in zeilen) {
-      final int stueckzahl = _stueckzahlen[zeile.id] ?? 0;
-      summe += stueckzahl * zeile.einzelwertCent;
-    }
-    return summe;
+    return TagesabschlussBerechnung.summeStueckzahlGruppeCent(
+      zeilen: zeilen,
+      stueckzahlen: _stueckzahlen,
+    );
   }
 
   int get _umschlagSummeCent {
-    int summe = 0;
-    for (final UmschlagEintrag eintrag in _umschlaege) {
-      summe += eintrag.betragCent;
-    }
-    return summe;
+    return TagesabschlussBerechnung.summeUmschlaegeCent(_umschlaege);
   }
 
   int get _kassenbestandGesamtCent {
-    return _summeGruppe(_scheine) +
-        _loseMuenzenGesamtCent +
-        _summeGruppe(_rollen) +
-        _umschlagSummeCent;
+    return TagesabschlussBerechnung.kassenbestandGesamtCent(
+      scheineCent: _summeGruppe(_scheine),
+      loseMuenzenCent: _loseMuenzenGesamtCent,
+      rollenCent: _summeGruppe(_rollen),
+      umschlaegeCent: _umschlagSummeCent,
+    );
   }
 
   int get _loseMuenzenGesamtCent {
-    int summe = 0;
-    for (final int betragCent in _loseMuenzenNachArtCent.values) {
-      summe += betragCent;
-    }
-    return summe;
+    return TagesabschlussBerechnung.summeCentBetraege(
+      _loseMuenzenNachArtCent.values,
+    );
   }
 
   int get _barumsatzBereinigtCent =>
-      _kassenbestandGesamtCent - _wechselgeldSollwertCent;
+      TagesabschlussBerechnung.barumsatzBereinigtCent(
+        kassenbestandGesamtCent: _kassenbestandGesamtCent,
+        wechselgeldSollwertCent: _wechselgeldSollwertCent,
+      );
 
   String _formatiereEuro(int cent) {
-    final String vorzeichen = cent < 0 ? '-' : '';
-    final int absolut = cent.abs();
-    final int euro = absolut ~/ 100;
-    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
-    return '$vorzeichen$euro,$centTeil €';
+    return TagesabschlussFormatierung.formatiereEuro(cent);
   }
 
   String _formatiereEuroEingabe(int cent) {
-    final String vorzeichen = cent < 0 ? '-' : '';
-    final int absolut = cent.abs();
-    final int euro = absolut ~/ 100;
-    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
-    return '$vorzeichen$euro,$centTeil';
+    return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
   }
 
   Future<void> _weiterZuSchritt2() async {
