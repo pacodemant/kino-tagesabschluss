@@ -8,4 +8,10 @@ jetzt einen Git-Commit zu machen.
 Gib mir:
 1) den passenden Commit-Befehl
 2) eine konkrete Commit-Message
-3) den Hinweis, vorher git status zu prüfenja, vorl
+3) den Hinweis, vorher git status zu prüfen.
+
+nach folgendem Muster:
+git status
+git add lib/domain/tagesabschluss_berechnung.dart lib/pages/tagesabschluss_schritt1_seite.dart lib/pages/tagesabschluss_schritt2_seite.dart test/widget_test.dart
+git commit -m "Refactor: <commit name>"
+git status
