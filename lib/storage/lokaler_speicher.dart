@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LokalerSpeicher {
   static const String aktivesKinoIdKey = 'activeCinemaId';
@@ -53,5 +54,66 @@ class LokalerSpeicher {
 
   static String entwurfKey({required String kinoId, required String isoDatum}) {
     return 'draft_closure_${kinoId}_$isoDatum';
+  }
+
+  /// Speichert einen finalen Tagesabschluss im eigenen Key-Namespace je Kino.
+  static Future<void> speichereFinalenTagesabschluss(
+    TagesabschlussFinal abschluss,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = finaleTagesabschluesseKey(abschluss.kinoId);
+    final String? rohwert = speicher.getString(key);
+
+    final List<Map<String, dynamic>> vorhandeneAbschluesse =
+        <Map<String, dynamic>>[];
+    if (rohwert != null) {
+      try {
+        final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+        for (final dynamic eintrag in geparst) {
+          if (eintrag is Map<String, dynamic>) {
+            vorhandeneAbschluesse.add(eintrag);
+          }
+        }
+      } catch (_) {
+        // Bei defektem Inhalt wird ab hier sauber neu gespeichert.
+      }
+    }
+
+    vorhandeneAbschluesse.add(abschluss.toJson());
+    await speicher.setString(key, jsonEncode(vorhandeneAbschluesse));
+  }
+
+  /// Laedt alle finalen Tagesabschluesse fuer ein Kino (neueste zuerst).
+  static Future<List<TagesabschlussFinal>> ladeFinaleTagesabschluesse(
+    String kinoId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = finaleTagesabschluesseKey(kinoId);
+    final String? rohwert = speicher.getString(key);
+    if (rohwert == null) {
+      return <TagesabschlussFinal>[];
+    }
+
+    try {
+      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+      final List<TagesabschlussFinal> abschluesse = <TagesabschlussFinal>[];
+      for (final dynamic eintrag in geparst) {
+        if (eintrag is Map<String, dynamic>) {
+          abschluesse.add(TagesabschlussFinal.fromJson(eintrag));
+        }
+      }
+      abschluesse.sort(
+        (TagesabschlussFinal a, TagesabschlussFinal b) =>
+            b.createdAt.compareTo(a.createdAt),
+      );
+      return abschluesse;
+    } catch (_) {
+      return <TagesabschlussFinal>[];
+    }
+  }
+
+  /// Key fuer alle finalen Tagesabschluesse eines Kinos.
+  static String finaleTagesabschluesseKey(String kinoId) {
+    return 'final/$kinoId/closures';
   }
 }

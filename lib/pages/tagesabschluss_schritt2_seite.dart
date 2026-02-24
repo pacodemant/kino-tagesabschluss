@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
 class TagesabschlussSchritt2Argumente {
   const TagesabschlussSchritt2Argumente({
     required this.kinoId,
     required this.kinoName,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.wechselgeldSollwertCent,
     required this.barBestandAbzglWechselgeldCent,
   });
 
   final String kinoId;
   final String kinoName;
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
 }
 
@@ -20,6 +31,11 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
     super.key,
     required this.kinoId,
     required this.kinoName,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.wechselgeldSollwertCent,
     required this.barBestandAbzglWechselgeldCent,
   });
 
@@ -27,6 +43,11 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 
   final String kinoId;
   final String kinoName;
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
 
   @override
@@ -146,6 +167,26 @@ class _TagesabschlussSchritt2SeiteState
           differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
         );
       },
+    );
+  }
+
+  void _weiterZuSchritt3() {
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt3Seite.routenName,
+      arguments: TagesabschlussSchritt3Argumente(
+        kinoId: widget.kinoId,
+        kinoName: widget.kinoName,
+        scheineCent: widget.scheineCent,
+        loseMuenzenCent: widget.loseMuenzenCent,
+        rollenCent: widget.rollenCent,
+        umschlaegeCent: widget.umschlaegeCent,
+        wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
+        kinoSollCent: _kinoSollCent,
+        bistroSollCent: _bistroSollCent,
+        ausgabenCent: _ausgabenCent,
+        ecBelegeCent: List<int>.from(_ecBelegeCent),
+        differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
+      ),
     );
   }
 
@@ -528,6 +569,14 @@ class _TagesabschlussSchritt2SeiteState
                         onPressed: _zeigeUmschlagVoransicht,
                         icon: const Icon(Icons.receipt_long_outlined),
                         label: const Text('Übertrag auf Umschlag'),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: _weiterZuSchritt3,
+                        child: const Text('Weiter zu Schritt 3'),
                       ),
                     ),
                     const SizedBox(height: 8),

@@ -504,6 +504,11 @@ class _TagesabschlussSchritt1SeiteState
       arguments: TagesabschlussSchritt2Argumente(
         kinoId: widget.kinoId,
         kinoName: widget.kinoName,
+        scheineCent: _summeGruppe(_scheine),
+        loseMuenzenCent: _loseMuenzenGesamtCent,
+        rollenCent: _summeGruppe(_rollen),
+        umschlaegeCent: _umschlagSummeCent,
+        wechselgeldSollwertCent: _wechselgeldSollwertCent,
         barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
       ),
     );

@@ -6,6 +6,7 @@ import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/startpruefung_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,9 +91,31 @@ class MeineApp extends StatelessWidget {
             builder: (_) => TagesabschlussSchritt2Seite(
               kinoId: argument.kinoId,
               kinoName: argument.kinoName,
+              scheineCent: argument.scheineCent,
+              loseMuenzenCent: argument.loseMuenzenCent,
+              rollenCent: argument.rollenCent,
+              umschlaegeCent: argument.umschlaegeCent,
+              wechselgeldSollwertCent: argument.wechselgeldSollwertCent,
               barBestandAbzglWechselgeldCent:
                   argument.barBestandAbzglWechselgeldCent,
             ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == TagesabschlussSchritt3Seite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussSchritt3Argumente) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          return MaterialPageRoute<void>(
+            builder: (_) => TagesabschlussSchritt3Seite(argumente: argument),
             settings: settings,
           );
         }
