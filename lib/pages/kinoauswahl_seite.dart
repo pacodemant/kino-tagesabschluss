@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/domain/usecases/kino_waehlen_usecase.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
-import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class KinoauswahlSeite extends StatefulWidget {
   const KinoauswahlSeite({super.key});
@@ -13,8 +13,10 @@ class KinoauswahlSeite extends StatefulWidget {
 }
 
 class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
+  final KinoWaehlenUsecase _kinoWaehlenUsecase = const KinoWaehlenUsecase();
+
   Future<void> _waehleKino(String kinoId) async {
-    await LokalerSpeicher.speichereAktiveKinoId(kinoId);
+    await _kinoWaehlenUsecase.speichereAktivesKino(kinoId);
     if (!mounted) {
       return;
     }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
+import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
-import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
 
@@ -37,67 +38,8 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 
 class _TagesabschlussSchritt1SeiteState
     extends State<TagesabschlussSchritt1Seite> {
-  static const List<Kassenzeile> _scheine = <Kassenzeile>[
-    Kassenzeile(id: 'note_100', bezeichnung: '100 €', einzelwertCent: 10000),
-    Kassenzeile(id: 'note_50', bezeichnung: '50 €', einzelwertCent: 5000),
-    Kassenzeile(id: 'note_20', bezeichnung: '20 €', einzelwertCent: 2000),
-    Kassenzeile(id: 'note_10', bezeichnung: '10 €', einzelwertCent: 1000),
-    Kassenzeile(id: 'note_5', bezeichnung: '5 €', einzelwertCent: 500),
-  ];
-
-  static const List<Kassenzeile> _rollen = <Kassenzeile>[
-    Kassenzeile(
-      id: 'roll_2e',
-      bezeichnung: 'Rolle 2 € (50,00 €)',
-      einzelwertCent: 5000,
-    ),
-    Kassenzeile(
-      id: 'roll_1e',
-      bezeichnung: 'Rolle 1 € (25,00 €)',
-      einzelwertCent: 2500,
-    ),
-    Kassenzeile(
-      id: 'roll_50c',
-      bezeichnung: 'Rolle 50 ct (20,00 €)',
-      einzelwertCent: 2000,
-    ),
-    Kassenzeile(
-      id: 'roll_20c',
-      bezeichnung: 'Rolle 20 ct (8,00 €)',
-      einzelwertCent: 800,
-    ),
-    Kassenzeile(
-      id: 'roll_10c',
-      bezeichnung: 'Rolle 10 ct (4,00 €)',
-      einzelwertCent: 400,
-    ),
-    Kassenzeile(
-      id: 'roll_5c',
-      bezeichnung: 'Rolle 5 ct (2,00 €)',
-      einzelwertCent: 200,
-    ),
-    Kassenzeile(
-      id: 'roll_2c',
-      bezeichnung: 'Rolle 2 ct (1,00 €)',
-      einzelwertCent: 100,
-    ),
-    Kassenzeile(
-      id: 'roll_1c',
-      bezeichnung: 'Rolle 1 ct (0,50 €)',
-      einzelwertCent: 50,
-    ),
-  ];
-
-  static const List<Kassenzeile> _loseMuenzarten = <Kassenzeile>[
-    Kassenzeile(id: 'coin_2e', bezeichnung: '2 €', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_1e', bezeichnung: '1 €', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_50c', bezeichnung: '50 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_20c', bezeichnung: '20 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_10c', bezeichnung: '10 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_5c', bezeichnung: '5 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_2c', bezeichnung: '2 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_1c', bezeichnung: '1 ct', einzelwertCent: 0),
-  ];
+  final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
+      const KassenstandEntwurfUsecase();
 
   final Map<String, int> _stueckzahlen = <String, int>{};
   final Map<String, TextEditingController> _stueckzahlController =
@@ -123,10 +65,11 @@ class _TagesabschlussSchritt1SeiteState
   bool _rollenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
 
-  List<Kassenzeile> get _alleStueckzahlZeilen => <Kassenzeile>[
-    ..._scheine,
-    ..._rollen,
-  ];
+  List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
+  List<Kassenzeile> get _rollen => StueckelungKonfiguration.rollen;
+  List<Kassenzeile> get _loseMuenzarten => StueckelungKonfiguration.loseMuenzarten;
+  List<Kassenzeile> get _alleStueckzahlZeilen =>
+      StueckelungKonfiguration.alleStueckzahlZeilen;
 
   @override
   void initState() {
@@ -186,13 +129,12 @@ class _TagesabschlussSchritt1SeiteState
 
   Future<void> _ladeInitialeDaten() async {
     final int geladenerWechselgeldSollwert =
-        await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
+        await _kassenstandEntwurfUsecase.ladeWechselgeldSollwertCent(
+          widget.kinoId,
+        );
 
     final KassenstandEntwurf? entwurf =
-        await LokalerSpeicher.ladeKassenstandEntwurf(
-          kinoId: widget.kinoId,
-          isoDatum: _heutigesIsoDatum(),
-        );
+        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(widget.kinoId);
 
     if (entwurf != null) {
       for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
@@ -282,10 +224,6 @@ class _TagesabschlussSchritt1SeiteState
     }
   }
 
-  String _heutigesIsoDatum() {
-    return TagesabschlussFormatierung.heutigesIsoDatum(DateTime.now());
-  }
-
   Future<void> _speichereEntwurf() async {
     final KassenstandEntwurf entwurf = KassenstandEntwurf(
       stueckzahlen: Map<String, int>.from(_stueckzahlen),
@@ -293,9 +231,8 @@ class _TagesabschlussSchritt1SeiteState
       loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
     );
 
-    await LokalerSpeicher.speichereKassenstandEntwurf(
+    await _kassenstandEntwurfUsecase.speichereHeutigenEntwurf(
       kinoId: widget.kinoId,
-      isoDatum: _heutigesIsoDatum(),
       entwurf: entwurf,
     );
   }
@@ -526,7 +463,10 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _weiterZuSchritt2() async {
-    if (_kassenbestandGesamtCent == 0) {
+    if (
+        _kassenstandEntwurfUsecase.bestaetigungNoetigFuerNullbetrag(
+          _kassenbestandGesamtCent,
+        )) {
       final bool? bestaetigt = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {

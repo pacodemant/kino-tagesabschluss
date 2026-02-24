@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/domain/usecases/startziel_bestimmen_usecase.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
-import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class StartpruefungSeite extends StatefulWidget {
   const StartpruefungSeite({super.key});
@@ -14,6 +13,9 @@ class StartpruefungSeite extends StatefulWidget {
 }
 
 class _StartpruefungSeiteState extends State<StartpruefungSeite> {
+  final StartzielBestimmenUsecase _startzielUsecase =
+      const StartzielBestimmenUsecase();
+
   @override
   void initState() {
     super.initState();
@@ -21,18 +23,19 @@ class _StartpruefungSeiteState extends State<StartpruefungSeite> {
   }
 
   Future<void> _navigiereNachGespeichertemKino() async {
-    final String? aktivesKinoId = await LokalerSpeicher.ladeAktiveKinoId();
+    final StartzielBestimmungErgebnis ergebnis =
+        await _startzielUsecase.bestimmeStartziel();
     if (!mounted) {
       return;
     }
 
-    final String zielRoute = KinoRepository.nachId(aktivesKinoId ?? '') == null
-        ? KinoauswahlSeite.routenName
-        : StartmenueSeite.routenName;
+    final String zielRoute = ergebnis.hatGueltigesKino
+        ? StartmenueSeite.routenName
+        : KinoauswahlSeite.routenName;
 
     Navigator.of(
       context,
-    ).pushReplacementNamed(zielRoute, arguments: aktivesKinoId);
+    ).pushReplacementNamed(zielRoute, arguments: ergebnis.aktivesKinoId);
   }
 
   @override
