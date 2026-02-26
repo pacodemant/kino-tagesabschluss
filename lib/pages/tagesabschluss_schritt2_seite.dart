@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
@@ -75,6 +78,9 @@ class _TagesabschlussSchritt2SeiteState
   int _ausgabenCent = 0;
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[0];
+  bool _devToolsOffen = false;
+  final Random _zufall = Random();
+  bool get _devToolsSichtbar => !kReleaseMode;
 
   @override
   void initState() {
@@ -149,6 +155,13 @@ class _TagesabschlussSchritt2SeiteState
     return TagesabschlussFormatierung.deutschesDatum(DateTime.now());
   }
 
+  String _kopfDatumUhrzeit() {
+    return DateFormat(
+      "EEEE, d.M.yy (H:mm 'Uhr')",
+      'de_DE',
+    ).format(DateTime.now());
+  }
+
   void _zeigeUmschlagVoransicht() {
     showDialog<void>(
       context: context,
@@ -212,6 +225,121 @@ class _TagesabschlussSchritt2SeiteState
       focusNode.dispose();
       _ecBelegeCent.removeAt(index);
     });
+  }
+
+  void _setzeControllerText(TextEditingController controller, String text) {
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  int _zufallszahl(int min, int max) {
+    return min + _zufall.nextInt(max - min + 1);
+  }
+
+  void _setzeEcBelegAnzahl(int anzahl) {
+    while (_ecBelegController.length > anzahl) {
+      _ecBelegController.removeLast().dispose();
+      final FocusNode focusNode = _ecBelegFocusNode.removeLast();
+      focusNode.removeListener(_beiFokusGeaendert);
+      focusNode.dispose();
+      _ecBelegeCent.removeLast();
+    }
+    while (_ecBelegController.length < anzahl) {
+      _ecBelegController.add(TextEditingController());
+      final FocusNode focusNode = FocusNode()..addListener(_beiFokusGeaendert);
+      _ecBelegFocusNode.add(focusNode);
+      _ecBelegeCent.add(0);
+    }
+  }
+
+  void _autoFillDev() {
+    setState(() {
+      _kinoSollCent = _zufallszahl(0, 200000);
+      _bistroSollCent = _zufallszahl(0, 200000);
+      _ausgabenCent = _zufallszahl(0, 10000);
+      _differenzAnfangsbestandCent = _zufallszahl(0, 20000);
+
+      final int ecAnzahl = _zufallszahl(1, 5);
+      _setzeEcBelegAnzahl(ecAnzahl);
+      for (int i = 0; i < _ecBelegeCent.length; i++) {
+        _ecBelegeCent[i] = _zufallszahl(0, 50000);
+      }
+
+      _setzeControllerText(
+        _kinoSollController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(_kinoSollCent),
+      );
+      _setzeControllerText(
+        _bistroSollController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(_bistroSollCent),
+      );
+      _setzeControllerText(
+        _ausgabenController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(_ausgabenCent),
+      );
+      _setzeControllerText(
+        _differenzAnfangsbestandController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(
+          _differenzAnfangsbestandCent,
+        ),
+      );
+      for (int i = 0; i < _ecBelegController.length; i++) {
+        _setzeControllerText(
+          _ecBelegController[i],
+          TagesabschlussFormatierung.formatiereEuroEingabe(_ecBelegeCent[i]),
+        );
+      }
+    });
+  }
+
+  void _leereAlleFelderDev() {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _kinoSollCent = 0;
+      _bistroSollCent = 0;
+      _ausgabenCent = 0;
+      _differenzAnfangsbestandCent = 0;
+
+      _setzeEcBelegAnzahl(1);
+      _ecBelegeCent[0] = 0;
+
+      _setzeControllerText(_kinoSollController, '');
+      _setzeControllerText(_bistroSollController, '');
+      _setzeControllerText(_ausgabenController, '');
+      _setzeControllerText(_differenzAnfangsbestandController, '');
+      _setzeControllerText(_ecBelegController[0], '');
+    });
+  }
+
+  Widget _baueDevToolsPanel() {
+    return Card(
+      color: const Color(0xFFFFF8E1),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: <Widget>[
+            const Expanded(
+              child: Text(
+                'DEV-Tools (nur Debug/Profile)',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: _autoFillDev,
+              child: const Text('Auto-Fill'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: _leereAlleFelderDev,
+              child: const Text('Alles leeren'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt2() {
@@ -396,25 +524,61 @@ class _TagesabschlussSchritt2SeiteState
 
   @override
   Widget build(BuildContext context) {
-    final bool istTastaturSichtbar =
-        MediaQuery.of(context).viewInsets.bottom > 0;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool istTastaturSichtbar = mediaQuery.viewInsets.bottom > 0;
+    final bool iosLeisteSichtbar =
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS &&
+        istTastaturSichtbar;
+    final double bottomPadding =
+        12 +
+        mediaQuery.viewInsets.bottom +
+        mediaQuery.padding.bottom +
+        (iosLeisteSichtbar ? 56 : 16);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Tagesabschluss – Schritt 2/4: Einnahmen/Abschluss'),
+        actions: <Widget>[
+          if (_devToolsSichtbar)
+            IconButton(
+              tooltip: 'DEV-Tools',
+              onPressed: () {
+                setState(() {
+                  _devToolsOffen = !_devToolsOffen;
+                });
+              },
+              icon: Icon(
+                _devToolsOffen
+                    ? Icons.developer_mode
+                    : Icons.developer_mode_outlined,
+              ),
+            ),
+        ],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.translucent,
+        behavior: HitTestBehavior.deferToChild,
         child: Stack(
           children: <Widget>[
             SafeArea(
               child: ListView(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
                 children: <Widget>[
+                  if (_devToolsSichtbar && _devToolsOffen)
+                    _baueDevToolsPanel(),
                   Text(
-                    'Kino: ${widget.kinoName} (${widget.kinoId})',
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    'Tagesabschluss ${widget.kinoName}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _kopfDatumUhrzeit(),
+                    style: const TextStyle(fontWeight: FontWeight.w500),
                   ),
                   const SizedBox(height: 8),
                   const Text(
@@ -561,26 +725,24 @@ class _TagesabschlussSchritt2SeiteState
                       ),
                     ),
                   ),
-                  if (!istTastaturSichtbar) ...<Widget>[
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 52,
-                      child: ElevatedButton.icon(
-                        onPressed: _zeigeUmschlagVoransicht,
-                        icon: const Icon(Icons.receipt_long_outlined),
-                        label: const Text('Übertrag auf Umschlag'),
-                      ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton.icon(
+                      onPressed: _zeigeUmschlagVoransicht,
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      label: const Text('Übertrag auf Umschlag'),
                     ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      height: 52,
-                      child: ElevatedButton(
-                        onPressed: _weiterZuSchritt3,
-                        child: const Text('Weiter zu Schritt 3'),
-                      ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: _weiterZuSchritt3,
+                      child: const Text('Weiter zu Schritt 3'),
                     ),
-                    const SizedBox(height: 8),
-                  ],
+                  ),
+                  const SizedBox(height: 8),
                 ],
               ),
             ),

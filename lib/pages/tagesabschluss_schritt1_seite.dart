@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
@@ -64,12 +66,15 @@ class _TagesabschlussSchritt1SeiteState
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
+  bool _devToolsOffen = false;
+  final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollen => StueckelungKonfiguration.rollen;
   List<Kassenzeile> get _loseMuenzarten => StueckelungKonfiguration.loseMuenzarten;
   List<Kassenzeile> get _alleStueckzahlZeilen =>
       StueckelungKonfiguration.alleStueckzahlZeilen;
+  bool get _devToolsSichtbar => !kReleaseMode;
 
   @override
   void initState() {
@@ -207,7 +212,7 @@ class _TagesabschlussSchritt1SeiteState
       final TextEditingController controller = _stueckzahlController[zeile.id]!;
       final String naechsterText = stueckzahl == 0 ? '' : stueckzahl.toString();
       if (controller.text != naechsterText) {
-        controller.text = naechsterText;
+        _setzeControllerText(controller, naechsterText);
       }
     }
 
@@ -219,9 +224,90 @@ class _TagesabschlussSchritt1SeiteState
           ? ''
           : _formatiereEuroEingabe(betragCent);
       if (controller.text != text) {
-        controller.text = text;
+        _setzeControllerText(controller, text);
       }
     }
+  }
+
+  void _setzeControllerText(TextEditingController controller, String text) {
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  int _zufallszahl(int min, int max) {
+    return min + _zufall.nextInt(max - min + 1);
+  }
+
+  void _autoFillDev() {
+    setState(() {
+      for (final Kassenzeile zeile in _scheine) {
+        _stueckzahlen[zeile.id] = _zufallszahl(0, 20);
+      }
+      for (final Kassenzeile zeile in _rollen) {
+        _stueckzahlen[zeile.id] = _zufallszahl(0, 3);
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] = _zufallszahl(0, 3000);
+      }
+
+      final int umschlagAnzahl = _zufallszahl(1, 4);
+      final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
+      for (int i = 0; i < umschlagAnzahl; i++) {
+        umschlaege.add(
+          UmschlagEintrag(
+            bezeichnung: 'Umschlag ${i + 1}',
+            betragCent: _zufallszahl(0, 50000),
+          ),
+        );
+      }
+      _uebernehmeUmschlagEntwurf(umschlaege);
+      _synchronisiereControllerAusState();
+    });
+  }
+
+  void _leereAlleFelderDev() {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+        _stueckzahlen[zeile.id] = 0;
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] = 0;
+      }
+      _leereUmschlagFelder();
+      _synchronisiereControllerAusState();
+    });
+  }
+
+  Widget _baueDevToolsPanel() {
+    return Card(
+      color: const Color(0xFFFFF8E1),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: <Widget>[
+            const Expanded(
+              child: Text(
+                'DEV-Tools (nur Debug/Profile)',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: _autoFillDev,
+              child: const Text('Auto-Fill'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: _leereAlleFelderDev,
+              child: const Text('Alles leeren'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _speichereEntwurf() async {
@@ -460,6 +546,48 @@ class _TagesabschlussSchritt1SeiteState
 
   String _formatiereEuroEingabe(int cent) {
     return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+  }
+
+  Future<void> _bestaetigeUndLeereEingaben() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogKontext) {
+        return AlertDialog(
+          title: const Text('Eingaben wirklich löschen?'),
+          content: const Text('Alle Eingaben in Schritt 1 werden zurückgesetzt.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(false),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(true),
+              child: const Text('Löschen'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (bestaetigt != true) {
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    setState(() {
+      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+        _stueckzahlen[zeile.id] = 0;
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] = 0;
+      }
+      _leereUmschlagFelder();
+      _synchronisiereControllerAusState();
+    });
+    await _speichereEntwurf();
   }
 
   Future<void> _weiterZuSchritt2() async {
@@ -858,11 +986,43 @@ class _TagesabschlussSchritt1SeiteState
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Tagesabschluss – Schritt 1/4: Bargeldzählung'),
+        toolbarHeight: 68,
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Tagesabschluss'),
+            Text(
+              '1/4 · Bargeldzählung',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          if (_devToolsSichtbar)
+            IconButton(
+              tooltip: 'DEV-Tools',
+              onPressed: () {
+                setState(() {
+                  _devToolsOffen = !_devToolsOffen;
+                });
+              },
+              icon: Icon(
+                _devToolsOffen
+                    ? Icons.developer_mode
+                    : Icons.developer_mode_outlined,
+              ),
+            ),
+          TextButton(
+            onPressed: _bestaetigeUndLeereEingaben,
+            child: const Text('Clear'),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.translucent,
+        behavior: HitTestBehavior.deferToChild,
         child: Stack(
           children: <Widget>[
             SafeArea(
@@ -872,6 +1032,8 @@ class _TagesabschlussSchritt1SeiteState
                     child: ListView(
                       padding: const EdgeInsets.all(12),
                       children: <Widget>[
+                        if (_devToolsSichtbar && _devToolsOffen)
+                          _baueDevToolsPanel(),
                         _baueScheineGruppe(),
                         _baueLoseMuenzenGruppe(),
                         _baueRollenGruppe(),
