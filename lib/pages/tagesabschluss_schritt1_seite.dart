@@ -470,42 +470,30 @@ class _TagesabschlussSchritt1SeiteState
     return null;
   }
 
-  Widget _baueIosTastaturLeiste() {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
-      return const SizedBox.shrink();
-    }
-    final double tastaturHoehe = MediaQuery.of(context).viewInsets.bottom;
-    if (tastaturHoehe <= 0) {
-      return const SizedBox.shrink();
+  void _weiterZumNaechstenFeldUnten() {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    if (reihenfolge.isEmpty) {
+      return;
     }
     final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
     if (aktivesFeld == null) {
-      return const SizedBox.shrink();
+      FocusScope.of(context).requestFocus(reihenfolge.first);
+      return;
     }
     final FocusNode? naechstesFeld = _naechstesFeldSchritt1(aktivesFeld);
-    final bool istLetztesFeld = naechstesFeld == null;
+    if (naechstesFeld == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    FocusScope.of(context).requestFocus(naechstesFeld);
+  }
 
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F7),
-        border: const Border(top: BorderSide(color: Color(0x14000000))),
-      ),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: () {
-            if (istLetztesFeld) {
-              FocusScope.of(context).unfocus();
-              return;
-            }
-            FocusScope.of(context).requestFocus(naechstesFeld);
-          },
-          child: Text(istLetztesFeld ? 'Fertig' : 'nächstes Feld'),
-        ),
-      ),
-    );
+  bool _istAktivesFeldLetztes() {
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
+    if (aktivesFeld == null) {
+      return false;
+    }
+    return _istLetztesFeldSchritt1(aktivesFeld);
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) {
@@ -674,10 +662,11 @@ class _TagesabschlussSchritt1SeiteState
           child: Text(zeile.bezeichnung, style: const TextStyle(fontSize: 16)),
         ),
         SizedBox(
-          width: 110,
+          width: 96,
           child: GanzzahlEingabefeld(
             textController: _stueckzahlController[zeile.id]!,
             focusNode: focusNode,
+            schriftgroesse: 18,
             textInputAction: _textInputActionFuerSchritt1(focusNode),
             onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
             onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
@@ -713,7 +702,7 @@ class _TagesabschlussSchritt1SeiteState
                     ),
                   ),
                   SizedBox(
-                    width: 160,
+                    width: 148,
                     child: BetragCentEingabefeld(
                       textController: _loseMuenzenController[zeile.id]!,
                       focusNode: focusNode,
@@ -722,7 +711,7 @@ class _TagesabschlussSchritt1SeiteState
                           _beiEingabeAbgeschlossenSchritt1(focusNode),
                       onChanged: (String wert) =>
                           _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-                      schriftgroesse: 20,
+                      schriftgroesse: 18,
                       hinweisText: '0,00 €',
                     ),
                   ),
@@ -767,6 +756,10 @@ class _TagesabschlussSchritt1SeiteState
                         labelText: 'Label (optional)',
                         border: OutlineInputBorder(),
                         isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
                       ),
                       onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
                         bezeichnungFocusNode,
@@ -777,7 +770,7 @@ class _TagesabschlussSchritt1SeiteState
                   ),
                   const SizedBox(width: 8),
                   SizedBox(
-                    width: 140,
+                    width: 132,
                     child: BetragCentEingabefeld(
                       textController: _umschlagBetragController[i],
                       focusNode: betragFocusNode,
@@ -788,7 +781,7 @@ class _TagesabschlussSchritt1SeiteState
                           _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
                       onChanged: (String wert) =>
                           _beiUmschlagBetragGeaendert(i, wert),
-                      schriftgroesse: 18,
+                      schriftgroesse: 16,
                       hinweisText: '0,00 €',
                       labelText: 'Betrag €',
                     ),
@@ -981,19 +974,9 @@ class _TagesabschlussSchritt1SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final bool istTastaturSichtbar = mediaQuery.viewInsets.bottom > 0;
-    final bool iosLeisteSichtbar =
-        !kIsWeb &&
-        defaultTargetPlatform == TargetPlatform.iOS &&
-        istTastaturSichtbar;
-    const double ctaHoehe = 52;
+    const double bottomBarHoehe = 52;
     final double bottomPadding =
-        12 +
-        ctaHoehe +
-        8 +
-        mediaQuery.viewInsets.bottom +
-        mediaQuery.padding.bottom +
-        (iosLeisteSichtbar ? 56 : 16);
+        12 + bottomBarHoehe + mediaQuery.padding.bottom + 12;
 
     return Scaffold(
       appBar: AppBar(
@@ -1038,41 +1021,43 @@ class _TagesabschlussSchritt1SeiteState
         padding: EdgeInsets.only(
           left: 12,
           right: 12,
-          top: 8,
-          bottom: mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 12,
+          top: 6,
+          bottom: mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 8,
         ),
         child: SizedBox(
-          width: double.infinity,
-          height: ctaHoehe,
-          child: ElevatedButton(
-            onPressed: _weiterZuSchritt2,
-            child: const Text('Weiter zu Schritt 2'),
+          height: bottomBarHoehe,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: _weiterZumNaechstenFeldUnten,
+                  child: Text(_istAktivesFeldLetztes() ? 'Fertig' : 'nächstes Feld'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZuSchritt2,
+                  child: const Text('Weiter zu Schritt 2'),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-      body: Stack(
-        children: <Widget>[
-          SafeArea(
-            child: ListView(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-              children: <Widget>[
-                if (_devToolsSichtbar && _devToolsOffen) _baueDevToolsPanel(),
-                _baueScheineGruppe(),
-                _baueLoseMuenzenGruppe(),
-                _baueRollenGruppe(),
-                _baueUmschlagGruppe(),
-                _baueZusammenfassung(),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _baueIosTastaturLeiste(),
-          ),
-        ],
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+          children: <Widget>[
+            if (_devToolsSichtbar && _devToolsOffen) _baueDevToolsPanel(),
+            _baueScheineGruppe(),
+            _baueLoseMuenzenGruppe(),
+            _baueRollenGruppe(),
+            _baueUmschlagGruppe(),
+            _baueZusammenfassung(),
+          ],
+        ),
       ),
     );
   }
