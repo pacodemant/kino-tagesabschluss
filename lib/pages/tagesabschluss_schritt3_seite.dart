@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
+import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
-import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -56,6 +56,8 @@ class _TagesabschlussSchritt3SeiteState
     extends State<TagesabschlussSchritt3Seite> {
   final TagesabschlussFinalisierenUsecase _finalisierenUsecase =
       const TagesabschlussFinalisierenUsecase();
+  final SpeichereTagesabschlussUsecase _speichereUsecase =
+      const SpeichereTagesabschlussUsecase();
 
   late final TagesabschlussFinal _abschlussVorschau;
   bool _speichert = false;
@@ -109,8 +111,23 @@ class _TagesabschlussSchritt3SeiteState
     });
 
     try {
-      await LokalerSpeicher.speichereFinalenTagesabschluss(_abschlussVorschau);
+      final SpeichereTagesabschlussErgebnis ergebnis =
+          await _speichereUsecase.ausfuehren(_abschlussVorschau);
       if (!mounted) {
+        return;
+      }
+
+      if (ergebnis.bereitsVorhanden) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Für dieses Kino existiert heute bereits ein Tagesabschluss.',
+            ),
+          ),
+        );
+        setState(() {
+          _speichert = false;
+        });
         return;
       }
 
