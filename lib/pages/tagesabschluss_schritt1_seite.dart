@@ -980,8 +980,17 @@ class _TagesabschlussSchritt1SeiteState
     if (_laedt) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final bool istTastaturSichtbar =
-        MediaQuery.of(context).viewInsets.bottom > 0;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool istTastaturSichtbar = mediaQuery.viewInsets.bottom > 0;
+    final bool iosLeisteSichtbar =
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS &&
+        istTastaturSichtbar;
+    final double bottomPadding =
+        12 +
+        mediaQuery.viewInsets.bottom +
+        mediaQuery.padding.bottom +
+        (iosLeisteSichtbar ? 56 : 16);
 
     return Scaffold(
       appBar: AppBar(
@@ -1020,51 +1029,38 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.deferToChild,
-        child: Stack(
-          children: <Widget>[
-            SafeArea(
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: ListView(
-                      padding: const EdgeInsets.all(12),
-                      children: <Widget>[
-                        if (_devToolsSichtbar && _devToolsOffen)
-                          _baueDevToolsPanel(),
-                        _baueScheineGruppe(),
-                        _baueLoseMuenzenGruppe(),
-                        _baueRollenGruppe(),
-                        _baueUmschlagGruppe(),
-                        _baueZusammenfassung(),
-                      ],
-                    ),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+              children: <Widget>[
+                if (_devToolsSichtbar && _devToolsOffen) _baueDevToolsPanel(),
+                _baueScheineGruppe(),
+                _baueLoseMuenzenGruppe(),
+                _baueRollenGruppe(),
+                _baueUmschlagGruppe(),
+                _baueZusammenfassung(),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: _weiterZuSchritt2,
+                    child: const Text('Weiter zu Schritt 2'),
                   ),
-                  if (!istTastaturSichtbar)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: ElevatedButton(
-                          onPressed: _weiterZuSchritt2,
-                          child: const Text('Weiter zu Schritt 2'),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _baueIosTastaturLeiste(),
-            ),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _baueIosTastaturLeiste(),
+          ),
+        ],
       ),
     );
   }
