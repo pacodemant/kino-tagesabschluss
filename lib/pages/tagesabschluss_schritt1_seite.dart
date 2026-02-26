@@ -986,8 +986,11 @@ class _TagesabschlussSchritt1SeiteState
         !kIsWeb &&
         defaultTargetPlatform == TargetPlatform.iOS &&
         istTastaturSichtbar;
+    const double ctaHoehe = 52;
     final double bottomPadding =
         12 +
+        ctaHoehe +
+        8 +
         mediaQuery.viewInsets.bottom +
         mediaQuery.padding.bottom +
         (iosLeisteSichtbar ? 56 : 16);
@@ -1029,11 +1032,30 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
+      bottomNavigationBar: AnimatedPadding(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: EdgeInsets.only(
+          left: 12,
+          right: 12,
+          top: 8,
+          bottom: mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 12,
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: ctaHoehe,
+          child: ElevatedButton(
+            onPressed: _weiterZuSchritt2,
+            child: const Text('Weiter zu Schritt 2'),
+          ),
+        ),
+      ),
       body: Stack(
         children: <Widget>[
           SafeArea(
             child: ListView(
               padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
               children: <Widget>[
                 if (_devToolsSichtbar && _devToolsOffen) _baueDevToolsPanel(),
                 _baueScheineGruppe(),
@@ -1041,16 +1063,6 @@ class _TagesabschlussSchritt1SeiteState
                 _baueRollenGruppe(),
                 _baueUmschlagGruppe(),
                 _baueZusammenfassung(),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: _weiterZuSchritt2,
-                    child: const Text('Weiter zu Schritt 2'),
-                  ),
-                ),
-                const SizedBox(height: 8),
               ],
             ),
           ),
