@@ -81,10 +81,7 @@ class _TagesabschlussSchritt1SeiteState
       StueckelungKonfiguration.alleStueckzahlZeilen;
   bool get _devToolsSichtbar => !kReleaseMode;
 
-  double _stabilisierterKeyboardInset({
-    required double aktuellerInset,
-    required bool hatFokus,
-  }) {
+  double _stabilisierterKeyboardInset({required double aktuellerInset}) {
     if (aktuellerInset > 0) {
       _letzterNichtNullInset = aktuellerInset;
       _insetRuecksetzTimer?.cancel();
@@ -92,16 +89,16 @@ class _TagesabschlussSchritt1SeiteState
       return aktuellerInset;
     }
 
-    if (hatFokus && _letzterNichtNullInset > 0) {
+    if (_letzterNichtNullInset > 0) {
       _insetRuecksetzTimer ??= Timer(const Duration(milliseconds: 200), () {
-          if (!mounted) {
-            return;
-          }
-          setState(() {
-            _letzterNichtNullInset = 0;
-            _insetRuecksetzTimer = null;
-          });
+        if (!mounted) {
+          return;
+        }
+        setState(() {
+          _letzterNichtNullInset = 0;
+          _insetRuecksetzTimer = null;
         });
+      });
       return _letzterNichtNullInset;
     }
 
@@ -987,7 +984,6 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final double stabilisierterInset = _stabilisierterKeyboardInset(
       aktuellerInset: mediaQuery.viewInsets.bottom,
-      hatFokus: FocusScope.of(context).hasFocus,
     );
     const double bottomBarHoehe = 52;
     final double bottomPadding =
@@ -1062,24 +1058,37 @@ class _TagesabschlussSchritt1SeiteState
             left: 12,
             right: 12,
             bottom: stabilisierterInset + mediaQuery.padding.bottom + 8,
-            child: SizedBox(
-              height: bottomBarHoehe,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: _weiterZumNaechstenFeldUnten,
-                      child: const Text('nächstes Feld'),
-                    ),
+            child: Material(
+              elevation: 1,
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(6),
+                child: SizedBox(
+                  height: bottomBarHoehe,
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
+                          ),
+                          onPressed: _weiterZumNaechstenFeldUnten,
+                          child: const Text('nächstes Feld'),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: _weiterZuSchritt2,
+                          child: const Text('Weiter zu Schritt 2'),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _weiterZuSchritt2,
-                      child: const Text('Weiter zu Schritt 2'),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
