@@ -59,6 +59,8 @@ class _TagesabschlussSchritt1SeiteState
       <TextEditingController>[];
   final List<FocusNode> _umschlagBetragFocusNode = <FocusNode>[];
   final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
+  final List<int> _umschlagIds = <int>[];
+  int _naechsteUmschlagId = 1;
 
   int _wechselgeldSollwertCent = 20000;
   bool _laedt = true;
@@ -82,16 +84,12 @@ class _TagesabschlussSchritt1SeiteState
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
-      final FocusNode focusNode = FocusNode();
-      focusNode.addListener(_beiFokusGeaendert);
-      _stueckzahlFocusNode[zeile.id] = focusNode;
+      _stueckzahlFocusNode[zeile.id] = FocusNode();
     }
     for (final Kassenzeile zeile in _loseMuenzarten) {
       _loseMuenzenNachArtCent[zeile.id] = 0;
       _loseMuenzenController[zeile.id] = TextEditingController();
-      final FocusNode focusNode = FocusNode();
-      focusNode.addListener(_beiFokusGeaendert);
-      _loseMuenzenFocusNode[zeile.id] = focusNode;
+      _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
     _ladeInitialeDaten();
   }
@@ -103,7 +101,6 @@ class _TagesabschlussSchritt1SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _stueckzahlFocusNode.values) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     for (final TextEditingController controller
@@ -111,7 +108,6 @@ class _TagesabschlussSchritt1SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _loseMuenzenFocusNode.values) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     for (final TextEditingController controller in _umschlagBetragController) {
@@ -122,11 +118,9 @@ class _TagesabschlussSchritt1SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _umschlagBetragFocusNode) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     super.dispose();
@@ -173,11 +167,9 @@ class _TagesabschlussSchritt1SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _umschlagBetragFocusNode) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     _umschlaege.clear();
@@ -185,6 +177,7 @@ class _TagesabschlussSchritt1SeiteState
     _umschlagBezeichnungController.clear();
     _umschlagBetragFocusNode.clear();
     _umschlagBezeichnungFocusNode.clear();
+    _umschlagIds.clear();
   }
 
   void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) {
@@ -197,12 +190,11 @@ class _TagesabschlussSchritt1SeiteState
       _umschlagBezeichnungController.add(
         TextEditingController(text: eintrag.bezeichnung),
       );
-      final FocusNode betragFocusNode = FocusNode()
-        ..addListener(_beiFokusGeaendert);
-      final FocusNode bezeichnungFocusNode = FocusNode()
-        ..addListener(_beiFokusGeaendert);
+      final FocusNode betragFocusNode = FocusNode();
+      final FocusNode bezeichnungFocusNode = FocusNode();
       _umschlagBetragFocusNode.add(betragFocusNode);
       _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
+      _umschlagIds.add(_naechsteUmschlagId++);
     }
   }
 
@@ -343,12 +335,11 @@ class _TagesabschlussSchritt1SeiteState
       _umschlaege.add(const UmschlagEintrag(bezeichnung: '', betragCent: 0));
       _umschlagBetragController.add(TextEditingController());
       _umschlagBezeichnungController.add(TextEditingController());
-      final FocusNode betragFocusNode = FocusNode()
-        ..addListener(_beiFokusGeaendert);
-      final FocusNode bezeichnungFocusNode = FocusNode()
-        ..addListener(_beiFokusGeaendert);
+      final FocusNode betragFocusNode = FocusNode();
+      final FocusNode bezeichnungFocusNode = FocusNode();
       _umschlagBetragFocusNode.add(betragFocusNode);
       _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
+      _umschlagIds.add(_naechsteUmschlagId++);
     });
     _speichereEntwurf();
   }
@@ -367,10 +358,9 @@ class _TagesabschlussSchritt1SeiteState
       );
       final FocusNode bezeichnungFocusNode = _umschlagBezeichnungFocusNode
           .removeAt(index);
-      betragFocusNode.removeListener(_beiFokusGeaendert);
-      bezeichnungFocusNode.removeListener(_beiFokusGeaendert);
       betragFocusNode.dispose();
       bezeichnungFocusNode.dispose();
+      _umschlagIds.removeAt(index);
     });
     _speichereEntwurf();
   }
@@ -429,12 +419,6 @@ class _TagesabschlussSchritt1SeiteState
     return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
   }
 
-  void _beiFokusGeaendert() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
   FocusNode? _naechstesFeldSchritt1(FocusNode focusNode) {
     final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
     final int index = reihenfolge.indexWhere(
@@ -486,14 +470,6 @@ class _TagesabschlussSchritt1SeiteState
       return;
     }
     FocusScope.of(context).requestFocus(naechstesFeld);
-  }
-
-  bool _istAktivesFeldLetztes() {
-    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
-    if (aktivesFeld == null) {
-      return false;
-    }
-    return _istLetztesFeldSchritt1(aktivesFeld);
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) {
@@ -743,6 +719,7 @@ class _TagesabschlussSchritt1SeiteState
                   _umschlagBezeichnungFocusNode[i];
               final FocusNode betragFocusNode = _umschlagBetragFocusNode[i];
               return Row(
+                key: ValueKey<int>(_umschlagIds[i]),
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
@@ -979,6 +956,7 @@ class _TagesabschlussSchritt1SeiteState
         12 + bottomBarHoehe + mediaQuery.padding.bottom + 12;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         toolbarHeight: 68,
@@ -1031,7 +1009,7 @@ class _TagesabschlussSchritt1SeiteState
               Expanded(
                 child: OutlinedButton(
                   onPressed: _weiterZumNaechstenFeldUnten,
-                  child: Text(_istAktivesFeldLetztes() ? 'Fertig' : 'nächstes Feld'),
+                  child: const Text('nächstes Feld'),
                 ),
               ),
               const SizedBox(width: 8),
@@ -1050,7 +1028,18 @@ class _TagesabschlussSchritt1SeiteState
           padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
           children: <Widget>[
-            if (_devToolsSichtbar && _devToolsOffen) _baueDevToolsPanel(),
+            IgnorePointer(
+              ignoring: !_devToolsSichtbar || !_devToolsOffen,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 140),
+                opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 140),
+                  height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                  child: _baueDevToolsPanel(),
+                ),
+              ),
+            ),
             _baueScheineGruppe(),
             _baueLoseMuenzenGruppe(),
             _baueRollenGruppe(),

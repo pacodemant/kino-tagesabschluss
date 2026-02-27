@@ -72,6 +72,8 @@ class _TagesabschlussSchritt2SeiteState
   final List<TextEditingController> _ecBelegController =
       <TextEditingController>[TextEditingController()];
   final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
+  final List<int> _ecBelegIds = <int>[0];
+  int _naechsteEcBelegId = 1;
 
   int _kinoSollCent = 0;
   int _bistroSollCent = 0;
@@ -85,12 +87,7 @@ class _TagesabschlussSchritt2SeiteState
   @override
   void initState() {
     super.initState();
-    _kinoSollFocusNode.addListener(_beiFokusGeaendert);
-    _bistroSollFocusNode.addListener(_beiFokusGeaendert);
-    _ausgabenFocusNode.addListener(_beiFokusGeaendert);
-    _differenzAnfangsbestandFocusNode.addListener(_beiFokusGeaendert);
-    final FocusNode ersterEcFocusNode = FocusNode()
-      ..addListener(_beiFokusGeaendert);
+    final FocusNode ersterEcFocusNode = FocusNode();
     _ecBelegFocusNode.add(ersterEcFocusNode);
   }
 
@@ -100,10 +97,6 @@ class _TagesabschlussSchritt2SeiteState
     _bistroSollController.dispose();
     _ausgabenController.dispose();
     _differenzAnfangsbestandController.dispose();
-    _kinoSollFocusNode.removeListener(_beiFokusGeaendert);
-    _bistroSollFocusNode.removeListener(_beiFokusGeaendert);
-    _ausgabenFocusNode.removeListener(_beiFokusGeaendert);
-    _differenzAnfangsbestandFocusNode.removeListener(_beiFokusGeaendert);
     _kinoSollFocusNode.dispose();
     _bistroSollFocusNode.dispose();
     _ausgabenFocusNode.dispose();
@@ -112,7 +105,6 @@ class _TagesabschlussSchritt2SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _ecBelegFocusNode) {
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
     }
     super.dispose();
@@ -206,9 +198,10 @@ class _TagesabschlussSchritt2SeiteState
   void _ecBelegHinzufuegen() {
     setState(() {
       _ecBelegController.add(TextEditingController());
-      final FocusNode focusNode = FocusNode()..addListener(_beiFokusGeaendert);
+      final FocusNode focusNode = FocusNode();
       _ecBelegFocusNode.add(focusNode);
       _ecBelegeCent.add(0);
+      _ecBelegIds.add(_naechsteEcBelegId++);
     });
   }
 
@@ -221,9 +214,9 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _ecBelegController.removeAt(index).dispose();
       final FocusNode focusNode = _ecBelegFocusNode.removeAt(index);
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
       _ecBelegeCent.removeAt(index);
+      _ecBelegIds.removeAt(index);
     });
   }
 
@@ -242,15 +235,16 @@ class _TagesabschlussSchritt2SeiteState
     while (_ecBelegController.length > anzahl) {
       _ecBelegController.removeLast().dispose();
       final FocusNode focusNode = _ecBelegFocusNode.removeLast();
-      focusNode.removeListener(_beiFokusGeaendert);
       focusNode.dispose();
       _ecBelegeCent.removeLast();
+      _ecBelegIds.removeLast();
     }
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
-      final FocusNode focusNode = FocusNode()..addListener(_beiFokusGeaendert);
+      final FocusNode focusNode = FocusNode();
       _ecBelegFocusNode.add(focusNode);
       _ecBelegeCent.add(0);
+      _ecBelegIds.add(_naechsteEcBelegId++);
     }
   }
 
@@ -355,12 +349,6 @@ class _TagesabschlussSchritt2SeiteState
   bool _istLetztesFeldSchritt2(FocusNode focusNode) {
     final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
     return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
-  }
-
-  void _beiFokusGeaendert() {
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   FocusNode? _naechstesFeldSchritt2(FocusNode focusNode) {
@@ -537,6 +525,7 @@ class _TagesabschlussSchritt2SeiteState
         (iosLeisteSichtbar ? 56 : 16);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Tagesabschluss – Schritt 2/4: Einnahmen/Abschluss'),
@@ -557,17 +546,25 @@ class _TagesabschlussSchritt2SeiteState
             ),
         ],
       ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        behavior: HitTestBehavior.deferToChild,
-        child: Stack(
-          children: <Widget>[
-            SafeArea(
-              child: ListView(
-                padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-                children: <Widget>[
-                  if (_devToolsSichtbar && _devToolsOffen)
-                    _baueDevToolsPanel(),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+              children: <Widget>[
+                IgnorePointer(
+                  ignoring: !_devToolsSichtbar || !_devToolsOffen,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 140),
+                    opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                      child: _baueDevToolsPanel(),
+                    ),
+                  ),
+                ),
                   Text(
                     'Tagesabschluss ${widget.kinoName}',
                     style: const TextStyle(
@@ -634,18 +631,21 @@ class _TagesabschlussSchritt2SeiteState
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           for (int i = 0; i < _ecBelegController.length; i++)
-                            _baueEingabeZeile(
-                              label: 'EC Beleg ${i + 1}',
-                              controller: _ecBelegController[i],
-                              focusNode: _ecBelegFocusNode[i],
-                              optional: i > 0,
-                              zeigeLoeschen: i > 0,
-                              onLoeschen: () => _ecBelegEntfernen(i),
-                              onChanged: (String wert) {
-                                setState(() {
-                                  _ecBelegeCent[i] = _parseCentZiffern(wert);
-                                });
-                              },
+                            KeyedSubtree(
+                              key: ValueKey<int>(_ecBelegIds[i]),
+                              child: _baueEingabeZeile(
+                                label: 'EC Beleg ${i + 1}',
+                                controller: _ecBelegController[i],
+                                focusNode: _ecBelegFocusNode[i],
+                                optional: i > 0,
+                                zeigeLoeschen: i > 0,
+                                onLoeschen: () => _ecBelegEntfernen(i),
+                                onChanged: (String wert) {
+                                  setState(() {
+                                    _ecBelegeCent[i] = _parseCentZiffern(wert);
+                                  });
+                                },
+                              ),
                             ),
                           Align(
                             alignment: Alignment.centerLeft,
@@ -744,16 +744,15 @@ class _TagesabschlussSchritt2SeiteState
                   ),
                   const SizedBox(height: 8),
                 ],
-              ),
             ),
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: _baueIosTastaturLeiste(),
-            ),
-          ],
-        ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _baueIosTastaturLeiste(),
+          ),
+        ],
       ),
     );
   }
