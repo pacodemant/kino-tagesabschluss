@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -72,8 +71,6 @@ class _TagesabschlussSchritt1SeiteState
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   final Random _zufall = Random();
-  double _letzterNichtNullInset = 0;
-  Timer? _insetRuecksetzTimer;
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollen => StueckelungKonfiguration.rollen;
@@ -81,33 +78,6 @@ class _TagesabschlussSchritt1SeiteState
   List<Kassenzeile> get _alleStueckzahlZeilen =>
       StueckelungKonfiguration.alleStueckzahlZeilen;
   bool get _devToolsSichtbar => !kReleaseMode;
-
-  double _stabilisierterKeyboardInset({required double aktuellerInset}) {
-    if (aktuellerInset > 0) {
-      _letzterNichtNullInset = aktuellerInset;
-      _insetRuecksetzTimer?.cancel();
-      _insetRuecksetzTimer = null;
-      return aktuellerInset;
-    }
-
-    if (_letzterNichtNullInset > 0) {
-      _insetRuecksetzTimer ??= Timer(const Duration(milliseconds: 200), () {
-        if (!mounted) {
-          return;
-        }
-        setState(() {
-          _letzterNichtNullInset = 0;
-          _insetRuecksetzTimer = null;
-        });
-      });
-      return _letzterNichtNullInset;
-    }
-
-    _insetRuecksetzTimer?.cancel();
-    _insetRuecksetzTimer = null;
-    _letzterNichtNullInset = 0;
-    return 0;
-  }
 
   @override
   void initState() {
@@ -127,7 +97,6 @@ class _TagesabschlussSchritt1SeiteState
 
   @override
   void dispose() {
-    _insetRuecksetzTimer?.cancel();
     for (final TextEditingController controller
         in _stueckzahlController.values) {
       controller.dispose();
@@ -990,15 +959,12 @@ class _TagesabschlussSchritt1SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final double stabilisierterInset = _stabilisierterKeyboardInset(
-      aktuellerInset: mediaQuery.viewInsets.bottom,
-    );
     const double bottomBarHoehe = 52;
     final double bottomPadding =
-        12 + bottomBarHoehe + mediaQuery.padding.bottom + stabilisierterInset + 12;
+        12 + bottomBarHoehe + mediaQuery.padding.bottom + 12;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         toolbarHeight: 68,
@@ -1035,76 +1001,66 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
-        children: <Widget>[
-          SafeArea(
-            child: ListView(
-              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-              children: <Widget>[
-                IgnorePointer(
-                  ignoring: !_devToolsSichtbar || !_devToolsOffen,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 140),
-                    opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 140),
-                      height: _devToolsSichtbar && _devToolsOffen ? null : 0,
-                      child: _baueDevToolsPanel(),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+        child: Material(
+          elevation: 1,
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: SizedBox(
+              height: bottomBarHoehe,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                      ),
+                      onPressed: _weiterZumNaechstenFeldUnten,
+                      child: const Text('nächstes Feld'),
                     ),
                   ),
-                ),
-                _baueScheineGruppe(),
-                _baueLoseMuenzenGruppe(),
-                _baueRollenGruppe(),
-                _baueUmschlagGruppe(),
-                _baueZusammenfassung(),
-              ],
-            ),
-          ),
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: stabilisierterInset + mediaQuery.padding.bottom + 8,
-            child: Focus(
-              canRequestFocus: false,
-              descendantsAreFocusable: false,
-              child: Material(
-                elevation: 1,
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: BorderRadius.circular(12),
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: SizedBox(
-                    height: bottomBarHoehe,
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              backgroundColor: Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
-                            ),
-                            onPressed: _weiterZumNaechstenFeldUnten,
-                            child: const Text('nächstes Feld'),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed: _weiterZuSchritt2,
-                            child: const Text('Weiter zu Schritt 2'),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _weiterZuSchritt2,
+                      child: const Text('Weiter zu Schritt 2'),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+          children: <Widget>[
+            IgnorePointer(
+              ignoring: !_devToolsSichtbar || !_devToolsOffen,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 140),
+                opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 140),
+                  height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                  child: _baueDevToolsPanel(),
+                ),
+              ),
+            ),
+            _baueScheineGruppe(),
+            _baueLoseMuenzenGruppe(),
+            _baueRollenGruppe(),
+            _baueUmschlagGruppe(),
+            _baueZusammenfassung(),
+          ],
+        ),
       ),
     );
   }
