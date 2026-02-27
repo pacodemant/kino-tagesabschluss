@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
@@ -492,7 +493,7 @@ class _TagesabschlussSchritt1SeiteState
     }
     final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
     if (aktivesFeld == null) {
-      FocusScope.of(context).requestFocus(reihenfolge.first);
+      _fokussiereTextfeld(reihenfolge.first);
       return;
     }
     final FocusNode? naechstesFeld = _naechstesFeldSchritt1(aktivesFeld);
@@ -500,7 +501,14 @@ class _TagesabschlussSchritt1SeiteState
       FocusScope.of(context).unfocus();
       return;
     }
-    FocusScope.of(context).requestFocus(naechstesFeld);
+    _fokussiereTextfeld(naechstesFeld);
+  }
+
+  void _fokussiereTextfeld(FocusNode fokusNode) {
+    FocusScope.of(context).requestFocus(fokusNode);
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+    }
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) {
@@ -1058,35 +1066,39 @@ class _TagesabschlussSchritt1SeiteState
             left: 12,
             right: 12,
             bottom: stabilisierterInset + mediaQuery.padding.bottom + 8,
-            child: Material(
-              elevation: 1,
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              child: Padding(
-                padding: const EdgeInsets.all(6),
-                child: SizedBox(
-                  height: bottomBarHoehe,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerHighest,
+            child: Focus(
+              canRequestFocus: false,
+              descendantsAreFocusable: false,
+              child: Material(
+                elevation: 1,
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: SizedBox(
+                    height: bottomBarHoehe,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                            ),
+                            onPressed: _weiterZumNaechstenFeldUnten,
+                            child: const Text('nächstes Feld'),
                           ),
-                          onPressed: _weiterZumNaechstenFeldUnten,
-                          child: const Text('nächstes Feld'),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: _weiterZuSchritt2,
-                          child: const Text('Weiter zu Schritt 2'),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: _weiterZuSchritt2,
+                            child: const Text('Weiter zu Schritt 2'),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
