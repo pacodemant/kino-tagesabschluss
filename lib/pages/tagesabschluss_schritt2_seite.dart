@@ -518,9 +518,16 @@ class _TagesabschlussSchritt2SeiteState
         !kIsWeb &&
         defaultTargetPlatform == TargetPlatform.iOS &&
         istTastaturSichtbar;
-    final double bottomPadding =
+    const double ctaHoehe = 52;
+    const double iosLeistenHoehe = 44;
+    final double ctaBottomInset =
         12 +
         mediaQuery.viewInsets.bottom +
+        mediaQuery.padding.bottom +
+        (iosLeisteSichtbar ? iosLeistenHoehe : 0);
+    final double bottomPadding =
+        ctaHoehe +
+        28 +
         mediaQuery.padding.bottom +
         (iosLeisteSichtbar ? 56 : 16);
 
@@ -565,185 +572,189 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 ),
-                  Text(
-                    'Tagesabschluss ${widget.kinoName}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
+                Text(
+                  'Tagesabschluss ${widget.kinoName}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _kopfDatumUhrzeit(),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Hinweis: „SOLL“ ist hier nur eine Bezeichnung für abgelesene Umsätze.',
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        _baueEingabeZeile(
+                          label: 'Kino SOLL',
+                          controller: _kinoSollController,
+                          focusNode: _kinoSollFocusNode,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _kinoSollCent = _parseCentZiffern(wert);
+                            });
+                          },
+                        ),
+                        _baueEingabeZeile(
+                          label: 'Bistro SOLL',
+                          controller: _bistroSollController,
+                          focusNode: _bistroSollFocusNode,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _bistroSollCent = _parseCentZiffern(wert);
+                            });
+                          },
+                        ),
+                        _baueEingabeZeile(
+                          label: 'Ausgaben',
+                          controller: _ausgabenController,
+                          focusNode: _ausgabenFocusNode,
+                          optional: true,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _ausgabenCent = _parseCentZiffern(wert);
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _kopfDatumUhrzeit(),
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Hinweis: „SOLL“ ist hier nur eine Bezeichnung für abgelesene Umsätze.',
-                  ),
-                  const SizedBox(height: 12),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          _baueEingabeZeile(
-                            label: 'Kino SOLL',
-                            controller: _kinoSollController,
-                            focusNode: _kinoSollFocusNode,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _kinoSollCent = _parseCentZiffern(wert);
-                              });
-                            },
-                          ),
-                          _baueEingabeZeile(
-                            label: 'Bistro SOLL',
-                            controller: _bistroSollController,
-                            focusNode: _bistroSollFocusNode,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _bistroSollCent = _parseCentZiffern(wert);
-                              });
-                            },
-                          ),
-                          _baueEingabeZeile(
-                            label: 'Ausgaben',
-                            controller: _ausgabenController,
-                            focusNode: _ausgabenFocusNode,
-                            optional: true,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _ausgabenCent = _parseCentZiffern(wert);
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          for (int i = 0; i < _ecBelegController.length; i++)
-                            KeyedSubtree(
-                              key: ValueKey<int>(_ecBelegIds[i]),
-                              child: _baueEingabeZeile(
-                                label: 'EC Beleg ${i + 1}',
-                                controller: _ecBelegController[i],
-                                focusNode: _ecBelegFocusNode[i],
-                                optional: i > 0,
-                                zeigeLoeschen: i > 0,
-                                onLoeschen: () => _ecBelegEntfernen(i),
-                                onChanged: (String wert) {
-                                  setState(() {
-                                    _ecBelegeCent[i] = _parseCentZiffern(wert);
-                                  });
-                                },
-                              ),
-                            ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: OutlinedButton.icon(
-                              onPressed: _ecBelegHinzufuegen,
-                              icon: const Icon(Icons.add),
-                              label: const Text('+ EC-Beleg hinzufügen'),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        for (int i = 0; i < _ecBelegController.length; i++)
+                          KeyedSubtree(
+                            key: ValueKey<int>(_ecBelegIds[i]),
+                            child: _baueEingabeZeile(
+                              label: 'EC Beleg ${i + 1}',
+                              controller: _ecBelegController[i],
+                              focusNode: _ecBelegFocusNode[i],
+                              optional: i > 0,
+                              zeigeLoeschen: i > 0,
+                              onLoeschen: () => _ecBelegEntfernen(i),
+                              onChanged: (String wert) {
+                                setState(() {
+                                  _ecBelegeCent[i] = _parseCentZiffern(wert);
+                                });
+                              },
                             ),
                           ),
-                        ],
-                      ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: OutlinedButton.icon(
+                            onPressed: _ecBelegHinzufuegen,
+                            icon: const Icon(Icons.add),
+                            label: const Text('+ EC-Beleg hinzufügen'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          _baueBerechneteZeile(
-                            label: 'Gesamt SOLL',
-                            wert: _formatiereEuro(_gesamtSollCent),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: <Widget>[
+                        _baueBerechneteZeile(
+                          label: 'Gesamt SOLL',
+                          wert: _formatiereEuro(_gesamtSollCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'EC Umsatz',
+                          wert: _formatiereEuro(_ecUmsatzGesamtCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'BAR Bestand abzgl. Wechselgeld',
+                          wert: _formatiereEuro(
+                            widget.barBestandAbzglWechselgeldCent,
                           ),
-                          _baueBerechneteZeile(
-                            label: 'EC Umsatz',
-                            wert: _formatiereEuro(_ecUmsatzGesamtCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'Gesamt IST',
+                          wert: _formatiereEuro(_gesamtIstCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'Differenz Tagesabschluss',
+                          wert: _formatiereEuroMitVorzeichen(
+                            _differenzTagesabschlussCent,
                           ),
-                          _baueBerechneteZeile(
-                            label: 'BAR Bestand abzgl. Wechselgeld',
-                            wert: _formatiereEuro(
-                              widget.barBestandAbzglWechselgeldCent,
-                            ),
-                          ),
-                          _baueBerechneteZeile(
-                            label: 'Gesamt IST',
-                            wert: _formatiereEuro(_gesamtIstCent),
-                          ),
-                          _baueBerechneteZeile(
-                            label: 'Differenz Tagesabschluss',
-                            wert: _formatiereEuroMitVorzeichen(
-                              _differenzTagesabschlussCent,
-                            ),
-                            hervorheben: true,
-                          ),
-                        ],
-                      ),
+                          hervorheben: true,
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          _baueEingabeZeile(
-                            label: 'Differenz im Anfangsbestand',
-                            controller: _differenzAnfangsbestandController,
-                            focusNode: _differenzAnfangsbestandFocusNode,
-                            optional: true,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _differenzAnfangsbestandCent =
-                                    _parseCentZiffern(wert);
-                              });
-                            },
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: <Widget>[
+                        _baueEingabeZeile(
+                          label: 'Differenz im Anfangsbestand',
+                          controller: _differenzAnfangsbestandController,
+                          focusNode: _differenzAnfangsbestandFocusNode,
+                          optional: true,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _differenzAnfangsbestandCent = _parseCentZiffern(
+                                wert,
+                              );
+                            });
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'Info: ${_formatiereEuro(_differenzAnfangsbestandCent)}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
                           ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'Info: ${_formatiereEuro(_differenzAnfangsbestandCent)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton.icon(
-                      onPressed: _zeigeUmschlagVoransicht,
-                      icon: const Icon(Icons.receipt_long_outlined),
-                      label: const Text('Übertrag auf Umschlag'),
-                    ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: _zeigeUmschlagVoransicht,
+                    icon: const Icon(Icons.receipt_long_outlined),
+                    label: const Text('Übertrag auf Umschlag'),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _weiterZuSchritt3,
-                      child: const Text('Weiter zu Schritt 3'),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                ],
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+          // CTA bleibt fix oberhalb der Tastatur, damit er bei Fokus immer sichtbar ist.
+          Positioned(
+            left: 12,
+            right: 12,
+            bottom: ctaBottomInset,
+            child: SizedBox(
+              height: ctaHoehe,
+              child: ElevatedButton(
+                onPressed: _weiterZuSchritt3,
+                child: const Text('Weiter zu Schritt 3'),
+              ),
             ),
           ),
           Positioned(
