@@ -1,5 +1,0 @@
-UX-Grundsätze:
-- Einhandbedienung
-- Keine freien Texte für Zahlen
-- Klare Reihenfolge, keine Überladung
-- MVP > Perfektion
