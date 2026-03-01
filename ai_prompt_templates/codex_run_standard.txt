@@ -1,0 +1,62 @@
+# codex_run_standard.txt
+# Zweck:
+# - Standard-Template für normale Änderungen (UX, Logik, kleine Refactors im Zielbereich).
+# - Wird für 80–90% der Codex-Runs verwendet.
+# - Bestimmt: Kontext, Ziel, Regeln, Nicht-Erlaubtes, erwartetes Ergebnis und Git-Commit (von Codex auszuführen).
+
+Codex Run <NUMMER>: <Kurzbeschreibung>
+
+Kontext:
+- Aktueller Stand in 3–6 Stichpunkten.
+- Betroffene Screens/Dateien: <Dateien/Ordner>
+- Was existiert bereits? <kurz>
+- Was darf NICHT neu gedacht werden? <kurz>
+
+Ziel:
+- In 1–3 Sätzen: Was ist nachher konkret anders?
+
+Akzeptanzkriterien (Test in Simulator/Device):
+1) <Kriterium 1>
+2) <Kriterium 2>
+3) <Kriterium 3>
+
+Verbindliche fachliche Regeln:
+1) <Regel 1>
+2) <Regel 2>
+
+Technische Vorgaben:
+- Interne Berechnung weiterhin in Cent.
+- Keine neuen Packages (außer ausdrücklich gefordert).
+- Keine Umbenennung von Dateien/Klassen ohne ausdrückliche Anweisung.
+- Keine Änderung an Persistenz-Keys/JSON-Struktur ohne ausdrückliche Anweisung.
+- Änderungen strikt auf den beschriebenen Zielbereich begrenzen.
+
+Nicht erlaubt:
+- Kein Refactoring außerhalb des Zielbereichs.
+- Keine UI-Umgestaltung außerhalb des Zielbereichs.
+- Keine „Nebenbei“-Änderungen an pubspec.*, iOS/Android/macOS-Konfig, Pods etc. (außer ausdrücklich gefordert).
+
+Kommentierpflicht (Code):
+- Neue/angepasste Klassen und fachlich relevante Methoden kurz und sachlich auf Deutsch kommentieren („Was macht das?“ ggf. „Warum so?“).
+- Keine Kommentare zu trivialem Flutter-Standardcode.
+
+Erwartetes Ergebnis:
+- Kurz beschreiben, wie es nachher aussieht.
+- Liste der voraussichtlich angepassten Dateien.
+
+Abschluss (deine Antwort):
+- Liste der tatsächlich geänderten Dateien.
+- Kurzer Hinweis, wie ich testen kann (3 Bulletpoints).
+
+GIT (verbindlich – von dir auszuführen):
+- Führe die Git-Befehle selbst aus (nicht nur vorschlagen).
+- Commit-Message exakt: "Run <NUMMER>: <Kurzbeschreibung>" (Deutsch).
+- Sicherheitsregel: Wenn git status NICHT "On branch master" zeigt ODER wenn „detached HEAD“ / unerwartete Deletes / fremde Änderungen auftauchen:
+  - STOPPE und gib NUR eine kurze Diagnose + sichere, nicht-destruktive Schritte aus (keine automatischen clean/restore ohne ausdrückliche Anweisung).
+
+Reihenfolge:
+1) git status
+2) git add <nur betroffene Dateien>   (kein -A, außer ich fordere es explizit)
+3) git commit -m "Run <NUMMER>: <Kurzbeschreibung>"
+4) git status
+5) git push

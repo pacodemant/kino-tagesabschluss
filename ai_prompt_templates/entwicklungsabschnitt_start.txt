@@ -1,0 +1,29 @@
+# entwicklungsabschnitt_start.txt
+# Zweck:
+# - "Arbeitsabschnitt starten": kurzer Reset, damit wir wieder in den Flow kommen.
+# - Wird am Anfang eines neuen Chats oder nach einer Pause verwendet.
+# - Bestimmt: aktueller Stand, offene Punkte, nächster Mini-Schritt, Run-Nummer.
+
+Entwicklungsabschnitt – Start
+
+Projekt:
+- Kino-App (Tagesabschluss), NICHT BudzBunny.
+
+Aktueller Stand (kurz):
+- <3–6 Bulletpoints>
+
+Bekannte offene Probleme:
+- <Liste>
+
+Nächster Mini-Schritt:
+- <1 konkretes Ziel, klein testbar>
+
+Run-Nummer:
+- Nächster Run: <NUMMER>  (fortlaufend)
+
+Arbeitsmodus:
+- Kleine Prompts, nach jedem Run testen.
+- Nach bestandenem Test: Commit + Push durch Codex gemäß Template.
+
+Startfrage an mich:
+- “Bist du bereit für Run <NUMMER>?”  (dann antworte ich mit: go)
