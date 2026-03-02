@@ -650,7 +650,7 @@ class _TagesabschlussSchritt1SeiteState
           child: GanzzahlEingabefeld(
             textController: _stueckzahlController[zeile.id]!,
             focusNode: focusNode,
-            schriftgroesse: 18,
+            schriftgroesse: 16,
             textInputAction: _textInputActionFuerSchritt1(focusNode),
             onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
             onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
@@ -695,7 +695,7 @@ class _TagesabschlussSchritt1SeiteState
                           _beiEingabeAbgeschlossenSchritt1(focusNode),
                       onChanged: (String wert) =>
                           _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-                      schriftgroesse: 18,
+                      schriftgroesse: 15,
                       hinweisText: '0,00 €',
                     ),
                   ),
@@ -742,8 +742,8 @@ class _TagesabschlussSchritt1SeiteState
                         border: OutlineInputBorder(),
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
+                          horizontal: 8,
+                          vertical: 8,
                         ),
                       ),
                       onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
@@ -766,7 +766,7 @@ class _TagesabschlussSchritt1SeiteState
                           _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
                       onChanged: (String wert) =>
                           _beiUmschlagBetragGeaendert(i, wert),
-                      schriftgroesse: 16,
+                      schriftgroesse: 14,
                       hinweisText: '0,00 €',
                       labelText: 'Betrag €',
                     ),
