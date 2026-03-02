@@ -429,7 +429,12 @@ class _TagesabschlussSchritt1SeiteState
     final bool istUmschlagFeld =
         _umschlagBezeichnungFocusNode.contains(aktivesFeld) ||
         _umschlagBetragFocusNode.contains(aktivesFeld);
-    final double umschlagBottomSafety = istUmschlagFeld ? 100 : 0;
+    final bool istKartenzahlungFeld = _kartenzahlungFocusNode.contains(
+      aktivesFeld,
+    );
+    final double bottomSafety = (istUmschlagFeld || istKartenzahlungFeld)
+        ? 100
+        : 0;
 
     final double scrollOffset = _scrollController.position.pixels;
     final double viewportHeight = _scrollController.position.viewportDimension;
@@ -437,7 +442,7 @@ class _TagesabschlussSchritt1SeiteState
         scrollOffset + statusBarHeight + _appBarHoehe + stickyHeaderHeight + 8;
     final double visibleBottom =
         scrollOffset -
-        (keyboardInset + footerTotalHoehe + 8 + umschlagBottomSafety) +
+        (keyboardInset + footerTotalHoehe + 8 + bottomSafety) +
         viewportHeight;
 
     double? targetOffset;
@@ -448,7 +453,7 @@ class _TagesabschlussSchritt1SeiteState
       targetOffset =
           fieldBottom -
           viewportHeight +
-          (keyboardInset + footerTotalHoehe + 16 + umschlagBottomSafety);
+          (keyboardInset + footerTotalHoehe + 16 + bottomSafety);
     }
     if (targetOffset == null) {
       return;
@@ -1588,7 +1593,6 @@ class _TagesabschlussSchritt1SeiteState
               footerContentHoehe + footerBottomInset;
           final double bottomPadding = keyboardInset + footerTotalHoehe + 16;
           final bool downButtonSichtbar =
-              tastaturOffen &&
               _scrollController.hasClients &&
               _scrollController.position.pixels <
                   _scrollController.position.maxScrollExtent - 24;
