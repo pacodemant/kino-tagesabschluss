@@ -953,15 +953,13 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueFooterLeiste(double bottomBarHoehe) {
-    return Material(
-      elevation: 1,
+  Widget _baueFooterLeiste(double footerHoehe) {
+    return ColoredBox(
       color: Theme.of(context).colorScheme.surfaceContainer,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: SizedBox(
-          height: bottomBarHoehe,
+      child: SizedBox(
+        height: footerHoehe,
+        child: Padding(
+          padding: const EdgeInsets.all(6),
           child: Row(
             children: <Widget>[
               Expanded(
@@ -992,14 +990,11 @@ class _TagesabschlussSchritt1SeiteState
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
-    const double bottomBarHoehe = 52;
-    const double footerInnenPadding = 12;
-    const double footerGesamtHoehe = bottomBarHoehe + footerInnenPadding;
+    const double footerHoehe = 72;
     const double devToolsStickyHoehe = 86;
     final double footerBottomInset =
         mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 8;
-    final double bottomPadding =
-        12 + footerGesamtHoehe + mediaQuery.padding.bottom + 16;
+    final double bottomPadding = footerHoehe + 16;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1090,7 +1085,10 @@ class _TagesabschlussSchritt1SeiteState
             left: 12,
             right: 12,
             bottom: footerBottomInset,
-            child: _baueFooterLeiste(bottomBarHoehe),
+            child: SizedBox(
+              height: footerHoehe,
+              child: _baueFooterLeiste(footerHoehe),
+            ),
           ),
         ],
       ),
