@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
@@ -11,6 +12,9 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
+    DeviceOrientation.portraitUp,
+  ]);
 
   // Wichtig für DateFormat(..., 'de_DE') in Schritt 2 (sonst LocaleDataException).
   await initializeDateFormatting('de_DE', null);

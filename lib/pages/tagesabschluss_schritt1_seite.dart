@@ -59,6 +59,8 @@ class _TagesabschlussSchritt1SeiteState
   );
   static const Duration _footerAnimationDauer = Duration(milliseconds: 200);
   static const Curve _footerAnimationKurve = Curves.easeOutCubic;
+  static const double _appBarHoehe = 48;
+  static const double _devToolsStickyHoehe = 86;
 
   final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
       const KassenstandEntwurfUsecase();
@@ -347,11 +349,76 @@ class _TagesabschlussSchritt1SeiteState
     if (feldKontext == null) {
       return;
     }
-    Scrollable.ensureVisible(
-      feldKontext,
+    if (!_scrollController.hasClients) {
+      return;
+    }
+    final RenderObject? renderObject = feldKontext.findRenderObject();
+    if (renderObject is! RenderBox) {
+      return;
+    }
+    final RenderObject? viewportObject = _scrollController
+        .position
+        .context
+        .storageContext
+        .findRenderObject();
+    if (viewportObject is! RenderBox) {
+      return;
+    }
+
+    final Offset feldPositionImViewport = renderObject.localToGlobal(
+      Offset.zero,
+      ancestor: viewportObject,
+    );
+    final double fieldTop =
+        _scrollController.position.pixels + feldPositionImViewport.dy;
+    final double fieldBottom = fieldTop + renderObject.size.height;
+
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final double statusBarHeight = mediaQuery.padding.top;
+    final double keyboardInset = _keyboardInset;
+    final bool tastaturOffen = keyboardInset > 0;
+    final double footerContentHoehe = tastaturOffen
+        ? _footerContentHoeheKeyboard
+        : _footerContentHoeheNormal;
+    final double footerBottomInset = tastaturOffen
+        ? 0
+        : mediaQuery.viewPadding.bottom;
+    final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
+    final double stickyHeaderHeight = (_devToolsSichtbar && _devToolsOffen)
+        ? _devToolsStickyHoehe
+        : 0;
+
+    final double scrollOffset = _scrollController.position.pixels;
+    final double viewportHeight = _scrollController.position.viewportDimension;
+    final double visibleTop =
+        scrollOffset + statusBarHeight + _appBarHoehe + stickyHeaderHeight + 8;
+    final double visibleBottom =
+        scrollOffset - (keyboardInset + footerTotalHoehe + 8) + viewportHeight;
+
+    double? targetOffset;
+    if (fieldTop < visibleTop) {
+      targetOffset =
+          fieldTop - (statusBarHeight + _appBarHoehe + stickyHeaderHeight + 8);
+    } else if (fieldBottom > visibleBottom) {
+      targetOffset =
+          fieldBottom -
+          viewportHeight +
+          (keyboardInset + footerTotalHoehe + 16);
+    }
+    if (targetOffset == null) {
+      return;
+    }
+    final double begrenzt = targetOffset.clamp(
+      _scrollController.position.minScrollExtent,
+      _scrollController.position.maxScrollExtent,
+    );
+    if ((begrenzt - _scrollController.position.pixels).abs() < 1) {
+      return;
+    }
+    _scrollController.animateTo(
+      begrenzt,
       duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      alignment: 0.15,
+      curve: Curves.easeOutCubic,
     );
   }
 
@@ -795,8 +862,11 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueGruppenInhalt(
     List<Kassenzeile> zeilen,
-    String gesamtbetragLabel,
-  ) {
+    String gesamtbetragLabel, {
+    String Function(int cent)? formatierer,
+  }) {
+    final String Function(int cent) nutzeFormatierer =
+        formatierer ?? _formatiereEuro;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -806,7 +876,7 @@ class _TagesabschlussSchritt1SeiteState
         ],
         const SizedBox(height: 4),
         Text(
-          '$gesamtbetragLabel: ${_formatiereEuro(_summeGruppe(zeilen))}',
+          '$gesamtbetragLabel: ${nutzeFormatierer(_summeGruppe(zeilen))}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
@@ -1009,7 +1079,10 @@ class _TagesabschlussSchritt1SeiteState
     required bool aufgeklappt,
     required VoidCallback beimUmschalten,
     required Widget inhalt,
+    String Function(int cent)? gesamtformatierer,
   }) {
+    final String Function(int cent) formatierer =
+        gesamtformatierer ?? _formatiereEuro;
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -1028,7 +1101,7 @@ class _TagesabschlussSchritt1SeiteState
                     ),
                   ),
                   Text(
-                    _formatiereEuro(gesamtbetragCent),
+                    formatierer(gesamtbetragCent),
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(width: 8),
@@ -1084,8 +1157,20 @@ class _TagesabschlussSchritt1SeiteState
           _rollenAufgeklappt = !_rollenAufgeklappt;
         });
       },
-      inhalt: _baueGruppenInhalt(_rollen, 'Gesamtbetrag Rollen'),
+      inhalt: _baueGruppenInhalt(
+        _rollen,
+        'Gesamtbetrag Rollen',
+        formatierer: _formatiereRollenAnzeige,
+      ),
+      gesamtformatierer: _formatiereRollenAnzeige,
     );
+  }
+
+  String _formatiereRollenAnzeige(int cent) {
+    if (cent % 100 == 0) {
+      return '${cent ~/ 100} €';
+    }
+    return _formatiereEuro(cent);
   }
 
   Widget _baueUmschlagGruppe() {
@@ -1281,16 +1366,7 @@ class _TagesabschlussSchritt1SeiteState
           ),
           child: Row(
             children: <Widget>[
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _weiterZuSchritt2,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Schritt 2'),
-                  style: kompaktButtonStyle,
-                ),
-              ),
               if (zeigeNaechstesFeld) ...<Widget>[
-                const SizedBox(width: 8),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _weiterZumNaechstenFeldUnten,
@@ -1298,7 +1374,23 @@ class _TagesabschlussSchritt1SeiteState
                     child: const Text('nächstes Feld'),
                   ),
                 ),
+                const SizedBox(width: 8),
               ],
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZuSchritt2,
+                  style: kompaktButtonStyle,
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.arrow_forward),
+                      SizedBox(width: 6),
+                      Text('Schritt 2'),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -1316,17 +1408,8 @@ class _TagesabschlussSchritt1SeiteState
     final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
     final double keyboardInset = _keyboardInset;
     final bool tastaturOffen = keyboardInset > 0;
-    final double footerContentHoehe = tastaturOffen
-        ? _footerContentHoeheKeyboard
-        : _footerContentHoeheNormal;
-    final EdgeInsets footerPadding = tastaturOffen
-        ? _footerPaddingKeyboard
-        : _footerPaddingNormal;
-    const double devToolsStickyHoehe = 86;
+    final double keyboardAnimationZiel = tastaturOffen ? 1.0 : 0.0;
     final double bottomInset = mediaQuery.viewPadding.bottom;
-    final double footerBottomInset = tastaturOffen ? 0 : bottomInset;
-    final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
-    final double bottomPadding = footerTotalHoehe + 16;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1373,73 +1456,96 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
-        children: <Widget>[
-          Theme(
-            data: Theme.of(context).copyWith(
-              inputDecorationTheme: const InputDecorationTheme(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 6,
-                ),
-              ),
-            ),
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: CustomScrollView(
-                controller: _scrollController,
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.manual,
-                slivers: <Widget>[
-                  if (devToolsStickySichtbar)
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _DevToolsStickyHeaderDelegate(
-                        extent: devToolsStickyHoehe,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                          child: _baueDevToolsPanel(),
-                        ),
-                      ),
-                    ),
-                  SliverPadding(
-                    padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate(<Widget>[
-                        _baueScheineGruppe(),
-                        _baueLoseMuenzenGruppe(),
-                        _baueRollenGruppe(),
-                        _baueKartenzahlungenGruppe(),
-                        _baueUmschlagGruppe(),
-                        _baueZusammenfassung(),
-                      ]),
+      body: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: keyboardAnimationZiel),
+        duration: _footerAnimationDauer,
+        curve: _footerAnimationKurve,
+        builder: (BuildContext context, double faktor, _) {
+          final double footerBottom = keyboardInset * faktor;
+          final double footerContentHoehe = ui.lerpDouble(
+            _footerContentHoeheNormal,
+            _footerContentHoeheKeyboard,
+            faktor,
+          )!;
+          final double footerBottomInset = ui.lerpDouble(
+            bottomInset,
+            0,
+            faktor,
+          )!;
+          final EdgeInsets footerPadding = EdgeInsets.lerp(
+            _footerPaddingNormal,
+            _footerPaddingKeyboard,
+            faktor,
+          )!;
+          final double footerTotalHoehe =
+              footerContentHoehe + footerBottomInset;
+          final double bottomPadding = keyboardInset + footerTotalHoehe + 16;
+
+          return Stack(
+            children: <Widget>[
+              Theme(
+                data: Theme.of(context).copyWith(
+                  inputDecorationTheme: const InputDecorationTheme(
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 6,
                     ),
                   ),
-                ],
+                ),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.manual,
+                    slivers: <Widget>[
+                      if (devToolsStickySichtbar)
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _DevToolsStickyHeaderDelegate(
+                            extent: _devToolsStickyHoehe,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                              child: _baueDevToolsPanel(),
+                            ),
+                          ),
+                        ),
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate(<Widget>[
+                            _baueScheineGruppe(),
+                            _baueLoseMuenzenGruppe(),
+                            _baueRollenGruppe(),
+                            _baueKartenzahlungenGruppe(),
+                            _baueUmschlagGruppe(),
+                            _baueZusammenfassung(),
+                          ]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          AnimatedPositioned(
-            duration: _footerAnimationDauer,
-            curve: _footerAnimationKurve,
-            left: 0,
-            right: 0,
-            bottom: keyboardInset,
-            child: AnimatedContainer(
-              duration: _footerAnimationDauer,
-              curve: _footerAnimationKurve,
-              height: footerTotalHoehe,
-              child: _baueFooterLeiste(
-                tastaturOffen: tastaturOffen,
-                footerPadding: footerPadding,
-                footerBottomInset: footerBottomInset,
-                zeigeNaechstesFeld: zeigeNaechstesFeld,
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: footerBottom,
+                child: SizedBox(
+                  height: footerTotalHoehe,
+                  child: _baueFooterLeiste(
+                    tastaturOffen: tastaturOffen,
+                    footerPadding: footerPadding,
+                    footerBottomInset: footerBottomInset,
+                    zeigeNaechstesFeld: zeigeNaechstesFeld,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
