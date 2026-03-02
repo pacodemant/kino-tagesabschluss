@@ -953,19 +953,57 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
+  Widget _baueFooterLeiste(double bottomBarHoehe) {
+    return Material(
+      elevation: 1,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: SizedBox(
+          height: bottomBarHoehe,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZumNaechstenFeldUnten,
+                  child: const Text('nächstes Feld'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _weiterZuSchritt2,
+                  icon: const Icon(Icons.arrow_forward),
+                  label: const Text('Schritt 2'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_laedt) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     const double bottomBarHoehe = 52;
+    const double footerInnenPadding = 12;
+    const double footerGesamtHoehe = bottomBarHoehe + footerInnenPadding;
+    const double devToolsStickyHoehe = 86;
+    final double footerBottomInset =
+        mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 8;
     final double bottomPadding =
-        12 + bottomBarHoehe + mediaQuery.padding.bottom + 12;
+        12 + footerGesamtHoehe + mediaQuery.padding.bottom + 16;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
-      resizeToAvoidBottomInset: true,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         toolbarHeight: 68,
@@ -1002,63 +1040,75 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.fromLTRB(12, 6, 12, 8),
-        child: Material(
-          elevation: 1,
-          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(6),
-            child: SizedBox(
-              height: bottomBarHoehe,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _weiterZumNaechstenFeldUnten,
-                      child: const Text('nächstes Feld'),
+      body: Stack(
+        children: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusScope.of(context).unfocus(),
+            child: CustomScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: <Widget>[
+                if (devToolsStickySichtbar)
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _DevToolsStickyHeaderDelegate(
+                      extent: devToolsStickyHoehe,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                        child: _baueDevToolsPanel(),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _weiterZuSchritt2,
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Schritt 2'),
-                    ),
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate(<Widget>[
+                      _baueScheineGruppe(),
+                      _baueLoseMuenzenGruppe(),
+                      _baueRollenGruppe(),
+                      _baueUmschlagGruppe(),
+                      _baueZusammenfassung(),
+                    ]),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ),
-      ),
-      body: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
-          children: <Widget>[
-            IgnorePointer(
-              ignoring: !_devToolsSichtbar || !_devToolsOffen,
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 140),
-                opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 140),
-                  height: _devToolsSichtbar && _devToolsOffen ? null : 0,
-                  child: _baueDevToolsPanel(),
-                ),
-              ),
-            ),
-            _baueScheineGruppe(),
-            _baueLoseMuenzenGruppe(),
-            _baueRollenGruppe(),
-            _baueUmschlagGruppe(),
-            _baueZusammenfassung(),
-          ],
-        ),
+          Positioned(
+            left: 12,
+            right: 12,
+            bottom: footerBottomInset,
+            child: _baueFooterLeiste(bottomBarHoehe),
+          ),
+        ],
       ),
     );
+  }
+}
+
+class _DevToolsStickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  _DevToolsStickyHeaderDelegate({required this.extent, required this.child});
+
+  final double extent;
+  final Widget child;
+
+  @override
+  double get minExtent => extent;
+
+  @override
+  double get maxExtent => extent;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return child;
+  }
+
+  @override
+  bool shouldRebuild(covariant _DevToolsStickyHeaderDelegate oldDelegate) {
+    return extent != oldDelegate.extent || child != oldDelegate.child;
   }
 }
