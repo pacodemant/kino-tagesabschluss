@@ -743,7 +743,7 @@ class _TagesabschlussSchritt1SeiteState
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: 8,
-                          vertical: 8,
+                          vertical: 6,
                         ),
                       ),
                       onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
@@ -956,7 +956,7 @@ class _TagesabschlussSchritt1SeiteState
   Widget _baueFooterLeiste(double bottomBarHoehe) {
     return Material(
       elevation: 1,
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      color: Theme.of(context).colorScheme.surfaceContainer,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.all(6),
@@ -1042,36 +1042,48 @@ class _TagesabschlussSchritt1SeiteState
       ),
       body: Stack(
         children: <Widget>[
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => FocusScope.of(context).unfocus(),
-            child: CustomScrollView(
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              slivers: <Widget>[
-                if (devToolsStickySichtbar)
-                  SliverPersistentHeader(
-                    pinned: true,
-                    delegate: _DevToolsStickyHeaderDelegate(
-                      extent: devToolsStickyHoehe,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                        child: _baueDevToolsPanel(),
+          Theme(
+            data: Theme.of(context).copyWith(
+              inputDecorationTheme: const InputDecorationTheme(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 6,
+                ),
+              ),
+            ),
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusScope.of(context).unfocus(),
+              child: CustomScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                slivers: <Widget>[
+                  if (devToolsStickySichtbar)
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _DevToolsStickyHeaderDelegate(
+                        extent: devToolsStickyHoehe,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                          child: _baueDevToolsPanel(),
+                        ),
                       ),
                     ),
+                  SliverPadding(
+                    padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate(<Widget>[
+                        _baueScheineGruppe(),
+                        _baueLoseMuenzenGruppe(),
+                        _baueRollenGruppe(),
+                        _baueUmschlagGruppe(),
+                        _baueZusammenfassung(),
+                      ]),
+                    ),
                   ),
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate(<Widget>[
-                      _baueScheineGruppe(),
-                      _baueLoseMuenzenGruppe(),
-                      _baueRollenGruppe(),
-                      _baueUmschlagGruppe(),
-                      _baueZusammenfassung(),
-                    ]),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Positioned(
