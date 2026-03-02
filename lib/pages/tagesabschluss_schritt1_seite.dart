@@ -92,7 +92,7 @@ class _TagesabschlussSchritt1SeiteState
   int _wechselgeldSollwertCent = 20000;
   final List<int> _kartenzahlungenCent = <int>[0];
   bool _laedt = true;
-  bool _scheineAufgeklappt = false;
+  bool _scheineAufgeklappt = true;
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
   bool _kartenzahlungenAufgeklappt = false;
@@ -994,7 +994,7 @@ class _TagesabschlussSchritt1SeiteState
               final FocusNode betragFocusNode = _umschlagBetragFocusNode[i];
               return Row(
                 key: ValueKey<int>(_umschlagIds[i]),
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Expanded(
                     child: _baueFeldMitKey(
@@ -1121,7 +1121,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueScheineGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'Scheine (Anzahl eingeben)',
+      titel: 'Scheine (Anzahl)',
       gesamtbetragCent: _summeGruppe(_scheine),
       aufgeklappt: _scheineAufgeklappt,
       beimUmschalten: () {
@@ -1135,7 +1135,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueLoseMuenzenGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'Lose Münzen (Betrag eingeben)',
+      titel: 'Lose Münzen (Beträge)',
       gesamtbetragCent: _loseMuenzenGesamtCent,
       aufgeklappt: _loseMuenzenAufgeklappt,
       beimUmschalten: () {
@@ -1149,7 +1149,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueRollenGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'Rollen (Anzahl eingeben)',
+      titel: 'Rollen (Anzahl)',
       gesamtbetragCent: _summeGruppe(_rollen),
       aufgeklappt: _rollenAufgeklappt,
       beimUmschalten: () {
@@ -1175,7 +1175,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueUmschlagGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'Umschläge (Betrag eingeben)',
+      titel: 'Umschläge (Beträge)',
       gesamtbetragCent: _umschlagSummeCent,
       aufgeklappt: _umschlaegeAufgeklappt,
       beimUmschalten: () {
@@ -1258,7 +1258,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueKartenzahlungenGruppe() {
     return _baueEinklappbarenBereich(
-      titel: 'Kartenzahlungen (Betrag eingeben)',
+      titel: 'Kartenzahlungen (Beträge)',
       gesamtbetragCent: _kartenzahlungenSummeCent,
       aufgeklappt: _kartenzahlungenAufgeklappt,
       beimUmschalten: () {
