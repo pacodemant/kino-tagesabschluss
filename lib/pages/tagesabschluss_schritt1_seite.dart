@@ -61,16 +61,20 @@ class _TagesabschlussSchritt1SeiteState
   final List<FocusNode> _umschlagBetragFocusNode = <FocusNode>[];
   final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
   final List<int> _umschlagIds = <int>[];
-  final TextEditingController _kartenumsatzController = TextEditingController();
-  final FocusNode _kartenumsatzFocusNode = FocusNode();
+  final List<TextEditingController> _kartenzahlungController =
+      <TextEditingController>[TextEditingController()];
+  final List<FocusNode> _kartenzahlungFocusNode = <FocusNode>[FocusNode()];
+  final List<int> _kartenzahlungIds = <int>[0];
+  int _naechsteKartenzahlungId = 1;
   int _naechsteUmschlagId = 1;
 
   int _wechselgeldSollwertCent = 20000;
-  int _kartenumsatzCent = 0;
+  final List<int> _kartenzahlungenCent = <int>[0];
   bool _laedt = true;
   bool _scheineAufgeklappt = false;
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
+  bool _kartenzahlungenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   final Random _zufall = Random();
@@ -129,8 +133,12 @@ class _TagesabschlussSchritt1SeiteState
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
       focusNode.dispose();
     }
-    _kartenumsatzController.dispose();
-    _kartenumsatzFocusNode.dispose();
+    for (final TextEditingController controller in _kartenzahlungController) {
+      controller.dispose();
+    }
+    for (final FocusNode focusNode in _kartenzahlungFocusNode) {
+      focusNode.dispose();
+    }
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
     super.dispose();
   }
@@ -227,11 +235,13 @@ class _TagesabschlussSchritt1SeiteState
       }
     }
 
-    final String kartenText = _kartenumsatzCent == 0
-        ? ''
-        : _formatiereEuroEingabe(_kartenumsatzCent);
-    if (_kartenumsatzController.text != kartenText) {
-      _setzeControllerText(_kartenumsatzController, kartenText);
+    for (int i = 0; i < _kartenzahlungController.length; i++) {
+      final String text = _kartenzahlungenCent[i] == 0
+          ? ''
+          : _formatiereEuroEingabe(_kartenzahlungenCent[i]);
+      if (_kartenzahlungController[i].text != text) {
+        _setzeControllerText(_kartenzahlungController[i], text);
+      }
     }
   }
 
@@ -264,7 +274,8 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _loseMuenzarten) {
         _loseMuenzenNachArtCent[zeile.id] = _zufallszahl(0, 3000);
       }
-      _kartenumsatzCent = _zufallszahl(0, 250000);
+      _setzeKartenzahlungAnzahl(1);
+      _kartenzahlungenCent[0] = _zufallszahl(0, 250000);
 
       final int umschlagAnzahl = _zufallszahl(1, 4);
       final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
@@ -278,10 +289,6 @@ class _TagesabschlussSchritt1SeiteState
       }
       _uebernehmeUmschlagEntwurf(umschlaege);
       _synchronisiereControllerAusState();
-      _setzeControllerText(
-        _kartenumsatzController,
-        _formatiereEuroEingabe(_kartenumsatzCent),
-      );
     });
   }
 
@@ -294,10 +301,10 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _loseMuenzarten) {
         _loseMuenzenNachArtCent[zeile.id] = 0;
       }
-      _kartenumsatzCent = 0;
+      _setzeKartenzahlungAnzahl(1);
+      _kartenzahlungenCent[0] = 0;
       _leereUmschlagFelder();
       _synchronisiereControllerAusState();
-      _setzeControllerText(_kartenumsatzController, '');
     });
   }
 
@@ -422,6 +429,39 @@ class _TagesabschlussSchritt1SeiteState
     _speichereEntwurf();
   }
 
+  void _setzeKartenzahlungAnzahl(int anzahl) {
+    while (_kartenzahlungController.length > anzahl) {
+      _kartenzahlungController.removeLast().dispose();
+      _kartenzahlungFocusNode.removeLast().dispose();
+      _kartenzahlungenCent.removeLast();
+      _kartenzahlungIds.removeLast();
+    }
+    while (_kartenzahlungController.length < anzahl) {
+      _kartenzahlungController.add(TextEditingController());
+      _kartenzahlungFocusNode.add(FocusNode());
+      _kartenzahlungenCent.add(0);
+      _kartenzahlungIds.add(_naechsteKartenzahlungId++);
+    }
+  }
+
+  void _kartenzahlungHinzufuegen() {
+    setState(() {
+      _setzeKartenzahlungAnzahl(_kartenzahlungController.length + 1);
+    });
+  }
+
+  void _kartenzahlungEntfernen(int index) {
+    if (index <= 0 || index >= _kartenzahlungController.length) {
+      return;
+    }
+    setState(() {
+      _kartenzahlungController.removeAt(index).dispose();
+      _kartenzahlungFocusNode.removeAt(index).dispose();
+      _kartenzahlungenCent.removeAt(index);
+      _kartenzahlungIds.removeAt(index);
+    });
+  }
+
   int _parseCentZiffern(String wert) {
     return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
@@ -433,7 +473,7 @@ class _TagesabschlussSchritt1SeiteState
         (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
       ),
       ..._rollen.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
-      _kartenumsatzFocusNode,
+      ..._kartenzahlungFocusNode,
     ];
 
     for (int i = 0; i < _umschlaege.length; i++) {
@@ -540,8 +580,11 @@ class _TagesabschlussSchritt1SeiteState
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
       );
 
+  int get _kartenzahlungenSummeCent =>
+      TagesabschlussBerechnung.summeCentBetraege(_kartenzahlungenCent);
+
   int get _gesamtUmsatzMitKarteCent =>
-      _barumsatzBereinigtCent + _kartenumsatzCent;
+      _barumsatzBereinigtCent + _kartenzahlungenSummeCent;
 
   String _formatiereEuro(int cent) {
     return TagesabschlussFormatierung.formatiereEuro(cent);
@@ -589,10 +632,10 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _loseMuenzarten) {
         _loseMuenzenNachArtCent[zeile.id] = 0;
       }
-      _kartenumsatzCent = 0;
+      _setzeKartenzahlungAnzahl(1);
+      _kartenzahlungenCent[0] = 0;
       _leereUmschlagFelder();
       _synchronisiereControllerAusState();
-      _setzeControllerText(_kartenumsatzController, '');
     });
     await _speichereEntwurf();
   }
@@ -943,43 +986,83 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueKartenumsatzEingabe() {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: <Widget>[
-            const Expanded(
-              child: Text(
-                'Kartenzahlungen',
-                textAlign: TextAlign.right,
-                style: TextStyle(fontSize: 13),
-              ),
-            ),
-            const SizedBox(width: 10),
-            SizedBox(
-              width: 148,
-              child: BetragCentEingabefeld(
-                textController: _kartenumsatzController,
-                focusNode: _kartenumsatzFocusNode,
-                textInputAction: _textInputActionFuerSchritt1(
-                  _kartenumsatzFocusNode,
+  Widget _baueKartenzahlungenInhalt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        for (int i = 0; i < _kartenzahlungController.length; i++) ...<Widget>[
+          Row(
+            key: ValueKey<int>(_kartenzahlungIds[i]),
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  'Kartenzahlung',
+                  textAlign: TextAlign.right,
+                  style: TextStyle(fontSize: 13),
                 ),
-                onSubmitted: (_) =>
-                    _beiEingabeAbgeschlossenSchritt1(_kartenumsatzFocusNode),
-                onChanged: (String wert) {
-                  setState(() {
-                    _kartenumsatzCent = _parseCentZiffern(wert);
-                  });
-                },
-                schriftgroesse: 15,
-                hinweisText: '0,00 €',
               ),
+              const SizedBox(width: 10),
+              SizedBox(
+                width: 148,
+                child: BetragCentEingabefeld(
+                  textController: _kartenzahlungController[i],
+                  focusNode: _kartenzahlungFocusNode[i],
+                  textInputAction: _textInputActionFuerSchritt1(
+                    _kartenzahlungFocusNode[i],
+                  ),
+                  onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
+                    _kartenzahlungFocusNode[i],
+                  ),
+                  onChanged: (String wert) {
+                    setState(() {
+                      _kartenzahlungenCent[i] = _parseCentZiffern(wert);
+                    });
+                  },
+                  schriftgroesse: 15,
+                  hinweisText: '0,00 €',
+                ),
+              ),
+              if (i > 0) ...<Widget>[
+                const SizedBox(width: 6),
+                IconButton(
+                  onPressed: () => _kartenzahlungEntfernen(i),
+                  icon: const Icon(Icons.delete_outline),
+                  tooltip: 'Kartenzahlung entfernen',
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
+        ],
+        if (_kartenzahlungenCent.first > 0)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: _kartenzahlungHinzufuegen,
+              icon: const Icon(Icons.add),
+              label: const Text('Kartenzahlung hinzufügen'),
             ),
-          ],
+          ),
+        Text(
+          'Gesamt Kartenzahlungen: ${_formatiereEuro(_kartenzahlungenSummeCent)}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-      ),
+      ],
+    );
+  }
+
+  Widget _baueKartenzahlungenGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'Kartenzahlungen (Betrag eingeben)',
+      gesamtbetragCent: _kartenzahlungenSummeCent,
+      aufgeklappt: _kartenzahlungenAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _kartenzahlungenAufgeklappt = !_kartenzahlungenAufgeklappt;
+        });
+      },
+      inhalt: _baueKartenzahlungenInhalt(),
     );
   }
 
@@ -1010,7 +1093,7 @@ class _TagesabschlussSchritt1SeiteState
             ),
             _baueZusammenfassungsZeile(
               'Kartenzahlungen',
-              _formatiereEuro(_kartenumsatzCent),
+              _formatiereEuro(_kartenzahlungenSummeCent),
             ),
             _baueZusammenfassungsZeile(
               'Gesamt inkl. Karte',
@@ -1048,12 +1131,19 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Widget _baueFooterLeiste(
-    double footerHoehe, {
+    double footerContentHoehe, {
+    required double bottomInset,
     required bool zeigeNaechstesFeld,
   }) {
     const Color footerBg = Colors.black87;
+    final ButtonStyle kompaktButtonStyle = ElevatedButton.styleFrom(
+      minimumSize: const Size(0, 40),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
     return Container(
-      height: footerHoehe,
+      height: footerContentHoehe + bottomInset,
       decoration: const BoxDecoration(
         color: footerBg,
         border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
@@ -1066,7 +1156,7 @@ class _TagesabschlussSchritt1SeiteState
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+        padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + bottomInset),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -1074,6 +1164,7 @@ class _TagesabschlussSchritt1SeiteState
                 onPressed: _weiterZuSchritt2,
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text('Schritt 2'),
+                style: kompaktButtonStyle,
               ),
             ),
             if (zeigeNaechstesFeld) ...<Widget>[
@@ -1081,6 +1172,7 @@ class _TagesabschlussSchritt1SeiteState
               Expanded(
                 child: ElevatedButton(
                   onPressed: _weiterZumNaechstenFeldUnten,
+                  style: kompaktButtonStyle,
                   child: const Text('nächstes Feld'),
                 ),
               ),
@@ -1099,11 +1191,12 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
-    const double footerHoehe = 72;
+    const double footerContentHoehe = 56;
     const double devToolsStickyHoehe = 86;
-    final double footerBottomInset =
-        mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 8;
-    final double bottomPadding = footerHoehe + 16;
+    final double bottomInset = mediaQuery.viewPadding.bottom;
+    final double keyboardInset = mediaQuery.viewInsets.bottom;
+    final double footerTotalHoehe = footerContentHoehe + bottomInset;
+    final double bottomPadding = footerTotalHoehe + 16;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1111,7 +1204,8 @@ class _TagesabschlussSchritt1SeiteState
       appBar: AppBar(
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
-        toolbarHeight: 68,
+        toolbarHeight: 56,
+        titleSpacing: 10,
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1140,6 +1234,10 @@ class _TagesabschlussSchritt1SeiteState
             ),
           TextButton(
             onPressed: _bestaetigeUndLeereEingaben,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white70,
+              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
             child: const Text('Clear'),
           ),
           const SizedBox(width: 8),
@@ -1182,8 +1280,8 @@ class _TagesabschlussSchritt1SeiteState
                         _baueScheineGruppe(),
                         _baueLoseMuenzenGruppe(),
                         _baueRollenGruppe(),
+                        _baueKartenzahlungenGruppe(),
                         _baueUmschlagGruppe(),
-                        _baueKartenumsatzEingabe(),
                         _baueZusammenfassung(),
                       ]),
                     ),
@@ -1195,11 +1293,12 @@ class _TagesabschlussSchritt1SeiteState
           Positioned(
             left: 0,
             right: 0,
-            bottom: footerBottomInset,
+            bottom: keyboardInset,
             child: SizedBox(
-              height: footerHoehe,
+              height: footerTotalHoehe,
               child: _baueFooterLeiste(
-                footerHoehe,
+                footerContentHoehe,
+                bottomInset: bottomInset,
                 zeigeNaechstesFeld: zeigeNaechstesFeld,
               ),
             ),
