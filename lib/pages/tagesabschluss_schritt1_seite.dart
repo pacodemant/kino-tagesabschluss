@@ -61,9 +61,12 @@ class _TagesabschlussSchritt1SeiteState
   final List<FocusNode> _umschlagBetragFocusNode = <FocusNode>[];
   final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
   final List<int> _umschlagIds = <int>[];
+  final TextEditingController _kartenumsatzController = TextEditingController();
+  final FocusNode _kartenumsatzFocusNode = FocusNode();
   int _naechsteUmschlagId = 1;
 
   int _wechselgeldSollwertCent = 20000;
+  int _kartenumsatzCent = 0;
   bool _laedt = true;
   bool _scheineAufgeklappt = false;
   bool _loseMuenzenAufgeklappt = false;
@@ -93,6 +96,7 @@ class _TagesabschlussSchritt1SeiteState
       _loseMuenzenController[zeile.id] = TextEditingController();
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
+    FocusManager.instance.addListener(_beiGlobalemFokuswechsel);
     _ladeInitialeDaten();
   }
 
@@ -125,6 +129,9 @@ class _TagesabschlussSchritt1SeiteState
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
       focusNode.dispose();
     }
+    _kartenumsatzController.dispose();
+    _kartenumsatzFocusNode.dispose();
+    FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
     super.dispose();
   }
 
@@ -219,6 +226,13 @@ class _TagesabschlussSchritt1SeiteState
         _setzeControllerText(controller, text);
       }
     }
+
+    final String kartenText = _kartenumsatzCent == 0
+        ? ''
+        : _formatiereEuroEingabe(_kartenumsatzCent);
+    if (_kartenumsatzController.text != kartenText) {
+      _setzeControllerText(_kartenumsatzController, kartenText);
+    }
   }
 
   void _setzeControllerText(TextEditingController controller, String text) {
@@ -226,6 +240,13 @@ class _TagesabschlussSchritt1SeiteState
       text: text,
       selection: TextSelection.collapsed(offset: text.length),
     );
+  }
+
+  void _beiGlobalemFokuswechsel() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
   }
 
   int _zufallszahl(int min, int max) {
@@ -243,6 +264,7 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _loseMuenzarten) {
         _loseMuenzenNachArtCent[zeile.id] = _zufallszahl(0, 3000);
       }
+      _kartenumsatzCent = _zufallszahl(0, 250000);
 
       final int umschlagAnzahl = _zufallszahl(1, 4);
       final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
@@ -256,6 +278,10 @@ class _TagesabschlussSchritt1SeiteState
       }
       _uebernehmeUmschlagEntwurf(umschlaege);
       _synchronisiereControllerAusState();
+      _setzeControllerText(
+        _kartenumsatzController,
+        _formatiereEuroEingabe(_kartenumsatzCent),
+      );
     });
   }
 
@@ -268,8 +294,10 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _loseMuenzarten) {
         _loseMuenzenNachArtCent[zeile.id] = 0;
       }
+      _kartenumsatzCent = 0;
       _leereUmschlagFelder();
       _synchronisiereControllerAusState();
+      _setzeControllerText(_kartenumsatzController, '');
     });
   }
 
@@ -405,6 +433,7 @@ class _TagesabschlussSchritt1SeiteState
         (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
       ),
       ..._rollen.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
+      _kartenumsatzFocusNode,
     ];
 
     for (int i = 0; i < _umschlaege.length; i++) {
@@ -511,6 +540,9 @@ class _TagesabschlussSchritt1SeiteState
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
       );
 
+  int get _gesamtUmsatzMitKarteCent =>
+      _barumsatzBereinigtCent + _kartenumsatzCent;
+
   String _formatiereEuro(int cent) {
     return TagesabschlussFormatierung.formatiereEuro(cent);
   }
@@ -557,8 +589,10 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _loseMuenzarten) {
         _loseMuenzenNachArtCent[zeile.id] = 0;
       }
+      _kartenumsatzCent = 0;
       _leereUmschlagFelder();
       _synchronisiereControllerAusState();
+      _setzeControllerText(_kartenumsatzController, '');
     });
     await _speichereEntwurf();
   }
@@ -643,8 +677,14 @@ class _TagesabschlussSchritt1SeiteState
     return Row(
       children: <Widget>[
         Expanded(
-          child: Text(zeile.bezeichnung, style: const TextStyle(fontSize: 16)),
+          child: Text(
+            zeile.bezeichnung,
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 13),
+          ),
         ),
+        const SizedBox(width: 10),
         SizedBox(
           width: 96,
           child: GanzzahlEingabefeld(
@@ -682,9 +722,12 @@ class _TagesabschlussSchritt1SeiteState
                   Expanded(
                     child: Text(
                       zeile.bezeichnung,
-                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.right,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 13),
                     ),
                   ),
+                  const SizedBox(width: 10),
                   SizedBox(
                     width: 148,
                     child: BetragCentEingabefeld(
@@ -734,11 +777,13 @@ class _TagesabschlussSchritt1SeiteState
                     child: TextField(
                       controller: _umschlagBezeichnungController[i],
                       focusNode: bezeichnungFocusNode,
+                      style: const TextStyle(fontSize: 15),
                       textInputAction: _textInputActionFuerSchritt1(
                         bezeichnungFocusNode,
                       ),
                       decoration: const InputDecoration(
-                        labelText: 'Label (optional)',
+                        hintText: 'Label (optional)',
+                        hintStyle: TextStyle(fontSize: 15),
                         border: OutlineInputBorder(),
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(
@@ -898,6 +943,46 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
+  Widget _baueKartenumsatzEingabe() {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: <Widget>[
+            const Expanded(
+              child: Text(
+                'Kartenzahlungen',
+                textAlign: TextAlign.right,
+                style: TextStyle(fontSize: 13),
+              ),
+            ),
+            const SizedBox(width: 10),
+            SizedBox(
+              width: 148,
+              child: BetragCentEingabefeld(
+                textController: _kartenumsatzController,
+                focusNode: _kartenumsatzFocusNode,
+                textInputAction: _textInputActionFuerSchritt1(
+                  _kartenumsatzFocusNode,
+                ),
+                onSubmitted: (_) =>
+                    _beiEingabeAbgeschlossenSchritt1(_kartenumsatzFocusNode),
+                onChanged: (String wert) {
+                  setState(() {
+                    _kartenumsatzCent = _parseCentZiffern(wert);
+                  });
+                },
+                schriftgroesse: 15,
+                hinweisText: '0,00 €',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _baueZusammenfassung() {
     return Card(
       child: Padding(
@@ -921,6 +1006,15 @@ class _TagesabschlussSchritt1SeiteState
             _baueZusammenfassungsZeile(
               'Barumsatz (bereinigt)',
               _formatiereEuro(_barumsatzBereinigtCent),
+              hervorheben: true,
+            ),
+            _baueZusammenfassungsZeile(
+              'Kartenzahlungen',
+              _formatiereEuro(_kartenumsatzCent),
+            ),
+            _baueZusammenfassungsZeile(
+              'Gesamt inkl. Karte',
+              _formatiereEuro(_gesamtUmsatzMitKarteCent),
               hervorheben: true,
             ),
           ],
@@ -953,7 +1047,10 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueFooterLeiste(double footerHoehe) {
+  Widget _baueFooterLeiste(
+    double footerHoehe, {
+    required bool zeigeNaechstesFeld,
+  }) {
     const Color footerBg = Colors.black87;
     return Container(
       height: footerHoehe,
@@ -973,19 +1070,21 @@ class _TagesabschlussSchritt1SeiteState
         child: Row(
           children: <Widget>[
             Expanded(
-              child: ElevatedButton(
-                onPressed: _weiterZumNaechstenFeldUnten,
-                child: const Text('nächstes Feld'),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
               child: ElevatedButton.icon(
                 onPressed: _weiterZuSchritt2,
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text('Schritt 2'),
               ),
             ),
+            if (zeigeNaechstesFeld) ...<Widget>[
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZumNaechstenFeldUnten,
+                  child: const Text('nächstes Feld'),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -999,23 +1098,19 @@ class _TagesabschlussSchritt1SeiteState
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
-    final bool footerSichtbar =
-        _scheineAufgeklappt ||
-        _loseMuenzenAufgeklappt ||
-        _rollenAufgeklappt ||
-        _umschlaegeAufgeklappt;
+    final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
     const double footerHoehe = 72;
-    final double effektiveFooterHoehe = footerSichtbar ? footerHoehe : 0;
     const double devToolsStickyHoehe = 86;
     final double footerBottomInset =
         mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 8;
-    final double bottomPadding = effektiveFooterHoehe + 16;
+    final double bottomPadding = footerHoehe + 16;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
         toolbarHeight: 68,
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1088,6 +1183,7 @@ class _TagesabschlussSchritt1SeiteState
                         _baueLoseMuenzenGruppe(),
                         _baueRollenGruppe(),
                         _baueUmschlagGruppe(),
+                        _baueKartenumsatzEingabe(),
                         _baueZusammenfassung(),
                       ]),
                     ),
@@ -1096,16 +1192,18 @@ class _TagesabschlussSchritt1SeiteState
               ),
             ),
           ),
-          if (footerSichtbar)
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: footerBottomInset,
-              child: SizedBox(
-                height: footerHoehe,
-                child: _baueFooterLeiste(footerHoehe),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: footerBottomInset,
+            child: SizedBox(
+              height: footerHoehe,
+              child: _baueFooterLeiste(
+                footerHoehe,
+                zeigeNaechstesFeld: zeigeNaechstesFeld,
               ),
             ),
+          ),
         ],
       ),
     );
