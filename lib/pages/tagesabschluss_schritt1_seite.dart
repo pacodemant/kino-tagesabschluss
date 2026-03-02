@@ -74,7 +74,8 @@ class _TagesabschlussSchritt1SeiteState
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollen => StueckelungKonfiguration.rollen;
-  List<Kassenzeile> get _loseMuenzarten => StueckelungKonfiguration.loseMuenzarten;
+  List<Kassenzeile> get _loseMuenzarten =>
+      StueckelungKonfiguration.loseMuenzarten;
   List<Kassenzeile> get _alleStueckzahlZeilen =>
       StueckelungKonfiguration.alleStueckzahlZeilen;
   bool get _devToolsSichtbar => !kReleaseMode;
@@ -128,13 +129,11 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _ladeInitialeDaten() async {
-    final int geladenerWechselgeldSollwert =
-        await _kassenstandEntwurfUsecase.ladeWechselgeldSollwertCent(
-          widget.kinoId,
-        );
+    final int geladenerWechselgeldSollwert = await _kassenstandEntwurfUsecase
+        .ladeWechselgeldSollwertCent(widget.kinoId);
 
-    final KassenstandEntwurf? entwurf =
-        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(widget.kinoId);
+    final KassenstandEntwurf? entwurf = await _kassenstandEntwurfUsecase
+        .ladeHeutigenEntwurf(widget.kinoId);
 
     if (entwurf != null) {
       for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
@@ -526,7 +525,9 @@ class _TagesabschlussSchritt1SeiteState
       builder: (BuildContext dialogKontext) {
         return AlertDialog(
           title: const Text('Eingaben wirklich löschen?'),
-          content: const Text('Alle Eingaben in Schritt 1 werden zurückgesetzt.'),
+          content: const Text(
+            'Alle Eingaben in Schritt 1 werden zurückgesetzt.',
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(dialogKontext).pop(false),
@@ -563,10 +564,9 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _weiterZuSchritt2() async {
-    if (
-        _kassenstandEntwurfUsecase.bestaetigungNoetigFuerNullbetrag(
-          _kassenbestandGesamtCent,
-        )) {
+    if (_kassenstandEntwurfUsecase.bestaetigungNoetigFuerNullbetrag(
+      _kassenbestandGesamtCent,
+    )) {
       final bool? bestaetigt = await showDialog<bool>(
         context: context,
         builder: (BuildContext context) {
@@ -964,6 +964,7 @@ class _TagesabschlussSchritt1SeiteState
         12 + bottomBarHoehe + mediaQuery.padding.bottom + 12;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainer,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -1005,7 +1006,7 @@ class _TagesabschlussSchritt1SeiteState
         minimum: const EdgeInsets.fromLTRB(12, 6, 12, 8),
         child: Material(
           elevation: 1,
-          color: Theme.of(context).colorScheme.surface,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(6),
@@ -1014,21 +1015,17 @@ class _TagesabschlussSchritt1SeiteState
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerHighest,
-                      ),
+                    child: ElevatedButton(
                       onPressed: _weiterZumNaechstenFeldUnten,
                       child: const Text('nächstes Feld'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: ElevatedButton(
+                    child: ElevatedButton.icon(
                       onPressed: _weiterZuSchritt2,
-                      child: const Text('Weiter zu Schritt 2'),
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Schritt 2'),
                     ),
                   ),
                 ],
