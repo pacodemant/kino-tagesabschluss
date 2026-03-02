@@ -61,6 +61,11 @@ class _TagesabschlussSchritt1SeiteState
   static const Curve _footerAnimationKurve = Curves.easeOutCubic;
   static const double _appBarHoehe = 48;
   static const double _devToolsStickyHoehe = 86;
+  static const Set<String> _kupferRollenIds = <String>{
+    'roll_1c',
+    'roll_2c',
+    'roll_5c',
+  };
 
   final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
       const KassenstandEntwurfUsecase();
@@ -95,6 +100,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _scheineAufgeklappt = true;
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
+  bool _kupferRollenSichtbar = false;
   bool _kartenzahlungenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
@@ -107,7 +113,15 @@ class _TagesabschlussSchritt1SeiteState
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
-  List<Kassenzeile> get _rollen => StueckelungKonfiguration.rollen;
+  List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
+  List<Kassenzeile> get _kupferRollen => _rollenAlle
+      .where((Kassenzeile zeile) => _kupferRollenIds.contains(zeile.id))
+      .toList();
+  List<Kassenzeile> get _rollenOhneKupfer => _rollenAlle
+      .where((Kassenzeile zeile) => !_kupferRollenIds.contains(zeile.id))
+      .toList();
+  List<Kassenzeile> get _rollenSichtbar =>
+      _kupferRollenSichtbar ? _rollenAlle : _rollenOhneKupfer;
   List<Kassenzeile> get _loseMuenzarten =>
       StueckelungKonfiguration.loseMuenzarten;
   List<Kassenzeile> get _alleStueckzahlZeilen =>
@@ -130,6 +144,7 @@ class _TagesabschlussSchritt1SeiteState
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
     FocusManager.instance.addListener(_beiGlobalemFokuswechsel);
+    _scrollController.addListener(_beiScrollAenderung);
     _ladeInitialeDaten();
   }
 
@@ -168,6 +183,7 @@ class _TagesabschlussSchritt1SeiteState
     for (final FocusNode focusNode in _kartenzahlungFocusNode) {
       focusNode.dispose();
     }
+    _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
     WidgetsBinding.instance.removeObserver(this);
@@ -345,6 +361,13 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {});
   }
 
+  void _beiScrollAenderung() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+  }
+
   GlobalKey _holeFeldKey(FocusNode focusNode) {
     return _feldKeys.putIfAbsent(focusNode, () => GlobalKey());
   }
@@ -453,7 +476,7 @@ class _TagesabschlussSchritt1SeiteState
       for (final Kassenzeile zeile in _scheine) {
         _stueckzahlen[zeile.id] = _zufallszahl(0, 20);
       }
-      for (final Kassenzeile zeile in _rollen) {
+      for (final Kassenzeile zeile in _rollenSichtbar) {
         _stueckzahlen[zeile.id] = _zufallszahl(0, 3);
       }
       for (final Kassenzeile zeile in _loseMuenzarten) {
@@ -688,7 +711,9 @@ class _TagesabschlussSchritt1SeiteState
       ..._loseMuenzarten.map(
         (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
       ),
-      ..._rollen.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
+      ..._rollenSichtbar.map(
+        (Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!,
+      ),
       ..._kartenzahlungFocusNode,
     ];
 
@@ -779,7 +804,7 @@ class _TagesabschlussSchritt1SeiteState
     return TagesabschlussBerechnung.kassenbestandGesamtCent(
       scheineCent: _summeGruppe(_scheine),
       loseMuenzenCent: _loseMuenzenGesamtCent,
-      rollenCent: _summeGruppe(_rollen),
+      rollenCent: _summeGruppe(_rollenSichtbar),
       umschlaegeCent: _umschlagSummeCent,
     );
   }
@@ -900,7 +925,7 @@ class _TagesabschlussSchritt1SeiteState
         kinoName: widget.kinoName,
         scheineCent: _summeGruppe(_scheine),
         loseMuenzenCent: _loseMuenzenGesamtCent,
-        rollenCent: _summeGruppe(_rollen),
+        rollenCent: _summeGruppe(_rollenSichtbar),
         umschlaegeCent: _umschlagSummeCent,
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
         barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
@@ -1199,19 +1224,51 @@ class _TagesabschlussSchritt1SeiteState
   Widget _baueRollenGruppe() {
     return _baueEinklappbarenBereich(
       titel: 'Rollen (Anzahl)',
-      gesamtbetragCent: _summeGruppe(_rollen),
+      gesamtbetragCent: _summeGruppe(_rollenSichtbar),
       aufgeklappt: _rollenAufgeklappt,
       beimUmschalten: () {
         setState(() {
           _rollenAufgeklappt = !_rollenAufgeklappt;
         });
       },
-      inhalt: _baueGruppenInhalt(
-        _rollen,
-        'Gesamtbetrag Rollen',
-        formatierer: _formatiereRollenAnzeige,
-      ),
+      inhalt: _baueRollenInhalt(),
       gesamtformatierer: _formatiereRollenAnzeige,
+    );
+  }
+
+  Widget _baueRollenInhalt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        ...<Widget>[
+          _baueGruppenInhalt(
+            _rollenOhneKupfer,
+            'Gesamtbetrag Rollen',
+            formatierer: _formatiereRollenAnzeige,
+          ),
+        ],
+        if (!_kupferRollenSichtbar)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _kupferRollenSichtbar = true;
+                });
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Kupfer-Rollen hinzufügen'),
+            ),
+          ),
+        if (_kupferRollenSichtbar) ...<Widget>[
+          const SizedBox(height: 8),
+          _baueGruppenInhalt(
+            _kupferRollen,
+            'Gesamtbetrag Kupfer-Rollen',
+            formatierer: _formatiereRollenAnzeige,
+          ),
+        ],
+      ],
     );
   }
 
@@ -1530,6 +1587,11 @@ class _TagesabschlussSchritt1SeiteState
           final double footerTotalHoehe =
               footerContentHoehe + footerBottomInset;
           final double bottomPadding = keyboardInset + footerTotalHoehe + 16;
+          final bool downButtonSichtbar =
+              tastaturOffen &&
+              _scrollController.hasClients &&
+              _scrollController.position.pixels <
+                  _scrollController.position.maxScrollExtent - 24;
 
           return Stack(
             children: <Widget>[
@@ -1593,6 +1655,34 @@ class _TagesabschlussSchritt1SeiteState
                   ),
                 ),
               ),
+              if (downButtonSichtbar)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: footerBottom + footerTotalHoehe + 10,
+                  child: Center(
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: FloatingActionButton(
+                        heroTag: 'step1DownFab',
+                        mini: true,
+                        elevation: 2,
+                        onPressed: () {
+                          if (!_scrollController.hasClients) {
+                            return;
+                          }
+                          _scrollController.animateTo(
+                            _scrollController.position.maxScrollExtent,
+                            duration: const Duration(milliseconds: 220),
+                            curve: Curves.easeOutCubic,
+                          );
+                        },
+                        child: const Icon(Icons.keyboard_arrow_down),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           );
         },
