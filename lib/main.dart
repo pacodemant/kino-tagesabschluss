@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/platzhalter_seite.dart';
@@ -10,6 +11,10 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Wichtig für DateFormat(..., 'de_DE') in Schritt 2 (sonst LocaleDataException).
+  await initializeDateFormatting('de_DE', null);
+
   runApp(const MeineApp());
 }
 
@@ -34,9 +39,7 @@ class MeineApp extends StatelessWidget {
           if (argument is! String) {
             return MaterialPageRoute<void>(
               builder: (_) => const KinoauswahlSeite(),
-              settings: const RouteSettings(
-                name: KinoauswahlSeite.routenName,
-              ),
+              settings: const RouteSettings(name: KinoauswahlSeite.routenName),
             );
           }
 
@@ -44,9 +47,7 @@ class MeineApp extends StatelessWidget {
           if (kino == null) {
             return MaterialPageRoute<void>(
               builder: (_) => const KinoauswahlSeite(),
-              settings: const RouteSettings(
-                name: KinoauswahlSeite.routenName,
-              ),
+              settings: const RouteSettings(name: KinoauswahlSeite.routenName),
             );
           }
 
@@ -61,9 +62,7 @@ class MeineApp extends StatelessWidget {
           if (argument is! TagesabschlussSchritt1Argumente) {
             return MaterialPageRoute<void>(
               builder: (_) => const KinoauswahlSeite(),
-              settings: const RouteSettings(
-                name: KinoauswahlSeite.routenName,
-              ),
+              settings: const RouteSettings(name: KinoauswahlSeite.routenName),
             );
           }
 
@@ -81,9 +80,7 @@ class MeineApp extends StatelessWidget {
           if (argument is! TagesabschlussSchritt2Argumente) {
             return MaterialPageRoute<void>(
               builder: (_) => const KinoauswahlSeite(),
-              settings: const RouteSettings(
-                name: KinoauswahlSeite.routenName,
-              ),
+              settings: const RouteSettings(name: KinoauswahlSeite.routenName),
             );
           }
 
@@ -108,9 +105,7 @@ class MeineApp extends StatelessWidget {
           if (argument is! TagesabschlussSchritt3Argumente) {
             return MaterialPageRoute<void>(
               builder: (_) => const KinoauswahlSeite(),
-              settings: const RouteSettings(
-                name: KinoauswahlSeite.routenName,
-              ),
+              settings: const RouteSettings(name: KinoauswahlSeite.routenName),
             );
           }
 
