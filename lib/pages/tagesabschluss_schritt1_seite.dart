@@ -938,6 +938,46 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
+  Future<void> _zeigeSchrittAuswahlBottomSheet() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.check_circle),
+                title: const Text(
+                  '1/4 · Bargeldzählung',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: const Text('Aktueller Schritt'),
+                enabled: false,
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_forward),
+                title: const Text('2/4 · Einnahmen/Abschluss'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _weiterZuSchritt2();
+                },
+              ),
+              const ListTile(
+                title: Text('3/4 · Finalisieren'),
+                enabled: false,
+              ),
+              const ListTile(
+                title: Text('4/4 · Schritt 4'),
+                enabled: false,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _baueGruppenInhalt(
     List<Kassenzeile> zeilen,
     String gesamtbetragLabel, {
@@ -1245,12 +1285,9 @@ class _TagesabschlussSchritt1SeiteState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        ...<Widget>[
-          _baueGruppenInhalt(
-            _rollenOhneKupfer,
-            'Gesamtbetrag Rollen',
-            formatierer: _formatiereRollenAnzeige,
-          ),
+        for (final Kassenzeile zeile in _rollenOhneKupfer) ...<Widget>[
+          _baueZeilenEintrag(zeile),
+          const SizedBox(height: 8),
         ],
         if (!_kupferRollenSichtbar)
           Align(
@@ -1267,12 +1304,17 @@ class _TagesabschlussSchritt1SeiteState
           ),
         if (_kupferRollenSichtbar) ...<Widget>[
           const SizedBox(height: 8),
-          _baueGruppenInhalt(
-            _kupferRollen,
-            'Gesamtbetrag Kupfer-Rollen',
-            formatierer: _formatiereRollenAnzeige,
-          ),
+          for (final Kassenzeile zeile in _kupferRollen) ...<Widget>[
+            _baueZeilenEintrag(zeile),
+            const SizedBox(height: 8),
+          ],
         ],
+        const SizedBox(height: 4),
+        Text(
+          'Gesamtbetrag Rollen: ${_formatiereRollenAnzeige(_summeGruppe(_rollenSichtbar))}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }
@@ -1531,16 +1573,23 @@ class _TagesabschlussSchritt1SeiteState
         foregroundColor: Colors.white,
         toolbarHeight: 48,
         titleSpacing: 8,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('Tagesabschluss'),
-            Text(
-              '1/4 · Bargeldzählung',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        title: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: _zeigeSchrittAuswahlBottomSheet,
+          child: const Padding(
+            padding: EdgeInsets.symmetric(vertical: 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Tagesabschluss'),
+                Text(
+                  '1/4 · Bargeldzählung',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         actions: <Widget>[
           if (_devToolsSichtbar)
