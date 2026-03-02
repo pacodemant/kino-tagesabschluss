@@ -954,30 +954,39 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Widget _baueFooterLeiste(double footerHoehe) {
-    return ColoredBox(
-      color: Theme.of(context).colorScheme.surfaceContainer,
-      child: SizedBox(
-        height: footerHoehe,
-        child: Padding(
-          padding: const EdgeInsets.all(6),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _weiterZumNaechstenFeldUnten,
-                  child: const Text('nächstes Feld'),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _weiterZuSchritt2,
-                  icon: const Icon(Icons.arrow_forward),
-                  label: const Text('Schritt 2'),
-                ),
-              ),
-            ],
+    const Color footerBg = Colors.black87;
+    return Container(
+      height: footerHoehe,
+      decoration: const BoxDecoration(
+        color: footerBg,
+        border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Color(0x4D000000),
+            offset: Offset(0, -2),
+            blurRadius: 12,
           ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _weiterZumNaechstenFeldUnten,
+                child: const Text('nächstes Feld'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _weiterZuSchritt2,
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Schritt 2'),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -990,11 +999,17 @@ class _TagesabschlussSchritt1SeiteState
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
+    final bool footerSichtbar =
+        _scheineAufgeklappt ||
+        _loseMuenzenAufgeklappt ||
+        _rollenAufgeklappt ||
+        _umschlaegeAufgeklappt;
     const double footerHoehe = 72;
+    final double effektiveFooterHoehe = footerSichtbar ? footerHoehe : 0;
     const double devToolsStickyHoehe = 86;
     final double footerBottomInset =
         mediaQuery.viewInsets.bottom + mediaQuery.padding.bottom + 8;
-    final double bottomPadding = footerHoehe + 16;
+    final double bottomPadding = effektiveFooterHoehe + 16;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1081,15 +1096,16 @@ class _TagesabschlussSchritt1SeiteState
               ),
             ),
           ),
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: footerBottomInset,
-            child: SizedBox(
-              height: footerHoehe,
-              child: _baueFooterLeiste(footerHoehe),
+          if (footerSichtbar)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: footerBottomInset,
+              child: SizedBox(
+                height: footerHoehe,
+                child: _baueFooterLeiste(footerHoehe),
+              ),
             ),
-          ),
         ],
       ),
     );
