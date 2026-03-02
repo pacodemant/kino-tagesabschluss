@@ -76,6 +76,12 @@ Nach jedem Run:
 - Erwartetes Verhalten definiert
 - Erst nach bestandenem Test → Commit
 
+### Ergänzung zu §6 (Run-Bericht)
+Jeder Run-Bericht enthält zusätzlich:
+- **Empfohlene Test-Aktionen** (mind. 3)
+- **Erwartetes Verhalten** pro Test-Aktion (kurz und prüfbar)
+
+ChatGPT weist aktiv darauf hin, wenn ein neuer Codex-Chat empfohlen wird (z. B. bei Kontext-Drift oder Themenwechsel).
 ---
 
 ## 7. Prompt-Regel für Codex
@@ -107,3 +113,38 @@ Nach jedem Run:
 - Git-Historie verwirrend wird
 - Run-Nummern unsauber wirken
 - Mehrere Themen vermischt wurden
+
+---
+
+## 11. Run-Erstellung (verbindlicher Ablauf)
+1. ChatGPT erstellt zunächst nur einen Run-Vorschlag (ohne Codeblock).
+2. User bestätigt mit "ok".
+3. Erst danach wird ein einziger finaler Codex-Prompt als Copy-Block erzeugt.
+4. Es darf nie mehr als ein aktiver Prompt mit derselben Run-Nummer existieren.
+5. Wird ein Prompt angepasst, erhält er eine neue Run-Nummer.
+
+---
+
+## 12. Codex-Chat-Wechsel
+
+Ein neuer Codex-Chat wird **nicht automatisch bei jedem Run** gestartet.
+
+Ein neuer Chat ist empfohlen, wenn:
+
+- ein klarer Kontextwechsel erfolgt (z. B. UI → Architektur, Schritt 1 → neues Feature)
+- Git-Komplexität entstanden ist (Merge, Rebase, Reset, Detached HEAD, unerwartete Changes)
+- mehrere Prompt-Varianten mit derselben Run-Nummer existieren
+- Codex inkonsistent wirkt oder alte Annahmen weiterverwendet
+- mehr als ca. 5–8 zusammenhängende Runs ohne Themenwechsel erfolgt sind
+
+---
+
+### Ablauf bei Chat-Wechsel
+
+1. Letzten Run sauber committen und pushen.
+2. Neuen Chat mit `entwicklungsabschnitt_start.txt` beginnen.
+3. Run-Nummer fortlaufend weiterführen (nicht zurücksetzen).
+
+---
+
+ChatGPT weist aktiv darauf hin, wenn ein neuer Codex-Chat empfohlen wird.
