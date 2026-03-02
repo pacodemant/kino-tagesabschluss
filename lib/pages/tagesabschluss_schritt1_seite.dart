@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -40,7 +41,25 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 }
 
 class _TagesabschlussSchritt1SeiteState
-    extends State<TagesabschlussSchritt1Seite> {
+    extends State<TagesabschlussSchritt1Seite>
+    with WidgetsBindingObserver {
+  static const double _footerContentHoeheNormal = 44;
+  static const double _footerContentHoeheKeyboard = 40;
+  static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
+    12,
+    4,
+    12,
+    4,
+  );
+  static const EdgeInsets _footerPaddingKeyboard = EdgeInsets.fromLTRB(
+    12,
+    2,
+    12,
+    2,
+  );
+  static const Duration _footerAnimationDauer = Duration(milliseconds: 200);
+  static const Curve _footerAnimationKurve = Curves.easeOutCubic;
+
   final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
       const KassenstandEntwurfUsecase();
 
@@ -80,6 +99,7 @@ class _TagesabschlussSchritt1SeiteState
   final ScrollController _scrollController = ScrollController();
   final Map<FocusNode, GlobalKey> _feldKeys = <FocusNode, GlobalKey>{};
   FocusNode? _letztesAktivesFeld;
+  double _keyboardInset = 0;
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
@@ -93,6 +113,8 @@ class _TagesabschlussSchritt1SeiteState
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _keyboardInset = _leseKeyboardInset();
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
@@ -144,7 +166,35 @@ class _TagesabschlussSchritt1SeiteState
     }
     _scrollController.dispose();
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    if (!mounted) {
+      return;
+    }
+    final double neuerKeyboardInset = _leseKeyboardInset();
+    if (neuerKeyboardInset != _keyboardInset) {
+      setState(() {
+        _keyboardInset = neuerKeyboardInset;
+      });
+    }
+    if (neuerKeyboardInset > 0 && _aktivesFeldSchritt1() != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        _ensureAktivesFeldSichtbar();
+      });
+    }
+  }
+
+  double _leseKeyboardInset() {
+    final ui.FlutterView view =
+        WidgetsBinding.instance.platformDispatcher.views.first;
+    return view.viewInsets.bottom / view.devicePixelRatio;
   }
 
   Future<void> _ladeInitialeDaten() async {
@@ -270,7 +320,7 @@ class _TagesabschlussSchritt1SeiteState
           if (!mounted) {
             return;
           }
-          _scrolleFeldSichtbar(aktivesFeld);
+          _ensureAktivesFeldSichtbar();
         });
       }
     }
@@ -288,16 +338,20 @@ class _TagesabschlussSchritt1SeiteState
     return KeyedSubtree(key: _holeFeldKey(focusNode), child: child);
   }
 
-  void _scrolleFeldSichtbar(FocusNode focusNode) {
-    final BuildContext? feldKontext = _feldKeys[focusNode]?.currentContext;
+  void _ensureAktivesFeldSichtbar() {
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
+    if (aktivesFeld == null) {
+      return;
+    }
+    final BuildContext? feldKontext = _feldKeys[aktivesFeld]?.currentContext;
     if (feldKontext == null) {
       return;
     }
     Scrollable.ensureVisible(
       feldKontext,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
-      alignment: 0.2,
+      alignment: 0.15,
     );
   }
 
@@ -1195,10 +1249,10 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueFooterLeiste(
-    double footerContentHoehe, {
+  Widget _baueFooterLeiste({
     required bool tastaturOffen,
-    required double bottomInset,
+    required EdgeInsets footerPadding,
+    required double footerBottomInset,
     required bool zeigeNaechstesFeld,
   }) {
     const Color footerBg = Colors.black87;
@@ -1208,47 +1262,45 @@ class _TagesabschlussSchritt1SeiteState
       visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
-    return Container(
-      height: footerContentHoehe + bottomInset,
-      decoration: const BoxDecoration(
-        color: footerBg,
-        border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Color(0x4D000000),
-            offset: Offset(0, -2),
-            blurRadius: 12,
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          12,
-          tastaturOffen ? 2 : 6,
-          12,
-          (tastaturOffen ? 2 : 6) + bottomInset,
-        ),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _weiterZuSchritt2,
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Schritt 2'),
-                style: kompaktButtonStyle,
-              ),
+    return ColoredBox(
+      color: footerBg,
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Color(0x4D000000),
+              offset: Offset(0, -2),
+              blurRadius: 12,
             ),
-            if (zeigeNaechstesFeld) ...<Widget>[
-              const SizedBox(width: 8),
+          ],
+        ),
+        child: Padding(
+          padding: footerPadding.add(
+            EdgeInsets.only(bottom: footerBottomInset),
+          ),
+          child: Row(
+            children: <Widget>[
               Expanded(
-                child: ElevatedButton(
-                  onPressed: _weiterZumNaechstenFeldUnten,
+                child: ElevatedButton.icon(
+                  onPressed: _weiterZuSchritt2,
+                  icon: const Icon(Icons.arrow_forward),
+                  label: const Text('Schritt 2'),
                   style: kompaktButtonStyle,
-                  child: const Text('nächstes Feld'),
                 ),
               ),
+              if (zeigeNaechstesFeld) ...<Widget>[
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _weiterZumNaechstenFeldUnten,
+                    style: kompaktButtonStyle,
+                    child: const Text('nächstes Feld'),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
@@ -1262,11 +1314,16 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
-    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
-    final double footerContentHoehe = tastaturOffen ? 44 : 56;
+    final double keyboardInset = _keyboardInset;
+    final bool tastaturOffen = keyboardInset > 0;
+    final double footerContentHoehe = tastaturOffen
+        ? _footerContentHoeheKeyboard
+        : _footerContentHoeheNormal;
+    final EdgeInsets footerPadding = tastaturOffen
+        ? _footerPaddingKeyboard
+        : _footerPaddingNormal;
     const double devToolsStickyHoehe = 86;
     final double bottomInset = mediaQuery.viewPadding.bottom;
-    final double keyboardInset = mediaQuery.viewInsets.bottom;
     final double footerBottomInset = tastaturOffen ? 0 : bottomInset;
     final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
     final double bottomPadding = footerTotalHoehe + 16;
@@ -1364,16 +1421,20 @@ class _TagesabschlussSchritt1SeiteState
               ),
             ),
           ),
-          Positioned(
+          AnimatedPositioned(
+            duration: _footerAnimationDauer,
+            curve: _footerAnimationKurve,
             left: 0,
             right: 0,
             bottom: keyboardInset,
-            child: SizedBox(
+            child: AnimatedContainer(
+              duration: _footerAnimationDauer,
+              curve: _footerAnimationKurve,
               height: footerTotalHoehe,
               child: _baueFooterLeiste(
-                footerContentHoehe,
                 tastaturOffen: tastaturOffen,
-                bottomInset: footerBottomInset,
+                footerPadding: footerPadding,
+                footerBottomInset: footerBottomInset,
                 zeigeNaechstesFeld: zeigeNaechstesFeld,
               ),
             ),
