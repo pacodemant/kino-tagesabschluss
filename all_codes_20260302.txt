@@ -1,0 +1,3726 @@
+// ./lib/models/kino.dart
+class Kino {
+  const Kino({required this.id, required this.name});
+
+  final String id;
+  final String name;
+}
+
+class KinoRepository {
+  static const List<Kino> kinos = <Kino>[
+    Kino(id: 'kino_01', name: 'Schauburg'),
+    Kino(id: 'kino_02', name: 'Gondel'),
+    Kino(id: 'kino_03', name: 'Atlantis'),
+    Kino(id: 'kino_04', name: 'Cinema Ostertor'),
+  ];
+
+  static Kino? nachId(String id) {
+    for (final Kino kino in kinos) {
+      if (kino.id == id) {
+        return kino;
+      }
+    }
+    return null;
+  }
+}
+
+// ./lib/models/kassenzeile.dart
+class Kassenzeile {
+  const Kassenzeile({
+    required this.id,
+    required this.bezeichnung,
+    required this.einzelwertCent,
+  });
+
+  final String id;
+  final String bezeichnung;
+  final int einzelwertCent;
+}
+
+class UmschlagEintrag {
+  const UmschlagEintrag({required this.bezeichnung, required this.betragCent});
+
+  final String bezeichnung;
+  final int betragCent;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'label': bezeichnung,
+      'amountCents': betragCent,
+    };
+  }
+
+  static UmschlagEintrag fromJson(Map<String, dynamic> json) {
+    return UmschlagEintrag(
+      bezeichnung: (json['label'] as String?) ?? (json['bezeichnung'] as String?) ?? '',
+      betragCent: (json['amountCents'] as num?)?.toInt() ??
+          (json['betragCent'] as num?)?.toInt() ??
+          0,
+    );
+  }
+}
+
+// ./lib/models/tagesabschluss_final.dart
+class TagesabschlussFinal {
+  const TagesabschlussFinal({
+    required this.kinoId,
+    required this.kinoName,
+    required this.datum,
+    required this.createdAt,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.kassenbestandGesamtCent,
+    required this.wechselgeldSollwertCent,
+    required this.barBestandAbzglWechselgeldCent,
+    required this.kinoSollCent,
+    required this.bistroSollCent,
+    required this.ausgabenCent,
+    required this.ecBelegeCent,
+    required this.ecUmsatzGesamtCent,
+    required this.gesamtSollCent,
+    required this.gesamtIstCent,
+    required this.differenzGesamtCent,
+    required this.differenzAnfangsbestandCent,
+  });
+
+  final String kinoId;
+  final String kinoName;
+  final DateTime datum;
+  final DateTime createdAt;
+
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int kassenbestandGesamtCent;
+  final int wechselgeldSollwertCent;
+  final int barBestandAbzglWechselgeldCent;
+
+  final int kinoSollCent;
+  final int bistroSollCent;
+  final int ausgabenCent;
+  final List<int> ecBelegeCent;
+  final int ecUmsatzGesamtCent;
+  final int gesamtSollCent;
+  final int gesamtIstCent;
+  final int differenzGesamtCent;
+  final int differenzAnfangsbestandCent;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'kinoId': kinoId,
+      'kinoName': kinoName,
+      'datumIso': datum.toIso8601String(),
+      'createdAtIso': createdAt.toIso8601String(),
+      'scheineCent': scheineCent,
+      'loseMuenzenCent': loseMuenzenCent,
+      'rollenCent': rollenCent,
+      'umschlaegeCent': umschlaegeCent,
+      'kassenbestandGesamtCent': kassenbestandGesamtCent,
+      'wechselgeldSollwertCent': wechselgeldSollwertCent,
+      'barBestandAbzglWechselgeldCent': barBestandAbzglWechselgeldCent,
+      'kinoSollCent': kinoSollCent,
+      'bistroSollCent': bistroSollCent,
+      'ausgabenCent': ausgabenCent,
+      'ecBelegeCent': ecBelegeCent,
+      'ecUmsatzGesamtCent': ecUmsatzGesamtCent,
+      'gesamtSollCent': gesamtSollCent,
+      'gesamtIstCent': gesamtIstCent,
+      'differenzGesamtCent': differenzGesamtCent,
+      'differenzAnfangsbestandCent': differenzAnfangsbestandCent,
+    };
+  }
+
+  static TagesabschlussFinal fromJson(Map<String, dynamic> json) {
+    final List<int> ecBelege = <int>[];
+    final Object? ecBelegeRoh = json['ecBelegeCent'];
+    if (ecBelegeRoh is List<dynamic>) {
+      for (final dynamic wert in ecBelegeRoh) {
+        ecBelege.add((wert as num?)?.toInt() ?? 0);
+      }
+    }
+
+    final String datumIso = (json['datumIso'] as String?) ?? '';
+    final String createdAtIso = (json['createdAtIso'] as String?) ?? '';
+
+    return TagesabschlussFinal(
+      kinoId: (json['kinoId'] as String?) ?? '',
+      kinoName: (json['kinoName'] as String?) ?? '',
+      datum: DateTime.tryParse(datumIso) ?? DateTime.fromMillisecondsSinceEpoch(0),
+      createdAt: DateTime.tryParse(createdAtIso) ?? DateTime.fromMillisecondsSinceEpoch(0),
+      scheineCent: (json['scheineCent'] as num?)?.toInt() ?? 0,
+      loseMuenzenCent: (json['loseMuenzenCent'] as num?)?.toInt() ?? 0,
+      rollenCent: (json['rollenCent'] as num?)?.toInt() ?? 0,
+      umschlaegeCent: (json['umschlaegeCent'] as num?)?.toInt() ?? 0,
+      kassenbestandGesamtCent:
+          (json['kassenbestandGesamtCent'] as num?)?.toInt() ?? 0,
+      wechselgeldSollwertCent:
+          (json['wechselgeldSollwertCent'] as num?)?.toInt() ?? 0,
+      barBestandAbzglWechselgeldCent:
+          (json['barBestandAbzglWechselgeldCent'] as num?)?.toInt() ?? 0,
+      kinoSollCent: (json['kinoSollCent'] as num?)?.toInt() ?? 0,
+      bistroSollCent: (json['bistroSollCent'] as num?)?.toInt() ?? 0,
+      ausgabenCent: (json['ausgabenCent'] as num?)?.toInt() ?? 0,
+      ecBelegeCent: ecBelege,
+      ecUmsatzGesamtCent: (json['ecUmsatzGesamtCent'] as num?)?.toInt() ?? 0,
+      gesamtSollCent: (json['gesamtSollCent'] as num?)?.toInt() ?? 0,
+      gesamtIstCent: (json['gesamtIstCent'] as num?)?.toInt() ?? 0,
+      differenzGesamtCent: (json['differenzGesamtCent'] as num?)?.toInt() ?? 0,
+      differenzAnfangsbestandCent:
+          (json['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+// ./lib/models/kassenstand_entwurf.dart
+import 'package:kino_bar_app/models/kassenzeile.dart';
+
+class KassenstandEntwurf {
+  const KassenstandEntwurf({
+    required this.stueckzahlen,
+    required this.umschlaege,
+    required this.loseMuenzenNachArtCent,
+  });
+
+  final Map<String, int> stueckzahlen;
+  final List<UmschlagEintrag> umschlaege;
+  final Map<String, int> loseMuenzenNachArtCent;
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'quantities': stueckzahlen,
+      'envelopes': umschlaege
+          .map((UmschlagEintrag eintrag) => eintrag.toJson())
+          .toList(),
+      'loseCoinsByTypeCents': loseMuenzenNachArtCent,
+    };
+  }
+
+  static KassenstandEntwurf fromJson(Map<String, dynamic> json) {
+    final Map<String, int> geparsteStueckzahlen = <String, int>{};
+    final Object? stueckzahlenRoh = json['quantities'] ?? json['stueckzahlen'];
+    if (stueckzahlenRoh is Map<String, dynamic>) {
+      for (final MapEntry<String, dynamic> eintrag in stueckzahlenRoh.entries) {
+        geparsteStueckzahlen[eintrag.key] =
+            (eintrag.value as num?)?.toInt() ?? 0;
+      }
+    }
+
+    final List<UmschlagEintrag> geparsteUmschlaege = <UmschlagEintrag>[];
+    final Object? umschlaegeRoh = json['envelopes'] ?? json['umschlaege'];
+    if (umschlaegeRoh is List<dynamic>) {
+      for (final dynamic element in umschlaegeRoh) {
+        if (element is Map<String, dynamic>) {
+          geparsteUmschlaege.add(UmschlagEintrag.fromJson(element));
+        }
+      }
+    }
+
+    final Map<String, int> geparsteLoseMuenzenNachArt = <String, int>{};
+    final Object? loseMuenzenRoh =
+        json['loseCoinsByTypeCents'] ?? json['loseMuenzenNachArtCent'];
+    if (loseMuenzenRoh is Map<String, dynamic>) {
+      for (final MapEntry<String, dynamic> eintrag in loseMuenzenRoh.entries) {
+        geparsteLoseMuenzenNachArt[eintrag.key] =
+            (eintrag.value as num?)?.toInt() ?? 0;
+      }
+    }
+
+    if (geparsteLoseMuenzenNachArt.isEmpty) {
+      final int alterGesamtwert = (json['looseCoinsCents'] as num?)?.toInt() ??
+          (json['loseMuenzenCent'] as num?)?.toInt() ??
+          0;
+      if (alterGesamtwert > 0) {
+        geparsteLoseMuenzenNachArt['coin_2e'] = alterGesamtwert;
+      }
+    }
+
+    return KassenstandEntwurf(
+      stueckzahlen: geparsteStueckzahlen,
+      umschlaege: geparsteUmschlaege,
+      loseMuenzenNachArtCent: geparsteLoseMuenzenNachArt,
+    );
+  }
+}
+
+// ./lib/storage/lokaler_speicher.dart
+import 'dart:convert';
+
+import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class LokalerSpeicher {
+  static const String aktivesKinoIdKey = 'activeCinemaId';
+
+  static Future<String?> ladeAktiveKinoId() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getString(aktivesKinoIdKey);
+  }
+
+  static Future<void> speichereAktiveKinoId(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(aktivesKinoIdKey, kinoId);
+  }
+
+  static Future<int> ladeWechselgeldSollwertCent(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getInt('change_target_cents_$kinoId') ?? 20000;
+  }
+
+  static Future<KassenstandEntwurf?> ladeKassenstandEntwurf({
+    required String kinoId,
+    required String isoDatum,
+  }) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = entwurfKey(kinoId: kinoId, isoDatum: isoDatum);
+    final String? rohwert = speicher.getString(key);
+    if (rohwert == null) {
+      return null;
+    }
+
+    try {
+      final Map<String, dynamic> geparst =
+          jsonDecode(rohwert) as Map<String, dynamic>;
+      return KassenstandEntwurf.fromJson(geparst);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> speichereKassenstandEntwurf({
+    required String kinoId,
+    required String isoDatum,
+    required KassenstandEntwurf entwurf,
+  }) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = entwurfKey(kinoId: kinoId, isoDatum: isoDatum);
+    await speicher.setString(key, jsonEncode(entwurf.toJson()));
+  }
+
+  static String entwurfKey({required String kinoId, required String isoDatum}) {
+    return 'draft_closure_${kinoId}_$isoDatum';
+  }
+
+  /// Speichert einen finalen Tagesabschluss im eigenen Key-Namespace je Kino.
+  static Future<void> speichereFinalenTagesabschluss(
+    TagesabschlussFinal abschluss,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = finaleTagesabschluesseKey(abschluss.kinoId);
+    final String? rohwert = speicher.getString(key);
+
+    final List<Map<String, dynamic>> vorhandeneAbschluesse =
+        <Map<String, dynamic>>[];
+    if (rohwert != null) {
+      try {
+        final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+        for (final dynamic eintrag in geparst) {
+          if (eintrag is Map<String, dynamic>) {
+            vorhandeneAbschluesse.add(eintrag);
+          }
+        }
+      } catch (_) {
+        // Bei defektem Inhalt wird ab hier sauber neu gespeichert.
+      }
+    }
+
+    vorhandeneAbschluesse.add(abschluss.toJson());
+    await speicher.setString(key, jsonEncode(vorhandeneAbschluesse));
+  }
+
+  /// Laedt alle finalen Tagesabschluesse fuer ein Kino (neueste zuerst).
+  static Future<List<TagesabschlussFinal>> ladeFinaleTagesabschluesse(
+    String kinoId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = finaleTagesabschluesseKey(kinoId);
+    final String? rohwert = speicher.getString(key);
+    if (rohwert == null) {
+      return <TagesabschlussFinal>[];
+    }
+
+    try {
+      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+      final List<TagesabschlussFinal> abschluesse = <TagesabschlussFinal>[];
+      for (final dynamic eintrag in geparst) {
+        if (eintrag is Map<String, dynamic>) {
+          abschluesse.add(TagesabschlussFinal.fromJson(eintrag));
+        }
+      }
+      abschluesse.sort(
+        (TagesabschlussFinal a, TagesabschlussFinal b) =>
+            b.createdAt.compareTo(a.createdAt),
+      );
+      return abschluesse;
+    } catch (_) {
+      return <TagesabschlussFinal>[];
+    }
+  }
+
+  /// Key fuer alle finalen Tagesabschluesse eines Kinos.
+  static String finaleTagesabschluesseKey(String kinoId) {
+    return 'final/$kinoId/closures';
+  }
+}
+
+// ./lib/main.dart
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
+import 'package:kino_bar_app/pages/platzhalter_seite.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/pages/startpruefung_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MeineApp());
+}
+
+class MeineApp extends StatelessWidget {
+  const MeineApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Schauburg Tagesabschluss',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+      ),
+      initialRoute: StartpruefungSeite.routenName,
+      routes: <String, WidgetBuilder>{
+        StartpruefungSeite.routenName: (_) => const StartpruefungSeite(),
+        KinoauswahlSeite.routenName: (_) => const KinoauswahlSeite(),
+      },
+      onGenerateRoute: (RouteSettings settings) {
+        if (settings.name == StartmenueSeite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! String) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          final Kino? kino = KinoRepository.nachId(argument);
+          if (kino == null) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          return MaterialPageRoute<void>(
+            builder: (_) => StartmenueSeite(kino: kino),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == TagesabschlussSchritt1Seite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussSchritt1Argumente) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          return MaterialPageRoute<void>(
+            builder: (_) => TagesabschlussSchritt1Seite(
+              kinoId: argument.kinoId,
+              kinoName: argument.kinoName,
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == TagesabschlussSchritt2Seite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussSchritt2Argumente) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          return MaterialPageRoute<void>(
+            builder: (_) => TagesabschlussSchritt2Seite(
+              kinoId: argument.kinoId,
+              kinoName: argument.kinoName,
+              scheineCent: argument.scheineCent,
+              loseMuenzenCent: argument.loseMuenzenCent,
+              rollenCent: argument.rollenCent,
+              umschlaegeCent: argument.umschlaegeCent,
+              wechselgeldSollwertCent: argument.wechselgeldSollwertCent,
+              barBestandAbzglWechselgeldCent:
+                  argument.barBestandAbzglWechselgeldCent,
+            ),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == TagesabschlussSchritt3Seite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussSchritt3Argumente) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings: const RouteSettings(
+                name: KinoauswahlSeite.routenName,
+              ),
+            );
+          }
+
+          return MaterialPageRoute<void>(
+            builder: (_) => TagesabschlussSchritt3Seite(argumente: argument),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == PlatzhalterSeite.routenName) {
+          final String titel = settings.arguments as String? ?? 'Platzhalter';
+          return MaterialPageRoute<void>(
+            builder: (_) => PlatzhalterSeite(titel: titel),
+            settings: settings,
+          );
+        }
+
+        return null;
+      },
+    );
+  }
+}
+
+// ./lib/pages/tagesabschluss_schritt2_seite.dart
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+
+class TagesabschlussSchritt2Argumente {
+  const TagesabschlussSchritt2Argumente({
+    required this.kinoId,
+    required this.kinoName,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.wechselgeldSollwertCent,
+    required this.barBestandAbzglWechselgeldCent,
+  });
+
+  final String kinoId;
+  final String kinoName;
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int wechselgeldSollwertCent;
+  final int barBestandAbzglWechselgeldCent;
+}
+
+class TagesabschlussSchritt2Seite extends StatefulWidget {
+  const TagesabschlussSchritt2Seite({
+    super.key,
+    required this.kinoId,
+    required this.kinoName,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.wechselgeldSollwertCent,
+    required this.barBestandAbzglWechselgeldCent,
+  });
+
+  static const String routenName = '/closure-step-2';
+
+  final String kinoId;
+  final String kinoName;
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int wechselgeldSollwertCent;
+  final int barBestandAbzglWechselgeldCent;
+
+  @override
+  State<TagesabschlussSchritt2Seite> createState() =>
+      _TagesabschlussSchritt2SeiteState();
+}
+
+class _TagesabschlussSchritt2SeiteState
+    extends State<TagesabschlussSchritt2Seite> {
+  final TextEditingController _kinoSollController = TextEditingController();
+  final TextEditingController _bistroSollController = TextEditingController();
+  final TextEditingController _ausgabenController = TextEditingController();
+  final TextEditingController _differenzAnfangsbestandController =
+      TextEditingController();
+  final FocusNode _kinoSollFocusNode = FocusNode();
+  final FocusNode _bistroSollFocusNode = FocusNode();
+  final FocusNode _ausgabenFocusNode = FocusNode();
+  final FocusNode _differenzAnfangsbestandFocusNode = FocusNode();
+  final List<TextEditingController> _ecBelegController =
+      <TextEditingController>[TextEditingController()];
+  final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
+  final List<int> _ecBelegIds = <int>[0];
+  int _naechsteEcBelegId = 1;
+
+  int _kinoSollCent = 0;
+  int _bistroSollCent = 0;
+  int _ausgabenCent = 0;
+  int _differenzAnfangsbestandCent = 0;
+  final List<int> _ecBelegeCent = <int>[0];
+  bool _devToolsOffen = false;
+  final Random _zufall = Random();
+  bool get _devToolsSichtbar => !kReleaseMode;
+
+  @override
+  void initState() {
+    super.initState();
+    final FocusNode ersterEcFocusNode = FocusNode();
+    _ecBelegFocusNode.add(ersterEcFocusNode);
+  }
+
+  @override
+  void dispose() {
+    _kinoSollController.dispose();
+    _bistroSollController.dispose();
+    _ausgabenController.dispose();
+    _differenzAnfangsbestandController.dispose();
+    _kinoSollFocusNode.dispose();
+    _bistroSollFocusNode.dispose();
+    _ausgabenFocusNode.dispose();
+    _differenzAnfangsbestandFocusNode.dispose();
+    for (final TextEditingController controller in _ecBelegController) {
+      controller.dispose();
+    }
+    for (final FocusNode focusNode in _ecBelegFocusNode) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  int _parseCentZiffern(String wert) {
+    return TagesabschlussBerechnung.parseCentZiffern(wert);
+  }
+
+  String _formatiereEuro(int cent) {
+    return TagesabschlussFormatierung.formatiereEuro(cent);
+  }
+
+  String _formatiereEuroMitVorzeichen(int cent) {
+    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
+  }
+
+  int get _ecUmsatzGesamtCent {
+    return TagesabschlussBerechnung.summeCentBetraege(_ecBelegeCent);
+  }
+
+  int get _gesamtSollCent => TagesabschlussBerechnung.gesamtSollCent(
+    kinoSollCent: _kinoSollCent,
+    bistroSollCent: _bistroSollCent,
+    ausgabenCent: _ausgabenCent,
+  );
+
+  int get _gesamtIstCent => TagesabschlussBerechnung.gesamtIstCent(
+    ecUmsatzGesamtCent: _ecUmsatzGesamtCent,
+    barBestandAbzglWechselgeldCent: widget.barBestandAbzglWechselgeldCent,
+  );
+
+  int get _differenzTagesabschlussCent =>
+      TagesabschlussBerechnung.differenzTagesabschlussCent(
+        gesamtIstCent: _gesamtIstCent,
+        gesamtSollCent: _gesamtSollCent,
+      );
+
+  String _heutigesDatumString() {
+    return TagesabschlussFormatierung.deutschesDatum(DateTime.now());
+  }
+
+  String _kopfDatumUhrzeit() {
+    return DateFormat(
+      "EEEE, d.M.yy (H:mm 'Uhr')",
+      'de_DE',
+    ).format(DateTime.now());
+  }
+
+  void _zeigeUmschlagVoransicht() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogKontext) {
+        return UmschlagVoransichtDialog(
+          kinoName: widget.kinoName,
+          datum: _heutigesDatumString(),
+          kinoSollCent: _kinoSollCent,
+          bistroSollCent: _bistroSollCent,
+          ausgabenCent: _ausgabenCent,
+          gesamtSollCent: _gesamtSollCent,
+          ecIstCent: _ecUmsatzGesamtCent,
+          barIstCent: widget.barBestandAbzglWechselgeldCent,
+          gesamtIstCent: _gesamtIstCent,
+          differenzCent: _differenzTagesabschlussCent,
+          differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
+        );
+      },
+    );
+  }
+
+  void _weiterZuSchritt3() {
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt3Seite.routenName,
+      arguments: TagesabschlussSchritt3Argumente(
+        kinoId: widget.kinoId,
+        kinoName: widget.kinoName,
+        scheineCent: widget.scheineCent,
+        loseMuenzenCent: widget.loseMuenzenCent,
+        rollenCent: widget.rollenCent,
+        umschlaegeCent: widget.umschlaegeCent,
+        wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
+        kinoSollCent: _kinoSollCent,
+        bistroSollCent: _bistroSollCent,
+        ausgabenCent: _ausgabenCent,
+        ecBelegeCent: List<int>.from(_ecBelegeCent),
+        differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
+      ),
+    );
+  }
+
+  void _ecBelegHinzufuegen() {
+    setState(() {
+      _ecBelegController.add(TextEditingController());
+      final FocusNode focusNode = FocusNode();
+      _ecBelegFocusNode.add(focusNode);
+      _ecBelegeCent.add(0);
+      _ecBelegIds.add(_naechsteEcBelegId++);
+    });
+  }
+
+  void _ecBelegEntfernen(int index) {
+    if (_ecBelegController.length <= 1 ||
+        index < 0 ||
+        index >= _ecBelegController.length) {
+      return;
+    }
+    setState(() {
+      _ecBelegController.removeAt(index).dispose();
+      final FocusNode focusNode = _ecBelegFocusNode.removeAt(index);
+      focusNode.dispose();
+      _ecBelegeCent.removeAt(index);
+      _ecBelegIds.removeAt(index);
+    });
+  }
+
+  void _setzeControllerText(TextEditingController controller, String text) {
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  int _zufallszahl(int min, int max) {
+    return min + _zufall.nextInt(max - min + 1);
+  }
+
+  void _setzeEcBelegAnzahl(int anzahl) {
+    while (_ecBelegController.length > anzahl) {
+      _ecBelegController.removeLast().dispose();
+      final FocusNode focusNode = _ecBelegFocusNode.removeLast();
+      focusNode.dispose();
+      _ecBelegeCent.removeLast();
+      _ecBelegIds.removeLast();
+    }
+    while (_ecBelegController.length < anzahl) {
+      _ecBelegController.add(TextEditingController());
+      final FocusNode focusNode = FocusNode();
+      _ecBelegFocusNode.add(focusNode);
+      _ecBelegeCent.add(0);
+      _ecBelegIds.add(_naechsteEcBelegId++);
+    }
+  }
+
+  void _autoFillDev() {
+    setState(() {
+      _kinoSollCent = _zufallszahl(0, 200000);
+      _bistroSollCent = _zufallszahl(0, 200000);
+      _ausgabenCent = _zufallszahl(0, 10000);
+      _differenzAnfangsbestandCent = _zufallszahl(0, 20000);
+
+      final int ecAnzahl = _zufallszahl(1, 5);
+      _setzeEcBelegAnzahl(ecAnzahl);
+      for (int i = 0; i < _ecBelegeCent.length; i++) {
+        _ecBelegeCent[i] = _zufallszahl(0, 50000);
+      }
+
+      _setzeControllerText(
+        _kinoSollController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(_kinoSollCent),
+      );
+      _setzeControllerText(
+        _bistroSollController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(_bistroSollCent),
+      );
+      _setzeControllerText(
+        _ausgabenController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(_ausgabenCent),
+      );
+      _setzeControllerText(
+        _differenzAnfangsbestandController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(
+          _differenzAnfangsbestandCent,
+        ),
+      );
+      for (int i = 0; i < _ecBelegController.length; i++) {
+        _setzeControllerText(
+          _ecBelegController[i],
+          TagesabschlussFormatierung.formatiereEuroEingabe(_ecBelegeCent[i]),
+        );
+      }
+    });
+  }
+
+  void _leereAlleFelderDev() {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _kinoSollCent = 0;
+      _bistroSollCent = 0;
+      _ausgabenCent = 0;
+      _differenzAnfangsbestandCent = 0;
+
+      _setzeEcBelegAnzahl(1);
+      _ecBelegeCent[0] = 0;
+
+      _setzeControllerText(_kinoSollController, '');
+      _setzeControllerText(_bistroSollController, '');
+      _setzeControllerText(_ausgabenController, '');
+      _setzeControllerText(_differenzAnfangsbestandController, '');
+      _setzeControllerText(_ecBelegController[0], '');
+    });
+  }
+
+  Widget _baueDevToolsPanel() {
+    return Card(
+      color: const Color(0xFFFFF8E1),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: <Widget>[
+            const Expanded(
+              child: Text(
+                'DEV-Tools (nur Debug/Profile)',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: _autoFillDev,
+              child: const Text('Auto-Fill'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: _leereAlleFelderDev,
+              child: const Text('Alles leeren'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<FocusNode> _fokusReihenfolgeSchritt2() {
+    return <FocusNode>[
+      _kinoSollFocusNode,
+      _bistroSollFocusNode,
+      _ausgabenFocusNode,
+      ..._ecBelegFocusNode,
+      _differenzAnfangsbestandFocusNode,
+    ];
+  }
+
+  bool _istLetztesFeldSchritt2(FocusNode focusNode) {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
+    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
+  }
+
+  FocusNode? _naechstesFeldSchritt2(FocusNode focusNode) {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
+    final int index = reihenfolge.indexWhere(
+      (FocusNode kandidat) => identical(kandidat, focusNode),
+    );
+    if (index < 0 || index >= reihenfolge.length - 1) {
+      return null;
+    }
+    return reihenfolge[index + 1];
+  }
+
+  TextInputAction _textInputActionFuerSchritt2(FocusNode focusNode) {
+    return _istLetztesFeldSchritt2(focusNode)
+        ? TextInputAction.done
+        : TextInputAction.next;
+  }
+
+  void _beiEingabeAbgeschlossenSchritt2(FocusNode focusNode) {
+    final FocusNode? naechstesFeld = _naechstesFeldSchritt2(focusNode);
+    if (naechstesFeld == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    FocusScope.of(context).requestFocus(naechstesFeld);
+  }
+
+  FocusNode? _aktivesFeldSchritt2() {
+    for (final FocusNode focusNode in _fokusReihenfolgeSchritt2()) {
+      if (focusNode.hasFocus) {
+        return focusNode;
+      }
+    }
+    return null;
+  }
+
+  Widget _baueIosTastaturLeiste() {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
+      return const SizedBox.shrink();
+    }
+    final double tastaturHoehe = MediaQuery.of(context).viewInsets.bottom;
+    if (tastaturHoehe <= 0) {
+      return const SizedBox.shrink();
+    }
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt2();
+    if (aktivesFeld == null) {
+      return const SizedBox.shrink();
+    }
+    final FocusNode? naechstesFeld = _naechstesFeldSchritt2(aktivesFeld);
+    final bool istLetztesFeld = naechstesFeld == null;
+
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF2F2F7),
+        border: const Border(top: BorderSide(color: Color(0x14000000))),
+      ),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: () {
+            if (istLetztesFeld) {
+              FocusScope.of(context).unfocus();
+              return;
+            }
+            FocusScope.of(context).requestFocus(naechstesFeld);
+          },
+          child: Text(istLetztesFeld ? 'Fertig' : 'nächstes Feld'),
+        ),
+      ),
+    );
+  }
+
+  Widget _baueEingabeZeile({
+    required String label,
+    required TextEditingController controller,
+    required ValueChanged<String> onChanged,
+    required FocusNode focusNode,
+    bool optional = false,
+    bool zeigeLoeschen = false,
+    VoidCallback? onLoeschen,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              optional ? '$label (optional)' : label,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+          ),
+          SizedBox(
+            width: 170,
+            child: BetragCentEingabefeld(
+              textController: controller,
+              focusNode: focusNode,
+              textInputAction: _textInputActionFuerSchritt2(focusNode),
+              onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt2(focusNode),
+              onChanged: onChanged,
+              schriftgroesse: 20,
+              hinweisText: '0,00 €',
+            ),
+          ),
+          if (zeigeLoeschen) ...<Widget>[
+            const SizedBox(width: 6),
+            IconButton(
+              onPressed: onLoeschen,
+              icon: const Icon(Icons.delete_outline),
+              tooltip: 'EC-Beleg entfernen',
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _baueBerechneteZeile({
+    required String label,
+    required String wert,
+    bool hervorheben = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+          ),
+          Container(
+            width: 180,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.black12,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              wert,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w600,
+                color: hervorheben && _differenzTagesabschlussCent < 0
+                    ? Colors.red
+                    : null,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool istTastaturSichtbar = mediaQuery.viewInsets.bottom > 0;
+    final bool iosLeisteSichtbar =
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS &&
+        istTastaturSichtbar;
+    const double ctaHoehe = 52;
+    const double iosLeistenHoehe = 44;
+    final double ctaBottomInset =
+        12 +
+        mediaQuery.viewInsets.bottom +
+        mediaQuery.padding.bottom +
+        (iosLeisteSichtbar ? iosLeistenHoehe : 0);
+    final double bottomPadding =
+        ctaHoehe +
+        28 +
+        mediaQuery.padding.bottom +
+        (iosLeisteSichtbar ? 56 : 16);
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Tagesabschluss – Schritt 2/4: Einnahmen/Abschluss'),
+        actions: <Widget>[
+          if (_devToolsSichtbar)
+            IconButton(
+              tooltip: 'DEV-Tools',
+              onPressed: () {
+                setState(() {
+                  _devToolsOffen = !_devToolsOffen;
+                });
+              },
+              icon: Icon(
+                _devToolsOffen
+                    ? Icons.developer_mode
+                    : Icons.developer_mode_outlined,
+              ),
+            ),
+        ],
+      ),
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+              children: <Widget>[
+                IgnorePointer(
+                  ignoring: !_devToolsSichtbar || !_devToolsOffen,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 140),
+                    opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 140),
+                      height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                      child: _baueDevToolsPanel(),
+                    ),
+                  ),
+                ),
+                Text(
+                  'Tagesabschluss ${widget.kinoName}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _kopfDatumUhrzeit(),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Hinweis: „SOLL“ ist hier nur eine Bezeichnung für abgelesene Umsätze.',
+                ),
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        _baueEingabeZeile(
+                          label: 'Kino SOLL',
+                          controller: _kinoSollController,
+                          focusNode: _kinoSollFocusNode,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _kinoSollCent = _parseCentZiffern(wert);
+                            });
+                          },
+                        ),
+                        _baueEingabeZeile(
+                          label: 'Bistro SOLL',
+                          controller: _bistroSollController,
+                          focusNode: _bistroSollFocusNode,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _bistroSollCent = _parseCentZiffern(wert);
+                            });
+                          },
+                        ),
+                        _baueEingabeZeile(
+                          label: 'Ausgaben',
+                          controller: _ausgabenController,
+                          focusNode: _ausgabenFocusNode,
+                          optional: true,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _ausgabenCent = _parseCentZiffern(wert);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        for (int i = 0; i < _ecBelegController.length; i++)
+                          KeyedSubtree(
+                            key: ValueKey<int>(_ecBelegIds[i]),
+                            child: _baueEingabeZeile(
+                              label: 'EC Beleg ${i + 1}',
+                              controller: _ecBelegController[i],
+                              focusNode: _ecBelegFocusNode[i],
+                              optional: i > 0,
+                              zeigeLoeschen: i > 0,
+                              onLoeschen: () => _ecBelegEntfernen(i),
+                              onChanged: (String wert) {
+                                setState(() {
+                                  _ecBelegeCent[i] = _parseCentZiffern(wert);
+                                });
+                              },
+                            ),
+                          ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: OutlinedButton.icon(
+                            onPressed: _ecBelegHinzufuegen,
+                            icon: const Icon(Icons.add),
+                            label: const Text('+ EC-Beleg hinzufügen'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: <Widget>[
+                        _baueBerechneteZeile(
+                          label: 'Gesamt SOLL',
+                          wert: _formatiereEuro(_gesamtSollCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'EC Umsatz',
+                          wert: _formatiereEuro(_ecUmsatzGesamtCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'BAR Bestand abzgl. Wechselgeld',
+                          wert: _formatiereEuro(
+                            widget.barBestandAbzglWechselgeldCent,
+                          ),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'Gesamt IST',
+                          wert: _formatiereEuro(_gesamtIstCent),
+                        ),
+                        _baueBerechneteZeile(
+                          label: 'Differenz Tagesabschluss',
+                          wert: _formatiereEuroMitVorzeichen(
+                            _differenzTagesabschlussCent,
+                          ),
+                          hervorheben: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      children: <Widget>[
+                        _baueEingabeZeile(
+                          label: 'Differenz im Anfangsbestand',
+                          controller: _differenzAnfangsbestandController,
+                          focusNode: _differenzAnfangsbestandFocusNode,
+                          optional: true,
+                          onChanged: (String wert) {
+                            setState(() {
+                              _differenzAnfangsbestandCent = _parseCentZiffern(
+                                wert,
+                              );
+                            });
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            'Info: ${_formatiereEuro(_differenzAnfangsbestandCent)}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 52,
+                  child: ElevatedButton.icon(
+                    onPressed: _zeigeUmschlagVoransicht,
+                    icon: const Icon(Icons.receipt_long_outlined),
+                    label: const Text('Übertrag auf Umschlag'),
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+          // CTA bleibt fix oberhalb der Tastatur, damit er bei Fokus immer sichtbar ist.
+          Positioned(
+            left: 12,
+            right: 12,
+            bottom: ctaBottomInset,
+            child: SizedBox(
+              height: ctaHoehe,
+              child: ElevatedButton(
+                onPressed: _weiterZuSchritt3,
+                child: const Text('Weiter zu Schritt 3'),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _baueIosTastaturLeiste(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class UmschlagVoransichtDialog extends StatelessWidget {
+  const UmschlagVoransichtDialog({
+    super.key,
+    required this.kinoName,
+    required this.datum,
+    required this.kinoSollCent,
+    required this.bistroSollCent,
+    required this.ausgabenCent,
+    required this.gesamtSollCent,
+    required this.ecIstCent,
+    required this.barIstCent,
+    required this.gesamtIstCent,
+    required this.differenzCent,
+    required this.differenzAnfangsbestandCent,
+  });
+
+  final String kinoName;
+  final String datum;
+  final int kinoSollCent;
+  final int bistroSollCent;
+  final int ausgabenCent;
+  final int gesamtSollCent;
+  final int ecIstCent;
+  final int barIstCent;
+  final int gesamtIstCent;
+  final int differenzCent;
+  final int differenzAnfangsbestandCent;
+
+  String _formatiereEuro(int cent) {
+    return TagesabschlussFormatierung.formatiereEuro(cent);
+  }
+
+  String _formatiereEuroMitVorzeichen(int cent) {
+    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
+  }
+
+  Widget _baueZeile({
+    required String label,
+    required String wert,
+    bool hervorheben = false,
+    Color? wertFarbe,
+    bool kursiv = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w500,
+                fontStyle: kursiv ? FontStyle.italic : FontStyle.normal,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            width: 130,
+            child: Text(
+              wert,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w600,
+                color: wertFarbe,
+                fontStyle: kursiv ? FontStyle.italic : FontStyle.normal,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Size bildschirm = MediaQuery.sizeOf(context);
+    final bool istPortrait = bildschirm.height > bildschirm.width;
+    const double umschlagMaxBreite = 680;
+    const double umschlagLayoutHoehe = 360;
+    Widget baueUmschlagInhalt(double layoutBreite) {
+      return SizedBox(
+        width: layoutBreite,
+        height: umschlagLayoutHoehe,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          _baueZeile(
+                            label: 'KINO SOLL',
+                            wert: _formatiereEuro(kinoSollCent),
+                          ),
+                          _baueZeile(
+                            label: '+ BISTRO SOLL',
+                            wert: _formatiereEuro(bistroSollCent),
+                          ),
+                          _baueZeile(
+                            label: '- Ausgaben',
+                            wert: _formatiereEuro(ausgabenCent),
+                          ),
+                          const Divider(),
+                          _baueZeile(
+                            label: '= Gesamt SOLL',
+                            wert: _formatiereEuro(gesamtSollCent),
+                            hervorheben: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          _baueZeile(
+                            label: '+ EC IST',
+                            wert: _formatiereEuro(ecIstCent),
+                          ),
+                          _baueZeile(
+                            label: '+ BAR IST',
+                            wert: _formatiereEuro(barIstCent),
+                          ),
+                          const Divider(),
+                          _baueZeile(
+                            label: '= Gesamt IST',
+                            wert: _formatiereEuro(gesamtIstCent),
+                            hervorheben: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: <Widget>[
+                    _baueZeile(
+                      label: 'Differenz',
+                      wert: _formatiereEuroMitVorzeichen(differenzCent),
+                      hervorheben: true,
+                      wertFarbe: differenzCent < 0 ? Colors.red : null,
+                    ),
+                    _baueZeile(
+                      label: 'Differenz im Anfangsbestand',
+                      wert: _formatiereEuro(differenzAnfangsbestandCent),
+                      kursiv: true,
+                    ),
+                    _baueZeile(label: 'Datum', wert: datum),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Dialog(
+      insetPadding: const EdgeInsets.all(12),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: bildschirm.width - 24,
+          maxHeight: bildschirm.height * 0.9,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  const Expanded(
+                    child: Text(
+                      'Übertrag auf Umschlag',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Schließen',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    final double layoutBreite =
+                        constraints.maxWidth < umschlagMaxBreite
+                        ? constraints.maxWidth
+                        : umschlagMaxBreite;
+                    if (istPortrait) {
+                      return FittedBox(
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topCenter,
+                        child: RotatedBox(
+                          quarterTurns: 1,
+                          child: baueUmschlagInhalt(layoutBreite),
+                        ),
+                      );
+                    }
+                    return SingleChildScrollView(
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: baueUmschlagInhalt(layoutBreite),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ./lib/pages/platzhalter_seite.dart
+import 'package:flutter/material.dart';
+
+class PlatzhalterSeite extends StatelessWidget {
+  const PlatzhalterSeite({super.key, required this.titel});
+
+  static const String routenName = '/placeholder';
+
+  final String titel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(titel),
+      ),
+      body: Center(child: Text('$titel folgt im nächsten Schritt.')),
+    );
+  }
+}
+
+// ./lib/pages/tagesabschluss_schritt3_seite.dart
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
+import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
+
+class TagesabschlussSchritt3Argumente {
+  const TagesabschlussSchritt3Argumente({
+    required this.kinoId,
+    required this.kinoName,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.wechselgeldSollwertCent,
+    required this.kinoSollCent,
+    required this.bistroSollCent,
+    required this.ausgabenCent,
+    required this.ecBelegeCent,
+    required this.differenzAnfangsbestandCent,
+  });
+
+  final String kinoId;
+  final String kinoName;
+
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int wechselgeldSollwertCent;
+
+  final int kinoSollCent;
+  final int bistroSollCent;
+  final int ausgabenCent;
+  final List<int> ecBelegeCent;
+  final int differenzAnfangsbestandCent;
+}
+
+class TagesabschlussSchritt3Seite extends StatefulWidget {
+  const TagesabschlussSchritt3Seite({
+    super.key,
+    required this.argumente,
+  });
+
+  static const String routenName = '/closure-step-3';
+
+  final TagesabschlussSchritt3Argumente argumente;
+
+  @override
+  State<TagesabschlussSchritt3Seite> createState() =>
+      _TagesabschlussSchritt3SeiteState();
+}
+
+class _TagesabschlussSchritt3SeiteState
+    extends State<TagesabschlussSchritt3Seite> {
+  final TagesabschlussFinalisierenUsecase _finalisierenUsecase =
+      const TagesabschlussFinalisierenUsecase();
+  final SpeichereTagesabschlussUsecase _speichereUsecase =
+      const SpeichereTagesabschlussUsecase();
+
+  late final TagesabschlussFinal _abschlussVorschau;
+  bool _speichert = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _abschlussVorschau = _finalisierenUsecase.finalisieren(
+      eingabe: TagesabschlussFinalisierenEingabe(
+        kinoId: widget.argumente.kinoId,
+        kinoName: widget.argumente.kinoName,
+        scheineCent: widget.argumente.scheineCent,
+        loseMuenzenCent: widget.argumente.loseMuenzenCent,
+        rollenCent: widget.argumente.rollenCent,
+        umschlaegeCent: widget.argumente.umschlaegeCent,
+        wechselgeldSollwertCent: widget.argumente.wechselgeldSollwertCent,
+        kinoSollCent: widget.argumente.kinoSollCent,
+        bistroSollCent: widget.argumente.bistroSollCent,
+        ausgabenCent: widget.argumente.ausgabenCent,
+        ecBelegeCent: widget.argumente.ecBelegeCent,
+        differenzAnfangsbestandCent: widget.argumente.differenzAnfangsbestandCent,
+      ),
+      jetzt: DateTime.now(),
+    );
+  }
+
+  String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
+
+  String _euroMitVorzeichen(int cent) {
+    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
+  }
+
+  String _deutschesDatum(DateTime zeit) {
+    return TagesabschlussFormatierung.deutschesDatum(zeit);
+  }
+
+  String _uhrzeit(DateTime zeit) {
+    final String stunde = zeit.hour.toString().padLeft(2, '0');
+    final String minute = zeit.minute.toString().padLeft(2, '0');
+    final String sekunde = zeit.second.toString().padLeft(2, '0');
+    return '$stunde:$minute:$sekunde';
+  }
+
+  Future<void> _speichereFinalenAbschluss() async {
+    if (_speichert) {
+      return;
+    }
+
+    setState(() {
+      _speichert = true;
+    });
+
+    try {
+      final SpeichereTagesabschlussErgebnis ergebnis =
+          await _speichereUsecase.ausfuehren(_abschlussVorschau);
+      if (!mounted) {
+        return;
+      }
+
+      if (ergebnis.bereitsVorhanden) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Für dieses Kino existiert heute bereits ein Tagesabschluss.',
+            ),
+          ),
+        );
+        setState(() {
+          _speichert = false;
+        });
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tagesabschluss wurde gespeichert.')),
+      );
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        StartmenueSeite.routenName,
+        (Route<dynamic> _) => false,
+        arguments: widget.argumente.kinoId,
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Speichern fehlgeschlagen. Bitte erneut versuchen.')),
+      );
+      setState(() {
+        _speichert = false;
+      });
+    }
+  }
+
+  void _zeigeBuchhaltungsAnsicht() {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Ansicht für Umschlag/Buchhaltung'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text('Gesamt SOLL: ${_euro(_abschlussVorschau.gesamtSollCent)}'),
+              Text('Gesamt IST: ${_euro(_abschlussVorschau.gesamtIstCent)}'),
+              Text(
+                'Differenz: ${_euroMitVorzeichen(_abschlussVorschau.differenzGesamtCent)}',
+              ),
+              Text(
+                'Differenz Anfangsbestand: ${_euro(_abschlussVorschau.differenzAnfangsbestandCent)}',
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Schließen'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _zeile(String label, String wert, {bool kursiv = false, bool fett = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontStyle: kursiv ? FontStyle.italic : FontStyle.normal,
+              ),
+            ),
+          ),
+          Text(
+            wert,
+            style: TextStyle(
+              fontWeight: fett ? FontWeight.w700 : FontWeight.w500,
+              fontStyle: kursiv ? FontStyle.italic : FontStyle.normal,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Tagesabschluss – Schritt 3/4: Finalisieren'),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(12),
+          children: <Widget>[
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _zeile('Kino', '${_abschlussVorschau.kinoName} (${_abschlussVorschau.kinoId})'),
+                    _zeile('Datum', _deutschesDatum(_abschlussVorschau.datum)),
+                    _zeile(
+                      'Erstellt um',
+                      '${_deutschesDatum(_abschlussVorschau.createdAt)} ${_uhrzeit(_abschlussVorschau.createdAt)}',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: <Widget>[
+                    _zeile('Scheine', _euro(_abschlussVorschau.scheineCent)),
+                    _zeile('Lose Münzen', _euro(_abschlussVorschau.loseMuenzenCent)),
+                    _zeile('Rollen', _euro(_abschlussVorschau.rollenCent)),
+                    _zeile('Umschläge', _euro(_abschlussVorschau.umschlaegeCent)),
+                    _zeile(
+                      'Gesamt Bargeld',
+                      _euro(_abschlussVorschau.kassenbestandGesamtCent),
+                      fett: true,
+                    ),
+                    _zeile(
+                      'Abzgl. Wechselgeld',
+                      _euro(_abschlussVorschau.barBestandAbzglWechselgeldCent),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: <Widget>[
+                    _zeile('Kino SOLL', _euro(_abschlussVorschau.kinoSollCent)),
+                    _zeile('Bistro SOLL', _euro(_abschlussVorschau.bistroSollCent)),
+                    _zeile('Ausgaben', _euro(_abschlussVorschau.ausgabenCent)),
+                    _zeile('Gesamt SOLL', _euro(_abschlussVorschau.gesamtSollCent), fett: true),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: <Widget>[
+                    _zeile('EC Gesamt', _euro(_abschlussVorschau.ecUmsatzGesamtCent)),
+                    _zeile(
+                      'BAR (abzgl. Wechselgeld)',
+                      _euro(_abschlussVorschau.barBestandAbzglWechselgeldCent),
+                    ),
+                    _zeile('Gesamt IST', _euro(_abschlussVorschau.gesamtIstCent), fett: true),
+                  ],
+                ),
+              ),
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: <Widget>[
+                    _zeile(
+                      'Differenz SOLL/IST',
+                      _euroMitVorzeichen(_abschlussVorschau.differenzGesamtCent),
+                      fett: true,
+                    ),
+                    _zeile(
+                      'Differenz im Anfangsbestand',
+                      _euro(_abschlussVorschau.differenzAnfangsbestandCent),
+                      kursiv: true,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _speichert ? null : _speichereFinalenAbschluss,
+                child: Text(
+                  _speichert ? 'Speichern...' : 'Tagesabschluss speichern/abschließen',
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: _zeigeBuchhaltungsAnsicht,
+              child: const Text('Ansicht für Umschlag/Buchhaltung'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ./lib/pages/startpruefung_seite.dart
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/domain/usecases/startziel_bestimmen_usecase.dart';
+import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
+
+class StartpruefungSeite extends StatefulWidget {
+  const StartpruefungSeite({super.key});
+
+  static const String routenName = '/';
+
+  @override
+  State<StartpruefungSeite> createState() => _StartpruefungSeiteState();
+}
+
+class _StartpruefungSeiteState extends State<StartpruefungSeite> {
+  final StartzielBestimmenUsecase _startzielUsecase =
+      const StartzielBestimmenUsecase();
+
+  @override
+  void initState() {
+    super.initState();
+    _navigiereNachGespeichertemKino();
+  }
+
+  Future<void> _navigiereNachGespeichertemKino() async {
+    final StartzielBestimmungErgebnis ergebnis =
+        await _startzielUsecase.bestimmeStartziel();
+    if (!mounted) {
+      return;
+    }
+
+    final String zielRoute = ergebnis.hatGueltigesKino
+        ? StartmenueSeite.routenName
+        : KinoauswahlSeite.routenName;
+
+    Navigator.of(
+      context,
+    ).pushReplacementNamed(zielRoute, arguments: ergebnis.aktivesKinoId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
+
+// ./lib/pages/kinoauswahl_seite.dart
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/domain/usecases/kino_waehlen_usecase.dart';
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
+
+class KinoauswahlSeite extends StatefulWidget {
+  const KinoauswahlSeite({super.key});
+
+  static const String routenName = '/cinema-selection';
+
+  @override
+  State<KinoauswahlSeite> createState() => _KinoauswahlSeiteState();
+}
+
+class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
+  final KinoWaehlenUsecase _kinoWaehlenUsecase = const KinoWaehlenUsecase();
+
+  Future<void> _waehleKino(String kinoId) async {
+    await _kinoWaehlenUsecase.speichereAktivesKino(kinoId);
+    if (!mounted) {
+      return;
+    }
+    Navigator.of(
+      context,
+    ).pushReplacementNamed(StartmenueSeite.routenName, arguments: kinoId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text('Schauburg Tagesabschluss'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Text(
+              'Kino auswählen',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+            for (final Kino kino in KinoRepository.kinos) ...<Widget>[
+              ElevatedButton(
+                onPressed: () => _waehleKino(kino.id),
+                child: Text(kino.name),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ./lib/pages/tagesabschluss_schritt1_seite.dart
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
+import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
+import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
+import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
+
+class TagesabschlussSchritt1Argumente {
+  const TagesabschlussSchritt1Argumente({
+    required this.kinoId,
+    required this.kinoName,
+  });
+
+  final String kinoId;
+  final String kinoName;
+}
+
+class TagesabschlussSchritt1Seite extends StatefulWidget {
+  const TagesabschlussSchritt1Seite({
+    super.key,
+    required this.kinoId,
+    required this.kinoName,
+  });
+
+  static const String routenName = '/closure-step-1';
+
+  final String kinoId;
+  final String kinoName;
+
+  @override
+  State<TagesabschlussSchritt1Seite> createState() =>
+      _TagesabschlussSchritt1SeiteState();
+}
+
+class _TagesabschlussSchritt1SeiteState
+    extends State<TagesabschlussSchritt1Seite> {
+  final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
+      const KassenstandEntwurfUsecase();
+
+  final Map<String, int> _stueckzahlen = <String, int>{};
+  final Map<String, TextEditingController> _stueckzahlController =
+      <String, TextEditingController>{};
+  final Map<String, FocusNode> _stueckzahlFocusNode = <String, FocusNode>{};
+  final Map<String, int> _loseMuenzenNachArtCent = <String, int>{};
+  final Map<String, TextEditingController> _loseMuenzenController =
+      <String, TextEditingController>{};
+  final Map<String, FocusNode> _loseMuenzenFocusNode = <String, FocusNode>{};
+
+  final List<UmschlagEintrag> _umschlaege = <UmschlagEintrag>[];
+  final List<TextEditingController> _umschlagBetragController =
+      <TextEditingController>[];
+  final List<TextEditingController> _umschlagBezeichnungController =
+      <TextEditingController>[];
+  final List<FocusNode> _umschlagBetragFocusNode = <FocusNode>[];
+  final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
+  final List<int> _umschlagIds = <int>[];
+  int _naechsteUmschlagId = 1;
+
+  int _wechselgeldSollwertCent = 20000;
+  bool _laedt = true;
+  bool _scheineAufgeklappt = false;
+  bool _loseMuenzenAufgeklappt = false;
+  bool _rollenAufgeklappt = false;
+  bool _umschlaegeAufgeklappt = false;
+  bool _devToolsOffen = false;
+  final Random _zufall = Random();
+
+  List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
+  List<Kassenzeile> get _rollen => StueckelungKonfiguration.rollen;
+  List<Kassenzeile> get _loseMuenzarten => StueckelungKonfiguration.loseMuenzarten;
+  List<Kassenzeile> get _alleStueckzahlZeilen =>
+      StueckelungKonfiguration.alleStueckzahlZeilen;
+  bool get _devToolsSichtbar => !kReleaseMode;
+
+  @override
+  void initState() {
+    super.initState();
+    for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+      _stueckzahlen[zeile.id] = 0;
+      _stueckzahlController[zeile.id] = TextEditingController();
+      _stueckzahlFocusNode[zeile.id] = FocusNode();
+    }
+    for (final Kassenzeile zeile in _loseMuenzarten) {
+      _loseMuenzenNachArtCent[zeile.id] = 0;
+      _loseMuenzenController[zeile.id] = TextEditingController();
+      _loseMuenzenFocusNode[zeile.id] = FocusNode();
+    }
+    _ladeInitialeDaten();
+  }
+
+  @override
+  void dispose() {
+    for (final TextEditingController controller
+        in _stueckzahlController.values) {
+      controller.dispose();
+    }
+    for (final FocusNode focusNode in _stueckzahlFocusNode.values) {
+      focusNode.dispose();
+    }
+    for (final TextEditingController controller
+        in _loseMuenzenController.values) {
+      controller.dispose();
+    }
+    for (final FocusNode focusNode in _loseMuenzenFocusNode.values) {
+      focusNode.dispose();
+    }
+    for (final TextEditingController controller in _umschlagBetragController) {
+      controller.dispose();
+    }
+    for (final TextEditingController controller
+        in _umschlagBezeichnungController) {
+      controller.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBetragFocusNode) {
+      focusNode.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  Future<void> _ladeInitialeDaten() async {
+    final int geladenerWechselgeldSollwert =
+        await _kassenstandEntwurfUsecase.ladeWechselgeldSollwertCent(
+          widget.kinoId,
+        );
+
+    final KassenstandEntwurf? entwurf =
+        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(widget.kinoId);
+
+    if (entwurf != null) {
+      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+        _stueckzahlen[zeile.id] = entwurf.stueckzahlen[zeile.id] ?? 0;
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] =
+            entwurf.loseMuenzenNachArtCent[zeile.id] ?? 0;
+      }
+      _uebernehmeUmschlagEntwurf(entwurf.umschlaege);
+    }
+
+    _synchronisiereControllerAusState();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _wechselgeldSollwertCent = geladenerWechselgeldSollwert;
+      _laedt = false;
+    });
+  }
+
+  void _leereUmschlagFelder() {
+    for (final TextEditingController controller in _umschlagBetragController) {
+      controller.dispose();
+    }
+    for (final TextEditingController controller
+        in _umschlagBezeichnungController) {
+      controller.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBetragFocusNode) {
+      focusNode.dispose();
+    }
+    for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
+      focusNode.dispose();
+    }
+    _umschlaege.clear();
+    _umschlagBetragController.clear();
+    _umschlagBezeichnungController.clear();
+    _umschlagBetragFocusNode.clear();
+    _umschlagBezeichnungFocusNode.clear();
+    _umschlagIds.clear();
+  }
+
+  void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) {
+    _leereUmschlagFelder();
+    for (final UmschlagEintrag eintrag in umschlagEntwurf) {
+      _umschlaege.add(eintrag);
+      _umschlagBetragController.add(
+        TextEditingController(text: _formatiereEuroEingabe(eintrag.betragCent)),
+      );
+      _umschlagBezeichnungController.add(
+        TextEditingController(text: eintrag.bezeichnung),
+      );
+      final FocusNode betragFocusNode = FocusNode();
+      final FocusNode bezeichnungFocusNode = FocusNode();
+      _umschlagBetragFocusNode.add(betragFocusNode);
+      _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
+      _umschlagIds.add(_naechsteUmschlagId++);
+    }
+  }
+
+  void _synchronisiereControllerAusState() {
+    for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+      final int stueckzahl = _stueckzahlen[zeile.id] ?? 0;
+      final TextEditingController controller = _stueckzahlController[zeile.id]!;
+      final String naechsterText = stueckzahl == 0 ? '' : stueckzahl.toString();
+      if (controller.text != naechsterText) {
+        _setzeControllerText(controller, naechsterText);
+      }
+    }
+
+    for (final Kassenzeile zeile in _loseMuenzarten) {
+      final int betragCent = _loseMuenzenNachArtCent[zeile.id] ?? 0;
+      final TextEditingController controller =
+          _loseMuenzenController[zeile.id]!;
+      final String text = betragCent == 0
+          ? ''
+          : _formatiereEuroEingabe(betragCent);
+      if (controller.text != text) {
+        _setzeControllerText(controller, text);
+      }
+    }
+  }
+
+  void _setzeControllerText(TextEditingController controller, String text) {
+    controller.value = TextEditingValue(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+  }
+
+  int _zufallszahl(int min, int max) {
+    return min + _zufall.nextInt(max - min + 1);
+  }
+
+  void _autoFillDev() {
+    setState(() {
+      for (final Kassenzeile zeile in _scheine) {
+        _stueckzahlen[zeile.id] = _zufallszahl(0, 20);
+      }
+      for (final Kassenzeile zeile in _rollen) {
+        _stueckzahlen[zeile.id] = _zufallszahl(0, 3);
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] = _zufallszahl(0, 3000);
+      }
+
+      final int umschlagAnzahl = _zufallszahl(1, 4);
+      final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
+      for (int i = 0; i < umschlagAnzahl; i++) {
+        umschlaege.add(
+          UmschlagEintrag(
+            bezeichnung: 'Umschlag ${i + 1}',
+            betragCent: _zufallszahl(0, 50000),
+          ),
+        );
+      }
+      _uebernehmeUmschlagEntwurf(umschlaege);
+      _synchronisiereControllerAusState();
+    });
+  }
+
+  void _leereAlleFelderDev() {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+        _stueckzahlen[zeile.id] = 0;
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] = 0;
+      }
+      _leereUmschlagFelder();
+      _synchronisiereControllerAusState();
+    });
+  }
+
+  Widget _baueDevToolsPanel() {
+    return Card(
+      color: const Color(0xFFFFF8E1),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: <Widget>[
+            const Expanded(
+              child: Text(
+                'DEV-Tools (nur Debug/Profile)',
+                style: TextStyle(fontWeight: FontWeight.w700),
+              ),
+            ),
+            OutlinedButton(
+              onPressed: _autoFillDev,
+              child: const Text('Auto-Fill'),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton(
+              onPressed: _leereAlleFelderDev,
+              child: const Text('Alles leeren'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _speichereEntwurf() async {
+    final KassenstandEntwurf entwurf = KassenstandEntwurf(
+      stueckzahlen: Map<String, int>.from(_stueckzahlen),
+      umschlaege: List<UmschlagEintrag>.from(_umschlaege),
+      loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
+    );
+
+    await _kassenstandEntwurfUsecase.speichereHeutigenEntwurf(
+      kinoId: widget.kinoId,
+      entwurf: entwurf,
+    );
+  }
+
+  void _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) {
+    final int geparsterWert = int.tryParse(wert) ?? 0;
+    setState(() {
+      _stueckzahlen[zeile.id] = geparsterWert;
+    });
+    _speichereEntwurf();
+  }
+
+  void _beiLoseMuenzartBetragGeaendert(String muenzartId, String wert) {
+    setState(() {
+      _loseMuenzenNachArtCent[muenzartId] = _parseCentZiffern(wert);
+    });
+    _speichereEntwurf();
+  }
+
+  void _umschlagHinzufuegen() {
+    setState(() {
+      _umschlaege.add(const UmschlagEintrag(bezeichnung: '', betragCent: 0));
+      _umschlagBetragController.add(TextEditingController());
+      _umschlagBezeichnungController.add(TextEditingController());
+      final FocusNode betragFocusNode = FocusNode();
+      final FocusNode bezeichnungFocusNode = FocusNode();
+      _umschlagBetragFocusNode.add(betragFocusNode);
+      _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
+      _umschlagIds.add(_naechsteUmschlagId++);
+    });
+    _speichereEntwurf();
+  }
+
+  void _umschlagEntfernen(int index) {
+    if (index < 0 || index >= _umschlaege.length) {
+      return;
+    }
+
+    setState(() {
+      _umschlaege.removeAt(index);
+      _umschlagBetragController.removeAt(index).dispose();
+      _umschlagBezeichnungController.removeAt(index).dispose();
+      final FocusNode betragFocusNode = _umschlagBetragFocusNode.removeAt(
+        index,
+      );
+      final FocusNode bezeichnungFocusNode = _umschlagBezeichnungFocusNode
+          .removeAt(index);
+      betragFocusNode.dispose();
+      bezeichnungFocusNode.dispose();
+      _umschlagIds.removeAt(index);
+    });
+    _speichereEntwurf();
+  }
+
+  void _beiUmschlagBezeichnungGeaendert(int index, String wert) {
+    if (index < 0 || index >= _umschlaege.length) {
+      return;
+    }
+
+    setState(() {
+      _umschlaege[index] = UmschlagEintrag(
+        bezeichnung: wert,
+        betragCent: _umschlaege[index].betragCent,
+      );
+    });
+    _speichereEntwurf();
+  }
+
+  void _beiUmschlagBetragGeaendert(int index, String wert) {
+    if (index < 0 || index >= _umschlaege.length) {
+      return;
+    }
+
+    final int betragCent = _parseCentZiffern(wert);
+    setState(() {
+      _umschlaege[index] = UmschlagEintrag(
+        bezeichnung: _umschlaege[index].bezeichnung,
+        betragCent: betragCent,
+      );
+    });
+    _speichereEntwurf();
+  }
+
+  int _parseCentZiffern(String wert) {
+    return TagesabschlussBerechnung.parseCentZiffern(wert);
+  }
+
+  List<FocusNode> _fokusReihenfolgeSchritt1() {
+    final List<FocusNode> reihenfolge = <FocusNode>[
+      ..._scheine.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
+      ..._loseMuenzarten.map(
+        (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
+      ),
+      ..._rollen.map((Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!),
+    ];
+
+    for (int i = 0; i < _umschlaege.length; i++) {
+      reihenfolge.add(_umschlagBezeichnungFocusNode[i]);
+      reihenfolge.add(_umschlagBetragFocusNode[i]);
+    }
+    return reihenfolge;
+  }
+
+  bool _istLetztesFeldSchritt1(FocusNode focusNode) {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
+  }
+
+  FocusNode? _naechstesFeldSchritt1(FocusNode focusNode) {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    final int index = reihenfolge.indexWhere(
+      (FocusNode kandidat) => identical(kandidat, focusNode),
+    );
+    if (index < 0 || index >= reihenfolge.length - 1) {
+      return null;
+    }
+    return reihenfolge[index + 1];
+  }
+
+  TextInputAction _textInputActionFuerSchritt1(FocusNode focusNode) {
+    return _istLetztesFeldSchritt1(focusNode)
+        ? TextInputAction.done
+        : TextInputAction.next;
+  }
+
+  void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) {
+    final FocusNode? naechstesFeld = _naechstesFeldSchritt1(focusNode);
+    if (naechstesFeld == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    FocusScope.of(context).requestFocus(naechstesFeld);
+  }
+
+  FocusNode? _aktivesFeldSchritt1() {
+    for (final FocusNode focusNode in _fokusReihenfolgeSchritt1()) {
+      if (focusNode.hasFocus) {
+        return focusNode;
+      }
+    }
+    return null;
+  }
+
+  void _weiterZumNaechstenFeldUnten() {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    if (reihenfolge.isEmpty) {
+      return;
+    }
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
+    if (aktivesFeld == null) {
+      _fokussiereTextfeld(reihenfolge.first);
+      return;
+    }
+    final FocusNode? naechstesFeld = _naechstesFeldSchritt1(aktivesFeld);
+    if (naechstesFeld == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    _fokussiereTextfeld(naechstesFeld);
+  }
+
+  void _fokussiereTextfeld(FocusNode fokusNode) {
+    FocusScope.of(context).requestFocus(fokusNode);
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+    }
+  }
+
+  int _summeGruppe(List<Kassenzeile> zeilen) {
+    return TagesabschlussBerechnung.summeStueckzahlGruppeCent(
+      zeilen: zeilen,
+      stueckzahlen: _stueckzahlen,
+    );
+  }
+
+  int get _umschlagSummeCent {
+    return TagesabschlussBerechnung.summeUmschlaegeCent(_umschlaege);
+  }
+
+  int get _kassenbestandGesamtCent {
+    return TagesabschlussBerechnung.kassenbestandGesamtCent(
+      scheineCent: _summeGruppe(_scheine),
+      loseMuenzenCent: _loseMuenzenGesamtCent,
+      rollenCent: _summeGruppe(_rollen),
+      umschlaegeCent: _umschlagSummeCent,
+    );
+  }
+
+  int get _loseMuenzenGesamtCent {
+    return TagesabschlussBerechnung.summeCentBetraege(
+      _loseMuenzenNachArtCent.values,
+    );
+  }
+
+  int get _barumsatzBereinigtCent =>
+      TagesabschlussBerechnung.barumsatzBereinigtCent(
+        kassenbestandGesamtCent: _kassenbestandGesamtCent,
+        wechselgeldSollwertCent: _wechselgeldSollwertCent,
+      );
+
+  String _formatiereEuro(int cent) {
+    return TagesabschlussFormatierung.formatiereEuro(cent);
+  }
+
+  String _formatiereEuroEingabe(int cent) {
+    return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+  }
+
+  Future<void> _bestaetigeUndLeereEingaben() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogKontext) {
+        return AlertDialog(
+          title: const Text('Eingaben wirklich löschen?'),
+          content: const Text('Alle Eingaben in Schritt 1 werden zurückgesetzt.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(false),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(true),
+              child: const Text('Löschen'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (bestaetigt != true) {
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    setState(() {
+      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
+        _stueckzahlen[zeile.id] = 0;
+      }
+      for (final Kassenzeile zeile in _loseMuenzarten) {
+        _loseMuenzenNachArtCent[zeile.id] = 0;
+      }
+      _leereUmschlagFelder();
+      _synchronisiereControllerAusState();
+    });
+    await _speichereEntwurf();
+  }
+
+  Future<void> _weiterZuSchritt2() async {
+    if (
+        _kassenstandEntwurfUsecase.bestaetigungNoetigFuerNullbetrag(
+          _kassenbestandGesamtCent,
+        )) {
+      final bool? bestaetigt = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('0 € übernehmen?'),
+            content: const Text(
+              'Es wurde noch kein Betrag erfasst. Willst du mit 0 € fortfahren?',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Abbrechen'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Fortfahren'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (bestaetigt != true) {
+        return;
+      }
+    }
+
+    await _speichereEntwurf();
+    if (!mounted) {
+      return;
+    }
+
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt2Seite.routenName,
+      arguments: TagesabschlussSchritt2Argumente(
+        kinoId: widget.kinoId,
+        kinoName: widget.kinoName,
+        scheineCent: _summeGruppe(_scheine),
+        loseMuenzenCent: _loseMuenzenGesamtCent,
+        rollenCent: _summeGruppe(_rollen),
+        umschlaegeCent: _umschlagSummeCent,
+        wechselgeldSollwertCent: _wechselgeldSollwertCent,
+        barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
+      ),
+    );
+  }
+
+  Widget _baueGruppenInhalt(
+    List<Kassenzeile> zeilen,
+    String gesamtbetragLabel,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        for (final Kassenzeile zeile in zeilen) ...<Widget>[
+          _baueZeilenEintrag(zeile),
+          const SizedBox(height: 8),
+        ],
+        const SizedBox(height: 4),
+        Text(
+          '$gesamtbetragLabel: ${_formatiereEuro(_summeGruppe(zeilen))}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _baueZeilenEintrag(Kassenzeile zeile) {
+    final int stueckzahl = _stueckzahlen[zeile.id] ?? 0;
+    final int zwischensumme = stueckzahl * zeile.einzelwertCent;
+    final FocusNode focusNode = _stueckzahlFocusNode[zeile.id]!;
+
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Text(zeile.bezeichnung, style: const TextStyle(fontSize: 16)),
+        ),
+        SizedBox(
+          width: 96,
+          child: GanzzahlEingabefeld(
+            textController: _stueckzahlController[zeile.id]!,
+            focusNode: focusNode,
+            schriftgroesse: 18,
+            textInputAction: _textInputActionFuerSchritt1(focusNode),
+            onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
+            onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 95,
+          child: Text(
+            _formatiereEuro(zwischensumme),
+            textAlign: TextAlign.right,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _baueLoseMuenzenInhalt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        for (final Kassenzeile zeile in _loseMuenzarten) ...<Widget>[
+          Builder(
+            builder: (BuildContext _) {
+              final FocusNode focusNode = _loseMuenzenFocusNode[zeile.id]!;
+              return Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      zeile.bezeichnung,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 148,
+                    child: BetragCentEingabefeld(
+                      textController: _loseMuenzenController[zeile.id]!,
+                      focusNode: focusNode,
+                      textInputAction: _textInputActionFuerSchritt1(focusNode),
+                      onSubmitted: (_) =>
+                          _beiEingabeAbgeschlossenSchritt1(focusNode),
+                      onChanged: (String wert) =>
+                          _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+                      schriftgroesse: 18,
+                      hinweisText: '0,00 €',
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
+        const SizedBox(height: 8),
+        Text(
+          'Gesamtbetrag Lose Münzen: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _baueUmschlagInhalt() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        if (_umschlaege.isEmpty) const Text('Noch keine Umschläge erfasst.'),
+        for (int i = 0; i < _umschlaege.length; i++) ...<Widget>[
+          Builder(
+            builder: (BuildContext _) {
+              final FocusNode bezeichnungFocusNode =
+                  _umschlagBezeichnungFocusNode[i];
+              final FocusNode betragFocusNode = _umschlagBetragFocusNode[i];
+              return Row(
+                key: ValueKey<int>(_umschlagIds[i]),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: _umschlagBezeichnungController[i],
+                      focusNode: bezeichnungFocusNode,
+                      textInputAction: _textInputActionFuerSchritt1(
+                        bezeichnungFocusNode,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Label (optional)',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 10,
+                        ),
+                      ),
+                      onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
+                        bezeichnungFocusNode,
+                      ),
+                      onChanged: (String wert) =>
+                          _beiUmschlagBezeichnungGeaendert(i, wert),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 132,
+                    child: BetragCentEingabefeld(
+                      textController: _umschlagBetragController[i],
+                      focusNode: betragFocusNode,
+                      textInputAction: _textInputActionFuerSchritt1(
+                        betragFocusNode,
+                      ),
+                      onSubmitted: (_) =>
+                          _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
+                      onChanged: (String wert) =>
+                          _beiUmschlagBetragGeaendert(i, wert),
+                      schriftgroesse: 16,
+                      hinweisText: '0,00 €',
+                      labelText: 'Betrag €',
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _umschlagEntfernen(i),
+                    icon: const Icon(Icons.delete_outline),
+                    tooltip: 'Umschlag entfernen',
+                  ),
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+        ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            onPressed: _umschlagHinzufuegen,
+            icon: const Icon(Icons.add),
+            label: const Text('Umschlag hinzufügen'),
+          ),
+        ),
+        Text(
+          'Gesamtbetrag Umschläge: ${_formatiereEuro(_umschlagSummeCent)}',
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _baueEinklappbarenBereich({
+    required String titel,
+    required int gesamtbetragCent,
+    required bool aufgeklappt,
+    required VoidCallback beimUmschalten,
+    required Widget inhalt,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          InkWell(
+            onTap: beimUmschalten,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      titel,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Text(
+                    _formatiereEuro(gesamtbetragCent),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(aufgeklappt ? Icons.expand_less : Icons.expand_more),
+                ],
+              ),
+            ),
+          ),
+          if (aufgeklappt) ...<Widget>[
+            const Divider(height: 1),
+            Padding(padding: const EdgeInsets.all(12), child: inhalt),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _baueScheineGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'Scheine (Anzahl eingeben)',
+      gesamtbetragCent: _summeGruppe(_scheine),
+      aufgeklappt: _scheineAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _scheineAufgeklappt = !_scheineAufgeklappt;
+        });
+      },
+      inhalt: _baueGruppenInhalt(_scheine, 'Gesamtbetrag Scheine'),
+    );
+  }
+
+  Widget _baueLoseMuenzenGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'Lose Münzen (Betrag eingeben)',
+      gesamtbetragCent: _loseMuenzenGesamtCent,
+      aufgeklappt: _loseMuenzenAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _loseMuenzenAufgeklappt = !_loseMuenzenAufgeklappt;
+        });
+      },
+      inhalt: _baueLoseMuenzenInhalt(),
+    );
+  }
+
+  Widget _baueRollenGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'Rollen (Anzahl eingeben)',
+      gesamtbetragCent: _summeGruppe(_rollen),
+      aufgeklappt: _rollenAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _rollenAufgeklappt = !_rollenAufgeklappt;
+        });
+      },
+      inhalt: _baueGruppenInhalt(_rollen, 'Gesamtbetrag Rollen'),
+    );
+  }
+
+  Widget _baueUmschlagGruppe() {
+    return _baueEinklappbarenBereich(
+      titel: 'Umschläge (Betrag eingeben)',
+      gesamtbetragCent: _umschlagSummeCent,
+      aufgeklappt: _umschlaegeAufgeklappt,
+      beimUmschalten: () {
+        setState(() {
+          _umschlaegeAufgeklappt = !_umschlaegeAufgeklappt;
+        });
+      },
+      inhalt: _baueUmschlagInhalt(),
+    );
+  }
+
+  Widget _baueZusammenfassung() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const Text(
+              'Zusammenfassung',
+              style: TextStyle(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            _baueZusammenfassungsZeile(
+              'Kassenbestand gesamt',
+              _formatiereEuro(_kassenbestandGesamtCent),
+            ),
+            _baueZusammenfassungsZeile(
+              'Wechselgeld-Sollwert',
+              _formatiereEuro(_wechselgeldSollwertCent),
+            ),
+            _baueZusammenfassungsZeile(
+              'Barumsatz (bereinigt)',
+              _formatiereEuro(_barumsatzBereinigtCent),
+              hervorheben: true,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _baueZusammenfassungsZeile(
+    String label,
+    String wert, {
+    bool hervorheben = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: <Widget>[
+          Expanded(child: Text(label)),
+          Text(
+            wert,
+            style: TextStyle(
+              fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w500,
+              color: hervorheben && _barumsatzBereinigtCent < 0
+                  ? Colors.red
+                  : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_laedt) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    const double bottomBarHoehe = 52;
+    final double bottomPadding =
+        12 + bottomBarHoehe + mediaQuery.padding.bottom + 12;
+
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        toolbarHeight: 68,
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Tagesabschluss'),
+            Text(
+              '1/4 · Bargeldzählung',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          if (_devToolsSichtbar)
+            IconButton(
+              tooltip: 'DEV-Tools',
+              onPressed: () {
+                setState(() {
+                  _devToolsOffen = !_devToolsOffen;
+                });
+              },
+              icon: Icon(
+                _devToolsOffen
+                    ? Icons.developer_mode
+                    : Icons.developer_mode_outlined,
+              ),
+            ),
+          TextButton(
+            onPressed: _bestaetigeUndLeereEingaben,
+            child: const Text('Clear'),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(12, 6, 12, 8),
+        child: Material(
+          elevation: 1,
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: SizedBox(
+              height: bottomBarHoehe,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
+                      ),
+                      onPressed: _weiterZumNaechstenFeldUnten,
+                      child: const Text('nächstes Feld'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _weiterZuSchritt2,
+                      child: const Text('Weiter zu Schritt 2'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+      body: SafeArea(
+        child: ListView(
+          padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+          children: <Widget>[
+            IgnorePointer(
+              ignoring: !_devToolsSichtbar || !_devToolsOffen,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 140),
+                opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 140),
+                  height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                  child: _baueDevToolsPanel(),
+                ),
+              ),
+            ),
+            _baueScheineGruppe(),
+            _baueLoseMuenzenGruppe(),
+            _baueRollenGruppe(),
+            _baueUmschlagGruppe(),
+            _baueZusammenfassung(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ./lib/pages/startmenue_seite.dart
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
+import 'package:kino_bar_app/pages/platzhalter_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+
+class StartmenueSeite extends StatelessWidget {
+  const StartmenueSeite({super.key, required this.kino});
+
+  static const String routenName = '/start-menu';
+
+  final Kino kino;
+
+  void _oeffneTagesabschlussSchritt1(BuildContext context) {
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt1Seite.routenName,
+      arguments: TagesabschlussSchritt1Argumente(
+        kinoId: kino.id,
+        kinoName: kino.name,
+      ),
+    );
+  }
+
+  void _oeffnePlatzhalter(BuildContext context, String titel) {
+    Navigator.of(context).pushNamed(PlatzhalterSeite.routenName, arguments: titel);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Text(kino.name),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).pushReplacementNamed(KinoauswahlSeite.routenName);
+            },
+            child: const Text('Kino wechseln'),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            const SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: () => _oeffneTagesabschlussSchritt1(context),
+              child: const Text('Tagesabschluss'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => _oeffnePlatzhalter(context, 'Getränke auffüllen'),
+              child: const Text('Getränke auffüllen'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => _oeffnePlatzhalter(context, 'Einstellungen'),
+              child: const Text('Einstellungen'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ./lib/domain/tagesabschluss_berechnung.dart
+import 'package:kino_bar_app/models/kassenzeile.dart';
+
+class TagesabschlussBerechnung {
+  const TagesabschlussBerechnung._();
+
+  static int parseCentZiffern(String wert) {
+    final String nurZiffern = wert.replaceAll(RegExp(r'[^0-9]'), '');
+    if (nurZiffern.isEmpty) {
+      return 0;
+    }
+    return int.tryParse(nurZiffern) ?? 0;
+  }
+
+  static int summeStueckzahlGruppeCent({
+    required List<Kassenzeile> zeilen,
+    required Map<String, int> stueckzahlen,
+  }) {
+    int summe = 0;
+    for (final Kassenzeile zeile in zeilen) {
+      final int stueckzahl = stueckzahlen[zeile.id] ?? 0;
+      summe += stueckzahl * zeile.einzelwertCent;
+    }
+    return summe;
+  }
+
+  static int summeCentBetraege(Iterable<int> betraegeCent) {
+    int summe = 0;
+    for (final int betragCent in betraegeCent) {
+      summe += betragCent;
+    }
+    return summe;
+  }
+
+  static int summeUmschlaegeCent(List<UmschlagEintrag> umschlaege) {
+    int summe = 0;
+    for (final UmschlagEintrag eintrag in umschlaege) {
+      summe += eintrag.betragCent;
+    }
+    return summe;
+  }
+
+  static int kassenbestandGesamtCent({
+    required int scheineCent,
+    required int loseMuenzenCent,
+    required int rollenCent,
+    required int umschlaegeCent,
+  }) {
+    return scheineCent + loseMuenzenCent + rollenCent + umschlaegeCent;
+  }
+
+  static int barumsatzBereinigtCent({
+    required int kassenbestandGesamtCent,
+    required int wechselgeldSollwertCent,
+  }) {
+    return kassenbestandGesamtCent - wechselgeldSollwertCent;
+  }
+
+  static int gesamtSollCent({
+    required int kinoSollCent,
+    required int bistroSollCent,
+    required int ausgabenCent,
+  }) {
+    return kinoSollCent + bistroSollCent - ausgabenCent;
+  }
+
+  static int gesamtIstCent({
+    required int ecUmsatzGesamtCent,
+    required int barBestandAbzglWechselgeldCent,
+  }) {
+    return ecUmsatzGesamtCent + barBestandAbzglWechselgeldCent;
+  }
+
+  static int differenzTagesabschlussCent({
+    required int gesamtIstCent,
+    required int gesamtSollCent,
+  }) {
+    return gesamtIstCent - gesamtSollCent;
+  }
+}
+
+class TagesabschlussFormatierung {
+  const TagesabschlussFormatierung._();
+
+  static String formatiereEuro(int cent) {
+    final String vorzeichen = cent < 0 ? '-' : '';
+    final int absolut = cent.abs();
+    final int euro = absolut ~/ 100;
+    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
+    return '$vorzeichen$euro,$centTeil €';
+  }
+
+  static String formatiereEuroEingabe(int cent) {
+    final String vorzeichen = cent < 0 ? '-' : '';
+    final int absolut = cent.abs();
+    final int euro = absolut ~/ 100;
+    final String centTeil = (absolut % 100).toString().padLeft(2, '0');
+    return '$vorzeichen$euro,$centTeil';
+  }
+
+  static String formatiereEuroMitVorzeichen(int cent) {
+    if (cent > 0) {
+      final int euro = cent ~/ 100;
+      final String centTeil = (cent % 100).toString().padLeft(2, '0');
+      return '+$euro,$centTeil €';
+    }
+    return formatiereEuro(cent);
+  }
+
+  static String heutigesIsoDatum(DateTime jetzt) {
+    final String jahr = jetzt.year.toString().padLeft(4, '0');
+    final String monat = jetzt.month.toString().padLeft(2, '0');
+    final String tag = jetzt.day.toString().padLeft(2, '0');
+    return '$jahr-$monat-$tag';
+  }
+
+  static String deutschesDatum(DateTime jetzt) {
+    final String tag = jetzt.day.toString().padLeft(2, '0');
+    final String monat = jetzt.month.toString().padLeft(2, '0');
+    final String jahr = jetzt.year.toString();
+    return '$tag.$monat.$jahr';
+  }
+}
+
+// ./lib/domain/tagesabschluss_finalisieren_usecase.dart
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+
+/// Eingabedaten aus Schritt 1 und 2 fuer den finalen Abschluss.
+class TagesabschlussFinalisierenEingabe {
+  const TagesabschlussFinalisierenEingabe({
+    required this.kinoId,
+    required this.kinoName,
+    required this.scheineCent,
+    required this.loseMuenzenCent,
+    required this.rollenCent,
+    required this.umschlaegeCent,
+    required this.wechselgeldSollwertCent,
+    required this.kinoSollCent,
+    required this.bistroSollCent,
+    required this.ausgabenCent,
+    required this.ecBelegeCent,
+    required this.differenzAnfangsbestandCent,
+  });
+
+  final String kinoId;
+  final String kinoName;
+  final int scheineCent;
+  final int loseMuenzenCent;
+  final int rollenCent;
+  final int umschlaegeCent;
+  final int wechselgeldSollwertCent;
+  final int kinoSollCent;
+  final int bistroSollCent;
+  final int ausgabenCent;
+  final List<int> ecBelegeCent;
+  final int differenzAnfangsbestandCent;
+}
+
+/// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
+class TagesabschlussValidierungsFehler implements Exception {
+  const TagesabschlussValidierungsFehler(this.nachricht);
+
+  final String nachricht;
+
+  @override
+  String toString() => nachricht;
+}
+
+/// Erstellt das finale Abschluss-Objekt aus den gesammelten Schritten.
+class TagesabschlussFinalisierenUsecase {
+  const TagesabschlussFinalisierenUsecase();
+
+  /// Finalisiert den Tagesabschluss und berechnet alle Summen zentral.
+  TagesabschlussFinal finalisieren({
+    required TagesabschlussFinalisierenEingabe eingabe,
+    DateTime? jetzt,
+  }) {
+    _validiere(eingabe);
+
+    final int kassenbestandGesamtCent =
+        TagesabschlussBerechnung.kassenbestandGesamtCent(
+          scheineCent: eingabe.scheineCent,
+          loseMuenzenCent: eingabe.loseMuenzenCent,
+          rollenCent: eingabe.rollenCent,
+          umschlaegeCent: eingabe.umschlaegeCent,
+        );
+
+    final int barBestandAbzglWechselgeldCent =
+        TagesabschlussBerechnung.barumsatzBereinigtCent(
+          kassenbestandGesamtCent: kassenbestandGesamtCent,
+          wechselgeldSollwertCent: eingabe.wechselgeldSollwertCent,
+        );
+
+    final int ecUmsatzGesamtCent = TagesabschlussBerechnung.summeCentBetraege(
+      eingabe.ecBelegeCent,
+    );
+
+    final int gesamtSollCent = TagesabschlussBerechnung.gesamtSollCent(
+      kinoSollCent: eingabe.kinoSollCent,
+      bistroSollCent: eingabe.bistroSollCent,
+      ausgabenCent: eingabe.ausgabenCent,
+    );
+
+    final int gesamtIstCent = TagesabschlussBerechnung.gesamtIstCent(
+      ecUmsatzGesamtCent: ecUmsatzGesamtCent,
+      barBestandAbzglWechselgeldCent: barBestandAbzglWechselgeldCent,
+    );
+
+    final int differenzGesamtCent =
+        TagesabschlussBerechnung.differenzTagesabschlussCent(
+          gesamtIstCent: gesamtIstCent,
+          gesamtSollCent: gesamtSollCent,
+        );
+
+    final DateTime zeitstempel = jetzt ?? DateTime.now();
+
+    return TagesabschlussFinal(
+      kinoId: eingabe.kinoId,
+      kinoName: eingabe.kinoName,
+      datum: DateTime(zeitstempel.year, zeitstempel.month, zeitstempel.day),
+      createdAt: zeitstempel,
+      scheineCent: eingabe.scheineCent,
+      loseMuenzenCent: eingabe.loseMuenzenCent,
+      rollenCent: eingabe.rollenCent,
+      umschlaegeCent: eingabe.umschlaegeCent,
+      kassenbestandGesamtCent: kassenbestandGesamtCent,
+      wechselgeldSollwertCent: eingabe.wechselgeldSollwertCent,
+      barBestandAbzglWechselgeldCent: barBestandAbzglWechselgeldCent,
+      kinoSollCent: eingabe.kinoSollCent,
+      bistroSollCent: eingabe.bistroSollCent,
+      ausgabenCent: eingabe.ausgabenCent,
+      ecBelegeCent: List<int>.from(eingabe.ecBelegeCent),
+      ecUmsatzGesamtCent: ecUmsatzGesamtCent,
+      gesamtSollCent: gesamtSollCent,
+      gesamtIstCent: gesamtIstCent,
+      differenzGesamtCent: differenzGesamtCent,
+      differenzAnfangsbestandCent: eingabe.differenzAnfangsbestandCent,
+    );
+  }
+
+  /// Prueft nur minimale Pflichtbedingungen ohne optionale Felder zu erzwingen.
+  void _validiere(TagesabschlussFinalisierenEingabe eingabe) {
+    if (eingabe.kinoId.trim().isEmpty) {
+      throw const TagesabschlussValidierungsFehler('Kino-ID fehlt.');
+    }
+    if (eingabe.kinoSollCent < 0 || eingabe.bistroSollCent < 0) {
+      throw const TagesabschlussValidierungsFehler(
+        'SOLL-Werte duerfen nicht negativ sein.',
+      );
+    }
+    if (eingabe.ausgabenCent < 0 || eingabe.differenzAnfangsbestandCent < 0) {
+      throw const TagesabschlussValidierungsFehler(
+        'Ausgaben oder Anfangsbestandsdifferenz sind ungueltig.',
+      );
+    }
+    if (eingabe.ecBelegeCent.any((int wert) => wert < 0)) {
+      throw const TagesabschlussValidierungsFehler(
+        'EC-Belege duerfen nicht negativ sein.',
+      );
+    }
+  }
+}
+
+// ./lib/domain/usecases/kino_waehlen_usecase.dart
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+
+/// Usecase zum Persistieren der aktuellen Kino-Auswahl.
+class KinoWaehlenUsecase {
+  const KinoWaehlenUsecase();
+
+  /// Speichert die aktive Kino-ID im lokalen Speicher.
+  Future<void> speichereAktivesKino(String kinoId) async {
+    await LokalerSpeicher.speichereAktiveKinoId(kinoId);
+  }
+}
+
+// ./lib/domain/usecases/startziel_bestimmen_usecase.dart
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+
+/// Ergebnisobjekt fuer die Startziel-Entscheidung beim App-Start.
+class StartzielBestimmungErgebnis {
+  const StartzielBestimmungErgebnis({
+    required this.aktivesKinoId,
+    required this.hatGueltigesKino,
+  });
+
+  final String? aktivesKinoId;
+  final bool hatGueltigesKino;
+}
+
+/// Usecase fuer den Startflow: gespeichertes Kino laden und validieren.
+class StartzielBestimmenUsecase {
+  const StartzielBestimmenUsecase();
+
+  /// Liefert, ob die gespeicherte Kino-ID im Repository bekannt ist.
+  Future<StartzielBestimmungErgebnis> bestimmeStartziel() async {
+    final String? aktivesKinoId = await LokalerSpeicher.ladeAktiveKinoId();
+    final bool hatGueltigesKino =
+        KinoRepository.nachId(aktivesKinoId ?? '') != null;
+
+    return StartzielBestimmungErgebnis(
+      aktivesKinoId: aktivesKinoId,
+      hatGueltigesKino: hatGueltigesKino,
+    );
+  }
+}
+
+// ./lib/domain/usecases/speichere_tagesabschluss_usecase.dart
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+
+/// Usecase zum Speichern eines finalen Tagesabschlusses mit Duplikat-Pruefung.
+class SpeichereTagesabschlussUsecase {
+  const SpeichereTagesabschlussUsecase();
+
+  /// Duplikat-Regel: Pro Kino und Kalendertag darf es maximal einen Abschluss geben.
+  Future<SpeichereTagesabschlussErgebnis> ausfuehren(
+    TagesabschlussFinal abschluss,
+  ) async {
+    final List<TagesabschlussFinal> vorhandeneAbschluesse =
+        await LokalerSpeicher.ladeFinaleTagesabschluesse(abschluss.kinoId);
+
+    final bool bereitsVorhanden = vorhandeneAbschluesse.any(
+      (TagesabschlussFinal eintrag) => _istGleicherKalendertag(
+        eintrag.datum,
+        abschluss.datum,
+      ),
+    );
+
+    if (bereitsVorhanden) {
+      return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: true);
+    }
+
+    await LokalerSpeicher.speichereFinalenTagesabschluss(abschluss);
+    return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: false);
+  }
+
+  bool _istGleicherKalendertag(DateTime links, DateTime rechts) {
+    return links.year == rechts.year &&
+        links.month == rechts.month &&
+        links.day == rechts.day;
+  }
+}
+
+class SpeichereTagesabschlussErgebnis {
+  const SpeichereTagesabschlussErgebnis({required this.bereitsVorhanden});
+
+  final bool bereitsVorhanden;
+}
+
+// ./lib/domain/usecases/kassenstand_entwurf_usecase.dart
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+
+/// Usecase fuer Laden/Speichern des Tagesabschluss-Entwurfs.
+class KassenstandEntwurfUsecase {
+  const KassenstandEntwurfUsecase();
+
+  /// Liefert den gespeicherten Wechselgeld-Sollwert fuer ein Kino.
+  Future<int> ladeWechselgeldSollwertCent(String kinoId) async {
+    return LokalerSpeicher.ladeWechselgeldSollwertCent(kinoId);
+  }
+
+  /// Laedt den Entwurf fuer das heutige Datum im ISO-Format.
+  Future<KassenstandEntwurf?> ladeHeutigenEntwurf(String kinoId) async {
+    return LokalerSpeicher.ladeKassenstandEntwurf(
+      kinoId: kinoId,
+      isoDatum: heutigesIsoDatum(),
+    );
+  }
+
+  /// Speichert den Entwurf fuer das heutige Datum im ISO-Format.
+  Future<void> speichereHeutigenEntwurf({
+    required String kinoId,
+    required KassenstandEntwurf entwurf,
+  }) async {
+    await LokalerSpeicher.speichereKassenstandEntwurf(
+      kinoId: kinoId,
+      isoDatum: heutigesIsoDatum(),
+      entwurf: entwurf,
+    );
+  }
+
+  /// Kapselt die Regel, ob bei 0 EUR eine Bestaetigung noetig ist.
+  bool bestaetigungNoetigFuerNullbetrag(int gesamtCent) {
+    return gesamtCent == 0;
+  }
+
+  /// Ermittelt das heutige Datum im benoetigten Speicher-Key-Format.
+  String heutigesIsoDatum() {
+    return TagesabschlussFormatierung.heutigesIsoDatum(DateTime.now());
+  }
+}
+
+// ./lib/domain/usecases/stueckelung_konfiguration.dart
+import 'package:kino_bar_app/models/kassenzeile.dart';
+
+/// Zentrale Konfiguration der Kassen-Stueckelungen fuer Schritt 1.
+class StueckelungKonfiguration {
+  const StueckelungKonfiguration._();
+
+  /// Definiert alle Schein-Stueckelungen inkl. Einzelwert in Cent.
+  static const List<Kassenzeile> scheine = <Kassenzeile>[
+    Kassenzeile(id: 'note_100', bezeichnung: '100 €', einzelwertCent: 10000),
+    Kassenzeile(id: 'note_50', bezeichnung: '50 €', einzelwertCent: 5000),
+    Kassenzeile(id: 'note_20', bezeichnung: '20 €', einzelwertCent: 2000),
+    Kassenzeile(id: 'note_10', bezeichnung: '10 €', einzelwertCent: 1000),
+    Kassenzeile(id: 'note_5', bezeichnung: '5 €', einzelwertCent: 500),
+  ];
+
+  /// Definiert alle Rollen-Stueckelungen inkl. Gesamtwert je Rolle in Cent.
+  static const List<Kassenzeile> rollen = <Kassenzeile>[
+    Kassenzeile(
+      id: 'roll_2e',
+      bezeichnung: 'Rolle 2 € (50,00 €)',
+      einzelwertCent: 5000,
+    ),
+    Kassenzeile(
+      id: 'roll_1e',
+      bezeichnung: 'Rolle 1 € (25,00 €)',
+      einzelwertCent: 2500,
+    ),
+    Kassenzeile(
+      id: 'roll_50c',
+      bezeichnung: 'Rolle 50 ct (20,00 €)',
+      einzelwertCent: 2000,
+    ),
+    Kassenzeile(
+      id: 'roll_20c',
+      bezeichnung: 'Rolle 20 ct (8,00 €)',
+      einzelwertCent: 800,
+    ),
+    Kassenzeile(
+      id: 'roll_10c',
+      bezeichnung: 'Rolle 10 ct (4,00 €)',
+      einzelwertCent: 400,
+    ),
+    Kassenzeile(
+      id: 'roll_5c',
+      bezeichnung: 'Rolle 5 ct (2,00 €)',
+      einzelwertCent: 200,
+    ),
+    Kassenzeile(
+      id: 'roll_2c',
+      bezeichnung: 'Rolle 2 ct (1,00 €)',
+      einzelwertCent: 100,
+    ),
+    Kassenzeile(
+      id: 'roll_1c',
+      bezeichnung: 'Rolle 1 ct (0,50 €)',
+      einzelwertCent: 50,
+    ),
+  ];
+
+  /// Definiert Muenzarten fuer lose Muenzen als Betragseingabe.
+  static const List<Kassenzeile> loseMuenzarten = <Kassenzeile>[
+    Kassenzeile(id: 'coin_2e', bezeichnung: '2 €', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_1e', bezeichnung: '1 €', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_50c', bezeichnung: '50 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_20c', bezeichnung: '20 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_10c', bezeichnung: '10 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_5c', bezeichnung: '5 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_2c', bezeichnung: '2 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_1c', bezeichnung: '1 ct', einzelwertCent: 0),
+  ];
+
+  /// Kombinierte Liste aller Eingabefelder mit Stueckzahl (Scheine + Rollen).
+  static const List<Kassenzeile> alleStueckzahlZeilen = <Kassenzeile>[
+    ...scheine,
+    ...rollen,
+  ];
+}
+
+// ./lib/widgets/betrag_cent_eingabefeld.dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class CentWaehrungsEingabeFormatter extends TextInputFormatter {
+  static final RegExp _nichtZiffern = RegExp(r'[^0-9]');
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final String ziffern = newValue.text.replaceAll(_nichtZiffern, '');
+    if (ziffern.isEmpty) {
+      return const TextEditingValue(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    final int cent = int.tryParse(ziffern) ?? 0;
+    final int euro = cent ~/ 100;
+    final String centTeil = (cent % 100).toString().padLeft(2, '0');
+    final String formatiert = '$euro,$centTeil';
+
+    return TextEditingValue(
+      text: formatiert,
+      selection: TextSelection.collapsed(offset: formatiert.length),
+    );
+  }
+}
+
+class BetragCentEingabefeld extends StatelessWidget {
+  const BetragCentEingabefeld({
+    super.key,
+    required this.textController,
+    required this.onChanged,
+    required this.schriftgroesse,
+    required this.hinweisText,
+    this.labelText,
+    this.focusNode,
+    this.textInputAction = TextInputAction.done,
+    this.onSubmitted,
+  });
+
+  final TextEditingController textController;
+  final ValueChanged<String> onChanged;
+  final double schriftgroesse;
+  final String hinweisText;
+  final String? labelText;
+  final FocusNode? focusNode;
+  final TextInputAction textInputAction;
+  final ValueChanged<String>? onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    final String bereinigterHinweisText = hinweisText
+        .replaceAll(' €', '')
+        .replaceAll('€', '');
+
+    return TextField(
+      controller: textController,
+      focusNode: focusNode,
+      keyboardType: TextInputType.number,
+      textInputAction: textInputAction,
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: schriftgroesse),
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+        CentWaehrungsEingabeFormatter(),
+      ],
+      decoration: InputDecoration(
+        labelText: labelText,
+        hintText: bereinigterHinweisText,
+        suffixText: '€',
+        isDense: true,
+        border: const OutlineInputBorder(),
+      ),
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+    );
+  }
+}
+
+// ./lib/widgets/ganzzahl_eingabefeld.dart
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+class GanzzahlEingabefeld extends StatelessWidget {
+  const GanzzahlEingabefeld({
+    super.key,
+    required this.textController,
+    required this.onChanged,
+    this.hinweisText = '0',
+    this.schriftgroesse = 20,
+    this.textAusrichtung = TextAlign.center,
+    this.textInputAction = TextInputAction.done,
+    this.focusNode,
+    this.onSubmitted,
+  });
+
+  final TextEditingController textController;
+  final ValueChanged<String> onChanged;
+  final String hinweisText;
+  final double schriftgroesse;
+  final TextAlign textAusrichtung;
+  final TextInputAction textInputAction;
+  final FocusNode? focusNode;
+  final ValueChanged<String>? onSubmitted;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: textController,
+      focusNode: focusNode,
+      keyboardType: TextInputType.number,
+      textInputAction: textInputAction,
+      textAlign: textAusrichtung,
+      style: TextStyle(fontSize: schriftgroesse),
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+      decoration: InputDecoration(
+        hintText: hinweisText,
+        isDense: true,
+        border: const OutlineInputBorder(),
+      ),
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+    );
+  }
+}
+
