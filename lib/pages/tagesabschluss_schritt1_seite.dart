@@ -77,6 +77,9 @@ class _TagesabschlussSchritt1SeiteState
   bool _kartenzahlungenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
+  final ScrollController _scrollController = ScrollController();
+  final Map<FocusNode, GlobalKey> _feldKeys = <FocusNode, GlobalKey>{};
+  FocusNode? _letztesAktivesFeld;
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
@@ -139,6 +142,7 @@ class _TagesabschlussSchritt1SeiteState
     for (final FocusNode focusNode in _kartenzahlungFocusNode) {
       focusNode.dispose();
     }
+    _scrollController.dispose();
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
     super.dispose();
   }
@@ -182,9 +186,11 @@ class _TagesabschlussSchritt1SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _umschlagBetragFocusNode) {
+      _feldKeys.remove(focusNode);
       focusNode.dispose();
     }
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
+      _feldKeys.remove(focusNode);
       focusNode.dispose();
     }
     _umschlaege.clear();
@@ -256,7 +262,43 @@ class _TagesabschlussSchritt1SeiteState
     if (!mounted) {
       return;
     }
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
+    if (!identical(_letztesAktivesFeld, aktivesFeld)) {
+      _letztesAktivesFeld = aktivesFeld;
+      if (aktivesFeld != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) {
+            return;
+          }
+          _scrolleFeldSichtbar(aktivesFeld);
+        });
+      }
+    }
     setState(() {});
+  }
+
+  GlobalKey _holeFeldKey(FocusNode focusNode) {
+    return _feldKeys.putIfAbsent(focusNode, () => GlobalKey());
+  }
+
+  Widget _baueFeldMitKey({
+    required FocusNode focusNode,
+    required Widget child,
+  }) {
+    return KeyedSubtree(key: _holeFeldKey(focusNode), child: child);
+  }
+
+  void _scrolleFeldSichtbar(FocusNode focusNode) {
+    final BuildContext? feldKontext = _feldKeys[focusNode]?.currentContext;
+    if (feldKontext == null) {
+      return;
+    }
+    Scrollable.ensureVisible(
+      feldKontext,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      alignment: 0.2,
+    );
   }
 
   int _zufallszahl(int min, int max) {
@@ -393,6 +435,8 @@ class _TagesabschlussSchritt1SeiteState
       );
       final FocusNode bezeichnungFocusNode = _umschlagBezeichnungFocusNode
           .removeAt(index);
+      _feldKeys.remove(betragFocusNode);
+      _feldKeys.remove(bezeichnungFocusNode);
       betragFocusNode.dispose();
       bezeichnungFocusNode.dispose();
       _umschlagIds.removeAt(index);
@@ -432,7 +476,9 @@ class _TagesabschlussSchritt1SeiteState
   void _setzeKartenzahlungAnzahl(int anzahl) {
     while (_kartenzahlungController.length > anzahl) {
       _kartenzahlungController.removeLast().dispose();
-      _kartenzahlungFocusNode.removeLast().dispose();
+      final FocusNode focusNode = _kartenzahlungFocusNode.removeLast();
+      _feldKeys.remove(focusNode);
+      focusNode.dispose();
       _kartenzahlungenCent.removeLast();
       _kartenzahlungIds.removeLast();
     }
@@ -456,7 +502,9 @@ class _TagesabschlussSchritt1SeiteState
     }
     setState(() {
       _kartenzahlungController.removeAt(index).dispose();
-      _kartenzahlungFocusNode.removeAt(index).dispose();
+      final FocusNode focusNode = _kartenzahlungFocusNode.removeAt(index);
+      _feldKeys.remove(focusNode);
+      focusNode.dispose();
       _kartenzahlungenCent.removeAt(index);
       _kartenzahlungIds.removeAt(index);
     });
@@ -730,13 +778,16 @@ class _TagesabschlussSchritt1SeiteState
         const SizedBox(width: 10),
         SizedBox(
           width: 96,
-          child: GanzzahlEingabefeld(
-            textController: _stueckzahlController[zeile.id]!,
+          child: _baueFeldMitKey(
             focusNode: focusNode,
-            schriftgroesse: 16,
-            textInputAction: _textInputActionFuerSchritt1(focusNode),
-            onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
-            onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
+            child: GanzzahlEingabefeld(
+              textController: _stueckzahlController[zeile.id]!,
+              focusNode: focusNode,
+              schriftgroesse: 16,
+              textInputAction: _textInputActionFuerSchritt1(focusNode),
+              onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
+              onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
+            ),
           ),
         ),
         const SizedBox(width: 10),
@@ -773,16 +824,21 @@ class _TagesabschlussSchritt1SeiteState
                   const SizedBox(width: 10),
                   SizedBox(
                     width: 148,
-                    child: BetragCentEingabefeld(
-                      textController: _loseMuenzenController[zeile.id]!,
+                    child: _baueFeldMitKey(
                       focusNode: focusNode,
-                      textInputAction: _textInputActionFuerSchritt1(focusNode),
-                      onSubmitted: (_) =>
-                          _beiEingabeAbgeschlossenSchritt1(focusNode),
-                      onChanged: (String wert) =>
-                          _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-                      schriftgroesse: 15,
-                      hinweisText: '0,00 €',
+                      child: BetragCentEingabefeld(
+                        textController: _loseMuenzenController[zeile.id]!,
+                        focusNode: focusNode,
+                        textInputAction: _textInputActionFuerSchritt1(
+                          focusNode,
+                        ),
+                        onSubmitted: (_) =>
+                            _beiEingabeAbgeschlossenSchritt1(focusNode),
+                        onChanged: (String wert) =>
+                            _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+                        schriftgroesse: 15,
+                        hinweisText: '0,00 €',
+                      ),
                     ),
                   ),
                 ],
@@ -817,46 +873,52 @@ class _TagesabschlussSchritt1SeiteState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    child: TextField(
-                      controller: _umschlagBezeichnungController[i],
+                    child: _baueFeldMitKey(
                       focusNode: bezeichnungFocusNode,
-                      style: const TextStyle(fontSize: 15),
-                      textInputAction: _textInputActionFuerSchritt1(
-                        bezeichnungFocusNode,
-                      ),
-                      decoration: const InputDecoration(
-                        hintText: 'Label (optional)',
-                        hintStyle: TextStyle(fontSize: 15),
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 6,
+                      child: TextField(
+                        controller: _umschlagBezeichnungController[i],
+                        focusNode: bezeichnungFocusNode,
+                        style: const TextStyle(fontSize: 15),
+                        textInputAction: _textInputActionFuerSchritt1(
+                          bezeichnungFocusNode,
                         ),
+                        decoration: const InputDecoration(
+                          hintText: 'Label (optional)',
+                          hintStyle: TextStyle(fontSize: 15),
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
+                        ),
+                        onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
+                          bezeichnungFocusNode,
+                        ),
+                        onChanged: (String wert) =>
+                            _beiUmschlagBezeichnungGeaendert(i, wert),
                       ),
-                      onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
-                        bezeichnungFocusNode,
-                      ),
-                      onChanged: (String wert) =>
-                          _beiUmschlagBezeichnungGeaendert(i, wert),
                     ),
                   ),
                   const SizedBox(width: 8),
                   SizedBox(
                     width: 132,
-                    child: BetragCentEingabefeld(
-                      textController: _umschlagBetragController[i],
+                    child: _baueFeldMitKey(
                       focusNode: betragFocusNode,
-                      textInputAction: _textInputActionFuerSchritt1(
-                        betragFocusNode,
+                      child: BetragCentEingabefeld(
+                        textController: _umschlagBetragController[i],
+                        focusNode: betragFocusNode,
+                        textInputAction: _textInputActionFuerSchritt1(
+                          betragFocusNode,
+                        ),
+                        onSubmitted: (_) =>
+                            _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
+                        onChanged: (String wert) =>
+                            _beiUmschlagBetragGeaendert(i, wert),
+                        schriftgroesse: 14,
+                        hinweisText: '0,00 €',
+                        labelText: 'Betrag €',
                       ),
-                      onSubmitted: (_) =>
-                          _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
-                      onChanged: (String wert) =>
-                          _beiUmschlagBetragGeaendert(i, wert),
-                      schriftgroesse: 14,
-                      hinweisText: '0,00 €',
-                      labelText: 'Betrag €',
                     ),
                   ),
                   IconButton(
@@ -895,7 +957,7 @@ class _TagesabschlussSchritt1SeiteState
     required Widget inhalt,
   }) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -1004,22 +1066,25 @@ class _TagesabschlussSchritt1SeiteState
               const SizedBox(width: 10),
               SizedBox(
                 width: 148,
-                child: BetragCentEingabefeld(
-                  textController: _kartenzahlungController[i],
+                child: _baueFeldMitKey(
                   focusNode: _kartenzahlungFocusNode[i],
-                  textInputAction: _textInputActionFuerSchritt1(
-                    _kartenzahlungFocusNode[i],
+                  child: BetragCentEingabefeld(
+                    textController: _kartenzahlungController[i],
+                    focusNode: _kartenzahlungFocusNode[i],
+                    textInputAction: _textInputActionFuerSchritt1(
+                      _kartenzahlungFocusNode[i],
+                    ),
+                    onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
+                      _kartenzahlungFocusNode[i],
+                    ),
+                    onChanged: (String wert) {
+                      setState(() {
+                        _kartenzahlungenCent[i] = _parseCentZiffern(wert);
+                      });
+                    },
+                    schriftgroesse: 15,
+                    hinweisText: '0,00 €',
                   ),
-                  onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
-                    _kartenzahlungFocusNode[i],
-                  ),
-                  onChanged: (String wert) {
-                    setState(() {
-                      _kartenzahlungenCent[i] = _parseCentZiffern(wert);
-                    });
-                  },
-                  schriftgroesse: 15,
-                  hinweisText: '0,00 €',
                 ),
               ),
               if (i > 0) ...<Widget>[
@@ -1132,12 +1197,13 @@ class _TagesabschlussSchritt1SeiteState
 
   Widget _baueFooterLeiste(
     double footerContentHoehe, {
+    required bool tastaturOffen,
     required double bottomInset,
     required bool zeigeNaechstesFeld,
   }) {
     const Color footerBg = Colors.black87;
     final ButtonStyle kompaktButtonStyle = ElevatedButton.styleFrom(
-      minimumSize: const Size(0, 40),
+      minimumSize: Size(0, tastaturOffen ? 36 : 40),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1156,7 +1222,12 @@ class _TagesabschlussSchritt1SeiteState
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + bottomInset),
+        padding: EdgeInsets.fromLTRB(
+          12,
+          tastaturOffen ? 2 : 6,
+          12,
+          (tastaturOffen ? 2 : 6) + bottomInset,
+        ),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -1191,11 +1262,13 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
-    const double footerContentHoehe = 56;
+    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
+    final double footerContentHoehe = tastaturOffen ? 44 : 56;
     const double devToolsStickyHoehe = 86;
     final double bottomInset = mediaQuery.viewPadding.bottom;
     final double keyboardInset = mediaQuery.viewInsets.bottom;
-    final double footerTotalHoehe = footerContentHoehe + bottomInset;
+    final double footerBottomInset = tastaturOffen ? 0 : bottomInset;
+    final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
     final double bottomPadding = footerTotalHoehe + 16;
 
     return Scaffold(
@@ -1204,8 +1277,8 @@ class _TagesabschlussSchritt1SeiteState
       appBar: AppBar(
         backgroundColor: Colors.black87,
         foregroundColor: Colors.white,
-        toolbarHeight: 56,
-        titleSpacing: 10,
+        toolbarHeight: 48,
+        titleSpacing: 8,
         title: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -1259,8 +1332,9 @@ class _TagesabschlussSchritt1SeiteState
               behavior: HitTestBehavior.translucent,
               onTap: () => FocusScope.of(context).unfocus(),
               child: CustomScrollView(
+                controller: _scrollController,
                 keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.onDrag,
+                    ScrollViewKeyboardDismissBehavior.manual,
                 slivers: <Widget>[
                   if (devToolsStickySichtbar)
                     SliverPersistentHeader(
@@ -1298,7 +1372,8 @@ class _TagesabschlussSchritt1SeiteState
               height: footerTotalHoehe,
               child: _baueFooterLeiste(
                 footerContentHoehe,
-                bottomInset: bottomInset,
+                tastaturOffen: tastaturOffen,
+                bottomInset: footerBottomInset,
                 zeigeNaechstesFeld: zeigeNaechstesFeld,
               ),
             ),
