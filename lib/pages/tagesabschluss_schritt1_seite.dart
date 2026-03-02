@@ -102,6 +102,8 @@ class _TagesabschlussSchritt1SeiteState
   final Map<FocusNode, GlobalKey> _feldKeys = <FocusNode, GlobalKey>{};
   FocusNode? _letztesAktivesFeld;
   double _keyboardInset = 0;
+  bool _ensureNachEingabeGeplant = false;
+  DateTime _letztesEnsureNachEingabe = DateTime.fromMillisecondsSinceEpoch(0);
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
@@ -216,6 +218,7 @@ class _TagesabschlussSchritt1SeiteState
       }
       _uebernehmeUmschlagEntwurf(entwurf.umschlaege);
     }
+    _sichereMindestensEinenUmschlag();
 
     _synchronisiereControllerAusState();
 
@@ -256,19 +259,32 @@ class _TagesabschlussSchritt1SeiteState
   void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) {
     _leereUmschlagFelder();
     for (final UmschlagEintrag eintrag in umschlagEntwurf) {
-      _umschlaege.add(eintrag);
-      _umschlagBetragController.add(
-        TextEditingController(text: _formatiereEuroEingabe(eintrag.betragCent)),
-      );
-      _umschlagBezeichnungController.add(
-        TextEditingController(text: eintrag.bezeichnung),
-      );
-      final FocusNode betragFocusNode = FocusNode();
-      final FocusNode bezeichnungFocusNode = FocusNode();
-      _umschlagBetragFocusNode.add(betragFocusNode);
-      _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
-      _umschlagIds.add(_naechsteUmschlagId++);
+      _fuegeUmschlagEintragOhneSpeichernHinzu(eintrag);
     }
+  }
+
+  void _fuegeUmschlagEintragOhneSpeichernHinzu(UmschlagEintrag eintrag) {
+    _umschlaege.add(eintrag);
+    _umschlagBetragController.add(
+      TextEditingController(text: _formatiereEuroEingabe(eintrag.betragCent)),
+    );
+    _umschlagBezeichnungController.add(
+      TextEditingController(text: eintrag.bezeichnung),
+    );
+    final FocusNode betragFocusNode = FocusNode();
+    final FocusNode bezeichnungFocusNode = FocusNode();
+    _umschlagBetragFocusNode.add(betragFocusNode);
+    _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
+    _umschlagIds.add(_naechsteUmschlagId++);
+  }
+
+  void _sichereMindestensEinenUmschlag() {
+    if (_umschlaege.isNotEmpty) {
+      return;
+    }
+    _fuegeUmschlagEintragOhneSpeichernHinzu(
+      const UmschlagEintrag(bezeichnung: '', betragCent: 0),
+    );
   }
 
   void _synchronisiereControllerAusState() {
@@ -387,13 +403,19 @@ class _TagesabschlussSchritt1SeiteState
     final double stickyHeaderHeight = (_devToolsSichtbar && _devToolsOffen)
         ? _devToolsStickyHoehe
         : 0;
+    final bool istUmschlagFeld =
+        _umschlagBezeichnungFocusNode.contains(aktivesFeld) ||
+        _umschlagBetragFocusNode.contains(aktivesFeld);
+    final double umschlagBottomSafety = istUmschlagFeld ? 100 : 0;
 
     final double scrollOffset = _scrollController.position.pixels;
     final double viewportHeight = _scrollController.position.viewportDimension;
     final double visibleTop =
         scrollOffset + statusBarHeight + _appBarHoehe + stickyHeaderHeight + 8;
     final double visibleBottom =
-        scrollOffset - (keyboardInset + footerTotalHoehe + 8) + viewportHeight;
+        scrollOffset -
+        (keyboardInset + footerTotalHoehe + 8 + umschlagBottomSafety) +
+        viewportHeight;
 
     double? targetOffset;
     if (fieldTop < visibleTop) {
@@ -403,7 +425,7 @@ class _TagesabschlussSchritt1SeiteState
       targetOffset =
           fieldBottom -
           viewportHeight +
-          (keyboardInset + footerTotalHoehe + 16);
+          (keyboardInset + footerTotalHoehe + 16 + umschlagBottomSafety);
     }
     if (targetOffset == null) {
       return;
@@ -451,6 +473,7 @@ class _TagesabschlussSchritt1SeiteState
         );
       }
       _uebernehmeUmschlagEntwurf(umschlaege);
+      _sichereMindestensEinenUmschlag();
       _synchronisiereControllerAusState();
     });
   }
@@ -467,6 +490,7 @@ class _TagesabschlussSchritt1SeiteState
       _setzeKartenzahlungAnzahl(1);
       _kartenzahlungenCent[0] = 0;
       _leereUmschlagFelder();
+      _sichereMindestensEinenUmschlag();
       _synchronisiereControllerAusState();
     });
   }
@@ -518,6 +542,7 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _stueckzahlen[zeile.id] = geparsterWert;
     });
+    _triggerEnsureBeiEingabe(_stueckzahlFocusNode[zeile.id]!);
     _speichereEntwurf();
   }
 
@@ -525,25 +550,21 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _loseMuenzenNachArtCent[muenzartId] = _parseCentZiffern(wert);
     });
+    _triggerEnsureBeiEingabe(_loseMuenzenFocusNode[muenzartId]!);
     _speichereEntwurf();
   }
 
   void _umschlagHinzufuegen() {
     setState(() {
-      _umschlaege.add(const UmschlagEintrag(bezeichnung: '', betragCent: 0));
-      _umschlagBetragController.add(TextEditingController());
-      _umschlagBezeichnungController.add(TextEditingController());
-      final FocusNode betragFocusNode = FocusNode();
-      final FocusNode bezeichnungFocusNode = FocusNode();
-      _umschlagBetragFocusNode.add(betragFocusNode);
-      _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
-      _umschlagIds.add(_naechsteUmschlagId++);
+      _fuegeUmschlagEintragOhneSpeichernHinzu(
+        const UmschlagEintrag(bezeichnung: '', betragCent: 0),
+      );
     });
     _speichereEntwurf();
   }
 
   void _umschlagEntfernen(int index) {
-    if (index < 0 || index >= _umschlaege.length) {
+    if (index <= 0 || index >= _umschlaege.length) {
       return;
     }
 
@@ -576,6 +597,7 @@ class _TagesabschlussSchritt1SeiteState
         betragCent: _umschlaege[index].betragCent,
       );
     });
+    _triggerEnsureBeiEingabe(_umschlagBezeichnungFocusNode[index]);
     _speichereEntwurf();
   }
 
@@ -591,7 +613,32 @@ class _TagesabschlussSchritt1SeiteState
         betragCent: betragCent,
       );
     });
+    _triggerEnsureBeiEingabe(_umschlagBetragFocusNode[index]);
     _speichereEntwurf();
+  }
+
+  void _triggerEnsureBeiEingabe(FocusNode focusNode) {
+    if (!focusNode.hasFocus || _keyboardInset <= 0) {
+      return;
+    }
+    if (_ensureNachEingabeGeplant) {
+      return;
+    }
+    final Duration seitLetztemEnsure = DateTime.now().difference(
+      _letztesEnsureNachEingabe,
+    );
+    if (seitLetztemEnsure < const Duration(milliseconds: 120)) {
+      return;
+    }
+    _ensureNachEingabeGeplant = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _ensureNachEingabeGeplant = false;
+      if (!mounted) {
+        return;
+      }
+      _letztesEnsureNachEingabe = DateTime.now();
+      _ensureAktivesFeldSichtbar();
+    });
   }
 
   void _setzeKartenzahlungAnzahl(int anzahl) {
@@ -804,6 +851,7 @@ class _TagesabschlussSchritt1SeiteState
       _setzeKartenzahlungAnzahl(1);
       _kartenzahlungenCent[0] = 0;
       _leereUmschlagFelder();
+      _sichereMindestensEinenUmschlag();
       _synchronisiereControllerAusState();
     });
     await _speichereEntwurf();
@@ -1056,14 +1104,15 @@ class _TagesabschlussSchritt1SeiteState
           ),
           const SizedBox(height: 8),
         ],
-        Align(
-          alignment: Alignment.centerLeft,
-          child: OutlinedButton.icon(
-            onPressed: _umschlagHinzufuegen,
-            icon: const Icon(Icons.add),
-            label: const Text('Umschlag hinzufügen'),
+        if (_umschlaege.isNotEmpty && _umschlaege.first.betragCent > 0)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: _umschlagHinzufuegen,
+              icon: const Icon(Icons.add),
+              label: const Text('Umschlag hinzufügen'),
+            ),
           ),
-        ),
         Text(
           'Gesamtbetrag Umschläge: ${_formatiereEuro(_umschlagSummeCent)}',
           textAlign: TextAlign.right,
@@ -1220,6 +1269,7 @@ class _TagesabschlussSchritt1SeiteState
                       setState(() {
                         _kartenzahlungenCent[i] = _parseCentZiffern(wert);
                       });
+                      _triggerEnsureBeiEingabe(_kartenzahlungFocusNode[i]);
                     },
                     schriftgroesse: 15,
                     hinweisText: '0,00 €',
