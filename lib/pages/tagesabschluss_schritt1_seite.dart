@@ -10,6 +10,12 @@ import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_header_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_uebersicht_section.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
 
@@ -963,14 +969,8 @@ class _TagesabschlussSchritt1SeiteState
                   _weiterZuSchritt2();
                 },
               ),
-              const ListTile(
-                title: Text('3/4 · Finalisieren'),
-                enabled: false,
-              ),
-              const ListTile(
-                title: Text('4/4 · Schritt 4'),
-                enabled: false,
-              ),
+              const ListTile(title: Text('3/4 · Finalisieren'), enabled: false),
+              const ListTile(title: Text('4/4 · Schritt 4'), enabled: false),
             ],
           ),
         );
@@ -1239,9 +1239,8 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Widget _baueScheineGruppe() {
-    return _baueEinklappbarenBereich(
-      titel: 'Scheine (Anzahl)',
-      gesamtbetragCent: _summeGruppe(_scheine),
+    return Schritt1ScheineSection(
+      gesamtbetrag: _formatiereEuro(_summeGruppe(_scheine)),
       aufgeklappt: _scheineAufgeklappt,
       beimUmschalten: () {
         setState(() {
@@ -1253,9 +1252,8 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Widget _baueLoseMuenzenGruppe() {
-    return _baueEinklappbarenBereich(
-      titel: 'Lose Münzen (Beträge)',
-      gesamtbetragCent: _loseMuenzenGesamtCent,
+    return Schritt1MuenzenLoseSection(
+      gesamtbetrag: _formatiereEuro(_loseMuenzenGesamtCent),
       aufgeklappt: _loseMuenzenAufgeklappt,
       beimUmschalten: () {
         setState(() {
@@ -1267,9 +1265,8 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Widget _baueRollenGruppe() {
-    return _baueEinklappbarenBereich(
-      titel: 'Rollen (Anzahl)',
-      gesamtbetragCent: _summeGruppe(_rollenSichtbar),
+    return Schritt1MuenzenRollenSection(
+      gesamtbetrag: _formatiereRollenAnzeige(_summeGruppe(_rollenSichtbar)),
       aufgeklappt: _rollenAufgeklappt,
       beimUmschalten: () {
         setState(() {
@@ -1277,7 +1274,6 @@ class _TagesabschlussSchritt1SeiteState
         });
       },
       inhalt: _baueRollenInhalt(),
-      gesamtformatierer: _formatiereRollenAnzeige,
     );
   }
 
@@ -1425,66 +1421,13 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Widget _baueZusammenfassung() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const Text(
-              'Zusammenfassung',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            _baueZusammenfassungsZeile(
-              'Kassenbestand gesamt',
-              _formatiereEuro(_kassenbestandGesamtCent),
-            ),
-            _baueZusammenfassungsZeile(
-              'Wechselgeld-Sollwert',
-              _formatiereEuro(_wechselgeldSollwertCent),
-            ),
-            _baueZusammenfassungsZeile(
-              'Barumsatz (bereinigt)',
-              _formatiereEuro(_barumsatzBereinigtCent),
-              hervorheben: true,
-            ),
-            _baueZusammenfassungsZeile(
-              'Kartenzahlungen',
-              _formatiereEuro(_kartenzahlungenSummeCent),
-            ),
-            _baueZusammenfassungsZeile(
-              'Gesamt inkl. Karte',
-              _formatiereEuro(_gesamtUmsatzMitKarteCent),
-              hervorheben: true,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _baueZusammenfassungsZeile(
-    String label,
-    String wert, {
-    bool hervorheben = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: <Widget>[
-          Expanded(child: Text(label)),
-          Text(
-            wert,
-            style: TextStyle(
-              fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w500,
-              color: hervorheben && _barumsatzBereinigtCent < 0
-                  ? Colors.red
-                  : null,
-            ),
-          ),
-        ],
-      ),
+    return Schritt1UebersichtSection(
+      kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
+      wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
+      barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
+      kartenzahlungen: _formatiereEuro(_kartenzahlungenSummeCent),
+      gesamtInklKarte: _formatiereEuro(_gesamtUmsatzMitKarteCent),
+      barumsatzNegativ: _barumsatzBereinigtCent < 0,
     );
   }
 
@@ -1573,23 +1516,10 @@ class _TagesabschlussSchritt1SeiteState
         foregroundColor: Colors.white,
         toolbarHeight: 48,
         titleSpacing: 8,
-        title: InkWell(
-          borderRadius: BorderRadius.circular(8),
+        title: Schritt1HeaderSection(
           onTap: _zeigeSchrittAuswahlBottomSheet,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(vertical: 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text('Tagesabschluss'),
-                Text(
-                  '1/4 · Bargeldzählung',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-          ),
+          titel: 'Tagesabschluss',
+          untertitel: '1/4 · Bargeldzählung',
         ),
         actions: <Widget>[
           if (_devToolsSichtbar)
@@ -1684,8 +1614,11 @@ class _TagesabschlussSchritt1SeiteState
                             _baueScheineGruppe(),
                             _baueLoseMuenzenGruppe(),
                             _baueRollenGruppe(),
-                            _baueKartenzahlungenGruppe(),
-                            _baueUmschlagGruppe(),
+                            Schritt1HinweiseSection(
+                              kartenzahlungenInhalt:
+                                  _baueKartenzahlungenGruppe(),
+                              umschlaegeInhalt: _baueUmschlagGruppe(),
+                            ),
                             _baueZusammenfassung(),
                           ]),
                         ),
