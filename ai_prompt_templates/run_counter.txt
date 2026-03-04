@@ -1,0 +1,33 @@
+RUN COUNTER – Kino-App
+
+Zweck
+Diese Datei definiert die nächste Run-Nummer für Codex-Runs.
+Sie verhindert doppelte oder übersprungene Run-Nummern.
+
+Regel
+- Nach jedem erfolgreichen Run wird die Nummer hier um +1 erhöht.
+- Diese Datei ist die einzige Quelle für die nächste Run-Nummer.
+
+Aktueller Stand
+Letzter abgeschlossener Run:
+Run 40
+
+Nächster Run:
+Run 41
+
+Workflow
+1. Run durchführen
+2. Commit + Push
+3. Diese Datei aktualisieren:
+   - "Letzter abgeschlossener Run" erhöhen
+   - "Nächster Run" erhöhen
+
+Beispiel
+
+Nach Abschluss von Run 41:
+
+Letzter abgeschlossener Run:
+Run 41
+
+Nächster Run:
+Run 42

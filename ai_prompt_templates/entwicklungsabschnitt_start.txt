@@ -1,4 +1,3 @@
-# entwicklungsabschnitt_start.txt
 # Zweck:
 # - "Arbeitsabschnitt starten": kurzer Reset, damit wir wieder in den Flow kommen.
 # - Wird am Anfang eines neuen Chats oder nach einer Pause verwendet.
@@ -8,6 +7,11 @@ Entwicklungsabschnitt – Start
 
 Projekt:
 - Kino-App (Tagesabschluss), NICHT BudzBunny.
+- Repository: kino_bar_app
+- Branch: master
+
+Git-Stand (optional, aber empfohlen):
+- Letzter Commit: <git log -1 --oneline>
 
 Aktueller Stand (kurz):
 - <3–6 Bulletpoints>
@@ -19,11 +23,15 @@ Nächster Mini-Schritt:
 - <1 konkretes Ziel, klein testbar>
 
 Run-Nummer:
-- Nächster Run: <NUMMER>  (fortlaufend)
+- Quelle: ai_prompt_templates/run_counter.txt
+- Nächster Run: <NUMMER>  (muss der Zeile "Nächster Run:" entsprechen)
 
 Arbeitsmodus:
 - Kleine Prompts, nach jedem Run testen.
 - Nach bestandenem Test: Commit + Push durch Codex gemäß Template.
 
 Startfrage an mich:
-- “Bist du bereit für Run <NUMMER>?”  (dann antworte ich mit: go)
+- “Bist du bereit für Run <NUMMER>?”
+
+Antwort:
+- go

@@ -1,4 +1,3 @@
-# codex_run_standard.txt
 # Zweck:
 # - Standard-Template für normale Änderungen (UX, Logik, kleine Refactors im Zielbereich).
 # - Wird für 80–90% der Codex-Runs verwendet.
@@ -6,7 +5,14 @@
 
 Codex Run <NUMMER>: <Kurzbeschreibung>
 
+WICHTIG (Run-Nummer):
+- Die Run-Nummer MUSS der Zeile "Nächster Run:" aus ai_prompt_templates/run_counter.txt entsprechen.
+- Wenn das nicht passt: STOPP und Rückfrage.
+
 Kontext:
+- Projekt: Kino-App (Tagesabschluss)
+- Repository: kino_bar_app
+- Branch: master
 - Aktueller Stand in 3–6 Stichpunkten.
 - Betroffene Screens/Dateien: <Dateien/Ordner>
 - Was existiert bereits? <kurz>
@@ -47,6 +53,8 @@ Erwartetes Ergebnis:
 Abschluss (deine Antwort):
 - Liste der tatsächlich geänderten Dateien.
 - Kurzer Hinweis, wie ich testen kann (3 Bulletpoints).
+- flutter analyze muss sauber sein.
+- flutter test muss grün sein (falls Tests vorhanden).
 
 GIT (verbindlich – von dir auszuführen):
 - Führe die Git-Befehle selbst aus (nicht nur vorschlagen).

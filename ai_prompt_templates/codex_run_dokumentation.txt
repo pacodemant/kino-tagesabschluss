@@ -1,4 +1,3 @@
-# codex_run_dokumentation.txt
 # Zweck:
 # - Kommentar-/Dokumentationsarbeiten ohne Code-Verhalten zu ändern.
 # - Wird genutzt für: Code-Kommentare, kurze README-Abschnitte, Hinweise für spätere Wartung.
@@ -7,6 +6,8 @@
 Codex Run <NUMMER>: <Kurzbeschreibung Doku/Kommentare>
 
 Kontext:
+- Projekt: Kino-App (Tagesabschluss)
+- Branch: master
 - Welcher Bereich soll besser verständlich werden? <Dateien/Ordner>
 - Was ist aktuell unklar? <kurz>
 
