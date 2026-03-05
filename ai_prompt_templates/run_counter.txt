@@ -4,30 +4,23 @@ Zweck
 Diese Datei definiert die nächste Run-Nummer für Codex-Runs.
 Sie verhindert doppelte oder übersprungene Run-Nummern.
 
-Regel
+Regeln
 - Nach jedem erfolgreichen Run wird die Nummer hier um +1 erhöht.
 - Diese Datei ist die einzige Quelle für die nächste Run-Nummer.
+- Die Zeile "Nächster Run:" muss immer in einer einzigen Zeile mit der Run-Nummer stehen.
 
 Aktueller Stand
-Letzter abgeschlossener Run:
-Run 40
-
-Nächster Run:
-Run 41
+Letzter abgeschlossener Run: Run 40
+Nächster Run: Run 41
 
 Workflow
 1. Run durchführen
 2. Commit + Push
 3. Diese Datei aktualisieren:
-   - "Letzter abgeschlossener Run" erhöhen
-   - "Nächster Run" erhöhen
+   Letzter abgeschlossener Run: Run <aktuell>
+   Nächster Run: Run <aktuell +1>
 
-Beispiel
+Beispiel nach Abschluss von Run 41
 
-Nach Abschluss von Run 41:
-
-Letzter abgeschlossener Run:
-Run 41
-
-Nächster Run:
-Run 42
+Letzter abgeschlossener Run: Run 41
+Nächster Run: Run 42
