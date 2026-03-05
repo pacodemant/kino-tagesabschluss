@@ -68,3 +68,15 @@ Reihenfolge:
 3) git commit -m "Run <NUMMER>: <Kurzbeschreibung>"
 4) git status
 5) git push
+
+Nach erfolgreichem Commit:
+
+1. Öffne ai_prompt_templates/run_counter.txt
+2. Erhöhe:
+   Letzter abgeschlossener Run → aktuelle Run-Nummer
+   Nächster Run → aktuelle Run-Nummer +1
+3. Commit:
+
+git add ai_prompt_templates/run_counter.txt
+git commit -m "Update run counter after Run <NUMMER>"
+git push
