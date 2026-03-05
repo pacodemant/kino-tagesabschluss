@@ -10,8 +10,8 @@ Regeln
 - Die Zeile "Nächster Run:" muss immer in einer einzigen Zeile mit der Run-Nummer stehen.
 
 Aktueller Stand
-Letzter abgeschlossener Run: Run 40
-Nächster Run: Run 41
+Letzter abgeschlossener Run: Run 41
+Nächster Run: Run 42
 
 Workflow
 1. Run durchführen
