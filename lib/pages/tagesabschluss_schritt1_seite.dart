@@ -10,7 +10,6 @@ import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_header_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
@@ -18,6 +17,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_sch
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_uebersicht_section.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 
 class TagesabschlussSchritt1Argumente {
   const TagesabschlussSchritt1Argumente({
@@ -1511,16 +1511,10 @@ class _TagesabschlussSchritt1SeiteState
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
-        toolbarHeight: 48,
-        titleSpacing: 8,
-        title: Schritt1HeaderSection(
-          onTap: _zeigeSchrittAuswahlBottomSheet,
-          titel: 'Tagesabschluss',
-          untertitel: '1/4 · Bargeldzählung',
-        ),
+      appBar: TagesabschlussHeader(
+        stepLabel: '1/4',
+        title: 'Bargeldzählung',
+        onTap: _zeigeSchrittAuswahlBottomSheet,
         actions: <Widget>[
           if (_devToolsSichtbar)
             IconButton(
