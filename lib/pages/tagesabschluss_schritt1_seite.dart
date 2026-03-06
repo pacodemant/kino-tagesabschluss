@@ -14,6 +14,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hin
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_uebersicht_section.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
@@ -1099,99 +1100,6 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueUmschlagInhalt() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        if (_umschlaege.isEmpty) const Text('Noch keine Umschläge erfasst.'),
-        for (int i = 0; i < _umschlaege.length; i++) ...<Widget>[
-          Builder(
-            builder: (BuildContext _) {
-              final FocusNode bezeichnungFocusNode =
-                  _umschlagBezeichnungFocusNode[i];
-              final FocusNode betragFocusNode = _umschlagBetragFocusNode[i];
-              return Row(
-                key: ValueKey<int>(_umschlagIds[i]),
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                    child: _baueFeldMitKey(
-                      focusNode: bezeichnungFocusNode,
-                      child: TextField(
-                        controller: _umschlagBezeichnungController[i],
-                        focusNode: bezeichnungFocusNode,
-                        style: const TextStyle(fontSize: 15),
-                        textInputAction: _textInputActionFuerSchritt1(
-                          bezeichnungFocusNode,
-                        ),
-                        decoration: const InputDecoration(
-                          hintText: 'Label (optional)',
-                          hintStyle: TextStyle(fontSize: 15),
-                          border: OutlineInputBorder(),
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
-                          ),
-                        ),
-                        onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
-                          bezeichnungFocusNode,
-                        ),
-                        onChanged: (String wert) =>
-                            _beiUmschlagBezeichnungGeaendert(i, wert),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    width: 132,
-                    child: _baueFeldMitKey(
-                      focusNode: betragFocusNode,
-                      child: BetragCentEingabefeld(
-                        textController: _umschlagBetragController[i],
-                        focusNode: betragFocusNode,
-                        textInputAction: _textInputActionFuerSchritt1(
-                          betragFocusNode,
-                        ),
-                        onSubmitted: (_) =>
-                            _beiEingabeAbgeschlossenSchritt1(betragFocusNode),
-                        onChanged: (String wert) =>
-                            _beiUmschlagBetragGeaendert(i, wert),
-                        schriftgroesse: 14,
-                        hinweisText: '0,00 €',
-                        labelText: 'Betrag €',
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => _umschlagEntfernen(i),
-                    icon: const Icon(Icons.delete_outline),
-                    tooltip: 'Umschlag entfernen',
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 8),
-        ],
-        if (_umschlaege.isNotEmpty && _umschlaege.first.betragCent > 0)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
-              onPressed: _umschlagHinzufuegen,
-              icon: const Icon(Icons.add),
-              label: const Text('Umschlag hinzufügen'),
-            ),
-          ),
-        Text(
-          'Gesamtbetrag Umschläge: ${_formatiereEuro(_umschlagSummeCent)}',
-          textAlign: TextAlign.right,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ],
-    );
-  }
-
   Widget _baueEinklappbarenBereich({
     required String titel,
     required int gesamtbetragCent,
@@ -1332,7 +1240,23 @@ class _TagesabschlussSchritt1SeiteState
           _umschlaegeAufgeklappt = !_umschlaegeAufgeklappt;
         });
       },
-      inhalt: _baueUmschlagInhalt(),
+      inhalt: Schritt1UmschlaegeSection(
+        umschlaege: _umschlaege,
+        umschlagIds: _umschlagIds,
+        umschlagBezeichnungController: _umschlagBezeichnungController,
+        umschlagBetragController: _umschlagBetragController,
+        umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
+        umschlagBetragFocusNode: _umschlagBetragFocusNode,
+        baueFeldMitKey: _baueFeldMitKey,
+        textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
+        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
+        beiUmschlagBezeichnungGeaendert: _beiUmschlagBezeichnungGeaendert,
+        beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
+        umschlagEntfernen: _umschlagEntfernen,
+        umschlagHinzufuegen: _umschlagHinzufuegen,
+        formatiereEuro: _formatiereEuro,
+        umschlagSummeCent: _umschlagSummeCent,
+      ),
     );
   }
 
