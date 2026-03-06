@@ -15,6 +15,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_mue
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_footer.dart'
     as schritt1_footer;
@@ -82,6 +83,7 @@ class _TagesabschlussSchritt1SeiteState
       const KassenstandEntwurfUsecase();
   final Schritt1StateController _stateController =
       const Schritt1StateController();
+  late final Schritt1InitialisierungHelper _initialisierungHelper;
 
   final Map<String, int> _stueckzahlen = <String, int>{};
   final Map<String, TextEditingController> _stueckzahlController =
@@ -141,6 +143,25 @@ class _TagesabschlussSchritt1SeiteState
   @override
   void initState() {
     super.initState();
+    _initialisierungHelper = Schritt1InitialisierungHelper(
+      stueckzahlen: _stueckzahlen,
+      loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
+      umschlaege: _umschlaege,
+      umschlagBetragController: _umschlagBetragController,
+      umschlagBezeichnungController: _umschlagBezeichnungController,
+      umschlagBetragFocusNode: _umschlagBetragFocusNode,
+      umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
+      umschlagIds: _umschlagIds,
+      kartenzahlungController: _kartenzahlungController,
+      kartenzahlungenCent: _kartenzahlungenCent,
+      stueckzahlController: _stueckzahlController,
+      loseMuenzenController: _loseMuenzenController,
+      alleStueckzahlZeilen: _alleStueckzahlZeilen,
+      loseMuenzarten: _loseMuenzarten,
+      formatiereEuroEingabe: _formatiereEuroEingabe,
+      entferneFeldKey: _scrollHelper.entferneFeldKey,
+      naechsteUmschlagId: () => _naechsteUmschlagId++,
+    );
     WidgetsBinding.instance.addObserver(this);
     _keyboardInset = _leseKeyboardInset();
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
@@ -226,25 +247,11 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _ladeInitialeDaten() async {
-    final int geladenerWechselgeldSollwert = await _kassenstandEntwurfUsecase
-        .ladeWechselgeldSollwertCent(widget.kinoId);
-
-    final KassenstandEntwurf? entwurf = await _kassenstandEntwurfUsecase
-        .ladeHeutigenEntwurf(widget.kinoId);
-
-    if (entwurf != null) {
-      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
-        _stueckzahlen[zeile.id] = entwurf.stueckzahlen[zeile.id] ?? 0;
-      }
-      for (final Kassenzeile zeile in _loseMuenzarten) {
-        _loseMuenzenNachArtCent[zeile.id] =
-            entwurf.loseMuenzenNachArtCent[zeile.id] ?? 0;
-      }
-      _uebernehmeUmschlagEntwurf(entwurf.umschlaege);
-    }
-    _sichereMindestensEinenUmschlag();
-
-    _synchronisiereControllerAusState();
+    final int geladenerWechselgeldSollwert = await _initialisierungHelper
+        .ladeInitialeDaten(
+          usecase: _kassenstandEntwurfUsecase,
+          kinoId: widget.kinoId,
+        );
 
     if (!mounted) {
       return;
@@ -256,99 +263,19 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
-  void _leereUmschlagFelder() {
-    for (final TextEditingController controller in _umschlagBetragController) {
-      controller.dispose();
-    }
-    for (final TextEditingController controller
-        in _umschlagBezeichnungController) {
-      controller.dispose();
-    }
-    for (final FocusNode focusNode in _umschlagBetragFocusNode) {
-      _scrollHelper.entferneFeldKey(focusNode);
-      focusNode.dispose();
-    }
-    for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
-      _scrollHelper.entferneFeldKey(focusNode);
-      focusNode.dispose();
-    }
-    _umschlaege.clear();
-    _umschlagBetragController.clear();
-    _umschlagBezeichnungController.clear();
-    _umschlagBetragFocusNode.clear();
-    _umschlagBezeichnungFocusNode.clear();
-    _umschlagIds.clear();
-  }
+  void _leereUmschlagFelder() => _initialisierungHelper.leereUmschlagFelder();
 
-  void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) {
-    _leereUmschlagFelder();
-    for (final UmschlagEintrag eintrag in umschlagEntwurf) {
-      _fuegeUmschlagEintragOhneSpeichernHinzu(eintrag);
-    }
-  }
+  void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) =>
+      _initialisierungHelper.uebernehmeUmschlagEntwurf(umschlagEntwurf);
 
-  void _fuegeUmschlagEintragOhneSpeichernHinzu(UmschlagEintrag eintrag) {
-    _umschlaege.add(eintrag);
-    _umschlagBetragController.add(
-      TextEditingController(text: _formatiereEuroEingabe(eintrag.betragCent)),
-    );
-    _umschlagBezeichnungController.add(
-      TextEditingController(text: eintrag.bezeichnung),
-    );
-    final FocusNode betragFocusNode = FocusNode();
-    final FocusNode bezeichnungFocusNode = FocusNode();
-    _umschlagBetragFocusNode.add(betragFocusNode);
-    _umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
-    _umschlagIds.add(_naechsteUmschlagId++);
-  }
+  void _fuegeUmschlagEintragOhneSpeichernHinzu(UmschlagEintrag eintrag) =>
+      _initialisierungHelper.fuegeUmschlagEintragOhneSpeichernHinzu(eintrag);
 
-  void _sichereMindestensEinenUmschlag() {
-    if (_umschlaege.isNotEmpty) {
-      return;
-    }
-    _fuegeUmschlagEintragOhneSpeichernHinzu(
-      const UmschlagEintrag(bezeichnung: '', betragCent: 0),
-    );
-  }
+  void _sichereMindestensEinenUmschlag() =>
+      _initialisierungHelper.sichereMindestensEinenUmschlag();
 
-  void _synchronisiereControllerAusState() {
-    for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
-      final int stueckzahl = _stueckzahlen[zeile.id] ?? 0;
-      final TextEditingController controller = _stueckzahlController[zeile.id]!;
-      final String naechsterText = stueckzahl == 0 ? '' : stueckzahl.toString();
-      if (controller.text != naechsterText) {
-        _setzeControllerText(controller, naechsterText);
-      }
-    }
-
-    for (final Kassenzeile zeile in _loseMuenzarten) {
-      final int betragCent = _loseMuenzenNachArtCent[zeile.id] ?? 0;
-      final TextEditingController controller =
-          _loseMuenzenController[zeile.id]!;
-      final String text = betragCent == 0
-          ? ''
-          : _formatiereEuroEingabe(betragCent);
-      if (controller.text != text) {
-        _setzeControllerText(controller, text);
-      }
-    }
-
-    for (int i = 0; i < _kartenzahlungController.length; i++) {
-      final String text = _kartenzahlungenCent[i] == 0
-          ? ''
-          : _formatiereEuroEingabe(_kartenzahlungenCent[i]);
-      if (_kartenzahlungController[i].text != text) {
-        _setzeControllerText(_kartenzahlungController[i], text);
-      }
-    }
-  }
-
-  void _setzeControllerText(TextEditingController controller, String text) {
-    controller.value = TextEditingValue(
-      text: text,
-      selection: TextSelection.collapsed(offset: text.length),
-    );
-  }
+  void _synchronisiereControllerAusState() =>
+      _initialisierungHelper.synchronisiereControllerAusState();
 
   void _beiGlobalemFokuswechsel() {
     _scrollHelper.beiGlobalemFokuswechsel(
