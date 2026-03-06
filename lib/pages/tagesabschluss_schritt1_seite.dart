@@ -678,6 +678,61 @@ class _TagesabschlussSchritt1SeiteState
   void _fokussiereTextfeld(FocusNode fokusNode) =>
       _schritt1FokussiereTextfeld(this, fokusNode);
 
+  // Oeffnet die passende Section fuer das Ziel-Feld, falls sie zugeklappt ist.
+  void _oeffneSectionFuerFokusfeld(FocusNode fokusNode) {
+    final bool istScheineFeld = _scheine.any(
+      (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
+    );
+    final bool istLoseMuenzenFeld = _loseMuenzarten.any(
+      (Kassenzeile zeile) =>
+          identical(_loseMuenzenFocusNode[zeile.id], fokusNode),
+    );
+    final bool istRollenFeld = _rollenSichtbar.any(
+      (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
+    );
+    final bool istKartenzahlungsFeld = _kartenzahlungFocusNode.any(
+      (FocusNode node) => identical(node, fokusNode),
+    );
+    final bool istUmschlagFeld =
+        _umschlagBezeichnungFocusNode.any(
+          (FocusNode node) => identical(node, fokusNode),
+        ) ||
+        _umschlagBetragFocusNode.any(
+          (FocusNode node) => identical(node, fokusNode),
+        );
+
+    bool geaendert = false;
+    if (istScheineFeld && !_scheineAufgeklappt) {
+      geaendert = true;
+    } else if (istLoseMuenzenFeld && !_loseMuenzenAufgeklappt) {
+      geaendert = true;
+    } else if (istRollenFeld && !_rollenAufgeklappt) {
+      geaendert = true;
+    } else if (istKartenzahlungsFeld && !_kartenzahlungenAufgeklappt) {
+      geaendert = true;
+    } else if (istUmschlagFeld && !_umschlaegeAufgeklappt) {
+      geaendert = true;
+    }
+
+    if (!geaendert) {
+      return;
+    }
+
+    setState(() {
+      if (istScheineFeld) {
+        _scheineAufgeklappt = true;
+      } else if (istLoseMuenzenFeld) {
+        _loseMuenzenAufgeklappt = true;
+      } else if (istRollenFeld) {
+        _rollenAufgeklappt = true;
+      } else if (istKartenzahlungsFeld) {
+        _kartenzahlungenAufgeklappt = true;
+      } else if (istUmschlagFeld) {
+        _umschlaegeAufgeklappt = true;
+      }
+    });
+  }
+
   int _summeGruppe(List<Kassenzeile> zeilen) =>
       _schritt1SummeGruppe(_stueckzahlen, zeilen);
 

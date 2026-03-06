@@ -251,6 +251,7 @@ void _schritt1FokussiereTextfeld(
   _TagesabschlussSchritt1SeiteState state,
   FocusNode fokusNode,
 ) {
+  state._oeffneSectionFuerFokusfeld(fokusNode);
   FocusScope.of(state.context).requestFocus(fokusNode);
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
     SystemChannels.textInput.invokeMethod<void>('TextInput.show');
