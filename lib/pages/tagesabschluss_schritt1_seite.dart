@@ -8,6 +8,7 @@ import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
@@ -83,6 +84,8 @@ class _TagesabschlussSchritt1SeiteState
       const KassenstandEntwurfUsecase();
   final Schritt1StateController _stateController =
       const Schritt1StateController();
+  final Schritt1OrchestrierungHelper _orchestrierungHelper =
+      const Schritt1OrchestrierungHelper();
   late final Schritt1InitialisierungHelper _initialisierungHelper;
 
   final Map<String, int> _stueckzahlen = <String, int>{};
@@ -323,85 +326,45 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  int _zufallszahl(int min, int max) {
-    return min + _zufall.nextInt(max - min + 1);
-  }
-
   void _autoFillDev() {
     setState(() {
-      for (final Kassenzeile zeile in _scheine) {
-        _stueckzahlen[zeile.id] = _zufallszahl(0, 20);
-      }
-      for (final Kassenzeile zeile in _rollenSichtbar) {
-        _stueckzahlen[zeile.id] = _zufallszahl(0, 3);
-      }
-      for (final Kassenzeile zeile in _loseMuenzarten) {
-        _loseMuenzenNachArtCent[zeile.id] = _zufallszahl(0, 3000);
-      }
-      _setzeKartenzahlungAnzahl(1);
-      _kartenzahlungenCent[0] = _zufallszahl(0, 250000);
-
-      final int umschlagAnzahl = _zufallszahl(1, 4);
-      final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
-      for (int i = 0; i < umschlagAnzahl; i++) {
-        umschlaege.add(
-          UmschlagEintrag(
-            bezeichnung: 'Umschlag ${i + 1}',
-            betragCent: _zufallszahl(0, 50000),
-          ),
-        );
-      }
-      _uebernehmeUmschlagEntwurf(umschlaege);
-      _sichereMindestensEinenUmschlag();
-      _synchronisiereControllerAusState();
+      _orchestrierungHelper.autoFillDev(
+        zufall: _zufall,
+        scheine: _scheine,
+        rollenSichtbar: _rollenSichtbar,
+        loseMuenzarten: _loseMuenzarten,
+        stueckzahlen: _stueckzahlen,
+        loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
+        setzeKartenzahlungAnzahl: _setzeKartenzahlungAnzahl,
+        kartenzahlungenCent: _kartenzahlungenCent,
+        uebernehmeUmschlagEntwurf: _uebernehmeUmschlagEntwurf,
+        sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
+        synchronisiereControllerAusState: _synchronisiereControllerAusState,
+      );
     });
   }
 
   void _leereAlleFelderDev() {
     FocusScope.of(context).unfocus();
     setState(() {
-      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
-        _stueckzahlen[zeile.id] = 0;
-      }
-      for (final Kassenzeile zeile in _loseMuenzarten) {
-        _loseMuenzenNachArtCent[zeile.id] = 0;
-      }
-      _setzeKartenzahlungAnzahl(1);
-      _kartenzahlungenCent[0] = 0;
-      _leereUmschlagFelder();
-      _sichereMindestensEinenUmschlag();
-      _synchronisiereControllerAusState();
+      _orchestrierungHelper.leereAlleFelder(
+        alleStueckzahlZeilen: _alleStueckzahlZeilen,
+        loseMuenzarten: _loseMuenzarten,
+        stueckzahlen: _stueckzahlen,
+        loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
+        setzeKartenzahlungAnzahl: _setzeKartenzahlungAnzahl,
+        kartenzahlungenCent: _kartenzahlungenCent,
+        leereUmschlagFelder: _leereUmschlagFelder,
+        sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
+        synchronisiereControllerAusState: _synchronisiereControllerAusState,
+      );
     });
   }
 
-  Widget _baueDevToolsPanel() {
-    return Card(
-      color: const Color(0xFFFFF8E1),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: <Widget>[
-            const Expanded(
-              child: Text(
-                'DEV-Tools (nur Debug/Profile)',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-            OutlinedButton(
-              onPressed: _autoFillDev,
-              child: const Text('Auto-Fill'),
-            ),
-            const SizedBox(width: 8),
-            OutlinedButton(
-              onPressed: _leereAlleFelderDev,
-              child: const Text('Alles leeren'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _baueDevToolsPanel() => _orchestrierungHelper.baueDevToolsPanel(
+    autoFillDev: _autoFillDev,
+    leereAlleFelderDev: _leereAlleFelderDev,
+  );
 
   Future<void> _speichereEntwurf() async {
     final KassenstandEntwurf entwurf = KassenstandEntwurf(
@@ -758,134 +721,57 @@ class _TagesabschlussSchritt1SeiteState
       _stateController.formatiereEuroEingabe(cent);
 
   Future<void> _bestaetigeUndLeereEingaben() async {
-    final bool? bestaetigt = await showDialog<bool>(
+    await _orchestrierungHelper.bestaetigeUndLeereEingaben(
       context: context,
-      builder: (BuildContext dialogKontext) {
-        return AlertDialog(
-          title: const Text('Eingaben wirklich löschen?'),
-          content: const Text(
-            'Alle Eingaben in Schritt 1 werden zurückgesetzt.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(false),
-              child: const Text('Abbrechen'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(true),
-              child: const Text('Löschen'),
-            ),
-          ],
+      isMounted: () => mounted,
+      unfocus: () => FocusScope.of(context).unfocus(),
+      mutateState: setState,
+      resetStateData: () {
+        _orchestrierungHelper.leereAlleFelder(
+          alleStueckzahlZeilen: _alleStueckzahlZeilen,
+          loseMuenzarten: _loseMuenzarten,
+          stueckzahlen: _stueckzahlen,
+          loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
+          setzeKartenzahlungAnzahl: _setzeKartenzahlungAnzahl,
+          kartenzahlungenCent: _kartenzahlungenCent,
+          leereUmschlagFelder: _leereUmschlagFelder,
+          sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
+          synchronisiereControllerAusState: _synchronisiereControllerAusState,
         );
       },
+      speichereEntwurf: _speichereEntwurf,
     );
-
-    if (bestaetigt != true) {
-      return;
-    }
-    if (!mounted) {
-      return;
-    }
-
-    FocusScope.of(context).unfocus();
-    setState(() {
-      for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
-        _stueckzahlen[zeile.id] = 0;
-      }
-      for (final Kassenzeile zeile in _loseMuenzarten) {
-        _loseMuenzenNachArtCent[zeile.id] = 0;
-      }
-      _setzeKartenzahlungAnzahl(1);
-      _kartenzahlungenCent[0] = 0;
-      _leereUmschlagFelder();
-      _sichereMindestensEinenUmschlag();
-      _synchronisiereControllerAusState();
-    });
-    await _speichereEntwurf();
   }
 
   Future<void> _weiterZuSchritt2() async {
-    if (_kassenstandEntwurfUsecase.bestaetigungNoetigFuerNullbetrag(
-      _kassenbestandGesamtCent,
-    )) {
-      final bool? bestaetigt = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('0 € übernehmen?'),
-            content: const Text(
-              'Es wurde noch kein Betrag erfasst. Willst du mit 0 € fortfahren?',
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Abbrechen'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Fortfahren'),
-              ),
-            ],
-          );
-        },
-      );
-
-      if (bestaetigt != true) {
-        return;
-      }
-    }
-
-    await _speichereEntwurf();
-    if (!mounted) {
-      return;
-    }
-
-    Navigator.of(context).pushNamed(
-      TagesabschlussSchritt2Seite.routenName,
-      arguments: TagesabschlussSchritt2Argumente(
-        kinoId: widget.kinoId,
-        kinoName: widget.kinoName,
-        scheineCent: _summeGruppe(_scheine),
-        loseMuenzenCent: _loseMuenzenGesamtCent,
-        rollenCent: _summeGruppe(_rollenSichtbar),
-        umschlaegeCent: _umschlagSummeCent,
-        wechselgeldSollwertCent: _wechselgeldSollwertCent,
-        barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
-      ),
+    await _orchestrierungHelper.weiterZuSchritt2(
+      context: context,
+      usecase: _kassenstandEntwurfUsecase,
+      kassenbestandGesamtCent: _kassenbestandGesamtCent,
+      speichereEntwurf: _speichereEntwurf,
+      isMounted: () => mounted,
+      navigiereZuSchritt2: () {
+        Navigator.of(context).pushNamed(
+          TagesabschlussSchritt2Seite.routenName,
+          arguments: TagesabschlussSchritt2Argumente(
+            kinoId: widget.kinoId,
+            kinoName: widget.kinoName,
+            scheineCent: _summeGruppe(_scheine),
+            loseMuenzenCent: _loseMuenzenGesamtCent,
+            rollenCent: _summeGruppe(_rollenSichtbar),
+            umschlaegeCent: _umschlagSummeCent,
+            wechselgeldSollwertCent: _wechselgeldSollwertCent,
+            barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
+          ),
+        );
+      },
     );
   }
 
   Future<void> _zeigeSchrittAuswahlBottomSheet() async {
-    await showModalBottomSheet<void>(
+    await _orchestrierungHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
-      builder: (BuildContext sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.check_circle),
-                title: const Text(
-                  '1/4 · Bargeldzählung',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                subtitle: const Text('Aktueller Schritt'),
-                enabled: false,
-              ),
-              ListTile(
-                leading: const Icon(Icons.arrow_forward),
-                title: const Text('2/4 · Einnahmen/Abschluss'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  _weiterZuSchritt2();
-                },
-              ),
-              const ListTile(title: Text('3/4 · Finalisieren'), enabled: false),
-              const ListTile(title: Text('4/4 · Schritt 4'), enabled: false),
-            ],
-          ),
-        );
-      },
+      weiterZuSchritt2: _weiterZuSchritt2,
     );
   }
 
