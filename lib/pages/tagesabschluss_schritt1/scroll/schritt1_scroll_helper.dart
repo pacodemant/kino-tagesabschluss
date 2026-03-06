@@ -8,6 +8,12 @@ class Schritt1ScrollHelper {
   FocusNode? _letztesAktivesFeld;
   bool _ensureNachEingabeGeplant = false;
   DateTime _letztesEnsureNachEingabe = DateTime.fromMillisecondsSinceEpoch(0);
+  bool _komfortablesScrollZielEinmalig = false;
+
+  // Aktiviert fuer den naechsten Ensure-Lauf eine bequemere Zielposition.
+  void markiereProgrammatischenFokuswechsel() {
+    _komfortablesScrollZielEinmalig = true;
+  }
 
   double leseKeyboardInset() {
     final ui.FlutterView view =
@@ -137,13 +143,24 @@ class Schritt1ScrollHelper {
         scrollOffset + statusBarHeight + appBarHoehe + stickyHeaderHeight + 8;
     final double visibleBottom =
         scrollOffset - (keyboardInset + footerTotalHoehe + 8 + bottomSafety) + viewportHeight;
+    final bool nutzeKomfortablesZiel = _komfortablesScrollZielEinmalig;
+    _komfortablesScrollZielEinmalig = false;
 
     double? targetOffset;
     if (fieldTop < visibleTop) {
       targetOffset = fieldTop - (statusBarHeight + appBarHoehe + stickyHeaderHeight + 8);
-    } else if (fieldBottom > visibleBottom) {
-      targetOffset =
-          fieldBottom - viewportHeight + (keyboardInset + footerTotalHoehe + 16 + bottomSafety);
+    } else {
+      if (nutzeKomfortablesZiel) {
+        final double feldMitte = fieldTop + (renderObject.size.height / 2);
+        final double zielMitte = visibleTop + ((visibleBottom - visibleTop) * 0.56);
+        if (feldMitte > zielMitte) {
+          targetOffset = scrollOffset + (feldMitte - zielMitte);
+        }
+      }
+      if (targetOffset == null && fieldBottom > visibleBottom) {
+        targetOffset =
+            fieldBottom - viewportHeight + (keyboardInset + footerTotalHoehe + 16 + bottomSafety);
+      }
     }
     if (targetOffset == null) {
       return;

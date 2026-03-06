@@ -224,6 +224,7 @@ void _schritt1FokussiereTextfeld(
   _TagesabschlussSchritt1SeiteState state,
   FocusNode fokusNode,
 ) {
+  state._scrollHelper.markiereProgrammatischenFokuswechsel();
   final bool sectionWurdeGeoeffnet = state._oeffneSectionFuerFokusfeld(
     fokusNode,
   );
