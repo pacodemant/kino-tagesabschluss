@@ -1,24 +1,25 @@
-part of 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:flutter/material.dart';
 
-// Zweck: Kapselt Zusammenfassungs- und Footer-UI fuer Schritt 1.
-extension _Schritt1FooterUndZusammenfassung on _TagesabschlussSchritt1SeiteState {
-  Widget _baueZusammenfassung() {
-    return Schritt1UebersichtSection(
-      kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
-      wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
-      barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
-      kartenzahlungen: _formatiereEuro(_kartenzahlungenSummeCent),
-      gesamtInklKarte: _formatiereEuro(_gesamtUmsatzMitKarteCent),
-      barumsatzNegativ: _barumsatzBereinigtCent < 0,
-    );
-  }
+class Schritt1Footer extends StatelessWidget {
+  const Schritt1Footer({
+    super.key,
+    required this.tastaturOffen,
+    required this.footerPadding,
+    required this.footerBottomInset,
+    required this.zeigeNaechstesFeld,
+    required this.weiterZumNaechstenFeldUnten,
+    required this.weiterZuSchritt2,
+  });
 
-  Widget _baueFooterLeiste({
-    required bool tastaturOffen,
-    required EdgeInsets footerPadding,
-    required double footerBottomInset,
-    required bool zeigeNaechstesFeld,
-  }) {
+  final bool tastaturOffen;
+  final EdgeInsets footerPadding;
+  final double footerBottomInset;
+  final bool zeigeNaechstesFeld;
+  final VoidCallback weiterZumNaechstenFeldUnten;
+  final VoidCallback weiterZuSchritt2;
+
+  @override
+  Widget build(BuildContext context) {
     const Color footerBg = Colors.black87;
     final ButtonStyle kompaktButtonStyle = ElevatedButton.styleFrom(
       minimumSize: Size(0, tastaturOffen ? 36 : 40),
@@ -48,7 +49,7 @@ extension _Schritt1FooterUndZusammenfassung on _TagesabschlussSchritt1SeiteState
               if (zeigeNaechstesFeld) ...<Widget>[
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _weiterZumNaechstenFeldUnten,
+                    onPressed: weiterZumNaechstenFeldUnten,
                     style: kompaktButtonStyle,
                     child: const Text('nächstes Feld'),
                   ),
@@ -57,7 +58,7 @@ extension _Schritt1FooterUndZusammenfassung on _TagesabschlussSchritt1SeiteState
               ],
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _weiterZuSchritt2,
+                  onPressed: weiterZuSchritt2,
                   style: kompaktButtonStyle,
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,

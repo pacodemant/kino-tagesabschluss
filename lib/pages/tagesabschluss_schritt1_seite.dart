@@ -15,15 +15,16 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_mue
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_uebersicht_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
-import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
-import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_footer.dart'
+    as schritt1_footer;
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart'
+    as schritt1_ui;
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
+    as schritt1_zusammenfassung;
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 
 part 'tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
-part 'tagesabschluss_schritt1/ui/schritt1_ui_builder.dart';
-part 'tagesabschluss_schritt1/ui/schritt1_footer_und_zusammenfassung.dart';
 
 class TagesabschlussSchritt1Argumente {
   const TagesabschlussSchritt1Argumente({
@@ -937,6 +938,20 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
+  Widget _baueZeilenEintrag(Kassenzeile zeile) {
+    return schritt1_ui.Schritt1ZeilenEintrag(
+      zeile: zeile,
+      stueckzahl: _stueckzahlen[zeile.id] ?? 0,
+      controller: _stueckzahlController[zeile.id]!,
+      focusNode: _stueckzahlFocusNode[zeile.id]!,
+      baueFeldMitKey: _baueFeldMitKey,
+      textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
+      beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
+      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
+      formatiereEuro: _formatiereEuro,
+    );
+  }
+
   Widget _baueScheineGruppe() {
     return Schritt1ScheineSection(
       gesamtbetrag: _formatiereEuro(_summeGruppe(_scheine)),
@@ -946,7 +961,13 @@ class _TagesabschlussSchritt1SeiteState
           _scheineAufgeklappt = !_scheineAufgeklappt;
         });
       },
-      inhalt: _baueGruppenInhalt(_scheine, 'Gesamtbetrag Scheine'),
+      inhalt: schritt1_ui.Schritt1GruppenInhalt(
+        zeilen: _scheine,
+        gesamtbetragLabel: 'Gesamtbetrag Scheine',
+        zeilenEintragBuilder: _baueZeilenEintrag,
+        summeGruppe: _summeGruppe,
+        formatiereBetrag: _formatiereEuro,
+      ),
     );
   }
 
@@ -959,20 +980,43 @@ class _TagesabschlussSchritt1SeiteState
           _loseMuenzenAufgeklappt = !_loseMuenzenAufgeklappt;
         });
       },
-      inhalt: _baueLoseMuenzenInhalt(),
+      inhalt: schritt1_ui.Schritt1LoseMuenzenInhalt(
+        loseMuenzarten: _loseMuenzarten,
+        loseMuenzenFocusNode: _loseMuenzenFocusNode,
+        loseMuenzenController: _loseMuenzenController,
+        baueFeldMitKey: _baueFeldMitKey,
+        textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
+        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
+        beiLoseMuenzartBetragGeaendert: _beiLoseMuenzartBetragGeaendert,
+        formatiereEuro: _formatiereEuro,
+        loseMuenzenGesamtCent: _loseMuenzenGesamtCent,
+      ),
     );
   }
 
   Widget _baueRollenGruppe() {
     return Schritt1MuenzenRollenSection(
-      gesamtbetrag: _formatiereRollenAnzeige(_summeGruppe(_rollenSichtbar)),
+      gesamtbetrag: schritt1_ui.schritt1FormatiereRollenAnzeige(
+        _summeGruppe(_rollenSichtbar),
+        _formatiereEuro,
+      ),
       aufgeklappt: _rollenAufgeklappt,
       beimUmschalten: () {
         setState(() {
           _rollenAufgeklappt = !_rollenAufgeklappt;
         });
       },
-      inhalt: _baueRollenInhalt(),
+      inhalt: schritt1_ui.Schritt1RollenInhalt(
+        rollenOhneKupfer: _rollenOhneKupfer,
+        kupferRollen: _kupferRollen,
+        kupferRollenSichtbar: _kupferRollenSichtbar,
+        zeilenEintragBuilder: _baueZeilenEintrag,
+        summeGruppe: _summeGruppe,
+        formatiereRollenAnzeige: (int cent) =>
+            schritt1_ui.schritt1FormatiereRollenAnzeige(cent, _formatiereEuro),
+        zeigeKupferRollen: _zeigeKupferRollen,
+        rollenSichtbar: _rollenSichtbar,
+      ),
     );
   }
 
@@ -1016,7 +1060,20 @@ class _TagesabschlussSchritt1SeiteState
           _kartenzahlungenAufgeklappt = !_kartenzahlungenAufgeklappt;
         });
       },
-      inhalt: _baueKartenzahlungenInhalt(),
+      inhalt: schritt1_ui.Schritt1KartenzahlungenInhalt(
+        kartenzahlungController: _kartenzahlungController,
+        kartenzahlungIds: _kartenzahlungIds,
+        kartenzahlungFocusNode: _kartenzahlungFocusNode,
+        baueFeldMitKey: _baueFeldMitKey,
+        textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
+        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
+        beiKartenzahlungBetragGeaendert: _beiKartenzahlungBetragGeaendert,
+        kartenzahlungEntfernen: _kartenzahlungEntfernen,
+        kartenzahlungHinzufuegen: _kartenzahlungHinzufuegen,
+        kartenzahlungenCent: _kartenzahlungenCent,
+        formatiereEuro: _formatiereEuro,
+        kartenzahlungenSummeCent: _kartenzahlungenSummeCent,
+      ),
     );
   }
 
@@ -1138,7 +1195,24 @@ class _TagesabschlussSchritt1SeiteState
                                   _baueKartenzahlungenGruppe(),
                               umschlaegeInhalt: _baueUmschlagGruppe(),
                             ),
-                            _baueZusammenfassung(),
+                            schritt1_zusammenfassung.Schritt1Zusammenfassung(
+                              kassenbestandGesamt: _formatiereEuro(
+                                _kassenbestandGesamtCent,
+                              ),
+                              wechselgeldSollwert: _formatiereEuro(
+                                _wechselgeldSollwertCent,
+                              ),
+                              barumsatzBereinigt: _formatiereEuro(
+                                _barumsatzBereinigtCent,
+                              ),
+                              kartenzahlungen: _formatiereEuro(
+                                _kartenzahlungenSummeCent,
+                              ),
+                              gesamtInklKarte: _formatiereEuro(
+                                _gesamtUmsatzMitKarteCent,
+                              ),
+                              barumsatzNegativ: _barumsatzBereinigtCent < 0,
+                            ),
                           ]),
                         ),
                       ),
@@ -1152,11 +1226,13 @@ class _TagesabschlussSchritt1SeiteState
                 bottom: footerBottom,
                 child: SizedBox(
                   height: footerTotalHoehe,
-                  child: _baueFooterLeiste(
+                  child: schritt1_footer.Schritt1Footer(
                     tastaturOffen: tastaturOffen,
                     footerPadding: footerPadding,
                     footerBottomInset: footerBottomInset,
                     zeigeNaechstesFeld: zeigeNaechstesFeld,
+                    weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+                    weiterZuSchritt2: _weiterZuSchritt2,
                   ),
                 ),
               ),

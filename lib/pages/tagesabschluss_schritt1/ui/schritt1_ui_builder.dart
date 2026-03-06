@@ -1,36 +1,83 @@
-part of 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
+import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
 
-// Zweck: Entkoppelt große UI-Build-Helfer aus Schritt 1.
-extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
-  Widget _baueGruppenInhalt(
-    List<Kassenzeile> zeilen,
-    String gesamtbetragLabel, {
-    String Function(int cent)? formatierer,
-  }) {
-    final String Function(int cent) nutzeFormatierer =
-        formatierer ?? _formatiereEuro;
+// Zweck: Formatiert Rollen-Betraege wie bisher (volle Euro ohne Nachkommastellen).
+String schritt1FormatiereRollenAnzeige(
+  int cent,
+  String Function(int cent) formatiereEuro,
+) {
+  if (cent % 100 == 0) {
+    return '${cent ~/ 100} €';
+  }
+  return formatiereEuro(cent);
+}
+
+class Schritt1GruppenInhalt extends StatelessWidget {
+  const Schritt1GruppenInhalt({
+    super.key,
+    required this.zeilen,
+    required this.gesamtbetragLabel,
+    required this.zeilenEintragBuilder,
+    required this.summeGruppe,
+    required this.formatiereBetrag,
+  });
+
+  final List<Kassenzeile> zeilen;
+  final String gesamtbetragLabel;
+  final Widget Function(Kassenzeile zeile) zeilenEintragBuilder;
+  final int Function(List<Kassenzeile> zeilen) summeGruppe;
+  final String Function(int cent) formatiereBetrag;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         for (final Kassenzeile zeile in zeilen) ...<Widget>[
-          _baueZeilenEintrag(zeile),
+          zeilenEintragBuilder(zeile),
           const SizedBox(height: 8),
         ],
         const SizedBox(height: 4),
         Text(
-          '$gesamtbetragLabel: ${nutzeFormatierer(_summeGruppe(zeilen))}',
+          '$gesamtbetragLabel: ${formatiereBetrag(summeGruppe(zeilen))}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ],
     );
   }
+}
 
-  Widget _baueZeilenEintrag(Kassenzeile zeile) {
-    final int stueckzahl = _stueckzahlen[zeile.id] ?? 0;
+class Schritt1ZeilenEintrag extends StatelessWidget {
+  const Schritt1ZeilenEintrag({
+    super.key,
+    required this.zeile,
+    required this.stueckzahl,
+    required this.controller,
+    required this.focusNode,
+    required this.baueFeldMitKey,
+    required this.textInputActionFuerSchritt1,
+    required this.beiStueckzahlGeaendert,
+    required this.beiEingabeAbgeschlossen,
+    required this.formatiereEuro,
+  });
+
+  final Kassenzeile zeile;
+  final int stueckzahl;
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final Schritt1FeldMitKeyBuilder baueFeldMitKey;
+  final TextInputAction Function(FocusNode focusNode) textInputActionFuerSchritt1;
+  final void Function(Kassenzeile zeile, String wert) beiStueckzahlGeaendert;
+  final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
+  final String Function(int cent) formatiereEuro;
+
+  @override
+  Widget build(BuildContext context) {
     final int zwischensumme = stueckzahl * zeile.einzelwertCent;
-    final FocusNode focusNode = _stueckzahlFocusNode[zeile.id]!;
-
     return Row(
       children: <Widget>[
         Expanded(
@@ -44,15 +91,15 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
         const SizedBox(width: 10),
         SizedBox(
           width: 96,
-          child: _baueFeldMitKey(
+          child: baueFeldMitKey(
             focusNode: focusNode,
             child: GanzzahlEingabefeld(
-              textController: _stueckzahlController[zeile.id]!,
+              textController: controller,
               focusNode: focusNode,
               schriftgroesse: 16,
-              textInputAction: _textInputActionFuerSchritt1(focusNode),
-              onChanged: (String wert) => _beiStueckzahlGeaendert(zeile, wert),
-              onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(focusNode),
+              textInputAction: textInputActionFuerSchritt1(focusNode),
+              onChanged: (String wert) => beiStueckzahlGeaendert(zeile, wert),
+              onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
             ),
           ),
         ),
@@ -60,7 +107,7 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
         SizedBox(
           width: 95,
           child: Text(
-            _formatiereEuro(zwischensumme),
+            formatiereEuro(zwischensumme),
             textAlign: TextAlign.right,
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
@@ -68,15 +115,41 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
       ],
     );
   }
+}
 
-  Widget _baueLoseMuenzenInhalt() {
+class Schritt1LoseMuenzenInhalt extends StatelessWidget {
+  const Schritt1LoseMuenzenInhalt({
+    super.key,
+    required this.loseMuenzarten,
+    required this.loseMuenzenFocusNode,
+    required this.loseMuenzenController,
+    required this.baueFeldMitKey,
+    required this.textInputActionFuerSchritt1,
+    required this.beiEingabeAbgeschlossen,
+    required this.beiLoseMuenzartBetragGeaendert,
+    required this.formatiereEuro,
+    required this.loseMuenzenGesamtCent,
+  });
+
+  final List<Kassenzeile> loseMuenzarten;
+  final Map<String, FocusNode> loseMuenzenFocusNode;
+  final Map<String, TextEditingController> loseMuenzenController;
+  final Schritt1FeldMitKeyBuilder baueFeldMitKey;
+  final TextInputAction Function(FocusNode focusNode) textInputActionFuerSchritt1;
+  final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
+  final void Function(String muenzartId, String wert) beiLoseMuenzartBetragGeaendert;
+  final String Function(int cent) formatiereEuro;
+  final int loseMuenzenGesamtCent;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (final Kassenzeile zeile in _loseMuenzarten) ...<Widget>[
+        for (final Kassenzeile zeile in loseMuenzarten) ...<Widget>[
           Builder(
             builder: (BuildContext _) {
-              final FocusNode focusNode = _loseMuenzenFocusNode[zeile.id]!;
+              final FocusNode focusNode = loseMuenzenFocusNode[zeile.id]!;
               return Row(
                 children: <Widget>[
                   Expanded(
@@ -90,18 +163,15 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
                   const SizedBox(width: 10),
                   SizedBox(
                     width: 148,
-                    child: _baueFeldMitKey(
+                    child: baueFeldMitKey(
                       focusNode: focusNode,
                       child: BetragCentEingabefeld(
-                        textController: _loseMuenzenController[zeile.id]!,
+                        textController: loseMuenzenController[zeile.id]!,
                         focusNode: focusNode,
-                        textInputAction: _textInputActionFuerSchritt1(
-                          focusNode,
-                        ),
-                        onSubmitted: (_) =>
-                            _beiEingabeAbgeschlossenSchritt1(focusNode),
+                        textInputAction: textInputActionFuerSchritt1(focusNode),
+                        onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
                         onChanged: (String wert) =>
-                            _beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+                            beiLoseMuenzartBetragGeaendert(zeile.id, wert),
                         schriftgroesse: 15,
                         hinweisText: '0,00 €',
                       ),
@@ -115,62 +185,111 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
         ],
         const SizedBox(height: 8),
         Text(
-          'Gesamtbetrag Lose Münzen: ${_formatiereEuro(_loseMuenzenGesamtCent)}',
+          'Gesamtbetrag Lose Münzen: ${formatiereEuro(loseMuenzenGesamtCent)}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ],
     );
   }
+}
 
-  Widget _baueRollenInhalt() {
+class Schritt1RollenInhalt extends StatelessWidget {
+  const Schritt1RollenInhalt({
+    super.key,
+    required this.rollenOhneKupfer,
+    required this.kupferRollen,
+    required this.kupferRollenSichtbar,
+    required this.zeilenEintragBuilder,
+    required this.summeGruppe,
+    required this.formatiereRollenAnzeige,
+    required this.zeigeKupferRollen,
+    required this.rollenSichtbar,
+  });
+
+  final List<Kassenzeile> rollenOhneKupfer;
+  final List<Kassenzeile> kupferRollen;
+  final bool kupferRollenSichtbar;
+  final Widget Function(Kassenzeile zeile) zeilenEintragBuilder;
+  final int Function(List<Kassenzeile> zeilen) summeGruppe;
+  final String Function(int cent) formatiereRollenAnzeige;
+  final VoidCallback zeigeKupferRollen;
+  final List<Kassenzeile> rollenSichtbar;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (final Kassenzeile zeile in _rollenOhneKupfer) ...<Widget>[
-          _baueZeilenEintrag(zeile),
+        for (final Kassenzeile zeile in rollenOhneKupfer) ...<Widget>[
+          zeilenEintragBuilder(zeile),
           const SizedBox(height: 8),
         ],
-        if (!_kupferRollenSichtbar)
+        if (!kupferRollenSichtbar)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
-              onPressed: _zeigeKupferRollen,
+              onPressed: zeigeKupferRollen,
               icon: const Icon(Icons.add),
               label: const Text('Kupfer-Rollen hinzufügen'),
             ),
           ),
-        if (_kupferRollenSichtbar) ...<Widget>[
+        if (kupferRollenSichtbar) ...<Widget>[
           const SizedBox(height: 8),
-          for (final Kassenzeile zeile in _kupferRollen) ...<Widget>[
-            _baueZeilenEintrag(zeile),
+          for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
+            zeilenEintragBuilder(zeile),
             const SizedBox(height: 8),
           ],
         ],
         const SizedBox(height: 4),
         Text(
-          'Gesamtbetrag Rollen: ${_formatiereRollenAnzeige(_summeGruppe(_rollenSichtbar))}',
+          'Gesamtbetrag Rollen: ${formatiereRollenAnzeige(summeGruppe(rollenSichtbar))}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ],
     );
   }
+}
 
-  String _formatiereRollenAnzeige(int cent) {
-    if (cent % 100 == 0) {
-      return '${cent ~/ 100} €';
-    }
-    return _formatiereEuro(cent);
-  }
+class Schritt1KartenzahlungenInhalt extends StatelessWidget {
+  const Schritt1KartenzahlungenInhalt({
+    super.key,
+    required this.kartenzahlungController,
+    required this.kartenzahlungIds,
+    required this.kartenzahlungFocusNode,
+    required this.baueFeldMitKey,
+    required this.textInputActionFuerSchritt1,
+    required this.beiEingabeAbgeschlossen,
+    required this.beiKartenzahlungBetragGeaendert,
+    required this.kartenzahlungEntfernen,
+    required this.kartenzahlungHinzufuegen,
+    required this.kartenzahlungenCent,
+    required this.formatiereEuro,
+    required this.kartenzahlungenSummeCent,
+  });
 
-  Widget _baueKartenzahlungenInhalt() {
+  final List<TextEditingController> kartenzahlungController;
+  final List<int> kartenzahlungIds;
+  final List<FocusNode> kartenzahlungFocusNode;
+  final Schritt1FeldMitKeyBuilder baueFeldMitKey;
+  final TextInputAction Function(FocusNode focusNode) textInputActionFuerSchritt1;
+  final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
+  final void Function(int index, String wert) beiKartenzahlungBetragGeaendert;
+  final void Function(int index) kartenzahlungEntfernen;
+  final VoidCallback kartenzahlungHinzufuegen;
+  final List<int> kartenzahlungenCent;
+  final String Function(int cent) formatiereEuro;
+  final int kartenzahlungenSummeCent;
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (int i = 0; i < _kartenzahlungController.length; i++) ...<Widget>[
+        for (int i = 0; i < kartenzahlungController.length; i++) ...<Widget>[
           Row(
-            key: ValueKey<int>(_kartenzahlungIds[i]),
+            key: ValueKey<int>(kartenzahlungIds[i]),
             children: <Widget>[
               const Expanded(
                 child: Text(
@@ -182,19 +301,18 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
               const SizedBox(width: 10),
               SizedBox(
                 width: 148,
-                child: _baueFeldMitKey(
-                  focusNode: _kartenzahlungFocusNode[i],
+                child: baueFeldMitKey(
+                  focusNode: kartenzahlungFocusNode[i],
                   child: BetragCentEingabefeld(
-                    textController: _kartenzahlungController[i],
-                    focusNode: _kartenzahlungFocusNode[i],
-                    textInputAction: _textInputActionFuerSchritt1(
-                      _kartenzahlungFocusNode[i],
+                    textController: kartenzahlungController[i],
+                    focusNode: kartenzahlungFocusNode[i],
+                    textInputAction: textInputActionFuerSchritt1(
+                      kartenzahlungFocusNode[i],
                     ),
-                    onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt1(
-                      _kartenzahlungFocusNode[i],
-                    ),
+                    onSubmitted: (_) =>
+                        beiEingabeAbgeschlossen(kartenzahlungFocusNode[i]),
                     onChanged: (String wert) =>
-                        _beiKartenzahlungBetragGeaendert(i, wert),
+                        beiKartenzahlungBetragGeaendert(i, wert),
                     schriftgroesse: 15,
                     hinweisText: '0,00 €',
                   ),
@@ -203,7 +321,7 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
               if (i > 0) ...<Widget>[
                 const SizedBox(width: 6),
                 IconButton(
-                  onPressed: () => _kartenzahlungEntfernen(i),
+                  onPressed: () => kartenzahlungEntfernen(i),
                   icon: const Icon(Icons.delete_outline),
                   tooltip: 'Kartenzahlung entfernen',
                 ),
@@ -212,17 +330,17 @@ extension _Schritt1UiBuilder on _TagesabschlussSchritt1SeiteState {
           ),
           const SizedBox(height: 8),
         ],
-        if (_kartenzahlungenCent.first > 0)
+        if (kartenzahlungenCent.first > 0)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
-              onPressed: _kartenzahlungHinzufuegen,
+              onPressed: kartenzahlungHinzufuegen,
               icon: const Icon(Icons.add),
               label: const Text('Kartenzahlung hinzufügen'),
             ),
           ),
         Text(
-          'Gesamt Kartenzahlungen: ${_formatiereEuro(_kartenzahlungenSummeCent)}',
+          'Gesamt Kartenzahlungen: ${formatiereEuro(kartenzahlungenSummeCent)}',
           textAlign: TextAlign.right,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
