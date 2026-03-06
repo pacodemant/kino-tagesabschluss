@@ -23,7 +23,7 @@ Nächster Mini-Schritt:
 - <1 konkretes Ziel, klein testbar>
 
 Run-Nummer:
-- Quelle: ai_prompt_templates/run_counter.txt
+- Quelle: coding_tools/ai_prompt_templates/run_counter.txt
 - Nächster Run: <NUMMER>  (muss der Zeile "Nächster Run:" entsprechen)
 
 Arbeitsmodus:
