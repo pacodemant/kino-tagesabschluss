@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +15,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_mue
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_footer.dart'
     as schritt1_footer;
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart'
@@ -1193,178 +1193,47 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      body: TweenAnimationBuilder<double>(
-        tween: Tween<double>(end: keyboardAnimationZiel),
-        duration: _footerAnimationDauer,
-        curve: _footerAnimationKurve,
-        builder: (BuildContext context, double faktor, _) {
-          final double footerBottom = keyboardInset * faktor;
-          final double footerContentHoehe = ui.lerpDouble(
-            _footerContentHoeheNormal,
-            _footerContentHoeheKeyboard,
-            faktor,
-          )!;
-          final double footerBottomInset = ui.lerpDouble(
-            bottomInset,
-            0,
-            faktor,
-          )!;
-          final EdgeInsets footerPadding = EdgeInsets.lerp(
-            _footerPaddingNormal,
-            _footerPaddingKeyboard,
-            faktor,
-          )!;
-          final double footerTotalHoehe =
-              footerContentHoehe + footerBottomInset;
-          final double bottomPadding = keyboardInset + footerTotalHoehe + 16;
-          final bool downButtonSichtbar =
-              _scrollController.hasClients &&
-              _scrollController.position.pixels <
-                  _scrollController.position.maxScrollExtent - 24;
-
-          return Stack(
-            children: <Widget>[
-              Theme(
-                data: Theme.of(context).copyWith(
-                  inputDecorationTheme: const InputDecorationTheme(
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                  ),
-                ),
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    keyboardDismissBehavior:
-                        ScrollViewKeyboardDismissBehavior.manual,
-                    slivers: <Widget>[
-                      if (devToolsStickySichtbar)
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _DevToolsStickyHeaderDelegate(
-                            extent: _devToolsStickyHoehe,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                              child: _baueDevToolsPanel(),
-                            ),
-                          ),
-                        ),
-                      SliverPadding(
-                        padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate(<Widget>[
-                            _baueScheineGruppe(),
-                            _baueLoseMuenzenGruppe(),
-                            _baueRollenGruppe(),
-                            Schritt1HinweiseSection(
-                              kartenzahlungenInhalt:
-                                  _baueKartenzahlungenGruppe(),
-                              umschlaegeInhalt: _baueUmschlagGruppe(),
-                            ),
-                            schritt1_zusammenfassung.Schritt1Zusammenfassung(
-                              kassenbestandGesamt: _formatiereEuro(
-                                _kassenbestandGesamtCent,
-                              ),
-                              wechselgeldSollwert: _formatiereEuro(
-                                _wechselgeldSollwertCent,
-                              ),
-                              barumsatzBereinigt: _formatiereEuro(
-                                _barumsatzBereinigtCent,
-                              ),
-                              kartenzahlungen: _formatiereEuro(
-                                _kartenzahlungenSummeCent,
-                              ),
-                              gesamtInklKarte: _formatiereEuro(
-                                _gesamtUmsatzMitKarteCent,
-                              ),
-                              barumsatzNegativ: _barumsatzBereinigtCent < 0,
-                            ),
-                          ]),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: footerBottom,
-                child: SizedBox(
-                  height: footerTotalHoehe,
-                  child: schritt1_footer.Schritt1Footer(
-                    tastaturOffen: tastaturOffen,
-                    footerPadding: footerPadding,
-                    footerBottomInset: footerBottomInset,
-                    zeigeNaechstesFeld: zeigeNaechstesFeld,
-                    weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-                    weiterZuSchritt2: _weiterZuSchritt2,
-                  ),
-                ),
-              ),
-              if (downButtonSichtbar)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: footerBottom + footerTotalHoehe + 10,
-                  child: Center(
-                    child: SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: FloatingActionButton(
-                        heroTag: 'step1DownFab',
-                        mini: true,
-                        elevation: 2,
-                        onPressed: () {
-                          if (!_scrollController.hasClients) {
-                            return;
-                          }
-                          _scrollController.animateTo(
-                            _scrollController.position.maxScrollExtent,
-                            duration: const Duration(milliseconds: 220),
-                            curve: Curves.easeOutCubic,
-                          );
-                        },
-                        child: const Icon(Icons.keyboard_arrow_down),
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          );
-        },
+      body: Schritt1BodyContent(
+        scrollController: _scrollController,
+        keyboardAnimationZiel: keyboardAnimationZiel,
+        footerAnimationDauer: _footerAnimationDauer,
+        footerAnimationKurve: _footerAnimationKurve,
+        footerContentHoeheNormal: _footerContentHoeheNormal,
+        footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
+        footerPaddingNormal: _footerPaddingNormal,
+        footerPaddingKeyboard: _footerPaddingKeyboard,
+        keyboardInset: keyboardInset,
+        bottomInset: bottomInset,
+        devToolsStickySichtbar: devToolsStickySichtbar,
+        devToolsStickyHoehe: _devToolsStickyHoehe,
+        devToolsPanel: _baueDevToolsPanel(),
+        scheineGruppe: _baueScheineGruppe(),
+        loseMuenzenGruppe: _baueLoseMuenzenGruppe(),
+        rollenGruppe: _baueRollenGruppe(),
+        hinweiseSection: Schritt1HinweiseSection(
+          kartenzahlungenInhalt: _baueKartenzahlungenGruppe(),
+          umschlaegeInhalt: _baueUmschlagGruppe(),
+        ),
+        zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
+          kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
+          wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
+          barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
+          kartenzahlungen: _formatiereEuro(_kartenzahlungenSummeCent),
+          gesamtInklKarte: _formatiereEuro(_gesamtUmsatzMitKarteCent),
+          barumsatzNegativ: _barumsatzBereinigtCent < 0,
+        ),
+        footerBuilder: ({
+          required EdgeInsets footerPadding,
+          required double footerBottomInset,
+        }) => schritt1_footer.Schritt1Footer(
+          tastaturOffen: tastaturOffen,
+          footerPadding: footerPadding,
+          footerBottomInset: footerBottomInset,
+          zeigeNaechstesFeld: zeigeNaechstesFeld,
+          weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+          weiterZuSchritt2: _weiterZuSchritt2,
+        ),
       ),
     );
-  }
-}
-
-class _DevToolsStickyHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _DevToolsStickyHeaderDelegate({required this.extent, required this.child});
-
-  final double extent;
-  final Widget child;
-
-  @override
-  double get minExtent => extent;
-
-  @override
-  double get maxExtent => extent;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return child;
-  }
-
-  @override
-  bool shouldRebuild(covariant _DevToolsStickyHeaderDelegate oldDelegate) {
-    return extent != oldDelegate.extent || child != oldDelegate.child;
   }
 }
