@@ -152,7 +152,10 @@ class Schritt1ScrollHelper {
     } else {
       if (nutzeKomfortablesZiel) {
         final double feldMitte = fieldTop + (renderObject.size.height / 2);
-        final double zielMitte = visibleTop + ((visibleBottom - visibleTop) * 0.56);
+        // Feintuning: programmatischen Fokuswechsel etwa eine Feldhoehe hoeher platzieren.
+        const double komfortOffsetNachOben = 44;
+        final double zielMitte =
+            visibleTop + ((visibleBottom - visibleTop) * 0.56) - komfortOffsetNachOben;
         if (feldMitte > zielMitte) {
           targetOffset = scrollOffset + (feldMitte - zielMitte);
         }
