@@ -1,4 +1,4 @@
 RUN COUNTER – Kino-App
 
-Letzter abgeschlossener Run: Run 55
-Nächster Run: Run 56
+Letzter abgeschlossener Run: Run 56
+Nächster Run: Run 57
