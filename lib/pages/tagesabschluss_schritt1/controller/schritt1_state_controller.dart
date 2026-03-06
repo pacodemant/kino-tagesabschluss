@@ -55,8 +55,8 @@ void _schritt1EntferneUmschlag(
   );
   final FocusNode bezeichnungFocusNode = state._umschlagBezeichnungFocusNode
       .removeAt(index);
-  state._feldKeys.remove(betragFocusNode);
-  state._feldKeys.remove(bezeichnungFocusNode);
+  state._scrollHelper.entferneFeldKey(betragFocusNode);
+  state._scrollHelper.entferneFeldKey(bezeichnungFocusNode);
   betragFocusNode.dispose();
   bezeichnungFocusNode.dispose();
   state._umschlagIds.removeAt(index);
@@ -84,33 +84,6 @@ void _schritt1SetzeUmschlagBetrag(
   );
 }
 
-void _schritt1TriggerEnsureBeiEingabe(
-  _TagesabschlussSchritt1SeiteState state,
-  FocusNode focusNode,
-) {
-  if (!focusNode.hasFocus || state._keyboardInset <= 0) {
-    return;
-  }
-  if (state._ensureNachEingabeGeplant) {
-    return;
-  }
-  final Duration seitLetztemEnsure = DateTime.now().difference(
-    state._letztesEnsureNachEingabe,
-  );
-  if (seitLetztemEnsure < const Duration(milliseconds: 120)) {
-    return;
-  }
-  state._ensureNachEingabeGeplant = true;
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    state._ensureNachEingabeGeplant = false;
-    if (!state.mounted) {
-      return;
-    }
-    state._letztesEnsureNachEingabe = DateTime.now();
-    state._ensureAktivesFeldSichtbar();
-  });
-}
-
 void _schritt1SetzeKartenzahlungAnzahl(
   _TagesabschlussSchritt1SeiteState state,
   int anzahl,
@@ -118,7 +91,7 @@ void _schritt1SetzeKartenzahlungAnzahl(
   while (state._kartenzahlungController.length > anzahl) {
     state._kartenzahlungController.removeLast().dispose();
     final FocusNode focusNode = state._kartenzahlungFocusNode.removeLast();
-    state._feldKeys.remove(focusNode);
+    state._scrollHelper.entferneFeldKey(focusNode);
     focusNode.dispose();
     state._kartenzahlungenCent.removeLast();
     state._kartenzahlungIds.removeLast();
@@ -144,7 +117,7 @@ void _schritt1EntferneKartenzahlung(
 ) {
   state._kartenzahlungController.removeAt(index).dispose();
   final FocusNode focusNode = state._kartenzahlungFocusNode.removeAt(index);
-  state._feldKeys.remove(focusNode);
+  state._scrollHelper.entferneFeldKey(focusNode);
   focusNode.dispose();
   state._kartenzahlungenCent.removeAt(index);
   state._kartenzahlungIds.removeAt(index);

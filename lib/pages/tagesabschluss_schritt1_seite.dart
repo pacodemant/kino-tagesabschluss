@@ -16,6 +16,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_mue
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_uebersicht_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -114,11 +115,8 @@ class _TagesabschlussSchritt1SeiteState
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   final ScrollController _scrollController = ScrollController();
-  final Map<FocusNode, GlobalKey> _feldKeys = <FocusNode, GlobalKey>{};
-  FocusNode? _letztesAktivesFeld;
+  final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   double _keyboardInset = 0;
-  bool _ensureNachEingabeGeplant = false;
-  DateTime _letztesEnsureNachEingabe = DateTime.fromMillisecondsSinceEpoch(0);
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
@@ -221,9 +219,7 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   double _leseKeyboardInset() {
-    final ui.FlutterView view =
-        WidgetsBinding.instance.platformDispatcher.views.first;
-    return view.viewInsets.bottom / view.devicePixelRatio;
+    return _scrollHelper.leseKeyboardInset();
   }
 
   Future<void> _ladeInitialeDaten() async {
@@ -266,11 +262,11 @@ class _TagesabschlussSchritt1SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _umschlagBetragFocusNode) {
-      _feldKeys.remove(focusNode);
+      _scrollHelper.entferneFeldKey(focusNode);
       focusNode.dispose();
     }
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
-      _feldKeys.remove(focusNode);
+      _scrollHelper.entferneFeldKey(focusNode);
       focusNode.dispose();
     }
     _umschlaege.clear();
@@ -352,33 +348,24 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   void _beiGlobalemFokuswechsel() {
-    if (!mounted) {
-      return;
-    }
-    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
-    if (!identical(_letztesAktivesFeld, aktivesFeld)) {
-      _letztesAktivesFeld = aktivesFeld;
-      if (aktivesFeld != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) {
-            return;
-          }
-          _ensureAktivesFeldSichtbar();
-        });
-      }
-    }
-    setState(() {});
+    _scrollHelper.beiGlobalemFokuswechsel(
+      mounted: mounted,
+      aktivesFeld: _aktivesFeldSchritt1(),
+      isMounted: () => mounted,
+      ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
+      rebuild: () => setState(() {}),
+    );
   }
 
   void _beiScrollAenderung() {
-    if (!mounted) {
-      return;
-    }
-    setState(() {});
+    _scrollHelper.beiScrollAenderung(
+      mounted: mounted,
+      rebuild: () => setState(() {}),
+    );
   }
 
   GlobalKey _holeFeldKey(FocusNode focusNode) {
-    return _feldKeys.putIfAbsent(focusNode, () => GlobalKey());
+    return _scrollHelper.holeFeldKey(focusNode);
   }
 
   Widget _baueFeldMitKey({
@@ -389,95 +376,20 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   void _ensureAktivesFeldSichtbar() {
-    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
-    if (aktivesFeld == null) {
-      return;
-    }
-    final BuildContext? feldKontext = _feldKeys[aktivesFeld]?.currentContext;
-    if (feldKontext == null) {
-      return;
-    }
-    if (!_scrollController.hasClients) {
-      return;
-    }
-    final RenderObject? renderObject = feldKontext.findRenderObject();
-    if (renderObject is! RenderBox) {
-      return;
-    }
-    final RenderObject? viewportObject = _scrollController
-        .position
-        .context
-        .storageContext
-        .findRenderObject();
-    if (viewportObject is! RenderBox) {
-      return;
-    }
-
-    final Offset feldPositionImViewport = renderObject.localToGlobal(
-      Offset.zero,
-      ancestor: viewportObject,
-    );
-    final double fieldTop =
-        _scrollController.position.pixels + feldPositionImViewport.dy;
-    final double fieldBottom = fieldTop + renderObject.size.height;
-
-    final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final double statusBarHeight = mediaQuery.padding.top;
-    final double keyboardInset = _keyboardInset;
-    final bool tastaturOffen = keyboardInset > 0;
-    final double footerContentHoehe = tastaturOffen
-        ? _footerContentHoeheKeyboard
-        : _footerContentHoeheNormal;
-    final double footerBottomInset = tastaturOffen
-        ? 0
-        : mediaQuery.viewPadding.bottom;
-    final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
-    final double stickyHeaderHeight = (_devToolsSichtbar && _devToolsOffen)
-        ? _devToolsStickyHoehe
-        : 0;
-    final bool istUmschlagFeld =
-        _umschlagBezeichnungFocusNode.contains(aktivesFeld) ||
-        _umschlagBetragFocusNode.contains(aktivesFeld);
-    final bool istKartenzahlungFeld = _kartenzahlungFocusNode.contains(
-      aktivesFeld,
-    );
-    final double bottomSafety = (istUmschlagFeld || istKartenzahlungFeld)
-        ? 100
-        : 0;
-
-    final double scrollOffset = _scrollController.position.pixels;
-    final double viewportHeight = _scrollController.position.viewportDimension;
-    final double visibleTop =
-        scrollOffset + statusBarHeight + _appBarHoehe + stickyHeaderHeight + 8;
-    final double visibleBottom =
-        scrollOffset -
-        (keyboardInset + footerTotalHoehe + 8 + bottomSafety) +
-        viewportHeight;
-
-    double? targetOffset;
-    if (fieldTop < visibleTop) {
-      targetOffset =
-          fieldTop - (statusBarHeight + _appBarHoehe + stickyHeaderHeight + 8);
-    } else if (fieldBottom > visibleBottom) {
-      targetOffset =
-          fieldBottom -
-          viewportHeight +
-          (keyboardInset + footerTotalHoehe + 16 + bottomSafety);
-    }
-    if (targetOffset == null) {
-      return;
-    }
-    final double begrenzt = targetOffset.clamp(
-      _scrollController.position.minScrollExtent,
-      _scrollController.position.maxScrollExtent,
-    );
-    if ((begrenzt - _scrollController.position.pixels).abs() < 1) {
-      return;
-    }
-    _scrollController.animateTo(
-      begrenzt,
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOutCubic,
+    _scrollHelper.ensureAktivesFeldSichtbar(
+      aktivesFeld: _aktivesFeldSchritt1(),
+      scrollController: _scrollController,
+      context: context,
+      keyboardInset: _keyboardInset,
+      footerContentHoeheNormal: _footerContentHoeheNormal,
+      footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
+      appBarHoehe: _appBarHoehe,
+      devToolsStickyHoehe: _devToolsStickyHoehe,
+      devToolsSichtbar: _devToolsSichtbar,
+      devToolsOffen: _devToolsOffen,
+      umschlagBezeichnungFocusNodes: _umschlagBezeichnungFocusNode,
+      umschlagBetragFocusNodes: _umschlagBetragFocusNode,
+      kartenzahlungFocusNodes: _kartenzahlungFocusNode,
     );
   }
 
@@ -633,7 +545,12 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   void _triggerEnsureBeiEingabe(FocusNode focusNode) =>
-      _schritt1TriggerEnsureBeiEingabe(this, focusNode);
+      _scrollHelper.triggerEnsureBeiEingabe(
+        focusNode: focusNode,
+        keyboardInset: _keyboardInset,
+        isMounted: () => mounted,
+        ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
+      );
 
   void _setzeKartenzahlungAnzahl(int anzahl) =>
       _schritt1SetzeKartenzahlungAnzahl(this, anzahl);
