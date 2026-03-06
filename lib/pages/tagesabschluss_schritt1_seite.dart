@@ -1512,8 +1512,8 @@ class _TagesabschlussSchritt1SeiteState
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       resizeToAvoidBottomInset: false,
       appBar: TagesabschlussHeader(
-        stepLabel: '1/4',
-        title: 'Bargeldzählung',
+        schrittNummer: 1,
+        schrittTitel: 'Bargeldzählung',
         onTap: _zeigeSchrittAuswahlBottomSheet,
         actions: <Widget>[
           if (_devToolsSichtbar)
