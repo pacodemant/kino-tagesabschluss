@@ -251,7 +251,18 @@ void _schritt1FokussiereTextfeld(
   _TagesabschlussSchritt1SeiteState state,
   FocusNode fokusNode,
 ) {
-  state._oeffneSectionFuerFokusfeld(fokusNode);
+  final bool sectionWurdeGeoeffnet = state._oeffneSectionFuerFokusfeld(
+    fokusNode,
+  );
+  if (sectionWurdeGeoeffnet) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!state.mounted) {
+        return;
+      }
+      state._fokussiereTextfeld(fokusNode);
+    });
+    return;
+  }
   FocusScope.of(state.context).requestFocus(fokusNode);
   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
     SystemChannels.textInput.invokeMethod<void>('TextInput.show');

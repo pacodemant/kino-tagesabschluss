@@ -678,8 +678,8 @@ class _TagesabschlussSchritt1SeiteState
   void _fokussiereTextfeld(FocusNode fokusNode) =>
       _schritt1FokussiereTextfeld(this, fokusNode);
 
-  // Oeffnet die passende Section fuer das Ziel-Feld, falls sie zugeklappt ist.
-  void _oeffneSectionFuerFokusfeld(FocusNode fokusNode) {
+  // Oeffnet die passende Section fuer das Ziel-Feld und gibt true bei Zustandsaenderung zurueck.
+  bool _oeffneSectionFuerFokusfeld(FocusNode fokusNode) {
     final bool istScheineFeld = _scheine.any(
       (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
     );
@@ -715,7 +715,7 @@ class _TagesabschlussSchritt1SeiteState
     }
 
     if (!geaendert) {
-      return;
+      return false;
     }
 
     setState(() {
@@ -731,6 +731,7 @@ class _TagesabschlussSchritt1SeiteState
         _umschlaegeAufgeklappt = true;
       }
     });
+    return true;
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) =>
