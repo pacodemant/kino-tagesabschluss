@@ -611,57 +611,108 @@ class _TagesabschlussSchritt1SeiteState
   void _fokussiereTextfeld(FocusNode fokusNode) =>
       _schritt1FokussiereTextfeld(this, fokusNode);
 
-  // Oeffnet die passende Section fuer das Ziel-Feld und gibt true bei Zustandsaenderung zurueck.
-  bool _oeffneSectionFuerFokusfeld(FocusNode fokusNode) {
-    final bool istScheineFeld = _scheine.any(
+  // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
+  int? _sectionIdFuerFokusfeld(FocusNode fokusNode) {
+    if (_scheine.any(
       (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
-    );
-    final bool istLoseMuenzenFeld = _loseMuenzarten.any(
+    )) {
+      return 0;
+    }
+    if (_loseMuenzarten.any(
       (Kassenzeile zeile) =>
           identical(_loseMuenzenFocusNode[zeile.id], fokusNode),
-    );
-    final bool istRollenFeld = _rollenSichtbar.any(
+    )) {
+      return 1;
+    }
+    if (_rollenSichtbar.any(
       (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
-    );
-    final bool istKartenzahlungsFeld = _kartenzahlungFocusNode.any(
-      (FocusNode node) => identical(node, fokusNode),
-    );
-    final bool istUmschlagFeld =
-        _umschlagBezeichnungFocusNode.any(
+    )) {
+      return 2;
+    }
+    if (_kartenzahlungFocusNode.any((FocusNode node) => identical(node, fokusNode))) {
+      return 3;
+    }
+    if (_umschlagBezeichnungFocusNode.any(
           (FocusNode node) => identical(node, fokusNode),
         ) ||
         _umschlagBetragFocusNode.any(
           (FocusNode node) => identical(node, fokusNode),
-        );
+        )) {
+      return 4;
+    }
+    return null;
+  }
+
+  bool _istSectionAufgeklappt(int sectionId) {
+    switch (sectionId) {
+      case 0:
+        return _scheineAufgeklappt;
+      case 1:
+        return _loseMuenzenAufgeklappt;
+      case 2:
+        return _rollenAufgeklappt;
+      case 3:
+        return _kartenzahlungenAufgeklappt;
+      case 4:
+        return _umschlaegeAufgeklappt;
+    }
+    return false;
+  }
+
+  void _setzeSectionAufgeklappt(int sectionId, bool wert) {
+    switch (sectionId) {
+      case 0:
+        _scheineAufgeklappt = wert;
+        return;
+      case 1:
+        _loseMuenzenAufgeklappt = wert;
+        return;
+      case 2:
+        _rollenAufgeklappt = wert;
+        return;
+      case 3:
+        _kartenzahlungenAufgeklappt = wert;
+        return;
+      case 4:
+        _umschlaegeAufgeklappt = wert;
+        return;
+    }
+  }
+
+  // Oeffnet die Ziel-Section; bei Section-Wechsel wird die vorherige geschlossen.
+  bool _oeffneSectionFuerFokusfeld(
+    FocusNode zielFokusNode, {
+    FocusNode? vorherigesFokusfeld,
+  }) {
+    final int? zielSectionId = _sectionIdFuerFokusfeld(zielFokusNode);
+    if (zielSectionId == null) {
+      return false;
+    }
+    final int? vorherigeSectionId = vorherigesFokusfeld == null
+        ? null
+        : _sectionIdFuerFokusfeld(vorherigesFokusfeld);
 
     bool geaendert = false;
-    if (istScheineFeld && !_scheineAufgeklappt) {
-      geaendert = true;
-    } else if (istLoseMuenzenFeld && !_loseMuenzenAufgeklappt) {
-      geaendert = true;
-    } else if (istRollenFeld && !_rollenAufgeklappt) {
-      geaendert = true;
-    } else if (istKartenzahlungsFeld && !_kartenzahlungenAufgeklappt) {
-      geaendert = true;
-    } else if (istUmschlagFeld && !_umschlaegeAufgeklappt) {
+    if (vorherigeSectionId != null &&
+        vorherigeSectionId != zielSectionId &&
+        _istSectionAufgeklappt(vorherigeSectionId)) {
       geaendert = true;
     }
-
+    if (!_istSectionAufgeklappt(zielSectionId)) {
+      geaendert = true;
+    }
     if (!geaendert) {
       return false;
     }
 
     setState(() {
-      if (istScheineFeld) {
-        _scheineAufgeklappt = true;
-      } else if (istLoseMuenzenFeld) {
-        _loseMuenzenAufgeklappt = true;
-      } else if (istRollenFeld) {
-        _rollenAufgeklappt = true;
-      } else if (istKartenzahlungsFeld) {
-        _kartenzahlungenAufgeklappt = true;
-      } else if (istUmschlagFeld) {
-        _umschlaegeAufgeklappt = true;
+      if (vorherigeSectionId != null &&
+          vorherigeSectionId != zielSectionId &&
+          _istSectionAufgeklappt(vorherigeSectionId)) {
+        _setzeSectionAufgeklappt(vorherigeSectionId, false);
+      }
+      if (!_istSectionAufgeklappt(zielSectionId)) {
+        _setzeSectionAufgeklappt(zielSectionId, true);
       }
     });
     return true;

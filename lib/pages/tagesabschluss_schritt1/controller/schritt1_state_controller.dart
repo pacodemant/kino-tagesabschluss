@@ -225,8 +225,10 @@ void _schritt1FokussiereTextfeld(
   FocusNode fokusNode,
 ) {
   state._scrollHelper.markiereProgrammatischenFokuswechsel();
+  final FocusNode? vorherigesFokusfeld = state._aktivesFeldSchritt1();
   final bool sectionWurdeGeoeffnet = state._oeffneSectionFuerFokusfeld(
     fokusNode,
+    vorherigesFokusfeld: vorherigesFokusfeld,
   );
   if (sectionWurdeGeoeffnet) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
