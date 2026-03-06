@@ -3,12 +3,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
@@ -23,8 +23,6 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builde
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
-
-part 'tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 
 class TagesabschlussSchritt1Argumente {
   const TagesabschlussSchritt1Argumente({
@@ -82,6 +80,8 @@ class _TagesabschlussSchritt1SeiteState
 
   final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
       const KassenstandEntwurfUsecase();
+  final Schritt1StateController _stateController =
+      const Schritt1StateController();
 
   final Map<String, int> _stueckzahlen = <String, int>{};
   final Map<String, TextEditingController> _stueckzahlController =
@@ -491,9 +491,9 @@ class _TagesabschlussSchritt1SeiteState
 
   // Delegiert State-/Controller-Logik in eine ausgelagerte Helper-Datei.
   void _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) {
-    final int geparsterWert = _schritt1ParseGanzzahl(wert);
+    final int geparsterWert = _stateController.parseGanzzahl(wert);
     setState(() {
-      _schritt1SetzeStueckzahl(this, zeile.id, geparsterWert);
+      _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
     });
     _triggerEnsureBeiEingabe(_stueckzahlFocusNode[zeile.id]!);
     _speichereEntwurf();
@@ -501,7 +501,11 @@ class _TagesabschlussSchritt1SeiteState
 
   void _beiLoseMuenzartBetragGeaendert(String muenzartId, String wert) {
     setState(() {
-      _schritt1SetzeLoseMuenzartBetrag(this, muenzartId, _parseCentZiffern(wert));
+      _stateController.setzeLoseMuenzartBetrag(
+        _loseMuenzenNachArtCent,
+        muenzartId,
+        _parseCentZiffern(wert),
+      );
     });
     _triggerEnsureBeiEingabe(_loseMuenzenFocusNode[muenzartId]!);
     _speichereEntwurf();
@@ -509,39 +513,52 @@ class _TagesabschlussSchritt1SeiteState
 
   void _umschlagHinzufuegen() {
     setState(() {
-      _schritt1FuegeUmschlagEintragHinzu(this);
+      _stateController.fuegeUmschlagEintragHinzu(() {
+        _fuegeUmschlagEintragOhneSpeichernHinzu(
+          const UmschlagEintrag(bezeichnung: '', betragCent: 0),
+        );
+      });
     });
     _speichereEntwurf();
   }
 
   void _umschlagEntfernen(int index) {
-    if (!_schritt1KannUmschlagEntfernen(this, index)) {
+    if (!_stateController.kannUmschlagEntfernen(_umschlaege, index)) {
       return;
     }
     setState(() {
-      _schritt1EntferneUmschlag(this, index);
+      _stateController.entferneUmschlag(
+        umschlaege: _umschlaege,
+        umschlagBetragController: _umschlagBetragController,
+        umschlagBezeichnungController: _umschlagBezeichnungController,
+        umschlagBetragFocusNode: _umschlagBetragFocusNode,
+        umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
+        umschlagIds: _umschlagIds,
+        index: index,
+        entferneFeldKey: _scrollHelper.entferneFeldKey,
+      );
     });
     _speichereEntwurf();
   }
 
   void _beiUmschlagBezeichnungGeaendert(int index, String wert) {
-    if (!_schritt1IstUmschlagIndexGueltig(this, index)) {
+    if (!_stateController.istUmschlagIndexGueltig(_umschlaege, index)) {
       return;
     }
     setState(() {
-      _schritt1SetzeUmschlagBezeichnung(this, index, wert);
+      _stateController.setzeUmschlagBezeichnung(_umschlaege, index, wert);
     });
     _triggerEnsureBeiEingabe(_umschlagBezeichnungFocusNode[index]);
     _speichereEntwurf();
   }
 
   void _beiUmschlagBetragGeaendert(int index, String wert) {
-    if (!_schritt1IstUmschlagIndexGueltig(this, index)) {
+    if (!_stateController.istUmschlagIndexGueltig(_umschlaege, index)) {
       return;
     }
     final int betragCent = _parseCentZiffern(wert);
     setState(() {
-      _schritt1SetzeUmschlagBetrag(this, index, betragCent);
+      _stateController.setzeUmschlagBetrag(_umschlaege, index, betragCent);
     });
     _triggerEnsureBeiEingabe(_umschlagBetragFocusNode[index]);
     _speichereEntwurf();
@@ -556,20 +573,46 @@ class _TagesabschlussSchritt1SeiteState
       );
 
   void _setzeKartenzahlungAnzahl(int anzahl) =>
-      _schritt1SetzeKartenzahlungAnzahl(this, anzahl);
+      _stateController.setzeKartenzahlungAnzahl(
+        anzahl: anzahl,
+        kartenzahlungController: _kartenzahlungController,
+        kartenzahlungFocusNode: _kartenzahlungFocusNode,
+        kartenzahlungenCent: _kartenzahlungenCent,
+        kartenzahlungIds: _kartenzahlungIds,
+        naechsteKartenzahlungId: () => _naechsteKartenzahlungId++,
+        entferneFeldKey: _scrollHelper.entferneFeldKey,
+      );
 
   void _kartenzahlungHinzufuegen() {
     setState(() {
-      _schritt1SetzeKartenzahlungAnzahl(this, _kartenzahlungController.length + 1);
+      _stateController.setzeKartenzahlungAnzahl(
+        anzahl: _kartenzahlungController.length + 1,
+        kartenzahlungController: _kartenzahlungController,
+        kartenzahlungFocusNode: _kartenzahlungFocusNode,
+        kartenzahlungenCent: _kartenzahlungenCent,
+        kartenzahlungIds: _kartenzahlungIds,
+        naechsteKartenzahlungId: () => _naechsteKartenzahlungId++,
+        entferneFeldKey: _scrollHelper.entferneFeldKey,
+      );
     });
   }
 
   void _kartenzahlungEntfernen(int index) {
-    if (!_schritt1KannKartenzahlungEntfernen(this, index)) {
+    if (!_stateController.kannKartenzahlungEntfernen(
+      _kartenzahlungController,
+      index,
+    )) {
       return;
     }
     setState(() {
-      _schritt1EntferneKartenzahlung(this, index);
+      _stateController.entferneKartenzahlung(
+        kartenzahlungController: _kartenzahlungController,
+        kartenzahlungFocusNode: _kartenzahlungFocusNode,
+        kartenzahlungenCent: _kartenzahlungenCent,
+        kartenzahlungIds: _kartenzahlungIds,
+        index: index,
+        entferneFeldKey: _scrollHelper.entferneFeldKey,
+      );
     });
   }
 
@@ -588,30 +631,58 @@ class _TagesabschlussSchritt1SeiteState
     _triggerEnsureBeiEingabe(_kartenzahlungFocusNode[index]);
   }
 
-  int _parseCentZiffern(String wert) => _schritt1ParseCentZiffern(wert);
+  int _parseCentZiffern(String wert) => _stateController.parseCentZiffern(wert);
 
-  List<FocusNode> _fokusReihenfolgeSchritt1() => _schritt1FokusReihenfolge(
-    this,
+  List<FocusNode> _fokusReihenfolgeSchritt1() => _stateController.fokusReihenfolge(
+    scheine: _scheine,
+    stueckzahlFocusNode: _stueckzahlFocusNode,
+    loseMuenzarten: _loseMuenzarten,
+    loseMuenzenFocusNode: _loseMuenzenFocusNode,
+    rollenSichtbar: _rollenSichtbar,
+    kartenzahlungFocusNode: _kartenzahlungFocusNode,
+    umschlaege: _umschlaege,
+    umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
+    umschlagBetragFocusNode: _umschlagBetragFocusNode,
   );
 
   bool _istLetztesFeldSchritt1(FocusNode focusNode) =>
-      _schritt1IstLetztesFeld(this, focusNode);
+      _stateController.istLetztesFeld(_fokusReihenfolgeSchritt1(), focusNode);
 
   FocusNode? _naechstesFeldSchritt1(FocusNode focusNode) =>
-      _schritt1NaechstesFeld(this, focusNode);
+      _stateController.naechstesFeld(_fokusReihenfolgeSchritt1(), focusNode);
 
   TextInputAction _textInputActionFuerSchritt1(FocusNode focusNode) =>
-      _schritt1TextInputActionFuerSchritt1(this, focusNode);
+      _stateController.textInputActionFuerSchritt1(
+        _istLetztesFeldSchritt1(focusNode),
+      );
 
   void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) =>
-      _schritt1BeiEingabeAbgeschlossen(this, focusNode);
+      _stateController.beiEingabeAbgeschlossen(
+        context,
+        _naechstesFeldSchritt1(focusNode),
+      );
 
-  FocusNode? _aktivesFeldSchritt1() => _schritt1AktivesFeld(this);
+  FocusNode? _aktivesFeldSchritt1() =>
+      _stateController.aktivesFeld(_fokusReihenfolgeSchritt1());
 
-  void _weiterZumNaechstenFeldUnten() => _schritt1WeiterZumNaechstenFeld(this);
+  void _weiterZumNaechstenFeldUnten() => _stateController.weiterZumNaechstenFeld(
+    context: context,
+    reihenfolge: _fokusReihenfolgeSchritt1(),
+    aktivesFeld: _aktivesFeldSchritt1(),
+    naechstesFeld: _naechstesFeldSchritt1,
+    fokussiereTextfeld: _fokussiereTextfeld,
+  );
 
   void _fokussiereTextfeld(FocusNode fokusNode) =>
-      _schritt1FokussiereTextfeld(this, fokusNode);
+      _stateController.fokussiereTextfeld(
+        context: context,
+        fokusNode: fokusNode,
+        scrollHelper: _scrollHelper,
+        aktivesFeld: _aktivesFeldSchritt1,
+        oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
+        fokussiereTextfeldRekursiv: _fokussiereTextfeld,
+        mounted: mounted,
+      );
 
   // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
   int? _sectionIdFuerFokusfeld(FocusNode fokusNode) {
@@ -721,7 +792,7 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) =>
-      _schritt1SummeGruppe(_stueckzahlen, zeilen);
+      _stateController.summeGruppe(_stueckzahlen, zeilen);
 
   int get _umschlagSummeCent {
     return TagesabschlussBerechnung.summeUmschlaegeCent(_umschlaege);
@@ -754,11 +825,10 @@ class _TagesabschlussSchritt1SeiteState
   int get _gesamtUmsatzMitKarteCent =>
       _barumsatzBereinigtCent + _kartenzahlungenSummeCent;
 
-  String _formatiereEuro(int cent) => _schritt1FormatiereEuro(cent);
+  String _formatiereEuro(int cent) => _stateController.formatiereEuro(cent);
 
-  String _formatiereEuroEingabe(int cent) => _schritt1FormatiereEuroEingabe(
-    cent,
-  );
+  String _formatiereEuroEingabe(int cent) =>
+      _stateController.formatiereEuroEingabe(cent);
 
   Future<void> _bestaetigeUndLeereEingaben() async {
     final bool? bestaetigt = await showDialog<bool>(

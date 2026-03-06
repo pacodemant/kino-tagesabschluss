@@ -1,261 +1,271 @@
-part of 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 
-// Zweck: Enthält ausgelagerte State-/Controller-Helfer für Schritt 1.
-int _schritt1ParseGanzzahl(String wert) {
-  return int.tryParse(wert) ?? 0;
-}
+// Zweck: Eigenstaendiger Controller fuer State-/Fokus-Helfer in Schritt 1.
+class Schritt1StateController {
+  const Schritt1StateController();
 
-void _schritt1SetzeStueckzahl(
-  _TagesabschlussSchritt1SeiteState state,
-  String zeilenId,
-  int wert,
-) {
-  state._stueckzahlen[zeilenId] = wert;
-}
-
-void _schritt1SetzeLoseMuenzartBetrag(
-  _TagesabschlussSchritt1SeiteState state,
-  String muenzartId,
-  int betragCent,
-) {
-  state._loseMuenzenNachArtCent[muenzartId] = betragCent;
-}
-
-void _schritt1FuegeUmschlagEintragHinzu(
-  _TagesabschlussSchritt1SeiteState state,
-) {
-  state._fuegeUmschlagEintragOhneSpeichernHinzu(
-    const UmschlagEintrag(bezeichnung: '', betragCent: 0),
-  );
-}
-
-bool _schritt1KannUmschlagEntfernen(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-) {
-  return index > 0 && index < state._umschlaege.length;
-}
-
-bool _schritt1IstUmschlagIndexGueltig(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-) {
-  return index >= 0 && index < state._umschlaege.length;
-}
-
-void _schritt1EntferneUmschlag(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-) {
-  state._umschlaege.removeAt(index);
-  state._umschlagBetragController.removeAt(index).dispose();
-  state._umschlagBezeichnungController.removeAt(index).dispose();
-  final FocusNode betragFocusNode = state._umschlagBetragFocusNode.removeAt(
-    index,
-  );
-  final FocusNode bezeichnungFocusNode = state._umschlagBezeichnungFocusNode
-      .removeAt(index);
-  state._scrollHelper.entferneFeldKey(betragFocusNode);
-  state._scrollHelper.entferneFeldKey(bezeichnungFocusNode);
-  betragFocusNode.dispose();
-  bezeichnungFocusNode.dispose();
-  state._umschlagIds.removeAt(index);
-}
-
-void _schritt1SetzeUmschlagBezeichnung(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-  String wert,
-) {
-  state._umschlaege[index] = UmschlagEintrag(
-    bezeichnung: wert,
-    betragCent: state._umschlaege[index].betragCent,
-  );
-}
-
-void _schritt1SetzeUmschlagBetrag(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-  int betragCent,
-) {
-  state._umschlaege[index] = UmschlagEintrag(
-    bezeichnung: state._umschlaege[index].bezeichnung,
-    betragCent: betragCent,
-  );
-}
-
-void _schritt1SetzeKartenzahlungAnzahl(
-  _TagesabschlussSchritt1SeiteState state,
-  int anzahl,
-) {
-  while (state._kartenzahlungController.length > anzahl) {
-    state._kartenzahlungController.removeLast().dispose();
-    final FocusNode focusNode = state._kartenzahlungFocusNode.removeLast();
-    state._scrollHelper.entferneFeldKey(focusNode);
-    focusNode.dispose();
-    state._kartenzahlungenCent.removeLast();
-    state._kartenzahlungIds.removeLast();
+  int parseGanzzahl(String wert) {
+    return int.tryParse(wert) ?? 0;
   }
-  while (state._kartenzahlungController.length < anzahl) {
-    state._kartenzahlungController.add(TextEditingController());
-    state._kartenzahlungFocusNode.add(FocusNode());
-    state._kartenzahlungenCent.add(0);
-    state._kartenzahlungIds.add(state._naechsteKartenzahlungId++);
+
+  void setzeStueckzahl(Map<String, int> stueckzahlen, String zeilenId, int wert) {
+    stueckzahlen[zeilenId] = wert;
   }
-}
 
-bool _schritt1KannKartenzahlungEntfernen(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-) {
-  return index > 0 && index < state._kartenzahlungController.length;
-}
-
-void _schritt1EntferneKartenzahlung(
-  _TagesabschlussSchritt1SeiteState state,
-  int index,
-) {
-  state._kartenzahlungController.removeAt(index).dispose();
-  final FocusNode focusNode = state._kartenzahlungFocusNode.removeAt(index);
-  state._scrollHelper.entferneFeldKey(focusNode);
-  focusNode.dispose();
-  state._kartenzahlungenCent.removeAt(index);
-  state._kartenzahlungIds.removeAt(index);
-}
-
-int _schritt1ParseCentZiffern(String wert) {
-  return TagesabschlussBerechnung.parseCentZiffern(wert);
-}
-
-List<FocusNode> _schritt1FokusReihenfolge(
-  _TagesabschlussSchritt1SeiteState state,
-) {
-  final List<FocusNode> reihenfolge = <FocusNode>[
-    ...state._scheine.map(
-      (Kassenzeile zeile) => state._stueckzahlFocusNode[zeile.id]!,
-    ),
-    ...state._loseMuenzarten.map(
-      (Kassenzeile zeile) => state._loseMuenzenFocusNode[zeile.id]!,
-    ),
-    ...state._rollenSichtbar.map(
-      (Kassenzeile zeile) => state._stueckzahlFocusNode[zeile.id]!,
-    ),
-    ...state._kartenzahlungFocusNode,
-  ];
-
-  for (int i = 0; i < state._umschlaege.length; i++) {
-    reihenfolge.add(state._umschlagBezeichnungFocusNode[i]);
-    reihenfolge.add(state._umschlagBetragFocusNode[i]);
+  void setzeLoseMuenzartBetrag(
+    Map<String, int> loseMuenzenNachArtCent,
+    String muenzartId,
+    int betragCent,
+  ) {
+    loseMuenzenNachArtCent[muenzartId] = betragCent;
   }
-  return reihenfolge;
-}
 
-bool _schritt1IstLetztesFeld(
-  _TagesabschlussSchritt1SeiteState state,
-  FocusNode focusNode,
-) {
-  final List<FocusNode> reihenfolge = state._fokusReihenfolgeSchritt1();
-  return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
-}
-
-FocusNode? _schritt1NaechstesFeld(
-  _TagesabschlussSchritt1SeiteState state,
-  FocusNode focusNode,
-) {
-  final List<FocusNode> reihenfolge = state._fokusReihenfolgeSchritt1();
-  final int index = reihenfolge.indexWhere(
-    (FocusNode kandidat) => identical(kandidat, focusNode),
-  );
-  if (index < 0 || index >= reihenfolge.length - 1) {
-    return null;
+  void fuegeUmschlagEintragHinzu(VoidCallback fuegeDefaultUmschlagHinzu) {
+    fuegeDefaultUmschlagHinzu();
   }
-  return reihenfolge[index + 1];
-}
 
-TextInputAction _schritt1TextInputActionFuerSchritt1(
-  _TagesabschlussSchritt1SeiteState state,
-  FocusNode focusNode,
-) {
-  return state._istLetztesFeldSchritt1(focusNode)
-      ? TextInputAction.done
-      : TextInputAction.next;
-}
-
-void _schritt1BeiEingabeAbgeschlossen(
-  _TagesabschlussSchritt1SeiteState state,
-  FocusNode focusNode,
-) {
-  final FocusNode? naechstesFeld = state._naechstesFeldSchritt1(focusNode);
-  if (naechstesFeld == null) {
-    FocusScope.of(state.context).unfocus();
-    return;
+  bool kannUmschlagEntfernen(List<UmschlagEintrag> umschlaege, int index) {
+    return index > 0 && index < umschlaege.length;
   }
-  FocusScope.of(state.context).requestFocus(naechstesFeld);
-}
 
-FocusNode? _schritt1AktivesFeld(_TagesabschlussSchritt1SeiteState state) {
-  for (final FocusNode focusNode in state._fokusReihenfolgeSchritt1()) {
-    if (focusNode.hasFocus) {
-      return focusNode;
+  bool istUmschlagIndexGueltig(List<UmschlagEintrag> umschlaege, int index) {
+    return index >= 0 && index < umschlaege.length;
+  }
+
+  void entferneUmschlag({
+    required List<UmschlagEintrag> umschlaege,
+    required List<TextEditingController> umschlagBetragController,
+    required List<TextEditingController> umschlagBezeichnungController,
+    required List<FocusNode> umschlagBetragFocusNode,
+    required List<FocusNode> umschlagBezeichnungFocusNode,
+    required List<int> umschlagIds,
+    required int index,
+    required void Function(FocusNode focusNode) entferneFeldKey,
+  }) {
+    umschlaege.removeAt(index);
+    umschlagBetragController.removeAt(index).dispose();
+    umschlagBezeichnungController.removeAt(index).dispose();
+    final FocusNode betragFocusNode = umschlagBetragFocusNode.removeAt(index);
+    final FocusNode bezeichnungFocusNode = umschlagBezeichnungFocusNode.removeAt(
+      index,
+    );
+    entferneFeldKey(betragFocusNode);
+    entferneFeldKey(bezeichnungFocusNode);
+    betragFocusNode.dispose();
+    bezeichnungFocusNode.dispose();
+    umschlagIds.removeAt(index);
+  }
+
+  void setzeUmschlagBezeichnung(
+    List<UmschlagEintrag> umschlaege,
+    int index,
+    String wert,
+  ) {
+    umschlaege[index] = UmschlagEintrag(
+      bezeichnung: wert,
+      betragCent: umschlaege[index].betragCent,
+    );
+  }
+
+  void setzeUmschlagBetrag(
+    List<UmschlagEintrag> umschlaege,
+    int index,
+    int betragCent,
+  ) {
+    umschlaege[index] = UmschlagEintrag(
+      bezeichnung: umschlaege[index].bezeichnung,
+      betragCent: betragCent,
+    );
+  }
+
+  void setzeKartenzahlungAnzahl({
+    required int anzahl,
+    required List<TextEditingController> kartenzahlungController,
+    required List<FocusNode> kartenzahlungFocusNode,
+    required List<int> kartenzahlungenCent,
+    required List<int> kartenzahlungIds,
+    required int Function() naechsteKartenzahlungId,
+    required void Function(FocusNode focusNode) entferneFeldKey,
+  }) {
+    while (kartenzahlungController.length > anzahl) {
+      kartenzahlungController.removeLast().dispose();
+      final FocusNode focusNode = kartenzahlungFocusNode.removeLast();
+      entferneFeldKey(focusNode);
+      focusNode.dispose();
+      kartenzahlungenCent.removeLast();
+      kartenzahlungIds.removeLast();
+    }
+    while (kartenzahlungController.length < anzahl) {
+      kartenzahlungController.add(TextEditingController());
+      kartenzahlungFocusNode.add(FocusNode());
+      kartenzahlungenCent.add(0);
+      kartenzahlungIds.add(naechsteKartenzahlungId());
     }
   }
-  return null;
-}
 
-void _schritt1WeiterZumNaechstenFeld(_TagesabschlussSchritt1SeiteState state) {
-  final List<FocusNode> reihenfolge = state._fokusReihenfolgeSchritt1();
-  if (reihenfolge.isEmpty) {
-    return;
+  bool kannKartenzahlungEntfernen(
+    List<TextEditingController> kartenzahlungController,
+    int index,
+  ) {
+    return index > 0 && index < kartenzahlungController.length;
   }
-  final FocusNode? aktivesFeld = state._aktivesFeldSchritt1();
-  if (aktivesFeld == null) {
-    state._fokussiereTextfeld(reihenfolge.first);
-    return;
-  }
-  final FocusNode? naechstesFeld = state._naechstesFeldSchritt1(aktivesFeld);
-  if (naechstesFeld == null) {
-    FocusScope.of(state.context).unfocus();
-    return;
-  }
-  state._fokussiereTextfeld(naechstesFeld);
-}
 
-void _schritt1FokussiereTextfeld(
-  _TagesabschlussSchritt1SeiteState state,
-  FocusNode fokusNode,
-) {
-  state._scrollHelper.markiereProgrammatischenFokuswechsel();
-  final FocusNode? vorherigesFokusfeld = state._aktivesFeldSchritt1();
-  final bool sectionWurdeGeoeffnet = state._oeffneSectionFuerFokusfeld(
-    fokusNode,
-    vorherigesFokusfeld: vorherigesFokusfeld,
-  );
-  if (sectionWurdeGeoeffnet) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!state.mounted) {
-        return;
+  void entferneKartenzahlung({
+    required List<TextEditingController> kartenzahlungController,
+    required List<FocusNode> kartenzahlungFocusNode,
+    required List<int> kartenzahlungenCent,
+    required List<int> kartenzahlungIds,
+    required int index,
+    required void Function(FocusNode focusNode) entferneFeldKey,
+  }) {
+    kartenzahlungController.removeAt(index).dispose();
+    final FocusNode focusNode = kartenzahlungFocusNode.removeAt(index);
+    entferneFeldKey(focusNode);
+    focusNode.dispose();
+    kartenzahlungenCent.removeAt(index);
+    kartenzahlungIds.removeAt(index);
+  }
+
+  int parseCentZiffern(String wert) {
+    return TagesabschlussBerechnung.parseCentZiffern(wert);
+  }
+
+  List<FocusNode> fokusReihenfolge({
+    required List<Kassenzeile> scheine,
+    required Map<String, FocusNode> stueckzahlFocusNode,
+    required List<Kassenzeile> loseMuenzarten,
+    required Map<String, FocusNode> loseMuenzenFocusNode,
+    required List<Kassenzeile> rollenSichtbar,
+    required List<FocusNode> kartenzahlungFocusNode,
+    required List<UmschlagEintrag> umschlaege,
+    required List<FocusNode> umschlagBezeichnungFocusNode,
+    required List<FocusNode> umschlagBetragFocusNode,
+  }) {
+    final List<FocusNode> reihenfolge = <FocusNode>[
+      ...scheine.map((Kassenzeile zeile) => stueckzahlFocusNode[zeile.id]!),
+      ...loseMuenzarten.map(
+        (Kassenzeile zeile) => loseMuenzenFocusNode[zeile.id]!,
+      ),
+      ...rollenSichtbar.map(
+        (Kassenzeile zeile) => stueckzahlFocusNode[zeile.id]!,
+      ),
+      ...kartenzahlungFocusNode,
+    ];
+
+    for (int i = 0; i < umschlaege.length; i++) {
+      reihenfolge.add(umschlagBezeichnungFocusNode[i]);
+      reihenfolge.add(umschlagBetragFocusNode[i]);
+    }
+    return reihenfolge;
+  }
+
+  bool istLetztesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
+    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
+  }
+
+  FocusNode? naechstesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
+    final int index = reihenfolge.indexWhere(
+      (FocusNode kandidat) => identical(kandidat, focusNode),
+    );
+    if (index < 0 || index >= reihenfolge.length - 1) {
+      return null;
+    }
+    return reihenfolge[index + 1];
+  }
+
+  TextInputAction textInputActionFuerSchritt1(bool istLetztesFeld) {
+    return istLetztesFeld ? TextInputAction.done : TextInputAction.next;
+  }
+
+  void beiEingabeAbgeschlossen(BuildContext context, FocusNode? naechstesFeld) {
+    if (naechstesFeld == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    FocusScope.of(context).requestFocus(naechstesFeld);
+  }
+
+  FocusNode? aktivesFeld(List<FocusNode> reihenfolge) {
+    for (final FocusNode focusNode in reihenfolge) {
+      if (focusNode.hasFocus) {
+        return focusNode;
       }
-      state._fokussiereTextfeld(fokusNode);
-    });
-    return;
+    }
+    return null;
   }
-  FocusScope.of(state.context).requestFocus(fokusNode);
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-    SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+
+  void weiterZumNaechstenFeld({
+    required BuildContext context,
+    required List<FocusNode> reihenfolge,
+    required FocusNode? aktivesFeld,
+    required FocusNode? Function(FocusNode focusNode) naechstesFeld,
+    required void Function(FocusNode fokusNode) fokussiereTextfeld,
+  }) {
+    if (reihenfolge.isEmpty) {
+      return;
+    }
+    if (aktivesFeld == null) {
+      fokussiereTextfeld(reihenfolge.first);
+      return;
+    }
+    final FocusNode? naechstes = naechstesFeld(aktivesFeld);
+    if (naechstes == null) {
+      FocusScope.of(context).unfocus();
+      return;
+    }
+    fokussiereTextfeld(naechstes);
   }
-}
 
-int _schritt1SummeGruppe(Map<String, int> stueckzahlen, List<Kassenzeile> zeilen) {
-  return TagesabschlussBerechnung.summeStueckzahlGruppeCent(
-    zeilen: zeilen,
-    stueckzahlen: stueckzahlen,
-  );
-}
+  void fokussiereTextfeld({
+    required BuildContext context,
+    required FocusNode fokusNode,
+    required Schritt1ScrollHelper scrollHelper,
+    required FocusNode? Function() aktivesFeld,
+    required bool Function(
+      FocusNode zielFokusNode, {
+      FocusNode? vorherigesFokusfeld,
+    }) oeffneSectionFuerFokusfeld,
+    required void Function(FocusNode fokusNode) fokussiereTextfeldRekursiv,
+    required bool mounted,
+  }) {
+    scrollHelper.markiereProgrammatischenFokuswechsel();
+    final FocusNode? vorherigesFokusfeld = aktivesFeld();
+    final bool sectionWurdeGeoeffnet = oeffneSectionFuerFokusfeld(
+      fokusNode,
+      vorherigesFokusfeld: vorherigesFokusfeld,
+    );
+    if (sectionWurdeGeoeffnet) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        fokussiereTextfeldRekursiv(fokusNode);
+      });
+      return;
+    }
+    FocusScope.of(context).requestFocus(fokusNode);
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+    }
+  }
 
-String _schritt1FormatiereEuro(int cent) {
-  return TagesabschlussFormatierung.formatiereEuro(cent);
-}
+  int summeGruppe(Map<String, int> stueckzahlen, List<Kassenzeile> zeilen) {
+    return TagesabschlussBerechnung.summeStueckzahlGruppeCent(
+      zeilen: zeilen,
+      stueckzahlen: stueckzahlen,
+    );
+  }
 
-String _schritt1FormatiereEuroEingabe(int cent) {
-  return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+  String formatiereEuro(int cent) {
+    return TagesabschlussFormatierung.formatiereEuro(cent);
+  }
+
+  String formatiereEuroEingabe(int cent) {
+    return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+  }
 }
