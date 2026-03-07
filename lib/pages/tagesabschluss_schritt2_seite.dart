@@ -71,9 +71,6 @@ class _TagesabschlussSchritt2SeiteState
   final FocusNode _ausgabenFocusNode = FocusNode();
   final FocusNode _differenzAnfangsbestandFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _kinoSollFeldKey = GlobalKey();
-  final GlobalKey _bistroSollFeldKey = GlobalKey();
-  final GlobalKey _ecBeleg1FeldKey = GlobalKey();
   final List<TextEditingController> _ecBelegController =
       <TextEditingController>[TextEditingController()];
   final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
@@ -214,40 +211,17 @@ class _TagesabschlussSchritt2SeiteState
       _validierungAusgeloest = true;
     });
 
-    final List<
-      ({TextEditingController controller, FocusNode fokus, GlobalKey key})
-    >
-    pflichtfelder =
-        <({TextEditingController controller, FocusNode fokus, GlobalKey key})>[
-          (
-            controller: _kinoSollController,
-            fokus: _kinoSollFocusNode,
-            key: _kinoSollFeldKey,
-          ),
-          (
-            controller: _bistroSollController,
-            fokus: _bistroSollFocusNode,
-            key: _bistroSollFeldKey,
-          ),
-          (
-            controller: _ecBelegController.first,
-            fokus: _ecBelegFocusNode.first,
-            key: _ecBeleg1FeldKey,
-          ),
-        ];
+    final List<({TextEditingController controller, FocusNode fokus})>
+    pflichtfelder = <({TextEditingController controller, FocusNode fokus})>[
+      (controller: _kinoSollController, fokus: _kinoSollFocusNode),
+      (controller: _bistroSollController, fokus: _bistroSollFocusNode),
+      (controller: _ecBelegController.first, fokus: _ecBelegFocusNode.first),
+    ];
 
-    for (final ({
-          TextEditingController controller,
-          FocusNode fokus,
-          GlobalKey key,
-        })
-        feld
+    for (final ({TextEditingController controller, FocusNode fokus}) feld
         in pflichtfelder) {
       if (feld.controller.text.trim().isEmpty) {
-        _zeigeValidierungsfehlerUndFokussiere(
-          fokusNode: feld.fokus,
-          feldKey: feld.key,
-        );
+        _zeigeValidierungsfehlerUndFokussiere(fokusNode: feld.fokus);
         return false;
       }
     }
@@ -270,15 +244,12 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   /// Zeigt eine knappe Rueckmeldung und macht das erste fehlerhafte Feld sichtbar.
-  void _zeigeValidierungsfehlerUndFokussiere({
-    required FocusNode fokusNode,
-    required GlobalKey feldKey,
-  }) {
+  void _zeigeValidierungsfehlerUndFokussiere({required FocusNode fokusNode}) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Bitte Pflichtfelder ausfüllen.')),
     );
     FocusScope.of(context).requestFocus(fokusNode);
-    final BuildContext? feldKontext = feldKey.currentContext;
+    final BuildContext? feldKontext = fokusNode.context;
     if (feldKontext == null) {
       return;
     }
@@ -533,14 +504,12 @@ class _TagesabschlussSchritt2SeiteState
     required TextEditingController controller,
     required ValueChanged<String> onChanged,
     required FocusNode focusNode,
-    GlobalKey? feldKey,
     String? fehlermeldungText,
     bool optional = false,
     bool zeigeLoeschen = false,
     VoidCallback? onLoeschen,
   }) {
     return Padding(
-      key: feldKey,
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: <Widget>[
@@ -551,14 +520,14 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           SizedBox(
-            width: 170,
+            width: 148,
             child: BetragCentEingabefeld(
               textController: controller,
               focusNode: focusNode,
               textInputAction: _textInputActionFuerSchritt2(focusNode),
               onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt2(focusNode),
               onChanged: onChanged,
-              schriftgroesse: 20,
+              schriftgroesse: 15,
               hinweisText: '0,00 €',
               fehlermeldungText: fehlermeldungText,
             ),
@@ -799,7 +768,6 @@ class _TagesabschlussSchritt2SeiteState
                             label: 'Kino SOLL',
                             controller: _kinoSollController,
                             focusNode: _kinoSollFocusNode,
-                            feldKey: _kinoSollFeldKey,
                             fehlermeldungText: _pflichtfeldFehlertext(
                               feldBeruehrt: _kinoSollBeruehrt,
                               controller: _kinoSollController,
@@ -815,7 +783,6 @@ class _TagesabschlussSchritt2SeiteState
                             label: 'Bistro SOLL',
                             controller: _bistroSollController,
                             focusNode: _bistroSollFocusNode,
-                            feldKey: _bistroSollFeldKey,
                             fehlermeldungText: _pflichtfeldFehlertext(
                               feldBeruehrt: _bistroSollBeruehrt,
                               controller: _bistroSollController,
@@ -856,7 +823,6 @@ class _TagesabschlussSchritt2SeiteState
                                 label: 'EC Beleg ${i + 1}',
                                 controller: _ecBelegController[i],
                                 focusNode: _ecBelegFocusNode[i],
-                                feldKey: i == 0 ? _ecBeleg1FeldKey : null,
                                 fehlermeldungText: i == 0
                                     ? _pflichtfeldFehlertext(
                                         feldBeruehrt: _ecBeleg1Beruehrt,
