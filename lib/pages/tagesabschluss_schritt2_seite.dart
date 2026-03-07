@@ -69,6 +69,10 @@ class _TagesabschlussSchritt2SeiteState
   final FocusNode _bistroSollFocusNode = FocusNode();
   final FocusNode _ausgabenFocusNode = FocusNode();
   final FocusNode _differenzAnfangsbestandFocusNode = FocusNode();
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _kinoSollFeldKey = GlobalKey();
+  final GlobalKey _bistroSollFeldKey = GlobalKey();
+  final GlobalKey _ecBeleg1FeldKey = GlobalKey();
   final List<TextEditingController> _ecBelegController =
       <TextEditingController>[TextEditingController()];
   final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
@@ -101,6 +105,7 @@ class _TagesabschlussSchritt2SeiteState
     _bistroSollFocusNode.dispose();
     _ausgabenFocusNode.dispose();
     _differenzAnfangsbestandFocusNode.dispose();
+    _scrollController.dispose();
     for (final TextEditingController controller in _ecBelegController) {
       controller.dispose();
     }
@@ -176,6 +181,9 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   void _weiterZuSchritt3() {
+    if (!_pruefePflichtfelderVorSchritt3()) {
+      return;
+    }
     Navigator.of(context).pushNamed(
       TagesabschlussSchritt3Seite.routenName,
       arguments: TagesabschlussSchritt3Argumente(
@@ -192,6 +200,69 @@ class _TagesabschlussSchritt2SeiteState
         ecBelegeCent: List<int>.from(_ecBelegeCent),
         differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
       ),
+    );
+  }
+
+  /// Prueft nur die fachlich noetigen Pflichtfelder vor dem finalen Abschluss.
+  bool _pruefePflichtfelderVorSchritt3() {
+    final List<
+      ({TextEditingController controller, FocusNode fokus, GlobalKey key})
+    >
+    pflichtfelder =
+        <({TextEditingController controller, FocusNode fokus, GlobalKey key})>[
+          (
+            controller: _kinoSollController,
+            fokus: _kinoSollFocusNode,
+            key: _kinoSollFeldKey,
+          ),
+          (
+            controller: _bistroSollController,
+            fokus: _bistroSollFocusNode,
+            key: _bistroSollFeldKey,
+          ),
+          (
+            controller: _ecBelegController.first,
+            fokus: _ecBelegFocusNode.first,
+            key: _ecBeleg1FeldKey,
+          ),
+        ];
+
+    for (final ({
+          TextEditingController controller,
+          FocusNode fokus,
+          GlobalKey key,
+        })
+        feld
+        in pflichtfelder) {
+      if (feld.controller.text.trim().isEmpty) {
+        _zeigeValidierungsfehlerUndFokussiere(
+          fokusNode: feld.fokus,
+          feldKey: feld.key,
+        );
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Zeigt eine knappe Rueckmeldung und macht das erste fehlerhafte Feld sichtbar.
+  void _zeigeValidierungsfehlerUndFokussiere({
+    required FocusNode fokusNode,
+    required GlobalKey feldKey,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Bitte Pflichtfelder ausfüllen.')),
+    );
+    FocusScope.of(context).requestFocus(fokusNode);
+    final BuildContext? feldKontext = feldKey.currentContext;
+    if (feldKontext == null) {
+      return;
+    }
+    Scrollable.ensureVisible(
+      feldKontext,
+      duration: const Duration(milliseconds: 260),
+      curve: Curves.easeOut,
+      alignment: 0.2,
     );
   }
 
@@ -429,11 +500,13 @@ class _TagesabschlussSchritt2SeiteState
     required TextEditingController controller,
     required ValueChanged<String> onChanged,
     required FocusNode focusNode,
+    GlobalKey? feldKey,
     bool optional = false,
     bool zeigeLoeschen = false,
     VoidCallback? onLoeschen,
   }) {
     return Padding(
+      key: feldKey,
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: <Widget>[
@@ -557,6 +630,7 @@ class _TagesabschlussSchritt2SeiteState
         children: <Widget>[
           SafeArea(
             child: ListView(
+              controller: _scrollController,
               padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
               keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
               children: <Widget>[
@@ -599,6 +673,7 @@ class _TagesabschlussSchritt2SeiteState
                           label: 'Kino SOLL',
                           controller: _kinoSollController,
                           focusNode: _kinoSollFocusNode,
+                          feldKey: _kinoSollFeldKey,
                           onChanged: (String wert) {
                             setState(() {
                               _kinoSollCent = _parseCentZiffern(wert);
@@ -609,6 +684,7 @@ class _TagesabschlussSchritt2SeiteState
                           label: 'Bistro SOLL',
                           controller: _bistroSollController,
                           focusNode: _bistroSollFocusNode,
+                          feldKey: _bistroSollFeldKey,
                           onChanged: (String wert) {
                             setState(() {
                               _bistroSollCent = _parseCentZiffern(wert);
@@ -644,6 +720,7 @@ class _TagesabschlussSchritt2SeiteState
                               label: 'EC Beleg ${i + 1}',
                               controller: _ecBelegController[i],
                               focusNode: _ecBelegFocusNode[i],
+                              feldKey: i == 0 ? _ecBeleg1FeldKey : null,
                               optional: i > 0,
                               zeigeLoeschen: i > 0,
                               onLoeschen: () => _ecBelegEntfernen(i),
