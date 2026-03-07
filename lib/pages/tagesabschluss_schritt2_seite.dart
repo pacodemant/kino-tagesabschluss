@@ -61,6 +61,22 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 
 class _TagesabschlussSchritt2SeiteState
     extends State<TagesabschlussSchritt2Seite> {
+  static const double _footerContentHoeheNormal = 44;
+  static const double _footerContentHoeheKeyboard = 40;
+  static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
+    12,
+    4,
+    12,
+    4,
+  );
+  static const EdgeInsets _footerPaddingKeyboard = EdgeInsets.fromLTRB(
+    12,
+    2,
+    12,
+    2,
+  );
+  static const double _iosLeistenHoehe = 44;
+
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
   final TextEditingController _ausgabenController = TextEditingController();
@@ -93,7 +109,12 @@ class _TagesabschlussSchritt2SeiteState
   @override
   void initState() {
     super.initState();
+    _kinoSollFocusNode.addListener(_beiFokusAenderung);
+    _bistroSollFocusNode.addListener(_beiFokusAenderung);
+    _ausgabenFocusNode.addListener(_beiFokusAenderung);
+    _differenzAnfangsbestandFocusNode.addListener(_beiFokusAenderung);
     final FocusNode ersterEcFocusNode = FocusNode();
+    ersterEcFocusNode.addListener(_beiFokusAenderung);
     _ecBelegFocusNode.add(ersterEcFocusNode);
   }
 
@@ -112,9 +133,18 @@ class _TagesabschlussSchritt2SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _ecBelegFocusNode) {
+      focusNode.removeListener(_beiFokusAenderung);
       focusNode.dispose();
     }
     super.dispose();
+  }
+
+  /// Aktualisiert den Footer-Zustand bei Fokuswechsel analog zu Schritt 1.
+  void _beiFokusAenderung() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
   }
 
   int _parseCentZiffern(String wert) {
@@ -249,15 +279,68 @@ class _TagesabschlussSchritt2SeiteState
       const SnackBar(content: Text('Bitte Pflichtfelder ausfüllen.')),
     );
     FocusScope.of(context).requestFocus(fokusNode);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _macheFehlerfeldSichtbar(fokusNode);
+    });
+  }
+
+  /// Stellt sicher, dass Feld und Inline-Fehlertext oberhalb von Tastatur/Footer liegen.
+  void _macheFehlerfeldSichtbar(FocusNode fokusNode) {
     final BuildContext? feldKontext = fokusNode.context;
     if (feldKontext == null) {
       return;
     }
+
     Scrollable.ensureVisible(
       feldKontext,
-      duration: const Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOutCubic,
+      alignment: 0.08,
+    );
+
+    final RenderObject? renderObject = feldKontext.findRenderObject();
+    if (renderObject is! RenderBox || !_scrollController.hasClients) {
+      return;
+    }
+
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
+    final bool iosLeisteSichtbar =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS && tastaturOffen;
+
+    final double footerContentHoehe = tastaturOffen
+        ? _footerContentHoeheKeyboard
+        : _footerContentHoeheNormal;
+    final double footerBottomInset = tastaturOffen
+        ? 0
+        : mediaQuery.padding.bottom;
+    final double footerGesamtHoehe = footerContentHoehe + footerBottomInset;
+    final double footerBottom =
+        mediaQuery.viewInsets.bottom +
+        (iosLeisteSichtbar ? _iosLeistenHoehe : 0);
+    final double ueberlagerungUnten = footerBottom + footerGesamtHoehe;
+
+    final Offset feldPosition = renderObject.localToGlobal(Offset.zero);
+    final double feldUnterkante = feldPosition.dy + renderObject.size.height;
+    const double fehlerTextReserve = 30;
+    final double sichtbarerBereichUnten =
+        mediaQuery.size.height - ueberlagerungUnten - 8;
+
+    if (feldUnterkante + fehlerTextReserve <= sichtbarerBereichUnten) {
+      return;
+    }
+
+    final double delta =
+        feldUnterkante + fehlerTextReserve - sichtbarerBereichUnten;
+    final double zielOffset = (_scrollController.position.pixels + delta + 6)
+        .clamp(
+          _scrollController.position.minScrollExtent,
+          _scrollController.position.maxScrollExtent,
+        );
+    _scrollController.animateTo(
+      zielOffset,
+      duration: const Duration(milliseconds: 160),
       curve: Curves.easeOut,
-      alignment: 0.2,
     );
   }
 
@@ -265,6 +348,7 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _ecBelegController.add(TextEditingController());
       final FocusNode focusNode = FocusNode();
+      focusNode.addListener(_beiFokusAenderung);
       _ecBelegFocusNode.add(focusNode);
       _ecBelegeCent.add(0);
       _ecBelegIds.add(_naechsteEcBelegId++);
@@ -280,6 +364,7 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _ecBelegController.removeAt(index).dispose();
       final FocusNode focusNode = _ecBelegFocusNode.removeAt(index);
+      focusNode.removeListener(_beiFokusAenderung);
       focusNode.dispose();
       _ecBelegeCent.removeAt(index);
       _ecBelegIds.removeAt(index);
@@ -301,6 +386,7 @@ class _TagesabschlussSchritt2SeiteState
     while (_ecBelegController.length > anzahl) {
       _ecBelegController.removeLast().dispose();
       final FocusNode focusNode = _ecBelegFocusNode.removeLast();
+      focusNode.removeListener(_beiFokusAenderung);
       focusNode.dispose();
       _ecBelegeCent.removeLast();
       _ecBelegIds.removeLast();
@@ -308,6 +394,7 @@ class _TagesabschlussSchritt2SeiteState
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
       final FocusNode focusNode = FocusNode();
+      focusNode.addListener(_beiFokusAenderung);
       _ecBelegFocusNode.add(focusNode);
       _ecBelegeCent.add(0);
       _ecBelegIds.add(_naechsteEcBelegId++);
@@ -667,24 +754,19 @@ class _TagesabschlussSchritt2SeiteState
         !kIsWeb &&
         defaultTargetPlatform == TargetPlatform.iOS &&
         istTastaturSichtbar;
-    const double footerContentHoeheNormal = 44;
-    const double footerContentHoeheKeyboard = 40;
-    const EdgeInsets footerPaddingNormal = EdgeInsets.fromLTRB(12, 4, 12, 4);
-    const EdgeInsets footerPaddingKeyboard = EdgeInsets.fromLTRB(12, 2, 12, 2);
-    const double iosLeistenHoehe = 44;
     final double footerContentHoehe = istTastaturSichtbar
-        ? footerContentHoeheKeyboard
-        : footerContentHoeheNormal;
+        ? _footerContentHoeheKeyboard
+        : _footerContentHoeheNormal;
     final double footerBottomInset = istTastaturSichtbar
         ? 0
         : mediaQuery.padding.bottom;
     final EdgeInsets footerPadding = istTastaturSichtbar
-        ? footerPaddingKeyboard
-        : footerPaddingNormal;
+        ? _footerPaddingKeyboard
+        : _footerPaddingNormal;
     final double footerGesamtHoehe = footerContentHoehe + footerBottomInset;
     final double footerBottom =
         mediaQuery.viewInsets.bottom +
-        (iosLeisteSichtbar ? iosLeistenHoehe : 0);
+        (iosLeisteSichtbar ? _iosLeistenHoehe : 0);
     final double bottomPadding =
         mediaQuery.viewInsets.bottom +
         footerGesamtHoehe +
