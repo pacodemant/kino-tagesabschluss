@@ -1,0 +1,277 @@
+import 'package:flutter/material.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart'
+    as schritt1_ui;
+
+// Zweck: Kapselt den verbleibenden Gruppen-/Wrapper-Aufbau fuer Schritt 1.
+class Schritt1GruppenOrchestrierung {
+  const Schritt1GruppenOrchestrierung();
+
+  Schritt1GruppenWidgets baueGruppen({
+    required List<Kassenzeile> scheine,
+    required List<Kassenzeile> loseMuenzarten,
+    required List<Kassenzeile> rollenOhneKupfer,
+    required List<Kassenzeile> kupferRollen,
+    required List<Kassenzeile> rollenSichtbar,
+    required bool scheineAufgeklappt,
+    required bool loseMuenzenAufgeklappt,
+    required bool rollenAufgeklappt,
+    required bool kartenzahlungenAufgeklappt,
+    required bool umschlaegeAufgeklappt,
+    required bool kupferRollenSichtbar,
+    required Map<String, int> stueckzahlen,
+    required Map<String, TextEditingController> stueckzahlController,
+    required Map<String, FocusNode> stueckzahlFocusNode,
+    required Map<String, TextEditingController> loseMuenzenController,
+    required Map<String, FocusNode> loseMuenzenFocusNode,
+    required List<UmschlagEintrag> umschlaege,
+    required List<int> umschlagIds,
+    required List<TextEditingController> umschlagBezeichnungController,
+    required List<TextEditingController> umschlagBetragController,
+    required List<FocusNode> umschlagBezeichnungFocusNode,
+    required List<FocusNode> umschlagBetragFocusNode,
+    required List<TextEditingController> kartenzahlungController,
+    required List<int> kartenzahlungIds,
+    required List<FocusNode> kartenzahlungFocusNode,
+    required List<int> kartenzahlungenCent,
+    required int loseMuenzenGesamtCent,
+    required int kartenzahlungenSummeCent,
+    required int umschlagSummeCent,
+    required String Function(int cent) formatiereEuro,
+    required int Function(List<Kassenzeile> zeilen) summeGruppe,
+    required Schritt1FeldMitKeyBuilder baueFeldMitKey,
+    required TextInputAction Function(FocusNode focusNode)
+    textInputActionFuerSchritt1,
+    required void Function(FocusNode focusNode) beiEingabeAbgeschlossen,
+    required void Function(Kassenzeile zeile, String wert)
+    beiStueckzahlGeaendert,
+    required void Function(String muenzartId, String wert)
+    beiLoseMuenzartBetragGeaendert,
+    required void Function(int index, String wert)
+    beiKartenzahlungBetragGeaendert,
+    required void Function(int index) kartenzahlungEntfernen,
+    required VoidCallback kartenzahlungHinzufuegen,
+    required void Function(int index, String wert)
+    beiUmschlagBezeichnungGeaendert,
+    required void Function(int index, String wert) beiUmschlagBetragGeaendert,
+    required void Function(int index) umschlagEntfernen,
+    required VoidCallback umschlagHinzufuegen,
+    required VoidCallback zeigeKupferRollen,
+    required VoidCallback toggleScheine,
+    required VoidCallback toggleLoseMuenzen,
+    required VoidCallback toggleRollen,
+    required VoidCallback toggleKartenzahlungen,
+    required VoidCallback toggleUmschlaege,
+  }) {
+    Widget baueZeilenEintrag(Kassenzeile zeile) {
+      return _baueZeilenEintrag(
+        zeile: zeile,
+        stueckzahl: stueckzahlen[zeile.id] ?? 0,
+        controller: stueckzahlController[zeile.id]!,
+        focusNode: stueckzahlFocusNode[zeile.id]!,
+        baueFeldMitKey: baueFeldMitKey,
+        textInputActionFuerSchritt1: textInputActionFuerSchritt1,
+        beiStueckzahlGeaendert: beiStueckzahlGeaendert,
+        beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
+        formatiereEuro: formatiereEuro,
+      );
+    }
+
+    final Widget scheineGruppe = Schritt1ScheineSection(
+      gesamtbetrag: formatiereEuro(summeGruppe(scheine)),
+      aufgeklappt: scheineAufgeklappt,
+      beimUmschalten: toggleScheine,
+      inhalt: schritt1_ui.Schritt1GruppenInhalt(
+        zeilen: scheine,
+        gesamtbetragLabel: 'Gesamtbetrag Scheine',
+        zeilenEintragBuilder: baueZeilenEintrag,
+        summeGruppe: summeGruppe,
+        formatiereBetrag: formatiereEuro,
+      ),
+    );
+
+    final Widget loseMuenzenGruppe = Schritt1MuenzenLoseSection(
+      gesamtbetrag: formatiereEuro(loseMuenzenGesamtCent),
+      aufgeklappt: loseMuenzenAufgeklappt,
+      beimUmschalten: toggleLoseMuenzen,
+      inhalt: schritt1_ui.Schritt1LoseMuenzenInhalt(
+        loseMuenzarten: loseMuenzarten,
+        loseMuenzenFocusNode: loseMuenzenFocusNode,
+        loseMuenzenController: loseMuenzenController,
+        baueFeldMitKey: baueFeldMitKey,
+        textInputActionFuerSchritt1: textInputActionFuerSchritt1,
+        beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
+        beiLoseMuenzartBetragGeaendert: beiLoseMuenzartBetragGeaendert,
+        formatiereEuro: formatiereEuro,
+        loseMuenzenGesamtCent: loseMuenzenGesamtCent,
+      ),
+    );
+
+    final Widget rollenGruppe = Schritt1MuenzenRollenSection(
+      gesamtbetrag: schritt1_ui.schritt1FormatiereRollenAnzeige(
+        summeGruppe(rollenSichtbar),
+        formatiereEuro,
+      ),
+      aufgeklappt: rollenAufgeklappt,
+      beimUmschalten: toggleRollen,
+      inhalt: schritt1_ui.Schritt1RollenInhalt(
+        rollenOhneKupfer: rollenOhneKupfer,
+        kupferRollen: kupferRollen,
+        kupferRollenSichtbar: kupferRollenSichtbar,
+        zeilenEintragBuilder: baueZeilenEintrag,
+        summeGruppe: summeGruppe,
+        formatiereRollenAnzeige: (int cent) =>
+            schritt1_ui.schritt1FormatiereRollenAnzeige(cent, formatiereEuro),
+        zeigeKupferRollen: zeigeKupferRollen,
+        rollenSichtbar: rollenSichtbar,
+      ),
+    );
+
+    final Widget kartenzahlungenGruppe = _baueEinklappbarenBereich(
+      titel: 'Kartenzahlungen (Beträge)',
+      gesamtbetragCent: kartenzahlungenSummeCent,
+      aufgeklappt: kartenzahlungenAufgeklappt,
+      beimUmschalten: toggleKartenzahlungen,
+      inhalt: schritt1_ui.Schritt1KartenzahlungenInhalt(
+        kartenzahlungController: kartenzahlungController,
+        kartenzahlungIds: kartenzahlungIds,
+        kartenzahlungFocusNode: kartenzahlungFocusNode,
+        baueFeldMitKey: baueFeldMitKey,
+        textInputActionFuerSchritt1: textInputActionFuerSchritt1,
+        beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
+        beiKartenzahlungBetragGeaendert: beiKartenzahlungBetragGeaendert,
+        kartenzahlungEntfernen: kartenzahlungEntfernen,
+        kartenzahlungHinzufuegen: kartenzahlungHinzufuegen,
+        kartenzahlungenCent: kartenzahlungenCent,
+        formatiereEuro: formatiereEuro,
+        kartenzahlungenSummeCent: kartenzahlungenSummeCent,
+      ),
+      formatiereEuro: formatiereEuro,
+    );
+
+    final Widget umschlaegeGruppe = _baueEinklappbarenBereich(
+      titel: 'Umschläge (Beträge)',
+      gesamtbetragCent: umschlagSummeCent,
+      aufgeklappt: umschlaegeAufgeklappt,
+      beimUmschalten: toggleUmschlaege,
+      inhalt: Schritt1UmschlaegeSection(
+        umschlaege: umschlaege,
+        umschlagIds: umschlagIds,
+        umschlagBezeichnungController: umschlagBezeichnungController,
+        umschlagBetragController: umschlagBetragController,
+        umschlagBezeichnungFocusNode: umschlagBezeichnungFocusNode,
+        umschlagBetragFocusNode: umschlagBetragFocusNode,
+        baueFeldMitKey: baueFeldMitKey,
+        textInputActionFuerSchritt1: textInputActionFuerSchritt1,
+        beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
+        beiUmschlagBezeichnungGeaendert: beiUmschlagBezeichnungGeaendert,
+        beiUmschlagBetragGeaendert: beiUmschlagBetragGeaendert,
+        umschlagEntfernen: umschlagEntfernen,
+        umschlagHinzufuegen: umschlagHinzufuegen,
+        formatiereEuro: formatiereEuro,
+        umschlagSummeCent: umschlagSummeCent,
+      ),
+      formatiereEuro: formatiereEuro,
+    );
+
+    return Schritt1GruppenWidgets(
+      scheineGruppe: scheineGruppe,
+      loseMuenzenGruppe: loseMuenzenGruppe,
+      rollenGruppe: rollenGruppe,
+      hinweiseSection: Schritt1HinweiseSection(
+        kartenzahlungenInhalt: kartenzahlungenGruppe,
+        umschlaegeInhalt: umschlaegeGruppe,
+      ),
+    );
+  }
+
+  Widget _baueEinklappbarenBereich({
+    required String titel,
+    required int gesamtbetragCent,
+    required bool aufgeklappt,
+    required VoidCallback beimUmschalten,
+    required Widget inhalt,
+    required String Function(int cent) formatiereEuro,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          InkWell(
+            onTap: beimUmschalten,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Text(
+                      titel,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Text(
+                    formatiereEuro(gesamtbetragCent),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(aufgeklappt ? Icons.expand_less : Icons.expand_more),
+                ],
+              ),
+            ),
+          ),
+          if (aufgeklappt) ...<Widget>[
+            const Divider(height: 1),
+            Padding(padding: const EdgeInsets.all(12), child: inhalt),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _baueZeilenEintrag({
+    required Kassenzeile zeile,
+    required int stueckzahl,
+    required TextEditingController controller,
+    required FocusNode focusNode,
+    required Schritt1FeldMitKeyBuilder baueFeldMitKey,
+    required TextInputAction Function(FocusNode focusNode)
+    textInputActionFuerSchritt1,
+    required void Function(Kassenzeile zeile, String wert)
+    beiStueckzahlGeaendert,
+    required void Function(FocusNode focusNode) beiEingabeAbgeschlossen,
+    required String Function(int cent) formatiereEuro,
+  }) {
+    return schritt1_ui.Schritt1ZeilenEintrag(
+      zeile: zeile,
+      stueckzahl: stueckzahl,
+      controller: controller,
+      focusNode: focusNode,
+      baueFeldMitKey: baueFeldMitKey,
+      textInputActionFuerSchritt1: textInputActionFuerSchritt1,
+      beiStueckzahlGeaendert: beiStueckzahlGeaendert,
+      beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
+      formatiereEuro: formatiereEuro,
+    );
+  }
+}
+
+// Zweck: Buedelt die gruppierten Widgets fuer die Body-Composition.
+class Schritt1GruppenWidgets {
+  const Schritt1GruppenWidgets({
+    required this.scheineGruppe,
+    required this.loseMuenzenGruppe,
+    required this.rollenGruppe,
+    required this.hinweiseSection,
+  });
+
+  final Widget scheineGruppe;
+  final Widget loseMuenzenGruppe;
+  final Widget rollenGruppe;
+  final Widget hinweiseSection;
+}

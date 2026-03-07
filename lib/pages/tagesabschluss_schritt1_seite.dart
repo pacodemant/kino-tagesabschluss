@@ -10,18 +10,12 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_scheine_section.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_footer.dart'
     as schritt1_footer;
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart'
-    as schritt1_ui;
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -86,6 +80,8 @@ class _TagesabschlussSchritt1SeiteState
       const Schritt1StateController();
   final Schritt1OrchestrierungHelper _orchestrierungHelper =
       const Schritt1OrchestrierungHelper();
+  final Schritt1GruppenOrchestrierung _gruppenOrchestrierung =
+      const Schritt1GruppenOrchestrierung();
   late final Schritt1InitialisierungHelper _initialisierungHelper;
 
   final Map<String, int> _stueckzahlen = <String, int>{};
@@ -523,17 +519,18 @@ class _TagesabschlussSchritt1SeiteState
 
   int _parseCentZiffern(String wert) => _stateController.parseCentZiffern(wert);
 
-  List<FocusNode> _fokusReihenfolgeSchritt1() => _stateController.fokusReihenfolge(
-    scheine: _scheine,
-    stueckzahlFocusNode: _stueckzahlFocusNode,
-    loseMuenzarten: _loseMuenzarten,
-    loseMuenzenFocusNode: _loseMuenzenFocusNode,
-    rollenSichtbar: _rollenSichtbar,
-    kartenzahlungFocusNode: _kartenzahlungFocusNode,
-    umschlaege: _umschlaege,
-    umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
-    umschlagBetragFocusNode: _umschlagBetragFocusNode,
-  );
+  List<FocusNode> _fokusReihenfolgeSchritt1() =>
+      _stateController.fokusReihenfolge(
+        scheine: _scheine,
+        stueckzahlFocusNode: _stueckzahlFocusNode,
+        loseMuenzarten: _loseMuenzarten,
+        loseMuenzenFocusNode: _loseMuenzenFocusNode,
+        rollenSichtbar: _rollenSichtbar,
+        kartenzahlungFocusNode: _kartenzahlungFocusNode,
+        umschlaege: _umschlaege,
+        umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
+        umschlagBetragFocusNode: _umschlagBetragFocusNode,
+      );
 
   bool _istLetztesFeldSchritt1(FocusNode focusNode) =>
       _stateController.istLetztesFeld(_fokusReihenfolgeSchritt1(), focusNode);
@@ -546,22 +543,20 @@ class _TagesabschlussSchritt1SeiteState
         _istLetztesFeldSchritt1(focusNode),
       );
 
-  void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) =>
-      _stateController.beiEingabeAbgeschlossen(
-        context,
-        _naechstesFeldSchritt1(focusNode),
-      );
+  void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) => _stateController
+      .beiEingabeAbgeschlossen(context, _naechstesFeldSchritt1(focusNode));
 
   FocusNode? _aktivesFeldSchritt1() =>
       _stateController.aktivesFeld(_fokusReihenfolgeSchritt1());
 
-  void _weiterZumNaechstenFeldUnten() => _stateController.weiterZumNaechstenFeld(
-    context: context,
-    reihenfolge: _fokusReihenfolgeSchritt1(),
-    aktivesFeld: _aktivesFeldSchritt1(),
-    naechstesFeld: _naechstesFeldSchritt1,
-    fokussiereTextfeld: _fokussiereTextfeld,
-  );
+  void _weiterZumNaechstenFeldUnten() =>
+      _stateController.weiterZumNaechstenFeld(
+        context: context,
+        reihenfolge: _fokusReihenfolgeSchritt1(),
+        aktivesFeld: _aktivesFeldSchritt1(),
+        naechstesFeld: _naechstesFeldSchritt1,
+        fokussiereTextfeld: _fokussiereTextfeld,
+      );
 
   void _fokussiereTextfeld(FocusNode fokusNode) =>
       _stateController.fokussiereTextfeld(
@@ -577,7 +572,8 @@ class _TagesabschlussSchritt1SeiteState
   // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
   int? _sectionIdFuerFokusfeld(FocusNode fokusNode) {
     if (_scheine.any(
-      (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
+      (Kassenzeile zeile) =>
+          identical(_stueckzahlFocusNode[zeile.id], fokusNode),
     )) {
       return 0;
     }
@@ -588,11 +584,14 @@ class _TagesabschlussSchritt1SeiteState
       return 1;
     }
     if (_rollenSichtbar.any(
-      (Kassenzeile zeile) => identical(_stueckzahlFocusNode[zeile.id], fokusNode),
+      (Kassenzeile zeile) =>
+          identical(_stueckzahlFocusNode[zeile.id], fokusNode),
     )) {
       return 2;
     }
-    if (_kartenzahlungFocusNode.any((FocusNode node) => identical(node, fokusNode))) {
+    if (_kartenzahlungFocusNode.any(
+      (FocusNode node) => identical(node, fokusNode),
+    )) {
       return 3;
     }
     if (_umschlagBezeichnungFocusNode.any(
@@ -775,191 +774,6 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Widget _baueEinklappbarenBereich({
-    required String titel,
-    required int gesamtbetragCent,
-    required bool aufgeklappt,
-    required VoidCallback beimUmschalten,
-    required Widget inhalt,
-    String Function(int cent)? gesamtformatierer,
-  }) {
-    final String Function(int cent) formatierer =
-        gesamtformatierer ?? _formatiereEuro;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          InkWell(
-            onTap: beimUmschalten,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      titel,
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                  Text(
-                    formatierer(gesamtbetragCent),
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(aufgeklappt ? Icons.expand_less : Icons.expand_more),
-                ],
-              ),
-            ),
-          ),
-          if (aufgeklappt) ...<Widget>[
-            const Divider(height: 1),
-            Padding(padding: const EdgeInsets.all(12), child: inhalt),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _baueZeilenEintrag(Kassenzeile zeile) {
-    return schritt1_ui.Schritt1ZeilenEintrag(
-      zeile: zeile,
-      stueckzahl: _stueckzahlen[zeile.id] ?? 0,
-      controller: _stueckzahlController[zeile.id]!,
-      focusNode: _stueckzahlFocusNode[zeile.id]!,
-      baueFeldMitKey: _baueFeldMitKey,
-      textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
-      beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
-      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
-      formatiereEuro: _formatiereEuro,
-    );
-  }
-
-  Widget _baueScheineGruppe() {
-    return Schritt1ScheineSection(
-      gesamtbetrag: _formatiereEuro(_summeGruppe(_scheine)),
-      aufgeklappt: _scheineAufgeklappt,
-      beimUmschalten: () {
-        setState(() {
-          _scheineAufgeklappt = !_scheineAufgeklappt;
-        });
-      },
-      inhalt: schritt1_ui.Schritt1GruppenInhalt(
-        zeilen: _scheine,
-        gesamtbetragLabel: 'Gesamtbetrag Scheine',
-        zeilenEintragBuilder: _baueZeilenEintrag,
-        summeGruppe: _summeGruppe,
-        formatiereBetrag: _formatiereEuro,
-      ),
-    );
-  }
-
-  Widget _baueLoseMuenzenGruppe() {
-    return Schritt1MuenzenLoseSection(
-      gesamtbetrag: _formatiereEuro(_loseMuenzenGesamtCent),
-      aufgeklappt: _loseMuenzenAufgeklappt,
-      beimUmschalten: () {
-        setState(() {
-          _loseMuenzenAufgeklappt = !_loseMuenzenAufgeklappt;
-        });
-      },
-      inhalt: schritt1_ui.Schritt1LoseMuenzenInhalt(
-        loseMuenzarten: _loseMuenzarten,
-        loseMuenzenFocusNode: _loseMuenzenFocusNode,
-        loseMuenzenController: _loseMuenzenController,
-        baueFeldMitKey: _baueFeldMitKey,
-        textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
-        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
-        beiLoseMuenzartBetragGeaendert: _beiLoseMuenzartBetragGeaendert,
-        formatiereEuro: _formatiereEuro,
-        loseMuenzenGesamtCent: _loseMuenzenGesamtCent,
-      ),
-    );
-  }
-
-  Widget _baueRollenGruppe() {
-    return Schritt1MuenzenRollenSection(
-      gesamtbetrag: schritt1_ui.schritt1FormatiereRollenAnzeige(
-        _summeGruppe(_rollenSichtbar),
-        _formatiereEuro,
-      ),
-      aufgeklappt: _rollenAufgeklappt,
-      beimUmschalten: () {
-        setState(() {
-          _rollenAufgeklappt = !_rollenAufgeklappt;
-        });
-      },
-      inhalt: schritt1_ui.Schritt1RollenInhalt(
-        rollenOhneKupfer: _rollenOhneKupfer,
-        kupferRollen: _kupferRollen,
-        kupferRollenSichtbar: _kupferRollenSichtbar,
-        zeilenEintragBuilder: _baueZeilenEintrag,
-        summeGruppe: _summeGruppe,
-        formatiereRollenAnzeige: (int cent) =>
-            schritt1_ui.schritt1FormatiereRollenAnzeige(cent, _formatiereEuro),
-        zeigeKupferRollen: _zeigeKupferRollen,
-        rollenSichtbar: _rollenSichtbar,
-      ),
-    );
-  }
-
-  Widget _baueUmschlagGruppe() {
-    return _baueEinklappbarenBereich(
-      titel: 'Umschläge (Beträge)',
-      gesamtbetragCent: _umschlagSummeCent,
-      aufgeklappt: _umschlaegeAufgeklappt,
-      beimUmschalten: () {
-        setState(() {
-          _umschlaegeAufgeklappt = !_umschlaegeAufgeklappt;
-        });
-      },
-      inhalt: Schritt1UmschlaegeSection(
-        umschlaege: _umschlaege,
-        umschlagIds: _umschlagIds,
-        umschlagBezeichnungController: _umschlagBezeichnungController,
-        umschlagBetragController: _umschlagBetragController,
-        umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
-        umschlagBetragFocusNode: _umschlagBetragFocusNode,
-        baueFeldMitKey: _baueFeldMitKey,
-        textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
-        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
-        beiUmschlagBezeichnungGeaendert: _beiUmschlagBezeichnungGeaendert,
-        beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
-        umschlagEntfernen: _umschlagEntfernen,
-        umschlagHinzufuegen: _umschlagHinzufuegen,
-        formatiereEuro: _formatiereEuro,
-        umschlagSummeCent: _umschlagSummeCent,
-      ),
-    );
-  }
-
-  Widget _baueKartenzahlungenGruppe() {
-    return _baueEinklappbarenBereich(
-      titel: 'Kartenzahlungen (Beträge)',
-      gesamtbetragCent: _kartenzahlungenSummeCent,
-      aufgeklappt: _kartenzahlungenAufgeklappt,
-      beimUmschalten: () {
-        setState(() {
-          _kartenzahlungenAufgeklappt = !_kartenzahlungenAufgeklappt;
-        });
-      },
-      inhalt: schritt1_ui.Schritt1KartenzahlungenInhalt(
-        kartenzahlungController: _kartenzahlungController,
-        kartenzahlungIds: _kartenzahlungIds,
-        kartenzahlungFocusNode: _kartenzahlungFocusNode,
-        baueFeldMitKey: _baueFeldMitKey,
-        textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
-        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
-        beiKartenzahlungBetragGeaendert: _beiKartenzahlungBetragGeaendert,
-        kartenzahlungEntfernen: _kartenzahlungEntfernen,
-        kartenzahlungHinzufuegen: _kartenzahlungHinzufuegen,
-        kartenzahlungenCent: _kartenzahlungenCent,
-        formatiereEuro: _formatiereEuro,
-        kartenzahlungenSummeCent: _kartenzahlungenSummeCent,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     if (_laedt) {
@@ -972,6 +786,77 @@ class _TagesabschlussSchritt1SeiteState
     final bool tastaturOffen = keyboardInset > 0;
     final double keyboardAnimationZiel = tastaturOffen ? 1.0 : 0.0;
     final double bottomInset = mediaQuery.viewPadding.bottom;
+    final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
+      scheine: _scheine,
+      loseMuenzarten: _loseMuenzarten,
+      rollenOhneKupfer: _rollenOhneKupfer,
+      kupferRollen: _kupferRollen,
+      rollenSichtbar: _rollenSichtbar,
+      scheineAufgeklappt: _scheineAufgeklappt,
+      loseMuenzenAufgeklappt: _loseMuenzenAufgeklappt,
+      rollenAufgeklappt: _rollenAufgeklappt,
+      kartenzahlungenAufgeklappt: _kartenzahlungenAufgeklappt,
+      umschlaegeAufgeklappt: _umschlaegeAufgeklappt,
+      kupferRollenSichtbar: _kupferRollenSichtbar,
+      stueckzahlen: _stueckzahlen,
+      stueckzahlController: _stueckzahlController,
+      stueckzahlFocusNode: _stueckzahlFocusNode,
+      loseMuenzenController: _loseMuenzenController,
+      loseMuenzenFocusNode: _loseMuenzenFocusNode,
+      umschlaege: _umschlaege,
+      umschlagIds: _umschlagIds,
+      umschlagBezeichnungController: _umschlagBezeichnungController,
+      umschlagBetragController: _umschlagBetragController,
+      umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
+      umschlagBetragFocusNode: _umschlagBetragFocusNode,
+      kartenzahlungController: _kartenzahlungController,
+      kartenzahlungIds: _kartenzahlungIds,
+      kartenzahlungFocusNode: _kartenzahlungFocusNode,
+      kartenzahlungenCent: _kartenzahlungenCent,
+      loseMuenzenGesamtCent: _loseMuenzenGesamtCent,
+      kartenzahlungenSummeCent: _kartenzahlungenSummeCent,
+      umschlagSummeCent: _umschlagSummeCent,
+      formatiereEuro: _formatiereEuro,
+      summeGruppe: _summeGruppe,
+      baueFeldMitKey: _baueFeldMitKey,
+      textInputActionFuerSchritt1: _textInputActionFuerSchritt1,
+      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
+      beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
+      beiLoseMuenzartBetragGeaendert: _beiLoseMuenzartBetragGeaendert,
+      beiKartenzahlungBetragGeaendert: _beiKartenzahlungBetragGeaendert,
+      kartenzahlungEntfernen: _kartenzahlungEntfernen,
+      kartenzahlungHinzufuegen: _kartenzahlungHinzufuegen,
+      beiUmschlagBezeichnungGeaendert: _beiUmschlagBezeichnungGeaendert,
+      beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
+      umschlagEntfernen: _umschlagEntfernen,
+      umschlagHinzufuegen: _umschlagHinzufuegen,
+      zeigeKupferRollen: _zeigeKupferRollen,
+      toggleScheine: () {
+        setState(() {
+          _scheineAufgeklappt = !_scheineAufgeklappt;
+        });
+      },
+      toggleLoseMuenzen: () {
+        setState(() {
+          _loseMuenzenAufgeklappt = !_loseMuenzenAufgeklappt;
+        });
+      },
+      toggleRollen: () {
+        setState(() {
+          _rollenAufgeklappt = !_rollenAufgeklappt;
+        });
+      },
+      toggleKartenzahlungen: () {
+        setState(() {
+          _kartenzahlungenAufgeklappt = !_kartenzahlungenAufgeklappt;
+        });
+      },
+      toggleUmschlaege: () {
+        setState(() {
+          _umschlaegeAufgeklappt = !_umschlaegeAufgeklappt;
+        });
+      },
+    );
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -1020,13 +905,10 @@ class _TagesabschlussSchritt1SeiteState
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
         devToolsPanel: _baueDevToolsPanel(),
-        scheineGruppe: _baueScheineGruppe(),
-        loseMuenzenGruppe: _baueLoseMuenzenGruppe(),
-        rollenGruppe: _baueRollenGruppe(),
-        hinweiseSection: Schritt1HinweiseSection(
-          kartenzahlungenInhalt: _baueKartenzahlungenGruppe(),
-          umschlaegeInhalt: _baueUmschlagGruppe(),
-        ),
+        scheineGruppe: gruppen.scheineGruppe,
+        loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
+        rollenGruppe: gruppen.rollenGruppe,
+        hinweiseSection: gruppen.hinweiseSection,
         zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
           kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
           wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
@@ -1035,17 +917,18 @@ class _TagesabschlussSchritt1SeiteState
           gesamtInklKarte: _formatiereEuro(_gesamtUmsatzMitKarteCent),
           barumsatzNegativ: _barumsatzBereinigtCent < 0,
         ),
-        footerBuilder: ({
-          required EdgeInsets footerPadding,
-          required double footerBottomInset,
-        }) => schritt1_footer.Schritt1Footer(
-          tastaturOffen: tastaturOffen,
-          footerPadding: footerPadding,
-          footerBottomInset: footerBottomInset,
-          zeigeNaechstesFeld: zeigeNaechstesFeld,
-          weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-          weiterZuSchritt2: _weiterZuSchritt2,
-        ),
+        footerBuilder:
+            ({
+              required EdgeInsets footerPadding,
+              required double footerBottomInset,
+            }) => schritt1_footer.Schritt1Footer(
+              tastaturOffen: tastaturOffen,
+              footerPadding: footerPadding,
+              footerBottomInset: footerBottomInset,
+              zeigeNaechstesFeld: zeigeNaechstesFeld,
+              weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+              weiterZuSchritt2: _weiterZuSchritt2,
+            ),
       ),
     );
   }
