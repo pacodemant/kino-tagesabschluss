@@ -37,6 +37,7 @@ class BetragCentEingabefeld extends StatelessWidget {
     required this.schriftgroesse,
     required this.hinweisText,
     this.labelText,
+    this.fehlermeldungText,
     this.focusNode,
     this.textInputAction = TextInputAction.done,
     this.onSubmitted,
@@ -47,6 +48,7 @@ class BetragCentEingabefeld extends StatelessWidget {
   final double schriftgroesse;
   final String hinweisText;
   final String? labelText;
+  final String? fehlermeldungText;
   final FocusNode? focusNode;
   final TextInputAction textInputAction;
   final ValueChanged<String>? onSubmitted;
@@ -74,6 +76,13 @@ class BetragCentEingabefeld extends StatelessWidget {
         suffixText: '€',
         isDense: true,
         border: const OutlineInputBorder(),
+        errorText: fehlermeldungText,
+        errorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red),
+        ),
+        focusedErrorBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 2),
+        ),
       ),
       onChanged: onChanged,
       onSubmitted: onSubmitted,
