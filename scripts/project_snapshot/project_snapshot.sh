@@ -9,12 +9,12 @@ set -euo pipefail
 # für neue ChatGPT-/Codex-Chats oder Diagnosen.
 #
 # Ausgabe:
-# scripts/project_snapshot/project_snapshot.txt
+# .dev/project_snapshot.generated.txt
 # ==================================================
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-OUTPUT_FILE="$SCRIPT_DIR/project_snapshot.txt"
+OUTPUT_FILE="$PROJECT_ROOT/.dev/project_snapshot.generated.txt"
 
 if [[ -z "${PROJECT_ROOT}" ]]; then
   echo "Fehler: Dieses Script muss innerhalb eines Git-Repositories ausgeführt werden."
