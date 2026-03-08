@@ -12,16 +12,17 @@ set -euo pipefail
 # .dev/project_snapshot.generated.txt
 # ==================================================
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-OUTPUT_FILE="$PROJECT_ROOT/.dev/project_snapshot.generated.txt"
 
-if [[ -z "${PROJECT_ROOT}" ]]; then
-  echo "Fehler: Dieses Script muss innerhalb eines Git-Repositories ausgeführt werden."
+if [[ -z "$PROJECT_ROOT" ]]; then
+  echo "Fehler: Dieses Skript muss innerhalb eines Git-Repositories ausgeführt werden."
   exit 1
 fi
 
 cd "$PROJECT_ROOT"
+
+OUTPUT_DIR="$PROJECT_ROOT/.dev"
+OUTPUT_FILE="$OUTPUT_DIR/project_snapshot.generated.txt"
 
 if [[ ! -f "pubspec.yaml" ]]; then
   echo "Fehler: pubspec.yaml nicht gefunden. Das sieht nicht nach einem Flutter/Dart-Projekt aus."
@@ -37,6 +38,22 @@ if ! find "lib" -type f -name "*.dart" | grep -q .; then
   echo "Fehler: Keine Dart-Dateien in lib/ gefunden."
   exit 1
 fi
+
+mkdir -p "$OUTPUT_DIR"
+: > "$OUTPUT_FILE"
+
+append_file() {
+  local file="$1"
+  [[ -f "$file" ]] || return 0
+
+  {
+    echo "=================================================="
+    echo "FILE: $file"
+    echo "=================================================="
+    cat "$file"
+    echo ""
+  } >> "$OUTPUT_FILE"
+}
 
 {
   echo "=================================================="
@@ -57,65 +74,40 @@ fi
   echo "Git Status:"
   git status -s 2>/dev/null || true
   echo ""
+} >> "$OUTPUT_FILE"
 
-  if [[ -f "AGENTS.md" ]]; then
-    echo "=================================================="
-    echo "FILE: AGENTS.md"
-    echo "=================================================="
-    cat "AGENTS.md"
-    echo ""
-  fi
+# Root-Dateien
+append_file "AGENTS.md"
+append_file "CONTRIBUTING.md"
+append_file "CHANGELOG.md"
+append_file "pubspec.yaml"
 
-  if [[ -f "CHANGELOG.md" ]]; then
-    echo "=================================================="
-    echo "FILE: CHANGELOG.md"
-    echo "=================================================="
-    cat "CHANGELOG.md"
-    echo ""
-  fi
+# Nur gezielt relevante .dev-Dateien einlesen
+append_file ".dev/AGENTS.md"
+append_file ".dev/CONTRIBUTING.md"
+append_file ".dev/run_template.md"
+append_file ".dev/run_counter.txt"
+append_file ".dev/project_context.md"
+append_file ".dev/project_snapshot.readme.md"
 
-  if [[ -f "pubspec.yaml" ]]; then
-    echo "=================================================="
-    echo "FILE: pubspec.yaml"
-    echo "=================================================="
-    cat "pubspec.yaml"
-    echo ""
-  fi
+# Shell-Skripte unter scripts/ einlesen
+if [[ -d "scripts" ]]; then
+  find "scripts" -type f -name "*.sh" | sort | while IFS= read -r file; do
+    append_file "$file"
+  done
+fi
 
-  if [[ -d ".dev" ]]; then
-    find ".dev" -maxdepth 1 -type f | sort | while IFS= read -r file; do
-      echo "=================================================="
-      echo "FILE: $file"
-      echo "=================================================="
-      cat "$file"
-      echo ""
-    done
-  fi
-
-  if [[ -d "scripts" ]]; then
-    find "scripts" -type f -name "*.sh" ! -path "*/project_snapshot.txt" | sort | while IFS= read -r file; do
-      echo "=================================================="
-      echo "FILE: $file"
-      echo "=================================================="
-      cat "$file"
-      echo ""
-    done
-  fi
-
+{
   echo "=================================================="
   echo "PROJECT STRUCTURE: lib/"
   echo "=================================================="
   find "lib" -type d | sort
   echo ""
+} >> "$OUTPUT_FILE"
 
-  find "lib" -type f -name "*.dart" | sort | while IFS= read -r file; do
-    echo "=================================================="
-    echo "FILE: $file"
-    echo "=================================================="
-    cat "$file"
-    echo ""
-  done
-} > "$OUTPUT_FILE"
+find "lib" -type f -name "*.dart" | sort | while IFS= read -r file; do
+  append_file "$file"
+done
 
 echo "Snapshot erstellt:"
 echo "$OUTPUT_FILE"
