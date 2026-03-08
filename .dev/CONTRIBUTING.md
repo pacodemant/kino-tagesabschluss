@@ -88,9 +88,29 @@ Ein neuer Codex-Chat ist empfohlen, wenn:
 
 ## Start eines neuen Coding-Chats
 Für einen neuen Coding-Chat genügen künftig:
-- `AGENTS.md`
-- `.dev/run_template.md`
-- `.dev/run_counter.txt`
+
+- AGENTS.md
+- .dev/run_template.md
+- .dev/run_counter.txt
 - ein kurzer Chat-Startblock mit aktuellem Kontext im Chat selbst
 
 Es ist keine separate Start-Template-Datei mehr nötig.
+
+### Snapshot-Regel (Projektkontext)
+
+Zu Beginn eines neuen Coding-Chats erzeugt der Agent automatisch
+einen aktuellen Projektsnapshot.
+
+Ablauf:
+
+1. Skript ausführen:
+   ./scripts/project_snapshot/project_snapshot.sh
+
+2. Danach die erzeugte Snapshot-Datei lesen:
+   .dev/project_snapshot.generated.txt
+
+3. Erst danach wird ein Run geplant oder Code analysiert.
+
+Ziel:
+Der Agent arbeitet immer mit einer aktuellen Projektübersicht,
+ohne dass diese manuell erzeugt oder hochgeladen werden muss.

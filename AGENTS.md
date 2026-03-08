@@ -1,84 +1,128 @@
 # AGENTS.md
 
-## Scope
-This file defines the working contract for AI coding agents in this repository.
+## Zweck
+Diese Datei definiert den verbindlichen Arbeitsvertrag für KI-Coding-Agenten in diesem Repository.
 
-Project:
+Projekt:
 - Kino-App (Tagesabschluss)
 - Stack: Flutter / Dart
-- Repository: `kino_bar_app`
-- Main branch: `master`
+- Repository: kino_bar_app
+- Hauptbranch: master
 
-## Primary working mode
-- Work only in small, controlled runs.
-- One run = one clear focus.
-- No side refactors.
-- No architecture changes unless the run explicitly says so.
+## Arbeitsmodus
+- Änderungen erfolgen ausschließlich über kleine, kontrollierte Runs.
+- Ein Run = genau ein klarer Fokus.
+- Keine Nebenbei-Refactors.
+- Keine Architekturänderungen ohne expliziten Architektur-Run.
 
-## Default lock
-Unless a concrete run prompt is provided, agents must not:
-- change code
-- create or move files
-- rename classes, files, widgets, or folders
-- add packages or edit `pubspec.*`
-- change build / platform / Pod / Gradle / Xcode / macOS config
-- change persistence keys, JSON structures, storage contracts, or migration logic
-- redesign UI outside the defined target area
+## Standard-Lock
+Ohne einen expliziten Run-Prompt dürfen Agenten NICHT:
 
-Allowed without a run prompt:
-- inspect code
-- answer understanding questions
-- point out risks or ambiguities
-- propose a next mini-run
+- Code ändern
+- Dateien erstellen, verschieben oder umbenennen
+- Klassen, Widgets oder Ordner umbenennen
+- Packages hinzufügen oder `pubspec.*` ändern
+- Build-, Plattform- oder Tooling-Konfiguration ändern
+- Persistenz-Keys, JSON-Strukturen oder Storage-Verträge ändern
+- UI außerhalb des Zielbereichs verändern
 
-## Technical guardrails
-- Internal money calculation stays in cents.
-- Existing persistence keys must remain stable unless the run explicitly allows changes.
-- No new dependencies unless explicitly approved.
-- Changes must stay inside the target area defined by the run prompt.
-- Keep naming pragmatic and stable.
+Erlaubt ohne Run-Prompt:
 
-## Run types
-Supported run types:
-- `standard` — normal UX / logic / local refactor in a clearly defined area
-- `architecture` — structure / separation / extraction without functional redesign
-- `documentation` — comments / docs only, no behavior change
+- Code lesen
+- Verständnisfragen beantworten
+- Risiken oder Unklarheiten benennen
+- einen nächsten Mini-Run vorschlagen
 
-## Behavior on ambiguity
-If the prompt is unclear, incomplete, contradictory, or risky:
-- stop
-- do not make changes
-- ask a concise clarification question or return a short diagnosis
+## Snapshot-Regel (Projektkontext laden)
 
-## Git safety contract
-If the agent is instructed to commit/push, it must first check repository state.
-If any of the following appears, stop and report only a short diagnosis plus safe next steps:
-- not on `master`
+Zu Beginn einer neuen Coding-Session muss der Agent zuerst den aktuellen
+Projektsnapshot erzeugen und einlesen.
+
+Ablauf:
+
+1. Skript ausführen:
+
+./scripts/project_snapshot/project_snapshot.sh
+
+2. Danach die erzeugte Datei vollständig lesen:
+
+.dev/project_snapshot.generated.txt
+
+3. Erst danach darf ein Run geplant werden.
+
+Wenn das Skript nicht ausgeführt werden kann (z. B. Sandbox-Einschränkung),
+muss der Agent stoppen und eine kurze Diagnose ausgeben.
+
+Ohne geladenen Snapshot dürfen keine Änderungen vorgeschlagen werden.
+
+## Run-Nummer-Regel
+
+Vor der Planung eines neuen Runs muss der Agent zusätzlich:
+
+1. `.dev/run_counter.txt` lesen
+2. die dort enthaltene Run-Nummer als letzte abgeschlossene Run-Nummer behandeln
+3. die nächste Run-Nummer daraus ableiten
+
+Die Run-Nummer aus Chat-Kontexten darf nicht als Quelle verwendet werden.
+Die Datei `.dev/run_counter.txt` ist die einzige gültige Quelle für die aktuelle Run-Nummer.
+
+## Technische Leitplanken
+
+- Geldberechnung erfolgt intern weiterhin in Cent.
+- Persistenz-Keys dürfen nicht verändert werden, außer der Run erlaubt es ausdrücklich.
+- Keine neuen Dependencies ohne explizite Freigabe.
+- Änderungen dürfen nur im im Run-Prompt definierten Zielbereich erfolgen.
+
+## Git-Sicherheitsvertrag
+
+Wenn ein Agent committen oder pushen soll, muss er zuerst den
+Repository-Status prüfen.
+
+Wenn einer der folgenden Zustände auftritt:
+
+- nicht auf Branch `master`
 - detached HEAD
-- unexpected staged or unstaged unrelated files
-- unexpected deletes
-- merge / rebase conflict state
+- unerwartete fremde Änderungen
+- unerwartete Deletes
+- Merge- oder Rebase-Konflikte
 
-Never run destructive cleanup commands automatically.
-Examples of forbidden automatic actions:
-- `git reset --hard`
-- `git clean -fd`
-- `git restore .`
+Dann gilt:
 
-## Output contract after a run
-After a successful run, the agent should report:
-- files actually changed
-- how to test the change in 3 concise steps
-- expected behavior for those tests
-- whether `flutter analyze` is clean
-- whether `flutter test` is green (if tests exist)
+- STOPP
+- keine Änderungen ausführen
+- nur eine kurze Diagnose + sichere nächste Schritte ausgeben
 
-## Counter + changelog maintenance
-After a successful committed run, the agent should also update:
+Automatisch verbotene destruktive Befehle:
+
+git reset --hard
+git clean -fd
+git restore .
+
+## Run-Typen
+
+- standard — normale UX-/Logik-Änderung im Zielbereich
+- architecture — Strukturänderung ohne funktionales Redesign
+- documentation — nur Kommentare / Dokumentation
+
+## Bericht nach einem Run
+
+Nach einem erfolgreichen Run muss der Agent berichten:
+
+- tatsächlich geänderte Dateien
+- 3 Testschritte
+- erwartetes Verhalten
+- Status von `flutter analyze`
+- Status von `flutter test` (falls vorhanden)
+
+## Counter- und Changelog-Pflege
+
+Nach einem erfolgreichen Run sollen zusätzlich aktualisiert werden:
+
 - `.dev/run_counter.txt`
 - `CHANGELOG.md`
 
-## Response to this file when loaded into a fresh coding chat
-Respond only with:
+## Antwortverhalten beim Laden dieser Datei
 
-`Bereit. Warte auf Run-Prompt.`
+Antworte ausschließlich mit:
+
+Bereit. Warte auf Run-Prompt.
