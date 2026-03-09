@@ -298,6 +298,13 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
+  void _beiScrollMetrikAenderung() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+  }
+
   bool _istDownButtonSichtbar() =>
       _scrollHelper.istDownButtonSichtbar(scrollController: _scrollController);
 
@@ -926,6 +933,7 @@ class _TagesabschlussSchritt1SeiteState
         ),
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
+        beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
         footerBuilder:
             ({
               required EdgeInsets footerPadding,

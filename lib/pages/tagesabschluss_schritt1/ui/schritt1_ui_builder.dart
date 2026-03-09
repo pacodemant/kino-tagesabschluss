@@ -4,14 +4,12 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_ums
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
 
-// Zweck: Formatiert Rollen-Betraege wie bisher (volle Euro ohne Nachkommastellen).
+// Zweck: Formatiert Rollen-Betraege konsistent als Euro-Wert mit Cent.
 String schritt1FormatiereRollenAnzeige(
   int cent,
   String Function(int cent) formatiereEuro,
 ) {
-  if (cent % 100 == 0) {
-    return '${cent ~/ 100} €';
-  }
+  // Regression-Fix: Rollensumme immer im gleichen Euroformat mit Cent anzeigen.
   return formatiereEuro(cent);
 }
 
@@ -70,7 +68,8 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
-  final TextInputAction Function(FocusNode focusNode) textInputActionFuerSchritt1;
+  final TextInputAction Function(FocusNode focusNode)
+  textInputActionFuerSchritt1;
   final void Function(Kassenzeile zeile, String wert) beiStueckzahlGeaendert;
   final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
   final String Function(int cent) formatiereEuro;
@@ -135,9 +134,11 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
   final Map<String, FocusNode> loseMuenzenFocusNode;
   final Map<String, TextEditingController> loseMuenzenController;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
-  final TextInputAction Function(FocusNode focusNode) textInputActionFuerSchritt1;
+  final TextInputAction Function(FocusNode focusNode)
+  textInputActionFuerSchritt1;
   final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
-  final void Function(String muenzartId, String wert) beiLoseMuenzartBetragGeaendert;
+  final void Function(String muenzartId, String wert)
+  beiLoseMuenzartBetragGeaendert;
   final String Function(int cent) formatiereEuro;
   final int loseMuenzenGesamtCent;
 
@@ -273,7 +274,8 @@ class Schritt1KartenzahlungenInhalt extends StatelessWidget {
   final List<int> kartenzahlungIds;
   final List<FocusNode> kartenzahlungFocusNode;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
-  final TextInputAction Function(FocusNode focusNode) textInputActionFuerSchritt1;
+  final TextInputAction Function(FocusNode focusNode)
+  textInputActionFuerSchritt1;
   final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
   final void Function(int index, String wert) beiKartenzahlungBetragGeaendert;
   final void Function(int index) kartenzahlungEntfernen;

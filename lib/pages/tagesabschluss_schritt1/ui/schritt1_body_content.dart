@@ -25,6 +25,7 @@ class Schritt1BodyContent extends StatelessWidget {
     required this.zusammenfassung,
     required this.downButtonSichtbar,
     required this.scrolleNachUnten,
+    required this.beiScrollMetrikAenderung,
     required this.footerBuilder,
   });
 
@@ -48,6 +49,7 @@ class Schritt1BodyContent extends StatelessWidget {
   final Widget zusammenfassung;
   final bool downButtonSichtbar;
   final VoidCallback scrolleNachUnten;
+  final VoidCallback beiScrollMetrikAenderung;
   final Widget Function({
     required EdgeInsets footerPadding,
     required double footerBottomInset,
@@ -90,35 +92,41 @@ class Schritt1BodyContent extends StatelessWidget {
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onTap: () => FocusScope.of(context).unfocus(),
-                child: CustomScrollView(
-                  controller: scrollController,
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.manual,
-                  slivers: <Widget>[
-                    if (devToolsStickySichtbar)
-                      SliverPersistentHeader(
-                        pinned: true,
-                        delegate: _DevToolsStickyHeaderDelegate(
-                          extent: devToolsStickyHoehe,
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-                            child: devToolsPanel,
+                child: NotificationListener<ScrollMetricsNotification>(
+                  onNotification: (ScrollMetricsNotification notification) {
+                    beiScrollMetrikAenderung();
+                    return false;
+                  },
+                  child: CustomScrollView(
+                    controller: scrollController,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.manual,
+                    slivers: <Widget>[
+                      if (devToolsStickySichtbar)
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _DevToolsStickyHeaderDelegate(
+                            extent: devToolsStickyHoehe,
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                              child: devToolsPanel,
+                            ),
                           ),
                         ),
+                      SliverPadding(
+                        padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate(<Widget>[
+                            scheineGruppe,
+                            loseMuenzenGruppe,
+                            rollenGruppe,
+                            hinweiseSection,
+                            zusammenfassung,
+                          ]),
+                        ),
                       ),
-                    SliverPadding(
-                      padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate(<Widget>[
-                          scheineGruppe,
-                          loseMuenzenGruppe,
-                          rollenGruppe,
-                          hinweiseSection,
-                          zusammenfassung,
-                        ]),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
