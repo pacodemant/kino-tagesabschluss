@@ -59,10 +59,7 @@ class Schritt1ScrollHelper {
     return _feldKeys.putIfAbsent(focusNode, () => GlobalKey());
   }
 
-  Widget baueFeldMitKey({
-    required FocusNode focusNode,
-    required Widget child,
-  }) {
+  Widget baueFeldMitKey({required FocusNode focusNode, required Widget child}) {
     return KeyedSubtree(key: holeFeldKey(focusNode), child: child);
   }
 
@@ -122,7 +119,9 @@ class Schritt1ScrollHelper {
     final double footerContentHoehe = tastaturOffen
         ? footerContentHoeheKeyboard
         : footerContentHoeheNormal;
-    final double footerBottomInset = tastaturOffen ? 0 : mediaQuery.viewPadding.bottom;
+    final double footerBottomInset = tastaturOffen
+        ? 0
+        : mediaQuery.viewPadding.bottom;
     final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
     final double stickyHeaderHeight = (devToolsSichtbar && devToolsOffen)
         ? devToolsStickyHoehe
@@ -142,27 +141,34 @@ class Schritt1ScrollHelper {
     final double visibleTop =
         scrollOffset + statusBarHeight + appBarHoehe + stickyHeaderHeight + 8;
     final double visibleBottom =
-        scrollOffset - (keyboardInset + footerTotalHoehe + 8 + bottomSafety) + viewportHeight;
+        scrollOffset -
+        (keyboardInset + footerTotalHoehe + 8 + bottomSafety) +
+        viewportHeight;
     final bool nutzeKomfortablesZiel = _komfortablesScrollZielEinmalig;
     _komfortablesScrollZielEinmalig = false;
 
     double? targetOffset;
     if (fieldTop < visibleTop) {
-      targetOffset = fieldTop - (statusBarHeight + appBarHoehe + stickyHeaderHeight + 8);
+      targetOffset =
+          fieldTop - (statusBarHeight + appBarHoehe + stickyHeaderHeight + 8);
     } else {
       if (nutzeKomfortablesZiel) {
         final double feldMitte = fieldTop + (renderObject.size.height / 2);
         // Feintuning: programmatischen Fokuswechsel etwa eine Feldhoehe hoeher platzieren.
         const double komfortOffsetNachOben = 44;
         final double zielMitte =
-            visibleTop + ((visibleBottom - visibleTop) * 0.56) - komfortOffsetNachOben;
+            visibleTop +
+            ((visibleBottom - visibleTop) * 0.56) -
+            komfortOffsetNachOben;
         if (feldMitte > zielMitte) {
           targetOffset = scrollOffset + (feldMitte - zielMitte);
         }
       }
       if (targetOffset == null && fieldBottom > visibleBottom) {
         targetOffset =
-            fieldBottom - viewportHeight + (keyboardInset + footerTotalHoehe + 16 + bottomSafety);
+            fieldBottom -
+            viewportHeight +
+            (keyboardInset + footerTotalHoehe + 16 + bottomSafety);
       }
     }
     if (targetOffset == null) {
@@ -209,5 +215,30 @@ class Schritt1ScrollHelper {
       _letztesEnsureNachEingabe = DateTime.now();
       ensureAktivesFeldSichtbar();
     });
+  }
+
+  bool istDownButtonSichtbar({
+    required ScrollController scrollController,
+    double mindestRestDistanz = 24,
+  }) {
+    if (!scrollController.hasClients) {
+      return false;
+    }
+    return scrollController.position.extentAfter > mindestRestDistanz;
+  }
+
+  void scrolleNachUnten({
+    required ScrollController scrollController,
+    Duration dauer = const Duration(milliseconds: 220),
+    Curve kurve = Curves.easeOutCubic,
+  }) {
+    if (!scrollController.hasClients) {
+      return;
+    }
+    scrollController.animateTo(
+      scrollController.position.maxScrollExtent,
+      duration: dauer,
+      curve: kurve,
+    );
   }
 }

@@ -50,6 +50,11 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 class _TagesabschlussSchritt1SeiteState
     extends State<TagesabschlussSchritt1Seite>
     with WidgetsBindingObserver {
+  static const int _sectionScheine = 0;
+  static const int _sectionLoseMuenzen = 1;
+  static const int _sectionRollen = 2;
+  static const int _sectionKartenzahlungen = 3;
+  static const int _sectionUmschlaege = 4;
   static const double _footerContentHoeheNormal = 44;
   static const double _footerContentHoeheKeyboard = 40;
   static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
@@ -292,6 +297,12 @@ class _TagesabschlussSchritt1SeiteState
       rebuild: () => setState(() {}),
     );
   }
+
+  bool _istDownButtonSichtbar() =>
+      _scrollHelper.istDownButtonSichtbar(scrollController: _scrollController);
+
+  void _scrolleNachUnten() =>
+      _scrollHelper.scrolleNachUnten(scrollController: _scrollController);
 
   GlobalKey _holeFeldKey(FocusNode focusNode) {
     return _scrollHelper.holeFeldKey(focusNode);
@@ -575,24 +586,24 @@ class _TagesabschlussSchritt1SeiteState
       (Kassenzeile zeile) =>
           identical(_stueckzahlFocusNode[zeile.id], fokusNode),
     )) {
-      return 0;
+      return _sectionScheine;
     }
     if (_loseMuenzarten.any(
       (Kassenzeile zeile) =>
           identical(_loseMuenzenFocusNode[zeile.id], fokusNode),
     )) {
-      return 1;
+      return _sectionLoseMuenzen;
     }
     if (_rollenSichtbar.any(
       (Kassenzeile zeile) =>
           identical(_stueckzahlFocusNode[zeile.id], fokusNode),
     )) {
-      return 2;
+      return _sectionRollen;
     }
     if (_kartenzahlungFocusNode.any(
       (FocusNode node) => identical(node, fokusNode),
     )) {
-      return 3;
+      return _sectionKartenzahlungen;
     }
     if (_umschlagBezeichnungFocusNode.any(
           (FocusNode node) => identical(node, fokusNode),
@@ -600,22 +611,22 @@ class _TagesabschlussSchritt1SeiteState
         _umschlagBetragFocusNode.any(
           (FocusNode node) => identical(node, fokusNode),
         )) {
-      return 4;
+      return _sectionUmschlaege;
     }
     return null;
   }
 
   bool _istSectionAufgeklappt(int sectionId) {
     switch (sectionId) {
-      case 0:
+      case _sectionScheine:
         return _scheineAufgeklappt;
-      case 1:
+      case _sectionLoseMuenzen:
         return _loseMuenzenAufgeklappt;
-      case 2:
+      case _sectionRollen:
         return _rollenAufgeklappt;
-      case 3:
+      case _sectionKartenzahlungen:
         return _kartenzahlungenAufgeklappt;
-      case 4:
+      case _sectionUmschlaege:
         return _umschlaegeAufgeklappt;
     }
     return false;
@@ -623,22 +634,28 @@ class _TagesabschlussSchritt1SeiteState
 
   void _setzeSectionAufgeklappt(int sectionId, bool wert) {
     switch (sectionId) {
-      case 0:
+      case _sectionScheine:
         _scheineAufgeklappt = wert;
         return;
-      case 1:
+      case _sectionLoseMuenzen:
         _loseMuenzenAufgeklappt = wert;
         return;
-      case 2:
+      case _sectionRollen:
         _rollenAufgeklappt = wert;
         return;
-      case 3:
+      case _sectionKartenzahlungen:
         _kartenzahlungenAufgeklappt = wert;
         return;
-      case 4:
+      case _sectionUmschlaege:
         _umschlaegeAufgeklappt = wert;
         return;
     }
+  }
+
+  void _toggleSection(int sectionId) {
+    setState(() {
+      _setzeSectionAufgeklappt(sectionId, !_istSectionAufgeklappt(sectionId));
+    });
   }
 
   // Oeffnet die Ziel-Section; bei Section-Wechsel wird die vorherige geschlossen.
@@ -832,29 +849,19 @@ class _TagesabschlussSchritt1SeiteState
       umschlagHinzufuegen: _umschlagHinzufuegen,
       zeigeKupferRollen: _zeigeKupferRollen,
       toggleScheine: () {
-        setState(() {
-          _scheineAufgeklappt = !_scheineAufgeklappt;
-        });
+        _toggleSection(_sectionScheine);
       },
       toggleLoseMuenzen: () {
-        setState(() {
-          _loseMuenzenAufgeklappt = !_loseMuenzenAufgeklappt;
-        });
+        _toggleSection(_sectionLoseMuenzen);
       },
       toggleRollen: () {
-        setState(() {
-          _rollenAufgeklappt = !_rollenAufgeklappt;
-        });
+        _toggleSection(_sectionRollen);
       },
       toggleKartenzahlungen: () {
-        setState(() {
-          _kartenzahlungenAufgeklappt = !_kartenzahlungenAufgeklappt;
-        });
+        _toggleSection(_sectionKartenzahlungen);
       },
       toggleUmschlaege: () {
-        setState(() {
-          _umschlaegeAufgeklappt = !_umschlaegeAufgeklappt;
-        });
+        _toggleSection(_sectionUmschlaege);
       },
     );
 
@@ -917,6 +924,8 @@ class _TagesabschlussSchritt1SeiteState
           gesamtInklKarte: _formatiereEuro(_gesamtUmsatzMitKarteCent),
           barumsatzNegativ: _barumsatzBereinigtCent < 0,
         ),
+        downButtonSichtbar: _istDownButtonSichtbar(),
+        scrolleNachUnten: _scrolleNachUnten,
         footerBuilder:
             ({
               required EdgeInsets footerPadding,

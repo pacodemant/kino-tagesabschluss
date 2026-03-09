@@ -23,6 +23,8 @@ class Schritt1BodyContent extends StatelessWidget {
     required this.rollenGruppe,
     required this.hinweiseSection,
     required this.zusammenfassung,
+    required this.downButtonSichtbar,
+    required this.scrolleNachUnten,
     required this.footerBuilder,
   });
 
@@ -44,6 +46,8 @@ class Schritt1BodyContent extends StatelessWidget {
   final Widget rollenGruppe;
   final Widget hinweiseSection;
   final Widget zusammenfassung;
+  final bool downButtonSichtbar;
+  final VoidCallback scrolleNachUnten;
   final Widget Function({
     required EdgeInsets footerPadding,
     required double footerBottomInset,
@@ -71,11 +75,6 @@ class Schritt1BodyContent extends StatelessWidget {
         )!;
         final double footerTotalHoehe = footerContentHoehe + footerBottomInset;
         final double bottomPadding = keyboardInset + footerTotalHoehe + 16;
-        final bool downButtonSichtbar =
-            scrollController.hasClients &&
-            scrollController.position.pixels <
-                scrollController.position.maxScrollExtent - 24;
-
         return Stack(
           children: <Widget>[
             Theme(
@@ -93,7 +92,8 @@ class Schritt1BodyContent extends StatelessWidget {
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: CustomScrollView(
                   controller: scrollController,
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.manual,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.manual,
                   slivers: <Widget>[
                     if (devToolsStickySichtbar)
                       SliverPersistentHeader(
@@ -147,16 +147,7 @@ class Schritt1BodyContent extends StatelessWidget {
                       heroTag: 'step1DownFab',
                       mini: true,
                       elevation: 2,
-                      onPressed: () {
-                        if (!scrollController.hasClients) {
-                          return;
-                        }
-                        scrollController.animateTo(
-                          scrollController.position.maxScrollExtent,
-                          duration: const Duration(milliseconds: 220),
-                          curve: Curves.easeOutCubic,
-                        );
-                      },
+                      onPressed: scrolleNachUnten,
                       child: const Icon(Icons.keyboard_arrow_down),
                     ),
                   ),
