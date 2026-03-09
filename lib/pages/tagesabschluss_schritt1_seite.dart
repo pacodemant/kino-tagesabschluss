@@ -126,6 +126,7 @@ class _TagesabschlussSchritt1SeiteState
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   double _keyboardInset = 0;
+  bool _keyboardInsetNullPruefungGeplant = false;
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
@@ -231,6 +232,36 @@ class _TagesabschlussSchritt1SeiteState
       return;
     }
     final double neuerKeyboardInset = _leseKeyboardInset();
+
+    // Glaettet kurze 0-Insets beim Fokuswechsel zwischen Feldern.
+    if (neuerKeyboardInset == 0 && _keyboardInset > 0) {
+      if (_keyboardInsetNullPruefungGeplant) {
+        return;
+      }
+      _keyboardInsetNullPruefungGeplant = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _keyboardInsetNullPruefungGeplant = false;
+        if (!mounted) {
+          return;
+        }
+        final double stabilerInset = _leseKeyboardInset();
+        if (stabilerInset != _keyboardInset) {
+          setState(() {
+            _keyboardInset = stabilerInset;
+          });
+        }
+        if (stabilerInset > 0 && _aktivesFeldSchritt1() != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) {
+              return;
+            }
+            _ensureAktivesFeldSichtbar();
+          });
+        }
+      });
+      return;
+    }
+
     if (neuerKeyboardInset != _keyboardInset) {
       setState(() {
         _keyboardInset = neuerKeyboardInset;
