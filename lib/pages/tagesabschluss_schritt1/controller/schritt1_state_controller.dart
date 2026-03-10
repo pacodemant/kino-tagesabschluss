@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
@@ -13,7 +11,11 @@ class Schritt1StateController {
     return int.tryParse(wert) ?? 0;
   }
 
-  void setzeStueckzahl(Map<String, int> stueckzahlen, String zeilenId, int wert) {
+  void setzeStueckzahl(
+    Map<String, int> stueckzahlen,
+    String zeilenId,
+    int wert,
+  ) {
     stueckzahlen[zeilenId] = wert;
   }
 
@@ -51,9 +53,8 @@ class Schritt1StateController {
     umschlagBetragController.removeAt(index).dispose();
     umschlagBezeichnungController.removeAt(index).dispose();
     final FocusNode betragFocusNode = umschlagBetragFocusNode.removeAt(index);
-    final FocusNode bezeichnungFocusNode = umschlagBezeichnungFocusNode.removeAt(
-      index,
-    );
+    final FocusNode bezeichnungFocusNode = umschlagBezeichnungFocusNode
+        .removeAt(index);
     entferneFeldKey(betragFocusNode);
     entferneFeldKey(bezeichnungFocusNode);
     betragFocusNode.dispose();
@@ -229,7 +230,8 @@ class Schritt1StateController {
     required bool Function(
       FocusNode zielFokusNode, {
       FocusNode? vorherigesFokusfeld,
-    }) oeffneSectionFuerFokusfeld,
+    })
+    oeffneSectionFuerFokusfeld,
     required void Function(FocusNode fokusNode) fokussiereTextfeldRekursiv,
     required bool mounted,
   }) {
@@ -249,9 +251,6 @@ class Schritt1StateController {
       return;
     }
     FocusScope.of(context).requestFocus(fokusNode);
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-      SystemChannels.textInput.invokeMethod<void>('TextInput.show');
-    }
   }
 
   int summeGruppe(Map<String, int> stueckzahlen, List<Kassenzeile> zeilen) {

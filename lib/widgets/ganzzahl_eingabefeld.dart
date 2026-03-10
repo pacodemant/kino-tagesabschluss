@@ -28,7 +28,6 @@ class GanzzahlEingabefeld extends StatelessWidget {
     return TextField(
       controller: textController,
       focusNode: focusNode,
-      onTap: () => focusNode?.requestFocus(),
       keyboardType: TextInputType.number,
       textInputAction: textInputAction,
       textAlign: textAusrichtung,
