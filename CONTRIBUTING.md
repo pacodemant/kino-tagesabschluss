@@ -65,6 +65,16 @@ Wenn `git status` zeigt:
 - unerwartete Deletes
 - Merge-/Rebase-Konflikte
 
+### Commit bedeutet nicht Run-Abschluss
+Ein erfolgreicher Commit oder Push beendet einen Dev-Run nicht automatisch.
+
+Ein Run gilt erst als abgeschlossen, wenn:
+1. Codex den Run ausgeführt hat
+2. der Entwickler lokal getestet hat
+3. der Codex-Bericht und die Testergebnisse im Chat dokumentiert wurden
+
+Der Chat bestätigt damit den tatsächlichen Abschluss eines Runs.
+
 Dann gilt:
 - nichts automatisch bereinigen
 - kein destruktiver Git-Befehl
@@ -77,6 +87,19 @@ Jeder Run-Bericht enthält:
 - erwartetes Verhalten pro Testschritt
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
+
+## Abschluss eines Runs
+
+Ein Dev-Run gilt erst als abgeschlossen, wenn:
+
+1. Codex den Run vollständig ausgeführt hat (inkl. Code-Commit und Meta-Commit).
+2. Der Entwickler das Ergebnis lokal getestet hat.
+3. Der Codex-Bericht und die Testergebnisse im Chat dokumentiert wurden.
+
+Wichtig:
+Der Chat dient als Kontrollinstanz für den tatsächlichen Abschluss eines Runs.
+Ein erfolgreicher Commit oder grüne Tests allein bedeuten noch nicht,
+dass ein Run fachlich abgeschlossen ist.
 
 ## Chat-Wechsel
 Ein neuer Codex-Chat ist empfohlen, wenn:
