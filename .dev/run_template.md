@@ -13,6 +13,26 @@ WICHTIG (Run-Nummer):
 - Die Run-Nummer MUSS `next_run` aus `.dev/run_counter.txt` entsprechen.
 - Wenn das nicht passt: STOPP und kurze Rückfrage.
 
+Snapshot-Pflicht:
+1. Skript ausführen:
+   ./scripts/project_snapshot/project_snapshot.sh
+2. Danach die erzeugte Datei vollständig lesen:
+   .dev/project_snapshot.generated.txt
+3. Snapshot-Frische prüfen:
+   - Git Branch aus dem Snapshot prüfen
+   - letzten Commit aus dem Snapshot prüfen
+   - Git-Status aus dem Snapshot prüfen
+4. Zusätzlich `.dev/run_counter.txt` lesen
+5. Erst danach Änderungen planen
+
+## Scope-Check (verbindlich)
+
+1. Liste zuerst die Dateien auf, die voraussichtlich geändert werden müssen.
+2. Prüfe, ob diese Dateien zum beschriebenen Zielbereich passen.
+3. Wenn mehr als 5 Dateien betroffen wären oder Dateien außerhalb des Zielbereichs nötig erscheinen:
+   STOPP und gib nur eine kurze Diagnose aus.
+4. Erst danach mit der eigentlichen Umsetzung beginnen.
+
 Kontext:
 - Projekt: Kino-App (Tagesabschluss)
 - Repository: `kino_bar_app`

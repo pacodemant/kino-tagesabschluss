@@ -35,25 +35,28 @@ Erlaubt ohne Run-Prompt:
 
 ## Snapshot-Regel (Projektkontext laden)
 
-Zu Beginn einer neuen Coding-Session muss der Agent zuerst den aktuellen
-Projektsnapshot erzeugen und einlesen.
+Zu Beginn einer neuen Coding-Session muss der Agent zuerst den aktuellen Projektsnapshot erzeugen und einlesen.
 
 Ablauf:
 
 1. Skript ausführen:
-
-./scripts/project_snapshot/project_snapshot.sh
+   `./scripts/project_snapshot/project_snapshot.sh`
 
 2. Danach die erzeugte Datei vollständig lesen:
+   `.dev/project_snapshot.generated.txt`
 
-.dev/project_snapshot.generated.txt
+3. Danach die Snapshot-Frische prüfen:
+   - Git Branch aus dem Snapshot prüfen
+   - letzten Commit aus dem Snapshot prüfen
+   - Git-Status aus dem Snapshot prüfen
 
-3. Erst danach darf ein Run geplant werden.
+4. Erst danach darf ein Run geplant werden.
 
-Wenn das Skript nicht ausgeführt werden kann (z. B. Sandbox-Einschränkung),
-muss der Agent stoppen und eine kurze Diagnose ausgeben.
+Wenn das Skript nicht ausgeführt werden kann (z. B. wegen Sandbox-Einschränkungen), muss der Agent stoppen und eine kurze Diagnose ausgeben.
 
-Ohne geladenen Snapshot dürfen keine Änderungen vorgeschlagen werden.
+Wenn die Snapshot-Angaben offenkundig veraltet, widersprüchlich oder unplausibel wirken, muss der Agent ebenfalls stoppen und eine kurze Diagnose ausgeben.
+
+Ohne geladenen und plausibel geprüften Snapshot dürfen keine Änderungen vorgeschlagen werden.
 
 ## Run-Nummer-Regel
 
