@@ -8,3 +8,4 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 - Run 64: Regressionsfix in Schritt 1 für Down-FAB-Sichtbarkeit bei Scroll-Metrikänderungen, Fokusverhalten und Rollensummenanzeige mit Cent.
 - Run 65: Keyboard-/Footer-Übergang in Schritt 1 geglättet, um kurzzeitiges Absacken bei Fokuswechseln zu vermeiden.
 - Run 66: Ursache für Keyboard-/Footer-Springen in Schritt 1 behoben durch Entfernen des globalen Tap-Unfocus im Body und stabileres Keyboard-Dismiss nur per Drag.
+- Run 67: Doppelte Fokus-/Keyboard-Anstöße in Schritt 1 reduziert (zusätzliches Feld-`requestFocus` beim Tap und iOS-`TextInput.show` nach `requestFocus` entfernt).
