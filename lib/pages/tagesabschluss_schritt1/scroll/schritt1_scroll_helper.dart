@@ -26,7 +26,6 @@ class Schritt1ScrollHelper {
     required FocusNode? aktivesFeld,
     required bool Function() isMounted,
     required VoidCallback ensureAktivesFeldSichtbar,
-    required VoidCallback rebuild,
   }) {
     if (!mounted) {
       return;
@@ -42,7 +41,6 @@ class Schritt1ScrollHelper {
         });
       }
     }
-    rebuild();
   }
 
   void beiScrollAenderung({

@@ -125,7 +125,8 @@ class _TagesabschlussSchritt1SeiteState
   bool _devToolsOffen = false;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
-  double _keyboardInset = 0;
+  final ValueNotifier<double> _keyboardInset = ValueNotifier<double>(0);
+  bool _zeigeNaechstesFeld = false;
   bool _keyboardInsetNullPruefungGeplant = false;
   final Random _zufall = Random();
 
@@ -168,7 +169,7 @@ class _TagesabschlussSchritt1SeiteState
       naechsteUmschlagId: () => _naechsteUmschlagId++,
     );
     WidgetsBinding.instance.addObserver(this);
-    _keyboardInset = _leseKeyboardInset();
+    _keyboardInset.value = _leseKeyboardInset();
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
@@ -222,6 +223,7 @@ class _TagesabschlussSchritt1SeiteState
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
+    _keyboardInset.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -234,7 +236,7 @@ class _TagesabschlussSchritt1SeiteState
     final double neuerKeyboardInset = _leseKeyboardInset();
 
     // Glaettet kurze 0-Insets beim Fokuswechsel zwischen Feldern.
-    if (neuerKeyboardInset == 0 && _keyboardInset > 0) {
+    if (neuerKeyboardInset == 0 && _keyboardInset.value > 0) {
       if (_keyboardInsetNullPruefungGeplant) {
         return;
       }
@@ -245,10 +247,8 @@ class _TagesabschlussSchritt1SeiteState
           return;
         }
         final double stabilerInset = _leseKeyboardInset();
-        if (stabilerInset != _keyboardInset) {
-          setState(() {
-            _keyboardInset = stabilerInset;
-          });
+        if (stabilerInset != _keyboardInset.value) {
+          _keyboardInset.value = stabilerInset;
         }
         if (stabilerInset > 0 && _aktivesFeldSchritt1() != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -262,10 +262,8 @@ class _TagesabschlussSchritt1SeiteState
       return;
     }
 
-    if (neuerKeyboardInset != _keyboardInset) {
-      setState(() {
-        _keyboardInset = neuerKeyboardInset;
-      });
+    if (neuerKeyboardInset != _keyboardInset.value) {
+      _keyboardInset.value = neuerKeyboardInset;
     }
     if (neuerKeyboardInset > 0 && _aktivesFeldSchritt1() != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -313,13 +311,19 @@ class _TagesabschlussSchritt1SeiteState
       _initialisierungHelper.synchronisiereControllerAusState();
 
   void _beiGlobalemFokuswechsel() {
+    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
     _scrollHelper.beiGlobalemFokuswechsel(
       mounted: mounted,
-      aktivesFeld: _aktivesFeldSchritt1(),
+      aktivesFeld: aktivesFeld,
       isMounted: () => mounted,
       ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
-      rebuild: () => setState(() {}),
     );
+    final bool zeigeNaechstesFeld = aktivesFeld != null;
+    if (zeigeNaechstesFeld != _zeigeNaechstesFeld) {
+      setState(() {
+        _zeigeNaechstesFeld = zeigeNaechstesFeld;
+      });
+    }
   }
 
   void _beiScrollAenderung() {
@@ -358,7 +362,7 @@ class _TagesabschlussSchritt1SeiteState
       aktivesFeld: _aktivesFeldSchritt1(),
       scrollController: _scrollController,
       context: context,
-      keyboardInset: _keyboardInset,
+      keyboardInset: _keyboardInset.value,
       footerContentHoeheNormal: _footerContentHoeheNormal,
       footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
       appBarHoehe: _appBarHoehe,
@@ -502,7 +506,7 @@ class _TagesabschlussSchritt1SeiteState
   void _triggerEnsureBeiEingabe(FocusNode focusNode) =>
       _scrollHelper.triggerEnsureBeiEingabe(
         focusNode: focusNode,
-        keyboardInset: _keyboardInset,
+        keyboardInset: _keyboardInset.value,
         isMounted: () => mounted,
         ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
       );
@@ -836,10 +840,6 @@ class _TagesabschlussSchritt1SeiteState
     }
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
-    final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
-    final double keyboardInset = _keyboardInset;
-    final bool tastaturOffen = keyboardInset > 0;
-    final double keyboardAnimationZiel = tastaturOffen ? 1.0 : 0.0;
     final double bottomInset = mediaQuery.viewPadding.bottom;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
@@ -938,14 +938,13 @@ class _TagesabschlussSchritt1SeiteState
       ),
       body: Schritt1BodyContent(
         scrollController: _scrollController,
-        keyboardAnimationZiel: keyboardAnimationZiel,
+        keyboardInsetListenable: _keyboardInset,
         footerAnimationDauer: _footerAnimationDauer,
         footerAnimationKurve: _footerAnimationKurve,
         footerContentHoeheNormal: _footerContentHoeheNormal,
         footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
         footerPaddingNormal: _footerPaddingNormal,
         footerPaddingKeyboard: _footerPaddingKeyboard,
-        keyboardInset: keyboardInset,
         bottomInset: bottomInset,
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
@@ -967,13 +966,14 @@ class _TagesabschlussSchritt1SeiteState
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
         footerBuilder:
             ({
+              required bool tastaturOffen,
               required EdgeInsets footerPadding,
               required double footerBottomInset,
             }) => schritt1_footer.Schritt1Footer(
               tastaturOffen: tastaturOffen,
               footerPadding: footerPadding,
               footerBottomInset: footerBottomInset,
-              zeigeNaechstesFeld: zeigeNaechstesFeld,
+              zeigeNaechstesFeld: _zeigeNaechstesFeld,
               weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
               weiterZuSchritt2: _weiterZuSchritt2,
             ),
