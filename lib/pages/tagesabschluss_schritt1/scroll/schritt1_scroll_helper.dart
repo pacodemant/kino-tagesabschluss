@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class Schritt1ScrollHelper {
   final Map<FocusNode, GlobalKey> _feldKeys = <FocusNode, GlobalKey>{};
   FocusNode? _letztesAktivesFeld;
+  int _fokuswechselEnsureGeneration = 0;
   bool _ensureNachEingabeGeplant = false;
   DateTime _letztesEnsureNachEingabe = DateTime.fromMillisecondsSinceEpoch(0);
   bool _komfortablesScrollZielEinmalig = false;
@@ -33,11 +34,35 @@ class Schritt1ScrollHelper {
     if (!identical(_letztesAktivesFeld, aktivesFeld)) {
       _letztesAktivesFeld = aktivesFeld;
       if (aktivesFeld != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Entschaerft konkurrierende Scrolls waehrend Keyboard-Uebergang.
+        final int ensureGeneration = ++_fokuswechselEnsureGeneration;
+        Future<void>.delayed(const Duration(milliseconds: 120), () {
           if (!isMounted()) {
             return;
           }
-          ensureAktivesFeldSichtbar();
+          if (ensureGeneration != _fokuswechselEnsureGeneration) {
+            return;
+          }
+          if (!identical(_letztesAktivesFeld, aktivesFeld) ||
+              !aktivesFeld.hasFocus) {
+            return;
+          }
+          if (leseKeyboardInset() <= 0) {
+            return;
+          }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!isMounted()) {
+              return;
+            }
+            if (ensureGeneration != _fokuswechselEnsureGeneration) {
+              return;
+            }
+            if (!identical(_letztesAktivesFeld, aktivesFeld) ||
+                !aktivesFeld.hasFocus) {
+              return;
+            }
+            ensureAktivesFeldSichtbar();
+          });
         });
       }
     }
