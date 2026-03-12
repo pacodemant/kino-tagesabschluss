@@ -253,25 +253,43 @@ nur Diagnose + sichere nächste Schritte.
 
 # Run-Metadaten aktualisieren
 
-Nach erfolgreichem Commit:
+Nach erfolgreichem Abschluss eines Runs müssen die Metadaten aktualisiert werden.
 
-1. `.dev/run_counter.txt` öffnen
+Zu aktualisieren sind:
 
-Aktualisieren:
+- `.dev/run_counter.txt`
+- `CHANGELOG.md`
 
-- last_run
-- next_run
-- last_run_title
-- last_commit
+In `.dev/run_counter.txt` müssen folgende Felder angepasst werden:
 
-2. `CHANGELOG.md` ergänzen
+- `last_run`
+- `next_run`
+- `last_run_title`
+- `last_commit`
 
-unter `Unreleased` oder neuem Abschnitt
+Regeln:
 
-3. Meta-Commit durchführen
+- `last_run` wird auf die aktuelle Run-Nummer gesetzt.
+- `next_run` wird auf die nächste Run-Nummer erhöht.
+- `last_run_title` enthält die Run-Nummer **und eine kurze Beschreibung**, z. B.:
 
-git add .dev/run_counter.txt CHANGELOG.md
+  `Run 68: Diagnose des Keyboard-/Footer-Wuselns in Schritt 1`
 
-git commit -m "Update run metadata after Run <NUMMER>"
+- `last_commit` enthält den Commit-Hash des letzten Code-Commits dieses Runs.
 
-git push
+Diagnose-Runs ohne Codeänderung:
+
+Auch Diagnose-Runs ohne Codeänderung oder ohne Commit zählen als abgeschlossener Run,
+wenn sie einen verwertbaren Abschlussbericht mit klarer Ursache oder klarer Folgeempfehlung liefern.
+
+In diesem Fall gilt ebenfalls:
+
+- `last_run` erhöhen
+- `next_run` erhöhen
+- `last_run_title` setzen
+- `CHANGELOG.md` ergänzen
+
+Wenn **kein neuer Git-Commit entstanden ist**:
+
+- `last_commit` unverändert lassen
+- im Abschlussbericht ausdrücklich angeben, dass kein Commit erfolgt ist
