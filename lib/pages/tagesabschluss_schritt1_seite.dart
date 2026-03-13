@@ -957,14 +957,19 @@ class _TagesabschlussSchritt1SeiteState
                 _footerPaddingKeyboard,
                 faktor,
               )!;
-              // Der Footer sitzt bewusst auf Scaffold-Ebene statt im Scroll-Stack.
-              return schritt1_footer.Schritt1Footer(
-                tastaturOffen: tastaturOffen,
-                footerPadding: footerPadding,
-                footerBottomInset: footerBottomInset,
-                zeigeNaechstesFeld: _zeigeNaechstesFeld,
-                weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-                weiterZuSchritt2: _weiterZuSchritt2,
+              // Material gibt dem Footer eine eigene Render-Ebene ueber dem Keyboard-Overlay.
+              return Material(
+                type: MaterialType.canvas,
+                color: Colors.transparent,
+                elevation: 8,
+                child: schritt1_footer.Schritt1Footer(
+                  tastaturOffen: tastaturOffen,
+                  footerPadding: footerPadding,
+                  footerBottomInset: footerBottomInset,
+                  zeigeNaechstesFeld: _zeigeNaechstesFeld,
+                  weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+                  weiterZuSchritt2: _weiterZuSchritt2,
+                ),
               );
             },
           );
