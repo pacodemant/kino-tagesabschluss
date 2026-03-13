@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 79: Schritt-1-Footer beim Fokuswechsel stabilisiert, indem `tastaturOffen` wieder ueber `didChangeMetrics` mit kurzem Post-Frame-Check gegen iOS-Null-Insets gefuehrt wird.
 - Run 78: Schritt-1-Footer-Hoehe an den nativen Keyboard-Inset angepasst und Footer-Uebergaenge beim Fokuswechsel lokal ueber `AnimatedSize` geglaettet.
 - Run 77: Schritt-1-Footer aus `Scaffold.bottomNavigationBar` in eine `Column` im Body verlagert, damit er mit dem verkleinerten Inhalt oberhalb der Tastatur sichtbar und antippbar bleibt.
 - Run 76: Manuellen Keyboard-Inset-Mechanismus in Schritt 1 entfernt und `resizeToAvoidBottomInset` wieder auf das native Scaffold-Verhalten mit statischem Footer umgestellt.
