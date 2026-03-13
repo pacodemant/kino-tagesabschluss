@@ -1,4 +1,4 @@
-last_run: 72
-next_run: 73
-last_run_title: Run 72 - Schritt 1 Bottom-Layout vereinheitlichen
-last_commit: ea28b71
+last_run: 73
+next_run: 74
+last_run_title: Run 73: Doppelte Footer-Animation entfernen
+last_commit: ea19598
