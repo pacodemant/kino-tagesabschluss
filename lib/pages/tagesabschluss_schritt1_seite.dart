@@ -977,10 +977,6 @@ class _TagesabschlussSchritt1SeiteState
       ),
       body: Schritt1BodyContent(
         scrollController: _scrollController,
-        keyboardInsetListenable: _keyboardInset,
-        footerContentHoeheNormal: _footerContentHoeheNormal,
-        footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
-        bottomInset: bottomInset,
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
         devToolsPanel: _baueDevToolsPanel(),
