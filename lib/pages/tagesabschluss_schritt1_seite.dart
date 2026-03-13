@@ -123,6 +123,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   bool _tastaturOffen = false;
+  int _tastaturSchliessGeneration = 0;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   bool _zeigeNaechstesFeld = false;
@@ -232,6 +233,8 @@ class _TagesabschlussSchritt1SeiteState
     final double inset = view.viewInsets.bottom / view.devicePixelRatio;
 
     if (inset > 0) {
+      // Tastatur offen: laufende Schliessen-Delays sofort ungueltig machen.
+      _tastaturSchliessGeneration++;
       if (!_tastaturOffen) {
         setState(() {
           _tastaturOffen = true;
@@ -244,16 +247,16 @@ class _TagesabschlussSchritt1SeiteState
         });
       }
     } else {
-      // iOS-Keyboard-Swap: kurz warten und zusaetzlich den Fokus pruefen,
-      // bevor die Tastatur wirklich als geschlossen behandelt wird.
-      Future<void>.delayed(const Duration(milliseconds: 200), () {
+      // inset == 0 kann echter Close oder iOS-Swap sein.
+      final int generation = ++_tastaturSchliessGeneration;
+      Future<void>.delayed(const Duration(milliseconds: 300), () {
         if (!mounted) return;
+        if (generation != _tastaturSchliessGeneration) return;
         final ui.FlutterView stabilerView =
             WidgetsBinding.instance.platformDispatcher.views.first;
         final double stabilerInset =
             stabilerView.viewInsets.bottom / stabilerView.devicePixelRatio;
-        final bool fokusNochAktiv = _aktivesFeldSchritt1() != null;
-        if (stabilerInset <= 0 && !fokusNochAktiv && _tastaturOffen) {
+        if (stabilerInset <= 0 && _tastaturOffen) {
           setState(() {
             _tastaturOffen = false;
           });
