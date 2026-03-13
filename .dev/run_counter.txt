@@ -1,4 +1,4 @@
-last_run: 79
-next_run: 80
-last_run_title: Run 79: Footer-Wegfallen beim Fokuswechsel beheben
-last_commit: 8cb0c81
+last_run: 80
+next_run: 81
+last_run_title: Run 80: iOS-Keyboard-Swap-Bug beim Fokuswechsel beheben
+last_commit: 016b79e
