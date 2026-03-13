@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 76: Manuellen Keyboard-Inset-Mechanismus in Schritt 1 entfernt und `resizeToAvoidBottomInset` wieder auf das native Scaffold-Verhalten mit statischem Footer umgestellt.
 - Run 75: Schritt-1-Footer-Tween mit stabilem `ValueKey` versehen, damit Rebuilds die laufende Footer-Animation nicht neu starten.
 - Run 74: Schritt-1-Footer im `bottomNavigationBar` in ein `Material` mit eigener Ebene gewrappt, damit er stabil ueber dem Keyboard-Overlay bleibt.
 - Run 73: Doppelte Footer-Animation in Schritt 1 entfernt, sodass der Footer nur noch ueber den bestehenden `TweenAnimationBuilder` fuer Safe-Area und Padding uebergaenge animiert.

@@ -1,4 +1,4 @@
-last_run: 75
-next_run: 76
-last_run_title: Run 75: TweenAnimationBuilder im Footer mit stabilem Key versehen
-last_commit: 3d973bd
+last_run: 76
+next_run: 77
+last_run_title: Run 76: Manuellen Keyboard-Inset-Mechanismus entfernen
+last_commit: 37e8ca5
