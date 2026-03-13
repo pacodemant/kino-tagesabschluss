@@ -244,7 +244,9 @@ class _TagesabschlussSchritt1SeiteState
         });
       }
     } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      // iOS-Keyboard-Swap zwischen gleichen Keyboard-Typen dauert laenger
+      // als ein Frame und soll den Footer-Zustand nicht kurz auf "zu" setzen.
+      Future<void>.delayed(const Duration(milliseconds: 120), () {
         if (!mounted) return;
         final ui.FlutterView stabilerView =
             WidgetsBinding.instance.platformDispatcher.views.first;
