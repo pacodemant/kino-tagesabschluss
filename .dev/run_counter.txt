@@ -1,4 +1,4 @@
-last_run: 82
-next_run: 83
-last_run_title: Run 82: iOS-Keyboard-Swap-Bug – Generation Counter statt Fokus-Bedingung
-last_commit: 43206bc
+last_run: 83
+next_run: 84
+last_run_title: Run 83: Footer-Flackern beheben – tastaturOffen aus MediaQuery statt didChangeMetrics
+last_commit: f71455d

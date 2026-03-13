@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 83: Footer-Flackern in Schritt 1 behoben – tastaturOffen wird nicht mehr ueber didChangeMetrics + setState gesetzt, sondern direkt im build-Kontext aus mediaQuery.viewInsets.bottom > 0 abgeleitet; _tastaturOffen, _tastaturSchliessGeneration und didChangeMetrics vollstaendig entfernt.
 - Run 82: iOS-Keyboard-Swap-Bug in `didChangeMetrics` mit Generation Counter geloest; jeder `inset > 0`-Aufruf inkrementiert `_tastaturSchliessGeneration` und macht laufende Schliessen-Delays ungueltig, die Fokus-Bedingung aus Run 81 wurde vollstaendig entfernt.
 - Run 81: iOS-Keyboard-Swap-Bug in `didChangeMetrics` weiter abgesichert, Delay auf 200ms erhoeht und den Fokus-Zustand als zweite Bedingung ergaenzt, damit `tastaturOffen` bei Same-Type-Swap nicht faelschlich auf false faellt.
 - Run 80: Schritt-1-Keyboard-Swap auf iOS beim Fokuswechsel zwischen gleichen Keyboard-Typen in `didChangeMetrics` mit 120ms Delay statt Post-Frame-Check abgefangen, damit der Footer nicht kurz wegfaellt.
