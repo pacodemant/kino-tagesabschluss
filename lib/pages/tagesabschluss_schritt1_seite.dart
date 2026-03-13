@@ -943,6 +943,7 @@ class _TagesabschlussSchritt1SeiteState
           final bool tastaturOffen = keyboardInset > 0;
           final double keyboardAnimationZiel = tastaturOffen ? 1.0 : 0.0;
           return TweenAnimationBuilder<double>(
+            key: const ValueKey<String>('schritt1FooterTween'),
             tween: Tween<double>(end: keyboardAnimationZiel),
             duration: _footerAnimationDauer,
             curve: _footerAnimationKurve,
