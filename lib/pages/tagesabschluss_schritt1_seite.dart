@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -64,14 +63,6 @@ class _TagesabschlussSchritt1SeiteState
     12,
     4,
   );
-  static const EdgeInsets _footerPaddingKeyboard = EdgeInsets.fromLTRB(
-    12,
-    2,
-    12,
-    2,
-  );
-  static const Duration _footerAnimationDauer = Duration(milliseconds: 200);
-  static const Curve _footerAnimationKurve = Curves.easeOutCubic;
   static const double _appBarHoehe = 48;
   static const double _devToolsStickyHoehe = 86;
   static const Set<String> _kupferRollenIds = <String>{
@@ -126,9 +117,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _devToolsOffen = false;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
-  final ValueNotifier<double> _keyboardInset = ValueNotifier<double>(0);
   bool _zeigeNaechstesFeld = false;
-  bool _keyboardInsetNullPruefungGeplant = false;
   final Random _zufall = Random();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
@@ -170,7 +159,6 @@ class _TagesabschlussSchritt1SeiteState
       naechsteUmschlagId: () => _naechsteUmschlagId++,
     );
     WidgetsBinding.instance.addObserver(this);
-    _keyboardInset.value = _leseKeyboardInset();
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
@@ -224,7 +212,6 @@ class _TagesabschlussSchritt1SeiteState
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
-    _keyboardInset.dispose();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -234,39 +221,7 @@ class _TagesabschlussSchritt1SeiteState
     if (!mounted) {
       return;
     }
-    final double neuerKeyboardInset = _leseKeyboardInset();
-
-    // Glaettet kurze 0-Insets beim Fokuswechsel zwischen Feldern.
-    if (neuerKeyboardInset == 0 && _keyboardInset.value > 0) {
-      if (_keyboardInsetNullPruefungGeplant) {
-        return;
-      }
-      _keyboardInsetNullPruefungGeplant = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _keyboardInsetNullPruefungGeplant = false;
-        if (!mounted) {
-          return;
-        }
-        final double stabilerInset = _leseKeyboardInset();
-        if (stabilerInset != _keyboardInset.value) {
-          _keyboardInset.value = stabilerInset;
-        }
-        if (stabilerInset > 0 && _aktivesFeldSchritt1() != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (!mounted) {
-              return;
-            }
-            _ensureAktivesFeldSichtbar();
-          });
-        }
-      });
-      return;
-    }
-
-    if (neuerKeyboardInset != _keyboardInset.value) {
-      _keyboardInset.value = neuerKeyboardInset;
-    }
-    if (neuerKeyboardInset > 0 && _aktivesFeldSchritt1() != null) {
+    if (_aktivesFeldSchritt1() != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) {
           return;
@@ -274,10 +229,6 @@ class _TagesabschlussSchritt1SeiteState
         _ensureAktivesFeldSichtbar();
       });
     }
-  }
-
-  double _leseKeyboardInset() {
-    return _scrollHelper.leseKeyboardInset();
   }
 
   Future<void> _ladeInitialeDaten() async {
@@ -363,7 +314,7 @@ class _TagesabschlussSchritt1SeiteState
       aktivesFeld: _aktivesFeldSchritt1(),
       scrollController: _scrollController,
       context: context,
-      keyboardInset: _keyboardInset.value,
+      keyboardInset: 0,
       footerContentHoeheNormal: _footerContentHoeheNormal,
       footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
       appBarHoehe: _appBarHoehe,
@@ -507,7 +458,7 @@ class _TagesabschlussSchritt1SeiteState
   void _triggerEnsureBeiEingabe(FocusNode focusNode) =>
       _scrollHelper.triggerEnsureBeiEingabe(
         focusNode: focusNode,
-        keyboardInset: _keyboardInset.value,
+        keyboardInset: 0,
         isMounted: () => mounted,
         ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
       );
@@ -906,7 +857,7 @@ class _TagesabschlussSchritt1SeiteState
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: TagesabschlussHeader(
         schrittNummer: 1,
         schrittTitel: 'Bargeldzählung',
@@ -937,44 +888,13 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      bottomNavigationBar: ValueListenableBuilder<double>(
-        valueListenable: _keyboardInset,
-        builder: (BuildContext context, double keyboardInset, Widget? child) {
-          final bool tastaturOffen = keyboardInset > 0;
-          final double keyboardAnimationZiel = tastaturOffen ? 1.0 : 0.0;
-          return TweenAnimationBuilder<double>(
-            key: const ValueKey<String>('schritt1FooterTween'),
-            tween: Tween<double>(end: keyboardAnimationZiel),
-            duration: _footerAnimationDauer,
-            curve: _footerAnimationKurve,
-            builder: (BuildContext context, double faktor, Widget? child) {
-              final double footerBottomInset = ui.lerpDouble(
-                bottomInset,
-                0,
-                faktor,
-              )!;
-              final EdgeInsets footerPadding = EdgeInsets.lerp(
-                _footerPaddingNormal,
-                _footerPaddingKeyboard,
-                faktor,
-              )!;
-              // Material gibt dem Footer eine eigene Render-Ebene ueber dem Keyboard-Overlay.
-              return Material(
-                type: MaterialType.canvas,
-                color: Colors.transparent,
-                elevation: 8,
-                child: schritt1_footer.Schritt1Footer(
-                  tastaturOffen: tastaturOffen,
-                  footerPadding: footerPadding,
-                  footerBottomInset: footerBottomInset,
-                  zeigeNaechstesFeld: _zeigeNaechstesFeld,
-                  weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-                  weiterZuSchritt2: _weiterZuSchritt2,
-                ),
-              );
-            },
-          );
-        },
+      bottomNavigationBar: schritt1_footer.Schritt1Footer(
+        tastaturOffen: false,
+        footerPadding: _footerPaddingNormal,
+        footerBottomInset: bottomInset,
+        zeigeNaechstesFeld: _zeigeNaechstesFeld,
+        weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+        weiterZuSchritt2: _weiterZuSchritt2,
       ),
       body: Schritt1BodyContent(
         scrollController: _scrollController,
