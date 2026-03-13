@@ -11,3 +11,4 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 - Run 67: Doppelte Fokus-/Keyboard-Anstöße in Schritt 1 reduziert (zusätzliches Feld-`requestFocus` beim Tap und iOS-`TextInput.show` nach `requestFocus` entfernt).
 - Run 69: Keyboard-Layout-State in Schritt 1 lokal entkoppelt (didChangeMetrics als führende Inset-Quelle, Footer-/Bottom-Layout über lokalen Listenable-State stabilisiert, Fokus-Rebuilds für Footer reduziert).
 - Run 70: Scroll-Ensure bei Fokuswechsel in Schritt 1 kontrolliert entschärft (kurze lokale Verzögerung mit Keyboard-Inset-/Fokus-Stabilitätscheck), um konkurrierende Scrolls während Keyboard-Übergängen zu reduzieren.
+- Run 71: Schritt-1-Footer aus dem Stack-/Scroll-Layoutpfad auf `Scaffold.bottomNavigationBar` verlagert, damit er stabiler oberhalb der Tastatur bleibt und nicht mehr im Content-Stack mitläuft.
