@@ -1,4 +1,4 @@
-last_run: 81
-next_run: 82
-last_run_title: Run 81: iOS-Keyboard-Swap-Bug – Fokus-Zustand als zweite Absicherung
-last_commit: f87b360
+last_run: 82
+next_run: 83
+last_run_title: Run 82: iOS-Keyboard-Swap-Bug – Generation Counter statt Fokus-Bedingung
+last_commit: 43206bc
