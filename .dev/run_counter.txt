@@ -1,4 +1,4 @@
-last_run: 73
-next_run: 74
-last_run_title: Run 73: Doppelte Footer-Animation entfernen
-last_commit: ea19598
+last_run: 74
+next_run: 75
+last_run_title: Run 74: Footer in Material-Widget wrappen
+last_commit: 6ebb97d

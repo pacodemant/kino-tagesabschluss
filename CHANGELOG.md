@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 74: Schritt-1-Footer im `bottomNavigationBar` in ein `Material` mit eigener Ebene gewrappt, damit er stabil ueber dem Keyboard-Overlay bleibt.
 - Run 73: Doppelte Footer-Animation in Schritt 1 entfernt, sodass der Footer nur noch ueber den bestehenden `TweenAnimationBuilder` fuer Safe-Area und Padding uebergaenge animiert.
 - Run 72: Bottom-Layout in Schritt 1 vereinheitlicht, Footer allein auf `Scaffold.bottomNavigationBar` belassen und konkurrierende Footer-/Inset-Logik aus dem Body sowie dem Down-FAB-Pfad entfernt.
 - Run 63: Scroll-/Abschnittsnavigation in Schritt 1 vereinheitlicht und Down-FAB-Scrollpfad über den bestehenden Scroll-Helper robuster gebündelt.
