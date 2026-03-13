@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -936,15 +937,49 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
+      bottomNavigationBar: ValueListenableBuilder<double>(
+        valueListenable: _keyboardInset,
+        builder: (BuildContext context, double keyboardInset, Widget? child) {
+          final bool tastaturOffen = keyboardInset > 0;
+          final double keyboardAnimationZiel = tastaturOffen ? 1.0 : 0.0;
+          return TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: keyboardAnimationZiel),
+            duration: _footerAnimationDauer,
+            curve: _footerAnimationKurve,
+            builder: (BuildContext context, double faktor, Widget? child) {
+              final double footerBottomInset = ui.lerpDouble(
+                bottomInset,
+                0,
+                faktor,
+              )!;
+              final EdgeInsets footerPadding = EdgeInsets.lerp(
+                _footerPaddingNormal,
+                _footerPaddingKeyboard,
+                faktor,
+              )!;
+              // Der Footer sitzt bewusst auf Scaffold-Ebene statt im Scroll-Stack.
+              return AnimatedPadding(
+                duration: _footerAnimationDauer,
+                curve: _footerAnimationKurve,
+                padding: EdgeInsets.only(bottom: keyboardInset),
+                child: schritt1_footer.Schritt1Footer(
+                  tastaturOffen: tastaturOffen,
+                  footerPadding: footerPadding,
+                  footerBottomInset: footerBottomInset,
+                  zeigeNaechstesFeld: _zeigeNaechstesFeld,
+                  weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+                  weiterZuSchritt2: _weiterZuSchritt2,
+                ),
+              );
+            },
+          );
+        },
+      ),
       body: Schritt1BodyContent(
         scrollController: _scrollController,
         keyboardInsetListenable: _keyboardInset,
-        footerAnimationDauer: _footerAnimationDauer,
-        footerAnimationKurve: _footerAnimationKurve,
         footerContentHoeheNormal: _footerContentHoeheNormal,
         footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
-        footerPaddingNormal: _footerPaddingNormal,
-        footerPaddingKeyboard: _footerPaddingKeyboard,
         bottomInset: bottomInset,
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
@@ -964,19 +999,6 @@ class _TagesabschlussSchritt1SeiteState
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
-        footerBuilder:
-            ({
-              required bool tastaturOffen,
-              required EdgeInsets footerPadding,
-              required double footerBottomInset,
-            }) => schritt1_footer.Schritt1Footer(
-              tastaturOffen: tastaturOffen,
-              footerPadding: footerPadding,
-              footerBottomInset: footerBottomInset,
-              zeigeNaechstesFeld: _zeigeNaechstesFeld,
-              weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-              weiterZuSchritt2: _weiterZuSchritt2,
-            ),
       ),
     );
   }
