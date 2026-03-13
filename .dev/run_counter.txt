@@ -1,4 +1,4 @@
-last_run: 74
-next_run: 75
-last_run_title: Run 74: Footer in Material-Widget wrappen
-last_commit: 6ebb97d
+last_run: 75
+next_run: 76
+last_run_title: Run 75: TweenAnimationBuilder im Footer mit stabilem Key versehen
+last_commit: 3d973bd
