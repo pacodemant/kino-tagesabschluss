@@ -63,6 +63,12 @@ class _TagesabschlussSchritt1SeiteState
     12,
     4,
   );
+  static const EdgeInsets _footerPaddingKeyboard = EdgeInsets.fromLTRB(
+    12,
+    2,
+    12,
+    2,
+  );
   static const double _appBarHoehe = 48;
   static const double _devToolsStickyHoehe = 86;
   static const Set<String> _kupferRollenIds = <String>{
@@ -793,6 +799,8 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final double bottomInset = mediaQuery.viewPadding.bottom;
+    final double keyboardInset = mediaQuery.viewInsets.bottom;
+    final bool tastaturOffen = keyboardInset > 0;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
@@ -913,13 +921,19 @@ class _TagesabschlussSchritt1SeiteState
               beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
             ),
           ),
-          schritt1_footer.Schritt1Footer(
-            tastaturOffen: false,
-            footerPadding: _footerPaddingNormal,
-            footerBottomInset: bottomInset,
-            zeigeNaechstesFeld: _zeigeNaechstesFeld,
-            weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-            weiterZuSchritt2: _weiterZuSchritt2,
+          AnimatedSize(
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeOut,
+            child: schritt1_footer.Schritt1Footer(
+              tastaturOffen: tastaturOffen,
+              footerPadding: tastaturOffen
+                  ? _footerPaddingKeyboard
+                  : _footerPaddingNormal,
+              footerBottomInset: tastaturOffen ? 0 : bottomInset,
+              zeigeNaechstesFeld: _zeigeNaechstesFeld,
+              weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+              weiterZuSchritt2: _weiterZuSchritt2,
+            ),
           ),
         ],
       ),
