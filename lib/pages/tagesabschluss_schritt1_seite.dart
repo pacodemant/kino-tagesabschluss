@@ -244,15 +244,16 @@ class _TagesabschlussSchritt1SeiteState
         });
       }
     } else {
-      // iOS-Keyboard-Swap zwischen gleichen Keyboard-Typen dauert laenger
-      // als ein Frame und soll den Footer-Zustand nicht kurz auf "zu" setzen.
-      Future<void>.delayed(const Duration(milliseconds: 120), () {
+      // iOS-Keyboard-Swap: kurz warten und zusaetzlich den Fokus pruefen,
+      // bevor die Tastatur wirklich als geschlossen behandelt wird.
+      Future<void>.delayed(const Duration(milliseconds: 200), () {
         if (!mounted) return;
         final ui.FlutterView stabilerView =
             WidgetsBinding.instance.platformDispatcher.views.first;
         final double stabilerInset =
             stabilerView.viewInsets.bottom / stabilerView.devicePixelRatio;
-        if (stabilerInset <= 0 && _tastaturOffen) {
+        final bool fokusNochAktiv = _aktivesFeldSchritt1() != null;
+        if (stabilerInset <= 0 && !fokusNochAktiv && _tastaturOffen) {
           setState(() {
             _tastaturOffen = false;
           });
