@@ -958,18 +958,13 @@ class _TagesabschlussSchritt1SeiteState
                 faktor,
               )!;
               // Der Footer sitzt bewusst auf Scaffold-Ebene statt im Scroll-Stack.
-              return AnimatedPadding(
-                duration: _footerAnimationDauer,
-                curve: _footerAnimationKurve,
-                padding: EdgeInsets.only(bottom: keyboardInset),
-                child: schritt1_footer.Schritt1Footer(
-                  tastaturOffen: tastaturOffen,
-                  footerPadding: footerPadding,
-                  footerBottomInset: footerBottomInset,
-                  zeigeNaechstesFeld: _zeigeNaechstesFeld,
-                  weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-                  weiterZuSchritt2: _weiterZuSchritt2,
-                ),
+              return schritt1_footer.Schritt1Footer(
+                tastaturOffen: tastaturOffen,
+                footerPadding: footerPadding,
+                footerBottomInset: footerBottomInset,
+                zeigeNaechstesFeld: _zeigeNaechstesFeld,
+                weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+                weiterZuSchritt2: _weiterZuSchritt2,
               );
             },
           );
