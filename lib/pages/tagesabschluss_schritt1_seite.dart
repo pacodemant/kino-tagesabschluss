@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -121,6 +122,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _kartenzahlungenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
+  bool _tastaturOffen = false;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   bool _zeigeNaechstesFeld = false;
@@ -224,15 +226,35 @@ class _TagesabschlussSchritt1SeiteState
 
   @override
   void didChangeMetrics() {
-    if (!mounted) {
-      return;
-    }
-    if (_aktivesFeldSchritt1() != null) {
+    if (!mounted) return;
+    final ui.FlutterView view =
+        WidgetsBinding.instance.platformDispatcher.views.first;
+    final double inset = view.viewInsets.bottom / view.devicePixelRatio;
+
+    if (inset > 0) {
+      if (!_tastaturOffen) {
+        setState(() {
+          _tastaturOffen = true;
+        });
+      }
+      if (_aktivesFeldSchritt1() != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _ensureAktivesFeldSichtbar();
+        });
+      }
+    } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) {
-          return;
+        if (!mounted) return;
+        final ui.FlutterView stabilerView =
+            WidgetsBinding.instance.platformDispatcher.views.first;
+        final double stabilerInset =
+            stabilerView.viewInsets.bottom / stabilerView.devicePixelRatio;
+        if (stabilerInset <= 0 && _tastaturOffen) {
+          setState(() {
+            _tastaturOffen = false;
+          });
         }
-        _ensureAktivesFeldSichtbar();
       });
     }
   }
@@ -799,8 +821,7 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final double bottomInset = mediaQuery.viewPadding.bottom;
-    final double keyboardInset = mediaQuery.viewInsets.bottom;
-    final bool tastaturOffen = keyboardInset > 0;
+    final bool tastaturOffen = _tastaturOffen;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
@@ -921,19 +942,15 @@ class _TagesabschlussSchritt1SeiteState
               beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
             ),
           ),
-          AnimatedSize(
-            duration: const Duration(milliseconds: 150),
-            curve: Curves.easeOut,
-            child: schritt1_footer.Schritt1Footer(
-              tastaturOffen: tastaturOffen,
-              footerPadding: tastaturOffen
-                  ? _footerPaddingKeyboard
-                  : _footerPaddingNormal,
-              footerBottomInset: tastaturOffen ? 0 : bottomInset,
-              zeigeNaechstesFeld: _zeigeNaechstesFeld,
-              weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-              weiterZuSchritt2: _weiterZuSchritt2,
-            ),
+          schritt1_footer.Schritt1Footer(
+            tastaturOffen: tastaturOffen,
+            footerPadding: tastaturOffen
+                ? _footerPaddingKeyboard
+                : _footerPaddingNormal,
+            footerBottomInset: tastaturOffen ? 0 : bottomInset,
+            zeigeNaechstesFeld: _zeigeNaechstesFeld,
+            weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
+            weiterZuSchritt2: _weiterZuSchritt2,
           ),
         ],
       ),
