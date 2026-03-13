@@ -1,4 +1,4 @@
-last_run: 80
-next_run: 81
-last_run_title: Run 80: iOS-Keyboard-Swap-Bug beim Fokuswechsel beheben
-last_commit: 016b79e
+last_run: 81
+next_run: 82
+last_run_title: Run 81: iOS-Keyboard-Swap-Bug – Fokus-Zustand als zweite Absicherung
+last_commit: f87b360
