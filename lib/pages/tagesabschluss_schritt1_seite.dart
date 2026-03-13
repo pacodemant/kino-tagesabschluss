@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -49,8 +48,7 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 }
 
 class _TagesabschlussSchritt1SeiteState
-    extends State<TagesabschlussSchritt1Seite>
-    with WidgetsBindingObserver {
+    extends State<TagesabschlussSchritt1Seite> {
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
@@ -122,8 +120,6 @@ class _TagesabschlussSchritt1SeiteState
   bool _kartenzahlungenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
-  bool _tastaturOffen = false;
-  int _tastaturSchliessGeneration = 0;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   bool _zeigeNaechstesFeld = false;
@@ -167,7 +163,6 @@ class _TagesabschlussSchritt1SeiteState
       entferneFeldKey: _scrollHelper.entferneFeldKey,
       naechsteUmschlagId: () => _naechsteUmschlagId++,
     );
-    WidgetsBinding.instance.addObserver(this);
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
@@ -221,48 +216,7 @@ class _TagesabschlussSchritt1SeiteState
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
     FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  @override
-  void didChangeMetrics() {
-    if (!mounted) return;
-    final ui.FlutterView view =
-        WidgetsBinding.instance.platformDispatcher.views.first;
-    final double inset = view.viewInsets.bottom / view.devicePixelRatio;
-
-    if (inset > 0) {
-      // Tastatur offen: laufende Schliessen-Delays sofort ungueltig machen.
-      _tastaturSchliessGeneration++;
-      if (!_tastaturOffen) {
-        setState(() {
-          _tastaturOffen = true;
-        });
-      }
-      if (_aktivesFeldSchritt1() != null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (!mounted) return;
-          _ensureAktivesFeldSichtbar();
-        });
-      }
-    } else {
-      // inset == 0 kann echter Close oder iOS-Swap sein.
-      final int generation = ++_tastaturSchliessGeneration;
-      Future<void>.delayed(const Duration(milliseconds: 300), () {
-        if (!mounted) return;
-        if (generation != _tastaturSchliessGeneration) return;
-        final ui.FlutterView stabilerView =
-            WidgetsBinding.instance.platformDispatcher.views.first;
-        final double stabilerInset =
-            stabilerView.viewInsets.bottom / stabilerView.devicePixelRatio;
-        if (stabilerInset <= 0 && _tastaturOffen) {
-          setState(() {
-            _tastaturOffen = false;
-          });
-        }
-      });
-    }
   }
 
   Future<void> _ladeInitialeDaten() async {
@@ -827,7 +781,7 @@ class _TagesabschlussSchritt1SeiteState
     final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final double bottomInset = mediaQuery.viewPadding.bottom;
-    final bool tastaturOffen = _tastaturOffen;
+    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
