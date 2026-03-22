@@ -93,6 +93,8 @@ class Schritt1BodyContent extends StatelessWidget {
                   heroTag: 'step1DownFab',
                   mini: true,
                   elevation: 2,
+                  backgroundColor: Colors.black87,
+                  foregroundColor: Colors.white,
                   onPressed: scrolleNachUnten,
                   child: const Icon(Icons.keyboard_arrow_down),
                 ),

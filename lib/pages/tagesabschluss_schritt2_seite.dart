@@ -759,7 +759,7 @@ class _TagesabschlussSchritt2SeiteState
         : _footerContentHoeheNormal;
     final double footerBottomInset = istTastaturSichtbar
         ? 0
-        : mediaQuery.padding.bottom;
+        : mediaQuery.viewPadding.bottom;
     final EdgeInsets footerPadding = istTastaturSichtbar
         ? _footerPaddingKeyboard
         : _footerPaddingNormal;
@@ -775,7 +775,7 @@ class _TagesabschlussSchritt2SeiteState
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
         schrittTitel: 'Einnahmen/Abschluss',
@@ -808,39 +808,38 @@ class _TagesabschlussSchritt2SeiteState
                 ),
               ),
             ),
-            child: SafeArea(
-              child: ListView(
-                controller: _scrollController,
-                padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-                keyboardDismissBehavior:
-                    ScrollViewKeyboardDismissBehavior.manual,
-                children: <Widget>[
-                  IgnorePointer(
-                    ignoring: !_devToolsSichtbar || !_devToolsOffen,
-                    child: AnimatedOpacity(
+            child: ListView(
+              controller: _scrollController,
+              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+              keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
+              children: <Widget>[
+                IgnorePointer(
+                  ignoring: !_devToolsSichtbar || !_devToolsOffen,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 140),
+                    opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                    child: AnimatedContainer(
                       duration: const Duration(milliseconds: 140),
-                      opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 140),
-                        height: _devToolsSichtbar && _devToolsOffen ? null : 0,
-                        child: _baueDevToolsPanel(),
-                      ),
+                      height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                      child: _baueDevToolsPanel(),
                     ),
                   ),
-                  Text(
-                    'Tagesabschluss ${widget.kinoName}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 20,
-                    ),
+                ),
+                Text(
+                  'Tagesabschluss ${widget.kinoName}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 20,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _kopfDatumUhrzeit(),
-                    style: const TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                  const SizedBox(height: 12),
-                  Card(
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _kopfDatumUhrzeit(),
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                const SizedBox(height: 12),
+                Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -891,8 +890,8 @@ class _TagesabschlussSchritt2SeiteState
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Card(
+                const SizedBox(height: 10),
+                Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -936,8 +935,8 @@ class _TagesabschlussSchritt2SeiteState
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Card(
+                const SizedBox(height: 10),
+                Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -971,8 +970,8 @@ class _TagesabschlussSchritt2SeiteState
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Card(
+                const SizedBox(height: 10),
+                Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
@@ -1002,8 +1001,8 @@ class _TagesabschlussSchritt2SeiteState
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  SizedBox(
+                const SizedBox(height: 8),
+                SizedBox(
                     height: 44,
                     child: OutlinedButton.icon(
                       onPressed: _zeigeUmschlagVoransicht,
@@ -1011,9 +1010,8 @@ class _TagesabschlussSchritt2SeiteState
                       label: const Text('Übertrag auf Umschlag'),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                ],
-              ),
+                const SizedBox(height: 8),
+              ],
             ),
           ),
           Positioned(
