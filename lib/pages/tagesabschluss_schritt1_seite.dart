@@ -298,11 +298,12 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   void _ensureAktivesFeldSichtbar() {
+    final double keyboardInset = MediaQuery.of(context).viewInsets.bottom;
     _scrollHelper.ensureAktivesFeldSichtbar(
       aktivesFeld: _aktivesFeldSchritt1(),
       scrollController: _scrollController,
       context: context,
-      keyboardInset: 0,
+      keyboardInset: keyboardInset,
       footerContentHoeheNormal: _footerContentHoeheNormal,
       footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
       appBarHoehe: _appBarHoehe,
@@ -446,7 +447,7 @@ class _TagesabschlussSchritt1SeiteState
   void _triggerEnsureBeiEingabe(FocusNode focusNode) =>
       _scrollHelper.triggerEnsureBeiEingabe(
         focusNode: focusNode,
-        keyboardInset: 0,
+        keyboardInset: MediaQuery.of(context).viewInsets.bottom,
         isMounted: () => mounted,
         ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
       );
