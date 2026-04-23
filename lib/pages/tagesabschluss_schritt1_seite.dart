@@ -49,6 +49,9 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 
 class _TagesabschlussSchritt1SeiteState
     extends State<TagesabschlussSchritt1Seite> {
+  // Diagnose-Flag: eigenen Scroll-Ensure deaktivieren, um natives iOS-Verhalten zu testen.
+  static final bool _eigenesScrollEnsureAktiv = false;
+
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
@@ -252,12 +255,18 @@ class _TagesabschlussSchritt1SeiteState
 
   void _beiGlobalemFokuswechsel() {
     final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
-    _scrollHelper.beiGlobalemFokuswechsel(
-      mounted: mounted,
-      aktivesFeld: aktivesFeld,
-      isMounted: () => mounted,
-      ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
-    );
+    if (_eigenesScrollEnsureAktiv) {
+      _scrollHelper.beiGlobalemFokuswechsel(
+        mounted: mounted,
+        aktivesFeld: aktivesFeld,
+        isMounted: () => mounted,
+        ensureAktivesFeldSichtbar: () {
+          if (_eigenesScrollEnsureAktiv) {
+            _ensureAktivesFeldSichtbar();
+          }
+        },
+      );
+    }
     final bool zeigeNaechstesFeld = aktivesFeld != null;
     if (zeigeNaechstesFeld != _zeigeNaechstesFeld) {
       setState(() {
