@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 88: Fokuszustand in `GanzzahlEingabefeld` und `BetragCentEingabefeld` visuell hervorgehoben mit schwarzem Hintergrund, weißer fetter Schrift und weißem Cursor.
 - Run 87: Eigenen Schritt-1-Scroll-Ensure per Diagnose-Flag deaktiviert, damit natives iOS-Scrollverhalten isoliert getestet werden kann.
 - Run 86: `triggerEnsureBeiEingabe` aus dem Schritt-1-`onChanged`-Pfad entfernt, damit Eingabefelder nach dem Fokus-Scroll beim Tippen stabil stehen bleiben.
 - Run 85: Schritt-2-Footer und Tastaturverhalten an Schritt 1 angeglichen – `resizeToAvoidBottomInset` auf `true`, `keyboardDismissBehavior` auf `onDrag`, `SafeArea` um `ListView` entfernt, `footerBottomInset` auf `viewPadding.bottom` umgestellt; Down-FAB in Schritt 1 schwarz mit weisser Schrift.
