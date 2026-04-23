@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 
 // Zweck: Eigenstaendiger Controller fuer State-/Fokus-Helfer in Schritt 1.
 class Schritt1StateController {
@@ -225,7 +224,6 @@ class Schritt1StateController {
   void fokussiereTextfeld({
     required BuildContext context,
     required FocusNode fokusNode,
-    required Schritt1ScrollHelper scrollHelper,
     required FocusNode? Function() aktivesFeld,
     required bool Function(
       FocusNode zielFokusNode, {
@@ -235,7 +233,6 @@ class Schritt1StateController {
     required void Function(FocusNode fokusNode) fokussiereTextfeldRekursiv,
     required bool mounted,
   }) {
-    scrollHelper.markiereProgrammatischenFokuswechsel();
     final FocusNode? vorherigesFokusfeld = aktivesFeld();
     final bool sectionWurdeGeoeffnet = oeffneSectionFuerFokusfeld(
       fokusNode,

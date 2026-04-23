@@ -49,16 +49,11 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 
 class _TagesabschlussSchritt1SeiteState
     extends State<TagesabschlussSchritt1Seite> {
-  // Diagnose-Flag: eigenen Scroll-Ensure deaktivieren, um natives iOS-Verhalten zu testen.
-  static final bool _eigenesScrollEnsureAktiv = false;
-
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
   static const int _sectionKartenzahlungen = 3;
   static const int _sectionUmschlaege = 4;
-  static const double _footerContentHoeheNormal = 44;
-  static const double _footerContentHoeheKeyboard = 40;
   static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
     12,
     4,
@@ -71,7 +66,6 @@ class _TagesabschlussSchritt1SeiteState
     12,
     2,
   );
-  static const double _appBarHoehe = 48;
   static const double _devToolsStickyHoehe = 86;
   static const Set<String> _kupferRollenIds = <String>{
     'roll_1c',
@@ -144,6 +138,16 @@ class _TagesabschlussSchritt1SeiteState
       StueckelungKonfiguration.alleStueckzahlZeilen;
   bool get _devToolsSichtbar => !kReleaseMode;
 
+  void _beiFokuswechselFuerFooter() {
+    final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
+    if (zeigeNaechstesFeld == _zeigeNaechstesFeld) {
+      return;
+    }
+    setState(() {
+      _zeigeNaechstesFeld = zeigeNaechstesFeld;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -176,7 +180,7 @@ class _TagesabschlussSchritt1SeiteState
       _loseMuenzenController[zeile.id] = TextEditingController();
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
-    FocusManager.instance.addListener(_beiGlobalemFokuswechsel);
+    FocusManager.instance.addListener(_beiFokuswechselFuerFooter);
     _scrollController.addListener(_beiScrollAenderung);
     _ladeInitialeDaten();
   }
@@ -218,7 +222,7 @@ class _TagesabschlussSchritt1SeiteState
     }
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
-    FocusManager.instance.removeListener(_beiGlobalemFokuswechsel);
+    FocusManager.instance.removeListener(_beiFokuswechselFuerFooter);
     super.dispose();
   }
 
@@ -253,28 +257,6 @@ class _TagesabschlussSchritt1SeiteState
   void _synchronisiereControllerAusState() =>
       _initialisierungHelper.synchronisiereControllerAusState();
 
-  void _beiGlobalemFokuswechsel() {
-    final FocusNode? aktivesFeld = _aktivesFeldSchritt1();
-    if (_eigenesScrollEnsureAktiv) {
-      _scrollHelper.beiGlobalemFokuswechsel(
-        mounted: mounted,
-        aktivesFeld: aktivesFeld,
-        isMounted: () => mounted,
-        ensureAktivesFeldSichtbar: () {
-          if (_eigenesScrollEnsureAktiv) {
-            _ensureAktivesFeldSichtbar();
-          }
-        },
-      );
-    }
-    final bool zeigeNaechstesFeld = aktivesFeld != null;
-    if (zeigeNaechstesFeld != _zeigeNaechstesFeld) {
-      setState(() {
-        _zeigeNaechstesFeld = zeigeNaechstesFeld;
-      });
-    }
-  }
-
   void _beiScrollAenderung() {
     _scrollHelper.beiScrollAenderung(
       mounted: mounted,
@@ -304,25 +286,6 @@ class _TagesabschlussSchritt1SeiteState
     required Widget child,
   }) {
     return KeyedSubtree(key: _holeFeldKey(focusNode), child: child);
-  }
-
-  void _ensureAktivesFeldSichtbar() {
-    final double keyboardInset = MediaQuery.of(context).viewInsets.bottom;
-    _scrollHelper.ensureAktivesFeldSichtbar(
-      aktivesFeld: _aktivesFeldSchritt1(),
-      scrollController: _scrollController,
-      context: context,
-      keyboardInset: keyboardInset,
-      footerContentHoeheNormal: _footerContentHoeheNormal,
-      footerContentHoeheKeyboard: _footerContentHoeheKeyboard,
-      appBarHoehe: _appBarHoehe,
-      devToolsStickyHoehe: _devToolsStickyHoehe,
-      devToolsSichtbar: _devToolsSichtbar,
-      devToolsOffen: _devToolsOffen,
-      umschlagBezeichnungFocusNodes: _umschlagBezeichnungFocusNode,
-      umschlagBetragFocusNodes: _umschlagBetragFocusNode,
-      kartenzahlungFocusNodes: _kartenzahlungFocusNode,
-    );
   }
 
   void _autoFillDev() {
@@ -552,7 +515,6 @@ class _TagesabschlussSchritt1SeiteState
       _stateController.fokussiereTextfeld(
         context: context,
         fokusNode: fokusNode,
-        scrollHelper: _scrollHelper,
         aktivesFeld: _aktivesFeldSchritt1,
         oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
         fokussiereTextfeldRekursiv: _fokussiereTextfeld,
