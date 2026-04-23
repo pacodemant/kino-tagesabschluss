@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 89: Obsoleten Schritt-1-Scroll-Ensure-Code vollstaendig entfernt; nativer iOS-Fokus-Scroll bleibt aktiv, Down-FAB-/Scroll-Metrik-Helfer bleiben bestehen.
 - Run 88: Fokuszustand in `GanzzahlEingabefeld` und `BetragCentEingabefeld` visuell hervorgehoben mit schwarzem Hintergrund, weißer fetter Schrift und weißem Cursor.
 - Run 87: Eigenen Schritt-1-Scroll-Ensure per Diagnose-Flag deaktiviert, damit natives iOS-Scrollverhalten isoliert getestet werden kann.
 - Run 86: `triggerEnsureBeiEingabe` aus dem Schritt-1-`onChanged`-Pfad entfernt, damit Eingabefelder nach dem Fokus-Scroll beim Tippen stabil stehen bleiben.
