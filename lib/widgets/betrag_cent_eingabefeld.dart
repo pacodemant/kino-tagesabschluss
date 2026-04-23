@@ -29,7 +29,7 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   }
 }
 
-class BetragCentEingabefeld extends StatelessWidget {
+class BetragCentEingabefeld extends StatefulWidget {
   const BetragCentEingabefeld({
     super.key,
     required this.textController,
@@ -54,29 +54,71 @@ class BetragCentEingabefeld extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
 
   @override
+  State<BetragCentEingabefeld> createState() => _BetragCentEingabefeldState();
+}
+
+class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
+  @override
+  void initState() {
+    super.initState();
+    widget.focusNode?.addListener(_beiFokuswechsel);
+  }
+
+  @override
+  void didUpdateWidget(covariant BetragCentEingabefeld oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.focusNode == widget.focusNode) {
+      return;
+    }
+    oldWidget.focusNode?.removeListener(_beiFokuswechsel);
+    widget.focusNode?.addListener(_beiFokuswechsel);
+  }
+
+  void _beiFokuswechsel() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    widget.focusNode?.removeListener(_beiFokuswechsel);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String bereinigterHinweisText = hinweisText
+    final bool hatFokus = widget.focusNode?.hasFocus ?? false;
+    final String bereinigterHinweisText = widget.hinweisText
         .replaceAll(' €', '')
         .replaceAll('€', '');
 
     return TextField(
-      controller: textController,
-      focusNode: focusNode,
+      controller: widget.textController,
+      focusNode: widget.focusNode,
       keyboardType: TextInputType.number,
-      textInputAction: textInputAction,
+      textInputAction: widget.textInputAction,
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: schriftgroesse),
+      cursorColor: hatFokus ? Colors.white : null,
+      style: TextStyle(
+        fontSize: widget.schriftgroesse,
+        color: hatFokus ? Colors.white : null,
+        fontWeight: hatFokus ? FontWeight.w700 : FontWeight.normal,
+      ),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.digitsOnly,
         CentWaehrungsEingabeFormatter(),
       ],
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: widget.labelText,
         hintText: bereinigterHinweisText,
         suffixText: '€',
         isDense: true,
+        filled: hatFokus,
+        fillColor: hatFokus ? Colors.black87 : null,
         border: const OutlineInputBorder(),
-        errorText: fehlermeldungText,
+        errorText: widget.fehlermeldungText,
         errorBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.red),
         ),
@@ -84,8 +126,8 @@ class BetragCentEingabefeld extends StatelessWidget {
           borderSide: BorderSide(color: Colors.red, width: 2),
         ),
       ),
-      onChanged: onChanged,
-      onSubmitted: onSubmitted,
+      onChanged: widget.onChanged,
+      onSubmitted: widget.onSubmitted,
     );
   }
 }
