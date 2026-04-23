@@ -375,7 +375,6 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
     });
-    _triggerEnsureBeiEingabe(_stueckzahlFocusNode[zeile.id]!);
     _speichereEntwurf();
   }
 
@@ -387,7 +386,6 @@ class _TagesabschlussSchritt1SeiteState
         _parseCentZiffern(wert),
       );
     });
-    _triggerEnsureBeiEingabe(_loseMuenzenFocusNode[muenzartId]!);
     _speichereEntwurf();
   }
 
@@ -428,7 +426,6 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _stateController.setzeUmschlagBezeichnung(_umschlaege, index, wert);
     });
-    _triggerEnsureBeiEingabe(_umschlagBezeichnungFocusNode[index]);
     _speichereEntwurf();
   }
 
@@ -440,17 +437,8 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _stateController.setzeUmschlagBetrag(_umschlaege, index, betragCent);
     });
-    _triggerEnsureBeiEingabe(_umschlagBetragFocusNode[index]);
     _speichereEntwurf();
   }
-
-  void _triggerEnsureBeiEingabe(FocusNode focusNode) =>
-      _scrollHelper.triggerEnsureBeiEingabe(
-        focusNode: focusNode,
-        keyboardInset: MediaQuery.of(context).viewInsets.bottom,
-        isMounted: () => mounted,
-        ensureAktivesFeldSichtbar: _ensureAktivesFeldSichtbar,
-      );
 
   void _setzeKartenzahlungAnzahl(int anzahl) =>
       _stateController.setzeKartenzahlungAnzahl(
@@ -503,12 +491,11 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
-  // Aktualisiert Kartenzahlung und triggert den bestehenden Ensure-Mechanismus.
+  // Aktualisiert Kartenzahlung ohne zusaetzlichen Scroll-Ensure bei Eingabe.
   void _beiKartenzahlungBetragGeaendert(int index, String wert) {
     setState(() {
       _kartenzahlungenCent[index] = _parseCentZiffern(wert);
     });
-    _triggerEnsureBeiEingabe(_kartenzahlungFocusNode[index]);
   }
 
   int _parseCentZiffern(String wert) => _stateController.parseCentZiffern(wert);
