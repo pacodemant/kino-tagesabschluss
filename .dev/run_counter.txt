@@ -1,4 +1,4 @@
-last_run: 90
-next_run: 91
-last_run_title: Run 90: Projektdokumentation auf Claude Code umstellen
-last_commit: c31b45c
+last_run: 91
+next_run: 92
+last_run_title: Run 91: Eingabeprüfung beim Übergang Schritt 1 zu Schritt 2
+last_commit: 555661d
