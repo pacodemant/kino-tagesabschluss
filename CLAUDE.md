@@ -103,6 +103,13 @@ Commit-Format:
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
 
+## Bericht-Formatierung
+
+- Die Überschrift des Abschlussberichts lautet immer:
+  „Claude Code-Bericht Run <NUMMER>"
+- Der gesamte Abschlussbericht wird immer in einem einzigen Codeblock ausgegeben,
+  damit er einfach in die Zwischenablage kopiert werden kann.
+
 ## Nach erfolgreichem Run aktualisieren
 
 - `.dev/run_counter.txt`
