@@ -125,3 +125,46 @@ Ein erfolgreicher Commit allein schließt einen Run nicht ab.
 
 ## Sprache
 Antworte immer auf Deutsch.
+
+## Automatischer Chat-Start
+
+Claude Code liest diese Datei automatisch beim Start eines neuen Chats.
+Folgende Schritte sind dann verbindlich auszuführen, bevor auf einen
+Run-Prompt gewartet wird:
+
+### Schritt 1: Kontextdateien laden
+
+Lies folgende Dateien vollständig:
+
+- CLAUDE.md (bereits geladen)
+- AGENTS.md
+- CONTRIBUTING.md
+- CHANGELOG.md
+- .dev/run_counter.txt
+- .dev/run_template.md
+
+Falls eine dieser Dateien fehlt:
+1. Sofort stoppen.
+2. Fehlende Dateien auflisten.
+3. Entwickler bitten, sie nachzureichen.
+
+### Schritt 2: Snapshot
+
+1. `.dev/run_counter.txt` lesen – einzige gültige Quelle für die Run-Nummer
+2. `git status` prüfen
+
+### Schritt 3: Bereitschaft bestätigen
+
+Nach dem Laden kurz bestätigen:
+"Kontext geladen. Bereit für Run-Prompt."
+
+### Schritt 4: Warten
+
+Keine Codeänderungen, keine Git-Befehle, keine Analyse –
+bis ein Prompt im Format erscheint:
+
+Claude Code Run <Nummer>: <Titel>
+
+### Sprache
+
+Antworte immer auf Deutsch.
