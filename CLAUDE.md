@@ -44,6 +44,15 @@ Ohne Run-Prompt erlaubt:
 3. Claude führt den Run aus
 4. Claude berichtet (siehe unten)
 
+## Snapshot-Regel
+
+Zu Beginn einer neuen Session genügt:
+1. `.dev/run_counter.txt` lesen
+2. `git status` prüfen
+
+Das vollständige Snapshot-Skript muss nicht ausgeführt werden.
+Die Run-Nummer aus `.dev/run_counter.txt` ist die einzige gültige Quelle.
+
 ## Run-Nummer
 
 Die aktuelle Run-Nummer steht in `.dev/run_counter.txt`.
@@ -106,3 +115,6 @@ Commit-Format:
 3. Bericht und Testergebnis im Chat dokumentiert sind
 
 Ein erfolgreicher Commit allein schließt einen Run nicht ab.
+
+## Sprache
+Antworte immer auf Deutsch.
