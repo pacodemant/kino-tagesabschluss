@@ -121,6 +121,7 @@ class _TagesabschlussSchritt1SeiteState
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   bool _zeigeNaechstesFeld = false;
   final Random _zufall = Random();
+  final Set<FocusNode> _rotHervorgehoben = <FocusNode>{};
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
@@ -772,10 +773,16 @@ class _TagesabschlussSchritt1SeiteState
         .toList();
 
     if (leereScheine.isNotEmpty) {
+      setState(() {
+        _rotHervorgehoben.clear();
+        _rotHervorgehoben.addAll(
+          leereScheine.map(
+            (Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!,
+          ),
+        );
+      });
       final String auflistung = _formatiereLeereListe(
-        leereScheine
-            .map((Kassenzeile zeile) => zeile.bezeichnung)
-            .toList(),
+        leereScheine.map((Kassenzeile zeile) => zeile.bezeichnung).toList(),
       );
       final bool bestaetigt = await _zeigeEingabePruefDialog(
         titel: 'Scheine unvollständig',
@@ -785,6 +792,9 @@ class _TagesabschlussSchritt1SeiteState
       if (!mounted) {
         return;
       }
+      setState(() {
+        _rotHervorgehoben.clear();
+      });
       if (!bestaetigt) {
         _fokussiereTextfeld(_stueckzahlFocusNode[leereScheine.first.id]!);
         return;
@@ -803,10 +813,16 @@ class _TagesabschlussSchritt1SeiteState
         .toList();
 
     if (leereMuenzen.isNotEmpty) {
+      setState(() {
+        _rotHervorgehoben.clear();
+        _rotHervorgehoben.addAll(
+          leereMuenzen.map(
+            (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
+          ),
+        );
+      });
       final String auflistung = _formatiereLeereListe(
-        leereMuenzen
-            .map((Kassenzeile zeile) => zeile.bezeichnung)
-            .toList(),
+        leereMuenzen.map((Kassenzeile zeile) => zeile.bezeichnung).toList(),
       );
       final bool bestaetigt = await _zeigeEingabePruefDialog(
         titel: 'Lose Münzen unvollständig',
@@ -816,12 +832,15 @@ class _TagesabschlussSchritt1SeiteState
       if (!mounted) {
         return;
       }
+      setState(() {
+        _rotHervorgehoben.clear();
+      });
       if (!bestaetigt) {
         _fokussiereTextfeld(_loseMuenzenFocusNode[leereMuenzen.first.id]!);
         return;
       }
       for (final Kassenzeile zeile in leereMuenzen) {
-        _loseMuenzenController[zeile.id]!.text = '0';
+        _loseMuenzenController[zeile.id]!.text = '0,00';
       }
     }
 
@@ -831,6 +850,10 @@ class _TagesabschlussSchritt1SeiteState
     );
 
     if (keineKartenzahlung) {
+      setState(() {
+        _rotHervorgehoben.clear();
+        _rotHervorgehoben.addAll(_kartenzahlungFocusNode);
+      });
       final bool bestaetigt = await _zeigeEingabePruefDialog(
         titel: 'Kartenzahlung fehlt',
         inhalt: 'Es wurde keine Kartenzahlung erfasst. Ist das korrekt?',
@@ -838,6 +861,9 @@ class _TagesabschlussSchritt1SeiteState
       if (!mounted) {
         return;
       }
+      setState(() {
+        _rotHervorgehoben.clear();
+      });
       if (!bestaetigt) {
         _fokussiereTextfeld(_kartenzahlungFocusNode.first);
         return;
@@ -923,6 +949,7 @@ class _TagesabschlussSchritt1SeiteState
       toggleUmschlaege: () {
         _toggleSection(_sectionUmschlaege);
       },
+      rotHervorgehoben: _rotHervorgehoben,
     );
 
     return Scaffold(

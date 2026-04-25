@@ -67,6 +67,7 @@ class Schritt1GruppenOrchestrierung {
     required VoidCallback toggleRollen,
     required VoidCallback toggleKartenzahlungen,
     required VoidCallback toggleUmschlaege,
+    required Set<FocusNode> rotHervorgehoben,
   }) {
     Widget baueZeilenEintrag(Kassenzeile zeile) {
       return _baueZeilenEintrag(
@@ -79,6 +80,8 @@ class Schritt1GruppenOrchestrierung {
         beiStueckzahlGeaendert: beiStueckzahlGeaendert,
         beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
         formatiereEuro: formatiereEuro,
+        istHervorgehoben:
+            rotHervorgehoben.contains(stueckzahlFocusNode[zeile.id]!),
       );
     }
 
@@ -109,6 +112,7 @@ class Schritt1GruppenOrchestrierung {
         beiLoseMuenzartBetragGeaendert: beiLoseMuenzartBetragGeaendert,
         formatiereEuro: formatiereEuro,
         loseMuenzenGesamtCent: loseMuenzenGesamtCent,
+        rotHervorgehoben: rotHervorgehoben,
       ),
     );
 
@@ -150,6 +154,7 @@ class Schritt1GruppenOrchestrierung {
         kartenzahlungenCent: kartenzahlungenCent,
         formatiereEuro: formatiereEuro,
         kartenzahlungenSummeCent: kartenzahlungenSummeCent,
+        rotHervorgehoben: rotHervorgehoben,
       ),
       formatiereEuro: formatiereEuro,
     );
@@ -246,6 +251,7 @@ class Schritt1GruppenOrchestrierung {
     beiStueckzahlGeaendert,
     required void Function(FocusNode focusNode) beiEingabeAbgeschlossen,
     required String Function(int cent) formatiereEuro,
+    bool istHervorgehoben = false,
   }) {
     return schritt1_ui.Schritt1ZeilenEintrag(
       zeile: zeile,
@@ -257,6 +263,7 @@ class Schritt1GruppenOrchestrierung {
       beiStueckzahlGeaendert: beiStueckzahlGeaendert,
       beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
       formatiereEuro: formatiereEuro,
+      istHervorgehoben: istHervorgehoben,
     );
   }
 }

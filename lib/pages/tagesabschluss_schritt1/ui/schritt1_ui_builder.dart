@@ -61,6 +61,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
     required this.beiStueckzahlGeaendert,
     required this.beiEingabeAbgeschlossen,
     required this.formatiereEuro,
+    this.istHervorgehoben = false,
   });
 
   final Kassenzeile zeile;
@@ -73,6 +74,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
   final void Function(Kassenzeile zeile, String wert) beiStueckzahlGeaendert;
   final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
   final String Function(int cent) formatiereEuro;
+  final bool istHervorgehoben;
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +101,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
               textInputAction: textInputActionFuerSchritt1(focusNode),
               onChanged: (String wert) => beiStueckzahlGeaendert(zeile, wert),
               onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
+              istHervorgehoben: istHervorgehoben,
             ),
           ),
         ),
@@ -128,6 +131,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
     required this.beiLoseMuenzartBetragGeaendert,
     required this.formatiereEuro,
     required this.loseMuenzenGesamtCent,
+    this.rotHervorgehoben = const <FocusNode>{},
   });
 
   final List<Kassenzeile> loseMuenzarten;
@@ -141,6 +145,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
   beiLoseMuenzartBetragGeaendert;
   final String Function(int cent) formatiereEuro;
   final int loseMuenzenGesamtCent;
+  final Set<FocusNode> rotHervorgehoben;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +180,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
                             beiLoseMuenzartBetragGeaendert(zeile.id, wert),
                         schriftgroesse: 15,
                         hinweisText: '0,00 €',
+                        istHervorgehoben: rotHervorgehoben.contains(focusNode),
                       ),
                     ),
                   ),
@@ -268,6 +274,7 @@ class Schritt1KartenzahlungenInhalt extends StatelessWidget {
     required this.kartenzahlungenCent,
     required this.formatiereEuro,
     required this.kartenzahlungenSummeCent,
+    this.rotHervorgehoben = const <FocusNode>{},
   });
 
   final List<TextEditingController> kartenzahlungController;
@@ -283,6 +290,7 @@ class Schritt1KartenzahlungenInhalt extends StatelessWidget {
   final List<int> kartenzahlungenCent;
   final String Function(int cent) formatiereEuro;
   final int kartenzahlungenSummeCent;
+  final Set<FocusNode> rotHervorgehoben;
 
   @override
   Widget build(BuildContext context) {
@@ -317,6 +325,8 @@ class Schritt1KartenzahlungenInhalt extends StatelessWidget {
                         beiKartenzahlungBetragGeaendert(i, wert),
                     schriftgroesse: 15,
                     hinweisText: '0,00 €',
+                    istHervorgehoben:
+                        rotHervorgehoben.contains(kartenzahlungFocusNode[i]),
                   ),
                 ),
               ),

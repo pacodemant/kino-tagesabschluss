@@ -41,6 +41,7 @@ class BetragCentEingabefeld extends StatefulWidget {
     this.focusNode,
     this.textInputAction = TextInputAction.done,
     this.onSubmitted,
+    this.istHervorgehoben = false,
   });
 
   final TextEditingController textController;
@@ -52,6 +53,7 @@ class BetragCentEingabefeld extends StatefulWidget {
   final FocusNode? focusNode;
   final TextInputAction textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final bool istHervorgehoben;
 
   @override
   State<BetragCentEingabefeld> createState() => _BetragCentEingabefeldState();
@@ -90,6 +92,8 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
   @override
   Widget build(BuildContext context) {
     final bool hatFokus = widget.focusNode?.hasFocus ?? false;
+    final bool rotRahmen = widget.istHervorgehoben;
+    final bool rotFuellung = rotRahmen && !hatFokus;
     final String bereinigterHinweisText = widget.hinweisText
         .replaceAll(' €', '')
         .replaceAll('€', '');
@@ -115,9 +119,25 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         hintText: bereinigterHinweisText,
         suffixText: '€',
         isDense: true,
-        filled: hatFokus,
-        fillColor: hatFokus ? Colors.black87 : null,
-        border: const OutlineInputBorder(),
+        filled: hatFokus || rotFuellung,
+        fillColor: hatFokus
+            ? Colors.black87
+            : (rotFuellung ? Colors.red.shade50 : null),
+        border: rotRahmen
+            ? const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : const OutlineInputBorder(),
+        enabledBorder: rotRahmen
+            ? const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : null,
+        focusedBorder: rotRahmen
+            ? const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : null,
         errorText: widget.fehlermeldungText,
         errorBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.red),

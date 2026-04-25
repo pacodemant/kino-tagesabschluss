@@ -12,6 +12,7 @@ class GanzzahlEingabefeld extends StatefulWidget {
     this.textInputAction = TextInputAction.done,
     this.focusNode,
     this.onSubmitted,
+    this.istHervorgehoben = false,
   });
 
   final TextEditingController textController;
@@ -22,6 +23,7 @@ class GanzzahlEingabefeld extends StatefulWidget {
   final TextInputAction textInputAction;
   final FocusNode? focusNode;
   final ValueChanged<String>? onSubmitted;
+  final bool istHervorgehoben;
 
   @override
   State<GanzzahlEingabefeld> createState() => _GanzzahlEingabefeldState();
@@ -60,6 +62,8 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
   @override
   Widget build(BuildContext context) {
     final bool hatFokus = widget.focusNode?.hasFocus ?? false;
+    final bool rotRahmen = widget.istHervorgehoben;
+    final bool rotFuellung = rotRahmen && !hatFokus;
 
     return TextField(
       controller: widget.textController,
@@ -79,9 +83,25 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
       decoration: InputDecoration(
         hintText: widget.hinweisText,
         isDense: true,
-        filled: hatFokus,
-        fillColor: hatFokus ? Colors.black87 : null,
-        border: const OutlineInputBorder(),
+        filled: hatFokus || rotFuellung,
+        fillColor: hatFokus
+            ? Colors.black87
+            : (rotFuellung ? Colors.red.shade50 : null),
+        border: rotRahmen
+            ? const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : const OutlineInputBorder(),
+        enabledBorder: rotRahmen
+            ? const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : null,
+        focusedBorder: rotRahmen
+            ? const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : null,
       ),
       onChanged: widget.onChanged,
       onSubmitted: widget.onSubmitted,
