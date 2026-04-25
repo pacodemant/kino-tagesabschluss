@@ -725,6 +725,128 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
+  String _formatiereLeereListe(List<String> bezeichnungen) {
+    if (bezeichnungen.length == 1) {
+      return bezeichnungen.first;
+    }
+    return '${bezeichnungen.sublist(0, bezeichnungen.length - 1).join(', ')} und ${bezeichnungen.last}';
+  }
+
+  Future<bool> _zeigeEingabePruefDialog({
+    required String titel,
+    required String inhalt,
+  }) async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogKontext) {
+        return AlertDialog(
+          title: Text(titel),
+          content: Text(inhalt),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(false),
+              child: const Text('Korrigieren'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(true),
+              child: const Text('Bestätigen'),
+            ),
+          ],
+        );
+      },
+    );
+    return bestaetigt == true;
+  }
+
+  Future<void> _pruefeEingabenUndWeiterZuSchritt2() async {
+    if (!mounted) {
+      return;
+    }
+
+    // Bereich 1: Scheine
+    final List<Kassenzeile> leereScheine = _scheine
+        .where(
+          (Kassenzeile zeile) => _stueckzahlController[zeile.id]!.text.isEmpty,
+        )
+        .toList();
+
+    if (leereScheine.isNotEmpty) {
+      final String auflistung = _formatiereLeereListe(
+        leereScheine
+            .map((Kassenzeile zeile) => zeile.bezeichnung)
+            .toList(),
+      );
+      final bool bestaetigt = await _zeigeEingabePruefDialog(
+        titel: 'Scheine unvollständig',
+        inhalt:
+            'Für $auflistung wurde kein Wert eingegeben. Ist das korrekt?',
+      );
+      if (!mounted) {
+        return;
+      }
+      if (!bestaetigt) {
+        _fokussiereTextfeld(_stueckzahlFocusNode[leereScheine.first.id]!);
+        return;
+      }
+      for (final Kassenzeile zeile in leereScheine) {
+        _stueckzahlController[zeile.id]!.text = '0';
+      }
+    }
+
+    // Bereich 2: Lose Münzen
+    final List<Kassenzeile> leereMuenzen = _loseMuenzarten
+        .where(
+          (Kassenzeile zeile) =>
+              _loseMuenzenController[zeile.id]!.text.isEmpty,
+        )
+        .toList();
+
+    if (leereMuenzen.isNotEmpty) {
+      final String auflistung = _formatiereLeereListe(
+        leereMuenzen
+            .map((Kassenzeile zeile) => zeile.bezeichnung)
+            .toList(),
+      );
+      final bool bestaetigt = await _zeigeEingabePruefDialog(
+        titel: 'Lose Münzen unvollständig',
+        inhalt:
+            'Für $auflistung wurde kein Wert eingegeben. Ist das korrekt?',
+      );
+      if (!mounted) {
+        return;
+      }
+      if (!bestaetigt) {
+        _fokussiereTextfeld(_loseMuenzenFocusNode[leereMuenzen.first.id]!);
+        return;
+      }
+      for (final Kassenzeile zeile in leereMuenzen) {
+        _loseMuenzenController[zeile.id]!.text = '0';
+      }
+    }
+
+    // Bereich 3: Kartenzahlung
+    final bool keineKartenzahlung = _kartenzahlungenCent.every(
+      (int cent) => cent == 0,
+    );
+
+    if (keineKartenzahlung) {
+      final bool bestaetigt = await _zeigeEingabePruefDialog(
+        titel: 'Kartenzahlung fehlt',
+        inhalt: 'Es wurde keine Kartenzahlung erfasst. Ist das korrekt?',
+      );
+      if (!mounted) {
+        return;
+      }
+      if (!bestaetigt) {
+        _fokussiereTextfeld(_kartenzahlungFocusNode.first);
+        return;
+      }
+    }
+
+    await _weiterZuSchritt2();
+  }
+
   Future<void> _zeigeSchrittAuswahlBottomSheet() async {
     await _orchestrierungHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
@@ -869,7 +991,7 @@ class _TagesabschlussSchritt1SeiteState
             footerBottomInset: tastaturOffen ? 0 : bottomInset,
             zeigeNaechstesFeld: _zeigeNaechstesFeld,
             weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-            weiterZuSchritt2: _weiterZuSchritt2,
+            weiterZuSchritt2: _pruefeEingabenUndWeiterZuSchritt2,
           ),
         ],
       ),

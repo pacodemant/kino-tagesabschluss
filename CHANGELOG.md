@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 91: Sequenzielle Eingabeprüfung beim Übergang Schritt 1 → 2 eingebaut – Dialog fuer leere Scheine, lose Münzen und fehlende Kartenzahlung; Fokus springt bei Korrigieren auf erstes leeres Feld.
 - Run 90: Projektdokumentation auf Claude Code umgestellt – Snapshot-Regel in CLAUDE.md ergaenzt, `.dev/claude_code_startprompt.md` neu erstellt.
 - Run 89: Obsoleten Schritt-1-Scroll-Ensure-Code vollstaendig entfernt; nativer iOS-Fokus-Scroll bleibt aktiv, Down-FAB-/Scroll-Metrik-Helfer bleiben bestehen.
 - Run 88: Fokuszustand in `GanzzahlEingabefeld` und `BetragCentEingabefeld` visuell hervorgehoben mit schwarzem Hintergrund, weißer fetter Schrift und weißem Cursor.
