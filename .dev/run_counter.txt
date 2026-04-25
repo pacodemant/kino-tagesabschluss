@@ -1,4 +1,4 @@
-last_run: 92
-next_run: 93
-last_run_title: Run 92: CLAUDE.md um Bericht-Formatierungsregeln ergänzen
-last_commit: ec0c062
+last_run: 93
+next_run: 94
+last_run_title: Run 93: Rote Hervorhebung leerer Felder bei Eingabeprüfung
+last_commit: 94d6fbb
