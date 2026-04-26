@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
@@ -66,10 +65,6 @@ class _TagesabschlussSchritt3SeiteState
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations(<DeviceOrientation>[
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     _abschlussVorschau = _finalisierenUsecase.finalisieren(
       eingabe: TagesabschlussFinalisierenEingabe(
         kinoId: widget.argumente.kinoId,
@@ -90,14 +85,6 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations(<DeviceOrientation>[
-      DeviceOrientation.portraitUp,
-    ]);
-    super.dispose();
-  }
-
   // Gibt das Abrechnungsdatum zurück – vor 3 Uhr zählt der Vortag.
   DateTime _abrechnungsDatum() {
     final DateTime jetzt = DateTime.now();
@@ -114,6 +101,22 @@ class _TagesabschlussSchritt3SeiteState
 
   String _deutschesDatum(DateTime zeit) =>
       TagesabschlussFormatierung.deutschesDatum(zeit);
+
+  Widget _zeile(String label, String wert, {bool fett = false, Color? farbe}) {
+    final FontWeight gewicht =
+        fett ? FontWeight.bold : FontWeight.normal;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(label, style: TextStyle(fontWeight: gewicht)),
+          ),
+          Text(wert, style: TextStyle(fontWeight: gewicht, color: farbe)),
+        ],
+      ),
+    );
+  }
 
   Future<void> _speichereFinalenAbschluss() async {
     if (_speichert) {
@@ -172,90 +175,132 @@ class _TagesabschlussSchritt3SeiteState
   @override
   Widget build(BuildContext context) {
     final int differenzCent = _abschlussVorschau.differenzGesamtCent;
+    final Color differenzFarbe =
+        differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Center(
-                child: Text(
-                  'Differenz Anfangsbestand: ${_euro(_abschlussVorschau.differenzAnfangsbestandCent)}',
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            '+ KINO SOLL: ${_euro(_abschlussVorschau.kinoSollCent)}',
+      appBar: AppBar(
+        title: Text(
+          'Tagesabschluss ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
+        ),
+      ),
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              children: <Widget>[
+                // Rahmen 1 – Differenz Anfangsbestand
+                Card(
+                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          'Differenz Anfangsbestand',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _euro(
+                            _abschlussVorschau.differenzAnfangsbestandCent,
                           ),
-                          Text(
-                            '+ BISTRO SOLL: ${_euro(_abschlussVorschau.bistroSollCent)}',
-                          ),
-                          Text(
-                            '- Ausgaben: ${_euro(_abschlussVorschau.ausgabenCent)}',
-                          ),
-                          Text(
-                            '= Gesamt SOLL: ${_euro(_abschlussVorschau.gesamtSollCent)}',
-                          ),
-                          const SizedBox(height: 8),
-                          const Text('Name: ____________'),
-                          Text('Datum: ${_deutschesDatum(_abrechnungsDatum())}'),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            '+ EC IST: ${_euro(_abschlussVorschau.ecUmsatzGesamtCent)}',
-                          ),
-                          Text(
-                            '+ BAR IST: ${_euro(_abschlussVorschau.barBestandAbzglWechselgeldCent)}',
-                          ),
-                          Text(
-                            '= Gesamt IST: ${_euro(_abschlussVorschau.gesamtIstCent)}',
-                          ),
-                          Text(
-                            'Differenz: ${_euroMitVorzeichen(differenzCent)}',
-                            style: TextStyle(
-                              color: differenzCent >= 0
-                                  ? Colors.green
-                                  : Colors.red,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text('Haus: ${widget.argumente.kinoName}'),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 44,
-                child: ElevatedButton(
-                  onPressed: _speichert ? null : _speichereFinalenAbschluss,
-                  child: Text(
-                    _speichert
-                        ? 'Speichern...'
-                        : 'Tagesabschluss speichern',
                   ),
                 ),
-              ),
-            ],
+                // Rahmen 2 – SOLL
+                Card(
+                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: <Widget>[
+                        _zeile(
+                          '+ Kino Soll',
+                          _euro(_abschlussVorschau.kinoSollCent),
+                        ),
+                        _zeile(
+                          '+ Bistro Soll',
+                          _euro(_abschlussVorschau.bistroSollCent),
+                        ),
+                        _zeile(
+                          '- Ausgaben',
+                          _euro(_abschlussVorschau.ausgabenCent),
+                        ),
+                        _zeile(
+                          '= Gesamt Soll',
+                          _euro(_abschlussVorschau.gesamtSollCent),
+                          fett: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Rahmen 3 – IST
+                Card(
+                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: <Widget>[
+                        _zeile(
+                          '+ EC IST',
+                          _euro(_abschlussVorschau.ecUmsatzGesamtCent),
+                        ),
+                        _zeile(
+                          '+ bar IST',
+                          _euro(
+                            _abschlussVorschau.barBestandAbzglWechselgeldCent,
+                          ),
+                        ),
+                        _zeile(
+                          '= Gesamt IST',
+                          _euro(_abschlussVorschau.gesamtIstCent),
+                          fett: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                // Rahmen 4 – Differenz
+                Card(
+                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: <Widget>[
+                        _zeile(
+                          'Differenz',
+                          _euroMitVorzeichen(differenzCent),
+                          fett: true,
+                          farbe: differenzFarbe,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: SizedBox(
+              height: 44,
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _speichert ? null : _speichereFinalenAbschluss,
+                child: Text(
+                  _speichert ? 'Speichern...' : 'Tagesabschluss speichern',
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
