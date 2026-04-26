@@ -1,4 +1,4 @@
-last_run: 96
-next_run: 97
-last_run_title: Run 96: ListView-Padding erhöhen damit fokussierte Felder nicht hinter Down-FAB verschwinden
-last_commit: 336a1e7
+last_run: 95
+next_run: 96
+last_run_title: Run 95: Rote Hervorhebung bleibt bis Wert eingegeben wurde
+last_commit: 726852e
