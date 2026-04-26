@@ -347,6 +347,9 @@ class _TagesabschlussSchritt1SeiteState
     final int geparsterWert = _stateController.parseGanzzahl(wert);
     setState(() {
       _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
+      if (wert.isNotEmpty) {
+        _rotHervorgehoben.remove(_stueckzahlFocusNode[zeile.id]);
+      }
     });
     _speichereEntwurf();
   }
@@ -358,6 +361,9 @@ class _TagesabschlussSchritt1SeiteState
         muenzartId,
         _parseCentZiffern(wert),
       );
+      if (wert.isNotEmpty) {
+        _rotHervorgehoben.remove(_loseMuenzenFocusNode[muenzartId]);
+      }
     });
     _speichereEntwurf();
   }
@@ -468,6 +474,9 @@ class _TagesabschlussSchritt1SeiteState
   void _beiKartenzahlungBetragGeaendert(int index, String wert) {
     setState(() {
       _kartenzahlungenCent[index] = _parseCentZiffern(wert);
+      if (wert.isNotEmpty) {
+        _rotHervorgehoben.remove(_kartenzahlungFocusNode[index]);
+      }
     });
   }
 
@@ -792,13 +801,13 @@ class _TagesabschlussSchritt1SeiteState
       if (!mounted) {
         return;
       }
-      setState(() {
-        _rotHervorgehoben.clear();
-      });
       if (!bestaetigt) {
         _fokussiereTextfeld(_stueckzahlFocusNode[leereScheine.first.id]!);
         return;
       }
+      setState(() {
+        _rotHervorgehoben.clear();
+      });
       for (final Kassenzeile zeile in leereScheine) {
         _stueckzahlController[zeile.id]!.text = '0';
       }
@@ -832,13 +841,13 @@ class _TagesabschlussSchritt1SeiteState
       if (!mounted) {
         return;
       }
-      setState(() {
-        _rotHervorgehoben.clear();
-      });
       if (!bestaetigt) {
         _fokussiereTextfeld(_loseMuenzenFocusNode[leereMuenzen.first.id]!);
         return;
       }
+      setState(() {
+        _rotHervorgehoben.clear();
+      });
       for (final Kassenzeile zeile in leereMuenzen) {
         _loseMuenzenController[zeile.id]!.text = '0,00';
       }
@@ -861,13 +870,13 @@ class _TagesabschlussSchritt1SeiteState
       if (!mounted) {
         return;
       }
-      setState(() {
-        _rotHervorgehoben.clear();
-      });
       if (!bestaetigt) {
         _fokussiereTextfeld(_kartenzahlungFocusNode.first);
         return;
       }
+      setState(() {
+        _rotHervorgehoben.clear();
+      });
     }
 
     await _weiterZuSchritt2();
