@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 98: Zufallswertebereiche in `_autoFillDev()` von Schritt 2 angepasst – Kino/Bistro SOLL 200–1.000 €, Differenz Anfangsbestand -10–+10 €.
 - Run 97: Down-FAB in Schritt 1 fest links positioniert (left: 12) – Center-Wrapper und right: 0 entfernt, sodass Eingabefelder nicht mehr verdeckt werden.
 - Run 96: (revertiert) ListView-Padding erhöhen damit fokussierte Felder nicht hinter Down-FAB verschwinden.
 - Run 95: Rote Hervorhebung bleibt bis Wert eingegeben wurde – bei „Korrigieren" wird `_rotHervorgehoben` nicht geleert; Hervorhebung verschwindet pro Feld sobald Mitarbeiter einen Wert einträgt; bei „Bestätigen" wird Set wie bisher komplett geleert.
