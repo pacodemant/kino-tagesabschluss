@@ -898,7 +898,6 @@ class _TagesabschlussSchritt1SeiteState
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final double bottomInset = mediaQuery.viewPadding.bottom;
     final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
-    final double fabPuffer = tastaturOffen ? 72.0 : 0.0;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
@@ -1018,7 +1017,6 @@ class _TagesabschlussSchritt1SeiteState
               downButtonSichtbar: _istDownButtonSichtbar(),
               scrolleNachUnten: _scrolleNachUnten,
               beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
-              extraBottomPadding: fabPuffer,
             ),
           ),
           schritt1_footer.Schritt1Footer(
