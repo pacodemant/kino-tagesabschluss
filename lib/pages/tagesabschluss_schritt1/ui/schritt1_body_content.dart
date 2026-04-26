@@ -15,6 +15,7 @@ class Schritt1BodyContent extends StatelessWidget {
     required this.downButtonSichtbar,
     required this.scrolleNachUnten,
     required this.beiScrollMetrikAenderung,
+    this.extraBottomPadding = 0.0,
   });
 
   final ScrollController scrollController;
@@ -29,10 +30,12 @@ class Schritt1BodyContent extends StatelessWidget {
   final bool downButtonSichtbar;
   final VoidCallback scrolleNachUnten;
   final VoidCallback beiScrollMetrikAenderung;
+  final double extraBottomPadding;
 
   @override
   Widget build(BuildContext context) {
     const double bottomPadding = 72;
+    final double effektivesBottomPadding = bottomPadding + extraBottomPadding;
     const double downButtonBottom = 12;
 
     return Stack(
@@ -65,7 +68,7 @@ class Schritt1BodyContent extends StatelessWidget {
                     ),
                   ),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
+                  padding: EdgeInsets.fromLTRB(12, 12, 12, effektivesBottomPadding),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate(<Widget>[
                       scheineGruppe,
