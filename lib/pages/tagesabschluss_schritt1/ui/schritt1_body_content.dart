@@ -82,22 +82,19 @@ class Schritt1BodyContent extends StatelessWidget {
         ),
         if (downButtonSichtbar)
           Positioned(
-            left: 0,
-            right: 0,
+            left: 12,
             bottom: downButtonBottom,
-            child: Center(
-              child: SizedBox(
-                width: 36,
-                height: 36,
-                child: FloatingActionButton(
-                  heroTag: 'step1DownFab',
-                  mini: true,
-                  elevation: 2,
-                  backgroundColor: Colors.black87,
-                  foregroundColor: Colors.white,
-                  onPressed: scrolleNachUnten,
-                  child: const Icon(Icons.keyboard_arrow_down),
-                ),
+            child: SizedBox(
+              width: 36,
+              height: 36,
+              child: FloatingActionButton(
+                heroTag: 'step1DownFab',
+                mini: true,
+                elevation: 2,
+                backgroundColor: Colors.black87,
+                foregroundColor: Colors.white,
+                onPressed: scrolleNachUnten,
+                child: const Icon(Icons.keyboard_arrow_down),
               ),
             ),
           ),
