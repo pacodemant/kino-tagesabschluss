@@ -403,10 +403,10 @@ class _TagesabschlussSchritt2SeiteState
 
   void _autoFillDev() {
     setState(() {
-      _kinoSollCent = _zufallszahl(0, 200000);
-      _bistroSollCent = _zufallszahl(0, 200000);
+      _kinoSollCent = _zufallszahl(20000, 100000);
+      _bistroSollCent = _zufallszahl(20000, 100000);
       _ausgabenCent = _zufallszahl(0, 10000);
-      _differenzAnfangsbestandCent = _zufallszahl(0, 20000);
+      _differenzAnfangsbestandCent = _zufallszahl(-1000, 1000);
 
       final int ecAnzahl = _zufallszahl(1, 5);
       _setzeEcBelegAnzahl(ecAnzahl);
