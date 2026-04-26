@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 95: Rote Hervorhebung bleibt bis Wert eingegeben wurde – bei „Korrigieren" wird `_rotHervorgehoben` nicht geleert; Hervorhebung verschwindet pro Feld sobald Mitarbeiter einen Wert einträgt; bei „Bestätigen" wird Set wie bisher komplett geleert.
 - Run 94: Startanweisungen aus claude_code_startprompt.md in CLAUDE.md integriert (Abschnitt „Automatischer Chat-Start"); startprompt-Datei entfernt.
 - Run 93: Rote Hervorhebung leerer Felder bei Eingabeprüfung – GanzzahlEingabefeld und BetragCentEingabefeld erhalten istHervorgehoben-Parameter; rotHervorgehoben-Set durch Orchestrierungsschicht weitergereicht; Prüflogik setzt/löscht Hervorhebung vor/nach Dialog.
 - Run 92: CLAUDE.md um Bericht-Formatierungsregeln ergaenzt (Ueberschrift und Codeblock-Pflicht fuer Abschlussberichte).
