@@ -1,4 +1,4 @@
-last_run: 106
-next_run: 107
-last_run_title: Run 106: Duplikat-Dialog beim Speichern eines Tagesabschlusses
-last_commit: 4fe8f7b
+last_run: 107
+next_run: 108
+last_run_title: Run 107: Schritt-2-Entwurf in SharedPreferences speichern
+last_commit: 453eefc

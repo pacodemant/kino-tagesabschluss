@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 107: Schritt-2-Entwurf automatisch in SharedPreferences speichern (`entwurf_schritt2_<kinoId>`) – Laden in `initState`, Speichern bei jedem `onChanged` und bei EC-Beleg-Änderungen.
 - Run 106: Duplikat-Snackbar in Schritt 3 durch Dialog ersetzt – „Abbrechen" bleibt in Schritt 3, „Überschreiben" ersetzt Eintrag via `ersetzeFinalenTagesabschluss` und navigiert zur Startseite.
 - Run 105: Verlauf-Screen – Betragsgröße auf `bodyLarge` angehoben, damit Betrag und Datum gleich groß dargestellt werden.
 - Run 104: Verlauf-Screen (`verlauf_seite.dart`) mit vier Kino-Tabs; Startseite um „Verlauf"-Button ergänzt; Route in `main.dart` registriert.
