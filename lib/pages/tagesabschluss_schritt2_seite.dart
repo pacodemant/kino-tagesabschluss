@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
@@ -116,6 +117,7 @@ class _TagesabschlussSchritt2SeiteState
     final FocusNode ersterEcFocusNode = FocusNode();
     ersterEcFocusNode.addListener(_beiFokusAenderung);
     _ecBelegFocusNode.add(ersterEcFocusNode);
+    _ladeEntwurf();
   }
 
   @override
@@ -145,6 +147,91 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     setState(() {});
+  }
+
+  Future<void> _ladeEntwurf() async {
+    final Map<String, dynamic>? daten =
+        await LokalerSpeicher.ladeSchritt2Entwurf(widget.kinoId);
+    if (daten == null || !mounted) {
+      return;
+    }
+
+    final int kinoSollCent = (daten['kinoSollCent'] as num?)?.toInt() ?? 0;
+    final int bistroSollCent = (daten['bistroSollCent'] as num?)?.toInt() ?? 0;
+    final int ausgabenCent = (daten['ausgabenCent'] as num?)?.toInt() ?? 0;
+    final int differenzAnfangsbestandCent =
+        (daten['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
+
+    final List<int> ecBelege = <int>[];
+    final Object? ecRoh = daten['ecBelegeCent'];
+    if (ecRoh is List<dynamic>) {
+      for (final dynamic wert in ecRoh) {
+        ecBelege.add((wert as num?)?.toInt() ?? 0);
+      }
+    }
+    if (ecBelege.isEmpty) {
+      ecBelege.add(0);
+    }
+
+    setState(() {
+      _setzeEcBelegAnzahl(ecBelege.length);
+      _kinoSollCent = kinoSollCent;
+      _bistroSollCent = bistroSollCent;
+      _ausgabenCent = ausgabenCent;
+      _differenzAnfangsbestandCent = differenzAnfangsbestandCent;
+      for (int i = 0; i < ecBelege.length; i++) {
+        _ecBelegeCent[i] = ecBelege[i];
+      }
+    });
+
+    if (kinoSollCent != 0) {
+      _setzeControllerText(
+        _kinoSollController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(kinoSollCent),
+      );
+    }
+    if (bistroSollCent != 0) {
+      _setzeControllerText(
+        _bistroSollController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(bistroSollCent),
+      );
+    }
+    if (ausgabenCent != 0) {
+      _setzeControllerText(
+        _ausgabenController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(ausgabenCent),
+      );
+    }
+    if (differenzAnfangsbestandCent != 0) {
+      _setzeControllerText(
+        _differenzAnfangsbestandController,
+        TagesabschlussFormatierung.formatiereEuroEingabe(
+          differenzAnfangsbestandCent,
+        ),
+      );
+    }
+    for (int i = 0; i < ecBelege.length; i++) {
+      if (ecBelege[i] != 0) {
+        _setzeControllerText(
+          _ecBelegController[i],
+          TagesabschlussFormatierung.formatiereEuroEingabe(ecBelege[i]),
+        );
+      }
+    }
+  }
+
+  Future<void> _speichereEntwurf() async {
+    await LokalerSpeicher.speichereSchritt2Entwurf(
+      widget.kinoId,
+      <String, dynamic>{
+        'kinoId': widget.kinoId,
+        'kinoSollCent': _kinoSollCent,
+        'bistroSollCent': _bistroSollCent,
+        'ausgabenCent': _ausgabenCent,
+        'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
+        'ecBelegeCent': List<int>.from(_ecBelegeCent),
+      },
+    );
   }
 
   int _parseCentZiffern(String wert) {
@@ -353,6 +440,7 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.add(0);
       _ecBelegIds.add(_naechsteEcBelegId++);
     });
+    _speichereEntwurf();
   }
 
   void _ecBelegEntfernen(int index) {
@@ -369,6 +457,7 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.removeAt(index);
       _ecBelegIds.removeAt(index);
     });
+    _speichereEntwurf();
   }
 
   void _setzeControllerText(TextEditingController controller, String text) {
@@ -858,6 +947,7 @@ class _TagesabschlussSchritt2SeiteState
                                 _kinoSollBeruehrt = true;
                                 _kinoSollCent = _parseCentZiffern(wert);
                               });
+                              _speichereEntwurf();
                             },
                           ),
                           _baueEingabeZeile(
@@ -873,6 +963,7 @@ class _TagesabschlussSchritt2SeiteState
                                 _bistroSollBeruehrt = true;
                                 _bistroSollCent = _parseCentZiffern(wert);
                               });
+                              _speichereEntwurf();
                             },
                           ),
                           _baueEingabeZeile(
@@ -884,6 +975,7 @@ class _TagesabschlussSchritt2SeiteState
                               setState(() {
                                 _ausgabenCent = _parseCentZiffern(wert);
                               });
+                              _speichereEntwurf();
                             },
                           ),
                         ],
@@ -920,6 +1012,7 @@ class _TagesabschlussSchritt2SeiteState
                                     }
                                     _ecBelegeCent[i] = _parseCentZiffern(wert);
                                   });
+                                  _speichereEntwurf();
                                 },
                               ),
                             ),
@@ -986,6 +1079,7 @@ class _TagesabschlussSchritt2SeiteState
                                 _differenzAnfangsbestandCent =
                                     _parseCentZiffern(wert);
                               });
+                              _speichereEntwurf();
                             },
                           ),
                           Align(

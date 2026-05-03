@@ -150,4 +150,32 @@ class LokalerSpeicher {
   static String finaleTagesabschluesseKey(String kinoId) {
     return 'final/$kinoId/closures';
   }
+
+  /// Speichert den Schritt-2-Entwurf fuer ein Kino.
+  static Future<void> speichereSchritt2Entwurf(
+    String kinoId,
+    Map<String, dynamic> daten,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(schritt2EntwurfKey(kinoId), jsonEncode(daten));
+  }
+
+  /// Laedt den Schritt-2-Entwurf fuer ein Kino, oder null wenn keiner vorhanden.
+  static Future<Map<String, dynamic>?> ladeSchritt2Entwurf(
+    String kinoId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? rohwert = speicher.getString(schritt2EntwurfKey(kinoId));
+    if (rohwert == null) {
+      return null;
+    }
+    try {
+      return jsonDecode(rohwert) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static String schritt2EntwurfKey(String kinoId) =>
+      'entwurf_schritt2_$kinoId';
 }
