@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 103: Diagnose-Run – Speicherfunktion in Schritt 3 bereits vollständig vorhanden (`SpeichereTagesabschlussUsecase`, `LokalerSpeicher.speichereFinalenTagesabschluss`); kein Code geändert. Nächster Run 104: Verlauf-Screen.
 - Run 102: Schritt 3 – Rahmen 1 einzeilig (Label + Betrag in einer Zeile); Rahmen 4 Label „Differenz" → „Differenz Tagesabrechnung".
 - Run 101: Validierung in `tagesabschluss_finalisieren_usecase.dart` korrigiert – `differenzAnfangsbestandCent < 0` nicht mehr verboten; nur `ausgabenCent < 0` wirft weiterhin Fehler.
 - Run 100: Schritt 3 auf Hochformat mit vier Rahmen umgestellt – SystemChrome entfernt, AppBar mit Datum und Kino-Name, scrollbare Cards für Differenz Anfangsbestand / SOLL / IST / Differenz; Differenz grün/rot.
