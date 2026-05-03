@@ -197,14 +197,9 @@ class _TagesabschlussSchritt3SeiteState
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        const Text(
+                        _zeile(
                           'Differenz Anfangsbestand',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
                           _euro(
                             _abschlussVorschau.differenzAnfangsbestandCent,
                           ),
@@ -275,7 +270,7 @@ class _TagesabschlussSchritt3SeiteState
                     child: Column(
                       children: <Widget>[
                         _zeile(
-                          'Differenz',
+                          'Differenz Tagesabrechnung',
                           _euroMitVorzeichen(differenzCent),
                           fett: true,
                           farbe: differenzFarbe,
