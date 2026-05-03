@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 109: Kachel „Differenz Anfangsbestand" in Schritt 2 an erste Position verschoben (vor Kino SOLL); Inhalt und Berechnungslogik unverändert.
 - Run 108: EC-Beleg-Wiederherstellung in `_ladeEntwurf()` korrigiert – `if (ecBelege[i] != 0)`-Bedingung entfernt, alle Beträge werden jetzt bedingungslos wiederhergestellt (inkl. 0,00 €).
 - Run 107: Schritt-2-Entwurf automatisch in SharedPreferences speichern (`entwurf_schritt2_<kinoId>`) – Laden in `initState`, Speichern bei jedem `onChanged` und bei EC-Beleg-Änderungen.
 - Run 106: Duplikat-Snackbar in Schritt 3 durch Dialog ersetzt – „Abbrechen" bleibt in Schritt 3, „Überschreiben" ersetzt Eintrag via `ersetzeFinalenTagesabschluss` und navigiert zur Startseite.
