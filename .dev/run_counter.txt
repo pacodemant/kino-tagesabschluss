@@ -1,4 +1,4 @@
-last_run: 101
-next_run: 102
-last_run_title: Run 101: Validierung für negative Differenz Anfangsbestand korrigieren
-last_commit: d8dc205
+last_run: 102
+next_run: 103
+last_run_title: Run 102: Schritt 3 – Kleinere Anpassungen Rahmen 1 und 4
+last_commit: afff499
