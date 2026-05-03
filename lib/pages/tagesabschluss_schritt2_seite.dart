@@ -930,6 +930,38 @@ class _TagesabschlussSchritt2SeiteState
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
+                        children: <Widget>[
+                          _baueEingabeZeile(
+                            label: 'Differenz im Anfangsbestand',
+                            controller: _differenzAnfangsbestandController,
+                            focusNode: _differenzAnfangsbestandFocusNode,
+                            optional: true,
+                            onChanged: (String wert) {
+                              setState(() {
+                                _differenzAnfangsbestandCent =
+                                    _parseCentZiffern(wert);
+                              });
+                              _speichereEntwurf();
+                            },
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              'Info: ${_formatiereEuro(_differenzAnfangsbestandCent)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 10),
+                Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
                           _baueEingabeZeile(
@@ -1056,38 +1088,6 @@ class _TagesabschlussSchritt2SeiteState
                               _differenzTagesabschlussCent,
                             ),
                             hervorheben: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 10),
-                Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          _baueEingabeZeile(
-                            label: 'Differenz im Anfangsbestand',
-                            controller: _differenzAnfangsbestandController,
-                            focusNode: _differenzAnfangsbestandFocusNode,
-                            optional: true,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _differenzAnfangsbestandCent =
-                                    _parseCentZiffern(wert);
-                              });
-                              _speichereEntwurf();
-                            },
-                          ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'Info: ${_formatiereEuro(_differenzAnfangsbestandCent)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
                           ),
                         ],
                       ),
