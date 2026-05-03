@@ -124,9 +124,9 @@ class TagesabschlussFinalisierenUsecase {
         'SOLL-Werte duerfen nicht negativ sein.',
       );
     }
-    if (eingabe.ausgabenCent < 0 || eingabe.differenzAnfangsbestandCent < 0) {
+    if (eingabe.ausgabenCent < 0) {
       throw const TagesabschlussValidierungsFehler(
-        'Ausgaben oder Anfangsbestandsdifferenz sind ungueltig.',
+        'Ausgaben duerfen nicht negativ sein.',
       );
     }
     if (eingabe.ecBelegeCent.any((int wert) => wert < 0)) {
