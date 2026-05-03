@@ -108,7 +108,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
                 title: Text(_deutschesDatum(eintrag.datum)),
                 trailing: Text(
                   _euroMitVorzeichen(differenz),
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: farbe,
                   ),
