@@ -3,6 +3,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/platzhalter_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:kino_bar_app/pages/verlauf_seite.dart';
 
 class StartmenueSeite extends StatelessWidget {
   const StartmenueSeite({super.key, required this.kino});
@@ -23,6 +24,10 @@ class StartmenueSeite extends StatelessWidget {
 
   void _oeffnePlatzhalter(BuildContext context, String titel) {
     Navigator.of(context).pushNamed(PlatzhalterSeite.routenName, arguments: titel);
+  }
+
+  void _oeffneVerlauf(BuildContext context) {
+    Navigator.of(context).pushNamed(VerlaufSeite.routenName);
   }
 
   @override
@@ -61,6 +66,11 @@ class StartmenueSeite extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _oeffnePlatzhalter(context, 'Einstellungen'),
               child: const Text('Einstellungen'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => _oeffneVerlauf(context),
+              child: const Text('Verlauf'),
             ),
           ],
         ),

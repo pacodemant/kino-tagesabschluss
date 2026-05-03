@@ -9,6 +9,7 @@ import 'package:kino_bar_app/pages/startpruefung_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/pages/verlauf_seite.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -123,6 +124,13 @@ class MeineApp extends StatelessWidget {
           final String titel = settings.arguments as String? ?? 'Platzhalter';
           return MaterialPageRoute<void>(
             builder: (_) => PlatzhalterSeite(titel: titel),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == VerlaufSeite.routenName) {
+          return MaterialPageRoute<void>(
+            builder: (_) => const VerlaufSeite(),
             settings: settings,
           );
         }
