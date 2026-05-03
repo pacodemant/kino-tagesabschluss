@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 101: Validierung in `tagesabschluss_finalisieren_usecase.dart` korrigiert – `differenzAnfangsbestandCent < 0` nicht mehr verboten; nur `ausgabenCent < 0` wirft weiterhin Fehler.
 - Run 100: Schritt 3 auf Hochformat mit vier Rahmen umgestellt – SystemChrome entfernt, AppBar mit Datum und Kino-Name, scrollbare Cards für Differenz Anfangsbestand / SOLL / IST / Differenz; Differenz grün/rot.
 - Run 99: Schritt 3 als Umschlag-Ansicht im Querformat implementiert – zweispaltiges Layout (SOLL links / IST rechts), Differenz Anfangsbestand als Kopfzeile, Querformat per SystemChrome gesetzt, bei Verlassen zurück zu Portrait; Save-Button erhalten.
 - Run 98: Zufallswertebereiche in `_autoFillDev()` von Schritt 2 angepasst – Kino/Bistro SOLL 200–1.000 €, Differenz Anfangsbestand -10–+10 €.
