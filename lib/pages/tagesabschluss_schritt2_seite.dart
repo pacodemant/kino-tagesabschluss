@@ -211,12 +211,10 @@ class _TagesabschlussSchritt2SeiteState
       );
     }
     for (int i = 0; i < ecBelege.length; i++) {
-      if (ecBelege[i] != 0) {
-        _setzeControllerText(
-          _ecBelegController[i],
-          TagesabschlussFormatierung.formatiereEuroEingabe(ecBelege[i]),
-        );
-      }
+      _setzeControllerText(
+        _ecBelegController[i],
+        TagesabschlussFormatierung.formatiereEuroEingabe(ecBelege[i]),
+      );
     }
   }
 
