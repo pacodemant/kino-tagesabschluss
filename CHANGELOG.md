@@ -4,6 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
+- Run 105: Verlauf-Screen – Betragsgröße auf `bodyLarge` angehoben, damit Betrag und Datum gleich groß dargestellt werden.
 - Run 104: Verlauf-Screen (`verlauf_seite.dart`) mit vier Kino-Tabs; Startseite um „Verlauf"-Button ergänzt; Route in `main.dart` registriert.
 - Run 103: Diagnose-Run – Speicherfunktion in Schritt 3 bereits vollständig vorhanden (`SpeichereTagesabschlussUsecase`, `LokalerSpeicher.speichereFinalenTagesabschluss`); kein Code geändert. Nächster Run 104: Verlauf-Screen.
 - Run 102: Schritt 3 – Rahmen 1 einzeilig (Label + Betrag in einer Zeile); Rahmen 4 Label „Differenz" → „Differenz Tagesabrechnung".
