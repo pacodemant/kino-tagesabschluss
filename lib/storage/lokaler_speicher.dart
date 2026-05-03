@@ -83,6 +83,40 @@ class LokalerSpeicher {
     await speicher.setString(key, jsonEncode(vorhandeneAbschluesse));
   }
 
+  /// Ersetzt den finalen Tagesabschluss desselben Kalendertags.
+  static Future<void> ersetzeFinalenTagesabschluss(
+    TagesabschlussFinal abschluss,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = finaleTagesabschluesseKey(abschluss.kinoId);
+    final String? rohwert = speicher.getString(key);
+
+    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
+    if (rohwert != null) {
+      try {
+        final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+        for (final dynamic eintrag in geparst) {
+          if (eintrag is Map<String, dynamic>) {
+            final TagesabschlussFinal bestehend =
+                TagesabschlussFinal.fromJson(eintrag);
+            final bool gleichenTag =
+                bestehend.datum.year == abschluss.datum.year &&
+                bestehend.datum.month == abschluss.datum.month &&
+                bestehend.datum.day == abschluss.datum.day;
+            if (!gleichenTag) {
+              aktualisiert.add(eintrag);
+            }
+          }
+        }
+      } catch (_) {
+        // Bei defektem Inhalt wird neu gespeichert.
+      }
+    }
+
+    aktualisiert.add(abschluss.toJson());
+    await speicher.setString(key, jsonEncode(aktualisiert));
+  }
+
   /// Laedt alle finalen Tagesabschluesse fuer ein Kino (neueste zuerst).
   static Future<List<TagesabschlussFinal>> ladeFinaleTagesabschluesse(
     String kinoId,

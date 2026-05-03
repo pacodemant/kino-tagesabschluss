@@ -7,8 +7,9 @@ class SpeichereTagesabschlussUsecase {
 
   /// Duplikat-Regel: Pro Kino und Kalendertag darf es maximal einen Abschluss geben.
   Future<SpeichereTagesabschlussErgebnis> ausfuehren(
-    TagesabschlussFinal abschluss,
-  ) async {
+    TagesabschlussFinal abschluss, {
+    bool ueberschreiben = false,
+  }) async {
     final List<TagesabschlussFinal> vorhandeneAbschluesse =
         await LokalerSpeicher.ladeFinaleTagesabschluesse(abschluss.kinoId);
 
@@ -19,11 +20,15 @@ class SpeichereTagesabschlussUsecase {
       ),
     );
 
-    if (bereitsVorhanden) {
+    if (bereitsVorhanden && !ueberschreiben) {
       return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: true);
     }
 
-    await LokalerSpeicher.speichereFinalenTagesabschluss(abschluss);
+    if (bereitsVorhanden) {
+      await LokalerSpeicher.ersetzeFinalenTagesabschluss(abschluss);
+    } else {
+      await LokalerSpeicher.speichereFinalenTagesabschluss(abschluss);
+    }
     return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: false);
   }
 

@@ -135,17 +135,47 @@ class _TagesabschlussSchritt3SeiteState
       }
 
       if (ergebnis.bereitsVorhanden) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Für dieses Kino existiert heute bereits ein Tagesabschluss.',
-            ),
-          ),
-        );
         setState(() {
           _speichert = false;
         });
-        return;
+
+        final bool? bestaetigt = await showDialog<bool>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext dialogContext) => AlertDialog(
+            title: const Text('Tagesabschluss bereits vorhanden'),
+            content: Text(
+              'Für ${widget.argumente.kinoName} existiert für diesen '
+              'Abrechnungstag bereits ein gespeicherter Abschluss. '
+              'Soll er überschrieben werden?',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Abbrechen'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(dialogContext).pop(true),
+                child: const Text('Überschreiben'),
+              ),
+            ],
+          ),
+        );
+
+        if (bestaetigt != true || !mounted) {
+          return;
+        }
+
+        setState(() {
+          _speichert = true;
+        });
+        await _speichereUsecase.ausfuehren(
+          _abschlussVorschau,
+          ueberschreiben: true,
+        );
+        if (!mounted) {
+          return;
+        }
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
