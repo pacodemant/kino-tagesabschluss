@@ -14,8 +14,6 @@ class Schritt1InitialisierungHelper {
     required this.umschlagBetragFocusNode,
     required this.umschlagBezeichnungFocusNode,
     required this.umschlagIds,
-    required this.kartenzahlungController,
-    required this.kartenzahlungenCent,
     required this.stueckzahlController,
     required this.loseMuenzenController,
     required this.alleStueckzahlZeilen,
@@ -33,8 +31,6 @@ class Schritt1InitialisierungHelper {
   final List<FocusNode> umschlagBetragFocusNode;
   final List<FocusNode> umschlagBezeichnungFocusNode;
   final List<int> umschlagIds;
-  final List<TextEditingController> kartenzahlungController;
-  final List<int> kartenzahlungenCent;
   final Map<String, TextEditingController> stueckzahlController;
   final Map<String, TextEditingController> loseMuenzenController;
   final List<Kassenzeile> alleStueckzahlZeilen;
@@ -139,14 +135,6 @@ class Schritt1InitialisierungHelper {
       }
     }
 
-    for (int i = 0; i < kartenzahlungController.length; i++) {
-      final String text = kartenzahlungenCent[i] == 0
-          ? ''
-          : formatiereEuroEingabe(kartenzahlungenCent[i]);
-      if (kartenzahlungController[i].text != text) {
-        _setzeControllerText(kartenzahlungController[i], text);
-      }
-    }
   }
 
   void _setzeControllerText(TextEditingController controller, String text) {

@@ -52,7 +52,6 @@ class _TagesabschlussSchritt1SeiteState
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
-  static const int _sectionKartenzahlungen = 3;
   static const int _sectionUmschlaege = 4;
   static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
     12,
@@ -100,21 +99,14 @@ class _TagesabschlussSchritt1SeiteState
   final List<FocusNode> _umschlagBetragFocusNode = <FocusNode>[];
   final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
   final List<int> _umschlagIds = <int>[];
-  final List<TextEditingController> _kartenzahlungController =
-      <TextEditingController>[TextEditingController()];
-  final List<FocusNode> _kartenzahlungFocusNode = <FocusNode>[FocusNode()];
-  final List<int> _kartenzahlungIds = <int>[0];
-  int _naechsteKartenzahlungId = 1;
   int _naechsteUmschlagId = 1;
 
   int _wechselgeldSollwertCent = 20000;
-  final List<int> _kartenzahlungenCent = <int>[0];
   bool _laedt = true;
   bool _scheineAufgeklappt = true;
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
   bool _kupferRollenSichtbar = false;
-  bool _kartenzahlungenAufgeklappt = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   final ScrollController _scrollController = ScrollController();
@@ -161,8 +153,6 @@ class _TagesabschlussSchritt1SeiteState
       umschlagBetragFocusNode: _umschlagBetragFocusNode,
       umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
       umschlagIds: _umschlagIds,
-      kartenzahlungController: _kartenzahlungController,
-      kartenzahlungenCent: _kartenzahlungenCent,
       stueckzahlController: _stueckzahlController,
       loseMuenzenController: _loseMuenzenController,
       alleStueckzahlZeilen: _alleStueckzahlZeilen,
@@ -213,12 +203,6 @@ class _TagesabschlussSchritt1SeiteState
       focusNode.dispose();
     }
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
-      focusNode.dispose();
-    }
-    for (final TextEditingController controller in _kartenzahlungController) {
-      controller.dispose();
-    }
-    for (final FocusNode focusNode in _kartenzahlungFocusNode) {
       focusNode.dispose();
     }
     _scrollController.removeListener(_beiScrollAenderung);
@@ -298,8 +282,6 @@ class _TagesabschlussSchritt1SeiteState
         loseMuenzarten: _loseMuenzarten,
         stueckzahlen: _stueckzahlen,
         loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
-        setzeKartenzahlungAnzahl: _setzeKartenzahlungAnzahl,
-        kartenzahlungenCent: _kartenzahlungenCent,
         uebernehmeUmschlagEntwurf: _uebernehmeUmschlagEntwurf,
         sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
@@ -315,8 +297,6 @@ class _TagesabschlussSchritt1SeiteState
         loseMuenzarten: _loseMuenzarten,
         stueckzahlen: _stueckzahlen,
         loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
-        setzeKartenzahlungAnzahl: _setzeKartenzahlungAnzahl,
-        kartenzahlungenCent: _kartenzahlungenCent,
         leereUmschlagFelder: _leereUmschlagFelder,
         sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
@@ -419,64 +399,10 @@ class _TagesabschlussSchritt1SeiteState
     _speichereEntwurf();
   }
 
-  void _setzeKartenzahlungAnzahl(int anzahl) =>
-      _stateController.setzeKartenzahlungAnzahl(
-        anzahl: anzahl,
-        kartenzahlungController: _kartenzahlungController,
-        kartenzahlungFocusNode: _kartenzahlungFocusNode,
-        kartenzahlungenCent: _kartenzahlungenCent,
-        kartenzahlungIds: _kartenzahlungIds,
-        naechsteKartenzahlungId: () => _naechsteKartenzahlungId++,
-        entferneFeldKey: _scrollHelper.entferneFeldKey,
-      );
-
-  void _kartenzahlungHinzufuegen() {
-    setState(() {
-      _stateController.setzeKartenzahlungAnzahl(
-        anzahl: _kartenzahlungController.length + 1,
-        kartenzahlungController: _kartenzahlungController,
-        kartenzahlungFocusNode: _kartenzahlungFocusNode,
-        kartenzahlungenCent: _kartenzahlungenCent,
-        kartenzahlungIds: _kartenzahlungIds,
-        naechsteKartenzahlungId: () => _naechsteKartenzahlungId++,
-        entferneFeldKey: _scrollHelper.entferneFeldKey,
-      );
-    });
-  }
-
-  void _kartenzahlungEntfernen(int index) {
-    if (!_stateController.kannKartenzahlungEntfernen(
-      _kartenzahlungController,
-      index,
-    )) {
-      return;
-    }
-    setState(() {
-      _stateController.entferneKartenzahlung(
-        kartenzahlungController: _kartenzahlungController,
-        kartenzahlungFocusNode: _kartenzahlungFocusNode,
-        kartenzahlungenCent: _kartenzahlungenCent,
-        kartenzahlungIds: _kartenzahlungIds,
-        index: index,
-        entferneFeldKey: _scrollHelper.entferneFeldKey,
-      );
-    });
-  }
-
   // Setzt die Sichtbarkeit der Kupfer-Rollen ohne Layout-/Logikaenderung.
   void _zeigeKupferRollen() {
     setState(() {
       _kupferRollenSichtbar = true;
-    });
-  }
-
-  // Aktualisiert Kartenzahlung ohne zusaetzlichen Scroll-Ensure bei Eingabe.
-  void _beiKartenzahlungBetragGeaendert(int index, String wert) {
-    setState(() {
-      _kartenzahlungenCent[index] = _parseCentZiffern(wert);
-      if (wert.isNotEmpty) {
-        _rotHervorgehoben.remove(_kartenzahlungFocusNode[index]);
-      }
     });
   }
 
@@ -489,7 +415,6 @@ class _TagesabschlussSchritt1SeiteState
         loseMuenzarten: _loseMuenzarten,
         loseMuenzenFocusNode: _loseMuenzenFocusNode,
         rollenSichtbar: _rollenSichtbar,
-        kartenzahlungFocusNode: _kartenzahlungFocusNode,
         umschlaege: _umschlaege,
         umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
         umschlagBetragFocusNode: _umschlagBetragFocusNode,
@@ -532,35 +457,30 @@ class _TagesabschlussSchritt1SeiteState
       );
 
   // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
-  int? _sectionIdFuerFokusfeld(FocusNode fokusNode) {
+  int? _sectionIdFuerFokusfeld(FocusNode focusNode) {
     if (_scheine.any(
       (Kassenzeile zeile) =>
-          identical(_stueckzahlFocusNode[zeile.id], fokusNode),
+          identical(_stueckzahlFocusNode[zeile.id], focusNode),
     )) {
       return _sectionScheine;
     }
     if (_loseMuenzarten.any(
       (Kassenzeile zeile) =>
-          identical(_loseMuenzenFocusNode[zeile.id], fokusNode),
+          identical(_loseMuenzenFocusNode[zeile.id], focusNode),
     )) {
       return _sectionLoseMuenzen;
     }
     if (_rollenSichtbar.any(
       (Kassenzeile zeile) =>
-          identical(_stueckzahlFocusNode[zeile.id], fokusNode),
+          identical(_stueckzahlFocusNode[zeile.id], focusNode),
     )) {
       return _sectionRollen;
     }
-    if (_kartenzahlungFocusNode.any(
-      (FocusNode node) => identical(node, fokusNode),
-    )) {
-      return _sectionKartenzahlungen;
-    }
     if (_umschlagBezeichnungFocusNode.any(
-          (FocusNode node) => identical(node, fokusNode),
+          (FocusNode node) => identical(node, focusNode),
         ) ||
         _umschlagBetragFocusNode.any(
-          (FocusNode node) => identical(node, fokusNode),
+          (FocusNode node) => identical(node, focusNode),
         )) {
       return _sectionUmschlaege;
     }
@@ -575,8 +495,6 @@ class _TagesabschlussSchritt1SeiteState
         return _loseMuenzenAufgeklappt;
       case _sectionRollen:
         return _rollenAufgeklappt;
-      case _sectionKartenzahlungen:
-        return _kartenzahlungenAufgeklappt;
       case _sectionUmschlaege:
         return _umschlaegeAufgeklappt;
     }
@@ -593,9 +511,6 @@ class _TagesabschlussSchritt1SeiteState
         return;
       case _sectionRollen:
         _rollenAufgeklappt = wert;
-        return;
-      case _sectionKartenzahlungen:
-        _kartenzahlungenAufgeklappt = wert;
         return;
       case _sectionUmschlaege:
         _umschlaegeAufgeklappt = wert;
@@ -676,12 +591,6 @@ class _TagesabschlussSchritt1SeiteState
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
       );
 
-  int get _kartenzahlungenSummeCent =>
-      TagesabschlussBerechnung.summeCentBetraege(_kartenzahlungenCent);
-
-  int get _gesamtUmsatzMitKarteCent =>
-      _barumsatzBereinigtCent + _kartenzahlungenSummeCent;
-
   String _formatiereEuro(int cent) => _stateController.formatiereEuro(cent);
 
   String _formatiereEuroEingabe(int cent) =>
@@ -699,8 +608,6 @@ class _TagesabschlussSchritt1SeiteState
           loseMuenzarten: _loseMuenzarten,
           stueckzahlen: _stueckzahlen,
           loseMuenzenNachArtCent: _loseMuenzenNachArtCent,
-          setzeKartenzahlungAnzahl: _setzeKartenzahlungAnzahl,
-          kartenzahlungenCent: _kartenzahlungenCent,
           leereUmschlagFelder: _leereUmschlagFelder,
           sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
           synchronisiereControllerAusState: _synchronisiereControllerAusState,
@@ -853,32 +760,6 @@ class _TagesabschlussSchritt1SeiteState
       }
     }
 
-    // Bereich 3: Kartenzahlung
-    final bool keineKartenzahlung = _kartenzahlungenCent.every(
-      (int cent) => cent == 0,
-    );
-
-    if (keineKartenzahlung) {
-      setState(() {
-        _rotHervorgehoben.clear();
-        _rotHervorgehoben.addAll(_kartenzahlungFocusNode);
-      });
-      final bool bestaetigt = await _zeigeEingabePruefDialog(
-        titel: 'Kartenzahlung fehlt',
-        inhalt: 'Es wurde keine Kartenzahlung erfasst. Ist das korrekt?',
-      );
-      if (!mounted) {
-        return;
-      }
-      if (!bestaetigt) {
-        _fokussiereTextfeld(_kartenzahlungFocusNode.first);
-        return;
-      }
-      setState(() {
-        _rotHervorgehoben.clear();
-      });
-    }
-
     await _weiterZuSchritt2();
   }
 
@@ -907,7 +788,6 @@ class _TagesabschlussSchritt1SeiteState
       scheineAufgeklappt: _scheineAufgeklappt,
       loseMuenzenAufgeklappt: _loseMuenzenAufgeklappt,
       rollenAufgeklappt: _rollenAufgeklappt,
-      kartenzahlungenAufgeklappt: _kartenzahlungenAufgeklappt,
       umschlaegeAufgeklappt: _umschlaegeAufgeklappt,
       kupferRollenSichtbar: _kupferRollenSichtbar,
       stueckzahlen: _stueckzahlen,
@@ -921,12 +801,7 @@ class _TagesabschlussSchritt1SeiteState
       umschlagBetragController: _umschlagBetragController,
       umschlagBezeichnungFocusNode: _umschlagBezeichnungFocusNode,
       umschlagBetragFocusNode: _umschlagBetragFocusNode,
-      kartenzahlungController: _kartenzahlungController,
-      kartenzahlungIds: _kartenzahlungIds,
-      kartenzahlungFocusNode: _kartenzahlungFocusNode,
-      kartenzahlungenCent: _kartenzahlungenCent,
       loseMuenzenGesamtCent: _loseMuenzenGesamtCent,
-      kartenzahlungenSummeCent: _kartenzahlungenSummeCent,
       umschlagSummeCent: _umschlagSummeCent,
       formatiereEuro: _formatiereEuro,
       summeGruppe: _summeGruppe,
@@ -935,9 +810,6 @@ class _TagesabschlussSchritt1SeiteState
       beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt1,
       beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
       beiLoseMuenzartBetragGeaendert: _beiLoseMuenzartBetragGeaendert,
-      beiKartenzahlungBetragGeaendert: _beiKartenzahlungBetragGeaendert,
-      kartenzahlungEntfernen: _kartenzahlungEntfernen,
-      kartenzahlungHinzufuegen: _kartenzahlungHinzufuegen,
       beiUmschlagBezeichnungGeaendert: _beiUmschlagBezeichnungGeaendert,
       beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
       umschlagEntfernen: _umschlagEntfernen,
@@ -951,9 +823,6 @@ class _TagesabschlussSchritt1SeiteState
       },
       toggleRollen: () {
         _toggleSection(_sectionRollen);
-      },
-      toggleKartenzahlungen: () {
-        _toggleSection(_sectionKartenzahlungen);
       },
       toggleUmschlaege: () {
         _toggleSection(_sectionUmschlaege);
@@ -1010,8 +879,6 @@ class _TagesabschlussSchritt1SeiteState
                 kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
                 wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
                 barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
-                kartenzahlungen: _formatiereEuro(_kartenzahlungenSummeCent),
-                gesamtInklKarte: _formatiereEuro(_gesamtUmsatzMitKarteCent),
                 barumsatzNegativ: _barumsatzBereinigtCent < 0,
               ),
               downButtonSichtbar: _istDownButtonSichtbar(),

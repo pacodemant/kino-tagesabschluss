@@ -7,16 +7,12 @@ class Schritt1Zusammenfassung extends StatelessWidget {
     required this.kassenbestandGesamt,
     required this.wechselgeldSollwert,
     required this.barumsatzBereinigt,
-    required this.kartenzahlungen,
-    required this.gesamtInklKarte,
     required this.barumsatzNegativ,
   });
 
   final String kassenbestandGesamt;
   final String wechselgeldSollwert;
   final String barumsatzBereinigt;
-  final String kartenzahlungen;
-  final String gesamtInklKarte;
   final bool barumsatzNegativ;
 
   @override
@@ -25,8 +21,6 @@ class Schritt1Zusammenfassung extends StatelessWidget {
       kassenbestandGesamt: kassenbestandGesamt,
       wechselgeldSollwert: wechselgeldSollwert,
       barumsatzBereinigt: barumsatzBereinigt,
-      kartenzahlungen: kartenzahlungen,
-      gesamtInklKarte: gesamtInklKarte,
       barumsatzNegativ: barumsatzNegativ,
     );
   }

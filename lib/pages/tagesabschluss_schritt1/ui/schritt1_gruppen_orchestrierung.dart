@@ -21,7 +21,6 @@ class Schritt1GruppenOrchestrierung {
     required bool scheineAufgeklappt,
     required bool loseMuenzenAufgeklappt,
     required bool rollenAufgeklappt,
-    required bool kartenzahlungenAufgeklappt,
     required bool umschlaegeAufgeklappt,
     required bool kupferRollenSichtbar,
     required Map<String, int> stueckzahlen,
@@ -35,12 +34,7 @@ class Schritt1GruppenOrchestrierung {
     required List<TextEditingController> umschlagBetragController,
     required List<FocusNode> umschlagBezeichnungFocusNode,
     required List<FocusNode> umschlagBetragFocusNode,
-    required List<TextEditingController> kartenzahlungController,
-    required List<int> kartenzahlungIds,
-    required List<FocusNode> kartenzahlungFocusNode,
-    required List<int> kartenzahlungenCent,
     required int loseMuenzenGesamtCent,
-    required int kartenzahlungenSummeCent,
     required int umschlagSummeCent,
     required String Function(int cent) formatiereEuro,
     required int Function(List<Kassenzeile> zeilen) summeGruppe,
@@ -53,10 +47,6 @@ class Schritt1GruppenOrchestrierung {
     required void Function(String muenzartId, String wert)
     beiLoseMuenzartBetragGeaendert,
     required void Function(int index, String wert)
-    beiKartenzahlungBetragGeaendert,
-    required void Function(int index) kartenzahlungEntfernen,
-    required VoidCallback kartenzahlungHinzufuegen,
-    required void Function(int index, String wert)
     beiUmschlagBezeichnungGeaendert,
     required void Function(int index, String wert) beiUmschlagBetragGeaendert,
     required void Function(int index) umschlagEntfernen,
@@ -65,7 +55,6 @@ class Schritt1GruppenOrchestrierung {
     required VoidCallback toggleScheine,
     required VoidCallback toggleLoseMuenzen,
     required VoidCallback toggleRollen,
-    required VoidCallback toggleKartenzahlungen,
     required VoidCallback toggleUmschlaege,
     required Set<FocusNode> rotHervorgehoben,
   }) {
@@ -136,29 +125,6 @@ class Schritt1GruppenOrchestrierung {
       ),
     );
 
-    final Widget kartenzahlungenGruppe = _baueEinklappbarenBereich(
-      titel: 'Kartenzahlungen (Beträge)',
-      gesamtbetragCent: kartenzahlungenSummeCent,
-      aufgeklappt: kartenzahlungenAufgeklappt,
-      beimUmschalten: toggleKartenzahlungen,
-      inhalt: schritt1_ui.Schritt1KartenzahlungenInhalt(
-        kartenzahlungController: kartenzahlungController,
-        kartenzahlungIds: kartenzahlungIds,
-        kartenzahlungFocusNode: kartenzahlungFocusNode,
-        baueFeldMitKey: baueFeldMitKey,
-        textInputActionFuerSchritt1: textInputActionFuerSchritt1,
-        beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
-        beiKartenzahlungBetragGeaendert: beiKartenzahlungBetragGeaendert,
-        kartenzahlungEntfernen: kartenzahlungEntfernen,
-        kartenzahlungHinzufuegen: kartenzahlungHinzufuegen,
-        kartenzahlungenCent: kartenzahlungenCent,
-        formatiereEuro: formatiereEuro,
-        kartenzahlungenSummeCent: kartenzahlungenSummeCent,
-        rotHervorgehoben: rotHervorgehoben,
-      ),
-      formatiereEuro: formatiereEuro,
-    );
-
     final Widget umschlaegeGruppe = _baueEinklappbarenBereich(
       titel: 'Umschläge (Beträge)',
       gesamtbetragCent: umschlagSummeCent,
@@ -189,7 +155,6 @@ class Schritt1GruppenOrchestrierung {
       loseMuenzenGruppe: loseMuenzenGruppe,
       rollenGruppe: rollenGruppe,
       hinweiseSection: Schritt1HinweiseSection(
-        kartenzahlungenInhalt: kartenzahlungenGruppe,
         umschlaegeInhalt: umschlaegeGruppe,
       ),
     );

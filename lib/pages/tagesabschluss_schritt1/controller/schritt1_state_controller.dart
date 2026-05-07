@@ -83,54 +83,6 @@ class Schritt1StateController {
     );
   }
 
-  void setzeKartenzahlungAnzahl({
-    required int anzahl,
-    required List<TextEditingController> kartenzahlungController,
-    required List<FocusNode> kartenzahlungFocusNode,
-    required List<int> kartenzahlungenCent,
-    required List<int> kartenzahlungIds,
-    required int Function() naechsteKartenzahlungId,
-    required void Function(FocusNode focusNode) entferneFeldKey,
-  }) {
-    while (kartenzahlungController.length > anzahl) {
-      kartenzahlungController.removeLast().dispose();
-      final FocusNode focusNode = kartenzahlungFocusNode.removeLast();
-      entferneFeldKey(focusNode);
-      focusNode.dispose();
-      kartenzahlungenCent.removeLast();
-      kartenzahlungIds.removeLast();
-    }
-    while (kartenzahlungController.length < anzahl) {
-      kartenzahlungController.add(TextEditingController());
-      kartenzahlungFocusNode.add(FocusNode());
-      kartenzahlungenCent.add(0);
-      kartenzahlungIds.add(naechsteKartenzahlungId());
-    }
-  }
-
-  bool kannKartenzahlungEntfernen(
-    List<TextEditingController> kartenzahlungController,
-    int index,
-  ) {
-    return index > 0 && index < kartenzahlungController.length;
-  }
-
-  void entferneKartenzahlung({
-    required List<TextEditingController> kartenzahlungController,
-    required List<FocusNode> kartenzahlungFocusNode,
-    required List<int> kartenzahlungenCent,
-    required List<int> kartenzahlungIds,
-    required int index,
-    required void Function(FocusNode focusNode) entferneFeldKey,
-  }) {
-    kartenzahlungController.removeAt(index).dispose();
-    final FocusNode focusNode = kartenzahlungFocusNode.removeAt(index);
-    entferneFeldKey(focusNode);
-    focusNode.dispose();
-    kartenzahlungenCent.removeAt(index);
-    kartenzahlungIds.removeAt(index);
-  }
-
   int parseCentZiffern(String wert) {
     return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
@@ -141,7 +93,6 @@ class Schritt1StateController {
     required List<Kassenzeile> loseMuenzarten,
     required Map<String, FocusNode> loseMuenzenFocusNode,
     required List<Kassenzeile> rollenSichtbar,
-    required List<FocusNode> kartenzahlungFocusNode,
     required List<UmschlagEintrag> umschlaege,
     required List<FocusNode> umschlagBezeichnungFocusNode,
     required List<FocusNode> umschlagBetragFocusNode,
@@ -154,7 +105,6 @@ class Schritt1StateController {
       ...rollenSichtbar.map(
         (Kassenzeile zeile) => stueckzahlFocusNode[zeile.id]!,
       ),
-      ...kartenzahlungFocusNode,
     ];
 
     for (int i = 0; i < umschlaege.length; i++) {

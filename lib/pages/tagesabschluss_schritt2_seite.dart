@@ -265,36 +265,11 @@ class _TagesabschlussSchritt2SeiteState
         gesamtSollCent: _gesamtSollCent,
       );
 
-  String _heutigesDatumString() {
-    return TagesabschlussFormatierung.deutschesDatum(DateTime.now());
-  }
-
   String _kopfDatumUhrzeit() {
     return DateFormat(
       "EEEE, d.M.yy (H:mm 'Uhr')",
       'de_DE',
     ).format(DateTime.now());
-  }
-
-  void _zeigeUmschlagVoransicht() {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogKontext) {
-        return UmschlagVoransichtDialog(
-          kinoName: widget.kinoName,
-          datum: _heutigesDatumString(),
-          kinoSollCent: _kinoSollCent,
-          bistroSollCent: _bistroSollCent,
-          ausgabenCent: _ausgabenCent,
-          gesamtSollCent: _gesamtSollCent,
-          ecIstCent: _ecUmsatzGesamtCent,
-          barIstCent: widget.barBestandAbzglWechselgeldCent,
-          gesamtIstCent: _gesamtIstCent,
-          differenzCent: _differenzTagesabschlussCent,
-          differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
-        );
-      },
-    );
   }
 
   void _weiterZuSchritt3() {
@@ -439,6 +414,11 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegIds.add(_naechsteEcBelegId++);
     });
     _speichereEntwurf();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _ecBelegFocusNode.isNotEmpty) {
+        FocusScope.of(context).requestFocus(_ecBelegFocusNode.last);
+      }
+    });
   }
 
   void _ecBelegEntfernen(int index) {
@@ -944,15 +924,6 @@ class _TagesabschlussSchritt2SeiteState
                               _speichereEntwurf();
                             },
                           ),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              'Info: ${_formatiereEuro(_differenzAnfangsbestandCent)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
@@ -1094,15 +1065,6 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 const SizedBox(height: 8),
-                SizedBox(
-                    height: 44,
-                    child: OutlinedButton.icon(
-                      onPressed: _zeigeUmschlagVoransicht,
-                      icon: const Icon(Icons.receipt_long_outlined),
-                      label: const Text('Übertrag auf Umschlag'),
-                    ),
-                  ),
-                const SizedBox(height: 8),
               ],
             ),
           ),
@@ -1126,247 +1088,6 @@ class _TagesabschlussSchritt2SeiteState
             child: _baueIosTastaturLeiste(),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class UmschlagVoransichtDialog extends StatelessWidget {
-  const UmschlagVoransichtDialog({
-    super.key,
-    required this.kinoName,
-    required this.datum,
-    required this.kinoSollCent,
-    required this.bistroSollCent,
-    required this.ausgabenCent,
-    required this.gesamtSollCent,
-    required this.ecIstCent,
-    required this.barIstCent,
-    required this.gesamtIstCent,
-    required this.differenzCent,
-    required this.differenzAnfangsbestandCent,
-  });
-
-  final String kinoName;
-  final String datum;
-  final int kinoSollCent;
-  final int bistroSollCent;
-  final int ausgabenCent;
-  final int gesamtSollCent;
-  final int ecIstCent;
-  final int barIstCent;
-  final int gesamtIstCent;
-  final int differenzCent;
-  final int differenzAnfangsbestandCent;
-
-  String _formatiereEuro(int cent) {
-    return TagesabschlussFormatierung.formatiereEuro(cent);
-  }
-
-  String _formatiereEuroMitVorzeichen(int cent) {
-    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
-  }
-
-  Widget _baueZeile({
-    required String label,
-    required String wert,
-    bool hervorheben = false,
-    Color? wertFarbe,
-    bool kursiv = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w500,
-                fontStyle: kursiv ? FontStyle.italic : FontStyle.normal,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          SizedBox(
-            width: 130,
-            child: Text(
-              wert,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w600,
-                color: wertFarbe,
-                fontStyle: kursiv ? FontStyle.italic : FontStyle.normal,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final Size bildschirm = MediaQuery.sizeOf(context);
-    final bool istPortrait = bildschirm.height > bildschirm.width;
-    const double umschlagMaxBreite = 680;
-    const double umschlagLayoutHoehe = 360;
-    Widget baueUmschlagInhalt(double layoutBreite) {
-      return SizedBox(
-        width: layoutBreite,
-        height: umschlagLayoutHoehe,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          _baueZeile(
-                            label: 'KINO SOLL',
-                            wert: _formatiereEuro(kinoSollCent),
-                          ),
-                          _baueZeile(
-                            label: '+ BISTRO SOLL',
-                            wert: _formatiereEuro(bistroSollCent),
-                          ),
-                          _baueZeile(
-                            label: '- Ausgaben',
-                            wert: _formatiereEuro(ausgabenCent),
-                          ),
-                          const Divider(),
-                          _baueZeile(
-                            label: '= Gesamt SOLL',
-                            wert: _formatiereEuro(gesamtSollCent),
-                            hervorheben: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          _baueZeile(
-                            label: '+ EC IST',
-                            wert: _formatiereEuro(ecIstCent),
-                          ),
-                          _baueZeile(
-                            label: '+ BAR IST',
-                            wert: _formatiereEuro(barIstCent),
-                          ),
-                          const Divider(),
-                          _baueZeile(
-                            label: '= Gesamt IST',
-                            wert: _formatiereEuro(gesamtIstCent),
-                            hervorheben: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  children: <Widget>[
-                    _baueZeile(
-                      label: 'Differenz',
-                      wert: _formatiereEuroMitVorzeichen(differenzCent),
-                      hervorheben: true,
-                      wertFarbe: differenzCent < 0 ? Colors.red : null,
-                    ),
-                    _baueZeile(
-                      label: 'Differenz im Anfangsbestand',
-                      wert: _formatiereEuro(differenzAnfangsbestandCent),
-                      kursiv: true,
-                    ),
-                    _baueZeile(label: 'Datum', wert: datum),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Dialog(
-      insetPadding: const EdgeInsets.all(12),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: bildschirm.width - 24,
-          maxHeight: bildschirm.height * 0.9,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  const Expanded(
-                    child: Text(
-                      'Übertrag auf Umschlag',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                    tooltip: 'Schließen',
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    final double layoutBreite =
-                        constraints.maxWidth < umschlagMaxBreite
-                        ? constraints.maxWidth
-                        : umschlagMaxBreite;
-                    if (istPortrait) {
-                      return FittedBox(
-                        fit: BoxFit.contain,
-                        alignment: Alignment.topCenter,
-                        child: RotatedBox(
-                          quarterTurns: 1,
-                          child: baueUmschlagInhalt(layoutBreite),
-                        ),
-                      );
-                    }
-                    return SingleChildScrollView(
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: baueUmschlagInhalt(layoutBreite),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

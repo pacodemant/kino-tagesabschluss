@@ -19,8 +19,6 @@ class Schritt1OrchestrierungHelper {
     required List<Kassenzeile> loseMuenzarten,
     required Map<String, int> stueckzahlen,
     required Map<String, int> loseMuenzenNachArtCent,
-    required void Function(int anzahl) setzeKartenzahlungAnzahl,
-    required List<int> kartenzahlungenCent,
     required void Function(List<UmschlagEintrag> umschlaege)
     uebernehmeUmschlagEntwurf,
     required VoidCallback sichereMindestensEinenUmschlag,
@@ -35,9 +33,6 @@ class Schritt1OrchestrierungHelper {
     for (final Kassenzeile zeile in loseMuenzarten) {
       loseMuenzenNachArtCent[zeile.id] = zufallszahl(zufall, 0, 3000);
     }
-    setzeKartenzahlungAnzahl(1);
-    kartenzahlungenCent[0] = zufallszahl(zufall, 0, 250000);
-
     final int umschlagAnzahl = zufallszahl(zufall, 1, 4);
     final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
     for (int i = 0; i < umschlagAnzahl; i++) {
@@ -58,8 +53,6 @@ class Schritt1OrchestrierungHelper {
     required List<Kassenzeile> loseMuenzarten,
     required Map<String, int> stueckzahlen,
     required Map<String, int> loseMuenzenNachArtCent,
-    required void Function(int anzahl) setzeKartenzahlungAnzahl,
-    required List<int> kartenzahlungenCent,
     required VoidCallback leereUmschlagFelder,
     required VoidCallback sichereMindestensEinenUmschlag,
     required VoidCallback synchronisiereControllerAusState,
@@ -70,8 +63,6 @@ class Schritt1OrchestrierungHelper {
     for (final Kassenzeile zeile in loseMuenzarten) {
       loseMuenzenNachArtCent[zeile.id] = 0;
     }
-    setzeKartenzahlungAnzahl(1);
-    kartenzahlungenCent[0] = 0;
     leereUmschlagFelder();
     sichereMindestensEinenUmschlag();
     synchronisiereControllerAusState();
