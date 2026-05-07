@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 111: Differenz-Anfangsbestand-Feld in Schritt 2 akzeptiert negative Werte (neuer `CentWaehrungsEingabeFormatterMitVorzeichen`); farbliche Hervorhebung nach Fokusverlust (grün bei positiv, rot bei negativ, neutral bei 0); `BetragCentEingabefeld` um `erlaubeNegativ` und `farbeNachWert` erweitert.
 - Run 110: Kartenzahlungs-Kachel aus Schritt 1 vollständig entfernt (inkl. aller Controller, FocusNodes, Helper-Parameter und Zusammenfassung); Info-Zeile in Differenz-Anfangsbestand-Kachel (Schritt 2) entfernt; Button „Übertrag auf Umschlag" samt Dialog-Klasse entfernt; neuer EC-Beleg wird nach Hinzufügen automatisch fokussiert.
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
 - Run 109: Kachel „Differenz Anfangsbestand" in Schritt 2 an erste Position verschoben (vor Kino SOLL); Inhalt und Berechnungslogik unverändert.
