@@ -205,9 +205,7 @@ class _TagesabschlussSchritt2SeiteState
     if (differenzAnfangsbestandCent != 0) {
       _setzeControllerText(
         _differenzAnfangsbestandController,
-        TagesabschlussFormatierung.formatiereEuroEingabe(
-          differenzAnfangsbestandCent.abs(),
-        ),
+        _differenzAnzeigeText(differenzAnfangsbestandCent),
       );
     }
     for (int i = 0; i < ecBelege.length; i++) {
@@ -236,12 +234,25 @@ class _TagesabschlussSchritt2SeiteState
     return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
 
-  /// Negiert den Differenz-Anfangsbestand-Wert; ignoriert 0.
+  /// Gibt den Anzeigetext für das Differenz-Feld zurück (mit Minuszeichen wenn negativ).
+  String _differenzAnzeigeText(int cent) {
+    if (cent == 0) return '';
+    final int abs = cent.abs();
+    final String betrag =
+        '${abs ~/ 100},${(abs % 100).toString().padLeft(2, '0')}';
+    return cent < 0 ? '-$betrag' : betrag;
+  }
+
+  /// Negiert den Differenz-Anfangsbestand-Wert; ignoriert 0; aktualisiert Controller-Anzeige.
   void _vorzeichenToggleDifferenz() {
     if (_differenzAnfangsbestandCent == 0) return;
     setState(() {
       _differenzAnfangsbestandCent = -_differenzAnfangsbestandCent;
     });
+    _setzeControllerText(
+      _differenzAnfangsbestandController,
+      _differenzAnzeigeText(_differenzAnfangsbestandCent),
+    );
     _speichereEntwurf();
   }
 
@@ -504,9 +515,7 @@ class _TagesabschlussSchritt2SeiteState
       );
       _setzeControllerText(
         _differenzAnfangsbestandController,
-        TagesabschlussFormatierung.formatiereEuroEingabe(
-          _differenzAnfangsbestandCent.abs(),
-        ),
+        _differenzAnzeigeText(_differenzAnfangsbestandCent),
       );
       for (int i = 0; i < _ecBelegController.length; i++) {
         _setzeControllerText(
@@ -947,13 +956,29 @@ class _TagesabschlussSchritt2SeiteState
                                   },
                                 ),
                               ),
-                              IconButton(
+                              OutlinedButton(
                                 onPressed: _vorzeichenToggleDifferenz,
-                                icon: const Text(
-                                  '±',
-                                  style: TextStyle(fontSize: 20),
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(48, 48),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
+                                  side: BorderSide(
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(8),
+                                    ),
+                                  ),
                                 ),
-                                tooltip: 'Vorzeichen umkehren',
+                                child: const Text(
+                                  '±',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.black87,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
