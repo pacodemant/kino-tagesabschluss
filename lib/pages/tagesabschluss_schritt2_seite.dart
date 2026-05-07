@@ -958,7 +958,8 @@ class _TagesabschlussSchritt2SeiteState
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Row(
+                              IntrinsicHeight(
+                                child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: <Widget>[
                                   Expanded(
@@ -1014,6 +1015,7 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                   ),
                                 ],
+                              ),
                               ),
                             ],
                           ),
