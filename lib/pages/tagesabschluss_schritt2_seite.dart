@@ -206,7 +206,7 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(
         _differenzAnfangsbestandController,
         TagesabschlussFormatierung.formatiereEuroEingabe(
-          differenzAnfangsbestandCent,
+          differenzAnfangsbestandCent.abs(),
         ),
       );
     }
@@ -236,13 +236,13 @@ class _TagesabschlussSchritt2SeiteState
     return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
 
-  /// Parst einen formatierten Betrag mit optionalem führenden Minuszeichen.
-  int _parseCentZiffernMitVorzeichen(String wert) {
-    final bool negativ = wert.trim().startsWith('-');
-    final String nurZiffern = wert.replaceAll(RegExp(r'[^0-9]'), '');
-    if (nurZiffern.isEmpty) return 0;
-    final int absolutCent = int.tryParse(nurZiffern) ?? 0;
-    return negativ ? -absolutCent : absolutCent;
+  /// Negiert den Differenz-Anfangsbestand-Wert; ignoriert 0.
+  void _vorzeichenToggleDifferenz() {
+    if (_differenzAnfangsbestandCent == 0) return;
+    setState(() {
+      _differenzAnfangsbestandCent = -_differenzAnfangsbestandCent;
+    });
+    _speichereEntwurf();
   }
 
   String _formatiereEuro(int cent) {
@@ -505,7 +505,7 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(
         _differenzAnfangsbestandController,
         TagesabschlussFormatierung.formatiereEuroEingabe(
-          _differenzAnfangsbestandCent,
+          _differenzAnfangsbestandCent.abs(),
         ),
       );
       for (int i = 0; i < _ecBelegController.length; i++) {
@@ -671,7 +671,6 @@ class _TagesabschlussSchritt2SeiteState
     bool optional = false,
     bool zeigeLoeschen = false,
     VoidCallback? onLoeschen,
-    bool erlaubeNegativ = false,
     int? farbeNachWert,
   }) {
     return Padding(
@@ -695,7 +694,6 @@ class _TagesabschlussSchritt2SeiteState
               schriftgroesse: 15,
               hinweisText: '0,00 €',
               fehlermeldungText: fehlermeldungText,
-              erlaubeNegativ: erlaubeNegativ,
               farbeNachWert: farbeNachWert,
             ),
           ),
@@ -924,20 +922,40 @@ class _TagesabschlussSchritt2SeiteState
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         children: <Widget>[
-                          _baueEingabeZeile(
-                            label: 'Differenz im Anfangsbestand',
-                            controller: _differenzAnfangsbestandController,
-                            focusNode: _differenzAnfangsbestandFocusNode,
-                            optional: true,
-                            erlaubeNegativ: true,
-                            farbeNachWert: _differenzAnfangsbestandCent,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _differenzAnfangsbestandCent =
-                                    _parseCentZiffernMitVorzeichen(wert);
-                              });
-                              _speichereEntwurf();
-                            },
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Expanded(
+                                child: _baueEingabeZeile(
+                                  label: 'Differenz im Anfangsbestand',
+                                  controller:
+                                      _differenzAnfangsbestandController,
+                                  focusNode: _differenzAnfangsbestandFocusNode,
+                                  optional: true,
+                                  farbeNachWert: _differenzAnfangsbestandCent,
+                                  onChanged: (String wert) {
+                                    setState(() {
+                                      final int absolutWert =
+                                          _parseCentZiffern(wert);
+                                      final bool istNegativ =
+                                          _differenzAnfangsbestandCent < 0;
+                                      _differenzAnfangsbestandCent = istNegativ
+                                          ? -absolutWert
+                                          : absolutWert;
+                                    });
+                                    _speichereEntwurf();
+                                  },
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: _vorzeichenToggleDifferenz,
+                                icon: const Text(
+                                  '±',
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                tooltip: 'Vorzeichen umkehren',
+                              ),
+                            ],
                           ),
                         ],
                       ),

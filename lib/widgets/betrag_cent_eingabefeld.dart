@@ -29,43 +29,6 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   }
 }
 
-/// Formatiert Betragseingaben mit optionalem führenden Minuszeichen.
-class CentWaehrungsEingabeFormatterMitVorzeichen extends TextInputFormatter {
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    final String text = newValue.text;
-    final bool negativ = text.startsWith('-');
-    final String ziffern = text.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (ziffern.isEmpty) {
-      if (negativ) {
-        return const TextEditingValue(
-          text: '-',
-          selection: TextSelection.collapsed(offset: 1),
-        );
-      }
-      return const TextEditingValue(
-        text: '',
-        selection: TextSelection.collapsed(offset: 0),
-      );
-    }
-
-    final int cent = int.tryParse(ziffern) ?? 0;
-    final int euro = cent ~/ 100;
-    final String centTeil = (cent % 100).toString().padLeft(2, '0');
-    final String vorzeichen = negativ ? '-' : '';
-    final String formatiert = '$vorzeichen$euro,$centTeil';
-
-    return TextEditingValue(
-      text: formatiert,
-      selection: TextSelection.collapsed(offset: formatiert.length),
-    );
-  }
-}
-
 class BetragCentEingabefeld extends StatefulWidget {
   const BetragCentEingabefeld({
     super.key,
@@ -79,7 +42,6 @@ class BetragCentEingabefeld extends StatefulWidget {
     this.textInputAction = TextInputAction.done,
     this.onSubmitted,
     this.istHervorgehoben = false,
-    this.erlaubeNegativ = false,
     this.farbeNachWert,
   });
 
@@ -93,8 +55,6 @@ class BetragCentEingabefeld extends StatefulWidget {
   final TextInputAction textInputAction;
   final ValueChanged<String>? onSubmitted;
   final bool istHervorgehoben;
-  /// Erlaubt negative Eingabewerte; aktiviert den Vorzeichen-Formatter.
-  final bool erlaubeNegativ;
   /// Farbliche Hervorhebung nach Wert im unfokussierten Zustand:
   /// > 0 → grün, < 0 → rot, == 0 → neutral. Nur sichtbar wenn nicht fokussiert.
   final int? farbeNachWert;
@@ -190,9 +150,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     return TextField(
       controller: widget.textController,
       focusNode: widget.focusNode,
-      keyboardType: widget.erlaubeNegativ
-          ? TextInputType.numberWithOptions(signed: true, decimal: false)
-          : TextInputType.number,
+      keyboardType: TextInputType.number,
       textInputAction: widget.textInputAction,
       textAlign: TextAlign.center,
       cursorColor: hatFokus ? Colors.white : null,
@@ -201,15 +159,10 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         color: hatFokus ? Colors.white : null,
         fontWeight: hatFokus ? FontWeight.w700 : FontWeight.normal,
       ),
-      inputFormatters: widget.erlaubeNegativ
-          ? <TextInputFormatter>[
-              FilteringTextInputFormatter.allow(RegExp(r'[-0-9]')),
-              CentWaehrungsEingabeFormatterMitVorzeichen(),
-            ]
-          : <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly,
-              CentWaehrungsEingabeFormatter(),
-            ],
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+        CentWaehrungsEingabeFormatter(),
+      ],
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,
