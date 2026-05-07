@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 114: Differenz-Anfangsbestand-Feld – Label in eigener Zeile (Text 14px grau), Eingabe + ±-Button nebeneinander mit `CrossAxisAlignment.stretch`; `_baueEingabeZeile` um `zeigeLabel`-Parameter erweitert; „(optional)"-Zusatz entfernt.
 - Run 113: Differenz-Anfangsbestand-Feld zeigt Minuszeichen nach Toggle und nach Laden (via `_differenzAnzeigeText`); `_vorzeichenToggleDifferenz` setzt Controller-Text direkt; onChanged nur Vorzeichenerhalt, kein Controller-Update; IconButton durch OutlinedButton mit grauem Rahmen ersetzt.
 - Run 112: ±-Toggle-Button neben Differenz-Anfangsbestand-Feld in Schritt 2 – negiert den gespeicherten Cent-Wert; Keyboard bleibt numerisch; Controller zeigt immer Absolutbetrag; Vorzeichen wird bei Texteingabe beibehalten; `CentWaehrungsEingabeFormatterMitVorzeichen` und `erlaubeNegativ` entfernt.
 - Run 111: Differenz-Anfangsbestand-Feld in Schritt 2 akzeptiert negative Werte (neuer `CentWaehrungsEingabeFormatterMitVorzeichen`); farbliche Hervorhebung nach Fokusverlust (grün bei positiv, rot bei negativ, neutral bei 0); `BetragCentEingabefeld` um `erlaubeNegativ` und `farbeNachWert` erweitert.
