@@ -236,6 +236,15 @@ class _TagesabschlussSchritt2SeiteState
     return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
 
+  /// Parst einen formatierten Betrag mit optionalem führenden Minuszeichen.
+  int _parseCentZiffernMitVorzeichen(String wert) {
+    final bool negativ = wert.trim().startsWith('-');
+    final String nurZiffern = wert.replaceAll(RegExp(r'[^0-9]'), '');
+    if (nurZiffern.isEmpty) return 0;
+    final int absolutCent = int.tryParse(nurZiffern) ?? 0;
+    return negativ ? -absolutCent : absolutCent;
+  }
+
   String _formatiereEuro(int cent) {
     return TagesabschlussFormatierung.formatiereEuro(cent);
   }
@@ -662,6 +671,8 @@ class _TagesabschlussSchritt2SeiteState
     bool optional = false,
     bool zeigeLoeschen = false,
     VoidCallback? onLoeschen,
+    bool erlaubeNegativ = false,
+    int? farbeNachWert,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -684,6 +695,8 @@ class _TagesabschlussSchritt2SeiteState
               schriftgroesse: 15,
               hinweisText: '0,00 €',
               fehlermeldungText: fehlermeldungText,
+              erlaubeNegativ: erlaubeNegativ,
+              farbeNachWert: farbeNachWert,
             ),
           ),
           if (zeigeLoeschen) ...<Widget>[
@@ -916,10 +929,12 @@ class _TagesabschlussSchritt2SeiteState
                             controller: _differenzAnfangsbestandController,
                             focusNode: _differenzAnfangsbestandFocusNode,
                             optional: true,
+                            erlaubeNegativ: true,
+                            farbeNachWert: _differenzAnfangsbestandCent,
                             onChanged: (String wert) {
                               setState(() {
                                 _differenzAnfangsbestandCent =
-                                    _parseCentZiffern(wert);
+                                    _parseCentZiffernMitVorzeichen(wert);
                               });
                               _speichereEntwurf();
                             },

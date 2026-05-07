@@ -29,6 +29,43 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   }
 }
 
+/// Formatiert Betragseingaben mit optionalem führenden Minuszeichen.
+class CentWaehrungsEingabeFormatterMitVorzeichen extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final String text = newValue.text;
+    final bool negativ = text.startsWith('-');
+    final String ziffern = text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (ziffern.isEmpty) {
+      if (negativ) {
+        return const TextEditingValue(
+          text: '-',
+          selection: TextSelection.collapsed(offset: 1),
+        );
+      }
+      return const TextEditingValue(
+        text: '',
+        selection: TextSelection.collapsed(offset: 0),
+      );
+    }
+
+    final int cent = int.tryParse(ziffern) ?? 0;
+    final int euro = cent ~/ 100;
+    final String centTeil = (cent % 100).toString().padLeft(2, '0');
+    final String vorzeichen = negativ ? '-' : '';
+    final String formatiert = '$vorzeichen$euro,$centTeil';
+
+    return TextEditingValue(
+      text: formatiert,
+      selection: TextSelection.collapsed(offset: formatiert.length),
+    );
+  }
+}
+
 class BetragCentEingabefeld extends StatefulWidget {
   const BetragCentEingabefeld({
     super.key,
@@ -42,6 +79,8 @@ class BetragCentEingabefeld extends StatefulWidget {
     this.textInputAction = TextInputAction.done,
     this.onSubmitted,
     this.istHervorgehoben = false,
+    this.erlaubeNegativ = false,
+    this.farbeNachWert,
   });
 
   final TextEditingController textController;
@@ -54,6 +93,11 @@ class BetragCentEingabefeld extends StatefulWidget {
   final TextInputAction textInputAction;
   final ValueChanged<String>? onSubmitted;
   final bool istHervorgehoben;
+  /// Erlaubt negative Eingabewerte; aktiviert den Vorzeichen-Formatter.
+  final bool erlaubeNegativ;
+  /// Farbliche Hervorhebung nach Wert im unfokussierten Zustand:
+  /// > 0 → grün, < 0 → rot, == 0 → neutral. Nur sichtbar wenn nicht fokussiert.
+  final int? farbeNachWert;
 
   @override
   State<BetragCentEingabefeld> createState() => _BetragCentEingabefeldState();
@@ -92,8 +136,53 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
   @override
   Widget build(BuildContext context) {
     final bool hatFokus = widget.focusNode?.hasFocus ?? false;
-    final bool rotRahmen = widget.istHervorgehoben;
-    final bool rotFuellung = rotRahmen && !hatFokus;
+
+    // istHervorgehoben (Validierungsfehler) hat Vorrang vor Wertfarbe.
+    final bool rotValidierung = widget.istHervorgehoben;
+    final bool zeigeWertfarbe =
+        !hatFokus && !rotValidierung && widget.farbeNachWert != null;
+    final bool gruenWert = zeigeWertfarbe && widget.farbeNachWert! > 0;
+    final bool rotWert = zeigeWertfarbe && widget.farbeNachWert! < 0;
+
+    final Color? fuellFarbe;
+    if (hatFokus) {
+      fuellFarbe = Colors.black87;
+    } else if (rotValidierung) {
+      fuellFarbe = Colors.red.shade50;
+    } else if (gruenWert) {
+      fuellFarbe = Colors.green.shade50;
+    } else if (rotWert) {
+      fuellFarbe = Colors.red.shade50;
+    } else {
+      fuellFarbe = null;
+    }
+
+    final InputBorder grenzeLinie;
+    final InputBorder? grenzeAktiviert;
+    final InputBorder? grenzeFokussiert;
+    if (rotValidierung) {
+      const BorderSide seite = BorderSide(color: Colors.red, width: 2);
+      grenzeLinie = const OutlineInputBorder(borderSide: seite);
+      grenzeAktiviert = const OutlineInputBorder(borderSide: seite);
+      grenzeFokussiert = const OutlineInputBorder(borderSide: seite);
+    } else if (gruenWert) {
+      grenzeLinie = const OutlineInputBorder();
+      grenzeAktiviert = const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.green, width: 2),
+      );
+      grenzeFokussiert = null;
+    } else if (rotWert) {
+      grenzeLinie = const OutlineInputBorder();
+      grenzeAktiviert = const OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.red, width: 2),
+      );
+      grenzeFokussiert = null;
+    } else {
+      grenzeLinie = const OutlineInputBorder();
+      grenzeAktiviert = null;
+      grenzeFokussiert = null;
+    }
+
     final String bereinigterHinweisText = widget.hinweisText
         .replaceAll(' €', '')
         .replaceAll('€', '');
@@ -101,7 +190,9 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     return TextField(
       controller: widget.textController,
       focusNode: widget.focusNode,
-      keyboardType: TextInputType.number,
+      keyboardType: widget.erlaubeNegativ
+          ? TextInputType.numberWithOptions(signed: true, decimal: false)
+          : TextInputType.number,
       textInputAction: widget.textInputAction,
       textAlign: TextAlign.center,
       cursorColor: hatFokus ? Colors.white : null,
@@ -110,34 +201,25 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         color: hatFokus ? Colors.white : null,
         fontWeight: hatFokus ? FontWeight.w700 : FontWeight.normal,
       ),
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly,
-        CentWaehrungsEingabeFormatter(),
-      ],
+      inputFormatters: widget.erlaubeNegativ
+          ? <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'[-0-9]')),
+              CentWaehrungsEingabeFormatterMitVorzeichen(),
+            ]
+          : <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly,
+              CentWaehrungsEingabeFormatter(),
+            ],
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,
         suffixText: '€',
         isDense: true,
-        filled: hatFokus || rotFuellung,
-        fillColor: hatFokus
-            ? Colors.black87
-            : (rotFuellung ? Colors.red.shade50 : null),
-        border: rotRahmen
-            ? const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red, width: 2),
-              )
-            : const OutlineInputBorder(),
-        enabledBorder: rotRahmen
-            ? const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red, width: 2),
-              )
-            : null,
-        focusedBorder: rotRahmen
-            ? const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.red, width: 2),
-              )
-            : null,
+        filled: fuellFarbe != null,
+        fillColor: fuellFarbe,
+        border: grenzeLinie,
+        enabledBorder: grenzeAktiviert,
+        focusedBorder: grenzeFokussiert,
         errorText: widget.fehlermeldungText,
         errorBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: Colors.red),
