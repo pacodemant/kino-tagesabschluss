@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 114c: Differenz-Eingabefeld auf `SizedBox(width: 148)` (gleich den anderen Feldern) geändert; Row erhält `MainAxisAlignment.end` für Rechtsbündigkeit; `Expanded` entfernt.
 - Run 114b: Row in Differenz-Kachel in `IntrinsicHeight` eingewickelt – behebt BoxConstraints-Fehler beim Strecken des ±-Buttons.
 - Run 114: Differenz-Anfangsbestand-Feld – Label in eigener Zeile (Text 14px grau), Eingabe + ±-Button nebeneinander mit `CrossAxisAlignment.stretch`; `_baueEingabeZeile` um `zeigeLabel`-Parameter erweitert; „(optional)"-Zusatz entfernt.
 - Run 113: Differenz-Anfangsbestand-Feld zeigt Minuszeichen nach Toggle und nach Laden (via `_differenzAnzeigeText`); `_vorzeichenToggleDifferenz` setzt Controller-Text direkt; onChanged nur Vorzeichenerhalt, kein Controller-Update; IconButton durch OutlinedButton mit grauem Rahmen ersetzt.
