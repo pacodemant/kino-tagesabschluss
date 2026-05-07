@@ -681,7 +681,23 @@ class _TagesabschlussSchritt2SeiteState
     bool zeigeLoeschen = false,
     VoidCallback? onLoeschen,
     int? farbeNachWert,
+    bool zeigeLabel = true,
   }) {
+    // Ohne Label: nur das Eingabefeld zurückgeben (Breite kommt vom Eltern-Widget).
+    if (!zeigeLabel) {
+      return BetragCentEingabefeld(
+        textController: controller,
+        focusNode: focusNode,
+        textInputAction: _textInputActionFuerSchritt2(focusNode),
+        onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt2(focusNode),
+        onChanged: onChanged,
+        schriftgroesse: 15,
+        hinweisText: '0,00 €',
+        fehlermeldungText: fehlermeldungText,
+        farbeNachWert: farbeNachWert,
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -931,54 +947,73 @@ class _TagesabschlussSchritt2SeiteState
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         children: <Widget>[
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Expanded(
-                                child: _baueEingabeZeile(
-                                  label: 'Differenz im Anfangsbestand',
-                                  controller:
-                                      _differenzAnfangsbestandController,
-                                  focusNode: _differenzAnfangsbestandFocusNode,
-                                  optional: true,
-                                  farbeNachWert: _differenzAnfangsbestandCent,
-                                  onChanged: (String wert) {
-                                    setState(() {
-                                      final int absolutWert =
-                                          _parseCentZiffern(wert);
-                                      final bool istNegativ =
-                                          _differenzAnfangsbestandCent < 0;
-                                      _differenzAnfangsbestandCent = istNegativ
-                                          ? -absolutWert
-                                          : absolutWert;
-                                    });
-                                    _speichereEntwurf();
-                                  },
+                              Text(
+                                'Differenz im Anfangsbestand',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey.shade700,
                                 ),
                               ),
-                              OutlinedButton(
-                                onPressed: _vorzeichenToggleDifferenz,
-                                style: OutlinedButton.styleFrom(
-                                  minimumSize: const Size(48, 48),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                  side: BorderSide(
-                                    color: Colors.grey.shade400,
-                                  ),
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(8),
+                              const SizedBox(height: 6),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: _baueEingabeZeile(
+                                      label: 'Differenz im Anfangsbestand',
+                                      controller:
+                                          _differenzAnfangsbestandController,
+                                      focusNode:
+                                          _differenzAnfangsbestandFocusNode,
+                                      zeigeLabel: false,
+                                      farbeNachWert:
+                                          _differenzAnfangsbestandCent,
+                                      onChanged: (String wert) {
+                                        setState(() {
+                                          final int absolutWert =
+                                              _parseCentZiffern(wert);
+                                          final bool istNegativ =
+                                              _differenzAnfangsbestandCent < 0;
+                                          _differenzAnfangsbestandCent =
+                                              istNegativ
+                                                  ? -absolutWert
+                                                  : absolutWert;
+                                        });
+                                        _speichereEntwurf();
+                                      },
                                     ),
                                   ),
-                                ),
-                                child: const Text(
-                                  '±',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    color: Colors.black87,
+                                  const SizedBox(width: 8),
+                                  OutlinedButton(
+                                    onPressed: _vorzeichenToggleDifferenz,
+                                    style: OutlinedButton.styleFrom(
+                                      minimumSize: const Size(48, 0),
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      side: BorderSide(
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      '±',
+                                      style: TextStyle(
+                                        fontSize: 22,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
