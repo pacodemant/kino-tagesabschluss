@@ -960,9 +960,11 @@ class _TagesabschlussSchritt2SeiteState
                               const SizedBox(height: 6),
                               IntrinsicHeight(
                                 child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: <Widget>[
-                                  Expanded(
+                                  SizedBox(
+                                    width: 148,
                                     child: _baueEingabeZeile(
                                       label: 'Differenz im Anfangsbestand',
                                       controller:
