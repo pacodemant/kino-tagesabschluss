@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 110: Kartenzahlungs-Kachel aus Schritt 1 vollständig entfernt (inkl. aller Controller, FocusNodes, Helper-Parameter und Zusammenfassung); Info-Zeile in Differenz-Anfangsbestand-Kachel (Schritt 2) entfernt; Button „Übertrag auf Umschlag" samt Dialog-Klasse entfernt; neuer EC-Beleg wird nach Hinzufügen automatisch fokussiert.
 - Prompt-System auf standardisierte Struktur umgestellt (`AGENTS.md`, `.dev/CONTRIBUTING.md`, `.dev/run_template.md`, `.dev/run_counter.txt`, `CHANGELOG.md`).
 - Run 109: Kachel „Differenz Anfangsbestand" in Schritt 2 an erste Position verschoben (vor Kino SOLL); Inhalt und Berechnungslogik unverändert.
 - Run 108: EC-Beleg-Wiederherstellung in `_ladeEntwurf()` korrigiert – `if (ecBelege[i] != 0)`-Bedingung entfernt, alle Beträge werden jetzt bedingungslos wiederhergestellt (inkl. 0,00 €).
