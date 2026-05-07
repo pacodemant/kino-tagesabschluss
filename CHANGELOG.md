@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 113: Differenz-Anfangsbestand-Feld zeigt Minuszeichen nach Toggle und nach Laden (via `_differenzAnzeigeText`); `_vorzeichenToggleDifferenz` setzt Controller-Text direkt; onChanged nur Vorzeichenerhalt, kein Controller-Update; IconButton durch OutlinedButton mit grauem Rahmen ersetzt.
 - Run 112: ±-Toggle-Button neben Differenz-Anfangsbestand-Feld in Schritt 2 – negiert den gespeicherten Cent-Wert; Keyboard bleibt numerisch; Controller zeigt immer Absolutbetrag; Vorzeichen wird bei Texteingabe beibehalten; `CentWaehrungsEingabeFormatterMitVorzeichen` und `erlaubeNegativ` entfernt.
 - Run 111: Differenz-Anfangsbestand-Feld in Schritt 2 akzeptiert negative Werte (neuer `CentWaehrungsEingabeFormatterMitVorzeichen`); farbliche Hervorhebung nach Fokusverlust (grün bei positiv, rot bei negativ, neutral bei 0); `BetragCentEingabefeld` um `erlaubeNegativ` und `farbeNachWert` erweitert.
 - Run 110: Kartenzahlungs-Kachel aus Schritt 1 vollständig entfernt (inkl. aller Controller, FocusNodes, Helper-Parameter und Zusammenfassung); Info-Zeile in Differenz-Anfangsbestand-Kachel (Schritt 2) entfernt; Button „Übertrag auf Umschlag" samt Dialog-Klasse entfernt; neuer EC-Beleg wird nach Hinzufügen automatisch fokussiert.
