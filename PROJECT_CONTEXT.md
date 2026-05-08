@@ -11,8 +11,8 @@ lib/ → Flutter-App-Code
 .dev/ → Entwicklungsworkflow und Run-System  
 scripts/ → Entwickler-Skripte
 
-## Snapshot
+## Session-Start
 
-Projekt-Snapshot erzeugen:
-
-./scripts/project_snapshot/project_snapshot.sh
+Zu Beginn einer neuen Session:
+1. `.dev/run_counter.txt` lesen
+2. `git status` prüfen

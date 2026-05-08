@@ -2,7 +2,7 @@
 
 ## Zweck
 Diese Datei ist das zentrale Regelwerk für die Zusammenarbeit im Kino-App-Projekt.
-Sie beschreibt den Ablauf für ChatGPT/Codex-Runs, Git-Disziplin und die Grenzen einzelner Änderungen.
+Sie beschreibt den Ablauf für Claude Code-Runs, Git-Disziplin und die Grenzen einzelner Änderungen.
 
 ## Projekt
 - Projekt: Kino-App (Tagesabschluss)
@@ -21,7 +21,7 @@ Sie beschreibt den Ablauf für ChatGPT/Codex-Runs, Git-Disziplin und die Grenzen
 Verbindlicher Ablauf:
 1. Zuerst nur Run-Vorschlag in normalem Chattext
 2. User gibt explizit frei (`go`)
-3. Erst danach wird der finale Codex-Prompt aus `run_template.md` erzeugt
+3. Erst danach wird der finale Run-Prompt aus `run_template.md` erzeugt
 4. Pro Run-Nummer gibt es genau einen aktiven finalen Prompt
 5. Wird ein Prompt wesentlich geändert, bekommt er eine neue Run-Nummer
 
@@ -74,9 +74,9 @@ Dann gilt:
 Ein erfolgreicher Commit oder Push beendet einen Dev-Run nicht automatisch.
 
 Ein Run gilt erst als abgeschlossen, wenn:
-1. Codex den Run ausgeführt hat
+1. Claude Code den Run ausgeführt hat
 2. der Entwickler lokal getestet hat
-3. der Codex-Bericht und die Testergebnisse im Chat dokumentiert wurden
+3. der Claude Code-Bericht und die Testergebnisse im Chat dokumentiert wurden
 
 Der Chat bestätigt damit den tatsächlichen Abschluss eines Runs.
 Dann gilt:
@@ -92,9 +92,9 @@ Jeder Run-Bericht enthält:
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
 
-1. Codex den Run vollständig ausgeführt hat (inkl. Code-Commit und Meta-Commit).
+1. Claude Code den Run vollständig ausgeführt hat (inkl. Code-Commit und Meta-Commit).
 2. Der Entwickler das Ergebnis lokal getestet hat.
-3. Der Codex-Bericht und die Testergebnisse im Chat dokumentiert wurden.
+3. Der Claude Code-Bericht und die Testergebnisse im Chat dokumentiert wurden.
 
 Wichtig:
 Der Chat dient als Kontrollinstanz für den tatsächlichen Abschluss eines Runs.
@@ -102,7 +102,7 @@ Ein erfolgreicher Commit oder grüne Tests allein bedeuten noch nicht,
 dass ein Run fachlich abgeschlossen ist.
 
 ## Chat-Wechsel
-Ein neuer Codex-Chat ist empfohlen, wenn:
+Ein neuer Claude Code-Chat ist empfohlen, wenn:
 - ein klarer Themenwechsel erfolgt
 - Git-Komplexität entstanden ist
 - mehrere Prompt-Varianten mit gleicher Run-Nummer existieren
@@ -119,21 +119,10 @@ Für einen neuen Coding-Chat genügen künftig:
 
 Es ist keine separate Start-Template-Datei mehr nötig.
 
-### Snapshot-Regel (Projektkontext)
+### Snapshot-Regel
 
-Zu Beginn eines neuen Coding-Chats erzeugt der Agent automatisch
-einen aktuellen Projektsnapshot.
+Zu Beginn eines neuen Coding-Chats genügt:
+1. `.dev/run_counter.txt` lesen
+2. `git status` prüfen
 
-Ablauf:
-
-1. Skript ausführen:
-   ./scripts/project_snapshot/project_snapshot.sh
-
-2. Danach die erzeugte Snapshot-Datei lesen:
-   .dev/project_snapshot.generated.txt
-
-3. Erst danach wird ein Run geplant oder Code analysiert.
-
-Ziel:
-Der Agent arbeitet immer mit einer aktuellen Projektübersicht,
-ohne dass diese manuell erzeugt oder hochgeladen werden muss.
+Das vollständige Snapshot-Skript muss nicht ausgeführt werden.

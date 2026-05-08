@@ -98,10 +98,12 @@ Commit-Format:
 
 ## Bericht nach jedem Run
 
-- Geänderte Dateien (Liste)
+- Geänderte Dateien (Liste mit kurzer Beschreibung der Änderung)
 - 3 Testschritte mit erwartetem Verhalten
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
+- Letzter Commit-Hash dieses Runs
+- Bestätigung, dass `.dev/run_counter.txt` und `CHANGELOG.md` aktualisiert wurden
 
 ## Bericht-Formatierung
 
