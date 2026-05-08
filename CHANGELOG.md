@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 118: Workflow-Dateien auf Claude-Code-Workflow aktualisiert – „Codex"/„ChatGPT" ersetzt, Snapshot-Regel auf Zweizeiler reduziert, Bericht-Standard in CLAUDE.md um Commit-Hash und Metadaten-Bestätigung ergänzt; drei obsolete Dateien in tools_paco/ gelöscht.
 - Run 117: Feste Testdaten im Dev-Auto-Fill – `autoFillDev()` (Schritt 1) und `_autoFillDev()` (Schritt 2) verwenden jetzt feste Werte statt Zufallszahlen; `_zufallszahl`, `_zufall` und `dart:math`-Import in Schritt 2 entfernt.
 - Run 114c: Differenz-Eingabefeld auf `SizedBox(width: 148)` (gleich den anderen Feldern) geändert; Row erhält `MainAxisAlignment.end` für Rechtsbündigkeit; `Expanded` entfernt.
 - Run 114b: Row in Differenz-Kachel in `IntrinsicHeight` eingewickelt – behebt BoxConstraints-Fehler beim Strecken des ±-Buttons.
