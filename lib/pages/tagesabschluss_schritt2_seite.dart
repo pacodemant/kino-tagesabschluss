@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
@@ -104,7 +102,6 @@ class _TagesabschlussSchritt2SeiteState
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
-  final Random _zufall = Random();
   bool get _devToolsSichtbar => !kReleaseMode;
 
   @override
@@ -465,10 +462,6 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  int _zufallszahl(int min, int max) {
-    return min + _zufall.nextInt(max - min + 1);
-  }
-
   void _setzeEcBelegAnzahl(int anzahl) {
     while (_ecBelegController.length > anzahl) {
       _ecBelegController.removeLast().dispose();
@@ -490,16 +483,13 @@ class _TagesabschlussSchritt2SeiteState
 
   void _autoFillDev() {
     setState(() {
-      _kinoSollCent = _zufallszahl(20000, 100000);
-      _bistroSollCent = _zufallszahl(20000, 100000);
-      _ausgabenCent = _zufallszahl(0, 10000);
-      _differenzAnfangsbestandCent = _zufallszahl(-1000, 1000);
+      _kinoSollCent = 74900;
+      _bistroSollCent = 20280;
+      _ausgabenCent = 0;
+      _differenzAnfangsbestandCent = 0;
 
-      final int ecAnzahl = _zufallszahl(1, 5);
-      _setzeEcBelegAnzahl(ecAnzahl);
-      for (int i = 0; i < _ecBelegeCent.length; i++) {
-        _ecBelegeCent[i] = _zufallszahl(0, 50000);
-      }
+      _setzeEcBelegAnzahl(1);
+      _ecBelegeCent[0] = 51390;
 
       _setzeControllerText(
         _kinoSollController,
@@ -509,20 +499,12 @@ class _TagesabschlussSchritt2SeiteState
         _bistroSollController,
         TagesabschlussFormatierung.formatiereEuroEingabe(_bistroSollCent),
       );
+      _setzeControllerText(_ausgabenController, '');
+      _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(
-        _ausgabenController,
-        TagesabschlussFormatierung.formatiereEuroEingabe(_ausgabenCent),
+        _ecBelegController[0],
+        TagesabschlussFormatierung.formatiereEuroEingabe(_ecBelegeCent[0]),
       );
-      _setzeControllerText(
-        _differenzAnfangsbestandController,
-        _differenzAnzeigeText(_differenzAnfangsbestandCent),
-      );
-      for (int i = 0; i < _ecBelegController.length; i++) {
-        _setzeControllerText(
-          _ecBelegController[i],
-          TagesabschlussFormatierung.formatiereEuroEingabe(_ecBelegeCent[i]),
-        );
-      }
     });
   }
 

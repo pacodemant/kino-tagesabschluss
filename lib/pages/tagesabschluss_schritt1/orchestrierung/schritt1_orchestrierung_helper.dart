@@ -24,26 +24,30 @@ class Schritt1OrchestrierungHelper {
     required VoidCallback sichereMindestensEinenUmschlag,
     required VoidCallback synchronisiereControllerAusState,
   }) {
-    for (final Kassenzeile zeile in scheine) {
-      stueckzahlen[zeile.id] = zufallszahl(zufall, 0, 20);
-    }
-    for (final Kassenzeile zeile in rollenSichtbar) {
-      stueckzahlen[zeile.id] = zufallszahl(zufall, 0, 3);
-    }
-    for (final Kassenzeile zeile in loseMuenzarten) {
-      loseMuenzenNachArtCent[zeile.id] = zufallszahl(zufall, 0, 3000);
-    }
-    final int umschlagAnzahl = zufallszahl(zufall, 1, 4);
-    final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
-    for (int i = 0; i < umschlagAnzahl; i++) {
-      umschlaege.add(
-        UmschlagEintrag(
-          bezeichnung: 'Umschlag ${i + 1}',
-          betragCent: zufallszahl(zufall, 0, 50000),
-        ),
-      );
-    }
-    uebernehmeUmschlagEntwurf(umschlaege);
+    stueckzahlen['note_100'] = 0;
+    stueckzahlen['note_50']  = 8;
+    stueckzahlen['note_20']  = 4;
+    stueckzahlen['note_10']  = 29;
+    stueckzahlen['note_5']   = 13;
+    stueckzahlen['roll_2e']  = 0;
+    stueckzahlen['roll_1e']  = 0;
+    stueckzahlen['roll_50c'] = 1;
+    stueckzahlen['roll_20c'] = 1;
+    stueckzahlen['roll_10c'] = 1;
+    stueckzahlen['roll_5c']  = 0;
+    stueckzahlen['roll_2c']  = 0;
+    stueckzahlen['roll_1c']  = 0;
+
+    loseMuenzenNachArtCent['coin_2e']  = 3800;
+    loseMuenzenNachArtCent['coin_1e']  = 2500;
+    loseMuenzenNachArtCent['coin_50c'] = 700;
+    loseMuenzenNachArtCent['coin_20c'] = 40;
+    loseMuenzenNachArtCent['coin_10c'] = 50;
+    loseMuenzenNachArtCent['coin_5c']  = 0;
+    loseMuenzenNachArtCent['coin_2c']  = 0;
+    loseMuenzenNachArtCent['coin_1c']  = 0;
+
+    uebernehmeUmschlagEntwurf(<UmschlagEintrag>[]);
     sichereMindestensEinenUmschlag();
     synchronisiereControllerAusState();
   }
