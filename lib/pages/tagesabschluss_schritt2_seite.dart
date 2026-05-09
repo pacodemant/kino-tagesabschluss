@@ -102,7 +102,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
-  bool get _devToolsSichtbar => !kReleaseMode;
+  bool get _devToolsSichtbar => !kReleaseMode && !kIsWeb;
 
   @override
   void initState() {

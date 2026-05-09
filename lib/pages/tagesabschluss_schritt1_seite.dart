@@ -129,7 +129,7 @@ class _TagesabschlussSchritt1SeiteState
       StueckelungKonfiguration.loseMuenzarten;
   List<Kassenzeile> get _alleStueckzahlZeilen =>
       StueckelungKonfiguration.alleStueckzahlZeilen;
-  bool get _devToolsSichtbar => !kReleaseMode;
+  bool get _devToolsSichtbar => !kReleaseMode && !kIsWeb;
 
   void _beiFokuswechselFuerFooter() {
     final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
