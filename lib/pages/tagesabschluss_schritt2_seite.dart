@@ -994,7 +994,9 @@ class _TagesabschlussSchritt2SeiteState
                             KeyedSubtree(
                               key: ValueKey<int>(_ecBelegIds[i]),
                               child: _baueEingabeZeile(
-                                label: 'EC Beleg ${i + 1}',
+                                label: _ecBelegController.length == 1
+                                    ? 'EC-Beleg'
+                                    : 'EC-Beleg ${i + 1}',
                                 controller: _ecBelegController[i],
                                 focusNode: _ecBelegFocusNode[i],
                                 fehlermeldungText: i == 0
