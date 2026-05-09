@@ -253,35 +253,6 @@ class _TagesabschlussSchritt2SeiteState
     _speichereEntwurf();
   }
 
-  String _formatiereEuro(int cent) {
-    return TagesabschlussFormatierung.formatiereEuro(cent);
-  }
-
-  String _formatiereEuroMitVorzeichen(int cent) {
-    return TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
-  }
-
-  int get _ecUmsatzGesamtCent {
-    return TagesabschlussBerechnung.summeCentBetraege(_ecBelegeCent);
-  }
-
-  int get _gesamtSollCent => TagesabschlussBerechnung.gesamtSollCent(
-    kinoSollCent: _kinoSollCent,
-    bistroSollCent: _bistroSollCent,
-    ausgabenCent: _ausgabenCent,
-  );
-
-  int get _gesamtIstCent => TagesabschlussBerechnung.gesamtIstCent(
-    ecUmsatzGesamtCent: _ecUmsatzGesamtCent,
-    barBestandAbzglWechselgeldCent: widget.barBestandAbzglWechselgeldCent,
-  );
-
-  int get _differenzTagesabschlussCent =>
-      TagesabschlussBerechnung.differenzTagesabschlussCent(
-        gesamtIstCent: _gesamtIstCent,
-        gesamtSollCent: _gesamtSollCent,
-      );
-
   String _kopfDatumUhrzeit() {
     return DateFormat(
       "EEEE, d.M.yy (H:mm 'Uhr')",
@@ -717,56 +688,6 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Color? _farbeFuerDifferenzTagesabschluss() {
-    if (_differenzTagesabschlussCent > 0) {
-      return Colors.green.shade700;
-    }
-    if (_differenzTagesabschlussCent < 0) {
-      return Colors.red;
-    }
-    return null;
-  }
-
-  Widget _baueBerechneteZeile({
-    required String label,
-    required String wert,
-    bool hervorheben = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w600,
-              ),
-            ),
-          ),
-          Container(
-            width: 180,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              wert,
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w600,
-                color: hervorheben ? _farbeFuerDifferenzTagesabschluss() : null,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _baueFooterSchritt2({
     required bool tastaturOffen,
     required EdgeInsets footerPadding,
@@ -1103,41 +1024,6 @@ class _TagesabschlussSchritt2SeiteState
                               icon: const Icon(Icons.add),
                               label: const Text('+ EC-Beleg hinzufügen'),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 10),
-                Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: <Widget>[
-                          _baueBerechneteZeile(
-                            label: 'Gesamt SOLL',
-                            wert: _formatiereEuro(_gesamtSollCent),
-                          ),
-                          _baueBerechneteZeile(
-                            label: 'EC Umsatz',
-                            wert: _formatiereEuro(_ecUmsatzGesamtCent),
-                          ),
-                          _baueBerechneteZeile(
-                            label: 'BAR Bestand abzgl. Wechselgeld',
-                            wert: _formatiereEuro(
-                              widget.barBestandAbzglWechselgeldCent,
-                            ),
-                          ),
-                          _baueBerechneteZeile(
-                            label: 'Gesamt IST',
-                            wert: _formatiereEuro(_gesamtIstCent),
-                          ),
-                          _baueBerechneteZeile(
-                            label: 'Differenz Tagesabschluss',
-                            wert: _formatiereEuroMitVorzeichen(
-                              _differenzTagesabschlussCent,
-                            ),
-                            hervorheben: true,
                           ),
                         ],
                       ),
