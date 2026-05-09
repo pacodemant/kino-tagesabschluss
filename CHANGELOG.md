@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 120: DEV-Tools-Panel in Schritt 1 und Schritt 2 im Web-Build ausgeblendet (`_devToolsSichtbar` ergänzt um `&& !kIsWeb`); behebt SliverPersistentHeader-Crash im Web.
 - Run 119: `scripts/flutter_maintenance.sh` neu erstellt (Modi: upgrade, clean, doctor); PROJECT_CONTEXT.md um Abschnitt „Flutter Maintenance" mit Skript-Referenz und manueller Kurzreferenz ergänzt.
 - Run 118: Workflow-Dateien auf Claude-Code-Workflow aktualisiert – „Codex"/„ChatGPT" ersetzt, Snapshot-Regel auf Zweizeiler reduziert, Bericht-Standard in CLAUDE.md um Commit-Hash und Metadaten-Bestätigung ergänzt; drei obsolete Dateien in tools_paco/ gelöscht.
 - Run 117: Feste Testdaten im Dev-Auto-Fill – `autoFillDev()` (Schritt 1) und `_autoFillDev()` (Schritt 2) verwenden jetzt feste Werte statt Zufallszahlen; `_zufallszahl`, `_zufall` und `dart:math`-Import in Schritt 2 entfernt.
