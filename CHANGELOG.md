@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 121: Ergebniskachel (Gesamt SOLL/IST, EC Umsatz, BAR Bestand, Differenz) aus Schritt 2 entfernt; zugehörige tote Methoden (_formatiereEuro, _formatiereEuroMitVorzeichen, _ecUmsatzGesamtCent, _gesamtSollCent, _gesamtIstCent, _differenzTagesabschlussCent, _farbeFuerDifferenzTagesabschluss, _baueBerechneteZeile) ebenfalls entfernt.
 - Run 120: DEV-Tools-Panel in Schritt 1 und Schritt 2 im Web-Build ausgeblendet (`_devToolsSichtbar` ergänzt um `&& !kIsWeb`); behebt SliverPersistentHeader-Crash im Web.
 - Run 119: `scripts/flutter_maintenance.sh` neu erstellt (Modi: upgrade, clean, doctor); PROJECT_CONTEXT.md um Abschnitt „Flutter Maintenance" mit Skript-Referenz und manueller Kurzreferenz ergänzt.
 - Run 118: Workflow-Dateien auf Claude-Code-Workflow aktualisiert – „Codex"/„ChatGPT" ersetzt, Snapshot-Regel auf Zweizeiler reduziert, Bericht-Standard in CLAUDE.md um Commit-Hash und Metadaten-Bestätigung ergänzt; drei obsolete Dateien in tools_paco/ gelöscht.
