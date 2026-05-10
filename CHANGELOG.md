@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 125: Neue `VerlaufDetailSeite` (`verlauf_detail_seite.dart`) mit drei Abschnitten (Geldzählung, Einnahmen, Ergebnis) und Löschen-Button mit Bestätigungsdialog; `loescheFinalenTagesabschluss` in `LokalerSpeicher`; Tap-Handler in `VerlaufSeite` lädt Liste nach Löschen neu; Route `/verlauf-detail` in `main.dart` registriert.
 - Run 124: Schritt 3 zu „Übertrag auf Umschlag" umbenannt; Auto-Save in `initState` (Duplikat wird stillschweigend überschrieben, Entwürfe werden danach gelöscht); Button „Tagesabschluss speichern" ersetzt durch „Tagesabrechnung abschließen" mit Folge-Dialog „Was möchtest du als nächstes tun?" (Wechselgeldkasse prüfen / Getränke auffüllen / Zurück zur Startseite); `_PlatzhalterSeite` als private Klasse in derselben Datei.
 - Run 123: Nach erfolgreichem Tagesabschluss werden Schritt-1- und Schritt-2-Entwurf des Kinos aus SharedPreferences gelöscht; neue Methoden `loescheKassenstandEntwurf` und `loescheSchritt2Entwurf` in `LokalerSpeicher`; Löschaufruf in Schritt 3 vor Navigation zur Startseite.
 - Run 122: EC-Beleg-Label in Schritt 2 dynamisch – bei einem Beleg „EC-Beleg", ab zwei Belegen „EC-Beleg 1", „EC-Beleg 2" usw.; kehrt automatisch zu „EC-Beleg" zurück wenn wieder nur einer übrig ist.
