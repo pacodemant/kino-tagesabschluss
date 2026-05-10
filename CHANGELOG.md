@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 128: `_autoFillDev()` in Schritt 1 und Schritt 2 ruft nach `setState` jeweils `_speichereEntwurf()` auf – Auto-Fill-Werte bleiben beim Zurückgehen und Neu-Öffnen erhalten; `ListView.builder` in `EinstellungenSeite` erhält `keyboardDismissBehavior: onDrag`.
 - Run 127: Neue `EinstellungenSeite` (`einstellungen_seite.dart`) mit je einem `BetragCentEingabefeld` pro Kino für den Wechselgeld-Sollwert; Auto-Save bei `onChanged` via neuem `speichereWechselgeldSollwertCent` in `LokalerSpeicher` (Key `change_target_cents_<kinoId>`); „Einstellungen"-Button in `StartmenueSeite` navigiert zur neuen Seite; Route `/einstellungen` in `main.dart` registriert.
 - Run 126: Papierkorb-Icon (`delete_outline`) rechts in jedem Verlaufseintrag; Tap öffnet Bestätigungsdialog „Diesen Tagesabschluss wirklich löschen?"; nach Bestätigung wird `loescheFinalenTagesabschluss` aufgerufen und die Liste für den aktiven Tab neu geladen; Tap auf Eintrag öffnet weiterhin die Detailansicht.
 - Run 125: Neue `VerlaufDetailSeite` (`verlauf_detail_seite.dart`) mit drei Abschnitten (Geldzählung, Einnahmen, Ergebnis) und Löschen-Button mit Bestätigungsdialog; `loescheFinalenTagesabschluss` in `LokalerSpeicher`; Tap-Handler in `VerlaufSeite` lädt Liste nach Löschen neu; Route `/verlauf-detail` in `main.dart` registriert.

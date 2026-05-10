@@ -1,4 +1,4 @@
-last_run: 127
-next_run: 128
-last_run_title: Run 127: Wechselgeld-Sollwert in Einstellungen pro Kino
-last_commit: d82290c
+last_run: 128
+next_run: 129
+last_run_title: Run 128: Auto-Fill speichert Entwurf + Tastatur-Fix Einstellungen
+last_commit: b016d32
