@@ -31,7 +31,9 @@ class MeineApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: MaterialApp(
       title: 'Schauburg Tagesabschluss',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
@@ -158,6 +160,7 @@ class MeineApp extends StatelessWidget {
 
         return null;
       },
+      ),
     );
   }
 }

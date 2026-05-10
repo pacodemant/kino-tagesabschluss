@@ -115,6 +115,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
                 borderSide: BorderSide(color: Colors.red, width: 2),
               )
             : null,
+        suffixIconConstraints: const BoxConstraints(maxHeight: 32, maxWidth: 32),
         suffixIcon: hatText
             ? IconButton(
                 icon: Icon(
@@ -123,7 +124,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
                   color: hatFokus ? Colors.white : Colors.grey.shade600,
                 ),
                 padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                constraints: const BoxConstraints(),
                 onPressed: () {
                   widget.textController.clear();
                   widget.onChanged('');

@@ -179,31 +179,34 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,
-        suffix: Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            if (hatText) ...<Widget>[
-              GestureDetector(
-                onTap: () {
-                  widget.textController.clear();
-                  widget.onChanged('');
-                },
-                child: Icon(
-                  Icons.clear,
-                  size: 16,
-                  color: hatFokus ? Colors.white : Colors.grey.shade600,
+        suffix: SizedBox(
+          height: 20,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              if (hatText) ...<Widget>[
+                GestureDetector(
+                  onTap: () {
+                    widget.textController.clear();
+                    widget.onChanged('');
+                  },
+                  child: Icon(
+                    Icons.clear,
+                    size: 16,
+                    color: hatFokus ? Colors.white : Colors.grey.shade600,
+                  ),
+                ),
+                const SizedBox(width: 2),
+              ],
+              Text(
+                '€',
+                style: TextStyle(
+                  color: hatFokus ? Colors.white : null,
                 ),
               ),
-              const SizedBox(width: 2),
             ],
-            Text(
-              '€',
-              style: TextStyle(
-                color: hatFokus ? Colors.white : null,
-              ),
-            ),
-          ],
+          ),
         ),
         isDense: true,
         filled: fuellFarbe != null,
