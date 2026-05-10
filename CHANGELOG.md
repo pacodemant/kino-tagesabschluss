@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 126: Papierkorb-Icon (`delete_outline`) rechts in jedem Verlaufseintrag; Tap öffnet Bestätigungsdialog „Diesen Tagesabschluss wirklich löschen?"; nach Bestätigung wird `loescheFinalenTagesabschluss` aufgerufen und die Liste für den aktiven Tab neu geladen; Tap auf Eintrag öffnet weiterhin die Detailansicht.
 - Run 125: Neue `VerlaufDetailSeite` (`verlauf_detail_seite.dart`) mit drei Abschnitten (Geldzählung, Einnahmen, Ergebnis) und Löschen-Button mit Bestätigungsdialog; `loescheFinalenTagesabschluss` in `LokalerSpeicher`; Tap-Handler in `VerlaufSeite` lädt Liste nach Löschen neu; Route `/verlauf-detail` in `main.dart` registriert.
 - Run 124: Schritt 3 zu „Übertrag auf Umschlag" umbenannt; Auto-Save in `initState` (Duplikat wird stillschweigend überschrieben, Entwürfe werden danach gelöscht); Button „Tagesabschluss speichern" ersetzt durch „Tagesabrechnung abschließen" mit Folge-Dialog „Was möchtest du als nächstes tun?" (Wechselgeldkasse prüfen / Getränke auffüllen / Zurück zur Startseite); `_PlatzhalterSeite` als private Klasse in derselben Datei.
 - Run 123: Nach erfolgreichem Tagesabschluss werden Schritt-1- und Schritt-2-Entwurf des Kinos aus SharedPreferences gelöscht; neue Methoden `loescheKassenstandEntwurf` und `loescheSchritt2Entwurf` in `LokalerSpeicher`; Löschaufruf in Schritt 3 vor Navigation zur Startseite.

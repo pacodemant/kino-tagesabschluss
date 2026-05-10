@@ -1,4 +1,4 @@
-last_run: 125
-next_run: 126
-last_run_title: Run 125: Verlauf-Detailansicht mit allen Posten und Löschen
-last_commit: 2dabad3
+last_run: 126
+next_run: 127
+last_run_title: Run 126: Löschen-Icon in der Verlaufsliste
+last_commit: deadb11
