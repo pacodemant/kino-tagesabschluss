@@ -6,9 +6,11 @@ import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class VerlaufSeite extends StatefulWidget {
-  const VerlaufSeite({super.key});
+  const VerlaufSeite({super.key, this.initialKinoId});
 
   static const String routenName = '/verlauf';
+
+  final String? initialKinoId;
 
   @override
   State<VerlaufSeite> createState() => _VerlaufSeiteState();
@@ -31,12 +33,18 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
   @override
   void initState() {
     super.initState();
+    final int initialIndex = widget.initialKinoId == null
+        ? 0
+        : KinoRepository.kinos.indexWhere(
+            (Kino k) => k.id == widget.initialKinoId,
+          ).clamp(0, KinoRepository.kinos.length - 1);
     _tabController = TabController(
       length: KinoRepository.kinos.length,
+      initialIndex: initialIndex,
       vsync: this,
     );
     _tabController.addListener(_onTabWechsel);
-    _ladeAbschluesse(0);
+    _ladeAbschluesse(initialIndex);
   }
 
   @override

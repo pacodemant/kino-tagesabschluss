@@ -32,7 +32,7 @@ class StartmenueSeite extends StatelessWidget {
   }
 
   void _oeffneVerlauf(BuildContext context) {
-    Navigator.of(context).pushNamed(VerlaufSeite.routenName);
+    Navigator.of(context).pushNamed(VerlaufSeite.routenName, arguments: kino.id);
   }
 
   @override
