@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 129: `GanzzahlEingabefeld` und `BetragCentEingabefeld` erhalten je einen ✕-Clear-Button; sichtbar sobald das Feld Text enthält; Tap ruft `controller.clear()` und `onChanged('')` auf; fokussiert weiß, unfokussiert grau; in `BetragCentEingabefeld` ersetzt ein `suffix`-Row das `suffixText: '€'` und zeigt ✕ + € gemeinsam; Controller-Listener (`addListener`) in beiden Widgets steuert das Ein-/Ausblenden.
 - Run 128: `_autoFillDev()` in Schritt 1 und Schritt 2 ruft nach `setState` jeweils `_speichereEntwurf()` auf – Auto-Fill-Werte bleiben beim Zurückgehen und Neu-Öffnen erhalten; `ListView.builder` in `EinstellungenSeite` erhält `keyboardDismissBehavior: onDrag`.
 - Run 127: Neue `EinstellungenSeite` (`einstellungen_seite.dart`) mit je einem `BetragCentEingabefeld` pro Kino für den Wechselgeld-Sollwert; Auto-Save bei `onChanged` via neuem `speichereWechselgeldSollwertCent` in `LokalerSpeicher` (Key `change_target_cents_<kinoId>`); „Einstellungen"-Button in `StartmenueSeite` navigiert zur neuen Seite; Route `/einstellungen` in `main.dart` registriert.
 - Run 126: Papierkorb-Icon (`delete_outline`) rechts in jedem Verlaufseintrag; Tap öffnet Bestätigungsdialog „Diesen Tagesabschluss wirklich löschen?"; nach Bestätigung wird `loescheFinalenTagesabschluss` aufgerufen und die Liste für den aktiven Tab neu geladen; Tap auf Eintrag öffnet weiterhin die Detailansicht.

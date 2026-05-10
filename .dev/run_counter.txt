@@ -1,4 +1,4 @@
-last_run: 128
-next_run: 129
-last_run_title: Run 128: Auto-Fill speichert Entwurf + Tastatur-Fix Einstellungen
-last_commit: b016d32
+last_run: 129
+next_run: 130
+last_run_title: Run 129: Clear-Button in allen Eingabefeldern
+last_commit: 6c74d53
