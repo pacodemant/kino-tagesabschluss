@@ -1,4 +1,4 @@
-last_run: 123
-next_run: 124
-last_run_title: Run 123: Entwürfe nach erfolgreichem Tagesabschluss löschen
-last_commit: 9f04412
+last_run: 124
+next_run: 125
+last_run_title: Run 124: Schritt 3 – Umbenennung, Auto-Save und Abschluss-Flow
+last_commit: 30a6c25
