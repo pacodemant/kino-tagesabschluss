@@ -4,6 +4,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -176,6 +177,17 @@ class _TagesabschlussSchritt3SeiteState
         if (!mounted) {
           return;
         }
+      }
+
+      final String isoDatum =
+          _abrechnungsDatum().toIso8601String().substring(0, 10);
+      await LokalerSpeicher.loescheKassenstandEntwurf(
+        kinoId: widget.argumente.kinoId,
+        isoDatum: isoDatum,
+      );
+      await LokalerSpeicher.loescheSchritt2Entwurf(widget.argumente.kinoId);
+      if (!mounted) {
+        return;
       }
 
       ScaffoldMessenger.of(context).showSnackBar(

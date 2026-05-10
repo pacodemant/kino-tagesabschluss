@@ -178,4 +178,19 @@ class LokalerSpeicher {
 
   static String schritt2EntwurfKey(String kinoId) =>
       'entwurf_schritt2_$kinoId';
+
+  /// Löscht den Schritt-1-Entwurf für ein Kino und Datum.
+  static Future<void> loescheKassenstandEntwurf({
+    required String kinoId,
+    required String isoDatum,
+  }) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.remove(entwurfKey(kinoId: kinoId, isoDatum: isoDatum));
+  }
+
+  /// Löscht den Schritt-2-Entwurf für ein Kino.
+  static Future<void> loescheSchritt2Entwurf(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.remove(schritt2EntwurfKey(kinoId));
+  }
 }
