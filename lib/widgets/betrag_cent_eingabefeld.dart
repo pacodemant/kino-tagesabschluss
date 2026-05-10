@@ -68,16 +68,20 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
   void initState() {
     super.initState();
     widget.focusNode?.addListener(_beiFokuswechsel);
+    widget.textController.addListener(_beiTextAenderung);
   }
 
   @override
   void didUpdateWidget(covariant BetragCentEingabefeld oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.focusNode == widget.focusNode) {
-      return;
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode?.removeListener(_beiFokuswechsel);
+      widget.focusNode?.addListener(_beiFokuswechsel);
     }
-    oldWidget.focusNode?.removeListener(_beiFokuswechsel);
-    widget.focusNode?.addListener(_beiFokuswechsel);
+    if (oldWidget.textController != widget.textController) {
+      oldWidget.textController.removeListener(_beiTextAenderung);
+      widget.textController.addListener(_beiTextAenderung);
+    }
   }
 
   void _beiFokuswechsel() {
@@ -87,15 +91,24 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     setState(() {});
   }
 
+  void _beiTextAenderung() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+  }
+
   @override
   void dispose() {
     widget.focusNode?.removeListener(_beiFokuswechsel);
+    widget.textController.removeListener(_beiTextAenderung);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final bool hatFokus = widget.focusNode?.hasFocus ?? false;
+    final bool hatText = widget.textController.text.isNotEmpty;
 
     // istHervorgehoben (Validierungsfehler) hat Vorrang vor Wertfarbe.
     final bool rotValidierung = widget.istHervorgehoben;
@@ -166,7 +179,32 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,
-        suffixText: '€',
+        suffix: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            if (hatText) ...<Widget>[
+              GestureDetector(
+                onTap: () {
+                  widget.textController.clear();
+                  widget.onChanged('');
+                },
+                child: Icon(
+                  Icons.clear,
+                  size: 16,
+                  color: hatFokus ? Colors.white : Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(width: 2),
+            ],
+            Text(
+              '€',
+              style: TextStyle(
+                color: hatFokus ? Colors.white : null,
+              ),
+            ),
+          ],
+        ),
         isDense: true,
         filled: fuellFarbe != null,
         fillColor: fuellFarbe,

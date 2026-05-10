@@ -34,16 +34,20 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
   void initState() {
     super.initState();
     widget.focusNode?.addListener(_beiFokuswechsel);
+    widget.textController.addListener(_beiTextAenderung);
   }
 
   @override
   void didUpdateWidget(covariant GanzzahlEingabefeld oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.focusNode == widget.focusNode) {
-      return;
+    if (oldWidget.focusNode != widget.focusNode) {
+      oldWidget.focusNode?.removeListener(_beiFokuswechsel);
+      widget.focusNode?.addListener(_beiFokuswechsel);
     }
-    oldWidget.focusNode?.removeListener(_beiFokuswechsel);
-    widget.focusNode?.addListener(_beiFokuswechsel);
+    if (oldWidget.textController != widget.textController) {
+      oldWidget.textController.removeListener(_beiTextAenderung);
+      widget.textController.addListener(_beiTextAenderung);
+    }
   }
 
   void _beiFokuswechsel() {
@@ -53,9 +57,17 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
     setState(() {});
   }
 
+  void _beiTextAenderung() {
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+  }
+
   @override
   void dispose() {
     widget.focusNode?.removeListener(_beiFokuswechsel);
+    widget.textController.removeListener(_beiTextAenderung);
     super.dispose();
   }
 
@@ -64,6 +76,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
     final bool hatFokus = widget.focusNode?.hasFocus ?? false;
     final bool rotRahmen = widget.istHervorgehoben;
     final bool rotFuellung = rotRahmen && !hatFokus;
+    final bool hatText = widget.textController.text.isNotEmpty;
 
     return TextField(
       controller: widget.textController,
@@ -100,6 +113,21 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
         focusedBorder: rotRahmen
             ? const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red, width: 2),
+              )
+            : null,
+        suffixIcon: hatText
+            ? IconButton(
+                icon: Icon(
+                  Icons.clear,
+                  size: 18,
+                  color: hatFokus ? Colors.white : Colors.grey.shade600,
+                ),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                onPressed: () {
+                  widget.textController.clear();
+                  widget.onChanged('');
+                },
               )
             : null,
       ),
