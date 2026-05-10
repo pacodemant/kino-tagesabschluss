@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 131: `VerlaufSeite` erhält optionalen Parameter `initialKinoId`; `TabController` wird mit `initialIndex` aus der Kino-Liste gestartet; `StartmenueSeite._oeffneVerlauf` übergibt `kino.id` als Argument; `main.dart`-Route liest optionales `String?`-Argument und reicht es weiter.
 - Run 130: `GanzzahlEingabefeld` erhält `suffixIconConstraints: BoxConstraints(maxHeight: 32, maxWidth: 32)` – verhindert Feldhöhen-Ausdehnung durch ✕-Icon; `BetragCentEingabefeld` suffix-Row in `SizedBox(height: 20)` gewrappt; `MaterialApp` in `main.dart` in `GestureDetector(onTap: FocusManager.instance.primaryFocus?.unfocus)` gewrappt – schließt Tastatur global bei Tap außerhalb.
 - Run 129: `GanzzahlEingabefeld` und `BetragCentEingabefeld` erhalten je einen ✕-Clear-Button; sichtbar sobald das Feld Text enthält; Tap ruft `controller.clear()` und `onChanged('')` auf; fokussiert weiß, unfokussiert grau; in `BetragCentEingabefeld` ersetzt ein `suffix`-Row das `suffixText: '€'` und zeigt ✕ + € gemeinsam; Controller-Listener (`addListener`) in beiden Widgets steuert das Ein-/Ausblenden.
 - Run 128: `_autoFillDev()` in Schritt 1 und Schritt 2 ruft nach `setState` jeweils `_speichereEntwurf()` auf – Auto-Fill-Werte bleiben beim Zurückgehen und Neu-Öffnen erhalten; `ListView.builder` in `EinstellungenSeite` erhält `keyboardDismissBehavior: onDrag`.
