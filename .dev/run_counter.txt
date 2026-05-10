@@ -1,4 +1,4 @@
-last_run: 129
-next_run: 130
-last_run_title: Run 129: Clear-Button in allen Eingabefeldern
-last_commit: 6c74d53
+last_run: 130
+next_run: 131
+last_run_title: Run 130: Eingabefeld-Höhe fix + Tastatur bei Tap außerhalb schließen
+last_commit: d19de66
