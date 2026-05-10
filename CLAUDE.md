@@ -104,6 +104,7 @@ Commit-Format:
 - Status von `flutter test` (falls Tests vorhanden)
 - Letzter Commit-Hash dieses Runs
 - Bestätigung, dass `.dev/run_counter.txt` und `CHANGELOG.md` aktualisiert wurden
+- 3 Testschritte = manuelle Tests, die der Entwickler in der App durchführt – kein flutter analyze als Testschritt.
 
 ## Bericht-Formatierung
 

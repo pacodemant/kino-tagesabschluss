@@ -72,6 +72,44 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
   String _euroMitVorzeichen(int cent) =>
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
 
+  Future<void> _loescheEintrag(
+    int tabIndex,
+    TagesabschlussFinal eintrag,
+  ) async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Eintrag löschen?'),
+        content: const Text('Diesen Tagesabschluss wirklich löschen?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
+    await LokalerSpeicher.loescheFinalenTagesabschluss(
+      eintrag.kinoId,
+      eintrag.datum,
+    );
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _geladen[tabIndex] = false;
+      _abschluesse[tabIndex] = <TagesabschlussFinal>[];
+    });
+    _ladeAbschluesse(tabIndex);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,12 +145,22 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
                   differenz >= 0 ? Colors.green.shade700 : Colors.red.shade700;
               return ListTile(
                 title: Text(_deutschesDatum(eintrag.datum)),
-                trailing: Text(
-                  _euroMitVorzeichen(differenz),
-                  style: Theme.of(itemContext).textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: farbe,
-                  ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      _euroMitVorzeichen(differenz),
+                      style: Theme.of(itemContext).textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: farbe,
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline),
+                      color: Colors.red.shade400,
+                      onPressed: () => _loescheEintrag(i, eintrag),
+                    ),
+                  ],
                 ),
                 onTap: () async {
                   final NavigatorState navigator = Navigator.of(context);
