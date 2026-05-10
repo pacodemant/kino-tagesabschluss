@@ -1,4 +1,4 @@
-last_run: 126
-next_run: 127
-last_run_title: Run 126: Löschen-Icon in der Verlaufsliste
-last_commit: deadb11
+last_run: 127
+next_run: 128
+last_run_title: Run 127: Wechselgeld-Sollwert in Einstellungen pro Kino
+last_commit: d82290c
