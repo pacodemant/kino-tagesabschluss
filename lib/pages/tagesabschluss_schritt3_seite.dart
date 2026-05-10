@@ -61,7 +61,10 @@ class _TagesabschlussSchritt3SeiteState
       const SpeichereTagesabschlussUsecase();
 
   late final TagesabschlussFinal _abschlussVorschau;
-  bool _speichert = false;
+
+  // true = Auto-Save läuft oder abgeschlossen, false = noch ausstehend
+  bool _autoSaveErledigt = false;
+  bool _autoSaveLaeuft = false;
 
   @override
   void initState() {
@@ -84,6 +87,8 @@ class _TagesabschlussSchritt3SeiteState
       ),
       jetzt: DateTime.now(),
     );
+
+    _autoSaveImHintergrund();
   }
 
   // Gibt das Abrechnungsdatum zurück – vor 3 Uhr zählt der Vortag.
@@ -93,6 +98,133 @@ class _TagesabschlussSchritt3SeiteState
       return jetzt.subtract(const Duration(days: 1));
     }
     return jetzt;
+  }
+
+  /// Speichert den Abschluss beim Öffnen der Seite automatisch.
+  /// Duplikat → stillschweigend überschreiben (kein Dialog).
+  Future<void> _autoSaveImHintergrund() async {
+    if (_autoSaveLaeuft || _autoSaveErledigt) {
+      return;
+    }
+    setState(() {
+      _autoSaveLaeuft = true;
+    });
+
+    try {
+      final SpeichereTagesabschlussErgebnis ergebnis =
+          await _speichereUsecase.ausfuehren(_abschlussVorschau);
+      if (!mounted) {
+        return;
+      }
+
+      if (ergebnis.bereitsVorhanden) {
+        await _speichereUsecase.ausfuehren(
+          _abschlussVorschau,
+          ueberschreiben: true,
+        );
+        if (!mounted) {
+          return;
+        }
+      }
+
+      final String isoDatum =
+          _abrechnungsDatum().toIso8601String().substring(0, 10);
+      await LokalerSpeicher.loescheKassenstandEntwurf(
+        kinoId: widget.argumente.kinoId,
+        isoDatum: isoDatum,
+      );
+      await LokalerSpeicher.loescheSchritt2Entwurf(widget.argumente.kinoId);
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _autoSaveErledigt = true;
+        _autoSaveLaeuft = false;
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _autoSaveLaeuft = false;
+      });
+    }
+  }
+
+  Future<void> _zeigeAbschlussDialog() async {
+    // Falls Auto-Save noch läuft, kurz warten und erneut prüfen.
+    if (_autoSaveLaeuft) {
+      return;
+    }
+
+    if (!_autoSaveErledigt) {
+      // Auto-Save ist fehlgeschlagen – erneut versuchen, dann Dialog.
+      await _autoSaveImHintergrund();
+      if (!mounted) {
+        return;
+      }
+      if (!_autoSaveErledigt) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Speichern fehlgeschlagen. Bitte erneut versuchen.'),
+          ),
+        );
+        return;
+      }
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Was möchtest du als nächstes tun?'),
+        content: null,
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const _PlatzhalterSeite(
+                    titel: 'Wechselgeldkasse prüfen',
+                  ),
+                ),
+              );
+            },
+            child: const Text('Wechselgeldkasse prüfen'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const _PlatzhalterSeite(
+                    titel: 'Getränke auffüllen',
+                  ),
+                ),
+              );
+            },
+            child: const Text('Getränke auffüllen'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                StartmenueSeite.routenName,
+                (Route<dynamic> _) => false,
+                arguments: widget.argumente.kinoId,
+              );
+            },
+            child: const Text('Zurück zur Startseite'),
+          ),
+        ],
+      ),
+    );
   }
 
   String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
@@ -119,112 +251,19 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
-  Future<void> _speichereFinalenAbschluss() async {
-    if (_speichert) {
-      return;
-    }
-
-    setState(() {
-      _speichert = true;
-    });
-
-    try {
-      final SpeichereTagesabschlussErgebnis ergebnis =
-          await _speichereUsecase.ausfuehren(_abschlussVorschau);
-      if (!mounted) {
-        return;
-      }
-
-      if (ergebnis.bereitsVorhanden) {
-        setState(() {
-          _speichert = false;
-        });
-
-        final bool? bestaetigt = await showDialog<bool>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext dialogContext) => AlertDialog(
-            title: const Text('Tagesabschluss bereits vorhanden'),
-            content: Text(
-              'Für ${widget.argumente.kinoName} existiert für diesen '
-              'Abrechnungstag bereits ein gespeicherter Abschluss. '
-              'Soll er überschrieben werden?',
-            ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Abbrechen'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(dialogContext).pop(true),
-                child: const Text('Überschreiben'),
-              ),
-            ],
-          ),
-        );
-
-        if (bestaetigt != true || !mounted) {
-          return;
-        }
-
-        setState(() {
-          _speichert = true;
-        });
-        await _speichereUsecase.ausfuehren(
-          _abschlussVorschau,
-          ueberschreiben: true,
-        );
-        if (!mounted) {
-          return;
-        }
-      }
-
-      final String isoDatum =
-          _abrechnungsDatum().toIso8601String().substring(0, 10);
-      await LokalerSpeicher.loescheKassenstandEntwurf(
-        kinoId: widget.argumente.kinoId,
-        isoDatum: isoDatum,
-      );
-      await LokalerSpeicher.loescheSchritt2Entwurf(widget.argumente.kinoId);
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tagesabschluss wurde gespeichert.')),
-      );
-
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        StartmenueSeite.routenName,
-        (Route<dynamic> _) => false,
-        arguments: widget.argumente.kinoId,
-      );
-    } catch (_) {
-      if (!mounted) {
-        return;
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Speichern fehlgeschlagen. Bitte erneut versuchen.'),
-        ),
-      );
-      setState(() {
-        _speichert = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final int differenzCent = _abschlussVorschau.differenzGesamtCent;
     final Color differenzFarbe =
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
+    final bool buttonGesperrt = _autoSaveLaeuft;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          'Tagesabschluss ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
+          'Übertrag auf Umschlag – ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
         ),
       ),
       body: Column(
@@ -330,14 +369,36 @@ class _TagesabschlussSchritt3SeiteState
               height: 44,
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _speichert ? null : _speichereFinalenAbschluss,
+                onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
                 child: Text(
-                  _speichert ? 'Speichern...' : 'Tagesabschluss speichern',
+                  _autoSaveLaeuft
+                      ? 'Wird gespeichert...'
+                      : 'Tagesabrechnung abschließen',
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PlatzhalterSeite extends StatelessWidget {
+  const _PlatzhalterSeite({required this.titel});
+
+  final String titel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(titel)),
+      body: Center(
+        child: Text(
+          '$titel\n(noch nicht implementiert)',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 18, color: Colors.grey),
+        ),
       ),
     );
   }
