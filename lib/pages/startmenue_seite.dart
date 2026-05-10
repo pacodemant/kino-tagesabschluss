@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
+import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/platzhalter_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
@@ -24,6 +25,10 @@ class StartmenueSeite extends StatelessWidget {
 
   void _oeffnePlatzhalter(BuildContext context, String titel) {
     Navigator.of(context).pushNamed(PlatzhalterSeite.routenName, arguments: titel);
+  }
+
+  void _oeffneEinstellungen(BuildContext context) {
+    Navigator.of(context).pushNamed(EinstellungenSeite.routenName);
   }
 
   void _oeffneVerlauf(BuildContext context) {
@@ -64,7 +69,7 @@ class StartmenueSeite extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => _oeffnePlatzhalter(context, 'Einstellungen'),
+              onPressed: () => _oeffneEinstellungen(context),
               child: const Text('Einstellungen'),
             ),
             const SizedBox(height: 12),
