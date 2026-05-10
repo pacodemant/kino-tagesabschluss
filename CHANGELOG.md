@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 123: Nach erfolgreichem Tagesabschluss werden Schritt-1- und Schritt-2-Entwurf des Kinos aus SharedPreferences gelöscht; neue Methoden `loescheKassenstandEntwurf` und `loescheSchritt2Entwurf` in `LokalerSpeicher`; Löschaufruf in Schritt 3 vor Navigation zur Startseite.
 - Run 122: EC-Beleg-Label in Schritt 2 dynamisch – bei einem Beleg „EC-Beleg", ab zwei Belegen „EC-Beleg 1", „EC-Beleg 2" usw.; kehrt automatisch zu „EC-Beleg" zurück wenn wieder nur einer übrig ist.
 - Run 121: Ergebniskachel (Gesamt SOLL/IST, EC Umsatz, BAR Bestand, Differenz) aus Schritt 2 entfernt; zugehörige tote Methoden (_formatiereEuro, _formatiereEuroMitVorzeichen, _ecUmsatzGesamtCent, _gesamtSollCent, _gesamtIstCent, _differenzTagesabschlussCent, _farbeFuerDifferenzTagesabschluss, _baueBerechneteZeile) ebenfalls entfernt.
 - Run 120: DEV-Tools-Panel in Schritt 1 und Schritt 2 im Web-Build ausgeblendet (`_devToolsSichtbar` ergänzt um `&& !kIsWeb`); behebt SliverPersistentHeader-Crash im Web.
