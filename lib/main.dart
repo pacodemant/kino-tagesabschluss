@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/platzhalter_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
@@ -9,6 +10,7 @@ import 'package:kino_bar_app/pages/startpruefung_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 
 Future<void> main() async {
@@ -131,6 +133,17 @@ class MeineApp extends StatelessWidget {
         if (settings.name == VerlaufSeite.routenName) {
           return MaterialPageRoute<void>(
             builder: (_) => const VerlaufSeite(),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == VerlaufDetailSeite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussFinal) {
+            return null;
+          }
+          return MaterialPageRoute<bool>(
+            builder: (_) => VerlaufDetailSeite(abschluss: argument),
             settings: settings,
           );
         }

@@ -193,4 +193,39 @@ class LokalerSpeicher {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.remove(schritt2EntwurfKey(kinoId));
   }
+
+  /// Löscht den finalen Tagesabschluss eines bestimmten Kalendertags.
+  static Future<void> loescheFinalenTagesabschluss(
+    String kinoId,
+    DateTime datum,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = finaleTagesabschluesseKey(kinoId);
+    final String? rohwert = speicher.getString(key);
+    if (rohwert == null) {
+      return;
+    }
+
+    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
+    try {
+      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+      for (final dynamic eintrag in geparst) {
+        if (eintrag is Map<String, dynamic>) {
+          final TagesabschlussFinal bestehend =
+              TagesabschlussFinal.fromJson(eintrag);
+          final bool gleichenTag =
+              bestehend.datum.year == datum.year &&
+              bestehend.datum.month == datum.month &&
+              bestehend.datum.day == datum.day;
+          if (!gleichenTag) {
+            aktualisiert.add(eintrag);
+          }
+        }
+      }
+    } catch (_) {
+      return;
+    }
+
+    await speicher.setString(key, jsonEncode(aktualisiert));
+  }
 }

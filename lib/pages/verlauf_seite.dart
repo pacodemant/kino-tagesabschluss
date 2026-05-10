@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class VerlaufSeite extends StatefulWidget {
@@ -99,7 +100,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
           return ListView.separated(
             itemCount: eintraege.length,
             separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (BuildContext context, int j) {
+            itemBuilder: (BuildContext itemContext, int j) {
               final TagesabschlussFinal eintrag = eintraege[j];
               final int differenz = eintrag.differenzGesamtCent;
               final Color farbe =
@@ -108,11 +109,26 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
                 title: Text(_deutschesDatum(eintrag.datum)),
                 trailing: Text(
                   _euroMitVorzeichen(differenz),
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  style: Theme.of(itemContext).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: farbe,
                   ),
                 ),
+                onTap: () async {
+                  final NavigatorState navigator = Navigator.of(context);
+                  final bool? geloescht =
+                      await navigator.pushNamed<bool>(
+                    VerlaufDetailSeite.routenName,
+                    arguments: eintrag,
+                  );
+                  if (geloescht == true && mounted) {
+                    setState(() {
+                      _geladen[i] = false;
+                      _abschluesse[i] = <TagesabschlussFinal>[];
+                    });
+                    _ladeAbschluesse(i);
+                  }
+                },
               );
             },
           );
