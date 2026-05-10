@@ -74,6 +74,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       appBar: AppBar(title: const Text('Einstellungen')),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         itemCount: KinoRepository.kinos.length,
         itemBuilder: (BuildContext ctx, int i) {
           final Kino kino = KinoRepository.kinos[i];

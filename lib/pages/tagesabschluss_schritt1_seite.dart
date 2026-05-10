@@ -287,6 +287,7 @@ class _TagesabschlussSchritt1SeiteState
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
       );
     });
+    _speichereEntwurf();
   }
 
   void _leereAlleFelderDev() {

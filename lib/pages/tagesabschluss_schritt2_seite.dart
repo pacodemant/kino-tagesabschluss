@@ -477,6 +477,7 @@ class _TagesabschlussSchritt2SeiteState
         TagesabschlussFormatierung.formatiereEuroEingabe(_ecBelegeCent[0]),
       );
     });
+    _speichereEntwurf();
   }
 
   void _leereAlleFelderDev() {
