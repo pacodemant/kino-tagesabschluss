@@ -1,4 +1,4 @@
-last_run: 131
-next_run: 132
-last_run_title: Run 131: Verlauf öffnet automatisch den Tab des aktiven Kinos
+last_run: 132
+next_run: 133
+last_run_title: Run 132: Usage-Block in flutter_maintenance.sh eingefügt
 last_commit: c0d28e1
