@@ -13,12 +13,12 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_footer.dart'
-    as schritt1_footer;
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class TagesabschlussSchritt1Argumente {
   const TagesabschlussSchritt1Argumente({
@@ -53,18 +53,6 @@ class _TagesabschlussSchritt1SeiteState
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
   static const int _sectionUmschlaege = 4;
-  static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
-    12,
-    4,
-    12,
-    4,
-  );
-  static const EdgeInsets _footerPaddingKeyboard = EdgeInsets.fromLTRB(
-    12,
-    2,
-    12,
-    2,
-  );
   static const double _devToolsStickyHoehe = 86;
   static const Set<String> _kupferRollenIds = <String>{
     'roll_1c',
@@ -776,10 +764,7 @@ class _TagesabschlussSchritt1SeiteState
     if (_laedt) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-    final MediaQueryData mediaQuery = MediaQuery.of(context);
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
-    final double bottomInset = mediaQuery.viewPadding.bottom;
-    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
@@ -831,9 +816,8 @@ class _TagesabschlussSchritt1SeiteState
       rotHervorgehoben: _rotHervorgehoben,
     );
 
-    return Scaffold(
+    return TagesabschlussScaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      resizeToAvoidBottomInset: true,
       appBar: TagesabschlussHeader(
         schrittNummer: 1,
         schrittTitel: 'Bargeldzählung',
@@ -864,40 +848,55 @@ class _TagesabschlussSchritt1SeiteState
           const SizedBox(width: 8),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Expanded(
-            child: Schritt1BodyContent(
-              scrollController: _scrollController,
-              devToolsStickySichtbar: devToolsStickySichtbar,
-              devToolsStickyHoehe: _devToolsStickyHoehe,
-              devToolsPanel: _baueDevToolsPanel(),
-              scheineGruppe: gruppen.scheineGruppe,
-              loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
-              rollenGruppe: gruppen.rollenGruppe,
-              hinweiseSection: gruppen.hinweiseSection,
-              zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
-                kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
-                wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
-                barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
-                barumsatzNegativ: _barumsatzBereinigtCent < 0,
+      footerChild: SizedBox(
+        height: 44,
+        child: Row(
+          children: <Widget>[
+            if (_zeigeNaechstesFeld) ...<Widget>[
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZumNaechstenFeldUnten,
+                  style: AppFarben.footerButtonStyle,
+                  child: const Text('nächstes Feld'),
+                ),
               ),
-              downButtonSichtbar: _istDownButtonSichtbar(),
-              scrolleNachUnten: _scrolleNachUnten,
-              beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _pruefeEingabenUndWeiterZuSchritt2,
+                style: AppFarben.footerButtonStyle,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.arrow_forward),
+                    SizedBox(width: 6),
+                    Text('Schritt 2'),
+                  ],
+                ),
+              ),
             ),
-          ),
-          schritt1_footer.Schritt1Footer(
-            tastaturOffen: tastaturOffen,
-            footerPadding: tastaturOffen
-                ? _footerPaddingKeyboard
-                : _footerPaddingNormal,
-            footerBottomInset: tastaturOffen ? 0 : bottomInset,
-            zeigeNaechstesFeld: _zeigeNaechstesFeld,
-            weiterZumNaechstenFeldUnten: _weiterZumNaechstenFeldUnten,
-            weiterZuSchritt2: _pruefeEingabenUndWeiterZuSchritt2,
-          ),
-        ],
+          ],
+        ),
+      ),
+      child: Schritt1BodyContent(
+        scrollController: _scrollController,
+        devToolsStickySichtbar: devToolsStickySichtbar,
+        devToolsStickyHoehe: _devToolsStickyHoehe,
+        devToolsPanel: _baueDevToolsPanel(),
+        scheineGruppe: gruppen.scheineGruppe,
+        loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
+        rollenGruppe: gruppen.rollenGruppe,
+        hinweiseSection: gruppen.hinweiseSection,
+        zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
+          kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
+          wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
+          barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
+          barumsatzNegativ: _barumsatzBereinigtCent < 0,
+        ),
+        downButtonSichtbar: _istDownButtonSichtbar(),
+        scrolleNachUnten: _scrolleNachUnten,
+        beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
       ),
     );
   }

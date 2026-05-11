@@ -4,11 +4,12 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 class TagesabschlussScaffold extends StatelessWidget {
   const TagesabschlussScaffold({
     super.key,
-    required this.title,
+    this.title = '',
     required this.child,
     this.footerChild,
     this.actions,
     this.backgroundColor,
+    this.appBar,
   });
 
   final String title;
@@ -16,6 +17,8 @@ class TagesabschlussScaffold extends StatelessWidget {
   final Widget? footerChild;
   final List<Widget>? actions;
   final Color? backgroundColor;
+  // Optionaler Custom-AppBar; wenn gesetzt, wird der Default-AppBar nicht gebaut.
+  final PreferredSizeWidget? appBar;
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +27,13 @@ class TagesabschlussScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        backgroundColor: AppFarben.appBarRot,
-        foregroundColor: Colors.white,
-        title: Text(title),
-        actions: actions,
-      ),
+      appBar: appBar ??
+          AppBar(
+            backgroundColor: AppFarben.appBarRot,
+            foregroundColor: Colors.white,
+            title: Text(title),
+            actions: actions,
+          ),
       bottomNavigationBar: footerChild == null
           ? null
           : Container(

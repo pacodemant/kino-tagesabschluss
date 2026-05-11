@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
-import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class TagesabschlussSchritt2Argumente {
   const TagesabschlussSchritt2Argumente({
@@ -60,22 +62,6 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 
 class _TagesabschlussSchritt2SeiteState
     extends State<TagesabschlussSchritt2Seite> {
-  static const double _footerContentHoeheNormal = 44;
-  static const double _footerContentHoeheKeyboard = 40;
-  static const EdgeInsets _footerPaddingNormal = EdgeInsets.fromLTRB(
-    12,
-    4,
-    12,
-    4,
-  );
-  static const EdgeInsets _footerPaddingKeyboard = EdgeInsets.fromLTRB(
-    12,
-    2,
-    12,
-    2,
-  );
-  static const double _iosLeistenHoehe = 44;
-
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
   final TextEditingController _ausgabenController = TextEditingController();
@@ -332,63 +318,16 @@ class _TagesabschlussSchritt2SeiteState
     });
   }
 
-  /// Stellt sicher, dass Feld und Inline-Fehlertext oberhalb von Tastatur/Footer liegen.
   void _macheFehlerfeldSichtbar(FocusNode fokusNode) {
     final BuildContext? feldKontext = fokusNode.context;
     if (feldKontext == null) {
       return;
     }
-
     Scrollable.ensureVisible(
       feldKontext,
       duration: const Duration(milliseconds: 220),
       curve: Curves.easeOutCubic,
       alignment: 0.08,
-    );
-
-    final RenderObject? renderObject = feldKontext.findRenderObject();
-    if (renderObject is! RenderBox || !_scrollController.hasClients) {
-      return;
-    }
-
-    final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
-    final bool iosLeisteSichtbar =
-        !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS && tastaturOffen;
-
-    final double footerContentHoehe = tastaturOffen
-        ? _footerContentHoeheKeyboard
-        : _footerContentHoeheNormal;
-    final double footerBottomInset = tastaturOffen
-        ? 0
-        : mediaQuery.padding.bottom;
-    final double footerGesamtHoehe = footerContentHoehe + footerBottomInset;
-    final double footerBottom =
-        mediaQuery.viewInsets.bottom +
-        (iosLeisteSichtbar ? _iosLeistenHoehe : 0);
-    final double ueberlagerungUnten = footerBottom + footerGesamtHoehe;
-
-    final Offset feldPosition = renderObject.localToGlobal(Offset.zero);
-    final double feldUnterkante = feldPosition.dy + renderObject.size.height;
-    const double fehlerTextReserve = 30;
-    final double sichtbarerBereichUnten =
-        mediaQuery.size.height - ueberlagerungUnten - 8;
-
-    if (feldUnterkante + fehlerTextReserve <= sichtbarerBereichUnten) {
-      return;
-    }
-
-    final double delta =
-        feldUnterkante + fehlerTextReserve - sichtbarerBereichUnten;
-    final double zielOffset = (_scrollController.position.pixels + delta + 6)
-        .clamp(
-          _scrollController.position.minScrollExtent,
-          _scrollController.position.maxScrollExtent,
-        );
-    _scrollController.animateTo(
-      zielOffset,
-      duration: const Duration(milliseconds: 160),
-      curve: Curves.easeOut,
     );
   }
 
@@ -587,44 +526,6 @@ class _TagesabschlussSchritt2SeiteState
     return null;
   }
 
-  Widget _baueIosTastaturLeiste() {
-    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) {
-      return const SizedBox.shrink();
-    }
-    final double tastaturHoehe = MediaQuery.of(context).viewInsets.bottom;
-    if (tastaturHoehe <= 0) {
-      return const SizedBox.shrink();
-    }
-    final FocusNode? aktivesFeld = _aktivesFeldSchritt2();
-    if (aktivesFeld == null) {
-      return const SizedBox.shrink();
-    }
-    final FocusNode? naechstesFeld = _naechstesFeldSchritt2(aktivesFeld);
-    final bool istLetztesFeld = naechstesFeld == null;
-
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF2F2F7),
-        border: const Border(top: BorderSide(color: Color(0x14000000))),
-      ),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: () {
-            if (istLetztesFeld) {
-              FocusScope.of(context).unfocus();
-              return;
-            }
-            FocusScope.of(context).requestFocus(naechstesFeld);
-          },
-          child: Text(istLetztesFeld ? 'Fertig' : 'nächstes Feld'),
-        ),
-      ),
-    );
-  }
-
   Widget _baueEingabeZeile({
     required String label,
     required TextEditingController controller,
@@ -689,100 +590,10 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueFooterSchritt2({
-    required bool tastaturOffen,
-    required EdgeInsets footerPadding,
-    required double footerBottomInset,
-  }) {
-    const Color footerBg = Colors.black87;
-    final bool zeigeNaechstesFeld = _aktivesFeldSchritt2() != null;
-    final ButtonStyle kompaktButtonStyle = ElevatedButton.styleFrom(
-      minimumSize: Size(0, tastaturOffen ? 36 : 40),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      visualDensity: const VisualDensity(horizontal: -1, vertical: -1),
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
-
-    return ColoredBox(
-      color: footerBg,
-      child: Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Color(0x4D000000),
-              offset: Offset(0, -2),
-              blurRadius: 12,
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: footerPadding.add(
-            EdgeInsets.only(bottom: footerBottomInset),
-          ),
-          child: Row(
-            children: <Widget>[
-              if (zeigeNaechstesFeld) ...<Widget>[
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _weiterZumNaechstenFeldUnten,
-                    style: kompaktButtonStyle,
-                    child: const Text('nächstes Feld'),
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _weiterZuSchritt3,
-                  style: kompaktButtonStyle,
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.arrow_forward),
-                      SizedBox(width: 6),
-                      Text('Schritt 3'),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final MediaQueryData mediaQuery = MediaQuery.of(context);
-    final bool istTastaturSichtbar = mediaQuery.viewInsets.bottom > 0;
-    final bool iosLeisteSichtbar =
-        !kIsWeb &&
-        defaultTargetPlatform == TargetPlatform.iOS &&
-        istTastaturSichtbar;
-    final double footerContentHoehe = istTastaturSichtbar
-        ? _footerContentHoeheKeyboard
-        : _footerContentHoeheNormal;
-    final double footerBottomInset = istTastaturSichtbar
-        ? 0
-        : mediaQuery.viewPadding.bottom;
-    final EdgeInsets footerPadding = istTastaturSichtbar
-        ? _footerPaddingKeyboard
-        : _footerPaddingNormal;
-    final double footerGesamtHoehe = footerContentHoehe + footerBottomInset;
-    final double footerBottom =
-        mediaQuery.viewInsets.bottom +
-        (iosLeisteSichtbar ? _iosLeistenHoehe : 0);
-    final double bottomPadding =
-        mediaQuery.viewInsets.bottom +
-        footerGesamtHoehe +
-        16 +
-        (iosLeisteSichtbar ? 56 : 16);
-
-    return Scaffold(
+    return TagesabschlussScaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-      resizeToAvoidBottomInset: true,
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
         schrittTitel: 'Einnahmen/Abschluss',
@@ -803,24 +614,52 @@ class _TagesabschlussSchritt2SeiteState
             ),
         ],
       ),
-      body: Stack(
-        children: <Widget>[
-          Theme(
-            data: Theme.of(context).copyWith(
-              inputDecorationTheme: const InputDecorationTheme(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 6,
+      footerChild: SizedBox(
+        height: 44,
+        child: Row(
+          children: <Widget>[
+            if (_aktivesFeldSchritt2() != null) ...<Widget>[
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZumNaechstenFeldUnten,
+                  style: AppFarben.footerButtonStyle,
+                  child: const Text('nächstes Feld'),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _weiterZuSchritt3,
+                style: AppFarben.footerButtonStyle,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(Icons.arrow_forward),
+                    SizedBox(width: 6),
+                    Text('Schritt 3'),
+                  ],
                 ),
               ),
             ),
-            child: ListView(
-              controller: _scrollController,
-              padding: EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
-              keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
-              children: <Widget>[
+          ],
+        ),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          inputDecorationTheme: const InputDecorationTheme(
+            isDense: true,
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 6,
+            ),
+          ),
+        ),
+        child: ListView(
+          controller: _scrollController,
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          children: <Widget>[
                 IgnorePointer(
                   ignoring: !_devToolsSichtbar || !_devToolsOffen,
                   child: AnimatedOpacity(
@@ -1034,28 +873,7 @@ class _TagesabschlussSchritt2SeiteState
                   ),
                 const SizedBox(height: 8),
               ],
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: footerBottom,
-            child: SizedBox(
-              height: footerGesamtHoehe,
-              child: _baueFooterSchritt2(
-                tastaturOffen: istTastaturSichtbar,
-                footerPadding: footerPadding,
-                footerBottomInset: footerBottomInset,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _baueIosTastaturLeiste(),
-          ),
-        ],
+        ),
       ),
     );
   }
