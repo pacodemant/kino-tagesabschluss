@@ -1,4 +1,4 @@
-last_run: 133
-next_run: 134
-last_run_title: Run 133: Einheitliche AppBar-Farbe + Footer-Verhalten
-last_commit: 9e1a850
+last_run: 134
+next_run: 135
+last_run_title: Run 134a: TagesabschlussScaffold committen + Theme-Farben + Dialog-Fix
+last_commit: f90cbe8

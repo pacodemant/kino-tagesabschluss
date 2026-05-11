@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 134a: `lib/widgets/tagesabschluss_scaffold.dart` in Git aufgenommen; `main.dart` um globale Button-Themes ergänzt (ElevatedButton, TextButton, OutlinedButton mit `AppFarben.appBarRot`); Dialog „Was möchtest du als nächstes tun?" in Schritt 3 auf `barrierDismissible: true` gesetzt.
 - Run 133: Neue Konstante `AppFarben.appBarRot` (`#7B0000`) in `lib/theme/app_farben.dart`; alle AppBars (StartmenueSeite, TagesabschlussHeader, VerlaufSeite, VerlaufDetailSeite, EinstellungenSeite, Schritt 3, _PlatzhalterSeite) auf `appBarRot` + `foregroundColor: Colors.white` umgestellt; Schritt 3 erhält schwarzen Footer-Balken analog Schritt 1/2 mit `viewPadding.bottom`, `resizeToAvoidBottomInset: true` und `keyboardDismissBehavior: onDrag`.
 - Run 132: Auskommentierter Usage-Block in `flutter_maintenance.sh` eingefügt – erklärt Zweck, Modi (clean/upgrade/doctor) und Aufruf-Syntax; clean bleibt Standard-Modus.
 - Run 131: `VerlaufSeite` erhält optionalen Parameter `initialKinoId`; `TabController` wird mit `initialIndex` aus der Kino-Liste gestartet; `StartmenueSeite._oeffneVerlauf` übergibt `kino.id` als Argument; `main.dart`-Route liest optionales `String?`-Argument und reicht es weiter.
