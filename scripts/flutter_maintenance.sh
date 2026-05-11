@@ -1,4 +1,22 @@
 #!/bin/zsh
+# ==================================================
+# flutter_maintenance.sh
+#
+# Zweck: Flutter-Projekt bereinigen, Abhängigkeiten aktualisieren
+#        oder die Entwicklungsumgebung prüfen.
+#
+# Verwendung:
+#   ./scripts/flutter_maintenance.sh [clean|upgrade|doctor]
+#
+# Modi:
+#   clean    – flutter clean + pub get (Standard)
+#   upgrade  – pub upgrade, clean und anschließend pub get + doctor
+#   doctor   – flutter doctor + Web-Unterstützung aktivieren
+#
+# Beispiele:
+#   ./scripts/flutter_maintenance.sh
+#   ./scripts/flutter_maintenance.sh upgrade
+# ==================================================
 set -euo pipefail
 
 print_step() {
