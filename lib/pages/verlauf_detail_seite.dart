@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
@@ -106,6 +107,8 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
         title: Text(
           '${_deutschesDatum(a.datum)} – ${a.kinoName}',
         ),

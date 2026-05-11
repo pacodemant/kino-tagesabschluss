@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_header_section.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 
 class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidget {
   const TagesabschlussHeader({
@@ -33,7 +34,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
   Widget build(BuildContext context) {
     final String untertitel = subtitle ?? _standardUntertitel;
     return AppBar(
-      backgroundColor: Colors.black87,
+      backgroundColor: AppFarben.appBarRot,
       foregroundColor: Colors.white,
       toolbarHeight: toolbarHeight,
       titleSpacing: 8,

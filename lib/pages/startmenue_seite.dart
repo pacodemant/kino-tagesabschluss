@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/platzhalter_seite.dart';
@@ -39,7 +40,8 @@ class StartmenueSeite extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
         title: Text(kino.name),
         actions: <Widget>[
           TextButton(

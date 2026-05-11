@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
@@ -258,10 +259,14 @@ class _TagesabschlussSchritt3SeiteState
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
     final bool buttonGesperrt = _autoSaveLaeuft;
+    final double bottomInset = MediaQuery.of(context).viewPadding.bottom;
 
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
         title: Text(
           'Übertrag auf Umschlag – ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
         ),
@@ -271,6 +276,7 @@ class _TagesabschlussSchritt3SeiteState
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(vertical: 8),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               children: <Widget>[
                 // Rahmen 1 – Differenz Anfangsbestand
                 Card(
@@ -363,17 +369,30 @@ class _TagesabschlussSchritt3SeiteState
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: SizedBox(
-              height: 44,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
-                child: Text(
-                  _autoSaveLaeuft
-                      ? 'Wird gespeichert...'
-                      : 'Tagesabrechnung abschließen',
+          ColoredBox(
+            color: Colors.black87,
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Color(0x4D000000),
+                    offset: Offset(0, -2),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+              padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + bottomInset),
+              child: SizedBox(
+                height: 44,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
+                  child: Text(
+                    _autoSaveLaeuft
+                        ? 'Wird gespeichert...'
+                        : 'Tagesabrechnung abschließen',
+                  ),
                 ),
               ),
             ),
@@ -392,7 +411,11 @@ class _PlatzhalterSeite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(titel)),
+      appBar: AppBar(
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
+        title: Text(titel),
+      ),
       body: Center(
         child: Text(
           '$titel\n(noch nicht implementiert)',

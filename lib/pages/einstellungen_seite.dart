@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
@@ -71,7 +72,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Einstellungen')),
+      appBar: AppBar(
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
+        title: const Text('Einstellungen'),
+      ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,

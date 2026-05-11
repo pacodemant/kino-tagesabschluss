@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
@@ -122,6 +123,8 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
         title: const Text('Verlauf'),
         bottom: TabBar(
           controller: _tabController,
