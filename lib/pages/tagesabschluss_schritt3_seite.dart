@@ -181,7 +181,7 @@ class _TagesabschlussSchritt3SeiteState
 
     await showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: true,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Was möchtest du als nächstes tun?'),
         content: null,

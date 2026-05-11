@@ -13,6 +13,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,22 @@ class MeineApp extends StatelessWidget {
       title: 'Schauburg Tagesabschluss',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppFarben.appBarRot,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: AppFarben.appBarRot,
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppFarben.appBarRot,
+          ),
+        ),
       ),
       initialRoute: StartpruefungSeite.routenName,
       routes: <String, WidgetBuilder>{
