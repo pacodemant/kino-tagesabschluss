@@ -19,6 +19,8 @@ class TagesabschlussSchritt2Argumente {
     required this.umschlaegeCent,
     required this.wechselgeldSollwertCent,
     required this.barBestandAbzglWechselgeldCent,
+    required this.stueckzahlen,
+    required this.loseMuenzenNachArtCent,
   });
 
   final String kinoId;
@@ -29,6 +31,8 @@ class TagesabschlussSchritt2Argumente {
   final int umschlaegeCent;
   final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
+  final Map<String, int> stueckzahlen;
+  final Map<String, int> loseMuenzenNachArtCent;
 }
 
 class TagesabschlussSchritt2Seite extends StatefulWidget {
@@ -42,6 +46,8 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
     required this.umschlaegeCent,
     required this.wechselgeldSollwertCent,
     required this.barBestandAbzglWechselgeldCent,
+    required this.stueckzahlen,
+    required this.loseMuenzenNachArtCent,
   });
 
   static const String routenName = '/closure-step-2';
@@ -54,6 +60,8 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
   final int umschlaegeCent;
   final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
+  final Map<String, int> stueckzahlen;
+  final Map<String, int> loseMuenzenNachArtCent;
 
   @override
   State<TagesabschlussSchritt2Seite> createState() =>
@@ -251,6 +259,8 @@ class _TagesabschlussSchritt2SeiteState
         ausgabenCent: _ausgabenCent,
         ecBelegeCent: List<int>.from(_ecBelegeCent),
         differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
+        stueckzahlen: widget.stueckzahlen,
+        loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
       ),
     );
   }

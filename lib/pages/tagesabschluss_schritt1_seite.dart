@@ -612,6 +612,9 @@ class _TagesabschlussSchritt1SeiteState
             umschlaegeCent: _umschlagSummeCent,
             wechselgeldSollwertCent: _wechselgeldSollwertCent,
             barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
+            stueckzahlen: Map<String, int>.from(_stueckzahlen),
+            loseMuenzenNachArtCent:
+                Map<String, int>.from(_loseMuenzenNachArtCent),
           ),
         );
       },

@@ -10,6 +10,7 @@ import 'package:kino_bar_app/pages/startpruefung_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
@@ -132,6 +133,8 @@ class MeineApp extends StatelessWidget {
               wechselgeldSollwertCent: argument.wechselgeldSollwertCent,
               barBestandAbzglWechselgeldCent:
                   argument.barBestandAbzglWechselgeldCent,
+              stueckzahlen: argument.stueckzahlen,
+              loseMuenzenNachArtCent: argument.loseMuenzenNachArtCent,
             ),
             settings: settings,
           );
@@ -148,6 +151,21 @@ class MeineApp extends StatelessWidget {
 
           return MaterialPageRoute<void>(
             builder: (_) => TagesabschlussSchritt3Seite(argumente: argument),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == StueckelungVorschlagSeite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! StueckelungVorschlagArgumente) {
+            return MaterialPageRoute<void>(
+              builder: (_) => const KinoauswahlSeite(),
+              settings:
+                  const RouteSettings(name: KinoauswahlSeite.routenName),
+            );
+          }
+          return MaterialPageRoute<void>(
+            builder: (_) => StueckelungVorschlagSeite(argumente: argument),
             settings: settings,
           );
         }

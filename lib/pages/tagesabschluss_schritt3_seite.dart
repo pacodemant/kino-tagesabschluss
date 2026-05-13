@@ -6,6 +6,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class TagesabschlussSchritt3Argumente {
@@ -22,6 +23,8 @@ class TagesabschlussSchritt3Argumente {
     required this.ausgabenCent,
     required this.ecBelegeCent,
     required this.differenzAnfangsbestandCent,
+    required this.stueckzahlen,
+    required this.loseMuenzenNachArtCent,
   });
 
   final String kinoId;
@@ -38,6 +41,8 @@ class TagesabschlussSchritt3Argumente {
   final int ausgabenCent;
   final List<int> ecBelegeCent;
   final int differenzAnfangsbestandCent;
+  final Map<String, int> stueckzahlen;
+  final Map<String, int> loseMuenzenNachArtCent;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -229,6 +234,18 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
+  void _navigiereZuSchritt4() {
+    Navigator.of(context).pushNamed(
+      StueckelungVorschlagSeite.routenName,
+      arguments: StueckelungVorschlagArgumente(
+        barBestandAbzglWechselgeldCent:
+            _abschlussVorschau.barBestandAbzglWechselgeldCent,
+        stueckzahlen: widget.argumente.stueckzahlen,
+        loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
+      ),
+    );
+  }
+
   String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
 
   String _euroMitVorzeichen(int cent) =>
@@ -267,13 +284,28 @@ class _TagesabschlussSchritt3SeiteState
           'Übertrag auf Umschlag – ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
       footerChild: SizedBox(
         height: 36,
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
-          style: AppFarben.footerButtonStyle,
-          child: Text(
-            _autoSaveLaeuft ? 'Wird gespeichert...' : 'Tagesabrechnung abschließen',
-          ),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: ElevatedButton(
+                onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
+                style: AppFarben.footerButtonStyle,
+                child: Text(
+                  _autoSaveLaeuft
+                      ? 'Wird gespeichert...'
+                      : 'Tagesabrechnung abschließen',
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _navigiereZuSchritt4,
+                style: AppFarben.footerButtonStyle,
+                child: const Text('→ Schritt 4'),
+              ),
+            ),
+          ],
         ),
       ),
       child: ListView(
