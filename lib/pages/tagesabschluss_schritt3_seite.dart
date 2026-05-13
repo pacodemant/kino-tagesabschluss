@@ -266,7 +266,7 @@ class _TagesabschlussSchritt3SeiteState
       title:
           'Übertrag auf Umschlag – ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
       footerChild: SizedBox(
-        height: 44,
+        height: 36,
         width: double.infinity,
         child: ElevatedButton(
           onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,

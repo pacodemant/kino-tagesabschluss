@@ -54,7 +54,7 @@ class TagesabschlussScaffold extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + footerBottomPadding),
+              padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + footerBottomPadding),
               child: footerChild,
             ),
         ],

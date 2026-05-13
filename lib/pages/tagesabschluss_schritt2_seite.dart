@@ -594,7 +594,7 @@ class _TagesabschlussSchritt2SeiteState
         ],
       ),
       footerChild: SizedBox(
-        height: 44,
+        height: 36,
         child: Row(
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[

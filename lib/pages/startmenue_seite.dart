@@ -50,6 +50,7 @@ class StartmenueSeite extends StatelessWidget {
                 context,
               ).pushReplacementNamed(KinoauswahlSeite.routenName);
             },
+            style: TextButton.styleFrom(foregroundColor: Colors.white),
             child: const Text('Kino wechseln'),
           ),
         ],
