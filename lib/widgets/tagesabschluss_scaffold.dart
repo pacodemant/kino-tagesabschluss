@@ -22,7 +22,10 @@ class TagesabschlussScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double viewPaddingBottom = MediaQuery.of(context).viewPadding.bottom;
+    final MediaQueryData mediaQuery = MediaQuery.of(context);
+    final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
+    final double footerBottomPadding =
+        tastaturOffen ? 8.0 : mediaQuery.padding.bottom;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -51,7 +54,7 @@ class TagesabschlussScaffold extends StatelessWidget {
                   ),
                 ],
               ),
-              padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + viewPaddingBottom),
+              padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + footerBottomPadding),
               child: footerChild,
             ),
         ],

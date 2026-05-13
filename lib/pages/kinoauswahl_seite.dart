@@ -47,11 +47,6 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
             for (final Kino kino in KinoRepository.kinos) ...<Widget>[
               ElevatedButton(
                 onPressed: () => _waehleKino(kino.id),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppFarben.appBarRot,
-                  side: const BorderSide(color: AppFarben.appBarRot),
-                ),
                 child: Text(kino.name),
               ),
               const SizedBox(height: 12),
