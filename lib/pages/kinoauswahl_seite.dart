@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/usecases/kino_waehlen_usecase.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 
 class KinoauswahlSeite extends StatefulWidget {
   const KinoauswahlSeite({super.key});
@@ -29,7 +30,8 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppFarben.appBarRot,
+        foregroundColor: Colors.white,
         title: const Text('Schauburg Tagesabschluss'),
       ),
       body: Padding(
@@ -45,6 +47,11 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
             for (final Kino kino in KinoRepository.kinos) ...<Widget>[
               ElevatedButton(
                 onPressed: () => _waehleKino(kino.id),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppFarben.appBarRot,
+                  side: const BorderSide(color: AppFarben.appBarRot),
+                ),
                 child: Text(kino.name),
               ),
               const SizedBox(height: 12),

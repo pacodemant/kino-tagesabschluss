@@ -99,7 +99,6 @@ class _TagesabschlussSchritt1SeiteState
   bool _devToolsOffen = false;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
-  bool _zeigeNaechstesFeld = false;
   final Random _zufall = Random();
   final Set<FocusNode> _rotHervorgehoben = <FocusNode>{};
 
@@ -118,16 +117,6 @@ class _TagesabschlussSchritt1SeiteState
   List<Kassenzeile> get _alleStueckzahlZeilen =>
       StueckelungKonfiguration.alleStueckzahlZeilen;
   bool get _devToolsSichtbar => !kReleaseMode && !kIsWeb;
-
-  void _beiFokuswechselFuerFooter() {
-    final bool zeigeNaechstesFeld = _aktivesFeldSchritt1() != null;
-    if (zeigeNaechstesFeld == _zeigeNaechstesFeld) {
-      return;
-    }
-    setState(() {
-      _zeigeNaechstesFeld = zeigeNaechstesFeld;
-    });
-  }
 
   @override
   void initState() {
@@ -159,7 +148,6 @@ class _TagesabschlussSchritt1SeiteState
       _loseMuenzenController[zeile.id] = TextEditingController();
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
-    FocusManager.instance.addListener(_beiFokuswechselFuerFooter);
     _scrollController.addListener(_beiScrollAenderung);
     _ladeInitialeDaten();
   }
@@ -195,7 +183,6 @@ class _TagesabschlussSchritt1SeiteState
     }
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
-    FocusManager.instance.removeListener(_beiFokuswechselFuerFooter);
     super.dispose();
   }
 
@@ -764,6 +751,7 @@ class _TagesabschlussSchritt1SeiteState
     if (_laedt) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+    final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
     final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
@@ -852,7 +840,7 @@ class _TagesabschlussSchritt1SeiteState
         height: 44,
         child: Row(
           children: <Widget>[
-            if (_zeigeNaechstesFeld) ...<Widget>[
+            if (tastaturOffen) ...<Widget>[
               Expanded(
                 child: ElevatedButton(
                   onPressed: _weiterZumNaechstenFeldUnten,

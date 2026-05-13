@@ -34,9 +34,12 @@ class TagesabschlussScaffold extends StatelessWidget {
             title: Text(title),
             actions: actions,
           ),
-      bottomNavigationBar: footerChild == null
-          ? null
-          : Container(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Expanded(child: child),
+          if (footerChild != null)
+            Container(
               decoration: const BoxDecoration(
                 color: Colors.black87,
                 border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
@@ -51,7 +54,8 @@ class TagesabschlussScaffold extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(12, 6, 12, 6 + viewPaddingBottom),
               child: footerChild,
             ),
-      body: child,
+        ],
+      ),
     );
   }
 }

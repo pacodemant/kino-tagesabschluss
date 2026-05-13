@@ -93,12 +93,7 @@ class _TagesabschlussSchritt2SeiteState
   @override
   void initState() {
     super.initState();
-    _kinoSollFocusNode.addListener(_beiFokusAenderung);
-    _bistroSollFocusNode.addListener(_beiFokusAenderung);
-    _ausgabenFocusNode.addListener(_beiFokusAenderung);
-    _differenzAnfangsbestandFocusNode.addListener(_beiFokusAenderung);
     final FocusNode ersterEcFocusNode = FocusNode();
-    ersterEcFocusNode.addListener(_beiFokusAenderung);
     _ecBelegFocusNode.add(ersterEcFocusNode);
     _ladeEntwurf();
   }
@@ -118,18 +113,9 @@ class _TagesabschlussSchritt2SeiteState
       controller.dispose();
     }
     for (final FocusNode focusNode in _ecBelegFocusNode) {
-      focusNode.removeListener(_beiFokusAenderung);
       focusNode.dispose();
     }
     super.dispose();
-  }
-
-  /// Aktualisiert den Footer-Zustand bei Fokuswechsel analog zu Schritt 1.
-  void _beiFokusAenderung() {
-    if (!mounted) {
-      return;
-    }
-    setState(() {});
   }
 
   Future<void> _ladeEntwurf() async {
@@ -334,9 +320,7 @@ class _TagesabschlussSchritt2SeiteState
   void _ecBelegHinzufuegen() {
     setState(() {
       _ecBelegController.add(TextEditingController());
-      final FocusNode focusNode = FocusNode();
-      focusNode.addListener(_beiFokusAenderung);
-      _ecBelegFocusNode.add(focusNode);
+      _ecBelegFocusNode.add(FocusNode());
       _ecBelegeCent.add(0);
       _ecBelegIds.add(_naechsteEcBelegId++);
     });
@@ -356,9 +340,7 @@ class _TagesabschlussSchritt2SeiteState
     }
     setState(() {
       _ecBelegController.removeAt(index).dispose();
-      final FocusNode focusNode = _ecBelegFocusNode.removeAt(index);
-      focusNode.removeListener(_beiFokusAenderung);
-      focusNode.dispose();
+      _ecBelegFocusNode.removeAt(index).dispose();
       _ecBelegeCent.removeAt(index);
       _ecBelegIds.removeAt(index);
     });
@@ -375,17 +357,13 @@ class _TagesabschlussSchritt2SeiteState
   void _setzeEcBelegAnzahl(int anzahl) {
     while (_ecBelegController.length > anzahl) {
       _ecBelegController.removeLast().dispose();
-      final FocusNode focusNode = _ecBelegFocusNode.removeLast();
-      focusNode.removeListener(_beiFokusAenderung);
-      focusNode.dispose();
+      _ecBelegFocusNode.removeLast().dispose();
       _ecBelegeCent.removeLast();
       _ecBelegIds.removeLast();
     }
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
-      final FocusNode focusNode = FocusNode();
-      focusNode.addListener(_beiFokusAenderung);
-      _ecBelegFocusNode.add(focusNode);
+      _ecBelegFocusNode.add(FocusNode());
       _ecBelegeCent.add(0);
       _ecBelegIds.add(_naechsteEcBelegId++);
     }
@@ -592,6 +570,7 @@ class _TagesabschlussSchritt2SeiteState
 
   @override
   Widget build(BuildContext context) {
+    final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
     return TagesabschlussScaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: TagesabschlussHeader(
@@ -618,7 +597,7 @@ class _TagesabschlussSchritt2SeiteState
         height: 44,
         child: Row(
           children: <Widget>[
-            if (_aktivesFeldSchritt2() != null) ...<Widget>[
+            if (tastaturOffen) ...<Widget>[
               Expanded(
                 child: ElevatedButton(
                   onPressed: _weiterZumNaechstenFeldUnten,
