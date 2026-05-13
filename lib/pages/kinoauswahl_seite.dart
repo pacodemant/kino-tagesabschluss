@@ -30,6 +30,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: const Text('Schauburg Tagesabschluss'),

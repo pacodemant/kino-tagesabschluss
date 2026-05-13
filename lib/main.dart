@@ -56,10 +56,20 @@ class MeineApp extends StatelessWidget {
         ),
       ),
       initialRoute: StartpruefungSeite.routenName,
+      onGenerateInitialRoutes: (String _) => <Route<void>>[
+        MaterialPageRoute<void>(
+          builder: (_) => const StartpruefungSeite(),
+          settings: const RouteSettings(name: StartpruefungSeite.routenName),
+        ),
+      ],
       routes: <String, WidgetBuilder>{
         StartpruefungSeite.routenName: (_) => const StartpruefungSeite(),
         KinoauswahlSeite.routenName: (_) => const KinoauswahlSeite(),
       },
+      onUnknownRoute: (RouteSettings settings) => MaterialPageRoute<void>(
+        builder: (_) => const KinoauswahlSeite(),
+        settings: const RouteSettings(name: KinoauswahlSeite.routenName),
+      ),
       onGenerateRoute: (RouteSettings settings) {
         if (settings.name == StartmenueSeite.routenName) {
           final Object? argument = settings.arguments;

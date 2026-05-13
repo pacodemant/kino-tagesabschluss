@@ -33,9 +33,11 @@ class _StartpruefungSeiteState extends State<StartpruefungSeite> {
         ? StartmenueSeite.routenName
         : KinoauswahlSeite.routenName;
 
-    Navigator.of(
-      context,
-    ).pushReplacementNamed(zielRoute, arguments: ergebnis.aktivesKinoId);
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      zielRoute,
+      (Route<dynamic> route) => false,
+      arguments: ergebnis.aktivesKinoId,
+    );
   }
 
   @override

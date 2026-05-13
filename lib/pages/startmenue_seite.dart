@@ -40,6 +40,7 @@ class StartmenueSeite extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: Text(kino.name),
