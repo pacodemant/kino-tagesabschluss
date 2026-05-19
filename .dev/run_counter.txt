@@ -1,4 +1,4 @@
-last_run: 143
-next_run: 144
-last_run_title: R143: Kupfergeld-Zeile nach Scheine/Rollen, vor Lose Münzen
-last_commit: d089d11
+last_run: 144
+next_run: 145
+last_run_title: R144: Speichermanagement mit shared_preferences
+last_commit: e46a8a1
