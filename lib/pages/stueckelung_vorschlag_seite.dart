@@ -29,6 +29,7 @@ class _ErgebnisZeile {
     this.vorhanden = 0,
     this.betragCent = 0,
     this.gruen = false,
+    this.rot = false,
   });
 
   factory _ErgebnisZeile.stueckzahl({
@@ -48,11 +49,13 @@ class _ErgebnisZeile {
   factory _ErgebnisZeile.betrag({
     required String bezeichnung,
     required int betragCent,
+    bool rot = false,
   }) =>
       _ErgebnisZeile._(
         art: _ZeilenArt.betrag,
         bezeichnung: bezeichnung,
         betragCent: betragCent,
+        rot: rot,
       );
 
   factory _ErgebnisZeile.restbetrag(int betragCent) =>
@@ -64,6 +67,7 @@ class _ErgebnisZeile {
   final int vorhanden;
   final int betragCent;
   final bool gruen;
+  final bool rot;
 }
 
 // ---------------------------------------------------------------------------
@@ -113,7 +117,11 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     }
     if (kupferCent > 0) {
       zeilen.add(
-        _ErgebnisZeile.betrag(bezeichnung: 'Kupfergeld', betragCent: kupferCent),
+        _ErgebnisZeile.betrag(
+          bezeichnung: 'Kupfergeld',
+          betragCent: kupferCent,
+          rot: true,
+        ),
       );
       restCent -= kupferCent;
     }
@@ -227,12 +235,18 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         );
 
       case _ZeilenArt.betrag:
+        final TextStyle? betragStyle = zeile.rot
+            ? TextStyle(
+                color: Colors.red.shade700,
+                fontWeight: FontWeight.bold,
+              )
+            : null;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           child: Row(
             children: <Widget>[
-              Expanded(child: Text(zeile.bezeichnung)),
-              Text(_euro(zeile.betragCent)),
+              Expanded(child: Text(zeile.bezeichnung, style: betragStyle)),
+              Text(_euro(zeile.betragCent), style: betragStyle),
             ],
           ),
         );
