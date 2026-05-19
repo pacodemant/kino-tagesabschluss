@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 148: Neuer Service `lib/services/dev_modus.dart` (Key `dev_modus_aktiv`, Methoden `istAktiv()` / `setzen()`); EinstellungenSeite lädt Bool beim Start, zeigt SwitchListTile „Entwicklermodus" mit `activeThumbColor: appBarRot`, speichert Änderungen sofort via SharedPreferences.
 - Run 147: TabBar in VerlaufSeite erhält labelColor/unselectedLabelColor/indicatorColor: Colors.white — Tabs auf rotem AppBar-Hintergrund klar sichtbar; PlatzhalterSeite AppBar von inversePrimary (Indigo-Blau) auf AppFarben.appBarRot + foregroundColor: white umgestellt.
 - Run 146: _kupferSichtbar aufgeteilt in _kupferLoseSichtbar (coin_1c/2c/5c) und _kupferRollenSichtbar (roll_1c/2c/5c); zwei getrennte Buttons und Methoden (_zeigeKupferLose / _zeigeKupferRollen); Lade-Logik setzt beide Flags separat; schritt1_ui_builder.dart und schritt1_gruppen_orchestrierung.dart entsprechend angepasst.
 - Run 145: Kupfermünzen in Schritt 1 standardmäßig ausgeblendet; neuer State `_kupferSichtbar` steuert beide Gruppen (roll_5c/2c/1c und coin_5c/2c/1c); Button „Kupfermünzen hinzufügen" in der Lose-Münzen-Section analog zum bestehenden Kupfer-Rollen-Button; beim Laden werden Kupferfelder automatisch eingeblendet falls gespeicherte Werte > 0.
