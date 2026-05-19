@@ -1,4 +1,4 @@
-last_run: 146
-next_run: 147
-last_run_title: R146: Kupfer-Buttons für Rollen und lose Münzen getrennt
-last_commit: 1449842
+last_run: 147
+next_run: 148
+last_run_title: R147: Tab-Leiste Verlauf sichtbar; AppBar Getränke rot
+last_commit: b21c439
