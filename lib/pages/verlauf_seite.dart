@@ -129,6 +129,9 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
           tabs: KinoRepository.kinos
               .map((Kino kino) => Tab(text: kino.name))
               .toList(),
