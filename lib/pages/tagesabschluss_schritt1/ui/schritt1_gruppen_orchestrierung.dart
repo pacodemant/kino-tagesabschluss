@@ -24,8 +24,9 @@ class Schritt1GruppenOrchestrierung {
     required bool loseMuenzenAufgeklappt,
     required bool rollenAufgeklappt,
     required bool umschlaegeAufgeklappt,
-    required bool kupferSichtbar,
-    required VoidCallback zeigeKupfer,
+    required bool kupferLoseSichtbar,
+    required bool kupferRollenSichtbar,
+    required VoidCallback zeigeKupferLose,
     required Map<String, int> stueckzahlen,
     required Map<String, TextEditingController> stueckzahlController,
     required Map<String, FocusNode> stueckzahlFocusNode,
@@ -97,8 +98,8 @@ class Schritt1GruppenOrchestrierung {
       inhalt: schritt1_ui.Schritt1LoseMuenzenInhalt(
         loseMuenzartenOhneKupfer: loseMuenzartenOhneKupfer,
         kupferLoseMuenzarten: kupferLoseMuenzarten,
-        kupferSichtbar: kupferSichtbar,
-        zeigeKupfer: zeigeKupfer,
+        kupferLoseSichtbar: kupferLoseSichtbar,
+        zeigeKupferLose: zeigeKupferLose,
         loseMuenzenFocusNode: loseMuenzenFocusNode,
         loseMuenzenController: loseMuenzenController,
         baueFeldMitKey: baueFeldMitKey,
@@ -121,7 +122,7 @@ class Schritt1GruppenOrchestrierung {
       inhalt: schritt1_ui.Schritt1RollenInhalt(
         rollenOhneKupfer: rollenOhneKupfer,
         kupferRollen: kupferRollen,
-        kupferSichtbar: kupferSichtbar,
+        kupferRollenSichtbar: kupferRollenSichtbar,
         zeilenEintragBuilder: baueZeilenEintrag,
         summeGruppe: summeGruppe,
         formatiereRollenAnzeige: (int cent) =>

@@ -124,8 +124,8 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
     super.key,
     required this.loseMuenzartenOhneKupfer,
     required this.kupferLoseMuenzarten,
-    required this.kupferSichtbar,
-    required this.zeigeKupfer,
+    required this.kupferLoseSichtbar,
+    required this.zeigeKupferLose,
     required this.loseMuenzenFocusNode,
     required this.loseMuenzenController,
     required this.baueFeldMitKey,
@@ -139,8 +139,8 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
 
   final List<Kassenzeile> loseMuenzartenOhneKupfer;
   final List<Kassenzeile> kupferLoseMuenzarten;
-  final bool kupferSichtbar;
-  final VoidCallback zeigeKupfer;
+  final bool kupferLoseSichtbar;
+  final VoidCallback zeigeKupferLose;
   final Map<String, FocusNode> loseMuenzenFocusNode;
   final Map<String, TextEditingController> loseMuenzenController;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
@@ -198,16 +198,16 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-        if (!kupferSichtbar)
+        if (!kupferLoseSichtbar)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
-              onPressed: zeigeKupfer,
+              onPressed: zeigeKupferLose,
               icon: const Icon(Icons.add),
               label: const Text('Kupfermünzen hinzufügen'),
             ),
           ),
-        if (kupferSichtbar) ...<Widget>[
+        if (kupferLoseSichtbar) ...<Widget>[
           const SizedBox(height: 8),
           for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
             Builder(
@@ -232,7 +232,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
     super.key,
     required this.rollenOhneKupfer,
     required this.kupferRollen,
-    required this.kupferSichtbar,
+    required this.kupferRollenSichtbar,
     required this.zeilenEintragBuilder,
     required this.summeGruppe,
     required this.formatiereRollenAnzeige,
@@ -242,7 +242,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
 
   final List<Kassenzeile> rollenOhneKupfer;
   final List<Kassenzeile> kupferRollen;
-  final bool kupferSichtbar;
+  final bool kupferRollenSichtbar;
   final Widget Function(Kassenzeile zeile) zeilenEintragBuilder;
   final int Function(List<Kassenzeile> zeilen) summeGruppe;
   final String Function(int cent) formatiereRollenAnzeige;
@@ -258,7 +258,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
           zeilenEintragBuilder(zeile),
           const SizedBox(height: 8),
         ],
-        if (!kupferSichtbar)
+        if (!kupferRollenSichtbar)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
@@ -267,7 +267,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
               label: const Text('Kupfer-Rollen hinzufügen'),
             ),
           ),
-        if (kupferSichtbar) ...<Widget>[
+        if (kupferRollenSichtbar) ...<Widget>[
           const SizedBox(height: 8),
           for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
             zeilenEintragBuilder(zeile),
