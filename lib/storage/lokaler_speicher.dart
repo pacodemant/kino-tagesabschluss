@@ -202,6 +202,46 @@ class LokalerSpeicher {
     await speicher.remove(schritt2EntwurfKey(kinoId));
   }
 
+  static Future<Map<String, dynamic>?> ladeAutoFillSchritt1() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? rohwert = speicher.getString('dev_autofill_schritt1');
+    if (rohwert == null) {
+      return null;
+    }
+    try {
+      return jsonDecode(rohwert) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> speichereAutoFillSchritt1(
+    Map<String, dynamic> daten,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString('dev_autofill_schritt1', jsonEncode(daten));
+  }
+
+  static Future<Map<String, dynamic>?> ladeAutoFillSchritt2() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? rohwert = speicher.getString('dev_autofill_schritt2');
+    if (rohwert == null) {
+      return null;
+    }
+    try {
+      return jsonDecode(rohwert) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> speichereAutoFillSchritt2(
+    Map<String, dynamic> daten,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString('dev_autofill_schritt2', jsonEncode(daten));
+  }
+
   /// Löscht den finalen Tagesabschluss eines bestimmten Kalendertags.
   static Future<void> loescheFinalenTagesabschluss(
     String kinoId,

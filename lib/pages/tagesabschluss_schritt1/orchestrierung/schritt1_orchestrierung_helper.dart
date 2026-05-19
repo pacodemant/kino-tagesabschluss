@@ -23,29 +23,44 @@ class Schritt1OrchestrierungHelper {
     uebernehmeUmschlagEntwurf,
     required VoidCallback sichereMindestensEinenUmschlag,
     required VoidCallback synchronisiereControllerAusState,
+    Map<String, dynamic>? gespeicherteDaten,
   }) {
-    stueckzahlen['note_100'] = 0;
-    stueckzahlen['note_50']  = 8;
-    stueckzahlen['note_20']  = 4;
-    stueckzahlen['note_10']  = 29;
-    stueckzahlen['note_5']   = 13;
-    stueckzahlen['roll_2e']  = 0;
-    stueckzahlen['roll_1e']  = 0;
-    stueckzahlen['roll_50c'] = 1;
-    stueckzahlen['roll_20c'] = 1;
-    stueckzahlen['roll_10c'] = 1;
-    stueckzahlen['roll_5c']  = 0;
-    stueckzahlen['roll_2c']  = 0;
-    stueckzahlen['roll_1c']  = 0;
+    final Object? stRoh = gespeicherteDaten?['stueckzahlen'];
+    final Object? lmRoh = gespeicherteDaten?['loseMuenzenNachArtCent'];
+    if (stRoh is Map<String, dynamic>) {
+      for (final MapEntry<String, dynamic> e in stRoh.entries) {
+        stueckzahlen[e.key] = (e.value as num?)?.toInt() ?? 0;
+      }
+    } else {
+      stueckzahlen['note_100'] = 0;
+      stueckzahlen['note_50']  = 8;
+      stueckzahlen['note_20']  = 4;
+      stueckzahlen['note_10']  = 29;
+      stueckzahlen['note_5']   = 13;
+      stueckzahlen['roll_2e']  = 0;
+      stueckzahlen['roll_1e']  = 0;
+      stueckzahlen['roll_50c'] = 1;
+      stueckzahlen['roll_20c'] = 1;
+      stueckzahlen['roll_10c'] = 1;
+      stueckzahlen['roll_5c']  = 0;
+      stueckzahlen['roll_2c']  = 0;
+      stueckzahlen['roll_1c']  = 0;
+    }
 
-    loseMuenzenNachArtCent['coin_2e']  = 3800;
-    loseMuenzenNachArtCent['coin_1e']  = 2500;
-    loseMuenzenNachArtCent['coin_50c'] = 700;
-    loseMuenzenNachArtCent['coin_20c'] = 40;
-    loseMuenzenNachArtCent['coin_10c'] = 50;
-    loseMuenzenNachArtCent['coin_5c']  = 0;
-    loseMuenzenNachArtCent['coin_2c']  = 0;
-    loseMuenzenNachArtCent['coin_1c']  = 0;
+    if (lmRoh is Map<String, dynamic>) {
+      for (final MapEntry<String, dynamic> e in lmRoh.entries) {
+        loseMuenzenNachArtCent[e.key] = (e.value as num?)?.toInt() ?? 0;
+      }
+    } else {
+      loseMuenzenNachArtCent['coin_2e']  = 3800;
+      loseMuenzenNachArtCent['coin_1e']  = 2500;
+      loseMuenzenNachArtCent['coin_50c'] = 700;
+      loseMuenzenNachArtCent['coin_20c'] = 40;
+      loseMuenzenNachArtCent['coin_10c'] = 50;
+      loseMuenzenNachArtCent['coin_5c']  = 0;
+      loseMuenzenNachArtCent['coin_2c']  = 0;
+      loseMuenzenNachArtCent['coin_1c']  = 0;
+    }
 
     uebernehmeUmschlagEntwurf(<UmschlagEintrag>[]);
     sichereMindestensEinenUmschlag();

@@ -385,29 +385,56 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
-  void _autoFillDev() {
+  Future<void> _autoFillDev() async {
+    final Map<String, dynamic>? daten =
+        await LokalerSpeicher.ladeAutoFillSchritt2();
+    if (!mounted) {
+      return;
+    }
+    final int kinoSoll =
+        (daten?['kinoSollCent'] as num?)?.toInt() ?? 74900;
+    final int bistroSoll =
+        (daten?['bistroSollCent'] as num?)?.toInt() ?? 20280;
+    final int ausgaben =
+        (daten?['ausgabenCent'] as num?)?.toInt() ?? 0;
+    final int ecBeleg =
+        (daten?['ecBelegCent'] as num?)?.toInt() ?? 51390;
+    final int differenz =
+        (daten?['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
+
     setState(() {
-      _kinoSollCent = 74900;
-      _bistroSollCent = 20280;
-      _ausgabenCent = 0;
-      _differenzAnfangsbestandCent = 0;
+      _kinoSollCent = kinoSoll;
+      _bistroSollCent = bistroSoll;
+      _ausgabenCent = ausgaben;
+      _differenzAnfangsbestandCent = differenz;
 
       _setzeEcBelegAnzahl(1);
-      _ecBelegeCent[0] = 51390;
+      _ecBelegeCent[0] = ecBeleg;
 
       _setzeControllerText(
         _kinoSollController,
-        TagesabschlussFormatierung.formatiereEuroEingabe(_kinoSollCent),
+        kinoSoll != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll)
+            : '',
       );
       _setzeControllerText(
         _bistroSollController,
-        TagesabschlussFormatierung.formatiereEuroEingabe(_bistroSollCent),
+        bistroSoll != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(bistroSoll)
+            : '',
       );
-      _setzeControllerText(_ausgabenController, '');
+      _setzeControllerText(
+        _ausgabenController,
+        ausgaben != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben)
+            : '',
+      );
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(
         _ecBelegController[0],
-        TagesabschlussFormatierung.formatiereEuroEingabe(_ecBelegeCent[0]),
+        ecBeleg != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
+            : '',
       );
     });
     _speichereEntwurf();

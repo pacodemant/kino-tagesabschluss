@@ -1,4 +1,4 @@
-last_run: 151
-next_run: 152
-last_run_title: R151: DEV-Panel Schritt 2: height:null durch feste Höhe ersetzt
-last_commit: e098147
+last_run: 152
+next_run: 153
+last_run_title: R152: Auto-Fill-Werte in Einstellungen editierbar
+last_commit: TBD

@@ -17,6 +17,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenf
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -297,7 +298,12 @@ class _TagesabschlussSchritt1SeiteState
     return KeyedSubtree(key: _holeFeldKey(focusNode), child: child);
   }
 
-  void _autoFillDev() {
+  Future<void> _autoFillDev() async {
+    final Map<String, dynamic>? gespeicherteDaten =
+        await LokalerSpeicher.ladeAutoFillSchritt1();
+    if (!mounted) {
+      return;
+    }
     setState(() {
       _orchestrierungHelper.autoFillDev(
         zufall: _zufall,
@@ -309,6 +315,7 @@ class _TagesabschlussSchritt1SeiteState
         uebernehmeUmschlagEntwurf: _uebernehmeUmschlagEntwurf,
         sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
+        gespeicherteDaten: gespeicherteDaten,
       );
     });
     _speichereEntwurf();
