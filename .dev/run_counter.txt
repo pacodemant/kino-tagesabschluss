@@ -1,4 +1,4 @@
-last_run: 142
-next_run: 143
-last_run_title: R142: Kupfergeld-Zeile rot/fett; Reihenfolge geprüft
-last_commit: 17ea8c3
+last_run: 143
+next_run: 144
+last_run_title: R143: Kupfergeld-Zeile nach Scheine/Rollen, vor Lose Münzen
+last_commit: d089d11
