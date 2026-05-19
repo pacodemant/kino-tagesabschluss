@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
@@ -17,6 +18,7 @@ class EinstellungenSeite extends StatefulWidget {
 class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   late final List<TextEditingController> _controllers;
   bool _geladen = false;
+  bool _devModusAktiv = false;
 
   @override
   void initState() {
@@ -47,11 +49,23 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _controllers[i].text =
           TagesabschlussFormatierung.formatiereEuroEingabe(cent);
     }
+    final bool devAktiv = await DevModus.istAktiv();
     if (!mounted) {
       return;
     }
     setState(() {
+      _devModusAktiv = devAktiv;
       _geladen = true;
+    });
+  }
+
+  Future<void> _onDevModusGeaendert(bool wert) async {
+    await DevModus.setzen(wert);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _devModusAktiv = wert;
     });
   }
 
@@ -77,41 +91,51 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         foregroundColor: Colors.white,
         title: const Text('Einstellungen'),
       ),
-      body: ListView.builder(
+      body: ListView(
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        itemCount: KinoRepository.kinos.length,
-        itemBuilder: (BuildContext ctx, int i) {
-          final Kino kino = KinoRepository.kinos[i];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      kino.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+        children: <Widget>[
+          ...List<Widget>.generate(KinoRepository.kinos.length, (int i) {
+            final Kino kino = KinoRepository.kinos[i];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        kino.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    BetragCentEingabefeld(
-                      textController: _controllers[i],
-                      onChanged: (String text) => _onChanged(i, text),
-                      schriftgroesse: 18,
-                      hinweisText: '200,00 €',
-                      labelText: 'Wechselgeld-Sollwert',
-                    ),
-                  ],
+                      const SizedBox(height: 12),
+                      BetragCentEingabefeld(
+                        textController: _controllers[i],
+                        onChanged: (String text) => _onChanged(i, text),
+                        schriftgroesse: 18,
+                        hinweisText: '200,00 €',
+                        labelText: 'Wechselgeld-Sollwert',
+                      ),
+                    ],
+                  ),
                 ),
               ),
+            );
+          }),
+          const SizedBox(height: 4),
+          Card(
+            child: SwitchListTile(
+              title: const Text('Entwicklermodus'),
+              value: _devModusAktiv,
+              onChanged: _onDevModusGeaendert,
+              activeThumbColor: AppFarben.appBarRot,
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
