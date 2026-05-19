@@ -115,13 +115,13 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     for (final String id in kupferRollenIds) {
       kupferCent += (argumente.stueckzahlen[id] ?? 0) * (ew[id] ?? 0);
     }
+    // restCent sofort reduzieren, Zeile erst nach Schritt 2 einfügen
+    _ErgebnisZeile? kupferZeile;
     if (kupferCent > 0) {
-      zeilen.add(
-        _ErgebnisZeile.betrag(
-          bezeichnung: 'Kupfergeld',
-          betragCent: kupferCent,
-          rot: true,
-        ),
+      kupferZeile = _ErgebnisZeile.betrag(
+        bezeichnung: 'Kupfergeld',
+        betragCent: kupferCent,
+        rot: true,
       );
       restCent -= kupferCent;
     }
@@ -160,6 +160,10 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           ),
         );
       }
+    }
+
+    if (kupferZeile != null) {
+      zeilen.add(kupferZeile);
     }
 
     // Schritt 3 — Lose Silbermünzen
