@@ -70,6 +70,8 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 
 class _TagesabschlussSchritt2SeiteState
     extends State<TagesabschlussSchritt2Seite> {
+  static const double _devToolsPanelHoehe = 68;
+
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
   final TextEditingController _ausgabenController = TextEditingController();
@@ -660,7 +662,7 @@ class _TagesabschlussSchritt2SeiteState
                     opacity: _devModusAktiv && _devToolsOffen ? 1 : 0,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 140),
-                      height: _devModusAktiv && _devToolsOffen ? null : 0,
+                      height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
                       child: _baueDevToolsPanel(),
                     ),
                   ),

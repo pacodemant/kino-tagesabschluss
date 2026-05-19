@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 151: DEV-Panel Schritt 2: `height: null` durch `_devToolsPanelHoehe = 68` ersetzt — `AnimatedContainer` kann jetzt von 0 auf 68 interpolieren (null-Interpolation funktioniert im Web nicht).
 - Run 150: DEV-Panel Web-Fix: `devToolsStickySichtbar` in Schritt 1 auf `_devModusAktiv && _devToolsOffen` umgestellt; `_devToolsSichtbar`-Getter (war `!kReleaseMode && !kIsWeb`) ersatzlos entfernt; in Schritt 2 alle drei Panel-Ausdrücke (`ignoring`, `opacity`, `height`) analog auf `_devModusAktiv` umgestellt; `foundation.dart`-Import in beiden Dateien entfernt.
 - Run 149: DEV-Button in Schritt 1 und Schritt 2 nur sichtbar wenn `DevModus.istAktiv() == true`; State-Variable `_devModusAktiv` (Default: false) wird in `initState()` asynchron via `.then()` gesetzt; `if (_devToolsSichtbar)` → `if (_devModusAktiv)` in beiden AppBars.
 - Run 148: Neuer Service `lib/services/dev_modus.dart` (Key `dev_modus_aktiv`, Methoden `istAktiv()` / `setzen()`); EinstellungenSeite lädt Bool beim Start, zeigt SwitchListTile „Entwicklermodus" mit `activeThumbColor: appBarRot`, speichert Änderungen sofort via SharedPreferences.
