@@ -16,6 +16,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_cont
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
+import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -193,8 +194,28 @@ class _TagesabschlussSchritt1SeiteState
           kinoId: widget.kinoId,
         );
 
+    // AbrechnungSpeicher als primäre Quelle (korrekte Datum-Logik mit 4-Uhr-Knick)
+    final Map<String, dynamic>? abrechnungDaten =
+        await AbrechnungSpeicher.laden(widget.kinoId);
+
     if (!mounted) {
       return;
+    }
+
+    if (abrechnungDaten != null) {
+      final Object? stueckzahlenRoh = abrechnungDaten['stueckzahlen'];
+      if (stueckzahlenRoh is Map<String, dynamic>) {
+        for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
+          _stueckzahlen[e.key] = (e.value as num?)?.toInt() ?? 0;
+        }
+      }
+      final Object? loseRoh = abrechnungDaten['loseMuenzenNachArtCent'];
+      if (loseRoh is Map<String, dynamic>) {
+        for (final MapEntry<String, dynamic> e in loseRoh.entries) {
+          _loseMuenzenNachArtCent[e.key] = (e.value as num?)?.toInt() ?? 0;
+        }
+      }
+      _initialisierungHelper.synchronisiereControllerAusState();
     }
 
     setState(() {
@@ -296,6 +317,12 @@ class _TagesabschlussSchritt1SeiteState
       kinoId: widget.kinoId,
       entwurf: entwurf,
     );
+
+    await AbrechnungSpeicher.speichern(widget.kinoId, <String, dynamic>{
+      'stueckzahlen': Map<String, int>.from(_stueckzahlen),
+      'loseMuenzenNachArtCent': Map<String, int>.from(_loseMuenzenNachArtCent),
+      'barBestandCent': _barumsatzBereinigtCent,
+    });
   }
 
   // Delegiert State-/Controller-Logik in eine ausgelagerte Helper-Datei.
