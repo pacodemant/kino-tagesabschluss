@@ -122,7 +122,10 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
 class Schritt1LoseMuenzenInhalt extends StatelessWidget {
   const Schritt1LoseMuenzenInhalt({
     super.key,
-    required this.loseMuenzarten,
+    required this.loseMuenzartenOhneKupfer,
+    required this.kupferLoseMuenzarten,
+    required this.kupferSichtbar,
+    required this.zeigeKupfer,
     required this.loseMuenzenFocusNode,
     required this.loseMuenzenController,
     required this.baueFeldMitKey,
@@ -134,7 +137,10 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
     this.rotHervorgehoben = const <FocusNode>{},
   });
 
-  final List<Kassenzeile> loseMuenzarten;
+  final List<Kassenzeile> loseMuenzartenOhneKupfer;
+  final List<Kassenzeile> kupferLoseMuenzarten;
+  final bool kupferSichtbar;
+  final VoidCallback zeigeKupfer;
   final Map<String, FocusNode> loseMuenzenFocusNode;
   final Map<String, TextEditingController> loseMuenzenController;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
@@ -147,48 +153,68 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
   final int loseMuenzenGesamtCent;
   final Set<FocusNode> rotHervorgehoben;
 
+  Widget _baueMuenzzeile(BuildContext context, Kassenzeile zeile) {
+    final FocusNode focusNode = loseMuenzenFocusNode[zeile.id]!;
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Text(
+            zeile.bezeichnung,
+            textAlign: TextAlign.right,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 13),
+          ),
+        ),
+        const SizedBox(width: 10),
+        SizedBox(
+          width: 148,
+          child: baueFeldMitKey(
+            focusNode: focusNode,
+            child: BetragCentEingabefeld(
+              textController: loseMuenzenController[zeile.id]!,
+              focusNode: focusNode,
+              textInputAction: textInputActionFuerSchritt1(focusNode),
+              onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
+              onChanged: (String wert) =>
+                  beiLoseMuenzartBetragGeaendert(zeile.id, wert),
+              schriftgroesse: 15,
+              hinweisText: '0,00 €',
+              istHervorgehoben: rotHervorgehoben.contains(focusNode),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (final Kassenzeile zeile in loseMuenzarten) ...<Widget>[
+        for (final Kassenzeile zeile in loseMuenzartenOhneKupfer) ...<Widget>[
           Builder(
-            builder: (BuildContext _) {
-              final FocusNode focusNode = loseMuenzenFocusNode[zeile.id]!;
-              return Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      zeile.bezeichnung,
-                      textAlign: TextAlign.right,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  SizedBox(
-                    width: 148,
-                    child: baueFeldMitKey(
-                      focusNode: focusNode,
-                      child: BetragCentEingabefeld(
-                        textController: loseMuenzenController[zeile.id]!,
-                        focusNode: focusNode,
-                        textInputAction: textInputActionFuerSchritt1(focusNode),
-                        onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
-                        onChanged: (String wert) =>
-                            beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-                        schriftgroesse: 15,
-                        hinweisText: '0,00 €',
-                        istHervorgehoben: rotHervorgehoben.contains(focusNode),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
+            builder: (BuildContext ctx) => _baueMuenzzeile(ctx, zeile),
           ),
           const SizedBox(height: 8),
+        ],
+        if (!kupferSichtbar)
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              onPressed: zeigeKupfer,
+              icon: const Icon(Icons.add),
+              label: const Text('Kupfermünzen hinzufügen'),
+            ),
+          ),
+        if (kupferSichtbar) ...<Widget>[
+          const SizedBox(height: 8),
+          for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
+            Builder(
+              builder: (BuildContext ctx) => _baueMuenzzeile(ctx, zeile),
+            ),
+            const SizedBox(height: 8),
+          ],
         ],
         const SizedBox(height: 8),
         Text(
@@ -206,7 +232,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
     super.key,
     required this.rollenOhneKupfer,
     required this.kupferRollen,
-    required this.kupferRollenSichtbar,
+    required this.kupferSichtbar,
     required this.zeilenEintragBuilder,
     required this.summeGruppe,
     required this.formatiereRollenAnzeige,
@@ -216,7 +242,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
 
   final List<Kassenzeile> rollenOhneKupfer;
   final List<Kassenzeile> kupferRollen;
-  final bool kupferRollenSichtbar;
+  final bool kupferSichtbar;
   final Widget Function(Kassenzeile zeile) zeilenEintragBuilder;
   final int Function(List<Kassenzeile> zeilen) summeGruppe;
   final String Function(int cent) formatiereRollenAnzeige;
@@ -232,7 +258,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
           zeilenEintragBuilder(zeile),
           const SizedBox(height: 8),
         ],
-        if (!kupferRollenSichtbar)
+        if (!kupferSichtbar)
           Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
@@ -241,7 +267,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
               label: const Text('Kupfer-Rollen hinzufügen'),
             ),
           ),
-        if (kupferRollenSichtbar) ...<Widget>[
+        if (kupferSichtbar) ...<Widget>[
           const SizedBox(height: 8),
           for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
             zeilenEintragBuilder(zeile),

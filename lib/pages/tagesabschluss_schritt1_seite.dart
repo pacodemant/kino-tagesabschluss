@@ -60,6 +60,11 @@ class _TagesabschlussSchritt1SeiteState
     'roll_2c',
     'roll_5c',
   };
+  static const Set<String> _kupferLoseMuenzenIds = <String>{
+    'coin_1c',
+    'coin_2c',
+    'coin_5c',
+  };
 
   final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
       const KassenstandEntwurfUsecase();
@@ -95,7 +100,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _scheineAufgeklappt = true;
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
-  bool _kupferRollenSichtbar = false;
+  bool _kupferSichtbar = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   final ScrollController _scrollController = ScrollController();
@@ -112,7 +117,13 @@ class _TagesabschlussSchritt1SeiteState
       .where((Kassenzeile zeile) => !_kupferRollenIds.contains(zeile.id))
       .toList();
   List<Kassenzeile> get _rollenSichtbar =>
-      _kupferRollenSichtbar ? _rollenAlle : _rollenOhneKupfer;
+      _kupferSichtbar ? _rollenAlle : _rollenOhneKupfer;
+  List<Kassenzeile> get _loseMuenzartenOhneKupfer => _loseMuenzarten
+      .where((Kassenzeile zeile) => !_kupferLoseMuenzenIds.contains(zeile.id))
+      .toList();
+  List<Kassenzeile> get _kupferLoseMuenzarten => _loseMuenzarten
+      .where((Kassenzeile zeile) => _kupferLoseMuenzenIds.contains(zeile.id))
+      .toList();
   List<Kassenzeile> get _loseMuenzarten =>
       StueckelungKonfiguration.loseMuenzarten;
   List<Kassenzeile> get _alleStueckzahlZeilen =>
@@ -218,9 +229,18 @@ class _TagesabschlussSchritt1SeiteState
       _initialisierungHelper.synchronisiereControllerAusState();
     }
 
+    final bool hatKupferWerte =
+        _kupferRollenIds.any((String id) => (_stueckzahlen[id] ?? 0) > 0) ||
+        _kupferLoseMuenzenIds.any(
+          (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
+        );
+
     setState(() {
       _wechselgeldSollwertCent = geladenerWechselgeldSollwert;
       _laedt = false;
+      if (hatKupferWerte) {
+        _kupferSichtbar = true;
+      }
     });
   }
 
@@ -403,9 +423,9 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   // Setzt die Sichtbarkeit der Kupfer-Rollen ohne Layout-/Logikaenderung.
-  void _zeigeKupferRollen() {
+  void _zeigeKupfer() {
     setState(() {
-      _kupferRollenSichtbar = true;
+      _kupferSichtbar = true;
     });
   }
 
@@ -786,6 +806,8 @@ class _TagesabschlussSchritt1SeiteState
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
+      loseMuenzartenOhneKupfer: _loseMuenzartenOhneKupfer,
+      kupferLoseMuenzarten: _kupferLoseMuenzarten,
       rollenOhneKupfer: _rollenOhneKupfer,
       kupferRollen: _kupferRollen,
       rollenSichtbar: _rollenSichtbar,
@@ -793,7 +815,8 @@ class _TagesabschlussSchritt1SeiteState
       loseMuenzenAufgeklappt: _loseMuenzenAufgeklappt,
       rollenAufgeklappt: _rollenAufgeklappt,
       umschlaegeAufgeklappt: _umschlaegeAufgeklappt,
-      kupferRollenSichtbar: _kupferRollenSichtbar,
+      kupferSichtbar: _kupferSichtbar,
+      zeigeKupfer: _zeigeKupfer,
       stueckzahlen: _stueckzahlen,
       stueckzahlController: _stueckzahlController,
       stueckzahlFocusNode: _stueckzahlFocusNode,
@@ -818,7 +841,7 @@ class _TagesabschlussSchritt1SeiteState
       beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
       umschlagEntfernen: _umschlagEntfernen,
       umschlagHinzufuegen: _umschlagHinzufuegen,
-      zeigeKupferRollen: _zeigeKupferRollen,
+      zeigeKupferRollen: _zeigeKupfer,
       toggleScheine: () {
         _toggleSection(_sectionScheine);
       },
