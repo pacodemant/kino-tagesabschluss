@@ -17,6 +17,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_o
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
+import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -104,6 +105,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _kupferRollenSichtbar = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
+  bool _devModusAktiv = false;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
@@ -162,6 +164,11 @@ class _TagesabschlussSchritt1SeiteState
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
     _scrollController.addListener(_beiScrollAenderung);
+    DevModus.istAktiv().then((bool aktiv) {
+      setState(() {
+        _devModusAktiv = aktiv;
+      });
+    });
     _ladeInitialeDaten();
   }
 
@@ -875,7 +882,7 @@ class _TagesabschlussSchritt1SeiteState
         schrittTitel: 'Bargeldzählung',
         onTap: _zeigeSchrittAuswahlBottomSheet,
         actions: <Widget>[
-          if (_devToolsSichtbar)
+          if (_devModusAktiv)
             IconButton(
               tooltip: 'DEV-Tools',
               onPressed: () {

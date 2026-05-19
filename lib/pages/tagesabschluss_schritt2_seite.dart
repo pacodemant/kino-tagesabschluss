@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
@@ -92,6 +93,7 @@ class _TagesabschlussSchritt2SeiteState
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[0];
   bool _devToolsOffen = false;
+  bool _devModusAktiv = false;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
@@ -103,6 +105,11 @@ class _TagesabschlussSchritt2SeiteState
     super.initState();
     final FocusNode ersterEcFocusNode = FocusNode();
     _ecBelegFocusNode.add(ersterEcFocusNode);
+    DevModus.istAktiv().then((bool aktiv) {
+      setState(() {
+        _devModusAktiv = aktiv;
+      });
+    });
     _ladeEntwurf();
   }
 
@@ -587,7 +594,7 @@ class _TagesabschlussSchritt2SeiteState
         schrittNummer: 2,
         schrittTitel: 'Einnahmen/Abschluss',
         actions: <Widget>[
-          if (_devToolsSichtbar)
+          if (_devModusAktiv)
             IconButton(
               tooltip: 'DEV-Tools',
               onPressed: () {

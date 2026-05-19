@@ -1,4 +1,4 @@
-last_run: 148
-next_run: 149
-last_run_title: R148: Entwicklermodus-Toggle in Einstellungen
-last_commit: da3e313
+last_run: 149
+next_run: 150
+last_run_title: R149: DEV-Button Sichtbarkeit an DevModus gekoppelt
+last_commit: pending

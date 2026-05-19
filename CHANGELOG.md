@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 149: DEV-Button in Schritt 1 und Schritt 2 nur sichtbar wenn `DevModus.istAktiv() == true`; State-Variable `_devModusAktiv` (Default: false) wird in `initState()` asynchron via `.then()` gesetzt; `if (_devToolsSichtbar)` → `if (_devModusAktiv)` in beiden AppBars.
 - Run 148: Neuer Service `lib/services/dev_modus.dart` (Key `dev_modus_aktiv`, Methoden `istAktiv()` / `setzen()`); EinstellungenSeite lädt Bool beim Start, zeigt SwitchListTile „Entwicklermodus" mit `activeThumbColor: appBarRot`, speichert Änderungen sofort via SharedPreferences.
 - Run 147: TabBar in VerlaufSeite erhält labelColor/unselectedLabelColor/indicatorColor: Colors.white — Tabs auf rotem AppBar-Hintergrund klar sichtbar; PlatzhalterSeite AppBar von inversePrimary (Indigo-Blau) auf AppFarben.appBarRot + foregroundColor: white umgestellt.
 - Run 146: _kupferSichtbar aufgeteilt in _kupferLoseSichtbar (coin_1c/2c/5c) und _kupferRollenSichtbar (roll_1c/2c/5c); zwei getrennte Buttons und Methoden (_zeigeKupferLose / _zeigeKupferRollen); Lade-Logik setzt beide Flags separat; schritt1_ui_builder.dart und schritt1_gruppen_orchestrierung.dart entsprechend angepasst.
