@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
@@ -98,8 +97,6 @@ class _TagesabschlussSchritt2SeiteState
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
-  bool get _devToolsSichtbar => !kReleaseMode && !kIsWeb;
-
   @override
   void initState() {
     super.initState();
@@ -657,13 +654,13 @@ class _TagesabschlussSchritt2SeiteState
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: <Widget>[
                 IgnorePointer(
-                  ignoring: !_devToolsSichtbar || !_devToolsOffen,
+                  ignoring: !_devModusAktiv || !_devToolsOffen,
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 140),
-                    opacity: _devToolsSichtbar && _devToolsOffen ? 1 : 0,
+                    opacity: _devModusAktiv && _devToolsOffen ? 1 : 0,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 140),
-                      height: _devToolsSichtbar && _devToolsOffen ? null : 0,
+                      height: _devModusAktiv && _devToolsOffen ? null : 0,
                       child: _baueDevToolsPanel(),
                     ),
                   ),

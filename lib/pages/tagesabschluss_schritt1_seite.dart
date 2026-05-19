@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
@@ -131,8 +130,6 @@ class _TagesabschlussSchritt1SeiteState
       StueckelungKonfiguration.loseMuenzarten;
   List<Kassenzeile> get _alleStueckzahlZeilen =>
       StueckelungKonfiguration.alleStueckzahlZeilen;
-  bool get _devToolsSichtbar => !kReleaseMode && !kIsWeb;
-
   @override
   void initState() {
     super.initState();
@@ -819,7 +816,7 @@ class _TagesabschlussSchritt1SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final bool devToolsStickySichtbar = _devToolsSichtbar && _devToolsOffen;
+    final bool devToolsStickySichtbar = _devModusAktiv && _devToolsOffen;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
       loseMuenzarten: _loseMuenzarten,
