@@ -33,6 +33,7 @@ class _ErgebnisZeile {
     this.betragCent = 0,
     this.gruen = false,
     this.rot = false,
+    this.fett = true,
   });
 
   factory _ErgebnisZeile.stueckzahl({
@@ -53,12 +54,14 @@ class _ErgebnisZeile {
     required String bezeichnung,
     required int betragCent,
     bool rot = false,
+    bool fett = true,
   }) =>
       _ErgebnisZeile._(
         art: _ZeilenArt.muenzBetrag,
         bezeichnung: bezeichnung,
         betragCent: betragCent,
         rot: rot,
+        fett: fett,
       );
 
   factory _ErgebnisZeile.restbetrag(int betragCent) =>
@@ -74,6 +77,7 @@ class _ErgebnisZeile {
   final int betragCent;
   final bool gruen;
   final bool rot;
+  final bool fett;
 }
 
 // ---------------------------------------------------------------------------
@@ -208,11 +212,13 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       zeilen.add(_ErgebnisZeile.restbetrag(restCent));
     }
 
-    // Bareinnahmen-Betrag (kein Label, Betrag in Bedarf-Spalte)
+    // Barumsatz-Zeile mit Trennlinie davor
+    zeilen.add(_ErgebnisZeile.trennlinie());
     zeilen.add(
       _ErgebnisZeile.muenzBetrag(
-        bezeichnung: '',
+        bezeichnung: 'Barumsatz',
         betragCent: argumente.barBestandAbzglWechselgeldCent,
+        fett: false,
       ),
     );
 
@@ -264,6 +270,14 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               )
             : null;
+        final TextStyle betragStyle = zeile.rot
+            ? const TextStyle(
+                color: Color(0xFFB87333),
+                fontWeight: FontWeight.bold,
+              )
+            : zeile.fett
+                ? const TextStyle(fontWeight: FontWeight.bold)
+                : const TextStyle();
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           child: Row(
@@ -274,8 +288,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                 child: Text(
                   _euro(zeile.betragCent),
                   textAlign: TextAlign.right,
-                  style: muenzStyle ??
-                      const TextStyle(fontWeight: FontWeight.bold),
+                  style: betragStyle,
                 ),
               ),
               const SizedBox(width: 64),
