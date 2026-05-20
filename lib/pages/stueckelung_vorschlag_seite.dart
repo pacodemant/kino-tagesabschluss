@@ -118,7 +118,14 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     for (final String id in kupferRollenIds) {
       kupferCent += (argumente.stueckzahlen[id] ?? 0) * (ew[id] ?? 0);
     }
+    // restCent sofort reduzieren, Zeile erst nach Schritt 2 einfügen
+    _ErgebnisZeile? kupferZeile;
     if (kupferCent > 0) {
+      kupferZeile = _ErgebnisZeile.betrag(
+        bezeichnung: 'Kupfergeld',
+        betragCent: kupferCent,
+        rot: true,
+      );
       restCent -= kupferCent;
     }
 
@@ -158,12 +165,16 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       }
     }
 
-    // Trennlinie und Münzbeträge
+    // Trennlinie vor Münzzeilen
     if (zeilen.isNotEmpty) {
       zeilen.add(_ErgebnisZeile.trennlinie());
     }
 
-    // Lose Silbermünzen — Gesamtbetrag anzeigen
+    if (kupferZeile != null) {
+      zeilen.add(kupferZeile);
+    }
+
+    // Schritt 3 — Lose Silbermünzen
     const List<String> silberLoseIds = <String>[
       'coin_2e',
       'coin_1e',
@@ -171,33 +182,25 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       'coin_20c',
       'coin_10c',
     ];
-    int loseSilberCent = 0;
-    for (final String id in silberLoseIds) {
-      loseSilberCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
-    }
-    final int silberGenommen =
-        restCent < loseSilberCent ? restCent : loseSilberCent;
-    restCent -= silberGenommen;
-
-    if (loseSilberCent > 0) {
-      zeilen.add(
-        _ErgebnisZeile.betrag(
-          bezeichnung: 'Lose Münzen',
-          betragCent: loseSilberCent,
-        ),
-      );
-    }
-    if (kupferCent > 0) {
-      zeilen.add(
-        _ErgebnisZeile.betrag(
-          bezeichnung: 'Kupfermünzen',
-          betragCent: kupferCent,
-          rot: true,
-        ),
-      );
+    if (restCent > 0) {
+      int silberVerfuegbar = 0;
+      for (final String id in silberLoseIds) {
+        silberVerfuegbar += argumente.loseMuenzenNachArtCent[id] ?? 0;
+      }
+      final int genommen =
+          restCent < silberVerfuegbar ? restCent : silberVerfuegbar;
+      if (genommen > 0) {
+        zeilen.add(
+          _ErgebnisZeile.betrag(
+            bezeichnung: 'Lose Münzen (Silber)',
+            betragCent: genommen,
+          ),
+        );
+        restCent -= genommen;
+      }
     }
 
-    // Restbetrag
+    // Schritt 4 — Restbetrag
     if (restCent > 0) {
       zeilen.add(_ErgebnisZeile.restbetrag(restCent));
     }
