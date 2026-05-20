@@ -167,13 +167,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       ..._s1RollenFelder,
     ]) {
       final int wert = (stMap?[id] as num?)?.toInt() ?? def;
-      _s1StueckzahlCtrl[id]!.text = wert.toString();
+      _s1StueckzahlCtrl[id]!.text = wert != 0 ? wert.toString() : '';
     }
 
     for (final (String id, _, int def) in _s1LoseMuenzFelder) {
       final int cent = (lmMap?[id] as num?)?.toInt() ?? def;
-      _s1LoseMuenzCtrl[id]!.text =
-          TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+      _s1LoseMuenzCtrl[id]!.text = cent != 0
+          ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
+          : '';
     }
 
     final List<dynamic>? umschlagRoh =
@@ -186,8 +187,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _s1UmschlagBezeichnungCtrl[i].text =
           (slot?['label'] as String?) ?? '';
       final int betrag = (slot?['amountCents'] as num?)?.toInt() ?? 0;
-      _s1UmschlagBetragCtrl[i].text =
-          TagesabschlussFormatierung.formatiereEuroEingabe(betrag);
+      _s1UmschlagBetragCtrl[i].text = betrag != 0
+          ? TagesabschlussFormatierung.formatiereEuroEingabe(betrag)
+          : '';
     }
   }
 
@@ -200,16 +202,21 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final int differenz =
         (daten?['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
 
-    _s2KinoSollCtrl.text =
-        TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll);
-    _s2BistroSollCtrl.text =
-        TagesabschlussFormatierung.formatiereEuroEingabe(bistroSoll);
-    _s2AusgabenCtrl.text =
-        TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben);
-    _s2EcBelegCtrl.text =
-        TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg);
-    _s2DifferenzCtrl.text =
-        TagesabschlussFormatierung.formatiereEuroEingabe(differenz);
+    _s2KinoSollCtrl.text = kinoSoll != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll)
+        : '';
+    _s2BistroSollCtrl.text = bistroSoll != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(bistroSoll)
+        : '';
+    _s2AusgabenCtrl.text = ausgaben != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben)
+        : '';
+    _s2EcBelegCtrl.text = ecBeleg != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
+        : '';
+    _s2DifferenzCtrl.text = differenz != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(differenz)
+        : '';
   }
 
   Future<void> _onDevModusGeaendert(bool wert) async {
@@ -298,11 +305,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             width: 60,
             child: Focus(
               onFocusChange: (bool hasFocus) {
-                if (hasFocus) {
-                  controller.clear();
-                } else if (controller.text.isEmpty) {
-                  controller.text = '0';
-                }
+                if (hasFocus) controller.clear();
               },
               child: TextField(
                 controller: controller,
@@ -337,12 +340,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             width: 80,
             child: Focus(
               onFocusChange: (bool hasFocus) {
-                if (hasFocus) {
-                  controller.clear();
-                } else if (controller.text.isEmpty) {
-                  controller.text =
-                      TagesabschlussFormatierung.formatiereEuroEingabe(0);
-                }
+                if (hasFocus) controller.clear();
               },
               child: TextField(
                 controller: controller,
@@ -388,12 +386,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             width: 80,
             child: Focus(
               onFocusChange: (bool hasFocus) {
-                if (hasFocus) {
-                  betragCtrl.clear();
-                } else if (betragCtrl.text.isEmpty) {
-                  betragCtrl.text =
-                      TagesabschlussFormatierung.formatiereEuroEingabe(0);
-                }
+                if (hasFocus) betragCtrl.clear();
               },
               child: TextField(
                 controller: betragCtrl,
