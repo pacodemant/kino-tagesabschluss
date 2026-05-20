@@ -1,4 +1,4 @@
-last_run: 158
-next_run: 159
-last_run_title: R158: Entwürfe erst nach Nutzerbestätigung löschen
+last_run: 159
+next_run: 160
+last_run_title: R159: Vollständigkeitsprüfung: Kupfermünzen nur prüfen wenn aktiviert
 last_commit: TBD

@@ -771,7 +771,9 @@ class _TagesabschlussSchritt1SeiteState
     final List<Kassenzeile> leereMuenzen = _loseMuenzarten
         .where(
           (Kassenzeile zeile) =>
-              _loseMuenzenController[zeile.id]!.text.isEmpty,
+              _loseMuenzenController[zeile.id]!.text.isEmpty &&
+              (!_kupferLoseMuenzenIds.contains(zeile.id) ||
+                  _kupferLoseSichtbar),
         )
         .toList();
 
