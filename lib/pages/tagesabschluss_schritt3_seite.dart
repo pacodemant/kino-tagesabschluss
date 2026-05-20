@@ -167,15 +167,6 @@ class _TagesabschlussSchritt3SeiteState
       return;
     }
 
-    await LokalerSpeicher.loescheKassenstandEntwurf(
-      kinoId: widget.argumente.kinoId,
-      isoDatum: DatumsHelper.logischesIsoDatum(),
-    );
-    await LokalerSpeicher.loescheSchritt2Entwurf(widget.argumente.kinoId);
-    if (!mounted) {
-      return;
-    }
-
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -184,28 +175,50 @@ class _TagesabschlussSchritt3SeiteState
         content: null,
         actions: <Widget>[
           TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const _PlatzhalterSeite(
-                    titel: 'Wechselgeldkasse prüfen',
-                  ),
-                ),
+            onPressed: () async {
+              await LokalerSpeicher.loescheKassenstandEntwurf(
+                kinoId: widget.argumente.kinoId,
+                isoDatum: DatumsHelper.logischesIsoDatum(),
               );
+              await LokalerSpeicher.loescheSchritt2Entwurf(
+                widget.argumente.kinoId,
+              );
+              if (dialogContext.mounted) {
+                Navigator.of(dialogContext).pop();
+              }
+              if (mounted) {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const _PlatzhalterSeite(
+                      titel: 'Wechselgeldkasse prüfen',
+                    ),
+                  ),
+                );
+              }
             },
             child: const Text('Wechselgeldkasse prüfen'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const _PlatzhalterSeite(
-                    titel: 'Getränke auffüllen',
-                  ),
-                ),
+            onPressed: () async {
+              await LokalerSpeicher.loescheKassenstandEntwurf(
+                kinoId: widget.argumente.kinoId,
+                isoDatum: DatumsHelper.logischesIsoDatum(),
               );
+              await LokalerSpeicher.loescheSchritt2Entwurf(
+                widget.argumente.kinoId,
+              );
+              if (dialogContext.mounted) {
+                Navigator.of(dialogContext).pop();
+              }
+              if (mounted) {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const _PlatzhalterSeite(
+                      titel: 'Getränke auffüllen',
+                    ),
+                  ),
+                );
+              }
             },
             child: const Text('Getränke auffüllen'),
           ),
