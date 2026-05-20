@@ -248,8 +248,8 @@ class StueckelungVorschlagSeite extends StatelessWidget {
 
       case _ZeilenArt.betrag:
         final TextStyle? betragStyle = zeile.rot
-            ? TextStyle(
-                color: Colors.red.shade700,
+            ? const TextStyle(
+                color: Color(0xFFB87333),
                 fontWeight: FontWeight.bold,
               )
             : null;
