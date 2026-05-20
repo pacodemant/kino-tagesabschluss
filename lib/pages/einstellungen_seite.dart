@@ -50,11 +50,23 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     ('coin_1c', '1 ct', 0),
   ];
 
+  static const int _umschlagSlots = 3;
+
   late final List<TextEditingController> _controllers;
   final Map<String, TextEditingController> _s1StueckzahlCtrl =
       <String, TextEditingController>{};
   final Map<String, TextEditingController> _s1LoseMuenzCtrl =
       <String, TextEditingController>{};
+  final List<TextEditingController> _s1UmschlagBezeichnungCtrl =
+      List<TextEditingController>.generate(
+    _umschlagSlots,
+    (_) => TextEditingController(),
+  );
+  final List<TextEditingController> _s1UmschlagBetragCtrl =
+      List<TextEditingController>.generate(
+    _umschlagSlots,
+    (_) => TextEditingController(),
+  );
   final TextEditingController _s2KinoSollCtrl = TextEditingController();
   final TextEditingController _s2BistroSollCtrl = TextEditingController();
   final TextEditingController _s2AusgabenCtrl = TextEditingController();
@@ -92,6 +104,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       c.dispose();
     }
     for (final TextEditingController c in _s1LoseMuenzCtrl.values) {
+      c.dispose();
+    }
+    for (final TextEditingController c in _s1UmschlagBezeichnungCtrl) {
+      c.dispose();
+    }
+    for (final TextEditingController c in _s1UmschlagBetragCtrl) {
       c.dispose();
     }
     _s2KinoSollCtrl.dispose();
@@ -158,6 +176,21 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
           : '';
     }
+
+    final List<dynamic>? umschlagRoh =
+        daten?['umschlaege'] as List<dynamic>?;
+    for (int i = 0; i < _umschlagSlots; i++) {
+      final Map<String, dynamic>? slot =
+          (umschlagRoh != null && i < umschlagRoh.length)
+              ? umschlagRoh[i] as Map<String, dynamic>?
+              : null;
+      _s1UmschlagBezeichnungCtrl[i].text =
+          (slot?['label'] as String?) ?? '';
+      final int betrag = (slot?['amountCents'] as num?)?.toInt() ?? 0;
+      _s1UmschlagBetragCtrl[i].text = betrag != 0
+          ? TagesabschlussFormatierung.formatiereEuroEingabe(betrag)
+          : '';
+    }
   }
 
   void _setzeAutoFillSchritt2Controller(Map<String, dynamic>? daten) {
@@ -215,9 +248,19 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         _s1LoseMuenzCtrl[id]!.text,
       );
     }
+    final List<Map<String, dynamic>> umschlaege = <Map<String, dynamic>>[];
+    for (int i = 0; i < _umschlagSlots; i++) {
+      umschlaege.add(<String, dynamic>{
+        'label': _s1UmschlagBezeichnungCtrl[i].text.trim(),
+        'amountCents': TagesabschlussBerechnung.parseCentZiffern(
+          _s1UmschlagBetragCtrl[i].text,
+        ),
+      });
+    }
     await LokalerSpeicher.speichereAutoFillSchritt1(<String, dynamic>{
       'stueckzahlen': stueckzahlen,
       'loseMuenzenNachArtCent': loseMuenzen,
+      'umschlaege': umschlaege,
     });
   }
 
@@ -315,6 +358,53 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     );
   }
 
+  Widget _baueUmschlagZeile({
+    required TextEditingController bezeichnungCtrl,
+    required TextEditingController betragCtrl,
+    required VoidCallback onChanged,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: TextField(
+              controller: bezeichnungCtrl,
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                hintText: 'Bezeichnung',
+              ),
+              onChanged: (_) => onChanged(),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 80,
+            child: TextField(
+              controller: betragCtrl,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.right,
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              ),
+              onTap: () {
+                if (betragCtrl.text == '0' || betragCtrl.text == '0,00') {
+                  betragCtrl.clear();
+                }
+              },
+              onChanged: (_) => onChanged(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _baueAutoFillInhalt() {
     return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -357,6 +447,18 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               _baueCentZeile(
                 label: label,
                 controller: _s1LoseMuenzCtrl[id]!,
+                onChanged: _speichereAutoFillSchritt1,
+              ),
+            const Divider(height: 16),
+            Text(
+              'Sonstige (z. B. Umschläge)',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 4),
+            for (int i = 0; i < _umschlagSlots; i++)
+              _baueUmschlagZeile(
+                bezeichnungCtrl: _s1UmschlagBezeichnungCtrl[i],
+                betragCtrl: _s1UmschlagBetragCtrl[i],
                 onChanged: _speichereAutoFillSchritt1,
               ),
             const Divider(height: 20),

@@ -62,7 +62,23 @@ class Schritt1OrchestrierungHelper {
       loseMuenzenNachArtCent['coin_1c']  = 0;
     }
 
-    uebernehmeUmschlagEntwurf(<UmschlagEintrag>[]);
+    final List<dynamic>? umschlagRoh =
+        gespeicherteDaten?['umschlaege'] as List<dynamic>?;
+    final List<UmschlagEintrag> umschlaege = <UmschlagEintrag>[];
+    if (umschlagRoh != null) {
+      for (final dynamic item in umschlagRoh) {
+        if (item is Map<String, dynamic>) {
+          final String label = (item['label'] as String?) ?? '';
+          final int betrag = (item['amountCents'] as num?)?.toInt() ?? 0;
+          if (label.isNotEmpty || betrag > 0) {
+            umschlaege.add(
+              UmschlagEintrag(bezeichnung: label, betragCent: betrag),
+            );
+          }
+        }
+      }
+    }
+    uebernehmeUmschlagEntwurf(umschlaege);
     sichereMindestensEinenUmschlag();
     synchronisiereControllerAusState();
   }
