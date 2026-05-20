@@ -244,7 +244,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
             children: <Widget>[
               Expanded(child: Text(zeile.bezeichnung)),
               SizedBox(
-                width: 64,
+                width: 96,
                 child: Text(
                   '${zeile.genommen} Stk.',
                   textAlign: TextAlign.right,
@@ -284,7 +284,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
             children: <Widget>[
               Expanded(child: Text(zeile.bezeichnung, style: muenzStyle)),
               SizedBox(
-                width: 64,
+                width: 96,
                 child: Text(
                   _euro(zeile.betragCent),
                   textAlign: TextAlign.right,
@@ -351,7 +351,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  width: 64,
+                  width: 96,
                   child: Text(
                     'Bedarf',
                     textAlign: TextAlign.right,
