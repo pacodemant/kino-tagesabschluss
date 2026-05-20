@@ -212,16 +212,6 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       zeilen.add(_ErgebnisZeile.restbetrag(restCent));
     }
 
-    // Barumsatz-Zeile mit Trennlinie davor
-    zeilen.add(_ErgebnisZeile.trennlinie());
-    zeilen.add(
-      _ErgebnisZeile.muenzBetrag(
-        bezeichnung: 'Barumsatz',
-        betragCent: argumente.barBestandAbzglWechselgeldCent,
-        fett: false,
-      ),
-    );
-
     return zeilen;
   }
 
@@ -332,11 +322,21 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         children: <Widget>[
-          const Text(
-            'Bareinnahmen Stückelung',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          Text.rich(
+            TextSpan(
+              children: <TextSpan>[
+                const TextSpan(
+                  text: 'Bareinnahmen Stückelung: ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                TextSpan(
+                  text: _euro(argumente.barBestandAbzglWechselgeldCent),
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 4),
