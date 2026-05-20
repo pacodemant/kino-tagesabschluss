@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -255,7 +256,14 @@ class _TagesabschlussSchritt3SeiteState
           Expanded(
             child: Text(label, style: TextStyle(fontWeight: gewicht)),
           ),
-          Text(wert, style: TextStyle(fontWeight: gewicht, color: farbe)),
+          Text(
+            wert,
+            style: GoogleFonts.caveat(
+              fontSize: 18,
+              fontWeight: gewicht,
+              color: farbe,
+            ),
+          ),
         ],
       ),
     );
@@ -307,7 +315,10 @@ class _TagesabschlussSchritt3SeiteState
                         _deutschesDatum(
                           DatumsHelper.logischerAbrechnungsTag(),
                         ),
-                        style: const TextStyle(fontWeight: FontWeight.w500),
+                        style: GoogleFonts.caveat(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
