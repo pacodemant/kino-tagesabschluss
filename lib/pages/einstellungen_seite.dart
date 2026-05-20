@@ -172,9 +172,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     for (final (String id, _, int def) in _s1LoseMuenzFelder) {
       final int cent = (lmMap?[id] as num?)?.toInt() ?? def;
-      _s1LoseMuenzCtrl[id]!.text = cent != 0
-          ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
-          : '';
+      _s1LoseMuenzCtrl[id]!.text =
+          TagesabschlussFormatierung.formatiereEuroEingabe(cent);
     }
 
     final List<dynamic>? umschlagRoh =
@@ -187,9 +186,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _s1UmschlagBezeichnungCtrl[i].text =
           (slot?['label'] as String?) ?? '';
       final int betrag = (slot?['amountCents'] as num?)?.toInt() ?? 0;
-      _s1UmschlagBetragCtrl[i].text = betrag != 0
-          ? TagesabschlussFormatierung.formatiereEuroEingabe(betrag)
-          : '';
+      _s1UmschlagBetragCtrl[i].text =
+          TagesabschlussFormatierung.formatiereEuroEingabe(betrag);
     }
   }
 
@@ -202,21 +200,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final int differenz =
         (daten?['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
 
-    _s2KinoSollCtrl.text = kinoSoll != 0
-        ? TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll)
-        : '';
-    _s2BistroSollCtrl.text = bistroSoll != 0
-        ? TagesabschlussFormatierung.formatiereEuroEingabe(bistroSoll)
-        : '';
-    _s2AusgabenCtrl.text = ausgaben != 0
-        ? TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben)
-        : '';
-    _s2EcBelegCtrl.text = ecBeleg != 0
-        ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
-        : '';
-    _s2DifferenzCtrl.text = differenz != 0
-        ? TagesabschlussFormatierung.formatiereEuroEingabe(differenz)
-        : '';
+    _s2KinoSollCtrl.text =
+        TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll);
+    _s2BistroSollCtrl.text =
+        TagesabschlussFormatierung.formatiereEuroEingabe(bistroSoll);
+    _s2AusgabenCtrl.text =
+        TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben);
+    _s2EcBelegCtrl.text =
+        TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg);
+    _s2DifferenzCtrl.text =
+        TagesabschlussFormatierung.formatiereEuroEingabe(differenz);
   }
 
   Future<void> _onDevModusGeaendert(bool wert) async {
@@ -292,12 +285,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 14)),
-          ),
+          Text(label, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
           SizedBox(
-            width: 80,
+            width: 72,
             child: Focus(
               onFocusChange: (bool hasFocus) {
                 if (hasFocus) {
@@ -335,24 +328,28 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 14)),
-          ),
+          Text(label, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
           SizedBox(
-            width: 80,
+            width: 72,
             child: Focus(
               onFocusChange: (bool hasFocus) {
                 if (hasFocus) {
                   controller.clear();
-                } else if (controller.text.isEmpty) {
-                  controller.text = '0';
+                } else {
+                  final int cent = int.tryParse(controller.text) ?? 0;
+                  controller.text =
+                      TagesabschlussFormatierung.formatiereEuroEingabe(cent);
                 }
               },
               child: TextField(
                 controller: controller,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 textAlign: TextAlign.right,
                 decoration: const InputDecoration(
                   isDense: true,
@@ -396,19 +393,23 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           ),
           const SizedBox(width: 8),
           SizedBox(
-            width: 80,
+            width: 72,
             child: Focus(
               onFocusChange: (bool hasFocus) {
                 if (hasFocus) {
                   betragCtrl.clear();
-                } else if (betragCtrl.text.isEmpty) {
-                  betragCtrl.text = '0';
+                } else {
+                  final int cent = int.tryParse(betragCtrl.text) ?? 0;
+                  betragCtrl.text =
+                      TagesabschlussFormatierung.formatiereEuroEingabe(cent);
                 }
               },
               child: TextField(
                 controller: betragCtrl,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 textAlign: TextAlign.right,
                 decoration: const InputDecoration(
                   isDense: true,
@@ -434,7 +435,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Scheine',
+              'Scheine (Anzahl)',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
@@ -446,7 +447,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             const Divider(height: 16),
             Text(
-              'Münzrollen',
+              'Münzrollen (Anzahl)',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
@@ -458,7 +459,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             const Divider(height: 16),
             Text(
-              'Lose Münzen',
+              'Lose Münzen (Betrag, Eingabe in Cent)',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
@@ -470,7 +471,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             const Divider(height: 16),
             Text(
-              'Sonstige (z. B. Umschläge)',
+              'Sonstige, z. B. Umschläge (Betrag, Eingabe in Cent)',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
@@ -482,7 +483,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             const Divider(height: 20),
             const Text(
-              'Schritt 2',
+              'Schritt 2 (Betrag, Eingabe in Cent)',
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
             ),
             const SizedBox(height: 6),
