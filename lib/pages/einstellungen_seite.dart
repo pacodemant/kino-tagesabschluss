@@ -290,10 +290,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 14)),
-          ),
+          Text(label, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
           SizedBox(
             width: 60,
             child: Focus(
@@ -329,10 +329,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Expanded(
-            child: Text(label, style: const TextStyle(fontSize: 14)),
-          ),
+          Text(label, style: const TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
           SizedBox(
             width: 80,
             child: Focus(
