@@ -8,6 +8,7 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -98,15 +99,6 @@ class _TagesabschlussSchritt3SeiteState
     _autoSaveImHintergrund();
   }
 
-  // Gibt das Abrechnungsdatum zurück – vor 3 Uhr zählt der Vortag.
-  DateTime _abrechnungsDatum() {
-    final DateTime jetzt = DateTime.now();
-    if (jetzt.hour < 3) {
-      return jetzt.subtract(const Duration(days: 1));
-    }
-    return jetzt;
-  }
-
   /// Speichert den Abschluss beim Öffnen der Seite automatisch.
   /// Duplikat → stillschweigend überschreiben (kein Dialog).
   Future<void> _autoSaveImHintergrund() async {
@@ -132,17 +124,6 @@ class _TagesabschlussSchritt3SeiteState
         if (!mounted) {
           return;
         }
-      }
-
-      final String isoDatum =
-          _abrechnungsDatum().toIso8601String().substring(0, 10);
-      await LokalerSpeicher.loescheKassenstandEntwurf(
-        kinoId: widget.argumente.kinoId,
-        isoDatum: isoDatum,
-      );
-      await LokalerSpeicher.loescheSchritt2Entwurf(widget.argumente.kinoId);
-      if (!mounted) {
-        return;
       }
 
       setState(() {
@@ -181,6 +162,15 @@ class _TagesabschlussSchritt3SeiteState
       }
     }
 
+    if (!mounted) {
+      return;
+    }
+
+    await LokalerSpeicher.loescheKassenstandEntwurf(
+      kinoId: widget.argumente.kinoId,
+      isoDatum: DatumsHelper.logischesIsoDatum(),
+    );
+    await LokalerSpeicher.loescheSchritt2Entwurf(widget.argumente.kinoId);
     if (!mounted) {
       return;
     }
@@ -281,7 +271,7 @@ class _TagesabschlussSchritt3SeiteState
     return TagesabschlussScaffold(
       backgroundColor: Colors.white,
       title:
-          'Übertrag auf Umschlag – ${_deutschesDatum(_abrechnungsDatum())}, ${widget.argumente.kinoName}',
+          'Übertrag auf Umschlag – ${_deutschesDatum(DatumsHelper.logischerAbrechnungsTag())}, ${widget.argumente.kinoName}',
       footerChild: SizedBox(
         height: 36,
         child: Row(

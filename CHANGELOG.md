@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 158: Schritt 3 löscht Entwürfe (KassenstandEntwurf + Schritt-2-Entwurf) jetzt erst nach expliziter Nutzerbestätigung in `_zeigeAbschlussDialog()`, nicht mehr sofort in `initState()`. Rücknavigation nach Schritt 3 lässt Umschläge und Schritt-2-Felder erhalten. Lokale `_abrechnungsDatum()` (hour < 3) durch `DatumsHelper.logischerAbrechnungsTag()` ersetzt.
 - Run 156: Neuer `DatumsHelper` (`lib/utils/datums_helper.dart`) mit `logischerAbrechnungsTag()` (4-Uhr-Knick) und `logischesIsoDatum()`; `KassenstandEntwurfUsecase` und `AbrechnungSpeicher` verwenden jetzt beide dieselbe Logik — Inkonsistenz beim frühmorgendlichen App-Start (0–3:59 Uhr) behoben.
 - Run 155: Einstellungen Wechselgeld: alle Kino-Cards durch eine einzige klappbare Card „Wechselgeldbestand" ersetzt (ListTile-Header mit expand_more/expand_less, Inhalt via `_wechselgeldAufgeklappt`); plain `TextField` mit `suffixText: '€'` statt `BetragCentEingabefeld`; Hint-Text '200,00 €' entfernt; Fallback in `ladeWechselgeldSollwertCent` von 20000 auf 0 gesenkt; leere Felder bleiben leer (kein '0,00'-Vorbelegung).
 - Run 154f: Einstellungen Auto-Fill: schlichte Unterlinien-Textfelder statt App-Widgets; Betrag-Felder mit CentWaehrungsEingabeFormatter (automatisches Komma beim Tippen, Eingabe wie Supermarktkasse); Clear bei Fokus für alle Felder; Restore '0' bzw. '0,00' bei Blur; Layout wieder rechtsbündig (Expanded Label + festes Feld).
