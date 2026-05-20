@@ -247,7 +247,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     required VoidCallback onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -265,7 +265,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               decoration: const InputDecoration(
                 isDense: true,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
               onChanged: (_) => onChanged(),
             ),
@@ -281,7 +281,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     required VoidCallback onChanged,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -297,7 +297,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               decoration: const InputDecoration(
                 isDense: true,
                 contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
               onChanged: (_) => onChanged(),
             ),
@@ -307,29 +307,85 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     );
   }
 
-  Widget _baueDevCard({
-    required String titel,
-    required List<Widget> felder,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                titel,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                ),
+  Widget _baueAutoFillCard() {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            const Text(
+              'Schritt 1',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Scheine',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 4),
+            for (final (String id, String label, _) in _s1ScheineFelder)
+              _baueStueckzahlZeile(
+                label: label,
+                controller: _s1StueckzahlCtrl[id]!,
+                onChanged: _speichereAutoFillSchritt1,
               ),
-              const SizedBox(height: 8),
-              ...felder,
-            ],
-          ),
+            const Divider(height: 16),
+            Text(
+              'Münzrollen',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 4),
+            for (final (String id, String label, _) in _s1RollenFelder)
+              _baueStueckzahlZeile(
+                label: label,
+                controller: _s1StueckzahlCtrl[id]!,
+                onChanged: _speichereAutoFillSchritt1,
+              ),
+            const Divider(height: 16),
+            Text(
+              'Lose Münzen',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 4),
+            for (final (String id, String label, _) in _s1LoseMuenzFelder)
+              _baueCentZeile(
+                label: label,
+                controller: _s1LoseMuenzCtrl[id]!,
+                onChanged: _speichereAutoFillSchritt1,
+              ),
+            const Divider(height: 20),
+            const Text(
+              'Schritt 2',
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+            ),
+            const SizedBox(height: 6),
+            _baueCentZeile(
+              label: 'Kino SOLL',
+              controller: _s2KinoSollCtrl,
+              onChanged: _speichereAutoFillSchritt2,
+            ),
+            _baueCentZeile(
+              label: 'Bistro SOLL',
+              controller: _s2BistroSollCtrl,
+              onChanged: _speichereAutoFillSchritt2,
+            ),
+            _baueCentZeile(
+              label: 'Ausgaben',
+              controller: _s2AusgabenCtrl,
+              onChanged: _speichereAutoFillSchritt2,
+            ),
+            _baueCentZeile(
+              label: 'EC-Beleg',
+              controller: _s2EcBelegCtrl,
+              onChanged: _speichereAutoFillSchritt2,
+            ),
+            _baueCentZeile(
+              label: 'Differenz Anfangsbestand',
+              controller: _s2DifferenzCtrl,
+              onChanged: _speichereAutoFillSchritt2,
+            ),
+          ],
         ),
       ),
     );
@@ -394,86 +450,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               activeThumbColor: AppFarben.appBarRot,
             ),
           ),
-          Text('DEBUG devModusAktiv: $_devModusAktiv'),
-          if (_devModusAktiv) ...<Widget>[
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
-              child: Text(
-                'Auto-Fill Schritt 1',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-            ),
-            _baueDevCard(
-              titel: 'Scheine',
-              felder: <Widget>[
-                for (final (String id, String label, _) in _s1ScheineFelder)
-                  _baueStueckzahlZeile(
-                    label: label,
-                    controller: _s1StueckzahlCtrl[id]!,
-                    onChanged: _speichereAutoFillSchritt1,
-                  ),
-              ],
-            ),
-            _baueDevCard(
-              titel: 'Münzrollen',
-              felder: <Widget>[
-                for (final (String id, String label, _) in _s1RollenFelder)
-                  _baueStueckzahlZeile(
-                    label: label,
-                    controller: _s1StueckzahlCtrl[id]!,
-                    onChanged: _speichereAutoFillSchritt1,
-                  ),
-              ],
-            ),
-            _baueDevCard(
-              titel: 'Lose Münzen',
-              felder: <Widget>[
-                for (final (String id, String label, _) in _s1LoseMuenzFelder)
-                  _baueCentZeile(
-                    label: label,
-                    controller: _s1LoseMuenzCtrl[id]!,
-                    onChanged: _speichereAutoFillSchritt1,
-                  ),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-              child: Text(
-                'Auto-Fill Schritt 2',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-            ),
-            _baueDevCard(
-              titel: 'Schritt 2',
-              felder: <Widget>[
-                _baueCentZeile(
-                  label: 'Kino SOLL',
-                  controller: _s2KinoSollCtrl,
-                  onChanged: _speichereAutoFillSchritt2,
-                ),
-                _baueCentZeile(
-                  label: 'Bistro SOLL',
-                  controller: _s2BistroSollCtrl,
-                  onChanged: _speichereAutoFillSchritt2,
-                ),
-                _baueCentZeile(
-                  label: 'Ausgaben',
-                  controller: _s2AusgabenCtrl,
-                  onChanged: _speichereAutoFillSchritt2,
-                ),
-                _baueCentZeile(
-                  label: 'EC-Beleg',
-                  controller: _s2EcBelegCtrl,
-                  onChanged: _speichereAutoFillSchritt2,
-                ),
-                _baueCentZeile(
-                  label: 'Differenz Anfangsbestand',
-                  controller: _s2DifferenzCtrl,
-                  onChanged: _speichereAutoFillSchritt2,
-                ),
-              ],
-            ),
-          ],
+          if (_devModusAktiv) _baueAutoFillCard(),
         ],
       ),
     );

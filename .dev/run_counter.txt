@@ -1,4 +1,4 @@
-last_run: 152
-next_run: 153
-last_run_title: R152: Auto-Fill-Werte in Einstellungen editierbar
-last_commit: fb5ecec
+last_run: 153
+next_run: 154
+last_run_title: R153: Auto-Fill eine Card mit Divider, kompaktere Zeilen
+last_commit: TBD

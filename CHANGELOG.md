@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 153: Auto-Fill-Bereich in Einstellungen: alle 4 Cards zu einer einzigen Card zusammengefasst; Abschnitte (Scheine, Münzrollen, Lose Münzen, Schritt 2) durch Divider getrennt; `_baueDevCard` durch `_baueAutoFillCard()` ersetzt; Zeilen-Padding `bottom: 8→4`, `contentPadding vertical: 6→4`; Debug-Text entfernt.
 - Run 152: Auto-Fill-Werte in Einstellungen editierbar — zwei neue Methodenpaare in `LokalerSpeicher` (`ladeAutoFillSchritt1/2`, `speichereAutoFillSchritt1/2`, Keys `dev_autofill_schritt1/2`); `EinstellungenSeite` zeigt bei aktivem DevModus 4 neue Cards (Scheine, Münzrollen, Lose Münzen, Schritt 2) mit editierbaren Feldern, Vorbelegung mit bisherigen Testwerten, sofortiges Speichern bei Änderung; `_autoFillDev()` in Schritt 1 und Schritt 2 lädt gespeicherte Werte mit hartkodiertem Fallback.
 - Run 151: DEV-Panel Schritt 2: `height: null` durch `_devToolsPanelHoehe = 68` ersetzt — `AnimatedContainer` kann jetzt von 0 auf 68 interpolieren (null-Interpolation funktioniert im Web nicht).
 - Run 150: DEV-Panel Web-Fix: `devToolsStickySichtbar` in Schritt 1 auf `_devModusAktiv && _devToolsOffen` umgestellt; `_devToolsSichtbar`-Getter (war `!kReleaseMode && !kIsWeb`) ersatzlos entfernt; in Schritt 2 alle drei Panel-Ausdrücke (`ignoring`, `opacity`, `height`) analog auf `_devModusAktiv` umgestellt; `foundation.dart`-Import in beiden Dateien entfernt.
