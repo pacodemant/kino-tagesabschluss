@@ -1,6 +1,6 @@
-import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 
 /// Usecase fuer Laden/Speichern des Tagesabschluss-Entwurfs.
 class KassenstandEntwurfUsecase {
@@ -15,7 +15,7 @@ class KassenstandEntwurfUsecase {
   Future<KassenstandEntwurf?> ladeHeutigenEntwurf(String kinoId) async {
     return LokalerSpeicher.ladeKassenstandEntwurf(
       kinoId: kinoId,
-      isoDatum: heutigesIsoDatum(),
+      isoDatum: DatumsHelper.logischesIsoDatum(),
     );
   }
 
@@ -26,7 +26,7 @@ class KassenstandEntwurfUsecase {
   }) async {
     await LokalerSpeicher.speichereKassenstandEntwurf(
       kinoId: kinoId,
-      isoDatum: heutigesIsoDatum(),
+      isoDatum: DatumsHelper.logischesIsoDatum(),
       entwurf: entwurf,
     );
   }
@@ -34,10 +34,5 @@ class KassenstandEntwurfUsecase {
   /// Kapselt die Regel, ob bei 0 EUR eine Bestaetigung noetig ist.
   bool bestaetigungNoetigFuerNullbetrag(int gesamtCent) {
     return gesamtCent == 0;
-  }
-
-  /// Ermittelt das heutige Datum im benoetigten Speicher-Key-Format.
-  String heutigesIsoDatum() {
-    return TagesabschlussFormatierung.heutigesIsoDatum(DateTime.now());
   }
 }

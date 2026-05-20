@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Speichert und lädt die Eingabewerte von Schritt 1 je Kino und Abrechnungsdatum.
@@ -9,21 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AbrechnungSpeicher {
   const AbrechnungSpeicher._();
 
-  static DateTime _abrechnungsDatum() {
-    final DateTime jetzt = DateTime.now();
-    if (jetzt.hour < 4) {
-      return jetzt.subtract(const Duration(days: 1));
-    }
-    return jetzt;
-  }
-
   static String abrechnungsDatumKey(String kinoId) {
-    final DateTime datum = _abrechnungsDatum();
-    final String iso =
-        '${datum.year.toString().padLeft(4, '0')}-'
-        '${datum.month.toString().padLeft(2, '0')}-'
-        '${datum.day.toString().padLeft(2, '0')}';
-    return 'abrechnung_${kinoId}_$iso';
+    return 'abrechnung_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
   }
 
   static Future<void> speichern(
