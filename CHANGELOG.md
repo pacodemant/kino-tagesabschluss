@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 154f: Einstellungen Auto-Fill: schlichte Unterlinien-Textfelder statt App-Widgets; Betrag-Felder mit CentWaehrungsEingabeFormatter (automatisches Komma beim Tippen, Eingabe wie Supermarktkasse); Clear bei Fokus für alle Felder; Restore '0' bzw. '0,00' bei Blur; Layout wieder rechtsbündig (Expanded Label + festes Feld).
 - Run 154c: Einstellungen Auto-Fill: Abschnittstitel ergänzt um "(Anzahl)" (Scheine, Münzrollen) bzw. "(Betrag, Eingabe in Cent)" (Lose Münzen, Sonstige, Schritt 2); Betrag-Felder auf `digitsOnly`-Eingabe umgestellt — Anzeige als "XX,YY" (via `formatiereEuroEingabe`), Eingabe als rohe Cent-Zahl (z. B. "3800" für 38,00 €), Formatierung beim Blur; Layout von gestreckt auf linksbündig (`mainAxisSize.min`, Label direkt vor Feld).
 - Run 154b: Einstellungen Auto-Fill-Felder: alle numerischen Felder leeren bei Fokus (egal welcher Wert); bei Blur ohne Eingabe wird '0' wiederhergestellt; `Focus(onFocusChange:)` ersetzt `onTap`-Logik in `_baueStueckzahlZeile`, `_baueCentZeile` und `_baueUmschlagZeile`; Bezeichnungsfelder der Umschläge leeren bei Fokus ohne Restore.
 - Run 154: Einstellungen: SwitchListTile und Auto-Fill-Inhalt in einer einzigen Card zusammengefasst; Debug-Text `devModusAktiv` direkt unterhalb des Switch immer sichtbar; `_baueAutoFillCard()` → `_baueAutoFillInhalt()` (gibt Column zurück, kein Card-Wrapper); `_baueStueckzahlZeile` und `_baueCentZeile` löschen Feldinhalt bei Fokus wenn Wert '0' bzw. '0,00' ist.
