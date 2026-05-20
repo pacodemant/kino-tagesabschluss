@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
-import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
 
 class EinstellungenSeite extends StatefulWidget {
   const EinstellungenSeite({super.key});
@@ -277,6 +277,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     });
   }
 
+  static const InputDecoration _zeilenDeko = InputDecoration(
+    isDense: true,
+    contentPadding: EdgeInsets.only(bottom: 4),
+  );
+
   Widget _baueStueckzahlZeile({
     required String label,
     required TextEditingController controller,
@@ -285,17 +290,30 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Text(label, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 8),
+          Expanded(
+            child: Text(label, style: const TextStyle(fontSize: 14)),
+          ),
           SizedBox(
-            width: 72,
-            child: GanzzahlEingabefeld(
-              textController: controller,
-              schriftgroesse: 14,
-              hinweisText: '0',
-              onChanged: (_) => onChanged(),
+            width: 60,
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) {
+                  controller.clear();
+                } else if (controller.text.isEmpty) {
+                  controller.text = '0';
+                }
+              },
+              child: TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                textAlign: TextAlign.right,
+                decoration: _zeilenDeko,
+                onChanged: (_) => onChanged(),
+              ),
             ),
           ),
         ],
@@ -311,17 +329,32 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
-          Text(label, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 8),
+          Expanded(
+            child: Text(label, style: const TextStyle(fontSize: 14)),
+          ),
           SizedBox(
-            width: 110,
-            child: BetragCentEingabefeld(
-              textController: controller,
-              schriftgroesse: 14,
-              hinweisText: '0,00',
-              onChanged: (_) => onChanged(),
+            width: 80,
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) {
+                  controller.clear();
+                } else if (controller.text.isEmpty) {
+                  controller.text =
+                      TagesabschlussFormatierung.formatiereEuroEingabe(0);
+                }
+              },
+              child: TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                  CentWaehrungsEingabeFormatter(),
+                ],
+                textAlign: TextAlign.right,
+                decoration: _zeilenDeko,
+                onChanged: (_) => onChanged(),
+              ),
             ),
           ),
         ],
@@ -345,24 +378,34 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               },
               child: TextField(
                 controller: bezeichnungCtrl,
-                decoration: const InputDecoration(
-                  isDense: true,
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  hintText: 'Bezeichnung',
-                ),
+                decoration: _zeilenDeko.copyWith(hintText: 'Bezeichnung'),
                 onChanged: (_) => onChanged(),
               ),
             ),
           ),
           const SizedBox(width: 8),
           SizedBox(
-            width: 110,
-            child: BetragCentEingabefeld(
-              textController: betragCtrl,
-              schriftgroesse: 14,
-              hinweisText: '0,00',
-              onChanged: (_) => onChanged(),
+            width: 80,
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) {
+                  betragCtrl.clear();
+                } else if (betragCtrl.text.isEmpty) {
+                  betragCtrl.text =
+                      TagesabschlussFormatierung.formatiereEuroEingabe(0);
+                }
+              },
+              child: TextField(
+                controller: betragCtrl,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                  CentWaehrungsEingabeFormatter(),
+                ],
+                textAlign: TextAlign.right,
+                decoration: _zeilenDeko,
+                onChanged: (_) => onChanged(),
+              ),
             ),
           ),
         ],
