@@ -288,12 +288,18 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             child: Text(label, style: const TextStyle(fontSize: 14)),
           ),
           SizedBox(
-            width: 120,
-            child: BetragCentEingabefeld(
-              textController: controller,
+            width: 80,
+            child: TextField(
+              controller: controller,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.right,
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              ),
               onChanged: (_) => onChanged(),
-              schriftgroesse: 14,
-              hinweisText: '0,00',
             ),
           ),
         ],
@@ -388,6 +394,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               activeThumbColor: AppFarben.appBarRot,
             ),
           ),
+          Text('DEBUG devModusAktiv: $_devModusAktiv'),
           if (_devModusAktiv) ...<Widget>[
             const Padding(
               padding: EdgeInsets.fromLTRB(0, 16, 0, 8),
