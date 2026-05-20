@@ -97,6 +97,16 @@ Inhalt:
 - Letzter Commit-Hash
 - Bestätigung: `.dev/run_counter.txt` und `CHANGELOG.md` aktualisiert
 
+## Direkte Anweisungen ohne Run-Nummer
+
+Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
+
+- Änderung als `[letzte Run-Nr]a`, `[letzte Run-Nr]b` usw. bezeichnen
+- Commit mit passender Message erstellen
+- Direkt `git push origin master` ausführen
+- `run_counter` NICHT erhöhen
+- Auf nächstes Prompt warten
+
 ## Sprache
 
 Antworte immer auf Deutsch.
