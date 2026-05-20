@@ -4,6 +4,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -138,6 +139,10 @@ class _TagesabschlussSchritt2SeiteState
     if (daten == null || !mounted) {
       return;
     }
+    final String? gespeichertesDatum = daten['isoDatum'] as String?;
+    if (gespeichertesDatum != DatumsHelper.logischesIsoDatum()) {
+      return;
+    }
 
     final int kinoSollCent = (daten['kinoSollCent'] as num?)?.toInt() ?? 0;
     final int bistroSollCent = (daten['bistroSollCent'] as num?)?.toInt() ?? 0;
@@ -204,6 +209,7 @@ class _TagesabschlussSchritt2SeiteState
       widget.kinoId,
       <String, dynamic>{
         'kinoId': widget.kinoId,
+        'isoDatum': DatumsHelper.logischesIsoDatum(),
         'kinoSollCent': _kinoSollCent,
         'bistroSollCent': _bistroSollCent,
         'ausgabenCent': _ausgabenCent,
