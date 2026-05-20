@@ -19,7 +19,7 @@ class LokalerSpeicher {
 
   static Future<int> ladeWechselgeldSollwertCent(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    return speicher.getInt('change_target_cents_$kinoId') ?? 20000;
+    return speicher.getInt('change_target_cents_$kinoId') ?? 0;
   }
 
   static Future<void> speichereWechselgeldSollwertCent(

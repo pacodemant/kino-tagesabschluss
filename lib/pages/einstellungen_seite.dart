@@ -75,6 +75,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   bool _geladen = false;
   bool _devModusAktiv = false;
+  bool _wechselgeldAufgeklappt = false;
 
   @override
   void initState() {
@@ -128,8 +129,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       if (!mounted) {
         return;
       }
-      _controllers[i].text =
-          TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+      _controllers[i].text = cent != 0
+          ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
+          : '';
     }
     final bool devAktiv = await DevModus.istAktiv();
     if (!mounted) {
@@ -516,37 +518,82 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: <Widget>[
-          ...List<Widget>.generate(KinoRepository.kinos.length, (int i) {
-            final Kino kino = KinoRepository.kinos[i];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        kino.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      BetragCentEingabefeld(
-                        textController: _controllers[i],
-                        onChanged: (String text) => _onChanged(i, text),
-                        schriftgroesse: 18,
-                        hinweisText: '200,00 €',
-                        labelText: 'Wechselgeld-Sollwert',
-                      ),
-                    ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: const Text(
+                      'Wechselgeldbestand',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: Icon(
+                      _wechselgeldAufgeklappt
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                    ),
+                    onTap: () => setState(
+                      () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
+                    ),
                   ),
-                ),
+                  if (_wechselgeldAufgeklappt) ...<Widget>[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Column(
+                        children: <Widget>[
+                          for (int i = 0;
+                              i < KinoRepository.kinos.length;
+                              i++)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    KinoRepository.kinos[i].name,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  SizedBox(
+                                    width: 120,
+                                    child: TextField(
+                                      controller: _controllers[i],
+                                      keyboardType:
+                                          const TextInputType.numberWithOptions(
+                                        decimal: true,
+                                      ),
+                                      textAlign: TextAlign.right,
+                                      decoration: const InputDecoration(
+                                        isDense: true,
+                                        contentPadding:
+                                            EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 4,
+                                        ),
+                                        suffixText: '€',
+                                      ),
+                                      onTap: () {
+                                        if (_controllers[i].text == '0') {
+                                          _controllers[i].clear();
+                                        }
+                                      },
+                                      onChanged: (String text) =>
+                                          _onChanged(i, text),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
-            );
-          }),
+            ),
+          ),
           const SizedBox(height: 4),
           Card(
             child: Column(
