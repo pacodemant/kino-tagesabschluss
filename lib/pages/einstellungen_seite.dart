@@ -298,22 +298,28 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           ),
           SizedBox(
             width: 80,
-            child: TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              textAlign: TextAlign.right,
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
-              onTap: () {
-                if (controller.text == '0') controller.clear();
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) {
+                  controller.clear();
+                } else if (controller.text.isEmpty) {
+                  controller.text = '0';
+                }
               },
-              onChanged: (_) => onChanged(),
+              child: TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                ),
+                onChanged: (_) => onChanged(),
+              ),
             ),
           ),
         ],
@@ -335,22 +341,26 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           ),
           SizedBox(
             width: 80,
-            child: TextField(
-              controller: controller,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              textAlign: TextAlign.right,
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
-              onTap: () {
-                if (controller.text == '0' || controller.text == '0,00') {
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) {
                   controller.clear();
+                } else if (controller.text.isEmpty) {
+                  controller.text = '0';
                 }
               },
-              onChanged: (_) => onChanged(),
+              child: TextField(
+                controller: controller,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                ),
+                onChanged: (_) => onChanged(),
+              ),
             ),
           ),
         ],
@@ -368,36 +378,45 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       child: Row(
         children: <Widget>[
           Expanded(
-            child: TextField(
-              controller: bezeichnungCtrl,
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                hintText: 'Bezeichnung',
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) bezeichnungCtrl.clear();
+              },
+              child: TextField(
+                controller: bezeichnungCtrl,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  hintText: 'Bezeichnung',
+                ),
+                onChanged: (_) => onChanged(),
               ),
-              onChanged: (_) => onChanged(),
             ),
           ),
           const SizedBox(width: 8),
           SizedBox(
             width: 80,
-            child: TextField(
-              controller: betragCtrl,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              textAlign: TextAlign.right,
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              ),
-              onTap: () {
-                if (betragCtrl.text == '0' || betragCtrl.text == '0,00') {
+            child: Focus(
+              onFocusChange: (bool hasFocus) {
+                if (hasFocus) {
                   betragCtrl.clear();
+                } else if (betragCtrl.text.isEmpty) {
+                  betragCtrl.text = '0';
                 }
               },
-              onChanged: (_) => onChanged(),
+              child: TextField(
+                controller: betragCtrl,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding:
+                      EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                ),
+                onChanged: (_) => onChanged(),
+              ),
             ),
           ),
         ],
