@@ -270,29 +270,16 @@ class _TagesabschlussSchritt3SeiteState
 
     return TagesabschlussScaffold(
       backgroundColor: Colors.white,
-      title:
-          'Übertrag auf Umschlag – ${_deutschesDatum(DatumsHelper.logischerAbrechnungsTag())}, ${widget.argumente.kinoName}',
+      title: 'Übertrag auf Umschlag',
       footerChild: SizedBox(
         height: 36,
         child: Row(
           children: <Widget>[
             Expanded(
               child: ElevatedButton(
-                onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
-                style: AppFarben.footerButtonStyle,
-                child: Text(
-                  _autoSaveLaeuft
-                      ? 'Wird gespeichert...'
-                      : 'Tagesabrechnung abschließen',
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton(
                 onPressed: _navigiereZuSchritt4,
                 style: AppFarben.footerButtonStyle,
-                child: const Text('→ Schritt 4'),
+                child: const Text('Wechselgeld…'),
               ),
             ),
           ],
@@ -302,6 +289,28 @@ class _TagesabschlussSchritt3SeiteState
         padding: const EdgeInsets.symmetric(vertical: 8),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        widget.argumente.kinoName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _deutschesDatum(
+                          DatumsHelper.logischerAbrechnungsTag(),
+                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
                 // Rahmen 1 – Differenz Anfangsbestand
                 Card(
                   margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
@@ -387,6 +396,22 @@ class _TagesabschlussSchritt3SeiteState
                           farbe: differenzFarbe,
                         ),
                       ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: ElevatedButton(
+                    onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppFarben.appBarRot,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 44),
+                    ),
+                    child: Text(
+                      _autoSaveLaeuft
+                          ? 'Wird gespeichert...'
+                          : 'Tagesabrechnung abschließen',
                     ),
                   ),
                 ),

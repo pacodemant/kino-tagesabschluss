@@ -34,6 +34,7 @@ class TagesabschlussScaffold extends StatelessWidget {
           AppBar(
             backgroundColor: AppFarben.appBarRot,
             foregroundColor: Colors.white,
+            toolbarHeight: 48,
             title: Text(title),
             actions: actions,
           ),

@@ -107,6 +107,10 @@ Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 - `run_counter` NICHT erhöhen
 - Auf nächstes Prompt warten
 
+## Ausgabeformat
+
+Diagnosen, Analysen und Berichte immer in einem einzigen Codeblock ausgeben — zum einfachen Kopieren per Klick.
+
 ## Sprache
 
 Antworte immer auf Deutsch.
