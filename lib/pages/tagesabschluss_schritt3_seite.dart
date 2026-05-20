@@ -259,7 +259,7 @@ class _TagesabschlussSchritt3SeiteState
           Text(
             wert,
             style: GoogleFonts.caveat(
-              fontSize: 18,
+              fontSize: 22,
               fontWeight: gewicht,
               color: farbe,
             ),
@@ -316,7 +316,7 @@ class _TagesabschlussSchritt3SeiteState
                           DatumsHelper.logischerAbrechnungsTag(),
                         ),
                         style: GoogleFonts.caveat(
-                          fontSize: 18,
+                          fontSize: 22,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -450,7 +450,7 @@ class _PlatzhalterSeite extends StatelessWidget {
         child: Text(
           '$titel\n(noch nicht implementiert)',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 18, color: Colors.grey),
+          style: const TextStyle(fontSize: 22, color: Colors.grey),
         ),
       ),
     );
