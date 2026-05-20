@@ -659,7 +659,7 @@ class _TagesabschlussSchritt2SeiteState
                   children: <Widget>[
                     Icon(Icons.arrow_forward),
                     SizedBox(width: 6),
-                    Text('Schritt 3'),
+                    Text('3. Übertrag (Umschlag)'),
                   ],
                 ),
               ),

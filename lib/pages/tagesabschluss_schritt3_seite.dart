@@ -232,6 +232,7 @@ class _TagesabschlussSchritt3SeiteState
             _abschlussVorschau.barBestandAbzglWechselgeldCent,
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
+        onAbschliessen: _zeigeAbschlussDialog,
       ),
     );
   }
@@ -279,7 +280,7 @@ class _TagesabschlussSchritt3SeiteState
               child: ElevatedButton(
                 onPressed: _navigiereZuSchritt4,
                 style: AppFarben.footerButtonStyle,
-                child: const Text('Wechselgeld…'),
+                child: const Text('Stückelung Barumsatz'),
               ),
             ),
           ],

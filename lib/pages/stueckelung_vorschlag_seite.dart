@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -10,16 +11,18 @@ class StueckelungVorschlagArgumente {
     required this.barBestandAbzglWechselgeldCent,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
+    this.onAbschliessen,
   });
 
   final int barBestandAbzglWechselgeldCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
+  final VoidCallback? onAbschliessen;
 }
 
 // ---------------------------------------------------------------------------
 
-enum _ZeilenArt { stueckzahl, betrag, restbetrag, trennlinie }
+enum _ZeilenArt { stueckzahl, muenzBetrag, restbetrag, trennlinie }
 
 class _ErgebnisZeile {
   const _ErgebnisZeile._({
@@ -46,13 +49,13 @@ class _ErgebnisZeile {
         gruen: gruen,
       );
 
-  factory _ErgebnisZeile.betrag({
+  factory _ErgebnisZeile.muenzBetrag({
     required String bezeichnung,
     required int betragCent,
     bool rot = false,
   }) =>
       _ErgebnisZeile._(
-        art: _ZeilenArt.betrag,
+        art: _ZeilenArt.muenzBetrag,
         bezeichnung: bezeichnung,
         betragCent: betragCent,
         rot: rot,
@@ -121,8 +124,8 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     // restCent sofort reduzieren, Zeile erst nach Schritt 2 einfügen
     _ErgebnisZeile? kupferZeile;
     if (kupferCent > 0) {
-      kupferZeile = _ErgebnisZeile.betrag(
-        bezeichnung: 'Kupfergeld',
+      kupferZeile = _ErgebnisZeile.muenzBetrag(
+        bezeichnung: 'Kupfermünzen',
         betragCent: kupferCent,
         rot: true,
       );
@@ -191,8 +194,8 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           restCent < silberVerfuegbar ? restCent : silberVerfuegbar;
       if (genommen > 0) {
         zeilen.add(
-          _ErgebnisZeile.betrag(
-            bezeichnung: 'Lose Münzen (Silber)',
+          _ErgebnisZeile.muenzBetrag(
+            bezeichnung: 'Münzen',
             betragCent: genommen,
           ),
         );
@@ -204,6 +207,14 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     if (restCent > 0) {
       zeilen.add(_ErgebnisZeile.restbetrag(restCent));
     }
+
+    // Bareinnahmen-Betrag (kein Label, Betrag in Bedarf-Spalte)
+    zeilen.add(
+      _ErgebnisZeile.muenzBetrag(
+        bezeichnung: '',
+        betragCent: argumente.barBestandAbzglWechselgeldCent,
+      ),
+    );
 
     return zeilen;
   }
@@ -246,19 +257,28 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           ),
         );
 
-      case _ZeilenArt.betrag:
-        final TextStyle? betragStyle = zeile.rot
+      case _ZeilenArt.muenzBetrag:
+        final TextStyle? muenzStyle = zeile.rot
             ? const TextStyle(
                 color: Color(0xFFB87333),
                 fontWeight: FontWeight.bold,
               )
             : null;
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           child: Row(
             children: <Widget>[
-              Expanded(child: Text(zeile.bezeichnung, style: betragStyle)),
-              Text(_euro(zeile.betragCent), style: betragStyle),
+              Expanded(child: Text(zeile.bezeichnung, style: muenzStyle)),
+              SizedBox(
+                width: 64,
+                child: Text(
+                  _euro(zeile.betragCent),
+                  textAlign: TextAlign.right,
+                  style: muenzStyle ??
+                      const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(width: 64),
             ],
           ),
         );
@@ -299,9 +319,9 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         children: <Widget>[
-          Text(
-            'Bareinnahmen: ${_euro(argumente.barBestandAbzglWechselgeldCent)}',
-            style: const TextStyle(
+          const Text(
+            'Bareinnahmen Stückelung',
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
@@ -347,6 +367,16 @@ class StueckelungVorschlagSeite extends StatelessWidget {
             )
           else
             ...zeilen.map(_baueZeile),
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: argumente.onAbschliessen,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppFarben.appBarRot,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(double.infinity, 44),
+            ),
+            child: const Text('Tagesabrechnung abschließen'),
+          ),
         ],
       ),
     );

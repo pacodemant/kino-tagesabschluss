@@ -936,7 +936,7 @@ class _TagesabschlussSchritt1SeiteState
                   children: <Widget>[
                     Icon(Icons.arrow_forward),
                     SizedBox(width: 6),
-                    Text('Schritt 2'),
+                    Text('2. Umsätze'),
                   ],
                 ),
               ),
