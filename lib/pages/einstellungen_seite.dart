@@ -267,6 +267,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
+              onTap: () {
+                if (controller.text == '0') controller.clear();
+              },
               onChanged: (_) => onChanged(),
             ),
           ),
@@ -299,6 +302,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               ),
+              onTap: () {
+                if (controller.text == '0' || controller.text == '0,00') {
+                  controller.clear();
+                }
+              },
               onChanged: (_) => onChanged(),
             ),
           ),
@@ -307,11 +315,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     );
   }
 
-  Widget _baueAutoFillCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
+  Widget _baueAutoFillInhalt() {
+    return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const Text(
@@ -386,8 +391,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               onChanged: _speichereAutoFillSchritt2,
             ),
           ],
-        ),
-      ),
     );
   }
 
@@ -443,14 +446,35 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           }),
           const SizedBox(height: 4),
           Card(
-            child: SwitchListTile(
-              title: const Text('Entwicklermodus'),
-              value: _devModusAktiv,
-              onChanged: _onDevModusGeaendert,
-              activeThumbColor: AppFarben.appBarRot,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SwitchListTile(
+                  title: const Text('Entwicklermodus'),
+                  value: _devModusAktiv,
+                  onChanged: _onDevModusGeaendert,
+                  activeThumbColor: AppFarben.appBarRot,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: Text(
+                    'DEBUG devModusAktiv: $_devModusAktiv',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+                if (_devModusAktiv) ...<Widget>[
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: _baueAutoFillInhalt(),
+                  ),
+                ],
+              ],
             ),
           ),
-          if (_devModusAktiv) _baueAutoFillCard(),
         ],
       ),
     );
