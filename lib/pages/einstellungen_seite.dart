@@ -100,6 +100,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _devModusAktiv = false;
   bool _wechselgeldAufgeklappt = false;
 
+  List<String> _getraenkeliste = <String>[];
+  final List<TextEditingController> _getraenkeController =
+      <TextEditingController>[];
+  final List<FocusNode> _getraenkeFocusNodes = <FocusNode>[];
+
   @override
   void initState() {
     super.initState();
@@ -141,6 +146,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _s2AusgabenCtrl.dispose();
     _s2EcBelegCtrl.dispose();
     _s2DifferenzCtrl.dispose();
+    for (final TextEditingController c in _getraenkeController) {
+      c.dispose();
+    }
+    for (final FocusNode fn in _getraenkeFocusNodes) {
+      fn.dispose();
+    }
     super.dispose();
   }
 
@@ -175,8 +186,26 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     _setzeAutoFillSchritt2Controller(s2Daten);
 
+    final List<String> getraenkeliste =
+        await LokalerSpeicher.ladeGetraenkeliste('kino_01');
+    if (!mounted) {
+      return;
+    }
+    for (final TextEditingController c in _getraenkeController) {
+      c.dispose();
+    }
+    _getraenkeController.clear();
+    for (final FocusNode fn in _getraenkeFocusNodes) {
+      fn.dispose();
+    }
+    _getraenkeFocusNodes.clear();
+    for (final String name in getraenkeliste) {
+      _getraenkeController.add(TextEditingController(text: name));
+      _getraenkeFocusNodes.add(FocusNode());
+    }
     setState(() {
       _devModusAktiv = devAktiv;
+      _getraenkeliste = getraenkeliste;
       _geladen = true;
     });
   }
@@ -600,6 +629,99 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     );
   }
 
+  Future<void> _speichereGetraenkeliste() async {
+    await LokalerSpeicher.speichereGetraenkeliste('kino_01', _getraenkeliste);
+  }
+
+  void _fuegeGetraenkHinzu() {
+    final FocusNode fn = FocusNode();
+    setState(() {
+      _getraenkeliste.add('');
+      _getraenkeController.add(TextEditingController());
+      _getraenkeFocusNodes.add(fn);
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => fn.requestFocus());
+    _speichereGetraenkeliste();
+  }
+
+  void _loescheGetraenk(int index) {
+    _getraenkeController[index].dispose();
+    _getraenkeFocusNodes[index].dispose();
+    setState(() {
+      _getraenkeliste.removeAt(index);
+      _getraenkeController.removeAt(index);
+      _getraenkeFocusNodes.removeAt(index);
+    });
+    _speichereGetraenkeliste();
+  }
+
+  void _onGetraenkeReorder(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) newIndex--;
+    setState(() {
+      final String item = _getraenkeliste.removeAt(oldIndex);
+      _getraenkeliste.insert(newIndex, item);
+      final TextEditingController ctrl =
+          _getraenkeController.removeAt(oldIndex);
+      _getraenkeController.insert(newIndex, ctrl);
+      final FocusNode fn = _getraenkeFocusNodes.removeAt(oldIndex);
+      _getraenkeFocusNodes.insert(newIndex, fn);
+    });
+    _speichereGetraenkeliste();
+  }
+
+  Widget _baueGetraenkelisteInhalt() {
+    return Column(
+      children: <Widget>[
+        ReorderableListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: _getraenkeliste.length,
+          onReorder: _onGetraenkeReorder,
+          itemBuilder: (BuildContext context, int index) {
+            return Row(
+              key: ObjectKey(_getraenkeController[index]),
+              children: <Widget>[
+                const Icon(Icons.drag_handle, color: Colors.grey),
+                Expanded(
+                  child: TextField(
+                    controller: _getraenkeController[index],
+                    focusNode: _getraenkeFocusNodes[index],
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      hintText: 'Getränk',
+                    ),
+                    onChanged: (String value) {
+                      _getraenkeliste[index] = value;
+                      _speichereGetraenkeliste();
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () => _loescheGetraenk(index),
+                ),
+              ],
+            );
+          },
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: _fuegeGetraenkHinzu,
+              child: const Text('+ Getränk hinzufügen'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_geladen) {
@@ -696,6 +818,29 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
           ),
           const SizedBox(height: 4),
+          // später: if (aktuellesKinoId == 'kino_01')
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              child: Column(
+                children: <Widget>[
+                  const ListTile(
+                    title: Text(
+                      'Getränkeliste',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text('Reihenfolge = Regal-Reihenfolge'),
+                    trailing: Icon(Icons.drag_handle),
+                  ),
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: _baueGetraenkelisteInhalt(),
+                  ),
+                ],
+              ),
+            ),
+          ),
           Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

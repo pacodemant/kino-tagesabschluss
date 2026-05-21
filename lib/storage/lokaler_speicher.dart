@@ -31,6 +31,28 @@ class LokalerSpeicher {
     await speicher.setInt('change_target_cents_$kinoId', cent);
   }
 
+  static Future<List<String>> ladeGetraenkeliste(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? rohwert = speicher.getString('getraenkeliste_$kinoId');
+    if (rohwert == null) {
+      return <String>[];
+    }
+    try {
+      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+      return geparst.map((dynamic e) => e as String).toList();
+    } catch (_) {
+      return <String>[];
+    }
+  }
+
+  static Future<void> speichereGetraenkeliste(
+    String kinoId,
+    List<String> liste,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString('getraenkeliste_$kinoId', jsonEncode(liste));
+  }
+
   static Future<KassenstandEntwurf?> ladeKassenstandEntwurf({
     required String kinoId,
     required String isoDatum,
