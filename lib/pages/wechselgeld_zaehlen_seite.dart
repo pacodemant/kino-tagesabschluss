@@ -11,6 +11,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart' as schritt1_ui;
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -675,9 +676,11 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(_kinoId);
     if (!mounted) return;
     if (entwurf == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Keine Zählung für heute gefunden.')),
-      );
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(
+          const SnackBar(content: Text('Keine Zählung für heute gefunden.')),
+        );
       return;
     }
     setState(() {
@@ -692,6 +695,28 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     });
     await _speichereEntwurf();
     _planePruefung();
+  }
+
+  Future<void> _zeigeRollenUebernehmenHilfe() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Geldrollenanzahl übernehmen'),
+          content: const Text(
+            'Übernimmt die Anzahl der Münzrollen aus der heutigen '
+            'Bargeldzählung (Schritt 1). Sinnvoll wenn die Rollenanzahl '
+            'seit der ersten Zählung unverändert ist.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _loescheRollen() {
@@ -819,27 +844,107 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         devToolsPanel: const SizedBox.shrink(),
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
-        rollenGruppe: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            TextButton(
-              onPressed: _rollenUebernommen
-                  ? _loescheRollen
-                  : _ladeRollenAusErsterZaehlung,
-              child: Text(
-                _rollenUebernommen
-                    ? 'Geldrollen löschen'
-                    : 'Geldrollenanzahl aus erster Zählung übernehmen',
-              ),
-            ),
-            gruppen.rollenGruppe,
-          ],
-        ),
+        rollenGruppe: _baueRollenGruppe(),
         hinweiseSection: gruppen.hinweiseSection,
         zusammenfassung: _baueZusammenfassung(differenzCent),
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
+      ),
+    );
+  }
+
+  Widget _baueRollenGruppe() {
+    final String gesamtbetrag = schritt1_ui.schritt1FormatiereRollenAnzeige(
+      _summeGruppe(_rollenSichtbar),
+      _formatiereEuro,
+    );
+
+    Widget zeilenEintrag(Kassenzeile zeile) {
+      return schritt1_ui.Schritt1ZeilenEintrag(
+        zeile: zeile,
+        stueckzahl: _stueckzahlen[zeile.id] ?? 0,
+        controller: _stueckzahlController[zeile.id]!,
+        focusNode: _stueckzahlFocusNode[zeile.id]!,
+        baueFeldMitKey: _baueFeldMitKey,
+        textInputActionFuerSchritt1: _textInputAction,
+        beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
+        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossen,
+        formatiereEuro: _formatiereEuro,
+      );
+    }
+
+    final Widget inhalt = schritt1_ui.Schritt1RollenInhalt(
+      rollenOhneKupfer: _rollenOhneKupfer,
+      kupferRollen: _kupferRollen,
+      kupferRollenSichtbar: _kupferRollenSichtbar,
+      zeilenEintragBuilder: zeilenEintrag,
+      summeGruppe: _summeGruppe,
+      formatiereRollenAnzeige: (int cent) =>
+          schritt1_ui.schritt1FormatiereRollenAnzeige(cent, _formatiereEuro),
+      zeigeKupferRollen: _zeigeKupferRollen,
+      rollenSichtbar: _rollenSichtbar,
+    );
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          InkWell(
+            onTap: () => _toggleSection(_sectionRollen),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: <Widget>[
+                  const Expanded(
+                    child: Text(
+                      'Rollen (Anzahl)',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  Text(
+                    gesamtbetrag,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    _rollenAufgeklappt
+                        ? Icons.expand_less
+                        : Icons.expand_more,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              children: <Widget>[
+                TextButton(
+                  onPressed: _rollenUebernommen
+                      ? _loescheRollen
+                      : _ladeRollenAusErsterZaehlung,
+                  style: TextButton.styleFrom(
+                    textStyle: const TextStyle(fontSize: 13),
+                  ),
+                  child: Text(
+                    _rollenUebernommen ? 'Geldrollen löschen' : 'Übernehmen',
+                  ),
+                ),
+                IconButton(
+                  iconSize: 18,
+                  onPressed: _zeigeRollenUebernehmenHilfe,
+                  icon: const Icon(Icons.help_outline),
+                ),
+              ],
+            ),
+          ),
+          if (_rollenAufgeklappt) ...<Widget>[
+            const Divider(height: 1),
+            Padding(padding: const EdgeInsets.all(12), child: inhalt),
+          ],
+        ],
       ),
     );
   }
