@@ -20,6 +20,14 @@ class TagesabschlussFinal {
     required this.gesamtIstCent,
     required this.differenzGesamtCent,
     required this.differenzAnfangsbestandCent,
+    // Rohdaten – seit Run 168, für ältere gespeicherte Einträge null
+    this.scheineStueckzahlen,
+    this.rollenStueckzahlen,
+    this.silberMuenzenCent,
+    this.kupferMuenzenCent,
+    this.umschlagBetraegeCent,
+    this.ausgabenBetraegeCent,
+    this.ausgabenLabels,
   });
 
   final String kinoId;
@@ -45,6 +53,18 @@ class TagesabschlussFinal {
   final int differenzGesamtCent;
   final int differenzAnfangsbestandCent;
 
+  // Rohdaten Geldzählung – Schlüssel entsprechen den IDs aus StueckelungKonfiguration
+  // (z. B. note_100, note_50 für Scheine; roll_2e, roll_1e für Rollen)
+  final Map<String, int>? scheineStueckzahlen;
+  final Map<String, int>? rollenStueckzahlen;
+  final int? silberMuenzenCent;
+  final int? kupferMuenzenCent;
+  final List<int>? umschlagBetraegeCent;
+
+  // Rohdaten Einnahmen
+  final List<int>? ausgabenBetraegeCent;
+  final List<String>? ausgabenLabels;
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'kinoId': kinoId,
@@ -67,6 +87,17 @@ class TagesabschlussFinal {
       'gesamtIstCent': gesamtIstCent,
       'differenzGesamtCent': differenzGesamtCent,
       'differenzAnfangsbestandCent': differenzAnfangsbestandCent,
+      if (scheineStueckzahlen != null)
+        'scheineStueckzahlen': scheineStueckzahlen,
+      if (rollenStueckzahlen != null)
+        'rollenStueckzahlen': rollenStueckzahlen,
+      if (silberMuenzenCent != null) 'silberMuenzenCent': silberMuenzenCent,
+      if (kupferMuenzenCent != null) 'kupferMuenzenCent': kupferMuenzenCent,
+      if (umschlagBetraegeCent != null)
+        'umschlagBetraegeCent': umschlagBetraegeCent,
+      if (ausgabenBetraegeCent != null)
+        'ausgabenBetraegeCent': ausgabenBetraegeCent,
+      if (ausgabenLabels != null) 'ausgabenLabels': ausgabenLabels,
     };
   }
 
@@ -82,11 +113,51 @@ class TagesabschlussFinal {
     final String datumIso = (json['datumIso'] as String?) ?? '';
     final String createdAtIso = (json['createdAtIso'] as String?) ?? '';
 
+    Map<String, int>? scheineStueckzahlen;
+    final Object? scheineRoh = json['scheineStueckzahlen'];
+    if (scheineRoh is Map) {
+      scheineStueckzahlen = scheineRoh.map(
+        (dynamic k, dynamic v) =>
+            MapEntry<String, int>(k.toString(), (v as num?)?.toInt() ?? 0),
+      );
+    }
+
+    Map<String, int>? rollenStueckzahlen;
+    final Object? rollenRoh = json['rollenStueckzahlen'];
+    if (rollenRoh is Map) {
+      rollenStueckzahlen = rollenRoh.map(
+        (dynamic k, dynamic v) =>
+            MapEntry<String, int>(k.toString(), (v as num?)?.toInt() ?? 0),
+      );
+    }
+
+    List<int>? umschlagBetraegeCent;
+    final Object? umschlagRoh = json['umschlagBetraegeCent'];
+    if (umschlagRoh is List) {
+      umschlagBetraegeCent =
+          umschlagRoh.map((dynamic e) => (e as num?)?.toInt() ?? 0).toList();
+    }
+
+    List<int>? ausgabenBetraegeCent;
+    final Object? ausgabenRoh = json['ausgabenBetraegeCent'];
+    if (ausgabenRoh is List) {
+      ausgabenBetraegeCent =
+          ausgabenRoh.map((dynamic e) => (e as num?)?.toInt() ?? 0).toList();
+    }
+
+    List<String>? ausgabenLabels;
+    final Object? ausgabenLabelsRoh = json['ausgabenLabels'];
+    if (ausgabenLabelsRoh is List) {
+      ausgabenLabels = ausgabenLabelsRoh.whereType<String>().toList();
+    }
+
     return TagesabschlussFinal(
       kinoId: (json['kinoId'] as String?) ?? '',
       kinoName: (json['kinoName'] as String?) ?? '',
-      datum: DateTime.tryParse(datumIso) ?? DateTime.fromMillisecondsSinceEpoch(0),
-      createdAt: DateTime.tryParse(createdAtIso) ?? DateTime.fromMillisecondsSinceEpoch(0),
+      datum: DateTime.tryParse(datumIso) ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      createdAt: DateTime.tryParse(createdAtIso) ??
+          DateTime.fromMillisecondsSinceEpoch(0),
       scheineCent: (json['scheineCent'] as num?)?.toInt() ?? 0,
       loseMuenzenCent: (json['loseMuenzenCent'] as num?)?.toInt() ?? 0,
       rollenCent: (json['rollenCent'] as num?)?.toInt() ?? 0,
@@ -107,6 +178,13 @@ class TagesabschlussFinal {
       differenzGesamtCent: (json['differenzGesamtCent'] as num?)?.toInt() ?? 0,
       differenzAnfangsbestandCent:
           (json['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0,
+      scheineStueckzahlen: scheineStueckzahlen,
+      rollenStueckzahlen: rollenStueckzahlen,
+      silberMuenzenCent: (json['silberMuenzenCent'] as num?)?.toInt(),
+      kupferMuenzenCent: (json['kupferMuenzenCent'] as num?)?.toInt(),
+      umschlagBetraegeCent: umschlagBetraegeCent,
+      ausgabenBetraegeCent: ausgabenBetraegeCent,
+      ausgabenLabels: ausgabenLabels,
     );
   }
 }

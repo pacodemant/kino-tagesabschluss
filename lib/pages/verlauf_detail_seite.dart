@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
@@ -17,6 +19,14 @@ class VerlaufDetailSeite extends StatefulWidget {
 
 class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   bool _loescht = false;
+
+  // Lookup-Maps aus StueckelungKonfiguration, einmalig gebaut
+  static final Map<String, Kassenzeile> _scheineLookup = <String, Kassenzeile>{
+    for (final Kassenzeile z in StueckelungKonfiguration.scheine) z.id: z,
+  };
+  static final Map<String, Kassenzeile> _rollenLookup = <String, Kassenzeile>{
+    for (final Kassenzeile z in StueckelungKonfiguration.rollen) z.id: z,
+  };
 
   String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
   String _euroMitVorzeichen(int cent) =>
@@ -68,6 +78,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     navigator.pop(true);
   }
 
+  // Hauptzeile mit Underline-Stil
   Widget _zeile(String label, String wert, {Color? farbe, bool fett = false}) {
     final FontWeight gewicht = fett ? FontWeight.bold : FontWeight.normal;
     return Container(
@@ -86,6 +97,114 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         ],
       ),
     );
+  }
+
+  // Eingerückte Unterzeile ohne Trennlinie
+  Widget _unterzeile(String label, String wert) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 0, 4),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            ),
+          ),
+          Text(
+            wert,
+            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _scheinUnterzeilen(TagesabschlussFinal a) {
+    final Map<String, int>? sz = a.scheineStueckzahlen;
+    if (sz == null || sz.isEmpty) {
+      return <Widget>[];
+    }
+    final List<MapEntry<String, int>> eintraege = sz.entries.toList()
+      ..sort(
+        (MapEntry<String, int> x, MapEntry<String, int> y) =>
+            (_scheineLookup[y.key]?.einzelwertCent ?? 0).compareTo(
+              _scheineLookup[x.key]?.einzelwertCent ?? 0,
+            ),
+      );
+    return eintraege.map((MapEntry<String, int> e) {
+      final Kassenzeile? zeile = _scheineLookup[e.key];
+      if (zeile == null) {
+        return const SizedBox.shrink();
+      }
+      return _unterzeile(
+        '${zeile.bezeichnung}  ×  ${e.value}',
+        _euro(zeile.einzelwertCent * e.value),
+      );
+    }).toList();
+  }
+
+  List<Widget> _rollenUnterzeilen(TagesabschlussFinal a) {
+    final Map<String, int>? sz = a.rollenStueckzahlen;
+    if (sz == null || sz.isEmpty) {
+      return <Widget>[];
+    }
+    final List<MapEntry<String, int>> eintraege = sz.entries.toList()
+      ..sort(
+        (MapEntry<String, int> x, MapEntry<String, int> y) =>
+            (_rollenLookup[y.key]?.einzelwertCent ?? 0).compareTo(
+              _rollenLookup[x.key]?.einzelwertCent ?? 0,
+            ),
+      );
+    return eintraege.map((MapEntry<String, int> e) {
+      final Kassenzeile? zeile = _rollenLookup[e.key];
+      if (zeile == null) {
+        return const SizedBox.shrink();
+      }
+      // Bezeichnung kürzen: "Rolle 2 € (50,00 €)" → "Rolle 2 €"
+      final String kurzLabel = zeile.bezeichnung.split(' (').first;
+      return _unterzeile(
+        '$kurzLabel  ×  ${e.value}',
+        _euro(zeile.einzelwertCent * e.value),
+      );
+    }).toList();
+  }
+
+  List<Widget> _loseMuenzenUnterzeilen(TagesabschlussFinal a) {
+    final List<Widget> result = <Widget>[];
+    if (a.silberMuenzenCent != null) {
+      result.add(_unterzeile('Silber', _euro(a.silberMuenzenCent!)));
+    }
+    if (a.kupferMuenzenCent != null) {
+      result.add(_unterzeile('Kupfer', _euro(a.kupferMuenzenCent!)));
+    }
+    return result;
+  }
+
+  List<Widget> _ecBelegUnterzeilen(TagesabschlussFinal a) {
+    if (a.ecBelegeCent.isEmpty) {
+      return <Widget>[];
+    }
+    return List<Widget>.generate(a.ecBelegeCent.length, (int i) {
+      final String label = a.ecBelegeCent.length == 1
+          ? 'EC-Beleg'
+          : 'EC-Beleg ${i + 1}';
+      return _unterzeile(label, _euro(a.ecBelegeCent[i]));
+    });
+  }
+
+  List<Widget> _ausgabenUnterzeilen(TagesabschlussFinal a) {
+    final List<int>? betraege = a.ausgabenBetraegeCent;
+    if (betraege == null || betraege.isEmpty) {
+      return <Widget>[];
+    }
+    return List<Widget>.generate(betraege.length, (int i) {
+      final String label =
+          a.ausgabenLabels != null && i < a.ausgabenLabels!.length
+              ? a.ausgabenLabels![i]
+              : 'Ausgabe ${i + 1}';
+      return _unterzeile(label, _euro(betraege[i]));
+    });
   }
 
   @override
@@ -113,11 +232,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                 Card(
                   color: Colors.black,
                   margin: const EdgeInsets.only(bottom: 12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(14),
+                  child: const Padding(
+                    padding: EdgeInsets.all(14),
                     child: Text(
                       'Diese Abrechnung kann nicht geändert werden.',
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
@@ -133,8 +252,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       _zeile('Scheine', _euro(a.scheineCent)),
-                      _zeile('Rollen', _euro(a.rollenCent)),
+                      ..._scheinUnterzeilen(a),
+                      _zeile('Münzrollen', _euro(a.rollenCent)),
+                      ..._rollenUnterzeilen(a),
                       _zeile('Lose Münzen', _euro(a.loseMuenzenCent)),
+                      ..._loseMuenzenUnterzeilen(a),
                       _zeile('Umschläge', _euro(a.umschlaegeCent)),
                       _zeile(
                         'Kassenbestand gesamt',
@@ -169,7 +291,9 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       _zeile('Kino SOLL', _euro(a.kinoSollCent)),
                       _zeile('Bistro SOLL', _euro(a.bistroSollCent)),
                       _zeile('Ausgaben', _euro(a.ausgabenCent)),
+                      ..._ausgabenUnterzeilen(a),
                       _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),
+                      ..._ecBelegUnterzeilen(a),
                     ],
                   ),
                 ),

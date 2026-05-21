@@ -92,6 +92,8 @@ class _TagesabschlussSchritt3SeiteState
         ecBelegeCent: widget.argumente.ecBelegeCent,
         differenzAnfangsbestandCent:
             widget.argumente.differenzAnfangsbestandCent,
+        stueckzahlen: widget.argumente.stueckzahlen,
+        loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
       ),
       jetzt: DateTime.now(),
     );

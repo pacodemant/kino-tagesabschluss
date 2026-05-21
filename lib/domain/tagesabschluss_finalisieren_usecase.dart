@@ -16,6 +16,9 @@ class TagesabschlussFinalisierenEingabe {
     required this.ausgabenCent,
     required this.ecBelegeCent,
     required this.differenzAnfangsbestandCent,
+    // Rohdaten aus Schritt 1 – optional, damit bestehende Aufrufer unverändert bleiben
+    this.stueckzahlen,
+    this.loseMuenzenNachArtCent,
   });
 
   final String kinoId;
@@ -30,6 +33,10 @@ class TagesabschlussFinalisierenEingabe {
   final int ausgabenCent;
   final List<int> ecBelegeCent;
   final int differenzAnfangsbestandCent;
+
+  // Stückzahlen/Beträge je Denomination aus Schritt 1 (IDs: note_xxx, roll_xxx, coin_xxx)
+  final Map<String, int>? stueckzahlen;
+  final Map<String, int>? loseMuenzenNachArtCent;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -45,6 +52,12 @@ class TagesabschlussValidierungsFehler implements Exception {
 /// Erstellt das finale Abschluss-Objekt aus den gesammelten Schritten.
 class TagesabschlussFinalisierenUsecase {
   const TagesabschlussFinalisierenUsecase();
+
+  static const Set<String> _kupferCoinIds = <String>{
+    'coin_1c',
+    'coin_2c',
+    'coin_5c',
+  };
 
   /// Finalisiert den Tagesabschluss und berechnet alle Summen zentral.
   TagesabschlussFinal finalisieren({
@@ -88,6 +101,46 @@ class TagesabschlussFinalisierenUsecase {
           gesamtSollCent: gesamtSollCent,
         );
 
+    // Rohdaten Geldzählung aus stueckzahlen-Map ableiten
+    Map<String, int>? scheineStueckzahlen;
+    Map<String, int>? rollenStueckzahlen;
+    if (eingabe.stueckzahlen != null) {
+      scheineStueckzahlen = <String, int>{};
+      rollenStueckzahlen = <String, int>{};
+      for (final MapEntry<String, int> e in eingabe.stueckzahlen!.entries) {
+        if (e.value <= 0) continue;
+        if (e.key.startsWith('note_')) {
+          scheineStueckzahlen[e.key] = e.value;
+        } else if (e.key.startsWith('roll_')) {
+          rollenStueckzahlen[e.key] = e.value;
+        }
+      }
+    }
+
+    // Silber- und Kupfermünzen aus Betrag-Map summieren
+    int? silberMuenzenCent;
+    int? kupferMuenzenCent;
+    if (eingabe.loseMuenzenNachArtCent != null) {
+      int silber = 0;
+      int kupfer = 0;
+      for (final MapEntry<String, int> e
+          in eingabe.loseMuenzenNachArtCent!.entries) {
+        if (_kupferCoinIds.contains(e.key)) {
+          kupfer += e.value;
+        } else {
+          silber += e.value;
+        }
+      }
+      silberMuenzenCent = silber;
+      kupferMuenzenCent = kupfer;
+    }
+
+    // TODO(Run 169): umschlagBetraegeCent befüllen – Einzelbeträge werden in
+    // TagesabschlussSchritt3Argumente nicht weitergegeben (nur umschlaegeCent-Summe).
+
+    // TODO(Run 169): ausgabenBetraegeCent/ausgabenLabels befüllen – kein
+    // Einzelposten-Eingabefeld in Schritt 2 vorhanden.
+
     final DateTime zeitstempel = jetzt ?? DateTime.now();
 
     return TagesabschlussFinal(
@@ -111,6 +164,12 @@ class TagesabschlussFinalisierenUsecase {
       gesamtIstCent: gesamtIstCent,
       differenzGesamtCent: differenzGesamtCent,
       differenzAnfangsbestandCent: eingabe.differenzAnfangsbestandCent,
+      scheineStueckzahlen:
+          scheineStueckzahlen?.isNotEmpty == true ? scheineStueckzahlen : null,
+      rollenStueckzahlen:
+          rollenStueckzahlen?.isNotEmpty == true ? rollenStueckzahlen : null,
+      silberMuenzenCent: silberMuenzenCent,
+      kupferMuenzenCent: kupferMuenzenCent,
     );
   }
 
