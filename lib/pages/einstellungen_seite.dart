@@ -99,6 +99,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _geladen = false;
   bool _devModusAktiv = false;
   bool _wechselgeldAufgeklappt = false;
+  bool _getraenkelisteAufgeklappt = false;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -200,8 +201,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     _getraenkeFocusNodes.clear();
     for (final String name in getraenkeliste) {
-      _getraenkeController.add(TextEditingController(text: name));
-      _getraenkeFocusNodes.add(FocusNode());
+      final TextEditingController ctrl = TextEditingController(text: name);
+      _getraenkeController.add(ctrl);
+      _getraenkeFocusNodes.add(_neueFocusNodeMitListener(ctrl));
     }
     setState(() {
       _devModusAktiv = devAktiv;
@@ -633,11 +635,27 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     await LokalerSpeicher.speichereGetraenkeliste('kino_01', _getraenkeliste);
   }
 
-  void _fuegeGetraenkHinzu() {
+  FocusNode _neueFocusNodeMitListener(TextEditingController ctrl) {
     final FocusNode fn = FocusNode();
+    fn.addListener(() {
+      if (fn.hasFocus) {
+        final int idx = _getraenkeController.indexOf(ctrl);
+        if (idx >= 0) {
+          ctrl.clear();
+          _getraenkeliste[idx] = '';
+          _speichereGetraenkeliste();
+        }
+      }
+    });
+    return fn;
+  }
+
+  void _fuegeGetraenkHinzu() {
+    final TextEditingController ctrl = TextEditingController();
+    final FocusNode fn = _neueFocusNodeMitListener(ctrl);
     setState(() {
       _getraenkeliste.add('');
-      _getraenkeController.add(TextEditingController());
+      _getraenkeController.add(ctrl);
       _getraenkeFocusNodes.add(fn);
     });
     WidgetsBinding.instance.addPostFrameCallback((_) => fn.requestFocus());
@@ -824,19 +842,29 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             child: Card(
               child: Column(
                 children: <Widget>[
-                  const ListTile(
-                    title: Text(
+                  ListTile(
+                    title: const Text(
                       'Getränkeliste',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: Text('Reihenfolge = Regal-Reihenfolge'),
-                    trailing: Icon(Icons.drag_handle),
+                    subtitle: const Text('Reihenfolge = Regal-Reihenfolge'),
+                    trailing: Icon(
+                      _getraenkelisteAufgeklappt
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                    ),
+                    onTap: () => setState(
+                      () => _getraenkelisteAufgeklappt =
+                          !_getraenkelisteAufgeklappt,
+                    ),
                   ),
-                  const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: _baueGetraenkelisteInhalt(),
-                  ),
+                  if (_getraenkelisteAufgeklappt) ...<Widget>[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: _baueGetraenkelisteInhalt(),
+                    ),
+                  ],
                 ],
               ),
             ),
