@@ -82,6 +82,7 @@ class _TagesabschlussSchritt3SeiteState
   // true = Auto-Save läuft oder abgeschlossen, false = noch ausstehend
   bool _autoSaveErledigt = false;
   bool _autoSaveLaeuft = false;
+  bool _autoSaveFehler = false;
 
   @override
   void initState() {
@@ -122,6 +123,7 @@ class _TagesabschlussSchritt3SeiteState
     }
     setState(() {
       _autoSaveLaeuft = true;
+      _autoSaveFehler = false;
     });
 
     try {
@@ -145,12 +147,14 @@ class _TagesabschlussSchritt3SeiteState
         _autoSaveErledigt = true;
         _autoSaveLaeuft = false;
       });
-    } catch (_) {
+    } catch (e) {
+      debugPrint('AutoSave fehlgeschlagen: $e');
       if (!mounted) {
         return;
       }
       setState(() {
         _autoSaveLaeuft = false;
+        _autoSaveFehler = true;
       });
     }
   }
@@ -431,6 +435,18 @@ class _TagesabschlussSchritt3SeiteState
                     ),
                   ),
                 ),
+                if (_autoSaveFehler)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(
+                      'Speichern fehlgeschlagen – bitte erneut versuchen.',
+                      style: TextStyle(
+                        color: Colors.red.shade700,
+                        fontSize: 13,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
               ],
             ),
     );
