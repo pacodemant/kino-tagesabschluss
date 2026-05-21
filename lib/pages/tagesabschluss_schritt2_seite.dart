@@ -1061,9 +1061,17 @@ class _TagesabschlussSchritt2SeiteState
                                             horizontal: 8,
                                             vertical: 6,
                                           ),
-                                                          suffixIcon: _ausgabenLabelController[i].text.isEmpty
+                                                          suffixIconConstraints: const BoxConstraints(
+                                            minWidth: 0,
+                                            minHeight: 0,
+                                            maxWidth: 32,
+                                            maxHeight: 32,
+                                          ),
+                                          suffixIcon: _ausgabenLabelController[i].text.isEmpty
                                               ? null
                                               : IconButton(
+                                                  constraints: const BoxConstraints(),
+                                                  padding: EdgeInsets.zero,
                                                   icon: const Icon(
                                                     Icons.close,
                                                     size: 18,
@@ -1188,9 +1196,17 @@ class _TagesabschlussSchritt2SeiteState
                                             horizontal: 8,
                                             vertical: 6,
                                           ),
+                                          suffixIconConstraints: const BoxConstraints(
+                                            minWidth: 0,
+                                            minHeight: 0,
+                                            maxWidth: 32,
+                                            maxHeight: 32,
+                                          ),
                                           suffixIcon: _ecBelegLabelController[i].text.isEmpty
                                               ? null
                                               : IconButton(
+                                                  constraints: const BoxConstraints(),
+                                                  padding: EdgeInsets.zero,
                                                   icon: const Icon(
                                                     Icons.close,
                                                     size: 18,

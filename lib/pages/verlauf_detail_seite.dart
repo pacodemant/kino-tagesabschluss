@@ -192,6 +192,20 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     return <Widget>[];
   }
 
+  List<Widget> _ecBelegUnterzeilen(TagesabschlussFinal a) {
+    final List<int> betraege = a.ecBelegeCent;
+    if (betraege.length <= 1) {
+      return <Widget>[];
+    }
+    return List<Widget>.generate(betraege.length, (int i) {
+      final String label =
+          a.ecBelegeLabels != null && i < a.ecBelegeLabels!.length && a.ecBelegeLabels![i].isNotEmpty
+              ? a.ecBelegeLabels![i]
+              : 'Beleg ${i + 1}';
+      return _unterzeile(label, _euro(betraege[i]));
+    });
+  }
+
   List<Widget> _ausgabenUnterzeilen(TagesabschlussFinal a) {
     final List<int>? betraege = a.ausgabenBetraegeCent;
     if (betraege != null && betraege.isNotEmpty) {
@@ -298,6 +312,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       _zeile('Ausgaben', _euro(a.ausgabenCent)),
                       ..._ausgabenUnterzeilen(a),
                       _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),
+                      ..._ecBelegUnterzeilen(a),
                     ],
                   ),
                 ),
