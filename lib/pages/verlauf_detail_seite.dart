@@ -248,6 +248,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       'Geldzählung',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    subtitle: Text(_euro(a.kassenbestandGesamtCent)),
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
@@ -285,6 +286,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       'Einnahmen',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    subtitle: Text(_euro(a.gesamtIstCent)),
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
@@ -306,6 +308,16 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     title: const Text(
                       'Ergebnis',
                       style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(
+                      _euroMitVorzeichen(a.differenzGesamtCent),
+                      style: TextStyle(
+                        color: a.differenzGesamtCent > 0
+                            ? Colors.green.shade700
+                            : a.differenzGesamtCent < 0
+                                ? Colors.red.shade700
+                                : Colors.black87,
+                      ),
                     ),
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
