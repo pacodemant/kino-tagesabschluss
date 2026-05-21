@@ -19,7 +19,7 @@ class EinstellungenSeite extends StatefulWidget {
 class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   static const List<(String, String, int)> _s1ScheineFelder =
       <(String, String, int)>[
-    ('note_100', '100 €', 0),
+    ('note_100', '100 €', 1),
     ('note_50', '50 €', 13),
     ('note_20', '20 €', 17),
     ('note_10', '10 €', 65),
@@ -52,7 +52,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   static const Map<String, dynamic> _standardTestwerte = <String, dynamic>{
     'stueckzahlen': <String, dynamic>{
-      'note_100': 0, 'note_50': 13, 'note_20': 17, 'note_10': 65, 'note_5': 20,
+      'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65, 'note_5': 20,
       'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0, 'roll_10c': 0,
       'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
     },
@@ -724,7 +724,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: _setzeStandardTestwerte,
-                        child: const Text('Standardwerte einsetzen'),
+                        child: const Text('Standard-Testwerte einsetzen'),
                       ),
                     ),
                   ),

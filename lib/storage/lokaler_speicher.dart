@@ -209,7 +209,7 @@ class LokalerSpeicher {
     if (rohwert == null) {
       return <String, dynamic>{
         'stueckzahlen': <String, dynamic>{
-          'note_100': 0, 'note_50': 13, 'note_20': 17, 'note_10': 65,
+          'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65,
           'note_5': 20,
           'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0,
           'roll_10c': 0, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
