@@ -1,4 +1,4 @@
-last_run: 163
-next_run: 164
-last_run_title: R163: Schritt 3 Handwriting-Font Caveat für Werte und Datum
-last_commit: 2778b49
+last_run: 167
+next_run: 168
+last_run_title: R167: VerlaufDetailSeite klappbare Cards, Read-Only-Stil, Hinweis-Card; Verlaufsliste kennzeichnet aktuellen Tag
+last_commit: d9d8e83
