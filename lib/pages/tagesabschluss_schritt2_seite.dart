@@ -845,13 +845,16 @@ class _TagesabschlussSchritt2SeiteState
               child: ElevatedButton(
                 onPressed: _weiterZuSchritt3,
                 style: AppFarben.footerButtonStyle,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.arrow_forward),
-                    SizedBox(width: 6),
-                    Text('3. Übertrag (Umschlag)'),
-                  ],
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const <Widget>[
+                      Icon(Icons.arrow_forward),
+                      SizedBox(width: 6),
+                      Text('3. Übertrag (Umschlag)'),
+                    ],
+                  ),
                 ),
               ),
             ),
