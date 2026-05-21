@@ -1,4 +1,4 @@
-last_run: 177
-next_run: 178
-last_run_title: R177: Wechselgeld-Zähl-Seite für Schauburg mit Entwurf und Übereinstimmungs-Dialog
-last_commit: f5934fb
+last_run: 178
+next_run: 179
+last_run_title: R178: Realistische Testwerte hardcoded als Fallback + Button in Einstellungen
+last_commit: a2b83c5
