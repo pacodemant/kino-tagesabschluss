@@ -1,4 +1,4 @@
-last_run: 179
-next_run: 180
-last_run_title: R179: Service Worker deaktiviert für zuverlässiges Cache-Verhalten
-last_commit: f215d52
+last_run: 180
+next_run: 181
+last_run_title: R180: Getränkeliste in Einstellungen mit Drag & Drop und Persistenz
+last_commit: 99abf42
