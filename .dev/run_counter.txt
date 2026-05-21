@@ -1,4 +1,4 @@
-last_run: 168
-next_run: 169
-last_run_title: R168: TagesabschlussFinal Rohdaten-Felder + VerlaufDetail Aufschlüsselung
-last_commit: cf0596e
+last_run: 169
+next_run: 170
+last_run_title: R169: Gesamtsummen als subtitle in VerlaufDetailSeite-Cards
+last_commit: 76116f3
