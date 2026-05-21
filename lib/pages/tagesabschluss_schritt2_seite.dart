@@ -545,6 +545,10 @@ class _TagesabschlussSchritt2SeiteState
     if (!mounted) {
       return;
     }
+    await _leereAlleFelder();
+    if (!mounted) {
+      return;
+    }
     final int kinoSoll =
         (daten?['kinoSollCent'] as num?)?.toInt() ?? 74900;
     final int bistroSoll =
@@ -623,6 +627,60 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_ecBelegController[0], '');
       _setzeControllerText(_ecBelegLabelController[0], '');
     });
+  }
+
+  Future<void> _leereAlleFelder() async {
+    FocusScope.of(context).unfocus();
+    setState(() {
+      _kinoSollCent = 0;
+      _bistroSollCent = 0;
+      _differenzAnfangsbestandCent = 0;
+      _kinoSollBeruehrt = false;
+      _bistroSollBeruehrt = false;
+      _ecBeleg1Beruehrt = false;
+      _validierungAusgeloest = false;
+
+      _setzeEcBelegAnzahl(1);
+      _ecBelegeCent[0] = 0;
+      _ecBelegLabels[0] = '';
+
+      _setzeAusgabenAnzahl(1);
+      _ausgabenBetrageCent[0] = 0;
+      _ausgabenLabels[0] = '';
+
+      _setzeControllerText(_kinoSollController, '');
+      _setzeControllerText(_bistroSollController, '');
+      _setzeControllerText(_differenzAnfangsbestandController, '');
+      _setzeControllerText(_ecBelegController[0], '');
+      _setzeControllerText(_ecBelegLabelController[0], '');
+      _setzeControllerText(_ausgabenBetragController[0], '');
+      _setzeControllerText(_ausgabenLabelController[0], '');
+    });
+    await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
+  }
+
+  Future<void> _bestaetigeUndLeereEingaben() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Eingaben löschen?'),
+        content: const Text('Alle Felder in Schritt 2 werden zurückgesetzt.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
+    await _leereAlleFelder();
   }
 
   Widget _baueDevToolsPanel() {
@@ -800,6 +858,14 @@ class _TagesabschlussSchritt2SeiteState
         schrittNummer: 2,
         schrittTitel: 'Einnahmen/Abschluss',
         actions: <Widget>[
+          TextButton(
+            onPressed: _bestaetigeUndLeereEingaben,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white70,
+              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            child: const Text('Clear'),
+          ),
           if (_devModusAktiv)
             IconButton(
               tooltip: 'DEV-Tools',
