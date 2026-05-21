@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
+import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
@@ -47,6 +49,8 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       const Schritt1OrchestrierungHelper();
   final Schritt1GruppenOrchestrierung _gruppenOrchestrierung =
       const Schritt1GruppenOrchestrierung();
+  final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
+      const KassenstandEntwurfUsecase();
   late final Schritt1InitialisierungHelper _initialisierungHelper;
 
   final Map<String, int> _stueckzahlen = <String, int>{};
@@ -78,6 +82,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
   bool _umschlaegeAufgeklappt = false;
   bool _dialogGezeigt = false;
   bool _dialogPruefungGeplant = false;
+  bool _rollenUebernommen = false;
 
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
@@ -665,6 +670,44 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(_kinoId);
   }
 
+  Future<void> _ladeRollenAusErsterZaehlung() async {
+    final KassenstandEntwurf? entwurf =
+        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(_kinoId);
+    if (!mounted) return;
+    if (entwurf == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Keine Zählung für heute gefunden.')),
+      );
+      return;
+    }
+    setState(() {
+      for (final MapEntry<String, int> e in entwurf.stueckzahlen.entries) {
+        if (e.key.startsWith('roll_') && _stueckzahlen.containsKey(e.key)) {
+          _stueckzahlen[e.key] = e.value;
+          _stueckzahlController[e.key]?.text =
+              e.value != 0 ? e.value.toString() : '';
+        }
+      }
+      _rollenUebernommen = true;
+    });
+    await _speichereEntwurf();
+    _planePruefung();
+  }
+
+  void _loescheRollen() {
+    setState(() {
+      for (final String key in _stueckzahlen.keys) {
+        if (key.startsWith('roll_')) {
+          _stueckzahlen[key] = 0;
+          _stueckzahlController[key]?.clear();
+        }
+      }
+      _rollenUebernommen = false;
+    });
+    _speichereEntwurf();
+    _planePruefung();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_laedt) {
@@ -776,7 +819,22 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         devToolsPanel: const SizedBox.shrink(),
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
-        rollenGruppe: gruppen.rollenGruppe,
+        rollenGruppe: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextButton(
+              onPressed: _rollenUebernommen
+                  ? _loescheRollen
+                  : _ladeRollenAusErsterZaehlung,
+              child: Text(
+                _rollenUebernommen
+                    ? 'Geldrollen löschen'
+                    : 'Geldrollenanzahl aus erster Zählung übernehmen',
+              ),
+            ),
+            gruppen.rollenGruppe,
+          ],
+        ),
         hinweiseSection: gruppen.hinweiseSection,
         zusammenfassung: _baueZusammenfassung(differenzCent),
         downButtonSichtbar: _istDownButtonSichtbar(),
