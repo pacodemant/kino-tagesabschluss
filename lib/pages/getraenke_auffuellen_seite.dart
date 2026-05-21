@@ -52,8 +52,16 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           (mengenRoh != null && i < mengenRoh.length)
               ? (mengenRoh[i] as String? ?? '')
               : '';
-      _mengeController.add(TextEditingController(text: menge));
-      _mengeFocusNode.add(FocusNode());
+      final TextEditingController ctrl = TextEditingController(text: menge);
+      final FocusNode fn = FocusNode();
+      fn.addListener(() {
+        if (fn.hasFocus) {
+          ctrl.clear();
+          setState(() {});
+        }
+      });
+      _mengeController.add(ctrl);
+      _mengeFocusNode.add(fn);
     }
     setState(() {
       _getraenkeliste = liste;

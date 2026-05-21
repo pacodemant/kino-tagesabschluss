@@ -100,11 +100,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _devModusAktiv = false;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
+  bool _testwertAufgeklappt = false;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
       <TextEditingController>[];
-  final List<FocusNode> _getraenkeFocusNodes = <FocusNode>[];
 
   @override
   void initState() {
@@ -150,9 +150,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final TextEditingController c in _getraenkeController) {
       c.dispose();
     }
-    for (final FocusNode fn in _getraenkeFocusNodes) {
-      fn.dispose();
-    }
     super.dispose();
   }
 
@@ -196,14 +193,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       c.dispose();
     }
     _getraenkeController.clear();
-    for (final FocusNode fn in _getraenkeFocusNodes) {
-      fn.dispose();
-    }
-    _getraenkeFocusNodes.clear();
     for (final String name in getraenkeliste) {
-      final TextEditingController ctrl = TextEditingController(text: name);
-      _getraenkeController.add(ctrl);
-      _getraenkeFocusNodes.add(_neueFocusNodeMitListener(ctrl));
+      _getraenkeController.add(TextEditingController(text: name));
     }
     setState(() {
       _devModusAktiv = devAktiv;
@@ -635,40 +626,19 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     await LokalerSpeicher.speichereGetraenkeliste('kino_01', _getraenkeliste);
   }
 
-  FocusNode _neueFocusNodeMitListener(TextEditingController ctrl) {
-    final FocusNode fn = FocusNode();
-    fn.addListener(() {
-      if (fn.hasFocus) {
-        final int idx = _getraenkeController.indexOf(ctrl);
-        if (idx >= 0) {
-          ctrl.clear();
-          _getraenkeliste[idx] = '';
-          _speichereGetraenkeliste();
-        }
-      }
-    });
-    return fn;
-  }
-
   void _fuegeGetraenkHinzu() {
-    final TextEditingController ctrl = TextEditingController();
-    final FocusNode fn = _neueFocusNodeMitListener(ctrl);
     setState(() {
       _getraenkeliste.add('');
-      _getraenkeController.add(ctrl);
-      _getraenkeFocusNodes.add(fn);
+      _getraenkeController.add(TextEditingController());
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) => fn.requestFocus());
     _speichereGetraenkeliste();
   }
 
   void _loescheGetraenk(int index) {
     _getraenkeController[index].dispose();
-    _getraenkeFocusNodes[index].dispose();
     setState(() {
       _getraenkeliste.removeAt(index);
       _getraenkeController.removeAt(index);
-      _getraenkeFocusNodes.removeAt(index);
     });
     _speichereGetraenkeliste();
   }
@@ -681,8 +651,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       final TextEditingController ctrl =
           _getraenkeController.removeAt(oldIndex);
       _getraenkeController.insert(newIndex, ctrl);
-      final FocusNode fn = _getraenkeFocusNodes.removeAt(oldIndex);
-      _getraenkeFocusNodes.insert(newIndex, fn);
     });
     _speichereGetraenkeliste();
   }
@@ -703,7 +671,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 Expanded(
                   child: TextField(
                     controller: _getraenkeController[index],
-                    focusNode: _getraenkeFocusNodes[index],
                     decoration: const InputDecoration(
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(
@@ -880,16 +847,35 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   activeThumbColor: AppFarben.appBarRot,
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                  child: Text(
-                    'DEBUG devModusAktiv: $_devModusAktiv',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey,
-                    ),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          'DEBUG devModusAktiv: $_devModusAktiv',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                      if (_devModusAktiv)
+                        TextButton.icon(
+                          onPressed: () => setState(
+                            () =>
+                                _testwertAufgeklappt = !_testwertAufgeklappt,
+                          ),
+                          icon: Icon(
+                            _testwertAufgeklappt
+                                ? Icons.expand_less
+                                : Icons.expand_more,
+                          ),
+                          label: const Text('Testwerte'),
+                        ),
+                    ],
                   ),
                 ),
-                if (_devModusAktiv) ...<Widget>[
+                if (_devModusAktiv && _testwertAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
