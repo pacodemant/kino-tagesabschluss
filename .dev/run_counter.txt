@@ -1,4 +1,4 @@
-last_run: 174
-next_run: 175
-last_run_title: R174: Auto-Save Fehler-Logging und sichtbares Fehler-Feedback in Schritt 3
+last_run: 175
+next_run: 176
+last_run_title: R175: FocusNode/Controller-Initialisierung in Schritt 2 vereinheitlicht
 last_commit: 766a7ed
