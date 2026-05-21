@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 172: Ausgaben als Einzelposten in Schritt 2: dynamische Liste mit Bezeichnung (optional) + Betrag pro Posten (analog EC-Belege); Label-X-Button (ValueListenableBuilder) für Umschlag-Bezeichnungsfelder in Schritt 1 und neue Ausgaben-Bezeichnungsfelder; Entwurf speichert ausgabenBetraegeCent + ausgabenLabels mit Fallback auf altes ausgabenCent-Format; Kette bis TagesabschlussFinal: Schritt3Argumente + FinalisierenEingabe + UseCase befüllen nun ausgabenBetraegeCent/ausgabenLabels.
 - Run 171: VerlaufDetailSeite: neue Hilfsmethode _umschlagUnterzeilen() zeigt Einzelbeträge aus umschlagBetraegeCent als Unterzeilen nach der Umschläge-Hauptzeile (Fallback auf Gesamtsumme); _ausgabenUnterzeilen() ergänzt um Fallback auf ausgabenCent > 0 wenn keine Einzelposten vorhanden.
 - Run 170: Umschlag-Einzelbeträge vollständig durch den Chain durchgereicht: TagesabschlussSchritt2Argumente + Schritt2Seite + TagesabschlussSchritt3Argumente + TagesabschlussFinalisierenEingabe erhalten je ein optionales List<UmschlagEintrag>? umschlaege-Feld; main.dart Router übergibt umschlaege; UseCase leitet umschlagBetraegeCent aus der Liste ab; TODO für Ausgaben-Einzelposten auf Run 171 verschoben.
 - Run 169: VerlaufDetailSeite: alle drei ExpansionTile-Cards zeigen im Header eine subtitle-Zeile — Geldzählung: kassenbestandGesamtCent, Einnahmen: gesamtIstCent, Ergebnis: differenzGesamtCent mit Vorzeichen und Farbe (grün/rot/schwarz bei 0).

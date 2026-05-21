@@ -1,4 +1,4 @@
-last_run: 171
-next_run: 172
-last_run_title: R171: Umschläge und Ausgaben als Unterzeilen in VerlaufDetailSeite
-last_commit: 212b4b1
+last_run: 172
+next_run: 173
+last_run_title: R172: Ausgaben als Einzelposten in Schritt 2, Label-X für Umschläge und Ausgaben
+last_commit: 766a7ed
