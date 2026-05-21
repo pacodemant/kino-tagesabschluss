@@ -181,18 +181,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     return result;
   }
 
-  List<Widget> _ecBelegUnterzeilen(TagesabschlussFinal a) {
-    if (a.ecBelegeCent.isEmpty) {
-      return <Widget>[];
-    }
-    return List<Widget>.generate(a.ecBelegeCent.length, (int i) {
-      final String label = a.ecBelegeCent.length == 1
-          ? 'EC-Beleg'
-          : 'EC-Beleg ${i + 1}';
-      return _unterzeile(label, _euro(a.ecBelegeCent[i]));
-    });
-  }
-
   List<Widget> _ausgabenUnterzeilen(TagesabschlussFinal a) {
     final List<int>? betraege = a.ausgabenBetraegeCent;
     if (betraege == null || betraege.isEmpty) {
@@ -295,7 +283,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       _zeile('Ausgaben', _euro(a.ausgabenCent)),
                       ..._ausgabenUnterzeilen(a),
                       _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),
-                      ..._ecBelegUnterzeilen(a),
                     ],
                   ),
                 ),
