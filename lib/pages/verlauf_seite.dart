@@ -5,6 +5,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 
 class VerlaufSeite extends StatefulWidget {
   const VerlaufSeite({super.key, this.initialKinoId});
@@ -77,6 +78,10 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
 
   String _deutschesDatum(DateTime datum) =>
       TagesabschlussFormatierung.deutschesDatum(datum);
+
+  String _isoDatum(DateTime datum) =>
+      '${datum.year}-${datum.month.toString().padLeft(2, '0')}-'
+      '${datum.day.toString().padLeft(2, '0')}';
 
   String _euroMitVorzeichen(int cent) =>
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
@@ -157,8 +162,35 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
               final int differenz = eintrag.differenzGesamtCent;
               final Color farbe =
                   differenz >= 0 ? Colors.green.shade700 : Colors.red.shade700;
+              final bool istHeute = _isoDatum(eintrag.datum) ==
+                  DatumsHelper.logischesIsoDatum();
               return ListTile(
-                title: Text(_deutschesDatum(eintrag.datum)),
+                title: Row(
+                  children: <Widget>[
+                    Text(_deutschesDatum(eintrag.datum)),
+                    if (istHeute) ...<Widget>[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade600,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: const Text(
+                          'Heute',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[

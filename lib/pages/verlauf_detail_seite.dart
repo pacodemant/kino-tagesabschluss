@@ -68,25 +68,15 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     navigator.pop(true);
   }
 
-  Widget _abschnittsTitel(String text) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 12, 0, 4),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 13,
-          color: Colors.grey,
-          letterSpacing: 0.5,
-        ),
-      ),
-    );
-  }
-
   Widget _zeile(String label, String wert, {Color? farbe, bool fett = false}) {
     final FontWeight gewicht = fett ? FontWeight.bold : FontWeight.normal;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade300),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -119,83 +109,104 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               children: <Widget>[
-                // Abschnitt 1 – Geldzählung
-                _abschnittsTitel('Geldzählung'),
+                // Hinweis-Card
                 Card(
+                  color: Colors.black,
+                  margin: const EdgeInsets.only(bottom: 12),
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        _zeile('Scheine', _euro(a.scheineCent)),
-                        _zeile('Rollen', _euro(a.rollenCent)),
-                        _zeile('Lose Münzen', _euro(a.loseMuenzenCent)),
-                        _zeile('Umschläge', _euro(a.umschlaegeCent)),
-                        const Divider(height: 16),
-                        _zeile(
-                          'Kassenbestand gesamt',
-                          _euro(a.kassenbestandGesamtCent),
-                          fett: true,
-                        ),
-                        _zeile(
-                          'Wechselgeld-Sollwert',
-                          _euro(a.wechselgeldSollwertCent),
-                        ),
-                        _zeile(
-                          'Bar-Bestand bereinigt',
-                          _euro(a.barBestandAbzglWechselgeldCent),
-                          fett: true,
-                        ),
-                      ],
+                    padding: const EdgeInsets.all(14),
+                    child: Text(
+                      'Diese Abrechnung kann nicht geändert werden.',
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
+
+                // Abschnitt 1 – Geldzählung
+                Card(
+                  child: ExpansionTile(
+                    title: const Text(
+                      'Geldzählung',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    initiallyExpanded: false,
+                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    children: <Widget>[
+                      _zeile('Scheine', _euro(a.scheineCent)),
+                      _zeile('Rollen', _euro(a.rollenCent)),
+                      _zeile('Lose Münzen', _euro(a.loseMuenzenCent)),
+                      _zeile('Umschläge', _euro(a.umschlaegeCent)),
+                      _zeile(
+                        'Kassenbestand gesamt',
+                        _euro(a.kassenbestandGesamtCent),
+                        fett: true,
+                      ),
+                      _zeile(
+                        'Wechselgeld-Sollwert',
+                        _euro(a.wechselgeldSollwertCent),
+                      ),
+                      _zeile(
+                        'Bar-Bestand bereinigt',
+                        _euro(a.barBestandAbzglWechselgeldCent),
+                        fett: true,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 4),
 
                 // Abschnitt 2 – Einnahmen
-                _abschnittsTitel('Einnahmen'),
                 Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        _zeile('Kino SOLL', _euro(a.kinoSollCent)),
-                        _zeile('Bistro SOLL', _euro(a.bistroSollCent)),
-                        _zeile('Ausgaben', _euro(a.ausgabenCent)),
-                        _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),
-                      ],
+                  child: ExpansionTile(
+                    title: const Text(
+                      'Einnahmen',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    initiallyExpanded: false,
+                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    children: <Widget>[
+                      _zeile('Kino SOLL', _euro(a.kinoSollCent)),
+                      _zeile('Bistro SOLL', _euro(a.bistroSollCent)),
+                      _zeile('Ausgaben', _euro(a.ausgabenCent)),
+                      _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),
+                    ],
                   ),
                 ),
 
+                const SizedBox(height: 4),
+
                 // Abschnitt 3 – Ergebnis
-                _abschnittsTitel('Ergebnis'),
                 Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        _zeile(
-                          'Gesamt SOLL',
-                          _euro(a.gesamtSollCent),
-                          fett: true,
-                        ),
-                        _zeile(
-                          'Gesamt IST',
-                          _euro(a.gesamtIstCent),
-                          fett: true,
-                        ),
-                        const Divider(height: 16),
-                        _zeile(
-                          'Differenz Tagesabschluss',
-                          _euroMitVorzeichen(a.differenzGesamtCent),
-                          fett: true,
-                          farbe: differenzFarbe,
-                        ),
-                        _zeile(
-                          'Differenz Anfangsbestand',
-                          _euro(a.differenzAnfangsbestandCent),
-                        ),
-                      ],
+                  child: ExpansionTile(
+                    title: const Text(
+                      'Ergebnis',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
+                    initiallyExpanded: false,
+                    childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    children: <Widget>[
+                      _zeile(
+                        'Gesamt SOLL',
+                        _euro(a.gesamtSollCent),
+                        fett: true,
+                      ),
+                      _zeile(
+                        'Gesamt IST',
+                        _euro(a.gesamtIstCent),
+                        fett: true,
+                      ),
+                      _zeile(
+                        'Differenz Tagesabschluss',
+                        _euroMitVorzeichen(a.differenzGesamtCent),
+                        fett: true,
+                        farbe: differenzFarbe,
+                      ),
+                      _zeile(
+                        'Differenz Anfangsbestand',
+                        _euro(a.differenzAnfangsbestandCent),
+                      ),
+                    ],
                   ),
                 ),
 
