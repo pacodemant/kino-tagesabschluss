@@ -91,7 +91,10 @@ Format: ein einziger Codeblock, Überschrift „Claude Code-Bericht Run <NUMMER>
 
 Inhalt:
 - Geänderte Dateien (kurze Beschreibung der Änderung)
-- 3 manuelle Testschritte mit erwartetem Verhalten (kein flutter analyze als Testschritt)
+- Manuelle Testschritte mit erwartetem Verhalten (kein flutter analyze als Testschritt)
+  - Nur Tests vorschlagen, die tatsächlich etwas verifizieren, das durch die Änderung hätte brechen können
+  - Keine Tests erfinden, nur um eine Mindestzahl zu erreichen
+  - Wenn die Änderung mehr als 3 relevante Risiken hat, auch mehr als 3 Tests
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
 - Letzter Commit-Hash
@@ -114,3 +117,8 @@ Diagnosen, Analysen und Berichte immer in einem einzigen Codeblock ausgeben — 
 ## Sprache
 
 Antworte immer auf Deutsch.
+
+## Session-Start
+Führe zu Beginn jeder neuen Session aus:
+    flutter clean
+    flutter pub get
