@@ -86,31 +86,27 @@ class _TagesabschlussSchritt2SeiteState
   final FocusNode _bistroSollFocusNode = FocusNode();
   final FocusNode _differenzAnfangsbestandFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
-  final List<TextEditingController> _ecBelegController =
-      <TextEditingController>[TextEditingController()];
-  final List<TextEditingController> _ecBelegLabelController =
-      <TextEditingController>[TextEditingController()];
+  final List<TextEditingController> _ecBelegController = <TextEditingController>[];
+  final List<TextEditingController> _ecBelegLabelController = <TextEditingController>[];
   final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
   final List<FocusNode> _ecBelegLabelFocusNode = <FocusNode>[];
-  final List<int> _ecBelegIds = <int>[0];
+  final List<int> _ecBelegIds = <int>[];
   int _naechsteEcBelegId = 1;
-  final List<String> _ecBelegLabels = <String>[''];
+  final List<String> _ecBelegLabels = <String>[];
 
-  final List<TextEditingController> _ausgabenBetragController =
-      <TextEditingController>[TextEditingController()];
-  final List<TextEditingController> _ausgabenLabelController =
-      <TextEditingController>[TextEditingController()];
+  final List<TextEditingController> _ausgabenBetragController = <TextEditingController>[];
+  final List<TextEditingController> _ausgabenLabelController = <TextEditingController>[];
   final List<FocusNode> _ausgabenBetragFocusNode = <FocusNode>[];
   final List<FocusNode> _ausgabenLabelFocusNode = <FocusNode>[];
-  final List<int> _ausgabenBetrageCent = <int>[0];
-  final List<String> _ausgabenLabels = <String>[''];
-  final List<int> _ausgabenIds = <int>[0];
+  final List<int> _ausgabenBetrageCent = <int>[];
+  final List<String> _ausgabenLabels = <String>[];
+  final List<int> _ausgabenIds = <int>[];
   int _naechsteAusgabeId = 1;
 
   int _kinoSollCent = 0;
   int _bistroSollCent = 0;
   int _differenzAnfangsbestandCent = 0;
-  final List<int> _ecBelegeCent = <int>[0];
+  final List<int> _ecBelegeCent = <int>[];
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
   bool _validierungAusgeloest = false;
@@ -120,11 +116,8 @@ class _TagesabschlussSchritt2SeiteState
   @override
   void initState() {
     super.initState();
-    final FocusNode ersterEcFocusNode = FocusNode();
-    _ecBelegFocusNode.add(ersterEcFocusNode);
-    _ecBelegLabelFocusNode.add(FocusNode());
-    _ausgabenLabelFocusNode.add(FocusNode());
-    _ausgabenBetragFocusNode.add(FocusNode());
+    _setzeEcBelegAnzahl(1);
+    _setzeAusgabenAnzahl(1);
     DevModus.istAktiv().then((bool aktiv) {
       setState(() {
         _devModusAktiv = aktiv;
