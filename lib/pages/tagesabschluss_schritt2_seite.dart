@@ -80,12 +80,10 @@ class _TagesabschlussSchritt2SeiteState
 
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
-  final TextEditingController _ausgabenController = TextEditingController();
   final TextEditingController _differenzAnfangsbestandController =
       TextEditingController();
   final FocusNode _kinoSollFocusNode = FocusNode();
   final FocusNode _bistroSollFocusNode = FocusNode();
-  final FocusNode _ausgabenFocusNode = FocusNode();
   final FocusNode _differenzAnfangsbestandFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
   final List<TextEditingController> _ecBelegController =
@@ -94,9 +92,19 @@ class _TagesabschlussSchritt2SeiteState
   final List<int> _ecBelegIds = <int>[0];
   int _naechsteEcBelegId = 1;
 
+  final List<TextEditingController> _ausgabenBetragController =
+      <TextEditingController>[TextEditingController()];
+  final List<TextEditingController> _ausgabenLabelController =
+      <TextEditingController>[TextEditingController()];
+  final List<FocusNode> _ausgabenBetragFocusNode = <FocusNode>[];
+  final List<FocusNode> _ausgabenLabelFocusNode = <FocusNode>[];
+  final List<int> _ausgabenBetrageCent = <int>[0];
+  final List<String> _ausgabenLabels = <String>[''];
+  final List<int> _ausgabenIds = <int>[0];
+  int _naechsteAusgabeId = 1;
+
   int _kinoSollCent = 0;
   int _bistroSollCent = 0;
-  int _ausgabenCent = 0;
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[0];
   bool _devToolsOffen = false;
@@ -110,6 +118,8 @@ class _TagesabschlussSchritt2SeiteState
     super.initState();
     final FocusNode ersterEcFocusNode = FocusNode();
     _ecBelegFocusNode.add(ersterEcFocusNode);
+    _ausgabenLabelFocusNode.add(FocusNode());
+    _ausgabenBetragFocusNode.add(FocusNode());
     DevModus.istAktiv().then((bool aktiv) {
       setState(() {
         _devModusAktiv = aktiv;
@@ -122,18 +132,28 @@ class _TagesabschlussSchritt2SeiteState
   void dispose() {
     _kinoSollController.dispose();
     _bistroSollController.dispose();
-    _ausgabenController.dispose();
     _differenzAnfangsbestandController.dispose();
     _kinoSollFocusNode.dispose();
     _bistroSollFocusNode.dispose();
-    _ausgabenFocusNode.dispose();
     _differenzAnfangsbestandFocusNode.dispose();
     _scrollController.dispose();
-    for (final TextEditingController controller in _ecBelegController) {
-      controller.dispose();
+    for (final TextEditingController c in _ecBelegController) {
+      c.dispose();
     }
-    for (final FocusNode focusNode in _ecBelegFocusNode) {
-      focusNode.dispose();
+    for (final FocusNode fn in _ecBelegFocusNode) {
+      fn.dispose();
+    }
+    for (final TextEditingController c in _ausgabenBetragController) {
+      c.dispose();
+    }
+    for (final TextEditingController c in _ausgabenLabelController) {
+      c.dispose();
+    }
+    for (final FocusNode fn in _ausgabenBetragFocusNode) {
+      fn.dispose();
+    }
+    for (final FocusNode fn in _ausgabenLabelFocusNode) {
+      fn.dispose();
     }
     super.dispose();
   }
@@ -151,7 +171,6 @@ class _TagesabschlussSchritt2SeiteState
 
     final int kinoSollCent = (daten['kinoSollCent'] as num?)?.toInt() ?? 0;
     final int bistroSollCent = (daten['bistroSollCent'] as num?)?.toInt() ?? 0;
-    final int ausgabenCent = (daten['ausgabenCent'] as num?)?.toInt() ?? 0;
     final int differenzAnfangsbestandCent =
         (daten['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
 
@@ -166,14 +185,42 @@ class _TagesabschlussSchritt2SeiteState
       ecBelege.add(0);
     }
 
+    // Ausgaben-Einzelposten laden; Fallback auf altes ausgabenCent-Feld
+    List<int> ausgabenBetraege = <int>[];
+    List<String> ausgabenLabelListe = <String>[];
+    final Object? ausgabenBetraegeRoh = daten['ausgabenBetraegeCent'];
+    if (ausgabenBetraegeRoh is List<dynamic>) {
+      for (final dynamic wert in ausgabenBetraegeRoh) {
+        ausgabenBetraege.add((wert as num?)?.toInt() ?? 0);
+      }
+    }
+    final Object? ausgabenLabelsRoh = daten['ausgabenLabels'];
+    if (ausgabenLabelsRoh is List<dynamic>) {
+      for (final dynamic wert in ausgabenLabelsRoh) {
+        ausgabenLabelListe.add(wert?.toString() ?? '');
+      }
+    }
+    if (ausgabenBetraege.isEmpty) {
+      final int altCent = (daten['ausgabenCent'] as num?)?.toInt() ?? 0;
+      ausgabenBetraege.add(altCent);
+      ausgabenLabelListe.add('');
+    }
+    while (ausgabenLabelListe.length < ausgabenBetraege.length) {
+      ausgabenLabelListe.add('');
+    }
+
     setState(() {
       _setzeEcBelegAnzahl(ecBelege.length);
+      _setzeAusgabenAnzahl(ausgabenBetraege.length);
       _kinoSollCent = kinoSollCent;
       _bistroSollCent = bistroSollCent;
-      _ausgabenCent = ausgabenCent;
       _differenzAnfangsbestandCent = differenzAnfangsbestandCent;
       for (int i = 0; i < ecBelege.length; i++) {
         _ecBelegeCent[i] = ecBelege[i];
+      }
+      for (int i = 0; i < ausgabenBetraege.length; i++) {
+        _ausgabenBetrageCent[i] = ausgabenBetraege[i];
+        _ausgabenLabels[i] = ausgabenLabelListe[i];
       }
     });
 
@@ -189,12 +236,6 @@ class _TagesabschlussSchritt2SeiteState
         TagesabschlussFormatierung.formatiereEuroEingabe(bistroSollCent),
       );
     }
-    if (ausgabenCent != 0) {
-      _setzeControllerText(
-        _ausgabenController,
-        TagesabschlussFormatierung.formatiereEuroEingabe(ausgabenCent),
-      );
-    }
     if (differenzAnfangsbestandCent != 0) {
       _setzeControllerText(
         _differenzAnfangsbestandController,
@@ -207,6 +248,17 @@ class _TagesabschlussSchritt2SeiteState
         TagesabschlussFormatierung.formatiereEuroEingabe(ecBelege[i]),
       );
     }
+    for (int i = 0; i < ausgabenBetraege.length; i++) {
+      if (ausgabenBetraege[i] != 0) {
+        _setzeControllerText(
+          _ausgabenBetragController[i],
+          TagesabschlussFormatierung.formatiereEuroEingabe(ausgabenBetraege[i]),
+        );
+      }
+      if (ausgabenLabelListe[i].isNotEmpty) {
+        _setzeControllerText(_ausgabenLabelController[i], ausgabenLabelListe[i]);
+      }
+    }
   }
 
   Future<void> _speichereEntwurf() async {
@@ -217,7 +269,9 @@ class _TagesabschlussSchritt2SeiteState
         'isoDatum': DatumsHelper.logischesIsoDatum(),
         'kinoSollCent': _kinoSollCent,
         'bistroSollCent': _bistroSollCent,
-        'ausgabenCent': _ausgabenCent,
+        'ausgabenCent': _ausgabenBetrageCent.fold(0, (int a, int b) => a + b),
+        'ausgabenBetraegeCent': List<int>.from(_ausgabenBetrageCent),
+        'ausgabenLabels': List<String>.from(_ausgabenLabels),
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
         'ecBelegeCent': List<int>.from(_ecBelegeCent),
       },
@@ -273,12 +327,14 @@ class _TagesabschlussSchritt2SeiteState
         wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
         kinoSollCent: _kinoSollCent,
         bistroSollCent: _bistroSollCent,
-        ausgabenCent: _ausgabenCent,
+        ausgabenCent: _ausgabenBetrageCent.fold(0, (int a, int b) => a + b),
         ecBelegeCent: List<int>.from(_ecBelegeCent),
         differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
         stueckzahlen: widget.stueckzahlen,
         loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
         umschlaege: widget.umschlaege,
+        ausgabenBetraegeCent: List<int>.from(_ausgabenBetrageCent),
+        ausgabenLabels: List<String>.from(_ausgabenLabels),
       ),
     );
   }
@@ -397,6 +453,63 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
+  void _ausgabeHinzufuegen() {
+    setState(() {
+      _ausgabenBetragController.add(TextEditingController());
+      _ausgabenLabelController.add(TextEditingController());
+      _ausgabenBetragFocusNode.add(FocusNode());
+      _ausgabenLabelFocusNode.add(FocusNode());
+      _ausgabenBetrageCent.add(0);
+      _ausgabenLabels.add('');
+      _ausgabenIds.add(_naechsteAusgabeId++);
+    });
+    _speichereEntwurf();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _ausgabenLabelFocusNode.isNotEmpty) {
+        FocusScope.of(context).requestFocus(_ausgabenLabelFocusNode.last);
+      }
+    });
+  }
+
+  void _ausgabeEntfernen(int index) {
+    if (_ausgabenBetragController.length <= 1 ||
+        index < 0 ||
+        index >= _ausgabenBetragController.length) {
+      return;
+    }
+    setState(() {
+      _ausgabenBetragController.removeAt(index).dispose();
+      _ausgabenLabelController.removeAt(index).dispose();
+      _ausgabenBetragFocusNode.removeAt(index).dispose();
+      _ausgabenLabelFocusNode.removeAt(index).dispose();
+      _ausgabenBetrageCent.removeAt(index);
+      _ausgabenLabels.removeAt(index);
+      _ausgabenIds.removeAt(index);
+    });
+    _speichereEntwurf();
+  }
+
+  void _setzeAusgabenAnzahl(int anzahl) {
+    while (_ausgabenBetragController.length > anzahl) {
+      _ausgabenBetragController.removeLast().dispose();
+      _ausgabenLabelController.removeLast().dispose();
+      _ausgabenBetragFocusNode.removeLast().dispose();
+      _ausgabenLabelFocusNode.removeLast().dispose();
+      _ausgabenBetrageCent.removeLast();
+      _ausgabenLabels.removeLast();
+      _ausgabenIds.removeLast();
+    }
+    while (_ausgabenBetragController.length < anzahl) {
+      _ausgabenBetragController.add(TextEditingController());
+      _ausgabenLabelController.add(TextEditingController());
+      _ausgabenBetragFocusNode.add(FocusNode());
+      _ausgabenLabelFocusNode.add(FocusNode());
+      _ausgabenBetrageCent.add(0);
+      _ausgabenLabels.add('');
+      _ausgabenIds.add(_naechsteAusgabeId++);
+    }
+  }
+
   Future<void> _autoFillDev() async {
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeAutoFillSchritt2();
@@ -417,11 +530,14 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _kinoSollCent = kinoSoll;
       _bistroSollCent = bistroSoll;
-      _ausgabenCent = ausgaben;
       _differenzAnfangsbestandCent = differenz;
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = ecBeleg;
+
+      _setzeAusgabenAnzahl(1);
+      _ausgabenBetrageCent[0] = ausgaben;
+      _ausgabenLabels[0] = '';
 
       _setzeControllerText(
         _kinoSollController,
@@ -436,11 +552,12 @@ class _TagesabschlussSchritt2SeiteState
             : '',
       );
       _setzeControllerText(
-        _ausgabenController,
+        _ausgabenBetragController[0],
         ausgaben != 0
             ? TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben)
             : '',
       );
+      _setzeControllerText(_ausgabenLabelController[0], '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(
         _ecBelegController[0],
@@ -457,15 +574,19 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _kinoSollCent = 0;
       _bistroSollCent = 0;
-      _ausgabenCent = 0;
       _differenzAnfangsbestandCent = 0;
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = 0;
 
+      _setzeAusgabenAnzahl(1);
+      _ausgabenBetrageCent[0] = 0;
+      _ausgabenLabels[0] = '';
+
       _setzeControllerText(_kinoSollController, '');
       _setzeControllerText(_bistroSollController, '');
-      _setzeControllerText(_ausgabenController, '');
+      _setzeControllerText(_ausgabenBetragController[0], '');
+      _setzeControllerText(_ausgabenLabelController[0], '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(_ecBelegController[0], '');
     });
@@ -501,10 +622,17 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt2() {
+    final List<FocusNode> ausgabenFokus = <FocusNode>[];
+    for (int i = 0; i < _ausgabenLabelFocusNode.length; i++) {
+      ausgabenFokus.add(_ausgabenLabelFocusNode[i]);
+      if (i < _ausgabenBetragFocusNode.length) {
+        ausgabenFokus.add(_ausgabenBetragFocusNode[i]);
+      }
+    }
     return <FocusNode>[
       _kinoSollFocusNode,
       _bistroSollFocusNode,
-      _ausgabenFocusNode,
+      ...ausgabenFokus,
       ..._ecBelegFocusNode,
       _differenzAnfangsbestandFocusNode,
     ];
@@ -841,17 +969,137 @@ class _TagesabschlussSchritt2SeiteState
                               _speichereEntwurf();
                             },
                           ),
-                          _baueEingabeZeile(
-                            label: 'Ausgaben',
-                            controller: _ausgabenController,
-                            focusNode: _ausgabenFocusNode,
-                            optional: true,
-                            onChanged: (String wert) {
-                              setState(() {
-                                _ausgabenCent = _parseCentZiffern(wert);
-                              });
-                              _speichereEntwurf();
-                            },
+                          const Padding(
+                            padding: EdgeInsets.only(top: 4, bottom: 8),
+                            child: Text(
+                              'Ausgaben (optional)',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          for (int i = 0;
+                              i < _ausgabenBetragController.length;
+                              i++)
+                            KeyedSubtree(
+                              key: ValueKey<int>(_ausgabenIds[i]),
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _ausgabenLabelController[i],
+                                        focusNode: _ausgabenLabelFocusNode[i],
+                                        style:
+                                            const TextStyle(fontSize: 15),
+                                        textInputAction:
+                                            _textInputActionFuerSchritt2(
+                                          _ausgabenLabelFocusNode[i],
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: 'Bezeichnung (optional)',
+                                          hintStyle: const TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                          border: const OutlineInputBorder(),
+                                          isDense: true,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 6,
+                                          ),
+                                          suffixIcon:
+                                              ValueListenableBuilder<
+                                                  TextEditingValue>(
+                                            valueListenable:
+                                                _ausgabenLabelController[i],
+                                            builder: (BuildContext _,
+                                                TextEditingValue value,
+                                                Widget? __) {
+                                              if (value.text.isEmpty) {
+                                                return const SizedBox
+                                                    .shrink();
+                                              }
+                                              return IconButton(
+                                                icon: const Icon(
+                                                  Icons.close,
+                                                  size: 18,
+                                                ),
+                                                onPressed: () {
+                                                  _ausgabenLabelController[i]
+                                                      .clear();
+                                                  setState(() {
+                                                    _ausgabenLabels[i] = '';
+                                                  });
+                                                  _speichereEntwurf();
+                                                },
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                        onSubmitted: (_) =>
+                                            _beiEingabeAbgeschlossenSchritt2(
+                                          _ausgabenLabelFocusNode[i],
+                                        ),
+                                        onChanged: (String wert) {
+                                          setState(() {
+                                            _ausgabenLabels[i] = wert;
+                                          });
+                                          _speichereEntwurf();
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    SizedBox(
+                                      width: 120,
+                                      child: BetragCentEingabefeld(
+                                        textController:
+                                            _ausgabenBetragController[i],
+                                        focusNode: _ausgabenBetragFocusNode[i],
+                                        textInputAction:
+                                            _textInputActionFuerSchritt2(
+                                          _ausgabenBetragFocusNode[i],
+                                        ),
+                                        onSubmitted: (_) =>
+                                            _beiEingabeAbgeschlossenSchritt2(
+                                          _ausgabenBetragFocusNode[i],
+                                        ),
+                                        onChanged: (String wert) {
+                                          setState(() {
+                                            _ausgabenBetrageCent[i] =
+                                                _parseCentZiffern(wert);
+                                          });
+                                          _speichereEntwurf();
+                                        },
+                                        schriftgroesse: 15,
+                                        hinweisText: '0,00 €',
+                                      ),
+                                    ),
+                                    if (_ausgabenBetragController.length >
+                                        1) ...<Widget>[
+                                      const SizedBox(width: 6),
+                                      IconButton(
+                                        onPressed: () =>
+                                            _ausgabeEntfernen(i),
+                                        icon: const Icon(
+                                          Icons.delete_outline,
+                                        ),
+                                        tooltip: 'Ausgabe entfernen',
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                            ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: OutlinedButton.icon(
+                              onPressed: _ausgabeHinzufuegen,
+                              icon: const Icon(Icons.add),
+                              label: const Text('+ Ausgabe hinzufügen'),
+                            ),
                           ),
                         ],
                       ),

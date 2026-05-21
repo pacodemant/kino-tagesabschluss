@@ -70,14 +70,27 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                         textInputAction: textInputActionFuerSchritt1(
                           bezeichnungFocusNode,
                         ),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: 'Label (optional)',
-                          hintStyle: TextStyle(fontSize: 15),
-                          border: OutlineInputBorder(),
+                          hintStyle: const TextStyle(fontSize: 15),
+                          border: const OutlineInputBorder(),
                           isDense: true,
-                          contentPadding: EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsets.symmetric(
                             horizontal: 8,
                             vertical: 6,
+                          ),
+                          suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                            valueListenable: umschlagBezeichnungController[i],
+                            builder: (BuildContext _, TextEditingValue value, Widget? __) {
+                              if (value.text.isEmpty) return const SizedBox.shrink();
+                              return IconButton(
+                                icon: const Icon(Icons.close, size: 18),
+                                onPressed: () {
+                                  umschlagBezeichnungController[i].clear();
+                                  beiUmschlagBezeichnungGeaendert(i, '');
+                                },
+                              );
+                            },
                           ),
                         ),
                         onSubmitted: (_) =>

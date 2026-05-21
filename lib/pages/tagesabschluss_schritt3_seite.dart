@@ -28,6 +28,8 @@ class TagesabschlussSchritt3Argumente {
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.umschlaege,
+    this.ausgabenBetraegeCent,
+    this.ausgabenLabels,
   });
 
   final String kinoId;
@@ -47,6 +49,8 @@ class TagesabschlussSchritt3Argumente {
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final List<UmschlagEintrag>? umschlaege;
+  final List<int>? ausgabenBetraegeCent;
+  final List<String>? ausgabenLabels;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -98,6 +102,8 @@ class _TagesabschlussSchritt3SeiteState
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
         umschlaege: widget.argumente.umschlaege,
+        ausgabenBetraegeCent: widget.argumente.ausgabenBetraegeCent,
+        ausgabenLabels: widget.argumente.ausgabenLabels,
       ),
       jetzt: DateTime.now(),
     );

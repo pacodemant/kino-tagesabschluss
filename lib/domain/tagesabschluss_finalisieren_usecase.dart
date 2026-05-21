@@ -21,6 +21,9 @@ class TagesabschlussFinalisierenEingabe {
     this.stueckzahlen,
     this.loseMuenzenNachArtCent,
     this.umschlaege,
+    // Ausgaben-Einzelposten aus Schritt 2
+    this.ausgabenBetraegeCent,
+    this.ausgabenLabels,
   });
 
   final String kinoId;
@@ -41,6 +44,9 @@ class TagesabschlussFinalisierenEingabe {
   final Map<String, int>? loseMuenzenNachArtCent;
   // Umschlag-Einzeleinträge aus Schritt 1
   final List<UmschlagEintrag>? umschlaege;
+  // Ausgaben-Einzelposten aus Schritt 2
+  final List<int>? ausgabenBetraegeCent;
+  final List<String>? ausgabenLabels;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -139,9 +145,6 @@ class TagesabschlussFinalisierenUsecase {
       kupferMuenzenCent = kupfer;
     }
 
-    // TODO(Run 171): ausgabenBetraegeCent/ausgabenLabels befüllen – kein
-    // Einzelposten-Eingabefeld in Schritt 2 vorhanden.
-
     final DateTime zeitstempel = jetzt ?? DateTime.now();
 
     return TagesabschlussFinal(
@@ -174,6 +177,14 @@ class TagesabschlussFinalisierenUsecase {
       umschlagBetraegeCent: eingabe.umschlaege
           ?.map((UmschlagEintrag e) => e.betragCent)
           .toList(),
+      ausgabenBetraegeCent: eingabe.ausgabenBetraegeCent != null &&
+              eingabe.ausgabenBetraegeCent!.isNotEmpty
+          ? List<int>.from(eingabe.ausgabenBetraegeCent!)
+          : null,
+      ausgabenLabels: eingabe.ausgabenLabels != null &&
+              eingabe.ausgabenLabels!.isNotEmpty
+          ? List<String>.from(eingabe.ausgabenLabels!)
+          : null,
     );
   }
 
