@@ -13,6 +13,7 @@ import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
+import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
@@ -192,6 +193,13 @@ class MeineApp extends StatelessWidget {
           }
           return MaterialPageRoute<bool>(
             builder: (_) => VerlaufDetailSeite(abschluss: argument),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == WechselgeldZaehlenSeite.routenName) {
+          return MaterialPageRoute<void>(
+            builder: (_) => const WechselgeldZaehlenSeite(),
             settings: settings,
           );
         }

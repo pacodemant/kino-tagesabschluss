@@ -242,6 +242,42 @@ class LokalerSpeicher {
     await speicher.setString('dev_autofill_schritt2', jsonEncode(daten));
   }
 
+  static Future<Map<String, dynamic>?> ladeWechselgeldZaehlEntwurf(
+    String kinoId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? rohwert = speicher.getString(
+      _wechselgeldZaehlEntwurfKey(kinoId),
+    );
+    if (rohwert == null) {
+      return null;
+    }
+    try {
+      return jsonDecode(rohwert) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> speichereWechselgeldZaehlEntwurf(
+    String kinoId,
+    Map<String, dynamic> daten,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+      _wechselgeldZaehlEntwurfKey(kinoId),
+      jsonEncode(daten),
+    );
+  }
+
+  static Future<void> loescheWechselgeldZaehlEntwurf(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.remove(_wechselgeldZaehlEntwurfKey(kinoId));
+  }
+
+  static String _wechselgeldZaehlEntwurfKey(String kinoId) =>
+      'wechselgeld_zaehlen_entwurf_$kinoId';
+
   /// Löscht den finalen Tagesabschluss eines bestimmten Kalendertags.
   static Future<void> loescheFinalenTagesabschluss(
     String kinoId,
