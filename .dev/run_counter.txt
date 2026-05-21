@@ -1,4 +1,4 @@
-last_run: 180
-next_run: 181
-last_run_title: R180: Getränkeliste in Einstellungen mit Drag & Drop und Persistenz
-last_commit: 99abf42
+last_run: 181
+next_run: 182
+last_run_title: R181: Getränke-Nachfüll-Seite mit Rechenausdruck-Auswertung und Gesamtsumme
+last_commit: cb3f3b9
