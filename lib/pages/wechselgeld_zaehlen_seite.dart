@@ -225,8 +225,6 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         _kupferLoseSichtbar = true;
       }
     });
-
-    _planePruefung();
   }
 
   Future<void> _speichereEntwurf() async {
