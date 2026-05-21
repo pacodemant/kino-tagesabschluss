@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LokalerSpeicher {
@@ -29,6 +30,33 @@ class LokalerSpeicher {
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setInt('change_target_cents_$kinoId', cent);
+  }
+
+  static Future<Map<String, dynamic>?> ladeGetraenkeMengen(
+    String kinoId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key =
+        'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
+    final String? rohwert = speicher.getString(key);
+    if (rohwert == null) {
+      return null;
+    }
+    try {
+      return jsonDecode(rohwert) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> speichereGetraenkeMengen(
+    String kinoId,
+    Map<String, dynamic> daten,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key =
+        'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
+    await speicher.setString(key, jsonEncode(daten));
   }
 
   static Future<List<String>> ladeGetraenkeliste(String kinoId) async {

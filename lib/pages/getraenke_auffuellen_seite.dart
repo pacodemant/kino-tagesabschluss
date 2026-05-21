@@ -24,7 +24,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   @override
   void initState() {
     super.initState();
-    _ladeGetraenkeliste();
+    _ladeAlles();
   }
 
   @override
@@ -38,12 +38,21 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     super.dispose();
   }
 
-  Future<void> _ladeGetraenkeliste() async {
+  Future<void> _ladeAlles() async {
     final List<String> liste =
         await LokalerSpeicher.ladeGetraenkeliste('kino_01');
     if (!mounted) return;
+    final Map<String, dynamic>? gespeichert =
+        await LokalerSpeicher.ladeGetraenkeMengen('kino_01');
+    if (!mounted) return;
+    final List<dynamic>? mengenRoh =
+        gespeichert?['mengen'] as List<dynamic>?;
     for (int i = 0; i < liste.length; i++) {
-      _mengeController.add(TextEditingController());
+      final String menge =
+          (mengenRoh != null && i < mengenRoh.length)
+              ? (mengenRoh[i] as String? ?? '')
+              : '';
+      _mengeController.add(TextEditingController(text: menge));
       _mengeFocusNode.add(FocusNode());
     }
     setState(() {
@@ -52,42 +61,21 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     });
   }
 
-  int _werteAus(String ausdruck) {
-    final String bereinigt = ausdruck.replaceAll(' ', '');
-    if (bereinigt.isEmpty) return 0;
-    try {
-      if (!RegExp(r'^[0-9+\-]+$').hasMatch(bereinigt)) return 0;
-      int summe = 0;
-      int vorzeichen = 1;
-      final StringBuffer aktuell = StringBuffer();
-      for (final String zeichen in bereinigt.split('')) {
-        if (zeichen == '+' || zeichen == '-') {
-          final String s = aktuell.toString();
-          if (s.isNotEmpty) {
-            summe += vorzeichen * int.parse(s);
-          }
-          aktuell.clear();
-          vorzeichen = zeichen == '+' ? 1 : -1;
-        } else {
-          aktuell.write(zeichen);
-        }
-      }
-      final String rest = aktuell.toString();
-      if (rest.isNotEmpty) {
-        summe += vorzeichen * int.parse(rest);
-      }
-      return summe;
-    } catch (_) {
-      return 0;
-    }
-  }
-
   int get _gesamtmenge {
     int summe = 0;
     for (final TextEditingController c in _mengeController) {
-      summe += _werteAus(c.text);
+      summe += int.tryParse(c.text) ?? 0;
     }
     return summe;
+  }
+
+  void _speichereMengen() {
+    final List<String> mengen =
+        _mengeController.map((TextEditingController c) => c.text).toList();
+    LokalerSpeicher.speichereGetraenkeMengen(
+      'kino_01',
+      <String, dynamic>{'mengen': mengen},
+    );
   }
 
   @override
@@ -119,7 +107,8 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(
-                  'Keine Getränke definiert. Bitte zuerst in den Einstellungen eine Getränkeliste anlegen.',
+                  'Keine Getränke definiert. Bitte zuerst in den '
+                  'Einstellungen eine Getränkeliste anlegen.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
@@ -177,12 +166,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                         child: TextField(
                           controller: _mengeController[index],
                           focusNode: _mengeFocusNode[index],
-                          keyboardType: TextInputType.text,
+                          keyboardType: TextInputType.number,
                           textAlign: TextAlign.right,
                           inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'[0-9+\-]'),
-                            ),
+                            FilteringTextInputFormatter.digitsOnly,
                           ],
                           decoration: const InputDecoration(
                             isDense: true,
@@ -191,7 +178,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                               vertical: 4,
                             ),
                           ),
-                          onChanged: (_) => setState(() {}),
+                          onChanged: (_) {
+                            setState(() {});
+                            _speichereMengen();
+                          },
                         ),
                       ),
                     ],
