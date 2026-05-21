@@ -9,6 +9,7 @@ import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.da
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
+import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 
 class TagesabschlussSchritt3Argumente {
@@ -194,12 +195,8 @@ class _TagesabschlussSchritt3SeiteState
           TextButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const _PlatzhalterSeite(
-                    titel: 'Wechselgeldkasse prüfen',
-                  ),
-                ),
+              Navigator.of(context).pushNamed(
+                WechselgeldZaehlenSeite.routenName,
               );
             },
             child: const Text('Wechselgeldkasse prüfen'),
