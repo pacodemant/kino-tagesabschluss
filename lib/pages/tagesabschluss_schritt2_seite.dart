@@ -88,9 +88,13 @@ class _TagesabschlussSchritt2SeiteState
   final ScrollController _scrollController = ScrollController();
   final List<TextEditingController> _ecBelegController =
       <TextEditingController>[TextEditingController()];
+  final List<TextEditingController> _ecBelegLabelController =
+      <TextEditingController>[TextEditingController()];
   final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
+  final List<FocusNode> _ecBelegLabelFocusNode = <FocusNode>[];
   final List<int> _ecBelegIds = <int>[0];
   int _naechsteEcBelegId = 1;
+  final List<String> _ecBelegLabels = <String>[''];
 
   final List<TextEditingController> _ausgabenBetragController =
       <TextEditingController>[TextEditingController()];
@@ -118,6 +122,7 @@ class _TagesabschlussSchritt2SeiteState
     super.initState();
     final FocusNode ersterEcFocusNode = FocusNode();
     _ecBelegFocusNode.add(ersterEcFocusNode);
+    _ecBelegLabelFocusNode.add(FocusNode());
     _ausgabenLabelFocusNode.add(FocusNode());
     _ausgabenBetragFocusNode.add(FocusNode());
     DevModus.istAktiv().then((bool aktiv) {
@@ -140,7 +145,13 @@ class _TagesabschlussSchritt2SeiteState
     for (final TextEditingController c in _ecBelegController) {
       c.dispose();
     }
+    for (final TextEditingController c in _ecBelegLabelController) {
+      c.dispose();
+    }
     for (final FocusNode fn in _ecBelegFocusNode) {
+      fn.dispose();
+    }
+    for (final FocusNode fn in _ecBelegLabelFocusNode) {
       fn.dispose();
     }
     for (final TextEditingController c in _ausgabenBetragController) {
@@ -185,6 +196,17 @@ class _TagesabschlussSchritt2SeiteState
       ecBelege.add(0);
     }
 
+    final List<String> ecBelegeLabelsListe = <String>[];
+    final Object? ecLabelsRoh = daten['ecBelegeLabels'];
+    if (ecLabelsRoh is List<dynamic>) {
+      for (final dynamic wert in ecLabelsRoh) {
+        ecBelegeLabelsListe.add(wert?.toString() ?? '');
+      }
+    }
+    while (ecBelegeLabelsListe.length < ecBelege.length) {
+      ecBelegeLabelsListe.add('');
+    }
+
     // Ausgaben-Einzelposten laden; Fallback auf altes ausgabenCent-Feld
     List<int> ausgabenBetraege = <int>[];
     List<String> ausgabenLabelListe = <String>[];
@@ -217,6 +239,7 @@ class _TagesabschlussSchritt2SeiteState
       _differenzAnfangsbestandCent = differenzAnfangsbestandCent;
       for (int i = 0; i < ecBelege.length; i++) {
         _ecBelegeCent[i] = ecBelege[i];
+        _ecBelegLabels[i] = ecBelegeLabelsListe[i];
       }
       for (int i = 0; i < ausgabenBetraege.length; i++) {
         _ausgabenBetrageCent[i] = ausgabenBetraege[i];
@@ -247,6 +270,9 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegController[i],
         TagesabschlussFormatierung.formatiereEuroEingabe(ecBelege[i]),
       );
+      if (ecBelegeLabelsListe[i].isNotEmpty) {
+        _setzeControllerText(_ecBelegLabelController[i], ecBelegeLabelsListe[i]);
+      }
     }
     for (int i = 0; i < ausgabenBetraege.length; i++) {
       if (ausgabenBetraege[i] != 0) {
@@ -274,6 +300,7 @@ class _TagesabschlussSchritt2SeiteState
         'ausgabenLabels': List<String>.from(_ausgabenLabels),
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
         'ecBelegeCent': List<int>.from(_ecBelegeCent),
+        'ecBelegeLabels': List<String>.from(_ecBelegLabels),
       },
     );
   }
@@ -335,6 +362,7 @@ class _TagesabschlussSchritt2SeiteState
         umschlaege: widget.umschlaege,
         ausgabenBetraegeCent: List<int>.from(_ausgabenBetrageCent),
         ausgabenLabels: List<String>.from(_ausgabenLabels),
+        ecBelegeLabels: List<String>.from(_ecBelegLabels),
       ),
     );
   }
@@ -404,14 +432,17 @@ class _TagesabschlussSchritt2SeiteState
   void _ecBelegHinzufuegen() {
     setState(() {
       _ecBelegController.add(TextEditingController());
+      _ecBelegLabelController.add(TextEditingController());
       _ecBelegFocusNode.add(FocusNode());
+      _ecBelegLabelFocusNode.add(FocusNode());
       _ecBelegeCent.add(0);
+      _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
     });
     _speichereEntwurf();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _ecBelegFocusNode.isNotEmpty) {
-        FocusScope.of(context).requestFocus(_ecBelegFocusNode.last);
+      if (mounted && _ecBelegLabelFocusNode.isNotEmpty) {
+        FocusScope.of(context).requestFocus(_ecBelegLabelFocusNode.last);
       }
     });
   }
@@ -424,8 +455,11 @@ class _TagesabschlussSchritt2SeiteState
     }
     setState(() {
       _ecBelegController.removeAt(index).dispose();
+      _ecBelegLabelController.removeAt(index).dispose();
       _ecBelegFocusNode.removeAt(index).dispose();
+      _ecBelegLabelFocusNode.removeAt(index).dispose();
       _ecBelegeCent.removeAt(index);
+      _ecBelegLabels.removeAt(index);
       _ecBelegIds.removeAt(index);
     });
     _speichereEntwurf();
@@ -441,14 +475,20 @@ class _TagesabschlussSchritt2SeiteState
   void _setzeEcBelegAnzahl(int anzahl) {
     while (_ecBelegController.length > anzahl) {
       _ecBelegController.removeLast().dispose();
+      _ecBelegLabelController.removeLast().dispose();
       _ecBelegFocusNode.removeLast().dispose();
+      _ecBelegLabelFocusNode.removeLast().dispose();
       _ecBelegeCent.removeLast();
+      _ecBelegLabels.removeLast();
       _ecBelegIds.removeLast();
     }
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
+      _ecBelegLabelController.add(TextEditingController());
       _ecBelegFocusNode.add(FocusNode());
+      _ecBelegLabelFocusNode.add(FocusNode());
       _ecBelegeCent.add(0);
+      _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
     }
   }
@@ -534,6 +574,7 @@ class _TagesabschlussSchritt2SeiteState
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = ecBeleg;
+      _ecBelegLabels[0] = '';
 
       _setzeAusgabenAnzahl(1);
       _ausgabenBetrageCent[0] = ausgaben;
@@ -565,6 +606,7 @@ class _TagesabschlussSchritt2SeiteState
             ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
             : '',
       );
+      _setzeControllerText(_ecBelegLabelController[0], '');
     });
     _speichereEntwurf();
   }
@@ -578,6 +620,7 @@ class _TagesabschlussSchritt2SeiteState
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = 0;
+      _ecBelegLabels[0] = '';
 
       _setzeAusgabenAnzahl(1);
       _ausgabenBetrageCent[0] = 0;
@@ -589,6 +632,7 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_ausgabenLabelController[0], '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(_ecBelegController[0], '');
+      _setzeControllerText(_ecBelegLabelController[0], '');
     });
   }
 
@@ -629,11 +673,18 @@ class _TagesabschlussSchritt2SeiteState
         ausgabenFokus.add(_ausgabenBetragFocusNode[i]);
       }
     }
+    final List<FocusNode> ecBelegFokus = <FocusNode>[];
+    for (int i = 0; i < _ecBelegLabelFocusNode.length; i++) {
+      ecBelegFokus.add(_ecBelegLabelFocusNode[i]);
+      if (i < _ecBelegFocusNode.length) {
+        ecBelegFokus.add(_ecBelegFocusNode[i]);
+      }
+    }
     return <FocusNode>[
       _kinoSollFocusNode,
       _bistroSollFocusNode,
       ...ausgabenFokus,
-      ..._ecBelegFocusNode,
+      ...ecBelegFokus,
       _differenzAnfangsbestandFocusNode,
     ];
   }
@@ -1010,34 +1061,21 @@ class _TagesabschlussSchritt2SeiteState
                                             horizontal: 8,
                                             vertical: 6,
                                           ),
-                                          suffixIcon:
-                                              ValueListenableBuilder<
-                                                  TextEditingValue>(
-                                            valueListenable:
-                                                _ausgabenLabelController[i],
-                                            builder: (BuildContext _,
-                                                TextEditingValue value,
-                                                Widget? __) {
-                                              if (value.text.isEmpty) {
-                                                return const SizedBox
-                                                    .shrink();
-                                              }
-                                              return IconButton(
-                                                icon: const Icon(
-                                                  Icons.close,
-                                                  size: 18,
+                                                          suffixIcon: _ausgabenLabelController[i].text.isEmpty
+                                              ? null
+                                              : IconButton(
+                                                  icon: const Icon(
+                                                    Icons.close,
+                                                    size: 18,
+                                                  ),
+                                                  onPressed: () {
+                                                    _ausgabenLabelController[i].clear();
+                                                    setState(() {
+                                                      _ausgabenLabels[i] = '';
+                                                    });
+                                                    _speichereEntwurf();
+                                                  },
                                                 ),
-                                                onPressed: () {
-                                                  _ausgabenLabelController[i]
-                                                      .clear();
-                                                  setState(() {
-                                                    _ausgabenLabels[i] = '';
-                                                  });
-                                                  _speichereEntwurf();
-                                                },
-                                              );
-                                            },
-                                          ),
                                         ),
                                         onSubmitted: (_) =>
                                             _beiEingabeAbgeschlossenSchritt2(
@@ -1112,33 +1150,117 @@ class _TagesabschlussSchritt2SeiteState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              'EC-Belege',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                           for (int i = 0; i < _ecBelegController.length; i++)
                             KeyedSubtree(
                               key: ValueKey<int>(_ecBelegIds[i]),
-                              child: _baueEingabeZeile(
-                                label: _ecBelegController.length == 1
-                                    ? 'EC-Beleg'
-                                    : 'EC-Beleg ${i + 1}',
-                                controller: _ecBelegController[i],
-                                focusNode: _ecBelegFocusNode[i],
-                                fehlermeldungText: i == 0
-                                    ? _pflichtfeldFehlertext(
-                                        feldBeruehrt: _ecBeleg1Beruehrt,
-                                        controller: _ecBelegController.first,
-                                      )
-                                    : null,
-                                optional: i > 0,
-                                zeigeLoeschen: i > 0,
-                                onLoeschen: () => _ecBelegEntfernen(i),
-                                onChanged: (String wert) {
-                                  setState(() {
-                                    if (i == 0) {
-                                      _ecBeleg1Beruehrt = true;
-                                    }
-                                    _ecBelegeCent[i] = _parseCentZiffern(wert);
-                                  });
-                                  _speichereEntwurf();
-                                },
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: TextField(
+                                        controller: _ecBelegLabelController[i],
+                                        focusNode: _ecBelegLabelFocusNode[i],
+                                        style: const TextStyle(fontSize: 15),
+                                        textInputAction:
+                                            _textInputActionFuerSchritt2(
+                                          _ecBelegLabelFocusNode[i],
+                                        ),
+                                        decoration: InputDecoration(
+                                          hintText: 'Bezeichnung (optional)',
+                                          hintStyle: const TextStyle(
+                                            fontSize: 15,
+                                          ),
+                                          border: const OutlineInputBorder(),
+                                          isDense: true,
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 6,
+                                          ),
+                                          suffixIcon: _ecBelegLabelController[i].text.isEmpty
+                                              ? null
+                                              : IconButton(
+                                                  icon: const Icon(
+                                                    Icons.close,
+                                                    size: 18,
+                                                  ),
+                                                  onPressed: () {
+                                                    _ecBelegLabelController[i].clear();
+                                                    setState(() {
+                                                      _ecBelegLabels[i] = '';
+                                                    });
+                                                    _speichereEntwurf();
+                                                  },
+                                                ),
+                                        ),
+                                        onSubmitted: (_) =>
+                                            _beiEingabeAbgeschlossenSchritt2(
+                                          _ecBelegLabelFocusNode[i],
+                                        ),
+                                        onChanged: (String wert) {
+                                          setState(() {
+                                            _ecBelegLabels[i] = wert;
+                                          });
+                                          _speichereEntwurf();
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    SizedBox(
+                                      width: 120,
+                                      child: BetragCentEingabefeld(
+                                        textController: _ecBelegController[i],
+                                        focusNode: _ecBelegFocusNode[i],
+                                        textInputAction:
+                                            _textInputActionFuerSchritt2(
+                                          _ecBelegFocusNode[i],
+                                        ),
+                                        onSubmitted: (_) =>
+                                            _beiEingabeAbgeschlossenSchritt2(
+                                          _ecBelegFocusNode[i],
+                                        ),
+                                        onChanged: (String wert) {
+                                          setState(() {
+                                            if (i == 0) {
+                                              _ecBeleg1Beruehrt = true;
+                                            }
+                                            _ecBelegeCent[i] =
+                                                _parseCentZiffern(wert);
+                                          });
+                                          _speichereEntwurf();
+                                        },
+                                        schriftgroesse: 15,
+                                        hinweisText: '0,00 €',
+                                        fehlermeldungText: i == 0
+                                            ? _pflichtfeldFehlertext(
+                                                feldBeruehrt: _ecBeleg1Beruehrt,
+                                                controller:
+                                                    _ecBelegController.first,
+                                              )
+                                            : null,
+                                      ),
+                                    ),
+                                    if (_ecBelegController.length > 1) ...<Widget>[
+                                      const SizedBox(width: 6),
+                                      IconButton(
+                                        onPressed: () => _ecBelegEntfernen(i),
+                                        icon: const Icon(Icons.delete_outline),
+                                        tooltip: 'EC-Beleg entfernen',
+                                      ),
+                                    ],
+                                  ],
+                                ),
                               ),
                             ),
                           Align(

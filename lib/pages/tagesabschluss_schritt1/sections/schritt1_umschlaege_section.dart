@@ -79,19 +79,15 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                             horizontal: 8,
                             vertical: 6,
                           ),
-                          suffixIcon: ValueListenableBuilder<TextEditingValue>(
-                            valueListenable: umschlagBezeichnungController[i],
-                            builder: (BuildContext _, TextEditingValue value, Widget? __) {
-                              if (value.text.isEmpty) return const SizedBox.shrink();
-                              return IconButton(
-                                icon: const Icon(Icons.close, size: 18),
-                                onPressed: () {
-                                  umschlagBezeichnungController[i].clear();
-                                  beiUmschlagBezeichnungGeaendert(i, '');
-                                },
-                              );
-                            },
-                          ),
+                          suffixIcon: umschlagBezeichnungController[i].text.isEmpty
+                              ? null
+                              : IconButton(
+                                  icon: const Icon(Icons.close, size: 18),
+                                  onPressed: () {
+                                    umschlagBezeichnungController[i].clear();
+                                    beiUmschlagBezeichnungGeaendert(i, '');
+                                  },
+                                ),
                         ),
                         onSubmitted: (_) =>
                             beiEingabeAbgeschlossen(bezeichnungFocusNode),

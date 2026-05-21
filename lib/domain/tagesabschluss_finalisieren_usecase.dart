@@ -24,6 +24,8 @@ class TagesabschlussFinalisierenEingabe {
     // Ausgaben-Einzelposten aus Schritt 2
     this.ausgabenBetraegeCent,
     this.ausgabenLabels,
+    // EC-Beleg-Labels aus Schritt 2
+    this.ecBelegeLabels,
   });
 
   final String kinoId;
@@ -47,6 +49,8 @@ class TagesabschlussFinalisierenEingabe {
   // Ausgaben-Einzelposten aus Schritt 2
   final List<int>? ausgabenBetraegeCent;
   final List<String>? ausgabenLabels;
+  // EC-Beleg-Labels aus Schritt 2
+  final List<String>? ecBelegeLabels;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -184,6 +188,10 @@ class TagesabschlussFinalisierenUsecase {
       ausgabenLabels: eingabe.ausgabenLabels != null &&
               eingabe.ausgabenLabels!.isNotEmpty
           ? List<String>.from(eingabe.ausgabenLabels!)
+          : null,
+      ecBelegeLabels: eingabe.ecBelegeLabels != null &&
+              eingabe.ecBelegeLabels!.isNotEmpty
+          ? List<String>.from(eingabe.ecBelegeLabels!)
           : null,
     );
   }

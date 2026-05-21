@@ -30,6 +30,7 @@ class TagesabschlussSchritt3Argumente {
     this.umschlaege,
     this.ausgabenBetraegeCent,
     this.ausgabenLabels,
+    this.ecBelegeLabels,
   });
 
   final String kinoId;
@@ -51,6 +52,7 @@ class TagesabschlussSchritt3Argumente {
   final List<UmschlagEintrag>? umschlaege;
   final List<int>? ausgabenBetraegeCent;
   final List<String>? ausgabenLabels;
+  final List<String>? ecBelegeLabels;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -104,6 +106,7 @@ class _TagesabschlussSchritt3SeiteState
         umschlaege: widget.argumente.umschlaege,
         ausgabenBetraegeCent: widget.argumente.ausgabenBetraegeCent,
         ausgabenLabels: widget.argumente.ausgabenLabels,
+        ecBelegeLabels: widget.argumente.ecBelegeLabels,
       ),
       jetzt: DateTime.now(),
     );
