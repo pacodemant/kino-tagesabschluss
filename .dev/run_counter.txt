@@ -1,4 +1,4 @@
-last_run: 167
-next_run: 168
-last_run_title: R167: VerlaufDetailSeite klappbare Cards, Read-Only-Stil, Hinweis-Card; Verlaufsliste kennzeichnet aktuellen Tag
-last_commit: d9d8e83
+last_run: 168
+next_run: 169
+last_run_title: R168: TagesabschlussFinal Rohdaten-Felder + VerlaufDetail Aufschlüsselung
+last_commit: cf0596e
