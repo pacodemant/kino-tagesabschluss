@@ -186,7 +186,6 @@ class _TagesabschlussSchritt3SeiteState
       barrierDismissible: true,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Was möchtest du als nächstes tun?'),
-        content: null,
         actions: <Widget>[
           TextButton(
             onPressed: () {

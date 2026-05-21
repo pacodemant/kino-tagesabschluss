@@ -305,10 +305,6 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  int _parseCentZiffern(String wert) {
-    return TagesabschlussBerechnung.parseCentZiffern(wert);
-  }
-
   /// Gibt den Anzeigetext für das Differenz-Feld zurück (mit Minuszeichen wenn negativ).
   String _differenzAnzeigeText(int cent) {
     if (cent == 0) return '';
@@ -936,7 +932,7 @@ class _TagesabschlussSchritt2SeiteState
                                       onChanged: (String wert) {
                                         setState(() {
                                           final int absolutWert =
-                                              _parseCentZiffern(wert);
+                                              TagesabschlussBerechnung.parseCentZiffern(wert);
                                           final bool istNegativ =
                                               _differenzAnfangsbestandCent < 0;
                                           _differenzAnfangsbestandCent =
@@ -1002,7 +998,7 @@ class _TagesabschlussSchritt2SeiteState
                             onChanged: (String wert) {
                               setState(() {
                                 _kinoSollBeruehrt = true;
-                                _kinoSollCent = _parseCentZiffern(wert);
+                                _kinoSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
                               });
                               _speichereEntwurf();
                             },
@@ -1018,7 +1014,7 @@ class _TagesabschlussSchritt2SeiteState
                             onChanged: (String wert) {
                               setState(() {
                                 _bistroSollBeruehrt = true;
-                                _bistroSollCent = _parseCentZiffern(wert);
+                                _bistroSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
                               });
                               _speichereEntwurf();
                             },
@@ -1118,7 +1114,7 @@ class _TagesabschlussSchritt2SeiteState
                                         onChanged: (String wert) {
                                           setState(() {
                                             _ausgabenBetrageCent[i] =
-                                                _parseCentZiffern(wert);
+                                                TagesabschlussBerechnung.parseCentZiffern(wert);
                                           });
                                           _speichereEntwurf();
                                         },
@@ -1255,7 +1251,7 @@ class _TagesabschlussSchritt2SeiteState
                                               _ecBeleg1Beruehrt = true;
                                             }
                                             _ecBelegeCent[i] =
-                                                _parseCentZiffern(wert);
+                                                TagesabschlussBerechnung.parseCentZiffern(wert);
                                           });
                                           _speichereEntwurf();
                                         },

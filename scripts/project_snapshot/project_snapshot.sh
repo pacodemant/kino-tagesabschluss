@@ -6,7 +6,7 @@ set -euo pipefail
 #
 # Zweck:
 # Erstellt einen vollständigen Projekt-Snapshot
-# für neue ChatGPT-/Codex-Chats oder Diagnosen.
+# für neue Claude-Code-Chats oder Diagnosen.
 #
 # Ausgabe:
 # .dev/project_snapshot.generated.txt

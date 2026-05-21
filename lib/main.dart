@@ -4,7 +4,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
-import 'package:kino_bar_app/pages/platzhalter_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/startpruefung_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
@@ -167,14 +166,6 @@ class MeineApp extends StatelessWidget {
           }
           return MaterialPageRoute<void>(
             builder: (_) => StueckelungVorschlagSeite(argumente: argument),
-            settings: settings,
-          );
-        }
-
-        if (settings.name == PlatzhalterSeite.routenName) {
-          final String titel = settings.arguments as String? ?? 'Platzhalter';
-          return MaterialPageRoute<void>(
-            builder: (_) => PlatzhalterSeite(titel: titel),
             settings: settings,
           );
         }
