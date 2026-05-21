@@ -20,19 +20,19 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   static const List<(String, String, int)> _s1ScheineFelder =
       <(String, String, int)>[
     ('note_100', '100 €', 0),
-    ('note_50', '50 €', 8),
-    ('note_20', '20 €', 4),
-    ('note_10', '10 €', 29),
-    ('note_5', '5 €', 13),
+    ('note_50', '50 €', 13),
+    ('note_20', '20 €', 17),
+    ('note_10', '10 €', 65),
+    ('note_5', '5 €', 20),
   ];
 
   static const List<(String, String, int)> _s1RollenFelder =
       <(String, String, int)>[
-    ('roll_2e', '2 €', 0),
-    ('roll_1e', '1 €', 0),
-    ('roll_50c', '50 ct', 1),
-    ('roll_20c', '20 ct', 1),
-    ('roll_10c', '10 ct', 1),
+    ('roll_2e', '2 €', 5),
+    ('roll_1e', '1 €', 8),
+    ('roll_50c', '50 ct', 0),
+    ('roll_20c', '20 ct', 0),
+    ('roll_10c', '10 ct', 0),
     ('roll_5c', '5 ct', 0),
     ('roll_2c', '2 ct', 0),
     ('roll_1c', '1 ct', 0),
@@ -40,15 +40,38 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   static const List<(String, String, int)> _s1LoseMuenzFelder =
       <(String, String, int)>[
-    ('coin_2e', '2 €', 3800),
-    ('coin_1e', '1 €', 2500),
-    ('coin_50c', '50 ct', 700),
-    ('coin_20c', '20 ct', 40),
-    ('coin_10c', '10 ct', 50),
+    ('coin_2e', '2 €', 6400),
+    ('coin_1e', '1 €', 5400),
+    ('coin_50c', '50 ct', 1900),
+    ('coin_20c', '20 ct', 1340),
+    ('coin_10c', '10 ct', 390),
     ('coin_5c', '5 ct', 0),
     ('coin_2c', '2 ct', 0),
     ('coin_1c', '1 ct', 0),
   ];
+
+  static const Map<String, dynamic> _standardTestwerte = <String, dynamic>{
+    'stueckzahlen': <String, dynamic>{
+      'note_100': 0, 'note_50': 13, 'note_20': 17, 'note_10': 65, 'note_5': 20,
+      'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0, 'roll_10c': 0,
+      'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+    },
+    'loseMuenzenNachArtCent': <String, dynamic>{
+      'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900, 'coin_20c': 1340,
+      'coin_10c': 390, 'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+    },
+    'umschlaege': <dynamic>[
+      <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
+      <String, dynamic>{'label': '', 'amountCents': 0},
+      <String, dynamic>{'label': '', 'amountCents': 0},
+    ],
+    'kinoSollCent': 110000,
+    'bistroSollCent': 52630,
+    'ausgabenCent': 0,
+    'ecBelegCent': 57820,
+    'differenzAnfangsbestandCent': 0,
+    'wechselgeldKino01Cent': 140000,
+  };
 
   static const int _umschlagSlots = 3;
 
@@ -196,11 +219,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   void _setzeAutoFillSchritt2Controller(Map<String, dynamic>? daten) {
-    final int kinoSoll = (daten?['kinoSollCent'] as num?)?.toInt() ?? 74900;
+    final int kinoSoll = (daten?['kinoSollCent'] as num?)?.toInt() ?? 110000;
     final int bistroSoll =
-        (daten?['bistroSollCent'] as num?)?.toInt() ?? 20280;
+        (daten?['bistroSollCent'] as num?)?.toInt() ?? 52630;
     final int ausgaben = (daten?['ausgabenCent'] as num?)?.toInt() ?? 0;
-    final int ecBeleg = (daten?['ecBelegCent'] as num?)?.toInt() ?? 51390;
+    final int ecBeleg = (daten?['ecBelegCent'] as num?)?.toInt() ?? 57820;
     final int differenz =
         (daten?['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
 
@@ -284,6 +307,84 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         _s2DifferenzCtrl.text,
       ),
     });
+  }
+
+  Future<void> _setzeStandardTestwerte() async {
+    final Map<String, dynamic> stMap =
+        _standardTestwerte['stueckzahlen'] as Map<String, dynamic>;
+    for (final String id in _s1StueckzahlCtrl.keys) {
+      final int wert = (stMap[id] as num?)?.toInt() ?? 0;
+      _s1StueckzahlCtrl[id]!.text = wert != 0 ? wert.toString() : '';
+    }
+
+    final Map<String, dynamic> lmMap =
+        _standardTestwerte['loseMuenzenNachArtCent'] as Map<String, dynamic>;
+    for (final String id in _s1LoseMuenzCtrl.keys) {
+      final int cent = (lmMap[id] as num?)?.toInt() ?? 0;
+      _s1LoseMuenzCtrl[id]!.text = cent != 0
+          ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
+          : '';
+    }
+
+    final List<dynamic> umschlagListe =
+        _standardTestwerte['umschlaege'] as List<dynamic>;
+    for (int i = 0; i < _umschlagSlots; i++) {
+      if (i < umschlagListe.length) {
+        final Map<String, dynamic> slot =
+            umschlagListe[i] as Map<String, dynamic>;
+        _s1UmschlagBezeichnungCtrl[i].text = (slot['label'] as String?) ?? '';
+        final int betrag = (slot['amountCents'] as num?)?.toInt() ?? 0;
+        _s1UmschlagBetragCtrl[i].text = betrag != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(betrag)
+            : '';
+      } else {
+        _s1UmschlagBezeichnungCtrl[i].text = '';
+        _s1UmschlagBetragCtrl[i].text = '';
+      }
+    }
+
+    final int kinoSoll = _standardTestwerte['kinoSollCent'] as int;
+    final int bistroSoll = _standardTestwerte['bistroSollCent'] as int;
+    final int ausgaben = _standardTestwerte['ausgabenCent'] as int;
+    final int ecBeleg = _standardTestwerte['ecBelegCent'] as int;
+    final int differenz =
+        _standardTestwerte['differenzAnfangsbestandCent'] as int;
+
+    _s2KinoSollCtrl.text = kinoSoll != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll)
+        : '';
+    _s2BistroSollCtrl.text = bistroSoll != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(bistroSoll)
+        : '';
+    _s2AusgabenCtrl.text = ausgaben != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben)
+        : '';
+    _s2EcBelegCtrl.text = ecBeleg != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
+        : '';
+    _s2DifferenzCtrl.text = differenz != 0
+        ? TagesabschlussFormatierung.formatiereEuroEingabe(differenz)
+        : '';
+
+    final int wgCent = _standardTestwerte['wechselgeldKino01Cent'] as int;
+    final int kinoIndex =
+        KinoRepository.kinos.indexWhere((Kino k) => k.id == 'kino_01');
+    if (kinoIndex >= 0) {
+      _controllers[kinoIndex].text =
+          TagesabschlussFormatierung.formatiereEuroEingabe(wgCent);
+    }
+
+    await _speichereAutoFillSchritt1();
+    await _speichereAutoFillSchritt2();
+    await LokalerSpeicher.speichereWechselgeldSollwertCent('kino_01', wgCent);
+
+    if (!mounted) {
+      return;
+    }
+    setState(() {});
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Standardwerte gesetzt.')),
+    );
   }
 
   static const InputDecoration _zeilenDeko = InputDecoration(
@@ -617,6 +718,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 ),
                 if (_devModusAktiv) ...<Widget>[
                   const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: _setzeStandardTestwerte,
+                        child: const Text('Standardwerte einsetzen'),
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(12),
                     child: _baueAutoFillInhalt(),

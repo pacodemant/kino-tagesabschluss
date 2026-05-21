@@ -19,7 +19,8 @@ class LokalerSpeicher {
 
   static Future<int> ladeWechselgeldSollwertCent(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    return speicher.getInt('change_target_cents_$kinoId') ?? 0;
+    return speicher.getInt('change_target_cents_$kinoId') ??
+        (kinoId == 'kino_01' ? 140000 : 0);
   }
 
   static Future<void> speichereWechselgeldSollwertCent(
@@ -206,7 +207,23 @@ class LokalerSpeicher {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? rohwert = speicher.getString('dev_autofill_schritt1');
     if (rohwert == null) {
-      return null;
+      return <String, dynamic>{
+        'stueckzahlen': <String, dynamic>{
+          'note_100': 0, 'note_50': 13, 'note_20': 17, 'note_10': 65,
+          'note_5': 20,
+          'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0,
+          'roll_10c': 0, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+        },
+        'loseMuenzenNachArtCent': <String, dynamic>{
+          'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900, 'coin_20c': 1340,
+          'coin_10c': 390, 'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+        },
+        'umschlaege': <dynamic>[
+          <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
+          <String, dynamic>{'label': '', 'amountCents': 0},
+          <String, dynamic>{'label': '', 'amountCents': 0},
+        ],
+      };
     }
     try {
       return jsonDecode(rohwert) as Map<String, dynamic>;
@@ -226,7 +243,13 @@ class LokalerSpeicher {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? rohwert = speicher.getString('dev_autofill_schritt2');
     if (rohwert == null) {
-      return null;
+      return <String, dynamic>{
+        'kinoSollCent': 110000,
+        'bistroSollCent': 52630,
+        'ausgabenCent': 0,
+        'ecBelegCent': 57820,
+        'differenzAnfangsbestandCent': 0,
+      };
     }
     try {
       return jsonDecode(rohwert) as Map<String, dynamic>;
