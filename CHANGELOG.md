@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 176: Clear-Button in AppBar von Schritt 2: TextButton „Clear" mit Bestätigungsdialog („Eingaben löschen?"); neue Methode _leereAlleFelder() setzt alle Felder, Touched-Flags und Validierung zurück und löscht den Schritt-2-Entwurf aus SharedPreferences; _autoFillDev() ruft _leereAlleFelder() vor dem Befüllen auf.
 - Run 175: Initialisierung von Controller/FocusNode-Listen in Schritt 2 vereinheitlicht: alle inline befüllten Listen auf leer umgestellt (_ecBelegController, _ecBelegLabelController, _ecBelegIds, _ecBelegLabels, _ecBelegeCent, _ausgabenBetragController, _ausgabenLabelController, _ausgabenBetrageCent, _ausgabenLabels, _ausgabenIds); initState ruft jetzt _setzeEcBelegAnzahl(1) und _setzeAusgabenAnzahl(1) auf statt FocusNodes manuell hinzuzufügen.
 - Run 174: Auto-Save Fehler-Logging in Schritt 3: `catch (_)` → `catch (e)` mit `debugPrint`; neue State-Variable `_autoSaveFehler`; Fehlermeldungstext unterhalb des Abschluss-Buttons wenn Speichern fehlschlägt, verschwindet beim nächsten Versuch.
 - Run 173: Cleanup – toter PlatzhalterSeite-Route-Eintrag aus main.dart entfernt (inkl. Import); `content: null`-Parameter aus AlertDialog in Schritt 3 entfernt; `_parseCentZiffern`-Wrapper in Schritt 2 entfernt, alle Aufrufe direkt auf `TagesabschlussBerechnung.parseCentZiffern` umgestellt; Snapshot-Kommentar von „ChatGPT-/Codex" auf „Claude-Code" aktualisiert.
