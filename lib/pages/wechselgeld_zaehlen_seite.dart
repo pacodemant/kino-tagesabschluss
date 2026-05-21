@@ -308,12 +308,16 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     }
 
     if (zurueck == true) {
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        StartmenueSeite.routenName,
-        (Route<dynamic> route) => false,
-        arguments: _kinoId,
-      );
+      _zurueckZurStartseite();
     }
+  }
+
+  void _zurueckZurStartseite() {
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      StartmenueSeite.routenName,
+      (Route<dynamic> route) => false,
+      arguments: _kinoId,
+    );
   }
 
   void _leereUmschlagFelder() => _initialisierungHelper.leereUmschlagFelder();
@@ -744,16 +748,30 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
           const SizedBox(width: 8),
         ],
       ),
-      footerChild: tastaturOffen
-          ? SizedBox(
-              height: 36,
-              child: ElevatedButton(
-                onPressed: _weiterZumNaechstenFeld,
-                style: AppFarben.footerButtonStyle,
-                child: const Text('nächstes Feld'),
+      footerChild: SizedBox(
+        height: 36,
+        child: Row(
+          children: <Widget>[
+            if (tastaturOffen) ...<Widget>[
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: _weiterZumNaechstenFeld,
+                  style: AppFarben.footerButtonStyle,
+                  child: const Text('nächstes Feld'),
+                ),
               ),
-            )
-          : null,
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _zurueckZurStartseite,
+                style: AppFarben.footerButtonStyle,
+                child: const Text('Startseite SB'),
+              ),
+            ),
+          ],
+        ),
+      ),
       child: Schritt1BodyContent(
         scrollController: _scrollController,
         devToolsStickySichtbar: false,
