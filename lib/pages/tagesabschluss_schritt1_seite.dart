@@ -683,6 +683,7 @@ class _TagesabschlussSchritt1SeiteState
             stueckzahlen: Map<String, int>.from(_stueckzahlen),
             loseMuenzenNachArtCent:
                 Map<String, int>.from(_loseMuenzenNachArtCent),
+            umschlaege: List<UmschlagEintrag>.from(_umschlaege),
           ),
         );
       },

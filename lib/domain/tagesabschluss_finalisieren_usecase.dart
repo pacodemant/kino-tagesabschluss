@@ -1,4 +1,5 @@
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 
 /// Eingabedaten aus Schritt 1 und 2 fuer den finalen Abschluss.
@@ -19,6 +20,7 @@ class TagesabschlussFinalisierenEingabe {
     // Rohdaten aus Schritt 1 – optional, damit bestehende Aufrufer unverändert bleiben
     this.stueckzahlen,
     this.loseMuenzenNachArtCent,
+    this.umschlaege,
   });
 
   final String kinoId;
@@ -37,6 +39,8 @@ class TagesabschlussFinalisierenEingabe {
   // Stückzahlen/Beträge je Denomination aus Schritt 1 (IDs: note_xxx, roll_xxx, coin_xxx)
   final Map<String, int>? stueckzahlen;
   final Map<String, int>? loseMuenzenNachArtCent;
+  // Umschlag-Einzeleinträge aus Schritt 1
+  final List<UmschlagEintrag>? umschlaege;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -135,10 +139,7 @@ class TagesabschlussFinalisierenUsecase {
       kupferMuenzenCent = kupfer;
     }
 
-    // TODO(Run 169): umschlagBetraegeCent befüllen – Einzelbeträge werden in
-    // TagesabschlussSchritt3Argumente nicht weitergegeben (nur umschlaegeCent-Summe).
-
-    // TODO(Run 169): ausgabenBetraegeCent/ausgabenLabels befüllen – kein
+    // TODO(Run 171): ausgabenBetraegeCent/ausgabenLabels befüllen – kein
     // Einzelposten-Eingabefeld in Schritt 2 vorhanden.
 
     final DateTime zeitstempel = jetzt ?? DateTime.now();
@@ -170,6 +171,9 @@ class TagesabschlussFinalisierenUsecase {
           rollenStueckzahlen?.isNotEmpty == true ? rollenStueckzahlen : null,
       silberMuenzenCent: silberMuenzenCent,
       kupferMuenzenCent: kupferMuenzenCent,
+      umschlagBetraegeCent: eingabe.umschlaege
+          ?.map((UmschlagEintrag e) => e.betragCent)
+          .toList(),
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
@@ -26,6 +27,7 @@ class TagesabschlussSchritt3Argumente {
     required this.differenzAnfangsbestandCent,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
+    this.umschlaege,
   });
 
   final String kinoId;
@@ -44,6 +46,7 @@ class TagesabschlussSchritt3Argumente {
   final int differenzAnfangsbestandCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
+  final List<UmschlagEintrag>? umschlaege;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -94,6 +97,7 @@ class _TagesabschlussSchritt3SeiteState
             widget.argumente.differenzAnfangsbestandCent,
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
+        umschlaege: widget.argumente.umschlaege,
       ),
       jetzt: DateTime.now(),
     );

@@ -135,6 +135,7 @@ class MeineApp extends StatelessWidget {
                   argument.barBestandAbzglWechselgeldCent,
               stueckzahlen: argument.stueckzahlen,
               loseMuenzenNachArtCent: argument.loseMuenzenNachArtCent,
+              umschlaege: argument.umschlaege,
             ),
             settings: settings,
           );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
@@ -22,6 +23,7 @@ class TagesabschlussSchritt2Argumente {
     required this.barBestandAbzglWechselgeldCent,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
+    this.umschlaege,
   });
 
   final String kinoId;
@@ -34,6 +36,7 @@ class TagesabschlussSchritt2Argumente {
   final int barBestandAbzglWechselgeldCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
+  final List<UmschlagEintrag>? umschlaege;
 }
 
 class TagesabschlussSchritt2Seite extends StatefulWidget {
@@ -49,6 +52,7 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
     required this.barBestandAbzglWechselgeldCent,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
+    this.umschlaege,
   });
 
   static const String routenName = '/closure-step-2';
@@ -63,6 +67,7 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
   final int barBestandAbzglWechselgeldCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
+  final List<UmschlagEintrag>? umschlaege;
 
   @override
   State<TagesabschlussSchritt2Seite> createState() =>
@@ -273,6 +278,7 @@ class _TagesabschlussSchritt2SeiteState
         differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
         stueckzahlen: widget.stueckzahlen,
         loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
+        umschlaege: widget.umschlaege,
       ),
     );
   }
