@@ -7,6 +7,7 @@ import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
@@ -204,12 +205,8 @@ class _TagesabschlussSchritt3SeiteState
           TextButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const _PlatzhalterSeite(
-                    titel: 'Getränke auffüllen',
-                  ),
-                ),
+              Navigator.of(context).pushNamed(
+                GetraenkeAuffuellenSeite.routenName,
               );
             },
             child: const Text('Getränke auffüllen'),
@@ -446,30 +443,6 @@ class _TagesabschlussSchritt3SeiteState
                   ),
               ],
             ),
-    );
-  }
-}
-
-class _PlatzhalterSeite extends StatelessWidget {
-  const _PlatzhalterSeite({required this.titel});
-
-  final String titel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppFarben.appBarRot,
-        foregroundColor: Colors.white,
-        title: Text(titel),
-      ),
-      body: Center(
-        child: Text(
-          '$titel\n(noch nicht implementiert)',
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 22, color: Colors.grey),
-        ),
-      ),
     );
   }
 }

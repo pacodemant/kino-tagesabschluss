@@ -11,6 +11,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
+import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
@@ -200,6 +201,13 @@ class MeineApp extends StatelessWidget {
         if (settings.name == WechselgeldZaehlenSeite.routenName) {
           return MaterialPageRoute<void>(
             builder: (_) => const WechselgeldZaehlenSeite(),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == GetraenkeAuffuellenSeite.routenName) {
+          return MaterialPageRoute<void>(
+            builder: (_) => const GetraenkeAuffuellenSeite(),
             settings: settings,
           );
         }

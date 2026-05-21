@@ -3,9 +3,9 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
-import 'package:kino_bar_app/pages/platzhalter_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
+import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
 
 class StartmenueSeite extends StatelessWidget {
@@ -25,10 +25,6 @@ class StartmenueSeite extends StatelessWidget {
     );
   }
 
-  void _oeffnePlatzhalter(BuildContext context, String titel) {
-    Navigator.of(context).pushNamed(PlatzhalterSeite.routenName, arguments: titel);
-  }
-
   void _oeffneEinstellungen(BuildContext context) {
     Navigator.of(context).pushNamed(EinstellungenSeite.routenName);
   }
@@ -39,6 +35,10 @@ class StartmenueSeite extends StatelessWidget {
 
   void _oeffneWechselgeldZaehlen(BuildContext context) {
     Navigator.of(context).pushNamed(WechselgeldZaehlenSeite.routenName);
+  }
+
+  void _oeffneGetraenkeAuffuellen(BuildContext context) {
+    Navigator.of(context).pushNamed(GetraenkeAuffuellenSeite.routenName);
   }
 
   @override
@@ -77,12 +77,12 @@ class StartmenueSeite extends StatelessWidget {
                 onPressed: () => _oeffneWechselgeldZaehlen(context),
                 child: const Text('Wechselgeld zählen'),
               ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => _oeffneGetraenkeAuffuellen(context),
+                child: const Text('Getränke auffüllen'),
+              ),
             ],
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => _oeffnePlatzhalter(context, 'Getränke auffüllen'),
-              child: const Text('Getränke auffüllen'),
-            ),
             const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () => _oeffneEinstellungen(context),
