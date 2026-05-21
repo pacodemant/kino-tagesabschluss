@@ -181,18 +181,32 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     return result;
   }
 
+  List<Widget> _umschlagUnterzeilen(TagesabschlussFinal a) {
+    final List<int>? betraege = a.umschlagBetraegeCent;
+    if (betraege != null && betraege.isNotEmpty) {
+      return betraege.map((int c) => _unterzeile('', _euro(c))).toList();
+    }
+    if (a.umschlaegeCent > 0) {
+      return <Widget>[_unterzeile('Gesamt', _euro(a.umschlaegeCent))];
+    }
+    return <Widget>[];
+  }
+
   List<Widget> _ausgabenUnterzeilen(TagesabschlussFinal a) {
     final List<int>? betraege = a.ausgabenBetraegeCent;
-    if (betraege == null || betraege.isEmpty) {
-      return <Widget>[];
+    if (betraege != null && betraege.isNotEmpty) {
+      return List<Widget>.generate(betraege.length, (int i) {
+        final String label =
+            a.ausgabenLabels != null && i < a.ausgabenLabels!.length
+                ? a.ausgabenLabels![i]
+                : 'Ausgabe ${i + 1}';
+        return _unterzeile(label, _euro(betraege[i]));
+      });
     }
-    return List<Widget>.generate(betraege.length, (int i) {
-      final String label =
-          a.ausgabenLabels != null && i < a.ausgabenLabels!.length
-              ? a.ausgabenLabels![i]
-              : 'Ausgabe ${i + 1}';
-      return _unterzeile(label, _euro(betraege[i]));
-    });
+    if (a.ausgabenCent > 0) {
+      return <Widget>[_unterzeile('Gesamt', _euro(a.ausgabenCent))];
+    }
+    return <Widget>[];
   }
 
   @override
@@ -247,6 +261,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       _zeile('Lose Münzen', _euro(a.loseMuenzenCent)),
                       ..._loseMuenzenUnterzeilen(a),
                       _zeile('Umschläge', _euro(a.umschlaegeCent)),
+                      ..._umschlagUnterzeilen(a),
                       _zeile(
                         'Kassenbestand gesamt',
                         _euro(a.kassenbestandGesamtCent),
