@@ -128,64 +128,67 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     });
   }
 
+  Widget _baueFilterTaste() {
+    return TextButton(
+      onPressed: () => setState(() => _nurBenoetigte = !_nurBenoetigte),
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Text(
+        _nurBenoetigte ? 'alle anzeigen' : 'nur benötigte anzeigen',
+        style: const TextStyle(fontSize: 13),
+      ),
+    );
+  }
+
+  Widget _baueHandednessTaste() {
+    return TextButton(
+      onPressed: _toggleHandedness,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        minimumSize: Size.zero,
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 13, color: AppFarben.appBarRot),
+          children: _istLinkshaender
+              ? <TextSpan>[
+                  const TextSpan(
+                    text: 'Links',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  const TextSpan(text: '-/Rechtshänder'),
+                ]
+              : <TextSpan>[
+                  const TextSpan(text: 'Links-/'),
+                  const TextSpan(
+                    text: 'Rechts',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                  const TextSpan(text: 'händer'),
+                ],
+        ),
+      ),
+    );
+  }
+
   Widget _baueFilterZeile(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          TextButton(
-            onPressed: () =>
-                setState(() => _nurBenoetigte = !_nurBenoetigte),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: Text(
-              _nurBenoetigte ? 'alle anzeigen' : 'nur benötigte anzeigen',
-              style: const TextStyle(fontSize: 13),
-            ),
-          ),
-          TextButton(
-            onPressed: _toggleHandedness,
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
-            child: RichText(
-              text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppFarben.appBarRot,
-                ),
-                children: _istLinkshaender
-                    ? <TextSpan>[
-                        const TextSpan(
-                          text: 'Links',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                        const TextSpan(text: '-/Rechtshänder'),
-                      ]
-                    : <TextSpan>[
-                        const TextSpan(text: 'Links-/'),
-                        const TextSpan(
-                          text: 'Rechts',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.underline,
-                          ),
-                        ),
-                        const TextSpan(text: 'händer'),
-                      ],
-              ),
-            ),
-          ),
-        ],
+        children: _istLinkshaender
+            ? <Widget>[_baueHandednessTaste(), _baueFilterTaste()]
+            : <Widget>[_baueFilterTaste(), _baueHandednessTaste()],
       ),
     );
   }
