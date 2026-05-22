@@ -196,65 +196,97 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     );
   }
 
-  Widget _baueZeile(int realIndex) {
-    final Widget eingabefeld = SizedBox(
-      width: 72,
-      child: TextField(
-        controller: _mengeController[realIndex],
-        focusNode: _mengeFocusNode[realIndex],
+  Widget _baueTabelle() {
+    final Map<int, TableColumnWidth> spaltenBreiten = _istLinkshaender
+        ? const <int, TableColumnWidth>{
+            0: IntrinsicColumnWidth(), // Namen
+            1: FixedColumnWidth(8), // Abstand
+            2: FixedColumnWidth(72), // Eingabe
+          }
+        : const <int, TableColumnWidth>{
+            0: FixedColumnWidth(72), // Eingabe
+            1: FixedColumnWidth(8), // Abstand
+            2: IntrinsicColumnWidth(), // Namen
+          };
+
+    TableRow baueEintragZeile(int idx) {
+      final Widget feld = TextField(
+        controller: _mengeController[idx],
+        focusNode: _mengeFocusNode[idx],
         keyboardType: TextInputType.number,
-        textAlign:
-            _istLinkshaender ? TextAlign.left : TextAlign.right,
+        textAlign: _istLinkshaender ? TextAlign.left : TextAlign.right,
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.digitsOnly,
         ],
         decoration: const InputDecoration(
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 8,
-            vertical: 4,
-          ),
+          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         ),
         onChanged: (_) {
           setState(() {});
           _speichereMengen();
         },
-      ),
-    );
-    final Widget name = Text(
-      _getraenkeliste[realIndex],
-      style: const TextStyle(fontSize: 15),
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
+      );
+      final Widget name = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 3),
+        child: Text(
+          _getraenkeliste[idx],
+          style: const TextStyle(fontSize: 15),
+          textAlign:
+              _istLinkshaender ? TextAlign.right : TextAlign.left,
+        ),
+      );
+      final Widget feldZelle = Padding(
+        padding: const EdgeInsets.symmetric(vertical: 3),
+        child: feld,
+      );
+      return TableRow(
         children: _istLinkshaender
-            ? <Widget>[name, const SizedBox(width: 8), eingabefeld]
-            : <Widget>[eingabefeld, const SizedBox(width: 8), name],
-      ),
-    );
-  }
+            ? <Widget>[name, const SizedBox(), feldZelle]
+            : <Widget>[feldZelle, const SizedBox(), name],
+      );
+    }
 
-  Widget _baueGesamtZeile() {
-    final Widget zahl = SizedBox(
-      width: 72,
+    final Widget gesamtZahl = Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Text(
         _gesamtmenge.toString(),
         textAlign: _istLinkshaender ? TextAlign.left : TextAlign.right,
         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
       ),
     );
-    const Widget label = Text(
-      'Gesamt',
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-    );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: _istLinkshaender
-            ? <Widget>[label, const SizedBox(width: 8), zahl]
-            : <Widget>[zahl, const SizedBox(width: 8), label],
+    const Widget gesamtLabel = Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
+      child: Text(
+        'Gesamt',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
       ),
+    );
+    final TableRow gesamtZeile = TableRow(
+      children: _istLinkshaender
+          ? <Widget>[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Text(
+                  'Gesamt',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+              ),
+              const SizedBox(),
+              gesamtZahl,
+            ]
+          : <Widget>[gesamtZahl, const SizedBox(), gesamtLabel],
+    );
+
+    return Table(
+      columnWidths: spaltenBreiten,
+      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      children: <TableRow>[
+        for (final int idx in _gezeigteIndizes) baueEintragZeile(idx),
+        gesamtZeile,
+      ],
     );
   }
 
@@ -355,23 +387,14 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
                     padding: _istLinkshaender
-                        ? const EdgeInsets.fromLTRB(0, 4, 15, 4)
-                        : const EdgeInsets.fromLTRB(15, 4, 0, 4),
+                        ? const EdgeInsets.fromLTRB(0, 4, 40, 4)
+                        : const EdgeInsets.fromLTRB(40, 4, 0, 4),
                     child: Row(
                       mainAxisAlignment: _istLinkshaender
                           ? MainAxisAlignment.end
                           : MainAxisAlignment.start,
                       children: <Widget>[
-                        IntrinsicWidth(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              for (final int idx in _gezeigteIndizes)
-                                _baueZeile(idx),
-                              _baueGesamtZeile(),
-                            ],
-                          ),
-                        ),
+                        IntrinsicWidth(child: _baueTabelle()),
                       ],
                     ),
                   ),
