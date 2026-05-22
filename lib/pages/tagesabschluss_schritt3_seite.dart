@@ -362,17 +362,19 @@ class _TagesabschlussSchritt3SeiteState
         children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: <Widget>[
-                      Text(
-                        widget.argumente.kinoName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
+                      Expanded(
+                        child: Text(
+                          widget.argumente.kinoName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 4),
                       Text(
                         _deutschesDatum(
                           DatumsHelper.logischerAbrechnungsTag(),
