@@ -52,29 +52,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     ('coin_1c', '1 ct', 0),
   ];
 
-  static const Map<String, dynamic> _standardTestwerte = <String, dynamic>{
-    'stueckzahlen': <String, dynamic>{
-      'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65, 'note_5': 20,
-      'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0, 'roll_10c': 0,
-      'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
-    },
-    'loseMuenzenNachArtCent': <String, dynamic>{
-      'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900, 'coin_20c': 1340,
-      'coin_10c': 390, 'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
-    },
-    'umschlaege': <dynamic>[
-      <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
-      <String, dynamic>{'label': '', 'amountCents': 0},
-      <String, dynamic>{'label': '', 'amountCents': 0},
-    ],
-    'kinoSollCent': 110000,
-    'bistroSollCent': 52630,
-    'ausgabenCent': 0,
-    'ecBelegCent': 57820,
-    'differenzAnfangsbestandCent': 0,
-    'wechselgeldKino01Cent': 140000,
-  };
-
   static const int _umschlagSlots = 3;
 
   final TextEditingController _wgCtrl = TextEditingController();
@@ -190,7 +167,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
 
     final Map<String, dynamic>? s1Daten =
-        await LokalerSpeicher.ladeAutoFillSchritt1();
+        await LokalerSpeicher.ladeAutoFillSchritt1(_aktiveKinoId);
     if (!mounted) {
       return;
     }
@@ -324,11 +301,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         ),
       });
     }
-    await LokalerSpeicher.speichereAutoFillSchritt1(<String, dynamic>{
-      'stueckzahlen': stueckzahlen,
-      'loseMuenzenNachArtCent': loseMuenzen,
-      'umschlaege': umschlaege,
-    });
+    await LokalerSpeicher.speichereAutoFillSchritt1(
+      _aktiveKinoId,
+      <String, dynamic>{
+        'stueckzahlen': stueckzahlen,
+        'loseMuenzenNachArtCent': loseMuenzen,
+        'umschlaege': umschlaege,
+      },
+    );
   }
 
   Future<void> _speichereAutoFillSchritt2() async {
@@ -352,6 +332,68 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         ),
       },
     );
+  }
+
+  Map<String, dynamic> _kinoSchritt1Testwerte() {
+    switch (_aktiveKinoId) {
+      case 'kino_03':
+        return <String, dynamic>{
+          'stueckzahlen': <String, dynamic>{
+            'note_100': 0, 'note_50': 8, 'note_20': 7, 'note_10': 30,
+            'note_5': 14,
+            'roll_2e': 1, 'roll_1e': 1, 'roll_50c': 1, 'roll_20c': 0,
+            'roll_10c': 1, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+          },
+          'loseMuenzenNachArtCent': <String, dynamic>{
+            'coin_2e': 1400, 'coin_1e': 1800, 'coin_50c': 700,
+            'coin_20c': 680, 'coin_10c': 290,
+            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+          },
+          'umschlaege': <dynamic>[
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+          ],
+        };
+      case 'kino_04':
+        return <String, dynamic>{
+          'stueckzahlen': <String, dynamic>{
+            'note_100': 0, 'note_50': 1, 'note_20': 6, 'note_10': 9,
+            'note_5': 11,
+            'roll_2e': 2, 'roll_1e': 1, 'roll_50c': 1, 'roll_20c': 1,
+            'roll_10c': 1, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+          },
+          'loseMuenzenNachArtCent': <String, dynamic>{
+            'coin_2e': 2200, 'coin_1e': 2900, 'coin_50c': 1550,
+            'coin_20c': 360, 'coin_10c': 390,
+            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+          },
+          'umschlaege': <dynamic>[
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+          ],
+        };
+      default:
+        return <String, dynamic>{
+          'stueckzahlen': <String, dynamic>{
+            'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65,
+            'note_5': 20,
+            'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0,
+            'roll_10c': 0, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+          },
+          'loseMuenzenNachArtCent': <String, dynamic>{
+            'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900,
+            'coin_20c': 1340, 'coin_10c': 390,
+            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+          },
+          'umschlaege': <dynamic>[
+            <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+          ],
+        };
+    }
   }
 
   Map<String, dynamic> _kinoSchritt2Testwerte() {
@@ -395,15 +437,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _setzeStandardTestwerte() async {
+    final Map<String, dynamic> s1 = _kinoSchritt1Testwerte();
     final Map<String, dynamic> stMap =
-        _standardTestwerte['stueckzahlen'] as Map<String, dynamic>;
+        s1['stueckzahlen'] as Map<String, dynamic>;
     for (final String id in _s1StueckzahlCtrl.keys) {
       final int wert = (stMap[id] as num?)?.toInt() ?? 0;
       _s1StueckzahlCtrl[id]!.text = wert != 0 ? wert.toString() : '';
     }
 
     final Map<String, dynamic> lmMap =
-        _standardTestwerte['loseMuenzenNachArtCent'] as Map<String, dynamic>;
+        s1['loseMuenzenNachArtCent'] as Map<String, dynamic>;
     for (final String id in _s1LoseMuenzCtrl.keys) {
       final int cent = (lmMap[id] as num?)?.toInt() ?? 0;
       _s1LoseMuenzCtrl[id]!.text = cent != 0
@@ -412,7 +455,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
 
     final List<dynamic> umschlagListe =
-        _standardTestwerte['umschlaege'] as List<dynamic>;
+        s1['umschlaege'] as List<dynamic>;
     for (int i = 0; i < _umschlagSlots; i++) {
       if (i < umschlagListe.length) {
         final Map<String, dynamic> slot =

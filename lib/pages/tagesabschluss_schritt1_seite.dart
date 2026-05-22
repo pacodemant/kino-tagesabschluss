@@ -300,7 +300,7 @@ class _TagesabschlussSchritt1SeiteState
 
   Future<void> _autoFillDev() async {
     final Map<String, dynamic>? gespeicherteDaten =
-        await LokalerSpeicher.ladeAutoFillSchritt1();
+        await LokalerSpeicher.ladeAutoFillSchritt1(widget.kinoId);
     if (!mounted) {
       return;
     }

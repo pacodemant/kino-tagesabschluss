@@ -262,27 +262,73 @@ class LokalerSpeicher {
     await speicher.remove(schritt2EntwurfKey(kinoId));
   }
 
-  static Future<Map<String, dynamic>?> ladeAutoFillSchritt1() async {
+  static Map<String, dynamic> _schritt1StandardWerte(String kinoId) {
+    switch (kinoId) {
+      case 'kino_03':
+        return <String, dynamic>{
+          'stueckzahlen': <String, dynamic>{
+            'note_100': 0, 'note_50': 8, 'note_20': 7, 'note_10': 30,
+            'note_5': 14,
+            'roll_2e': 1, 'roll_1e': 1, 'roll_50c': 1, 'roll_20c': 0,
+            'roll_10c': 1, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+          },
+          'loseMuenzenNachArtCent': <String, dynamic>{
+            'coin_2e': 1400, 'coin_1e': 1800, 'coin_50c': 700,
+            'coin_20c': 680, 'coin_10c': 290,
+            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+          },
+          'umschlaege': <dynamic>[
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+          ],
+        };
+      case 'kino_04':
+        return <String, dynamic>{
+          'stueckzahlen': <String, dynamic>{
+            'note_100': 0, 'note_50': 1, 'note_20': 6, 'note_10': 9,
+            'note_5': 11,
+            'roll_2e': 2, 'roll_1e': 1, 'roll_50c': 1, 'roll_20c': 1,
+            'roll_10c': 1, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+          },
+          'loseMuenzenNachArtCent': <String, dynamic>{
+            'coin_2e': 2200, 'coin_1e': 2900, 'coin_50c': 1550,
+            'coin_20c': 360, 'coin_10c': 390,
+            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+          },
+          'umschlaege': <dynamic>[
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+          ],
+        };
+      default:
+        return <String, dynamic>{
+          'stueckzahlen': <String, dynamic>{
+            'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65,
+            'note_5': 20,
+            'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0,
+            'roll_10c': 0, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+          },
+          'loseMuenzenNachArtCent': <String, dynamic>{
+            'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900,
+            'coin_20c': 1340, 'coin_10c': 390,
+            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+          },
+          'umschlaege': <dynamic>[
+            <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+            <String, dynamic>{'label': '', 'amountCents': 0},
+          ],
+        };
+    }
+  }
+
+  static Future<Map<String, dynamic>?> ladeAutoFillSchritt1(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? rohwert = speicher.getString('dev_autofill_schritt1');
+    final String? rohwert = speicher.getString('dev_autofill_schritt1_$kinoId');
     if (rohwert == null) {
-      return <String, dynamic>{
-        'stueckzahlen': <String, dynamic>{
-          'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65,
-          'note_5': 20,
-          'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0,
-          'roll_10c': 0, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
-        },
-        'loseMuenzenNachArtCent': <String, dynamic>{
-          'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900, 'coin_20c': 1340,
-          'coin_10c': 390, 'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
-        },
-        'umschlaege': <dynamic>[
-          <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
-          <String, dynamic>{'label': '', 'amountCents': 0},
-          <String, dynamic>{'label': '', 'amountCents': 0},
-        ],
-      };
+      return _schritt1StandardWerte(kinoId);
     }
     try {
       return jsonDecode(rohwert) as Map<String, dynamic>;
@@ -292,10 +338,11 @@ class LokalerSpeicher {
   }
 
   static Future<void> speichereAutoFillSchritt1(
+    String kinoId,
     Map<String, dynamic> daten,
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString('dev_autofill_schritt1', jsonEncode(daten));
+    await speicher.setString('dev_autofill_schritt1_$kinoId', jsonEncode(daten));
   }
 
   static Map<String, dynamic> _schritt2StandardWerte(String kinoId) {
