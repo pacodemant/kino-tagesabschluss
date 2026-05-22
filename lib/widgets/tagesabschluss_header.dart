@@ -25,7 +25,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
   final double toolbarHeight;
 
   // Ermöglicht bei Bedarf ein explizites Ueberschreiben der Unterzeile.
-  String get _standardUntertitel => '$schrittNummer/$gesamtSchritte · $schrittTitel';
+  String get _standardUntertitel => '$schrittTitel ($schrittNummer/$gesamtSchritte)';
 
   @override
   Size get preferredSize => Size.fromHeight(toolbarHeight);

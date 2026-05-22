@@ -23,11 +23,11 @@ class Schritt1HeaderSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(titel),
             Text(
               untertitel,
               style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
             ),
+            Text(titel),
           ],
         ),
       ),
