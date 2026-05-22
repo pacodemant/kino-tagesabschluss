@@ -257,9 +257,12 @@ class _TagesabschlussSchritt3SeiteState
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: <Widget>[
-          Expanded(
-            child: Text(label, style: TextStyle(fontWeight: gewicht)),
+          Text(label, style: TextStyle(fontWeight: gewicht)),
+          const SizedBox(width: 4),
+          const Expanded(
+            child: CustomPaint(painter: _FuehrungsLiniePainter()),
           ),
+          const SizedBox(width: 4),
           Text(
             wert,
             style: GoogleFonts.caveat(
@@ -510,4 +513,27 @@ class _TagesabschlussSchritt3SeiteState
             ),
     );
   }
+}
+
+class _FuehrungsLiniePainter extends CustomPainter {
+  const _FuehrungsLiniePainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint paint = Paint()
+      ..color = const Color(0xFFCCCCCC)
+      ..strokeWidth = 1.0
+      ..strokeCap = StrokeCap.round;
+    const double dash = 2.0;
+    const double gap = 4.0;
+    final double y = size.height / 2;
+    double x = 0;
+    while (x < size.width) {
+      canvas.drawLine(Offset(x, y), Offset(x + dash, y), paint);
+      x += dash + gap;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
