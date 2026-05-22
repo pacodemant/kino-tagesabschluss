@@ -102,6 +102,13 @@ class StartmenueSeite extends StatelessWidget {
               child: const Text('Verlauf'),
             ),
             const Spacer(),
+            const Center(
+              child: Text(
+                'Web App @ GitHub:',
+                style: TextStyle(fontSize: 13, color: Colors.black54),
+              ),
+            ),
+            const SizedBox(height: 4),
             Center(
               child: Image.asset(
                 'assets/images/qr_webapp_github.png',
