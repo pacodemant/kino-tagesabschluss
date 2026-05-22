@@ -26,10 +26,13 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
   final VoidCallback? onTap;
   final double toolbarHeight;
 
-  // Ermöglicht bei Bedarf ein explizites Ueberschreiben der Unterzeile.
-  String get _standardUntertitel => schrittNummer == 0
-      ? schrittTitel
-      : '$schrittTitel ($schrittNummer/$gesamtSchritte)';
+  // Obere Zeile (bold): nur der Titel ohne Schrittnummer.
+  String get _standardUntertitel => schrittTitel;
+
+  // Untere Zeile (klein): Kinoname + Schrittnummer wenn vorhanden.
+  String get _titelUnten => schrittNummer == 0
+      ? 'Tagesabschluss ${kinoName.toUpperCase()}'
+      : 'Tagesabschluss ${kinoName.toUpperCase()} ($schrittNummer/$gesamtSchritte)';
 
   @override
   Size get preferredSize => Size.fromHeight(toolbarHeight);
@@ -44,7 +47,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
       titleSpacing: 8,
       title: Schritt1HeaderSection(
         onTap: onTap ?? () {},
-        titel: 'Tagesabschluss ${kinoName.toUpperCase()}',
+        titel: _titelUnten,
         untertitel: untertitel,
       ),
       actions: actions,

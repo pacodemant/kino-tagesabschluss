@@ -870,7 +870,7 @@ class _TagesabschlussSchritt2SeiteState
               const ListTile(
                 leading: Icon(Icons.check_circle),
                 title: Text(
-                  '2/4 · Einnahmen/Abschluss',
+                  '2/4 · Einnahmen',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
                 subtitle: Text('Aktueller Schritt'),
@@ -902,7 +902,7 @@ class _TagesabschlussSchritt2SeiteState
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
-        schrittTitel: 'Einnahmen/Abschluss',
+        schrittTitel: 'Einnahmen',
         kinoName: widget.kinoName,
         onTap: _zeigeSchrittSlider,
         actions: <Widget>[

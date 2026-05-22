@@ -238,7 +238,7 @@ class Schritt1OrchestrierungHelper {
               ),
               ListTile(
                 leading: const Icon(Icons.arrow_forward),
-                title: const Text('2/4 · Einnahmen/Abschluss'),
+                title: const Text('2/4 · Einnahmen'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   weiterZuSchritt2();
