@@ -657,7 +657,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _speichereGetraenkeliste() async {
-    await LokalerSpeicher.speichereGetraenkeliste('kino_01', _getraenkeliste);
+    await GetraenkeConfigService().saveLocal(_getraenkeliste);
   }
 
   void _fuegeGetraenkHinzu() {

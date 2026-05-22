@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -43,7 +44,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
 
   Future<void> _ladeAlles() async {
     final List<String> liste =
-        await LokalerSpeicher.ladeGetraenkeliste('kino_01');
+        await GetraenkeConfigService().loadLocal();
     if (!mounted) return;
     final Map<String, dynamic>? gespeichert =
         await LokalerSpeicher.ladeGetraenkeMengen('kino_01');
