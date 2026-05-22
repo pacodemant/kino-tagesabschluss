@@ -11,12 +11,14 @@ class StueckelungVorschlagArgumente {
     required this.barBestandAbzglWechselgeldCent,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
+    this.kinoName = 'Schauburg',
     this.onAbschliessen,
   });
 
   final int barBestandAbzglWechselgeldCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
+  final String kinoName;
   final VoidCallback? onAbschliessen;
 }
 
@@ -314,10 +316,11 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     final List<_ErgebnisZeile> zeilen = _berechneErgebnis();
 
     return TagesabschlussScaffold(
-      appBar: const TagesabschlussHeader(
+      appBar: TagesabschlussHeader(
         schrittNummer: 4,
         schrittTitel: 'Stückelung Barumsatz',
         gesamtSchritte: 4,
+        kinoName: argumente.kinoName,
       ),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),

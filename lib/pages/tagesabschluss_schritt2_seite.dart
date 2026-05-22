@@ -857,6 +857,7 @@ class _TagesabschlussSchritt2SeiteState
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
         schrittTitel: 'Einnahmen/Abschluss',
+        kinoName: widget.kinoName,
         actions: <Widget>[
           TextButton(
             onPressed: _bestaetigeUndLeereEingaben,

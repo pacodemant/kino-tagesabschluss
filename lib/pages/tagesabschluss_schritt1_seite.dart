@@ -887,6 +887,7 @@ class _TagesabschlussSchritt1SeiteState
       appBar: TagesabschlussHeader(
         schrittNummer: 1,
         schrittTitel: 'Bargeldzählung',
+        kinoName: widget.kinoName,
         onTap: _zeigeSchrittAuswahlBottomSheet,
         actions: <Widget>[
           if (_devModusAktiv)

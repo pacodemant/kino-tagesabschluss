@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -274,6 +275,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       appBar: TagesabschlussHeader(
         schrittNummer: 0,
         schrittTitel: 'Getränke auffüllen',
+        kinoName: KinoRepository.nachId(widget.kinoId)?.name ?? 'Schauburg',
         actions: <Widget>[
           TextButton(
             onPressed: _leereAlleFelder,

@@ -236,6 +236,7 @@ class _TagesabschlussSchritt3SeiteState
             _abschlussVorschau.barBestandAbzglWechselgeldCent,
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
+        kinoName: widget.argumente.kinoName,
         onAbschliessen: _zeigeAbschlussDialog,
       ),
     );
@@ -282,9 +283,10 @@ class _TagesabschlussSchritt3SeiteState
 
     return TagesabschlussScaffold(
       backgroundColor: Colors.white,
-      appBar: const TagesabschlussHeader(
+      appBar: TagesabschlussHeader(
         schrittNummer: 3,
         schrittTitel: 'Übertrag auf Umschlag',
+        kinoName: widget.argumente.kinoName,
       ),
       footerChild: SizedBox(
         height: 36,

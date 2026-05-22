@@ -810,6 +810,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       appBar: TagesabschlussHeader(
         schrittNummer: 0,
         schrittTitel: 'Wechselgeld zählen',
+        kinoName: KinoRepository.nachId(widget.kinoId)?.name ?? 'Schauburg',
         actions: <Widget>[
           TextButton(
             onPressed: _bestaetigeUndLeere,

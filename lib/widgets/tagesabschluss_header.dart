@@ -7,6 +7,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
     super.key,
     required this.schrittNummer,
     required this.schrittTitel,
+    this.kinoName = 'Schauburg',
     this.gesamtSchritte = 4,
     this.subtitle,
     this.actions,
@@ -18,6 +19,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
   // Die Schrittzeile wird standardmaessig als "x/4 · Titel" aufgebaut.
   final int schrittNummer;
   final int gesamtSchritte;
+  final String kinoName;
   final String schrittTitel;
   final String? subtitle;
   final List<Widget>? actions;
@@ -42,7 +44,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
       titleSpacing: 8,
       title: Schritt1HeaderSection(
         onTap: onTap ?? () {},
-        titel: 'Tagesabschluss SCHAUBURG',
+        titel: 'Tagesabschluss ${kinoName.toUpperCase()}',
         untertitel: untertitel,
       ),
       actions: actions,
