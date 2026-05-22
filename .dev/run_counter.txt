@@ -1,4 +1,4 @@
-last_run: 193
-next_run: 194
-last_run_title: R193: Zeitgrenze 6 Uhr, Wechselgeld-Key datumbasiert
-last_commit: pending
+last_run: 194
+next_run: 195
+last_run_title: R194: Haus-Button links im Footer aller Unterseiten
+last_commit: 854bbdf
