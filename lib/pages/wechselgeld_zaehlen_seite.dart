@@ -753,7 +753,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         _kassenbestandGesamtCent == _wechselgeldSollwertCent;
     final Color hintergrundFarbe = hatUebereinstimmung
         ? Colors.green.shade50
-        : Theme.of(context).colorScheme.surfaceContainerHighest;
+        : AppFarben.seitenHintergrund;
 
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,

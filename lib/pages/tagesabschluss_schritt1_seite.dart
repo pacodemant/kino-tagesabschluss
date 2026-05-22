@@ -883,7 +883,7 @@ class _TagesabschlussSchritt1SeiteState
     );
 
     return TagesabschlussScaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
         schrittNummer: 1,
         schrittTitel: 'Bargeldzählung',

@@ -336,7 +336,7 @@ class _TagesabschlussSchritt3SeiteState
     final bool buttonGesperrt = _autoSaveLaeuft;
 
     return TagesabschlussScaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
         schrittNummer: 3,
         schrittTitel: 'Übertrag auf Umschlag',

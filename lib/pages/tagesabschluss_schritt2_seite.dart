@@ -899,7 +899,7 @@ class _TagesabschlussSchritt2SeiteState
   Widget build(BuildContext context) {
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
     return TagesabschlussScaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
         schrittTitel: 'Einnahmen',

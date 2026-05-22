@@ -49,6 +49,7 @@ class MeineApp extends StatelessWidget {
       title: 'Schauburg Tagesabschluss',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        scaffoldBackgroundColor: AppFarben.seitenHintergrund,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             backgroundColor: AppFarben.appBarRot,

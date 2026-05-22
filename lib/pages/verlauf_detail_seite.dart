@@ -238,7 +238,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     final double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,

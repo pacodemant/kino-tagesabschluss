@@ -928,7 +928,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
