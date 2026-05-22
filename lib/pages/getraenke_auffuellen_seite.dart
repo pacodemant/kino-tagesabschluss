@@ -7,9 +7,11 @@ import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class GetraenkeAuffuellenSeite extends StatefulWidget {
-  const GetraenkeAuffuellenSeite({super.key});
+  const GetraenkeAuffuellenSeite({super.key, required this.kinoId});
 
   static const String routenName = '/getraenke-auffuellen';
+
+  final String kinoId;
 
   @override
   State<GetraenkeAuffuellenSeite> createState() =>
@@ -47,7 +49,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     final List<String> liste = await GetraenkeConfigService().loadLocal();
     if (!mounted) return;
     final Map<String, dynamic>? gespeichert =
-        await LokalerSpeicher.ladeGetraenkeMengen('kino_01');
+        await LokalerSpeicher.ladeGetraenkeMengen(widget.kinoId);
     if (!mounted) return;
     final List<dynamic>? mengenRoh =
         gespeichert?['mengen'] as List<dynamic>?;
@@ -105,7 +107,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     final List<String> mengen =
         _mengeController.map((TextEditingController c) => c.text).toList();
     LokalerSpeicher.speichereGetraenkeMengen(
-      'kino_01',
+      widget.kinoId,
       <String, dynamic>{'mengen': mengen},
     );
   }

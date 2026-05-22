@@ -34,11 +34,17 @@ class StartmenueSeite extends StatelessWidget {
   }
 
   void _oeffneWechselgeldZaehlen(BuildContext context) {
-    Navigator.of(context).pushNamed(WechselgeldZaehlenSeite.routenName);
+    Navigator.of(context).pushNamed(
+      WechselgeldZaehlenSeite.routenName,
+      arguments: kino.id,
+    );
   }
 
   void _oeffneGetraenkeAuffuellen(BuildContext context) {
-    Navigator.of(context).pushNamed(GetraenkeAuffuellenSeite.routenName);
+    Navigator.of(context).pushNamed(
+      GetraenkeAuffuellenSeite.routenName,
+      arguments: kino.id,
+    );
   }
 
   @override
@@ -71,12 +77,14 @@ class StartmenueSeite extends StatelessWidget {
               onPressed: () => _oeffneTagesabschlussSchritt1(context),
               child: const Text('Tagesabschluss'),
             ),
-            if (kino.id == 'kino_01') ...<Widget>[
+            if (kino.hatWechselgeld) ...<Widget>[
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => _oeffneWechselgeldZaehlen(context),
                 child: const Text('Wechselgeld zählen'),
               ),
+            ],
+            if (kino.hatGetraenke) ...<Widget>[
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => _oeffneGetraenkeAuffuellen(context),

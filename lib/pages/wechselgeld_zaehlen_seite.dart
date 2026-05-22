@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
@@ -18,9 +20,11 @@ import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class WechselgeldZaehlenSeite extends StatefulWidget {
-  const WechselgeldZaehlenSeite({super.key});
+  const WechselgeldZaehlenSeite({super.key, required this.kinoId});
 
   static const String routenName = '/wechselgeld-zaehlen';
+
+  final String kinoId;
 
   @override
   State<WechselgeldZaehlenSeite> createState() =>
@@ -28,7 +32,6 @@ class WechselgeldZaehlenSeite extends StatefulWidget {
 }
 
 class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
-  static const String _kinoId = 'kino_01';
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
@@ -178,10 +181,16 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
   }
 
   Future<void> _ladeInitialeDaten() async {
-    final int geladenerSollwert =
-        await LokalerSpeicher.ladeWechselgeldSollwertCent(_kinoId);
+    int geladenerSollwert =
+        await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
+    if (geladenerSollwert == 0) {
+      final String kinoName =
+          KinoRepository.nachId(widget.kinoId)?.name ?? '';
+      geladenerSollwert =
+          await WechselgeldConfigService().getWechselgeldBetrag(kinoName);
+    }
     final Map<String, dynamic>? entwurf =
-        await LokalerSpeicher.ladeWechselgeldZaehlEntwurf(_kinoId);
+        await LokalerSpeicher.ladeWechselgeldZaehlEntwurf(widget.kinoId);
 
     if (!mounted) {
       return;
@@ -235,7 +244,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
 
   Future<void> _speichereEntwurf() async {
     await LokalerSpeicher.speichereWechselgeldZaehlEntwurf(
-      _kinoId,
+      widget.kinoId,
       <String, dynamic>{
         'stueckzahlen': Map<String, int>.from(_stueckzahlen),
         'loseMuenzenNachArtCent': Map<String, int>.from(_loseMuenzenNachArtCent),
@@ -320,7 +329,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     Navigator.of(context).pushNamedAndRemoveUntil(
       StartmenueSeite.routenName,
       (Route<dynamic> route) => false,
-      arguments: _kinoId,
+      arguments: widget.kinoId,
     );
   }
 
@@ -668,12 +677,12 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       _dialogGezeigt = false;
     });
 
-    await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(_kinoId);
+    await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
   }
 
   Future<void> _ladeRollenAusErsterZaehlung() async {
     final KassenstandEntwurf? entwurf =
-        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(_kinoId);
+        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(widget.kinoId);
     if (!mounted) return;
     if (entwurf == null) {
       ScaffoldMessenger.of(context)

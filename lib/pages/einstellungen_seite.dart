@@ -408,7 +408,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     final int wgCent = _standardTestwerte['wechselgeldKino01Cent'] as int;
     final int kinoIndex =
-        KinoRepository.kinos.indexWhere((Kino k) => k.id == 'kino_01');
+        KinoRepository.kinos.indexWhere((Kino k) => k.hatWechselgeld);
     if (kinoIndex >= 0) {
       _controllers[kinoIndex].text =
           TagesabschlussFormatierung.formatiereEuroEingabe(wgCent);
@@ -416,7 +416,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     await _speichereAutoFillSchritt1();
     await _speichereAutoFillSchritt2();
-    await LokalerSpeicher.speichereWechselgeldSollwertCent('kino_01', wgCent);
+    if (kinoIndex >= 0) {
+      await LokalerSpeicher.speichereWechselgeldSollwertCent(
+        KinoRepository.kinos[kinoIndex].id,
+        wgCent,
+      );
+    }
 
     if (!mounted) {
       return;
@@ -832,7 +837,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
           ),
           const SizedBox(height: 4),
-          // später: if (aktuellesKinoId == 'kino_01')
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Card(

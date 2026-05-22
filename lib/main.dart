@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
+import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
   await initializeDateFormatting('de_DE', null);
 
   await GetraenkeConfigService().initOnAppStart();
+  await WechselgeldConfigService().initOnAppStart();
 
   runApp(const MeineApp());
 }
@@ -202,15 +204,17 @@ class MeineApp extends StatelessWidget {
         }
 
         if (settings.name == WechselgeldZaehlenSeite.routenName) {
+          final String kinoId = (settings.arguments as String?) ?? '';
           return MaterialPageRoute<void>(
-            builder: (_) => const WechselgeldZaehlenSeite(),
+            builder: (_) => WechselgeldZaehlenSeite(kinoId: kinoId),
             settings: settings,
           );
         }
 
         if (settings.name == GetraenkeAuffuellenSeite.routenName) {
+          final String kinoId = (settings.arguments as String?) ?? '';
           return MaterialPageRoute<void>(
-            builder: (_) => const GetraenkeAuffuellenSeite(),
+            builder: (_) => GetraenkeAuffuellenSeite(kinoId: kinoId),
             settings: settings,
           );
         }

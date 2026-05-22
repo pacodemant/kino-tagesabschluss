@@ -6,6 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetraenkeConfigService {
+  const GetraenkeConfigService({this.kinoId = 'kino_01'});
+
+  final String kinoId;
+
   static const String _remoteUrl =
       'https://raw.githubusercontent.com/pacodemant/kino-tagesabschluss/master/config/getraenke_schauburg.txt';
   static const String _localKey = 'getraenke_schauburg';
