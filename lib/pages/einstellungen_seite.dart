@@ -4,6 +4,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
+import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
@@ -102,10 +103,13 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _getraenkelisteAufgeklappt = false;
   bool _testwertAufgeklappt = false;
   bool _linkshaenderModus = false;
+  bool _updateVerfuegbar = false;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
       <TextEditingController>[];
+  final TextEditingController _neuesGetraenkCtrl = TextEditingController();
+  late final FocusNode _neuesGetraenkFocus;
 
   @override
   void initState() {
@@ -123,6 +127,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final (String id, _, _) in _s1LoseMuenzFelder) {
       _s1LoseMuenzCtrl[id] = TextEditingController();
     }
+    _neuesGetraenkFocus = FocusNode();
+    _neuesGetraenkFocus.addListener(() {
+      if (!_neuesGetraenkFocus.hasFocus) {
+        _fuegeNeuesGetraenkEin();
+      }
+    });
     _ladeWerte();
   }
 
@@ -151,6 +161,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final TextEditingController c in _getraenkeController) {
       c.dispose();
     }
+    _neuesGetraenkCtrl.dispose();
+    _neuesGetraenkFocus.dispose();
     super.dispose();
   }
 
@@ -186,7 +198,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _setzeAutoFillSchritt2Controller(s2Daten);
 
     final List<String> getraenkeliste =
-        await LokalerSpeicher.ladeGetraenkeliste('kino_01');
+        await GetraenkeConfigService().loadLocal();
+    if (!mounted) {
+      return;
+    }
+    final bool updateVerfuegbar =
+        await GetraenkeConfigService().isUpdateAvailable();
     if (!mounted) {
       return;
     }
@@ -204,6 +221,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     setState(() {
       _devModusAktiv = devAktiv;
       _getraenkeliste = getraenkeliste;
+      _updateVerfuegbar = updateVerfuegbar;
       _linkshaenderModus = linkshaender;
       _geladen = true;
     });
@@ -647,6 +665,17 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _getraenkeliste.add('');
       _getraenkeController.add(TextEditingController());
     });
+    _speichereGetraenkeliste();
+  }
+
+  void _fuegeNeuesGetraenkEin() {
+    final String name = _neuesGetraenkCtrl.text.trim();
+    if (name.isEmpty) return;
+    setState(() {
+      _getraenkeliste.add(name);
+      _getraenkeController.add(TextEditingController(text: name));
+    });
+    _neuesGetraenkCtrl.clear();
     _speichereGetraenkeliste();
   }
 
