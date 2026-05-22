@@ -6,6 +6,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/widgets/haus_button.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -235,6 +236,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         '${a.datum.day.toString().padLeft(2, '0')}';
     final bool istHeute = isoDatum == DatumsHelper.logischesIsoDatum();
 
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -242,6 +244,27 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         foregroundColor: Colors.white,
         title: Text(
           '${_deutschesDatum(a.datum)} – ${a.kinoName}',
+        ),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.black87,
+          border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Color(0x4D000000),
+              offset: Offset(0, -2),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
+        child: const SizedBox(
+          height: 36,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: HausButton(),
+          ),
         ),
       ),
       body: Column(

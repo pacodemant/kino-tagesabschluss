@@ -6,6 +6,7 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/widgets/haus_button.dart';
 
 class VerlaufSeite extends StatefulWidget {
   const VerlaufSeite({super.key, required this.kinoId});
@@ -95,11 +96,33 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
 
   @override
   Widget build(BuildContext context) {
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: Text('Verlauf – $_kinoName'),
+      ),
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.black87,
+          border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Color(0x4D000000),
+              offset: Offset(0, -2),
+              blurRadius: 12,
+            ),
+          ],
+        ),
+        padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
+        child: const SizedBox(
+          height: 36,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: HausButton(),
+          ),
+        ),
       ),
       body: !_geladen
           ? const Center(child: CircularProgressIndicator())

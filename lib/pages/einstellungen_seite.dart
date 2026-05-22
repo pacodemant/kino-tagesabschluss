@@ -8,6 +8,7 @@ import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/haus_button.dart';
 
 class EinstellungenSeite extends StatefulWidget {
   const EinstellungenSeite({super.key});
@@ -947,6 +948,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           ],
         ),
       ),
+      bottomNavigationBar: _hausFooter(context),
       body: ListView(
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -1109,6 +1111,31 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _hausFooter(BuildContext context) {
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.black87,
+        border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Color(0x4D000000),
+            offset: Offset(0, -2),
+            blurRadius: 12,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
+      child: const SizedBox(
+        height: 36,
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: HausButton(),
+        ),
       ),
     );
   }

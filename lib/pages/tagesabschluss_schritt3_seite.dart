@@ -296,7 +296,10 @@ class _TagesabschlussSchritt3SeiteState
               child: ElevatedButton(
                 onPressed: _navigiereZuSchritt4,
                 style: AppFarben.footerButtonStyle,
-                child: const Text('Stückelung Barumsatz'),
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text('Stückelung Barumsatz'),
+                ),
               ),
             ),
           ],

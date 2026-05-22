@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/haus_button.dart';
 
 class TagesabschlussScaffold extends StatelessWidget {
   const TagesabschlussScaffold({
@@ -10,6 +11,7 @@ class TagesabschlussScaffold extends StatelessWidget {
     this.actions,
     this.backgroundColor,
     this.appBar,
+    this.zeigeHausButton = true,
   });
 
   final String title;
@@ -19,6 +21,7 @@ class TagesabschlussScaffold extends StatelessWidget {
   final Color? backgroundColor;
   // Optionaler Custom-AppBar; wenn gesetzt, wird der Default-AppBar nicht gebaut.
   final PreferredSizeWidget? appBar;
+  final bool zeigeHausButton;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,8 @@ class TagesabschlussScaffold extends StatelessWidget {
     final bool tastaturOffen = mediaQuery.viewInsets.bottom > 0;
     final double footerBottomPadding =
         tastaturOffen ? 8.0 : mediaQuery.padding.bottom;
+
+    final bool zeigeFooter = zeigeHausButton || footerChild != null;
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -42,7 +47,7 @@ class TagesabschlussScaffold extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Expanded(child: child),
-          if (footerChild != null)
+          if (zeigeFooter)
             Container(
               decoration: const BoxDecoration(
                 color: Colors.black87,
@@ -56,7 +61,19 @@ class TagesabschlussScaffold extends StatelessWidget {
                 ],
               ),
               padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + footerBottomPadding),
-              child: footerChild,
+              child: SizedBox(
+                height: 36,
+                child: Row(
+                  children: <Widget>[
+                    if (zeigeHausButton) ...<Widget>[
+                      const HausButton(),
+                      const SizedBox(width: 8),
+                    ],
+                    if (footerChild != null)
+                      Expanded(child: footerChild!),
+                  ],
+                ),
+              ),
             ),
         ],
       ),

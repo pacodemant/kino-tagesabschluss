@@ -823,31 +823,22 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
           const SizedBox(width: 8),
         ],
       ),
-      footerChild: SizedBox(
-        height: 36,
-        child: Row(
-          children: <Widget>[
-            if (tastaturOffen) ...<Widget>[
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _weiterZumNaechstenFeld,
-                  style: AppFarben.footerButtonStyle,
-                  child: const Text('nächstes Feld'),
-                ),
+      footerChild: tastaturOffen
+          ? SizedBox(
+              height: 36,
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _weiterZumNaechstenFeld,
+                      style: AppFarben.footerButtonStyle,
+                      child: const Text('nächstes Feld'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-            ],
-            Expanded(
-              child: ElevatedButton(
-                onPressed: _zurueckZurStartseite,
-                child: Text(
-                  'Startseite ${KinoRepository.nachId(widget.kinoId)?.kuerzel ?? ''}',
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+            )
+          : null,
       child: Schritt1BodyContent(
         scrollController: _scrollController,
         devToolsStickySichtbar: false,
