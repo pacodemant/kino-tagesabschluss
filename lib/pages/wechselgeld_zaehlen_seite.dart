@@ -800,8 +800,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       backgroundColor: hintergrundFarbe,
       appBar: TagesabschlussHeader(
         schrittNummer: 0,
-        schrittTitel: '',
-        subtitle: 'Wechselgeld zählen',
+        schrittTitel: 'Wechselgeld zählen',
         actions: <Widget>[
           TextButton(
             onPressed: _bestaetigeUndLeere,

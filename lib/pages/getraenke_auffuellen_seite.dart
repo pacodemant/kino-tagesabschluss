@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class GetraenkeAuffuellenSeite extends StatefulWidget {
@@ -95,7 +96,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     }
 
     return TagesabschlussScaffold(
-      title: 'Getränke auffüllen',
+      appBar: const TagesabschlussHeader(
+        schrittNummer: 0,
+        schrittTitel: 'Getränke auffüllen',
+      ),
       footerChild: SizedBox(
         height: 36,
         child: Row(

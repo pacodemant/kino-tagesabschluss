@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
@@ -281,7 +282,10 @@ class _TagesabschlussSchritt3SeiteState
 
     return TagesabschlussScaffold(
       backgroundColor: Colors.white,
-      title: 'Übertrag auf Umschlag',
+      appBar: const TagesabschlussHeader(
+        schrittNummer: 3,
+        schrittTitel: 'Übertrag auf Umschlag',
+      ),
       footerChild: SizedBox(
         height: 36,
         child: Row(

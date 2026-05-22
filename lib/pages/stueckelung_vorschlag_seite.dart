@@ -316,7 +316,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     return TagesabschlussScaffold(
       appBar: const TagesabschlussHeader(
         schrittNummer: 4,
-        schrittTitel: 'Stückelungsvorschlag',
+        schrittTitel: 'Stückelung Barumsatz',
         gesamtSchritte: 4,
       ),
       child: ListView(
