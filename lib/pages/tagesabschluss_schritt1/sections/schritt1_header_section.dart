@@ -25,9 +25,12 @@ class Schritt1HeaderSection extends StatelessWidget {
           children: <Widget>[
             Text(
               untertitel,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
-            Text(titel),
+            Text(
+              titel,
+              style: const TextStyle(fontSize: 14),
+            ),
           ],
         ),
       ),
