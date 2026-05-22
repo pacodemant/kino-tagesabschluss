@@ -1,4 +1,4 @@
-last_run: 182
-next_run: 183
-last_run_title: R182: Toggle-Button Geldrollenanzahl übernehmen/löschen auf Wechselgeld-Seite
-last_commit: c9b806d
+last_run: 183
+next_run: 184
+last_run_title: R183: AppBar-Titel getauscht, Tagesabschluss SCHAUBURG oben
+last_commit: 8694af1
