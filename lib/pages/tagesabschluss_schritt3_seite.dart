@@ -263,9 +263,10 @@ class _TagesabschlussSchritt3SeiteState
           Text(
             wert,
             style: GoogleFonts.caveat(
-              fontSize: 22,
+              fontSize: 26,
               fontWeight: gewicht,
               color: farbe,
+              height: 1.0,
             ),
           ),
         ],
@@ -380,8 +381,9 @@ class _TagesabschlussSchritt3SeiteState
                           DatumsHelper.logischerAbrechnungsTag(),
                         ),
                         style: GoogleFonts.caveat(
-                          fontSize: 22,
+                          fontSize: 26,
                           fontWeight: FontWeight.w500,
+                          height: 1.0,
                         ),
                       ),
                     ],
