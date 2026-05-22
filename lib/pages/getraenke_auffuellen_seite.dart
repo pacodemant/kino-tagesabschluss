@@ -218,9 +218,12 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            _getraenkeliste[realIndex],
-            style: const TextStyle(fontSize: 15),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 160),
+            child: Text(
+              _getraenkeliste[realIndex],
+              style: const TextStyle(fontSize: 15),
+            ),
           ),
         ],
       ),
