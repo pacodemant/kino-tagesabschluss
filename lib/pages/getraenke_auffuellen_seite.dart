@@ -85,6 +85,14 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     return summe;
   }
 
+  void _leereAlleFelder() {
+    for (final TextEditingController c in _mengeController) {
+      c.clear();
+    }
+    setState(() {});
+    _speichereMengen();
+  }
+
   void _springeZumNaechstfeld() {
     final int naechster = _aktuellerFokusIndex + 1;
     if (naechster < _mengeFocusNode.length) {
@@ -117,23 +125,41 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       footerChild: SizedBox(
         height: 36,
         child: Row(
-          children: <Widget>[
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: AppFarben.footerButtonStyle,
-                child: const Text('Fertig'),
-              ),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
-                  ? _springeZumNaechstfeld
-                  : null,
-              style: AppFarben.footerButtonStyle,
-              child: const Text('Weiter →'),
-            ),
-          ],
+          children: _istLinkshaender
+              ? <Widget>[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: AppFarben.footerButtonStyle,
+                      child: const Text('Fertig'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
+                        ? _springeZumNaechstfeld
+                        : null,
+                    style: AppFarben.footerButtonStyle,
+                    child: const Text('next'),
+                  ),
+                ]
+              : <Widget>[
+                  ElevatedButton(
+                    onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
+                        ? _springeZumNaechstfeld
+                        : null,
+                    style: AppFarben.footerButtonStyle,
+                    child: const Text('next'),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: AppFarben.footerButtonStyle,
+                      child: const Text('Fertig'),
+                    ),
+                  ),
+                ],
         ),
       ),
       child: _getraenkeliste.isEmpty
@@ -148,7 +174,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 ),
               ),
             )
-          : ListView.builder(
+          : Column(
+              children: <Widget>[
+                Expanded(
+                  child: ListView.builder(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               keyboardDismissBehavior:
@@ -221,6 +250,13 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   ),
                 );
               },
+            ),
+                ),
+                TextButton(
+                  onPressed: _leereAlleFelder,
+                  child: const Text('Clear'),
+                ),
+              ],
             ),
     );
   }
