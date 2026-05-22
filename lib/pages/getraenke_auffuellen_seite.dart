@@ -197,68 +197,63 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Widget _baueZeile(int realIndex) {
+    final Widget eingabefeld = SizedBox(
+      width: 72,
+      child: TextField(
+        controller: _mengeController[realIndex],
+        focusNode: _mengeFocusNode[realIndex],
+        keyboardType: TextInputType.number,
+        textAlign:
+            _istLinkshaender ? TextAlign.left : TextAlign.right,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.digitsOnly,
+        ],
+        decoration: const InputDecoration(
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 8,
+            vertical: 4,
+          ),
+        ),
+        onChanged: (_) {
+          setState(() {});
+          _speichereMengen();
+        },
+      ),
+    );
+    final Widget name = Text(
+      _getraenkeliste[realIndex],
+      style: const TextStyle(fontSize: 15),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 72,
-            child: TextField(
-              controller: _mengeController[realIndex],
-              focusNode: _mengeFocusNode[realIndex],
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.right,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly,
-              ],
-              decoration: const InputDecoration(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
-              ),
-              onChanged: (_) {
-                setState(() {});
-                _speichereMengen();
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 160),
-            child: Text(
-              _getraenkeliste[realIndex],
-              style: const TextStyle(fontSize: 15),
-            ),
-          ),
-        ],
+        children: _istLinkshaender
+            ? <Widget>[name, const SizedBox(width: 8), eingabefeld]
+            : <Widget>[eingabefeld, const SizedBox(width: 8), name],
       ),
     );
   }
 
   Widget _baueGesamtZeile() {
+    final Widget zahl = SizedBox(
+      width: 72,
+      child: Text(
+        _gesamtmenge.toString(),
+        textAlign: _istLinkshaender ? TextAlign.left : TextAlign.right,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+      ),
+    );
+    const Widget label = Text(
+      'Gesamt',
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 72,
-            child: Text(
-              _gesamtmenge.toString(),
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          const Text(
-            'Gesamt',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          ),
-        ],
+        children: _istLinkshaender
+            ? <Widget>[label, const SizedBox(width: 8), zahl]
+            : <Widget>[zahl, const SizedBox(width: 8), label],
       ),
     );
   }
@@ -359,10 +354,9 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   child: SingleChildScrollView(
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 4,
-                    ),
+                    padding: _istLinkshaender
+                        ? const EdgeInsets.fromLTRB(0, 4, 15, 4)
+                        : const EdgeInsets.fromLTRB(15, 4, 0, 4),
                     child: Row(
                       mainAxisAlignment: _istLinkshaender
                           ? MainAxisAlignment.end

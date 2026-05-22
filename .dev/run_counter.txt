@@ -1,4 +1,4 @@
-last_run: 191
-next_run: 192
-last_run_title: R191: Verlaufsseite kino-spezifisch, Tabs entfernt
+last_run: 192
+next_run: 193
+last_run_title: R192: Getränkeseite Händigkeit-Layout spiegeln, Randabstand 15pt
 last_commit: pending
