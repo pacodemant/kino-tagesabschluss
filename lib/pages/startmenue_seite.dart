@@ -101,6 +101,14 @@ class StartmenueSeite extends StatelessWidget {
               onPressed: () => _oeffneVerlauf(context),
               child: const Text('Verlauf'),
             ),
+            const Spacer(),
+            Center(
+              child: Image.asset(
+                'assets/images/qr_webapp_github.png',
+                width: 180,
+              ),
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
