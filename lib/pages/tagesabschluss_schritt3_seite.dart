@@ -273,6 +273,56 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
+  void _zeigeSchrittSlider() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('1/4 · Bargeldzählung'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName('/closure-step-1'));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('2/4 · Einnahmen/Abschluss'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName('/closure-step-2'));
+                },
+              ),
+              const ListTile(
+                leading: Icon(Icons.check_circle),
+                title: Text(
+                  '3/4 · Finalisieren',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text('Aktueller Schritt'),
+                enabled: false,
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_forward),
+                title: const Text('4/4 · Stückelung Barumsatz'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _navigiereZuSchritt4();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final int differenzCent = _abschlussVorschau.differenzGesamtCent;
@@ -287,6 +337,7 @@ class _TagesabschlussSchritt3SeiteState
         schrittNummer: 3,
         schrittTitel: 'Übertrag auf Umschlag',
         kinoName: widget.argumente.kinoName,
+        onTap: _zeigeSchrittSlider,
       ),
       footerChild: SizedBox(
         height: 36,

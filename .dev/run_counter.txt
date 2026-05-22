@@ -1,4 +1,4 @@
-last_run: 194
-next_run: 195
-last_run_title: R194: Haus-Button links im Footer aller Unterseiten
-last_commit: 854bbdf
+last_run: 195
+next_run: 196
+last_run_title: R195: Seiten-Slider auf Schritt 2, 3 und 4 erweitert
+last_commit: pending

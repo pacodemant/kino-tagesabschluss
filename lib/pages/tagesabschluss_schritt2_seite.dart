@@ -850,6 +850,51 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
+  void _zeigeSchrittSlider() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('1/4 · Bargeldzählung'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName('/closure-step-1'));
+                },
+              ),
+              const ListTile(
+                leading: Icon(Icons.check_circle),
+                title: Text(
+                  '2/4 · Einnahmen/Abschluss',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text('Aktueller Schritt'),
+                enabled: false,
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_forward),
+                title: const Text('3/4 · Finalisieren'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _weiterZuSchritt3();
+                },
+              ),
+              const ListTile(
+                title: Text('4/4 · Stückelung Barumsatz'),
+                enabled: false,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
@@ -859,6 +904,7 @@ class _TagesabschlussSchritt2SeiteState
         schrittNummer: 2,
         schrittTitel: 'Einnahmen/Abschluss',
         kinoName: widget.kinoName,
+        onTap: _zeigeSchrittSlider,
         actions: <Widget>[
           TextButton(
             onPressed: _bestaetigeUndLeereEingaben,

@@ -311,6 +311,57 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     }
   }
 
+  void _zeigeSchrittSlider(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('1/4 · Bargeldzählung'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName('/closure-step-1'));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('2/4 · Einnahmen/Abschluss'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName('/closure-step-2'));
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_back),
+                title: const Text('3/4 · Finalisieren'),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  Navigator.of(context)
+                      .popUntil(ModalRoute.withName('/closure-step-3'));
+                },
+              ),
+              const ListTile(
+                leading: Icon(Icons.check_circle),
+                title: Text(
+                  '4/4 · Stückelung Barumsatz',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text('Aktueller Schritt'),
+                enabled: false,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<_ErgebnisZeile> zeilen = _berechneErgebnis();
@@ -321,6 +372,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         schrittTitel: 'Stückelung Barumsatz',
         gesamtSchritte: 4,
         kinoName: argumente.kinoName,
+        onTap: () => _zeigeSchrittSlider(context),
       ),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
