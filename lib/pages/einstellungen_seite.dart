@@ -5,6 +5,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
+import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
@@ -76,7 +77,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   static const int _umschlagSlots = 3;
 
-  late final List<TextEditingController> _controllers;
+  final TextEditingController _wgCtrl = TextEditingController();
+  int _aktiveKinoIndex = -1;
+  String _aktiveKinoName = '';
   final Map<String, TextEditingController> _s1StueckzahlCtrl =
       <String, TextEditingController>{};
   final Map<String, TextEditingController> _s1LoseMuenzCtrl =
@@ -102,7 +105,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   bool _testwertAufgeklappt = false;
-  bool _updateVerfuegbar = false;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -113,10 +115,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   @override
   void initState() {
     super.initState();
-    _controllers = List<TextEditingController>.generate(
-      KinoRepository.kinos.length,
-      (_) => TextEditingController(),
-    );
     for (final (String id, _, _) in [
       ..._s1ScheineFelder,
       ..._s1RollenFelder,
@@ -137,9 +135,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   @override
   void dispose() {
-    for (final TextEditingController c in _controllers) {
-      c.dispose();
-    }
+    _wgCtrl.dispose();
     for (final TextEditingController c in _s1StueckzahlCtrl.values) {
       c.dispose();
     }
@@ -166,16 +162,25 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _ladeWerte() async {
-    for (int i = 0; i < KinoRepository.kinos.length; i++) {
-      final int cent = await LokalerSpeicher.ladeWechselgeldSollwertCent(
-        KinoRepository.kinos[i].id,
-      );
-      if (!mounted) {
-        return;
+    final String? aktivId = await LokalerSpeicher.ladeAktiveKinoId();
+    final int aktiveIndex = aktivId != null
+        ? KinoRepository.kinos.indexWhere((Kino k) => k.id == aktivId)
+        : -1;
+    if (!mounted) return;
+    if (aktiveIndex >= 0) {
+      final Kino aktiveKino = KinoRepository.kinos[aktiveIndex];
+      int wgCent =
+          await LokalerSpeicher.ladeWechselgeldSollwertCent(aktiveKino.id);
+      if (wgCent == 0) {
+        wgCent =
+            await WechselgeldConfigService().getWechselgeldBetrag(aktiveKino.name);
       }
-      _controllers[i].text = cent != 0
-          ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
+      if (!mounted) return;
+      _wgCtrl.text = wgCent != 0
+          ? TagesabschlussFormatierung.formatiereEuroEingabe(wgCent)
           : '';
+      _aktiveKinoIndex = aktiveIndex;
+      _aktiveKinoName = aktiveKino.name;
     }
     final bool devAktiv = await DevModus.istAktiv();
     if (!mounted) {
@@ -201,11 +206,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     if (!mounted) {
       return;
     }
-    final bool updateVerfuegbar =
-        await GetraenkeConfigService().isUpdateAvailable();
-    if (!mounted) {
-      return;
-    }
     for (final TextEditingController c in _getraenkeController) {
       c.dispose();
     }
@@ -216,7 +216,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     setState(() {
       _devModusAktiv = devAktiv;
       _getraenkeliste = getraenkeliste;
-      _updateVerfuegbar = updateVerfuegbar;
       _geladen = true;
     });
   }
@@ -294,8 +293,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     });
   }
 
-  void _onChanged(int index, String text) {
-    final String kinoId = KinoRepository.kinos[index].id;
+  void _onWgChanged(String text) {
+    if (_aktiveKinoIndex < 0) return;
+    final String kinoId = KinoRepository.kinos[_aktiveKinoIndex].id;
     final int cent =
         int.tryParse(text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     LokalerSpeicher.speichereWechselgeldSollwertCent(kinoId, cent);
@@ -407,18 +407,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         : '';
 
     final int wgCent = _standardTestwerte['wechselgeldKino01Cent'] as int;
-    final int kinoIndex =
-        KinoRepository.kinos.indexWhere((Kino k) => k.hatWechselgeld);
-    if (kinoIndex >= 0) {
-      _controllers[kinoIndex].text =
-          TagesabschlussFormatierung.formatiereEuroEingabe(wgCent);
+    if (_aktiveKinoIndex >= 0) {
+      _wgCtrl.text = TagesabschlussFormatierung.formatiereEuroEingabe(wgCent);
     }
 
     await _speichereAutoFillSchritt1();
     await _speichereAutoFillSchritt2();
-    if (kinoIndex >= 0) {
+    if (_aktiveKinoIndex >= 0) {
       await LokalerSpeicher.speichereWechselgeldSollwertCent(
-        KinoRepository.kinos[kinoIndex].id,
+        KinoRepository.kinos[_aktiveKinoIndex].id,
         wgCent,
       );
     }
@@ -657,6 +654,77 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _speichereGetraenkeliste();
   }
 
+  Future<void> _zeigeStandardListeHilfe() async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Standard-Liste herunterladen'),
+          content: const Text(
+            'Lädt die von der Kinoleitung gepflegte Getränkeliste herunter '
+            'und ersetzt deine aktuelle Liste. Eigene Anpassungen gehen '
+            'dabei verloren — du kannst sie danach hier wieder vornehmen.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _ladeStandardListe() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Liste wirklich ersetzen?'),
+          content: const Text(
+            'Deine aktuelle Liste wird durch die Standard-Liste ersetzt. '
+            'Eigene Bezeichnungen gehen dabei verloren.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Herunterladen'),
+            ),
+          ],
+        );
+      },
+    );
+    if (bestaetigt != true || !mounted) return;
+    try {
+      await GetraenkeConfigService().updateFromRemote();
+      if (!mounted) return;
+      final List<String> neueListe = await GetraenkeConfigService().loadLocal();
+      if (!mounted) return;
+      for (final TextEditingController c in _getraenkeController) {
+        c.dispose();
+      }
+      _getraenkeController.clear();
+      setState(() {
+        _getraenkeliste = neueListe;
+        for (final String name in neueListe) {
+          _getraenkeController.add(TextEditingController(text: name));
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Download fehlgeschlagen. Bitte Verbindung prüfen.'),
+        ),
+      );
+    }
+  }
+
   void _fuegeNeuesGetraenkEin() {
     final String name = _neuesGetraenkCtrl.text.trim();
     if (name.isEmpty) return;
@@ -692,6 +760,19 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Widget _baueGetraenkelisteInhalt() {
     return Column(
       children: <Widget>[
+        Row(
+          children: <Widget>[
+            TextButton(
+              onPressed: _ladeStandardListe,
+              child: const Text('Standard-Liste herunterladen'),
+            ),
+            IconButton(
+              iconSize: 18,
+              onPressed: _zeigeStandardListeHilfe,
+              icon: const Icon(Icons.help_outline),
+            ),
+          ],
+        ),
         ReorderableListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -754,7 +835,21 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       appBar: AppBar(
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: const Text('Einstellungen'),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'Einstellungen',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
+            if (_aktiveKinoName.isNotEmpty)
+              Text(
+                _aktiveKinoName,
+                style: const TextStyle(fontSize: 14),
+              ),
+          ],
+        ),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -779,55 +874,41 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
                     ),
                   ),
-                  if (_wechselgeldAufgeklappt) ...<Widget>[
+                  if (_wechselgeldAufgeklappt && _aktiveKinoIndex >= 0) ...<Widget>[
                     const Divider(height: 1),
                     Padding(
                       padding: const EdgeInsets.all(12),
-                      child: Column(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
-                          for (int i = 0;
-                              i < KinoRepository.kinos.length;
-                              i++)
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: <Widget>[
-                                  Text(
-                                    KinoRepository.kinos[i].name,
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  SizedBox(
-                                    width: 120,
-                                    child: TextField(
-                                      controller: _controllers[i],
-                                      keyboardType:
-                                          const TextInputType.numberWithOptions(
-                                        decimal: true,
-                                      ),
-                                      textAlign: TextAlign.right,
-                                      decoration: const InputDecoration(
-                                        isDense: true,
-                                        contentPadding:
-                                            EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 4,
-                                        ),
-                                        suffixText: '€',
-                                      ),
-                                      onTap: () {
-                                        if (_controllers[i].text == '0') {
-                                          _controllers[i].clear();
-                                        }
-                                      },
-                                      onChanged: (String text) =>
-                                          _onChanged(i, text),
-                                    ),
-                                  ),
-                                ],
+                          Text(
+                            'Wechselgeld $_aktiveKinoName',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            width: 120,
+                            child: TextField(
+                              controller: _wgCtrl,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                decimal: true,
                               ),
+                              textAlign: TextAlign.right,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                suffixText: '€',
+                              ),
+                              onTap: () {
+                                if (_wgCtrl.text == '0') _wgCtrl.clear();
+                              },
+                              onChanged: _onWgChanged,
                             ),
+                          ),
                         ],
                       ),
                     ),
@@ -847,7 +928,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       'Getränkeliste',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: const Text('Reihenfolge = Regal-Reihenfolge'),
+                    subtitle: const Text(
+                      'Reihenfolge = Regal-Reihenfolge',
+                      style: TextStyle(fontSize: 11),
+                    ),
                     trailing: Icon(
                       _getraenkelisteAufgeklappt
                           ? Icons.expand_less

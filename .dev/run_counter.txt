@@ -1,4 +1,4 @@
-last_run: 187
-next_run: 188
-last_run_title: R187: Kino-Modell erweitern, kino_01 auflösen, WechselgeldConfigService
+last_run: 188
+next_run: 189
+last_run_title: R188: Einstellungs-Screen Feinarbeiten
 last_commit: pending
