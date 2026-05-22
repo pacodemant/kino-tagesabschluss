@@ -81,12 +81,26 @@ class TagesabschlussBerechnung {
 class TagesabschlussFormatierung {
   const TagesabschlussFormatierung._();
 
+  static String _tausenderPunkt(int euro) {
+    final String s = euro.toString();
+    if (s.length <= 3) return s;
+    final int startMod = s.length % 3;
+    final StringBuffer buf = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && i % 3 == startMod) {
+        buf.write('.');
+      }
+      buf.write(s[i]);
+    }
+    return buf.toString();
+  }
+
   static String formatiereEuro(int cent) {
     final String vorzeichen = cent < 0 ? '-' : '';
     final int absolut = cent.abs();
-    final int euro = absolut ~/ 100;
+    final String euroTeil = _tausenderPunkt(absolut ~/ 100);
     final String centTeil = (absolut % 100).toString().padLeft(2, '0');
-    return '$vorzeichen$euro,$centTeil €';
+    return '$vorzeichen$euroTeil,$centTeil €';
   }
 
   static String formatiereEuroEingabe(int cent) {
@@ -99,9 +113,9 @@ class TagesabschlussFormatierung {
 
   static String formatiereEuroMitVorzeichen(int cent) {
     if (cent > 0) {
-      final int euro = cent ~/ 100;
+      final String euroTeil = _tausenderPunkt(cent ~/ 100);
       final String centTeil = (cent % 100).toString().padLeft(2, '0');
-      return '+$euro,$centTeil €';
+      return '+$euroTeil,$centTeil €';
     }
     return formatiereEuro(cent);
   }
