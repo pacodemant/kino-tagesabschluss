@@ -429,7 +429,7 @@ class LokalerSpeicher {
   }
 
   static String _wechselgeldZaehlEntwurfKey(String kinoId) =>
-      'wechselgeld_zaehlen_entwurf_$kinoId';
+      'wechselgeld_zaehlen_entwurf_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
 
   /// Löscht den finalen Tagesabschluss eines bestimmten Kalendertags.
   static Future<void> loescheFinalenTagesabschluss(

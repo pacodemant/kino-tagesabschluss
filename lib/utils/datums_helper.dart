@@ -3,7 +3,7 @@ class DatumsHelper {
 
   static DateTime logischerAbrechnungsTag() {
     final DateTime now = DateTime.now();
-    if (now.hour < 4) {
+    if (now.hour < 6) {
       return now.subtract(const Duration(days: 1));
     }
     return now;
