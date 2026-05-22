@@ -101,6 +101,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   bool _testwertAufgeklappt = false;
+  bool _linkshaenderModus = false;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -196,9 +197,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final String name in getraenkeliste) {
       _getraenkeController.add(TextEditingController(text: name));
     }
+    final bool linkshaender = await LokalerSpeicher.ladeLinkshaenderModus();
+    if (!mounted) {
+      return;
+    }
     setState(() {
       _devModusAktiv = devAktiv;
       _getraenkeliste = getraenkeliste;
+      _linkshaenderModus = linkshaender;
       _geladen = true;
     });
   }
@@ -273,6 +279,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     setState(() {
       _devModusAktiv = wert;
+    });
+  }
+
+  Future<void> _onLinkshaenderGeaendert(bool wert) async {
+    await LokalerSpeicher.speichereLinkshaenderModus(wert);
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _linkshaenderModus = wert;
     });
   }
 
@@ -836,6 +852,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             ),
           ),
+          Card(
+            child: SwitchListTile(
+              title: const Text('Linkshänder-Modus'),
+              value: _linkshaenderModus,
+              onChanged: _onLinkshaenderGeaendert,
+              activeThumbColor: AppFarben.appBarRot,
+            ),
+          ),
+          const SizedBox(height: 4),
           Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

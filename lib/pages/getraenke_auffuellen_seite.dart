@@ -21,6 +21,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       <TextEditingController>[];
   final List<FocusNode> _mengeFocusNode = <FocusNode>[];
   bool _geladen = false;
+  bool _istLinkshaender = false;
 
   @override
   void initState() {
@@ -64,8 +65,11 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       _mengeController.add(ctrl);
       _mengeFocusNode.add(fn);
     }
+    final bool linkshaender = await LokalerSpeicher.ladeLinkshaenderModus();
+    if (!mounted) return;
     setState(() {
       _getraenkeliste = liste;
+      _istLinkshaender = linkshaender;
       _geladen = true;
     });
   }
@@ -126,77 +130,76 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 ),
               ),
             )
-          : ListView.separated(
+          : ListView.builder(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               keyboardDismissBehavior:
                   ScrollViewKeyboardDismissBehavior.onDrag,
               itemCount: _getraenkeliste.length + 1,
-              separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (BuildContext context, int index) {
                 if (index == _getraenkeliste.length) {
+                  final Widget gesamtZahl = SizedBox(
+                    width: 72,
+                    child: Text(
+                      _gesamtmenge.toString(),
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  );
+                  const Widget gesamtLabel = Text(
+                    'Gesamt',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  );
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Row(
-                      children: <Widget>[
-                        const Expanded(
-                          child: Text(
-                            'Gesamt',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: Text(
-                            _gesamtmenge.toString(),
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ),
-                      ],
+                      children: _istLinkshaender
+                          ? <Widget>[gesamtZahl, const SizedBox(width: 8), gesamtLabel]
+                          : <Widget>[const Expanded(child: gesamtLabel), gesamtZahl],
                     ),
                   );
                 }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          _getraenkeliste[index],
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 120,
-                        child: TextField(
-                          controller: _mengeController[index],
-                          focusNode: _mengeFocusNode[index],
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.right,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                          ),
-                          onChanged: (_) {
-                            setState(() {});
-                            _speichereMengen();
-                          },
-                        ),
-                      ),
+                final Widget eingabefeld = SizedBox(
+                  width: 72,
+                  child: TextField(
+                    controller: _mengeController[index],
+                    focusNode: _mengeFocusNode[index],
+                    keyboardType: TextInputType.number,
+                    textAlign: _istLinkshaender
+                        ? TextAlign.left
+                        : TextAlign.right,
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
                     ],
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                    ),
+                    onChanged: (_) {
+                      setState(() {});
+                      _speichereMengen();
+                    },
+                  ),
+                );
+                final Widget name = Text(
+                  _getraenkeliste[index],
+                  style: const TextStyle(fontSize: 16),
+                );
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 3),
+                  child: Row(
+                    children: _istLinkshaender
+                        ? <Widget>[eingabefeld, const SizedBox(width: 8), name]
+                        : <Widget>[name, const SizedBox(width: 8), eingabefeld],
                   ),
                 );
               },

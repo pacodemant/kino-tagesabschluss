@@ -210,6 +210,16 @@ class LokalerSpeicher {
     return 'final/$kinoId/closures';
   }
 
+  static Future<bool> ladeLinkshaenderModus() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getBool('linkshaender_modus') ?? false;
+  }
+
+  static Future<void> speichereLinkshaenderModus(bool wert) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setBool('linkshaender_modus', wert);
+  }
+
   /// Speichert den Schritt-2-Entwurf fuer ein Kino.
   static Future<void> speichereSchritt2Entwurf(
     String kinoId,
