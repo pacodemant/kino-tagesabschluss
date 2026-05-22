@@ -82,15 +82,15 @@ class WechselgeldConfigService {
     final List<String> zeilen = inhalt
         .split('\n')
         .map((String z) => z.trim())
-        .where((String z) => z.isNotEmpty)
+        .where((String z) => z.isNotEmpty && !z.startsWith('#'))
         .toList();
     final String datum = zeilen.isNotEmpty ? zeilen.first : '';
     final Map<String, int> map = <String, int>{};
     for (int i = 1; i + 1 < zeilen.length; i += 2) {
       final String name = zeilen[i];
-      final int? betrag = int.tryParse(zeilen[i + 1]);
-      if (betrag != null) {
-        map[name] = betrag;
+      final int? euroGanzzahl = int.tryParse(zeilen[i + 1]);
+      if (euroGanzzahl != null) {
+        map[name] = euroGanzzahl * 100;
       }
     }
     return (datum, map);
