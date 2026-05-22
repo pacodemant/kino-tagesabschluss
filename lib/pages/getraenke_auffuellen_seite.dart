@@ -145,7 +145,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                       textAlign: TextAlign.right,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 15,
                       ),
                     ),
                   );
@@ -159,9 +159,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     child: Row(
-                      children: _istLinkshaender
-                          ? <Widget>[gesamtZahl, const SizedBox(width: 8), gesamtLabel]
-                          : <Widget>[const Expanded(child: gesamtLabel), gesamtZahl],
+                      mainAxisAlignment: _istLinkshaender
+                          ? MainAxisAlignment.start
+                          : MainAxisAlignment.end,
+                      children: <Widget>[gesamtZahl, const SizedBox(width: 8), gesamtLabel],
                     ),
                   );
                 }
@@ -171,9 +172,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     controller: _mengeController[index],
                     focusNode: _mengeFocusNode[index],
                     keyboardType: TextInputType.number,
-                    textAlign: _istLinkshaender
-                        ? TextAlign.left
-                        : TextAlign.right,
+                    textAlign: TextAlign.right,
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.digitsOnly,
                     ],
@@ -192,14 +191,15 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 );
                 final Widget name = Text(
                   _getraenkeliste[index],
-                  style: const TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 15),
                 );
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: Row(
-                    children: _istLinkshaender
-                        ? <Widget>[eingabefeld, const SizedBox(width: 8), name]
-                        : <Widget>[name, const SizedBox(width: 8), eingabefeld],
+                    mainAxisAlignment: _istLinkshaender
+                        ? MainAxisAlignment.start
+                        : MainAxisAlignment.end,
+                    children: <Widget>[eingabefeld, const SizedBox(width: 8), name],
                   ),
                 );
               },

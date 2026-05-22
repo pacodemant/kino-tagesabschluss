@@ -853,18 +853,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
           ),
           Card(
-            child: SwitchListTile(
-              title: const Text('Linkshänder-Modus'),
-              value: _linkshaenderModus,
-              onChanged: _onLinkshaenderGeaendert,
-              activeThumbColor: AppFarben.appBarRot,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                SwitchListTile(
+                  title: const Text('Linkshänder-Modus'),
+                  value: _linkshaenderModus,
+                  onChanged: _onLinkshaenderGeaendert,
+                  activeThumbColor: AppFarben.appBarRot,
+                ),
+                const Divider(height: 1),
                 SwitchListTile(
                   title: const Text('Entwicklermodus'),
                   value: _devModusAktiv,
