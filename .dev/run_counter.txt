@@ -1,4 +1,4 @@
-last_run: 190
-next_run: 191
-last_run_title: R190: DEV-Testwerte AT + CO, wechselgeld.txt, Bar Tabak
+last_run: 191
+next_run: 192
+last_run_title: R191: Verlaufsseite kino-spezifisch, Tabs entfernt
 last_commit: pending

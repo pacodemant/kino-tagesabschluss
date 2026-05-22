@@ -8,71 +8,43 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 
 class VerlaufSeite extends StatefulWidget {
-  const VerlaufSeite({super.key, this.initialKinoId});
+  const VerlaufSeite({super.key, required this.kinoId});
 
   static const String routenName = '/verlauf';
 
-  final String? initialKinoId;
+  final String kinoId;
 
   @override
   State<VerlaufSeite> createState() => _VerlaufSeiteState();
 }
 
-class _VerlaufSeiteState extends State<VerlaufSeite>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
+class _VerlaufSeiteState extends State<VerlaufSeite> {
+  List<TagesabschlussFinal> _abschluesse = <TagesabschlussFinal>[];
+  bool _geladen = false;
 
-  final List<List<TagesabschlussFinal>> _abschluesse =
-      List<List<TagesabschlussFinal>>.generate(
-    KinoRepository.kinos.length,
-    (_) => <TagesabschlussFinal>[],
-  );
-  final List<bool> _geladen = List<bool>.generate(
-    KinoRepository.kinos.length,
-    (_) => false,
-  );
+  String get _kinoName {
+    final Kino? kino = KinoRepository.kinos.cast<Kino?>().firstWhere(
+      (Kino? k) => k?.id == widget.kinoId,
+      orElse: () => null,
+    );
+    return kino?.name ?? 'Verlauf';
+  }
 
   @override
   void initState() {
     super.initState();
-    final int initialIndex = widget.initialKinoId == null
-        ? 0
-        : KinoRepository.kinos.indexWhere(
-            (Kino k) => k.id == widget.initialKinoId,
-          ).clamp(0, KinoRepository.kinos.length - 1);
-    _tabController = TabController(
-      length: KinoRepository.kinos.length,
-      initialIndex: initialIndex,
-      vsync: this,
-    );
-    _tabController.addListener(_onTabWechsel);
-    _ladeAbschluesse(initialIndex);
+    _ladeAbschluesse();
   }
 
-  @override
-  void dispose() {
-    _tabController.removeListener(_onTabWechsel);
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  void _onTabWechsel() {
-    _ladeAbschluesse(_tabController.index);
-  }
-
-  Future<void> _ladeAbschluesse(int index) async {
-    if (_geladen[index]) {
-      return;
-    }
-    final String kinoId = KinoRepository.kinos[index].id;
+  Future<void> _ladeAbschluesse() async {
     final List<TagesabschlussFinal> abschluesse =
-        await LokalerSpeicher.ladeFinaleTagesabschluesse(kinoId);
+        await LokalerSpeicher.ladeFinaleTagesabschluesse(widget.kinoId);
     if (!mounted) {
       return;
     }
     setState(() {
-      _abschluesse[index] = abschluesse;
-      _geladen[index] = true;
+      _abschluesse = abschluesse;
+      _geladen = true;
     });
   }
 
@@ -86,10 +58,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
   String _euroMitVorzeichen(int cent) =>
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
 
-  Future<void> _loescheEintrag(
-    int tabIndex,
-    TagesabschlussFinal eintrag,
-  ) async {
+  Future<void> _loescheEintrag(TagesabschlussFinal eintrag) async {
     final bool? bestaetigt = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -118,10 +87,10 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
       return;
     }
     setState(() {
-      _geladen[tabIndex] = false;
-      _abschluesse[tabIndex] = <TagesabschlussFinal>[];
+      _geladen = false;
+      _abschluesse = <TagesabschlussFinal>[];
     });
-    _ladeAbschluesse(tabIndex);
+    _ladeAbschluesse();
   }
 
   @override
@@ -130,104 +99,90 @@ class _VerlaufSeiteState extends State<VerlaufSeite>
       appBar: AppBar(
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: const Text('Verlauf'),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          indicatorColor: Colors.white,
-          tabs: KinoRepository.kinos
-              .map((Kino kino) => Tab(text: kino.name))
-              .toList(),
-        ),
+        title: Text('Verlauf – $_kinoName'),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: List<Widget>.generate(KinoRepository.kinos.length, (int i) {
-          if (!_geladen[i]) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final List<TagesabschlussFinal> eintraege = _abschluesse[i];
-          if (eintraege.isEmpty) {
-            return const Center(
-              child: Text('Noch keine Abschlüsse gespeichert.'),
-            );
-          }
-          return ListView.separated(
-            itemCount: eintraege.length,
-            separatorBuilder: (_, __) => const Divider(height: 1),
-            itemBuilder: (BuildContext itemContext, int j) {
-              final TagesabschlussFinal eintrag = eintraege[j];
-              final int differenz = eintrag.differenzGesamtCent;
-              final Color farbe =
-                  differenz >= 0 ? Colors.green.shade700 : Colors.red.shade700;
-              final bool istHeute = _isoDatum(eintrag.datum) ==
-                  DatumsHelper.logischesIsoDatum();
-              return ListTile(
-                title: Row(
-                  children: <Widget>[
-                    Text(_deutschesDatum(eintrag.datum)),
-                    if (istHeute) ...<Widget>[
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade600,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: const Text(
-                          'Heute',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
+      body: !_geladen
+          ? const Center(child: CircularProgressIndicator())
+          : _abschluesse.isEmpty
+              ? const Center(
+                  child: Text('Noch keine Abschlüsse gespeichert.'),
+                )
+              : ListView.separated(
+                  itemCount: _abschluesse.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  itemBuilder: (BuildContext itemContext, int j) {
+                    final TagesabschlussFinal eintrag = _abschluesse[j];
+                    final int differenz = eintrag.differenzGesamtCent;
+                    final Color farbe = differenz >= 0
+                        ? Colors.green.shade700
+                        : Colors.red.shade700;
+                    final bool istHeute = _isoDatum(eintrag.datum) ==
+                        DatumsHelper.logischesIsoDatum();
+                    return ListTile(
+                      title: Row(
+                        children: <Widget>[
+                          Text(_deutschesDatum(eintrag.datum)),
+                          if (istHeute) ...<Widget>[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade600,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: const Text(
+                                'Heute',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            _euroMitVorzeichen(differenz),
+                            style: Theme.of(itemContext)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: farbe,
+                                ),
                           ),
-                        ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline),
+                            color: Colors.red.shade400,
+                            onPressed: () => _loescheEintrag(eintrag),
+                          ),
+                        ],
                       ),
-                    ],
-                  ],
+                      onTap: () async {
+                        final NavigatorState navigator = Navigator.of(context);
+                        final bool? geloescht =
+                            await navigator.pushNamed<bool>(
+                          VerlaufDetailSeite.routenName,
+                          arguments: eintrag,
+                        );
+                        if (geloescht == true && mounted) {
+                          setState(() {
+                            _geladen = false;
+                            _abschluesse = <TagesabschlussFinal>[];
+                          });
+                          _ladeAbschluesse();
+                        }
+                      },
+                    );
+                  },
                 ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      _euroMitVorzeichen(differenz),
-                      style: Theme.of(itemContext).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: farbe,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline),
-                      color: Colors.red.shade400,
-                      onPressed: () => _loescheEintrag(i, eintrag),
-                    ),
-                  ],
-                ),
-                onTap: () async {
-                  final NavigatorState navigator = Navigator.of(context);
-                  final bool? geloescht =
-                      await navigator.pushNamed<bool>(
-                    VerlaufDetailSeite.routenName,
-                    arguments: eintrag,
-                  );
-                  if (geloescht == true && mounted) {
-                    setState(() {
-                      _geladen[i] = false;
-                      _abschluesse[i] = <TagesabschlussFinal>[];
-                    });
-                    _ladeAbschluesse(i);
-                  }
-                },
-              );
-            },
-          );
-        }),
-      ),
     );
   }
 }

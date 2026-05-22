@@ -190,8 +190,11 @@ class MeineApp extends StatelessWidget {
 
         if (settings.name == VerlaufSeite.routenName) {
           final String? kinoId = settings.arguments as String?;
+          if (kinoId == null) {
+            return null;
+          }
           return MaterialPageRoute<void>(
-            builder: (_) => VerlaufSeite(initialKinoId: kinoId),
+            builder: (_) => VerlaufSeite(kinoId: kinoId),
             settings: settings,
           );
         }
