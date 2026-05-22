@@ -764,10 +764,17 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           children: <Widget>[
             TextButton(
               onPressed: _ladeStandardListe,
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(fontSize: 12),
+              ),
               child: const Text('Standard-Liste herunterladen'),
             ),
             IconButton(
               iconSize: 18,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
               onPressed: _zeigeStandardListeHilfe,
               icon: const Icon(Icons.help_outline),
             ),
