@@ -15,8 +15,8 @@ class GetraenkeConfigService {
 
   Future<void> initOnAppStart() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? rohwert = prefs.getString(_localKey);
-    final bool leer = rohwert == null || rohwert.isEmpty;
+    final List<String> vorhanden = await loadLocal();
+    final bool leer = vorhanden.isEmpty;
 
     if (leer) {
       debugPrint('[GetraenkeConfig] Remote-Fetch gestartet');
