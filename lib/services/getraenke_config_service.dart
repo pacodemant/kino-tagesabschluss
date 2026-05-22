@@ -1,6 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetraenkeConfigService {
@@ -9,6 +11,7 @@ class GetraenkeConfigService {
   static const String _localKey = 'getraenke_schauburg';
   static const String _localDateKey = 'getraenke_schauburg_date';
   static const String _updateAvailableKey = 'getraenke_update_available';
+  static const String _assetPath = 'config/getraenke_schauburg.txt';
 
   Future<void> initOnAppStart() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -16,13 +19,30 @@ class GetraenkeConfigService {
     final bool leer = rohwert == null || rohwert.isEmpty;
 
     if (leer) {
+      debugPrint('[GetraenkeConfig] Remote-Fetch gestartet');
       try {
         final (String datum, List<String> liste) = await _fetchRemote();
         await _speichereListeUndDatum(prefs, liste, datum);
         await prefs.setBool(_updateAvailableKey, false);
-      } catch (_) {
-        // offline: kein Fehler
+        debugPrint(
+          '[GetraenkeConfig] Remote-Fetch erfolgreich, Datum: $datum',
+        );
+      } catch (e) {
+        debugPrint(
+          '[GetraenkeConfig] Remote-Fetch fehlgeschlagen: $e — Asset-Fallback',
+        );
+        try {
+          final (String datum, List<String> liste) = await _ladeAsset();
+          await _speichereListeUndDatum(prefs, liste, datum);
+          debugPrint(
+            '[GetraenkeConfig] Asset-Fallback geladen, ${liste.length} Getränke',
+          );
+        } catch (assetFehler) {
+          debugPrint('[GetraenkeConfig] Asset-Fallback fehlgeschlagen: $assetFehler');
+        }
       }
+      final List<String> geladen = await loadLocal();
+      debugPrint('[GetraenkeConfig] Lokale Liste geladen, ${geladen.length} Getränke');
     } else {
       try {
         final String inhalt = await _fetchRemoteRaw();
@@ -31,6 +51,11 @@ class GetraenkeConfigService {
         final bool neuer =
             lokalDatum == null || remoteDatum.compareTo(lokalDatum) > 0;
         await prefs.setBool(_updateAvailableKey, neuer);
+        if (neuer) {
+          debugPrint(
+            '[GetraenkeConfig] Update verfügbar: remote $remoteDatum > lokal $lokalDatum',
+          );
+        }
       } catch (_) {
         await prefs.setBool(_updateAvailableKey, false);
       }
@@ -74,19 +99,24 @@ class GetraenkeConfigService {
   }
 
   Future<String> _fetchRemoteRaw() async {
-    final HttpClient client = HttpClient();
-    try {
-      final HttpClientRequest request =
-          await client.getUrl(Uri.parse(_remoteUrl));
-      final HttpClientResponse response = await request.close();
-      return response.transform(utf8.decoder).join();
-    } finally {
-      client.close();
+    final http.Response response = await http.get(Uri.parse(_remoteUrl));
+    if (response.statusCode != 200) {
+      throw Exception('HTTP ${response.statusCode}');
     }
+    return response.body;
   }
 
   Future<(String, List<String>)> _fetchRemote() async {
     final String inhalt = await _fetchRemoteRaw();
+    return _parseInhalt(inhalt);
+  }
+
+  Future<(String, List<String>)> _ladeAsset() async {
+    final String inhalt = await rootBundle.loadString(_assetPath);
+    return _parseInhalt(inhalt);
+  }
+
+  (String, List<String>) _parseInhalt(String inhalt) {
     final List<String> zeilen = inhalt.split('\n');
     final String datum = zeilen.first.trim();
     final List<String> liste = zeilen
