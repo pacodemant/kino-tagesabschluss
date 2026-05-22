@@ -118,9 +118,20 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     }
 
     return TagesabschlussScaffold(
-      appBar: const TagesabschlussHeader(
+      appBar: TagesabschlussHeader(
         schrittNummer: 0,
         schrittTitel: 'Getränke auffüllen',
+        actions: <Widget>[
+          TextButton(
+            onPressed: _leereAlleFelder,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white70,
+              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            child: const Text('Clear'),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       footerChild: SizedBox(
         height: 36,
@@ -139,7 +150,12 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
                         ? _springeZumNaechstfeld
                         : null,
-                    style: AppFarben.footerButtonStyle,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppFarben.appBarRot,
+                      disabledForegroundColor: Colors.grey.shade400,
+                      disabledBackgroundColor: Colors.grey.shade200,
+                    ),
                     child: const Text('next'),
                   ),
                 ]
@@ -148,7 +164,12 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
                         ? _springeZumNaechstfeld
                         : null,
-                    style: AppFarben.footerButtonStyle,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppFarben.appBarRot,
+                      disabledForegroundColor: Colors.grey.shade400,
+                      disabledBackgroundColor: Colors.grey.shade200,
+                    ),
                     child: const Text('next'),
                   ),
                   const SizedBox(width: 8),
@@ -174,10 +195,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 ),
               ),
             )
-          : Column(
-              children: <Widget>[
-                Expanded(
-                  child: ListView.builder(
+          : ListView.builder(
               padding:
                   const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               keyboardDismissBehavior:
@@ -250,13 +268,6 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   ),
                 );
               },
-            ),
-                ),
-                TextButton(
-                  onPressed: _leereAlleFelder,
-                  child: const Text('Clear'),
-                ),
-              ],
             ),
     );
   }
