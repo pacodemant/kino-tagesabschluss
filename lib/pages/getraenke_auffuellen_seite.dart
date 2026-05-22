@@ -44,8 +44,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Future<void> _ladeAlles() async {
-    final List<String> liste =
-        await GetraenkeConfigService().loadLocal();
+    final List<String> liste = await GetraenkeConfigService().loadLocal();
     if (!mounted) return;
     final Map<String, dynamic>? gespeichert =
         await LokalerSpeicher.ladeGetraenkeMengen('kino_01');
@@ -135,7 +134,8 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       child: Row(
         children: <Widget>[
           TextButton(
-            onPressed: () => setState(() => _nurBenoetigte = !_nurBenoetigte),
+            onPressed: () =>
+                setState(() => _nurBenoetigte = !_nurBenoetigte),
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               minimumSize: Size.zero,
@@ -189,6 +189,70 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     );
   }
 
+  Widget _baueZeile(int realIndex) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: 72,
+            child: TextField(
+              controller: _mengeController[realIndex],
+              focusNode: _mengeFocusNode[realIndex],
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.right,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly,
+              ],
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 4,
+                ),
+              ),
+              onChanged: (_) {
+                setState(() {});
+                _speichereMengen();
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _getraenkeliste[realIndex],
+            style: const TextStyle(fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _baueGesamtZeile() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: <Widget>[
+          SizedBox(
+            width: 72,
+            child: Text(
+              _gesamtmenge.toString(),
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'Gesamt',
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_geladen) {
@@ -227,9 +291,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
-                        ? _springeZumNaechstfeld
-                        : null,
+                    onPressed:
+                        _aktuellerFokusIndex < _getraenkeliste.length - 1
+                            ? _springeZumNaechstfeld
+                            : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: AppFarben.appBarRot,
@@ -241,9 +306,10 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 ]
               : <Widget>[
                   ElevatedButton(
-                    onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
-                        ? _springeZumNaechstfeld
-                        : null,
+                    onPressed:
+                        _aktuellerFokusIndex < _getraenkeliste.length - 1
+                            ? _springeZumNaechstfeld
+                            : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: AppFarben.appBarRot,
@@ -279,88 +345,30 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               children: <Widget>[
                 _baueFilterZeile(context),
                 Expanded(
-                  child: ListView.builder(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: SingleChildScrollView(
                     keyboardDismissBehavior:
                         ScrollViewKeyboardDismissBehavior.onDrag,
-                    itemCount: _gezeigteIndizes.length + 1,
-                    itemBuilder: (BuildContext context, int index) {
-                      if (index == _gezeigteIndizes.length) {
-                        final Widget gesamtZahl = SizedBox(
-                          width: 72,
-                          child: Text(
-                            _gesamtmenge.toString(),
-                            textAlign: TextAlign.right,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                        );
-                        const Widget gesamtLabel = Text(
-                          'Gesamt',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        );
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 6),
-                          child: Row(
-                            mainAxisAlignment: _istLinkshaender
-                                ? MainAxisAlignment.start
-                                : MainAxisAlignment.end,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: _istLinkshaender
+                          ? MainAxisAlignment.end
+                          : MainAxisAlignment.start,
+                      children: <Widget>[
+                        IntrinsicWidth(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              gesamtZahl,
-                              const SizedBox(width: 8),
-                              gesamtLabel,
+                              for (final int idx in _gezeigteIndizes)
+                                _baueZeile(idx),
+                              _baueGesamtZeile(),
                             ],
                           ),
-                        );
-                      }
-                      final int realIndex = _gezeigteIndizes[index];
-                      final Widget eingabefeld = SizedBox(
-                        width: 72,
-                        child: TextField(
-                          controller: _mengeController[realIndex],
-                          focusNode: _mengeFocusNode[realIndex],
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.right,
-                          inputFormatters: <TextInputFormatter>[
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          decoration: const InputDecoration(
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                          ),
-                          onChanged: (_) {
-                            setState(() {});
-                            _speichereMengen();
-                          },
                         ),
-                      );
-                      final Widget name = Text(
-                        _getraenkeliste[realIndex],
-                        style: const TextStyle(fontSize: 15),
-                      );
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 3),
-                        child: Row(
-                          mainAxisAlignment: _istLinkshaender
-                              ? MainAxisAlignment.start
-                              : MainAxisAlignment.end,
-                          children: <Widget>[
-                            eingabefeld,
-                            const SizedBox(width: 8),
-                            name,
-                          ],
-                        ),
-                      );
-                    },
+                      ],
+                    ),
                   ),
                 ),
               ],
