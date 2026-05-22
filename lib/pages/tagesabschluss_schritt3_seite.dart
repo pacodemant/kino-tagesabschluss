@@ -359,10 +359,11 @@ class _TagesabschlussSchritt3SeiteState
                           '+ Kino Soll',
                           _euro(_abschlussVorschau.kinoSollCent),
                         ),
-                        _zeile(
-                          '+ Bistro Soll',
-                          _euro(_abschlussVorschau.bistroSollCent),
-                        ),
+                        if (widget.argumente.kinoId != 'kino_04')
+                          _zeile(
+                            '+ Bistro Soll',
+                            _euro(_abschlussVorschau.bistroSollCent),
+                          ),
                         _zeile(
                           '- Ausgaben',
                           _euro(_abschlussVorschau.ausgabenCent),

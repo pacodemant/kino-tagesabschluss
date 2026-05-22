@@ -365,7 +365,8 @@ class _TagesabschlussSchritt2SeiteState
     final List<({TextEditingController controller, FocusNode fokus})>
     pflichtfelder = <({TextEditingController controller, FocusNode fokus})>[
       (controller: _kinoSollController, fokus: _kinoSollFocusNode),
-      (controller: _bistroSollController, fokus: _bistroSollFocusNode),
+      if (widget.kinoId != 'kino_04')
+        (controller: _bistroSollController, fokus: _bistroSollFocusNode),
       (controller: _ecBelegController.first, fokus: _ecBelegFocusNode.first),
     ];
 
@@ -1063,22 +1064,23 @@ class _TagesabschlussSchritt2SeiteState
                               _speichereEntwurf();
                             },
                           ),
-                          _baueEingabeZeile(
-                            label: 'Bistro SOLL',
-                            controller: _bistroSollController,
-                            focusNode: _bistroSollFocusNode,
-                            fehlermeldungText: _pflichtfeldFehlertext(
-                              feldBeruehrt: _bistroSollBeruehrt,
+                          if (widget.kinoId != 'kino_04')
+                            _baueEingabeZeile(
+                              label: 'Bistro SOLL',
                               controller: _bistroSollController,
+                              focusNode: _bistroSollFocusNode,
+                              fehlermeldungText: _pflichtfeldFehlertext(
+                                feldBeruehrt: _bistroSollBeruehrt,
+                                controller: _bistroSollController,
+                              ),
+                              onChanged: (String wert) {
+                                setState(() {
+                                  _bistroSollBeruehrt = true;
+                                  _bistroSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
+                                });
+                                _speichereEntwurf();
+                              },
                             ),
-                            onChanged: (String wert) {
-                              setState(() {
-                                _bistroSollBeruehrt = true;
-                                _bistroSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
-                              });
-                              _speichereEntwurf();
-                            },
-                          ),
                           const Padding(
                             padding: EdgeInsets.only(top: 4, bottom: 8),
                             child: Text(

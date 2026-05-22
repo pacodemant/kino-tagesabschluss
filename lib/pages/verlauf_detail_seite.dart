@@ -308,7 +308,8 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       _zeile('Kino SOLL', _euro(a.kinoSollCent)),
-                      _zeile('Bistro SOLL', _euro(a.bistroSollCent)),
+                      if (a.kinoId != 'kino_04')
+                        _zeile('Bistro SOLL', _euro(a.bistroSollCent)),
                       _zeile('Ausgaben', _euro(a.ausgabenCent)),
                       ..._ausgabenUnterzeilen(a),
                       _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),

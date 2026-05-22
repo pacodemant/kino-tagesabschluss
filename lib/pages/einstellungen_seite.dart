@@ -706,11 +706,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               controller: _s2KinoSollCtrl,
               onChanged: _speichereAutoFillSchritt2,
             ),
-            _baueCentZeile(
-              label: 'Bistro SOLL',
-              controller: _s2BistroSollCtrl,
-              onChanged: _speichereAutoFillSchritt2,
-            ),
+            if (_aktiveKinoId != 'kino_04')
+              _baueCentZeile(
+                label: 'Bistro SOLL',
+                controller: _s2BistroSollCtrl,
+                onChanged: _speichereAutoFillSchritt2,
+              ),
             _baueCentZeile(
               label: 'Ausgaben',
               controller: _s2AusgabenCtrl,
