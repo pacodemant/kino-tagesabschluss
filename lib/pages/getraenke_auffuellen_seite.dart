@@ -22,6 +22,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   final List<FocusNode> _mengeFocusNode = <FocusNode>[];
   bool _geladen = false;
   bool _istLinkshaender = false;
+  int _aktuellerFokusIndex = -1;
 
   @override
   void initState() {
@@ -59,7 +60,9 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       fn.addListener(() {
         if (fn.hasFocus) {
           ctrl.clear();
-          setState(() {});
+          setState(() {
+            _aktuellerFokusIndex = i;
+          });
         }
       });
       _mengeController.add(ctrl);
@@ -80,6 +83,13 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       summe += int.tryParse(c.text) ?? 0;
     }
     return summe;
+  }
+
+  void _springeZumNaechstfeld() {
+    final int naechster = _aktuellerFokusIndex + 1;
+    if (naechster < _mengeFocusNode.length) {
+      _mengeFocusNode[naechster].requestFocus();
+    }
   }
 
   void _speichereMengen() {
@@ -114,6 +124,14 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 style: AppFarben.footerButtonStyle,
                 child: const Text('Fertig'),
               ),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: _aktuellerFokusIndex < _getraenkeliste.length - 1
+                  ? _springeZumNaechstfeld
+                  : null,
+              style: AppFarben.footerButtonStyle,
+              child: const Text('Weiter →'),
             ),
           ],
         ),
@@ -153,7 +171,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     'Gesamt',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 15,
                     ),
                   );
                   return Padding(
