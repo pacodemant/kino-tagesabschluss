@@ -132,6 +132,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           TextButton(
             onPressed: () =>
