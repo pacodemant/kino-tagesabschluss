@@ -1,0 +1,40 @@
+2026-05-22
+Aperol Spritz
+Prosecco
+Rotwein
+Weißwein
+Ginger Beer
+TH Bitter Lemon
+TH Tonic Water
+TH Ginger Ale
+Orangina
+LemonAid Ingwer
+LemonAid Blutorange
+Lemonaid Limette
+Lemonaid Maracuja
+Laut
+Leise
+Apfel Schorle
+Rhabarber Schorle
+Bionade Holunder
+Lavendel Limo
+Gurken Limo
+Störtebecker Freibier
+Icetea Cherry
+Icetea Lemon
+Icetea Pineapple
+Icetea Watermelon
+Icetea Peach
+Störtebecker Kellerbier
+Störtebecker Pilsener
+Radler
+Leffe
+Heineken
+Bx
+Laut 0,75
+Störtebecker nordisch-hell
+Flens
+Mate
+Premium Cola
+Coke Zero
+Coke

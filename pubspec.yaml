@@ -63,6 +63,8 @@ flutter:
 
   assets:
     - config/getraenke_schauburg.txt
+    - config/getraenke_atlantis.txt
+    - config/getraenke_cinema_ostertor.txt
 
   # To add assets to your application, add an assets section, like this:
   # assets:

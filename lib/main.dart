@@ -28,7 +28,11 @@ Future<void> main() async {
   // Wichtig für DateFormat(..., 'de_DE') in Schritt 2 (sonst LocaleDataException).
   await initializeDateFormatting('de_DE', null);
 
-  await GetraenkeConfigService().initOnAppStart();
+  for (final Kino kino in KinoRepository.kinos) {
+    if (kino.hatGetraenke) {
+      await GetraenkeConfigService(kinoId: kino.id).initOnAppStart();
+    }
+  }
   await WechselgeldConfigService().initOnAppStart();
 
   runApp(const MeineApp());

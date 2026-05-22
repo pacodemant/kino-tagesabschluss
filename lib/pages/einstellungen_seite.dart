@@ -100,6 +100,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final TextEditingController _s2EcBelegCtrl = TextEditingController();
   final TextEditingController _s2DifferenzCtrl = TextEditingController();
 
+  String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
   bool _devModusAktiv = false;
   bool _wechselgeldAufgeklappt = false;
@@ -167,6 +168,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         ? KinoRepository.kinos.indexWhere((Kino k) => k.id == aktivId)
         : -1;
     if (!mounted) return;
+    if (aktivId != null) _aktiveKinoId = aktivId;
     if (aktiveIndex >= 0) {
       final Kino aktiveKino = KinoRepository.kinos[aktiveIndex];
       int wgCent =
@@ -202,7 +204,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _setzeAutoFillSchritt2Controller(s2Daten);
 
     final List<String> getraenkeliste =
-        await GetraenkeConfigService().loadLocal();
+        await GetraenkeConfigService(kinoId: _aktiveKinoId).loadLocal();
     if (!mounted) {
       return;
     }
@@ -643,7 +645,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _speichereGetraenkeliste() async {
-    await GetraenkeConfigService().saveLocal(_getraenkeliste);
+    await GetraenkeConfigService(kinoId: _aktiveKinoId).saveLocal(_getraenkeliste);
   }
 
   void _fuegeGetraenkHinzu() {
@@ -701,9 +703,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     );
     if (bestaetigt != true || !mounted) return;
     try {
-      await GetraenkeConfigService().updateFromRemote();
+      await GetraenkeConfigService(kinoId: _aktiveKinoId).updateFromRemote();
       if (!mounted) return;
-      final List<String> neueListe = await GetraenkeConfigService().loadLocal();
+      final List<String> neueListe = await GetraenkeConfigService(kinoId: _aktiveKinoId).loadLocal();
       if (!mounted) return;
       for (final TextEditingController c in _getraenkeController) {
         c.dispose();

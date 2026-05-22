@@ -10,12 +10,25 @@ class GetraenkeConfigService {
 
   final String kinoId;
 
-  static const String _remoteUrl =
-      'https://raw.githubusercontent.com/pacodemant/kino-tagesabschluss/master/config/getraenke_schauburg.txt';
-  static const String _localKey = 'getraenke_schauburg';
-  static const String _localDateKey = 'getraenke_schauburg_date';
-  static const String _updateAvailableKey = 'getraenke_update_available';
-  static const String _assetPath = 'config/getraenke_schauburg.txt';
+  static const String _baseRawUrl =
+      'https://raw.githubusercontent.com/pacodemant/kino-tagesabschluss/master/config/';
+
+  String get _dateiname {
+    switch (kinoId) {
+      case 'kino_03':
+        return 'getraenke_atlantis.txt';
+      case 'kino_04':
+        return 'getraenke_cinema_ostertor.txt';
+      default:
+        return 'getraenke_schauburg.txt';
+    }
+  }
+
+  String get _remoteUrl => '$_baseRawUrl$_dateiname';
+  String get _localKey => 'getraenke_$kinoId';
+  String get _localDateKey => 'getraenke_${kinoId}_date';
+  String get _updateAvailableKey => 'getraenke_update_available_$kinoId';
+  String get _assetPath => 'config/$_dateiname';
 
   Future<void> initOnAppStart() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -23,30 +36,30 @@ class GetraenkeConfigService {
     final bool leer = vorhanden.isEmpty;
 
     if (leer) {
-      debugPrint('[GetraenkeConfig] Remote-Fetch gestartet');
+      debugPrint('[GetraenkeConfig/$kinoId] Remote-Fetch gestartet');
       try {
         final (String datum, List<String> liste) = await _fetchRemote();
         await _speichereListeUndDatum(prefs, liste, datum);
         await prefs.setBool(_updateAvailableKey, false);
         debugPrint(
-          '[GetraenkeConfig] Remote-Fetch erfolgreich, Datum: $datum',
+          '[GetraenkeConfig/$kinoId] Remote-Fetch erfolgreich, Datum: $datum',
         );
       } catch (e) {
         debugPrint(
-          '[GetraenkeConfig] Remote-Fetch fehlgeschlagen: $e — Asset-Fallback',
+          '[GetraenkeConfig/$kinoId] Remote-Fetch fehlgeschlagen: $e — Asset-Fallback',
         );
         try {
           final (String datum, List<String> liste) = await _ladeAsset();
           await _speichereListeUndDatum(prefs, liste, datum);
           debugPrint(
-            '[GetraenkeConfig] Asset-Fallback geladen, ${liste.length} Getränke',
+            '[GetraenkeConfig/$kinoId] Asset-Fallback geladen, ${liste.length} Getränke',
           );
         } catch (assetFehler) {
-          debugPrint('[GetraenkeConfig] Asset-Fallback fehlgeschlagen: $assetFehler');
+          debugPrint('[GetraenkeConfig/$kinoId] Asset-Fallback fehlgeschlagen: $assetFehler');
         }
       }
       final List<String> geladen = await loadLocal();
-      debugPrint('[GetraenkeConfig] Lokale Liste geladen, ${geladen.length} Getränke');
+      debugPrint('[GetraenkeConfig/$kinoId] Lokale Liste geladen, ${geladen.length} Getränke');
     } else {
       try {
         final String inhalt = await _fetchRemoteRaw();
@@ -57,7 +70,7 @@ class GetraenkeConfigService {
         await prefs.setBool(_updateAvailableKey, neuer);
         if (neuer) {
           debugPrint(
-            '[GetraenkeConfig] Update verfügbar: remote $remoteDatum > lokal $lokalDatum',
+            '[GetraenkeConfig/$kinoId] Update verfügbar: remote $remoteDatum > lokal $lokalDatum',
           );
         }
       } catch (_) {

@@ -46,7 +46,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Future<void> _ladeAlles() async {
-    final List<String> liste = await GetraenkeConfigService().loadLocal();
+    final List<String> liste = await GetraenkeConfigService(kinoId: widget.kinoId).loadLocal();
     if (!mounted) return;
     final Map<String, dynamic>? gespeichert =
         await LokalerSpeicher.ladeGetraenkeMengen(widget.kinoId);
