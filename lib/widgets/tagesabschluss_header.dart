@@ -40,7 +40,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
       titleSpacing: 8,
       title: Schritt1HeaderSection(
         onTap: onTap ?? () {},
-        titel: 'Tagesabschluss',
+        titel: 'Tagesabschluss SCHAUBURG',
         untertitel: untertitel,
       ),
       actions: actions,
