@@ -841,7 +841,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
               child: ElevatedButton(
                 onPressed: _zurueckZurStartseite,
                 child: Text(
-                  'Startseite ${KinoRepository.nachId(widget.kinoId)?.name ?? ''}',
+                  'Startseite ${KinoRepository.nachId(widget.kinoId)?.kuerzel ?? ''}',
                 ),
               ),
             ),
