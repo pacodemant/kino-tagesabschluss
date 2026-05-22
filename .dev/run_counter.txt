@@ -1,4 +1,4 @@
-last_run: 184
-next_run: 185
-last_run_title: R184: Getränke-Seite kompakter, kein Divider, Linkshänder-Modus
-last_commit: 5794468
+last_run: 185
+next_run: 186
+last_run_title: R185: Getränkeliste remote config, lokale Persistenz, Einstellungs-Editor
+last_commit: pending
