@@ -1,4 +1,4 @@
-last_run: 183
-next_run: 184
-last_run_title: R183: AppBar-Titel getauscht, Tagesabschluss SCHAUBURG oben
-last_commit: 8694af1
+last_run: 184
+next_run: 185
+last_run_title: R184: Getränke-Seite kompakter, kein Divider, Linkshänder-Modus
+last_commit: 5794468
