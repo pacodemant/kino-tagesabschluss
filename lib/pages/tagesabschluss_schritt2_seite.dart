@@ -541,7 +541,7 @@ class _TagesabschlussSchritt2SeiteState
 
   Future<void> _autoFillDev() async {
     final Map<String, dynamic>? daten =
-        await LokalerSpeicher.ladeAutoFillSchritt2();
+        await LokalerSpeicher.ladeAutoFillSchritt2(widget.kinoId);
     if (!mounted) {
       return;
     }
@@ -550,13 +550,13 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     final int kinoSoll =
-        (daten?['kinoSollCent'] as num?)?.toInt() ?? 74900;
+        (daten?['kinoSollCent'] as num?)?.toInt() ?? 0;
     final int bistroSoll =
-        (daten?['bistroSollCent'] as num?)?.toInt() ?? 20280;
+        (daten?['bistroSollCent'] as num?)?.toInt() ?? 0;
     final int ausgaben =
         (daten?['ausgabenCent'] as num?)?.toInt() ?? 0;
     final int ecBeleg =
-        (daten?['ecBelegCent'] as num?)?.toInt() ?? 51390;
+        (daten?['ecBelegCent'] as num?)?.toInt() ?? 0;
     final int differenz =
         (daten?['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
 

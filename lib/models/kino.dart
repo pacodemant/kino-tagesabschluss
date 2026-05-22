@@ -18,6 +18,7 @@ class KinoRepository {
     Kino(id: 'kino_02', name: 'Gondel'),
     Kino(id: 'kino_03', name: 'Atlantis', hatGetraenke: true, hatWechselgeld: true),
     Kino(id: 'kino_04', name: 'Cinema Ostertor', hatGetraenke: true, hatWechselgeld: true),
+    Kino(id: 'kino_05', name: 'Bar Tabak'),
   ];
 
   static Kino? nachId(String id) {

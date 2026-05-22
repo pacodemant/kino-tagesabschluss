@@ -197,7 +197,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _setzeAutoFillSchritt1Controller(s1Daten);
 
     final Map<String, dynamic>? s2Daten =
-        await LokalerSpeicher.ladeAutoFillSchritt2();
+        await LokalerSpeicher.ladeAutoFillSchritt2(_aktiveKinoId);
     if (!mounted) {
       return;
     }
@@ -332,23 +332,66 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _speichereAutoFillSchritt2() async {
-    await LokalerSpeicher.speichereAutoFillSchritt2(<String, dynamic>{
-      'kinoSollCent': TagesabschlussBerechnung.parseCentZiffern(
-        _s2KinoSollCtrl.text,
-      ),
-      'bistroSollCent': TagesabschlussBerechnung.parseCentZiffern(
-        _s2BistroSollCtrl.text,
-      ),
-      'ausgabenCent': TagesabschlussBerechnung.parseCentZiffern(
-        _s2AusgabenCtrl.text,
-      ),
-      'ecBelegCent': TagesabschlussBerechnung.parseCentZiffern(
-        _s2EcBelegCtrl.text,
-      ),
-      'differenzAnfangsbestandCent': TagesabschlussBerechnung.parseCentZiffern(
-        _s2DifferenzCtrl.text,
-      ),
-    });
+    await LokalerSpeicher.speichereAutoFillSchritt2(
+      _aktiveKinoId,
+      <String, dynamic>{
+        'kinoSollCent': TagesabschlussBerechnung.parseCentZiffern(
+          _s2KinoSollCtrl.text,
+        ),
+        'bistroSollCent': TagesabschlussBerechnung.parseCentZiffern(
+          _s2BistroSollCtrl.text,
+        ),
+        'ausgabenCent': TagesabschlussBerechnung.parseCentZiffern(
+          _s2AusgabenCtrl.text,
+        ),
+        'ecBelegCent': TagesabschlussBerechnung.parseCentZiffern(
+          _s2EcBelegCtrl.text,
+        ),
+        'differenzAnfangsbestandCent': TagesabschlussBerechnung.parseCentZiffern(
+          _s2DifferenzCtrl.text,
+        ),
+      },
+    );
+  }
+
+  Map<String, dynamic> _kinoSchritt2Testwerte() {
+    switch (_aktiveKinoId) {
+      case 'kino_03':
+        return <String, dynamic>{
+          'kinoSollCent': 69000,
+          'bistroSollCent': 24930,
+          'ausgabenCent': 0,
+          'ecBelegCent': 38160,
+          'differenzAnfangsbestandCent': 0,
+        };
+      case 'kino_04':
+        return <String, dynamic>{
+          'kinoSollCent': 22350,
+          'bistroSollCent': 0,
+          'ausgabenCent': 0,
+          'ecBelegCent': 7750,
+          'differenzAnfangsbestandCent': 0,
+        };
+      default:
+        return <String, dynamic>{
+          'kinoSollCent': 110000,
+          'bistroSollCent': 52630,
+          'ausgabenCent': 0,
+          'ecBelegCent': 57820,
+          'differenzAnfangsbestandCent': 0,
+        };
+    }
+  }
+
+  int _kinoStandardWechselgeldCent() {
+    switch (_aktiveKinoId) {
+      case 'kino_03':
+        return 50000;
+      case 'kino_04':
+        return 40000;
+      default:
+        return 140000;
+    }
   }
 
   Future<void> _setzeStandardTestwerte() async {
@@ -385,12 +428,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       }
     }
 
-    final int kinoSoll = _standardTestwerte['kinoSollCent'] as int;
-    final int bistroSoll = _standardTestwerte['bistroSollCent'] as int;
-    final int ausgaben = _standardTestwerte['ausgabenCent'] as int;
-    final int ecBeleg = _standardTestwerte['ecBelegCent'] as int;
-    final int differenz =
-        _standardTestwerte['differenzAnfangsbestandCent'] as int;
+    final Map<String, dynamic> s2 = _kinoSchritt2Testwerte();
+    final int kinoSoll = s2['kinoSollCent'] as int;
+    final int bistroSoll = s2['bistroSollCent'] as int;
+    final int ausgaben = s2['ausgabenCent'] as int;
+    final int ecBeleg = s2['ecBelegCent'] as int;
+    final int differenz = s2['differenzAnfangsbestandCent'] as int;
 
     _s2KinoSollCtrl.text = kinoSoll != 0
         ? TagesabschlussFormatierung.formatiereEuroEingabe(kinoSoll)
@@ -408,7 +451,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         ? TagesabschlussFormatierung.formatiereEuroEingabe(differenz)
         : '';
 
-    final int wgCent = _standardTestwerte['wechselgeldKino01Cent'] as int;
+    final int wgCent = _kinoStandardWechselgeldCent();
     if (_aktiveKinoIndex >= 0) {
       _wgCtrl.text = TagesabschlussFormatierung.formatiereEuroEingabe(wgCent);
     }

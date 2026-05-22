@@ -298,17 +298,40 @@ class LokalerSpeicher {
     await speicher.setString('dev_autofill_schritt1', jsonEncode(daten));
   }
 
-  static Future<Map<String, dynamic>?> ladeAutoFillSchritt2() async {
+  static Map<String, dynamic> _schritt2StandardWerte(String kinoId) {
+    switch (kinoId) {
+      case 'kino_03':
+        return <String, dynamic>{
+          'kinoSollCent': 69000,
+          'bistroSollCent': 24930,
+          'ausgabenCent': 0,
+          'ecBelegCent': 38160,
+          'differenzAnfangsbestandCent': 0,
+        };
+      case 'kino_04':
+        return <String, dynamic>{
+          'kinoSollCent': 22350,
+          'bistroSollCent': 0,
+          'ausgabenCent': 0,
+          'ecBelegCent': 7750,
+          'differenzAnfangsbestandCent': 0,
+        };
+      default:
+        return <String, dynamic>{
+          'kinoSollCent': 110000,
+          'bistroSollCent': 52630,
+          'ausgabenCent': 0,
+          'ecBelegCent': 57820,
+          'differenzAnfangsbestandCent': 0,
+        };
+    }
+  }
+
+  static Future<Map<String, dynamic>?> ladeAutoFillSchritt2(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? rohwert = speicher.getString('dev_autofill_schritt2');
+    final String? rohwert = speicher.getString('dev_autofill_schritt2_$kinoId');
     if (rohwert == null) {
-      return <String, dynamic>{
-        'kinoSollCent': 110000,
-        'bistroSollCent': 52630,
-        'ausgabenCent': 0,
-        'ecBelegCent': 57820,
-        'differenzAnfangsbestandCent': 0,
-      };
+      return _schritt2StandardWerte(kinoId);
     }
     try {
       return jsonDecode(rohwert) as Map<String, dynamic>;
@@ -318,10 +341,11 @@ class LokalerSpeicher {
   }
 
   static Future<void> speichereAutoFillSchritt2(
+    String kinoId,
     Map<String, dynamic> daten,
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString('dev_autofill_schritt2', jsonEncode(daten));
+    await speicher.setString('dev_autofill_schritt2_$kinoId', jsonEncode(daten));
   }
 
   static Future<Map<String, dynamic>?> ladeWechselgeldZaehlEntwurf(
