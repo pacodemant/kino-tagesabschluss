@@ -322,7 +322,7 @@ class _TagesabschlussSchritt2SeiteState
 
   String _kopfDatumUhrzeit() {
     return DateFormat(
-      "EEEE, d.M.yy (H:mm 'Uhr')",
+      "EEEE, d.M.yy, 'Stand' H:mm 'Uhr'",
       'de_DE',
     ).format(DateTime.now());
   }
