@@ -5,6 +5,7 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -229,6 +230,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     final Color differenzFarbe =
         a.differenzGesamtCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
+    final String isoDatum =
+        '${a.datum.year}-${a.datum.month.toString().padLeft(2, '0')}-'
+        '${a.datum.day.toString().padLeft(2, '0')}';
+    final bool istHeute = isoDatum == DatumsHelper.logischesIsoDatum();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -244,18 +250,19 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               children: <Widget>[
-                // Hinweis-Card
-                Card(
-                  color: Colors.black,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: const Padding(
-                    padding: EdgeInsets.all(14),
-                    child: Text(
-                      'Diese Abrechnung kann nicht geändert werden.',
-                      style: TextStyle(color: Colors.white),
+                // Hinweis-Card – nur für vergangene Einträge
+                if (!istHeute)
+                  Card(
+                    color: Colors.black,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      child: Text(
+                        'Diese Abrechnung kann nicht mehr geändert werden.',
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
                     ),
                   ),
-                ),
 
                 // Abschnitt 1 – Geldzählung
                 Card(
