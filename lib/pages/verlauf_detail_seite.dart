@@ -240,10 +240,12 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     return Scaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
+        centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: Text(
           '${_deutschesDatum(a.datum)} – ${a.kinoName}',
+          style: const TextStyle(fontWeight: FontWeight.normal),
         ),
       ),
       bottomNavigationBar: Container(

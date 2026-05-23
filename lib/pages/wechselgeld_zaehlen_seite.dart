@@ -919,30 +919,30 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              children: <Widget>[
-                TextButton(
-                  onPressed: _rollenUebernommen
-                      ? _loescheRollen
-                      : _ladeRollenAusErsterZaehlung,
-                  style: TextButton.styleFrom(
-                    textStyle: const TextStyle(fontSize: 13),
-                  ),
-                  child: Text(
-                    _rollenUebernommen ? 'Geldrollen löschen' : 'Übernehmen',
-                  ),
-                ),
-                IconButton(
-                  iconSize: 18,
-                  onPressed: _zeigeRollenUebernehmenHilfe,
-                  icon: const Icon(Icons.help_outline),
-                ),
-              ],
-            ),
-          ),
           if (_rollenAufgeklappt) ...<Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Row(
+                children: <Widget>[
+                  TextButton(
+                    onPressed: _rollenUebernommen
+                        ? _loescheRollen
+                        : _ladeRollenAusErsterZaehlung,
+                    style: TextButton.styleFrom(
+                      textStyle: const TextStyle(fontSize: 13),
+                    ),
+                    child: Text(
+                      _rollenUebernommen ? 'Geldrollen löschen' : 'Übernehmen',
+                    ),
+                  ),
+                  IconButton(
+                    iconSize: 18,
+                    onPressed: _zeigeRollenUebernehmenHilfe,
+                    icon: const Icon(Icons.help_outline),
+                  ),
+                ],
+              ),
+            ),
             const Divider(height: 1),
             Padding(padding: const EdgeInsets.all(12), child: inhalt),
           ],

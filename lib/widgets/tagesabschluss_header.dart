@@ -41,6 +41,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
   Widget build(BuildContext context) {
     final String untertitel = subtitle ?? _standardUntertitel;
     return AppBar(
+      centerTitle: false,
       backgroundColor: AppFarben.appBarRot,
       foregroundColor: Colors.white,
       toolbarHeight: toolbarHeight,

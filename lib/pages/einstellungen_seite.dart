@@ -279,6 +279,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final int cent =
         int.tryParse(text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     LokalerSpeicher.speichereWechselgeldSollwertCent(kinoId, cent);
+    setState(() {});
   }
 
   Future<void> _speichereAutoFillSchritt1() async {
@@ -930,6 +931,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     return Scaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
+        centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: Column(
@@ -938,7 +940,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           children: <Widget>[
             const Text(
               'Einstellungen',
-              style: TextStyle(fontWeight: FontWeight.w500),
+              style: TextStyle(fontWeight: FontWeight.normal),
             ),
             if (_aktiveKinoName.isNotEmpty)
               Text(
@@ -963,6 +965,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       'Wechselgeldbestand',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
+                    subtitle: _wgCtrl.text.isNotEmpty
+                        ? Text(
+                            _wgCtrl.text,
+                            style: const TextStyle(fontSize: 11),
+                          )
+                        : null,
                     trailing: Icon(
                       _wechselgeldAufgeklappt
                           ? Icons.expand_less
@@ -1026,10 +1034,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       'Getränkeliste',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: const Text(
-                      'Reihenfolge = Regal-Reihenfolge',
-                      style: TextStyle(fontSize: 11),
-                    ),
                     trailing: Icon(
                       _getraenkelisteAufgeklappt
                           ? Icons.expand_less
@@ -1042,6 +1046,13 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   ),
                   if (_getraenkelisteAufgeklappt) ...<Widget>[
                     const Divider(height: 1),
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Text(
+                        'Reihenfolge = Regal-Reihenfolge',
+                        style: TextStyle(fontSize: 11),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: _baueGetraenkelisteInhalt(),

@@ -37,10 +37,14 @@ class TagesabschlussScaffold extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       appBar: appBar ??
           AppBar(
+            centerTitle: false,
             backgroundColor: AppFarben.appBarRot,
             foregroundColor: Colors.white,
             toolbarHeight: 48,
-            title: Text(title),
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.normal),
+            ),
             actions: actions,
           ),
       body: Column(

@@ -31,9 +31,13 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: const Text('Schauburg Tagesabrechnung'),
+        title: const Text(
+          'Schauburg Tagesabrechnung',
+          style: TextStyle(fontWeight: FontWeight.normal),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

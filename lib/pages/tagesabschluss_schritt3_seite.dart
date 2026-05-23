@@ -7,6 +7,7 @@ import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
@@ -191,40 +192,47 @@ class _TagesabschlussSchritt3SeiteState
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Was möchtest du als nächstes tun?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              Navigator.of(context).pushNamed(
-                WechselgeldZaehlenSeite.routenName,
-              );
-            },
-            child: const Text('Wechselgeldkasse prüfen'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              Navigator.of(context).pushNamed(
-                GetraenkeAuffuellenSeite.routenName,
-              );
-            },
-            child: const Text('Getränke auffüllen'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                StartmenueSeite.routenName,
-                (Route<dynamic> _) => false,
-                arguments: widget.argumente.kinoId,
-              );
-            },
-            child: const Text('Zurück zur Startseite'),
-          ),
-        ],
-      ),
+      builder: (BuildContext dialogContext) {
+        final Kino? kino = KinoRepository.nachId(widget.argumente.kinoId);
+        return AlertDialog(
+          title: const Text('Was möchtest du als nächstes tun?'),
+          actions: <Widget>[
+            if (kino?.hatWechselgeld == true)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  Navigator.of(context).pushNamed(
+                    WechselgeldZaehlenSeite.routenName,
+                    arguments: widget.argumente.kinoId,
+                  );
+                },
+                child: const Text('Wechselgeldkasse prüfen'),
+              ),
+            if (kino?.hatGetraenke == true)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                  Navigator.of(context).pushNamed(
+                    GetraenkeAuffuellenSeite.routenName,
+                    arguments: widget.argumente.kinoId,
+                  );
+                },
+                child: const Text('Getränke auffüllen'),
+              ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  StartmenueSeite.routenName,
+                  (Route<dynamic> _) => false,
+                  arguments: widget.argumente.kinoId,
+                );
+              },
+              child: const Text('Zurück zur Startseite'),
+            ),
+          ],
+        );
+      },
     );
   }
 

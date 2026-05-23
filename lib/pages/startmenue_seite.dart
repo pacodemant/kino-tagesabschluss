@@ -52,9 +52,13 @@ class StartmenueSeite extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: Text(kino.name),
+        title: Text(
+          kino.name,
+          style: const TextStyle(fontWeight: FontWeight.normal),
+        ),
         actions: <Widget>[
           TextButton(
             onPressed: () {

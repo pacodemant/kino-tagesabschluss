@@ -12,9 +12,13 @@ class PlatzhalterSeite extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: Text(titel),
+        title: Text(
+          titel,
+          style: const TextStyle(fontWeight: FontWeight.normal),
+        ),
       ),
       body: Center(child: Text('$titel folgt im nächsten Schritt.')),
     );

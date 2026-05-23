@@ -99,9 +99,13 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
     final double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: Text('Verlauf – $_kinoName'),
+        title: Text(
+          'Verlauf – $_kinoName',
+          style: const TextStyle(fontWeight: FontWeight.normal),
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
