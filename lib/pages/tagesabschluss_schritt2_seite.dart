@@ -113,6 +113,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
+  DateTime _letzteAenderung = DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -311,6 +312,7 @@ class _TagesabschlussSchritt2SeiteState
   void _vorzeichenToggleDifferenz() {
     if (_differenzAnfangsbestandCent == 0) return;
     setState(() {
+      _letzteAenderung = DateTime.now();
       _differenzAnfangsbestandCent = -_differenzAnfangsbestandCent;
     });
     _setzeControllerText(
@@ -324,7 +326,7 @@ class _TagesabschlussSchritt2SeiteState
     return DateFormat(
       "EEEE, d.M.yy, 'Stand' H:mm 'Uhr'",
       'de_DE',
-    ).format(DateTime.now());
+    ).format(_letzteAenderung);
   }
 
   void _weiterZuSchritt3() {
@@ -421,6 +423,7 @@ class _TagesabschlussSchritt2SeiteState
 
   void _ecBelegHinzufuegen() {
     setState(() {
+      _letzteAenderung = DateTime.now();
       _ecBelegController.add(TextEditingController());
       _ecBelegLabelController.add(TextEditingController());
       _ecBelegFocusNode.add(FocusNode());
@@ -444,6 +447,7 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     setState(() {
+      _letzteAenderung = DateTime.now();
       _ecBelegController.removeAt(index).dispose();
       _ecBelegLabelController.removeAt(index).dispose();
       _ecBelegFocusNode.removeAt(index).dispose();
@@ -485,6 +489,7 @@ class _TagesabschlussSchritt2SeiteState
 
   void _ausgabeHinzufuegen() {
     setState(() {
+      _letzteAenderung = DateTime.now();
       _ausgabenBetragController.add(TextEditingController());
       _ausgabenLabelController.add(TextEditingController());
       _ausgabenBetragFocusNode.add(FocusNode());
@@ -508,6 +513,7 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     setState(() {
+      _letzteAenderung = DateTime.now();
       _ausgabenBetragController.removeAt(index).dispose();
       _ausgabenLabelController.removeAt(index).dispose();
       _ausgabenBetragFocusNode.removeAt(index).dispose();
@@ -1038,6 +1044,7 @@ class _TagesabschlussSchritt2SeiteState
                                           _differenzAnfangsbestandCent,
                                       onChanged: (String wert) {
                                         setState(() {
+                                          _letzteAenderung = DateTime.now();
                                           final int absolutWert =
                                               TagesabschlussBerechnung.parseCentZiffern(wert);
                                           final bool istNegativ =
@@ -1104,6 +1111,7 @@ class _TagesabschlussSchritt2SeiteState
                             ),
                             onChanged: (String wert) {
                               setState(() {
+                                _letzteAenderung = DateTime.now();
                                 _kinoSollBeruehrt = true;
                                 _kinoSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
                               });
@@ -1121,6 +1129,7 @@ class _TagesabschlussSchritt2SeiteState
                               ),
                               onChanged: (String wert) {
                                 setState(() {
+                                  _letzteAenderung = DateTime.now();
                                   _bistroSollBeruehrt = true;
                                   _bistroSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
                                 });
@@ -1198,6 +1207,7 @@ class _TagesabschlussSchritt2SeiteState
                                         ),
                                         onChanged: (String wert) {
                                           setState(() {
+                                            _letzteAenderung = DateTime.now();
                                             _ausgabenLabels[i] = wert;
                                           });
                                           _speichereEntwurf();
@@ -1221,6 +1231,7 @@ class _TagesabschlussSchritt2SeiteState
                                         ),
                                         onChanged: (String wert) {
                                           setState(() {
+                                            _letzteAenderung = DateTime.now();
                                             _ausgabenBetrageCent[i] =
                                                 TagesabschlussBerechnung.parseCentZiffern(wert);
                                           });
@@ -1333,6 +1344,7 @@ class _TagesabschlussSchritt2SeiteState
                                         ),
                                         onChanged: (String wert) {
                                           setState(() {
+                                            _letzteAenderung = DateTime.now();
                                             _ecBelegLabels[i] = wert;
                                           });
                                           _speichereEntwurf();
@@ -1355,6 +1367,7 @@ class _TagesabschlussSchritt2SeiteState
                                         ),
                                         onChanged: (String wert) {
                                           setState(() {
+                                            _letzteAenderung = DateTime.now();
                                             if (i == 0) {
                                               _ecBeleg1Beruehrt = true;
                                             }
