@@ -99,6 +99,7 @@ Inhalt:
 - Status von `flutter test` (falls Tests vorhanden)
 - Letzter Commit-Hash
 - Bestätigung: `.dev/run_counter.txt` und `CHANGELOG.md` aktualisiert
+  - CHANGELOG.md vor dem Schreiben per Read prüfen — nie behaupten, sie existiere nicht, ohne vorher nachgesehen zu haben
 
 ## Direkte Anweisungen ohne Run-Nummer
 
@@ -109,6 +110,7 @@ Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 - Direkt `git push origin master` ausführen
 - `run_counter` NICHT erhöhen
 - Auf nächstes Prompt warten
+- **Bericht trotzdem ausgeben** — im gleichen Codeblock-Format wie § „Bericht nach jedem Run"
 
 ## Ausgabeformat
 
