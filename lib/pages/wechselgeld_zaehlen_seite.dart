@@ -682,7 +682,10 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         await AbrechnungSpeicher.laden(widget.kinoId);
     if (!mounted) return;
     final Object? stueckzahlenRoh = daten?['stueckzahlen'];
-    if (stueckzahlenRoh is! Map<String, dynamic>) {
+    final Map<String, dynamic>? stueckzahlMap =
+        stueckzahlenRoh is Map<String, dynamic> ? stueckzahlenRoh : null;
+    if (stueckzahlMap == null || stueckzahlMap.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(
@@ -691,7 +694,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       return;
     }
     setState(() {
-      for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
+      for (final MapEntry<String, dynamic> e in stueckzahlMap.entries) {
         if (e.key.startsWith('roll_') && _stueckzahlen.containsKey(e.key)) {
           final int wert = (e.value as num?)?.toInt() ?? 0;
           _stueckzahlen[e.key] = wert;
