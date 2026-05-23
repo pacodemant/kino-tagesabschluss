@@ -2,7 +2,7 @@ import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 
-/// Usecase fuer Laden/Speichern des Tagesabschluss-Entwurfs.
+/// Usecase fuer Laden/Speichern des Tagesabrechnungs-Entwurfs.
 class KassenstandEntwurfUsecase {
   const KassenstandEntwurfUsecase();
 

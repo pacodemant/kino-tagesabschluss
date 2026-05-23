@@ -1,4 +1,4 @@
-last_run: 198
-next_run: 199
-last_run_title: Run 198: Wechselgeld-Fallback in Schritt 1 (iPhone)
-last_commit: b08731a
+last_run: 199
+next_run: 200
+last_run_title: Run 199: Text & Labels (Tagesabrechnung, Scheine/Rollen, Wechselgeld, Umschläge, DEV-Kachel)
+last_commit: TBD

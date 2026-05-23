@@ -73,7 +73,7 @@ class TagesabschlussFinalisierenUsecase {
     'coin_5c',
   };
 
-  /// Finalisiert den Tagesabschluss und berechnet alle Summen zentral.
+  /// Finalisiert die Tagesabrechnung und berechnet alle Summen zentral.
   TagesabschlussFinal finalisieren({
     required TagesabschlussFinalisierenEingabe eingabe,
     DateTime? jetzt,

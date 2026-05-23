@@ -47,7 +47,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Eintrag löschen?'),
-        content: const Text('Diesen Tagesabschluss wirklich löschen?'),
+        content: const Text('Diesen Tagesabrechnung wirklich löschen?'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -312,8 +312,8 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                         fett: true,
                       ),
                       _zeile(
-                        'Wechselgeld-Sollwert',
-                        _euro(a.wechselgeldSollwertCent),
+                        'Wechselgeld',
+                        '− ${_euro(a.wechselgeldSollwertCent)}',
                       ),
                       _zeile(
                         'Bar-Bestand bereinigt',
@@ -381,7 +381,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                         fett: true,
                       ),
                       _zeile(
-                        'Differenz Tagesabschluss',
+                        'Differenz Tagesabrechnung',
                         _euroMitVorzeichen(a.differenzGesamtCent),
                         fett: true,
                         farbe: differenzFarbe,

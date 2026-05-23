@@ -32,7 +32,7 @@ class Schritt1UebersichtSection extends StatelessWidget {
               wert: kassenbestandGesamt,
             ),
             _UebersichtZeile(
-              label: 'Wechselgeld-Sollwert',
+              label: 'Wechselgeld',
               wert: wechselgeldSollwert,
             ),
             _UebersichtZeile(

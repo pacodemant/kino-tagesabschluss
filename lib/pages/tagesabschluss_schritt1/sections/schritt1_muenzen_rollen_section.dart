@@ -29,7 +29,7 @@ class Schritt1MuenzenRollenSection extends StatelessWidget {
                 children: <Widget>[
                   const Expanded(
                     child: Text(
-                      'Rollen (Anzahl)',
+                      'Rollen (Anzahl der Rollen)',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),

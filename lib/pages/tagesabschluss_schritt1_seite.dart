@@ -962,7 +962,7 @@ class _TagesabschlussSchritt1SeiteState
         hinweiseSection: gruppen.hinweiseSection,
         zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
           kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
-          wechselgeldSollwert: _formatiereEuro(_wechselgeldSollwertCent),
+          wechselgeldSollwert: '− ${_formatiereEuro(_wechselgeldSollwertCent)}',
           barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
           barumsatzNegativ: _barumsatzBereinigtCent < 0,
         ),

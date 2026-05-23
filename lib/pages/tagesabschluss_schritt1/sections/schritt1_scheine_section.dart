@@ -29,7 +29,7 @@ class Schritt1ScheineSection extends StatelessWidget {
                 children: <Widget>[
                   const Expanded(
                     child: Text(
-                      'Scheine (Anzahl)',
+                      'Scheine (Anzahl der Scheine)',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),

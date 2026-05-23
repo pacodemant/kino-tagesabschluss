@@ -133,7 +133,7 @@ class Schritt1GruppenOrchestrierung {
     );
 
     final Widget umschlaegeGruppe = _baueEinklappbarenBereich(
-      titel: 'Umschläge (Beträge)',
+      titel: 'Sonstiges: Umschläge u.a. (Geldbeträge)',
       gesamtbetragCent: umschlagSummeCent,
       aufgeklappt: umschlaegeAufgeklappt,
       beimUmschalten: toggleUmschlaege,

@@ -998,7 +998,7 @@ class _TagesabschlussSchritt2SeiteState
                   ),
                 ),
                 Text(
-                  'Tagesabschluss ${widget.kinoName}',
+                  'Tagesabrechnung ${widget.kinoName}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 20,

@@ -15,7 +15,7 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
     this.toolbarHeight = 48,
   });
 
-  // Zweck: Einheitlicher Header/AppBar fuer alle Tagesabschluss-Schritte.
+  // Zweck: Einheitlicher Header/AppBar fuer alle Tagesabrechnung-Schritte.
   // Die Schrittzeile wird standardmaessig als "x/4 · Titel" aufgebaut.
   final int schrittNummer;
   final int gesamtSchritte;
@@ -31,8 +31,8 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
 
   // Untere Zeile (klein): Kinoname + Schrittnummer wenn vorhanden.
   String get _titelUnten => schrittNummer == 0
-      ? 'Tagesabschluss ${kinoName.toUpperCase()}'
-      : 'Tagesabschluss ${kinoName.toUpperCase()} ($schrittNummer/$gesamtSchritte)';
+      ? 'Tagesabrechnung ${kinoName.toUpperCase()}'
+      : 'Tagesabrechnung ${kinoName.toUpperCase()} ($schrittNummer/$gesamtSchritte)';
 
   @override
   Size get preferredSize => Size.fromHeight(toolbarHeight);

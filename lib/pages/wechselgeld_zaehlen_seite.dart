@@ -901,7 +901,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                 children: <Widget>[
                   const Expanded(
                     child: Text(
-                      'Rollen (Anzahl)',
+                      'Rollen (Anzahl der Rollen)',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -969,8 +969,8 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
               wert: _formatiereEuro(_kassenbestandGesamtCent),
             ),
             _ZusammenfassungsZeile(
-              label: 'Wechselgeld-Sollwert',
-              wert: _formatiereEuro(_wechselgeldSollwertCent),
+              label: 'Wechselgeld',
+              wert: '− ${_formatiereEuro(_wechselgeldSollwertCent)}',
             ),
             _ZusammenfassungsZeile(
               label: 'Differenz',

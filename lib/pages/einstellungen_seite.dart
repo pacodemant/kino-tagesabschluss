@@ -650,7 +650,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
             const SizedBox(height: 6),
             Text(
-              'Scheine (Anzahl)',
+              'Scheine (Anzahl der Scheine)',
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
@@ -1061,20 +1061,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   onChanged: _onDevModusGeaendert,
                   activeThumbColor: AppFarben.appBarRot,
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          'DEBUG devModusAktiv: $_devModusAktiv',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ),
-                      if (_devModusAktiv)
+                if (_devModusAktiv)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
                         TextButton.icon(
                           onPressed: () => setState(
                             () =>
@@ -1087,18 +1079,18 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                           ),
                           label: const Text('Testwerte'),
                         ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                 if (_devModusAktiv && _testwertAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                     child: SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton(
+                      child: TextButton(
                         onPressed: _setzeStandardTestwerte,
-                        child: const Text('Standard-Testwerte einsetzen'),
+                        child: const Text('Standard-Testwerte übernehmen'),
                       ),
                     ),
                   ),

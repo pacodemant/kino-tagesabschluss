@@ -33,7 +33,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
         automaticallyImplyLeading: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: const Text('Schauburg Tagesabschluss'),
+        title: const Text('Schauburg Tagesabrechnung'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

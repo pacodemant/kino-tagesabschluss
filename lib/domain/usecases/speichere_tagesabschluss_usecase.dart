@@ -1,7 +1,7 @@
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
-/// Usecase zum Speichern eines finalen Tagesabschlusses mit Duplikat-Pruefung.
+/// Usecase zum Speichern einer finalen Tagesabrechnung mit Duplikat-Pruefung.
 class SpeichereTagesabschlussUsecase {
   const SpeichereTagesabschlussUsecase();
 

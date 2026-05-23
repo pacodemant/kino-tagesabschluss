@@ -75,7 +75,7 @@ class StartmenueSeite extends StatelessWidget {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: () => _oeffneTagesabschlussSchritt1(context),
-              child: const Text('Tagesabschluss'),
+              child: const Text('Tagesabrechnung'),
             ),
             if (kino.hatWechselgeld) ...<Widget>[
               const SizedBox(height: 12),

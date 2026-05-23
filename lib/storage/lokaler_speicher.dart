@@ -114,7 +114,7 @@ class LokalerSpeicher {
     return 'draft_closure_${kinoId}_$isoDatum';
   }
 
-  /// Speichert einen finalen Tagesabschluss im eigenen Key-Namespace je Kino.
+  /// Speichert eine finale Tagesabrechnung im eigenen Key-Namespace je Kino.
   static Future<void> speichereFinalenTagesabschluss(
     TagesabschlussFinal abschluss,
   ) async {
@@ -141,7 +141,7 @@ class LokalerSpeicher {
     await speicher.setString(key, jsonEncode(vorhandeneAbschluesse));
   }
 
-  /// Ersetzt den finalen Tagesabschluss desselben Kalendertags.
+  /// Ersetzt die finale Tagesabrechnung desselben Kalendertags.
   static Future<void> ersetzeFinalenTagesabschluss(
     TagesabschlussFinal abschluss,
   ) async {
@@ -431,7 +431,7 @@ class LokalerSpeicher {
   static String _wechselgeldZaehlEntwurfKey(String kinoId) =>
       'wechselgeld_zaehlen_entwurf_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
 
-  /// Löscht den finalen Tagesabschluss eines bestimmten Kalendertags.
+  /// Löscht die finale Tagesabrechnung eines bestimmten Kalendertags.
   static Future<void> loescheFinalenTagesabschluss(
     String kinoId,
     DateTime datum,
