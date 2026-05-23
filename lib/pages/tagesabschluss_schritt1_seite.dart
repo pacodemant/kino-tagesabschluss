@@ -17,6 +17,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenf
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
+import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -205,11 +206,15 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _ladeInitialeDaten() async {
-    final int geladenerWechselgeldSollwert = await _initialisierungHelper
+    int geladenerWechselgeldSollwert = await _initialisierungHelper
         .ladeInitialeDaten(
           usecase: _kassenstandEntwurfUsecase,
           kinoId: widget.kinoId,
         );
+    if (geladenerWechselgeldSollwert == 0) {
+      geladenerWechselgeldSollwert =
+          await WechselgeldConfigService().getWechselgeldBetrag(widget.kinoName);
+    }
 
     // AbrechnungSpeicher als primäre Quelle (korrekte Datum-Logik mit 4-Uhr-Knick)
     final Map<String, dynamic>? abrechnungDaten =
