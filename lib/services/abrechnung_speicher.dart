@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Speichert und lädt die Eingabewerte von Schritt 1 je Kino und Abrechnungsdatum.
 ///
-/// Datum-Logik: 0:00–3:59 Uhr → Abrechnungsdatum = Vortag, ab 4:00 Uhr = heute.
+/// Datum-Logik: 0:00–5:59 Uhr → Abrechnungsdatum = Vortag, ab 6:00 Uhr = heute.
 /// Key-Schema: "abrechnung_[kinoId]_[yyyy-MM-dd]"
 class AbrechnungSpeicher {
   const AbrechnungSpeicher._();

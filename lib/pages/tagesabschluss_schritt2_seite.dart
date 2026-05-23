@@ -113,6 +113,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
+  bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
   @override
   void initState() {
@@ -167,10 +168,12 @@ class _TagesabschlussSchritt2SeiteState
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeSchritt2Entwurf(widget.kinoId);
     if (daten == null || !mounted) {
+      if (mounted) setState(() { _laedt = false; });
       return;
     }
     final String? gespeichertesDatum = daten['isoDatum'] as String?;
     if (gespeichertesDatum != DatumsHelper.logischesIsoDatum()) {
+      setState(() { _laedt = false; });
       return;
     }
 
@@ -226,6 +229,7 @@ class _TagesabschlussSchritt2SeiteState
     }
 
     setState(() {
+      _laedt = false;
       _setzeEcBelegAnzahl(ecBelege.length);
       _setzeAusgabenAnzahl(ausgabenBetraege.length);
       _kinoSollCent = kinoSollCent;
@@ -903,6 +907,9 @@ class _TagesabschlussSchritt2SeiteState
 
   @override
   Widget build(BuildContext context) {
+    if (_laedt) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,

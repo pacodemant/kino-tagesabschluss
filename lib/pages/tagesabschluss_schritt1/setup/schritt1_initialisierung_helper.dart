@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
-import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 // Zweck: Kapselt Initialisierung, Laden und Controller-Synchronisierung von Schritt 1.
 class Schritt1InitialisierungHelper {
@@ -39,27 +38,11 @@ class Schritt1InitialisierungHelper {
   final void Function(FocusNode focusNode) entferneFeldKey;
   final int Function() naechsteUmschlagId;
 
-  Future<int> ladeInitialeDaten({
-    required KassenstandEntwurfUsecase usecase,
-    required String kinoId,
-  }) async {
-    final int geladenerWechselgeldSollwert = await usecase
-        .ladeWechselgeldSollwertCent(kinoId);
-    final KassenstandEntwurf? entwurf = await usecase.ladeHeutigenEntwurf(kinoId);
-
-    if (entwurf != null) {
-      for (final Kassenzeile zeile in alleStueckzahlZeilen) {
-        stueckzahlen[zeile.id] = entwurf.stueckzahlen[zeile.id] ?? 0;
-      }
-      for (final Kassenzeile zeile in loseMuenzarten) {
-        loseMuenzenNachArtCent[zeile.id] =
-            entwurf.loseMuenzenNachArtCent[zeile.id] ?? 0;
-      }
-      uebernehmeUmschlagEntwurf(entwurf.umschlaege);
-    }
+  Future<int> ladeInitialeDaten({required String kinoId}) async {
+    final int wechselgeld =
+        await LokalerSpeicher.ladeWechselgeldSollwertCent(kinoId);
     sichereMindestensEinenUmschlag();
-    synchronisiereControllerAusState();
-    return geladenerWechselgeldSollwert;
+    return wechselgeld;
   }
 
   void leereUmschlagFelder() {

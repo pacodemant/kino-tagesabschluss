@@ -2,9 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
-import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
-import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
@@ -68,8 +66,6 @@ class _TagesabschlussSchritt1SeiteState
     'coin_5c',
   };
 
-  final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
-      const KassenstandEntwurfUsecase();
   final Schritt1StateController _stateController =
       const Schritt1StateController();
   final Schritt1OrchestrierungHelper _orchestrierungHelper =
@@ -206,17 +202,14 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _ladeInitialeDaten() async {
-    int geladenerWechselgeldSollwert = await _initialisierungHelper
-        .ladeInitialeDaten(
-          usecase: _kassenstandEntwurfUsecase,
-          kinoId: widget.kinoId,
-        );
-    if (geladenerWechselgeldSollwert == 0) {
-      geladenerWechselgeldSollwert =
+    int wechselgeld = await _initialisierungHelper.ladeInitialeDaten(
+      kinoId: widget.kinoId,
+    );
+    if (wechselgeld == 0) {
+      wechselgeld =
           await WechselgeldConfigService().getWechselgeldBetrag(widget.kinoName);
     }
 
-    // AbrechnungSpeicher als primäre Quelle (korrekte Datum-Logik mit 4-Uhr-Knick)
     final Map<String, dynamic>? abrechnungDaten =
         await AbrechnungSpeicher.laden(widget.kinoId);
 
@@ -237,6 +230,18 @@ class _TagesabschlussSchritt1SeiteState
           _loseMuenzenNachArtCent[e.key] = (e.value as num?)?.toInt() ?? 0;
         }
       }
+      final Object? umschlaegeRoh = abrechnungDaten['umschlaege'];
+      if (umschlaegeRoh is List<dynamic>) {
+        final List<UmschlagEintrag> geladen = <UmschlagEintrag>[];
+        for (final dynamic element in umschlaegeRoh) {
+          if (element is Map<String, dynamic>) {
+            geladen.add(UmschlagEintrag.fromJson(element));
+          }
+        }
+        if (geladen.isNotEmpty) {
+          _uebernehmeUmschlagEntwurf(geladen);
+        }
+      }
       _initialisierungHelper.synchronisiereControllerAusState();
     }
 
@@ -247,7 +252,7 @@ class _TagesabschlussSchritt1SeiteState
     );
 
     setState(() {
-      _wechselgeldSollwertCent = geladenerWechselgeldSollwert;
+      _wechselgeldSollwertCent = wechselgeld;
       _laedt = false;
       if (hatKupferRollenWerte) {
         _kupferRollenSichtbar = true;
@@ -323,7 +328,7 @@ class _TagesabschlussSchritt1SeiteState
         gespeicherteDaten: gespeicherteDaten,
       );
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
   void _leereAlleFelderDev() {
@@ -347,26 +352,18 @@ class _TagesabschlussSchritt1SeiteState
   );
 
   Future<void> _speichereEntwurf() async {
-    final KassenstandEntwurf entwurf = KassenstandEntwurf(
-      stueckzahlen: Map<String, int>.from(_stueckzahlen),
-      umschlaege: List<UmschlagEintrag>.from(_umschlaege),
-      loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
-    );
-
-    await _kassenstandEntwurfUsecase.speichereHeutigenEntwurf(
-      kinoId: widget.kinoId,
-      entwurf: entwurf,
-    );
-
     await AbrechnungSpeicher.speichern(widget.kinoId, <String, dynamic>{
       'stueckzahlen': Map<String, int>.from(_stueckzahlen),
       'loseMuenzenNachArtCent': Map<String, int>.from(_loseMuenzenNachArtCent),
+      'umschlaege': _umschlaege
+          .map((UmschlagEintrag e) => e.toJson())
+          .toList(),
       'barBestandCent': _barumsatzBereinigtCent,
     });
   }
 
   // Delegiert State-/Controller-Logik in eine ausgelagerte Helper-Datei.
-  void _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) {
+  Future<void> _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) async {
     final int geparsterWert = _stateController.parseGanzzahl(wert);
     setState(() {
       _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
@@ -374,10 +371,13 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_stueckzahlFocusNode[zeile.id]);
       }
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
-  void _beiLoseMuenzartBetragGeaendert(String muenzartId, String wert) {
+  Future<void> _beiLoseMuenzartBetragGeaendert(
+    String muenzartId,
+    String wert,
+  ) async {
     setState(() {
       _stateController.setzeLoseMuenzartBetrag(
         _loseMuenzenNachArtCent,
@@ -388,10 +388,10 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_loseMuenzenFocusNode[muenzartId]);
       }
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
-  void _umschlagHinzufuegen() {
+  Future<void> _umschlagHinzufuegen() async {
     setState(() {
       _stateController.fuegeUmschlagEintragHinzu(() {
         _fuegeUmschlagEintragOhneSpeichernHinzu(
@@ -399,10 +399,10 @@ class _TagesabschlussSchritt1SeiteState
         );
       });
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
-  void _umschlagEntfernen(int index) {
+  Future<void> _umschlagEntfernen(int index) async {
     if (!_stateController.kannUmschlagEntfernen(_umschlaege, index)) {
       return;
     }
@@ -418,20 +418,23 @@ class _TagesabschlussSchritt1SeiteState
         entferneFeldKey: _scrollHelper.entferneFeldKey,
       );
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
-  void _beiUmschlagBezeichnungGeaendert(int index, String wert) {
+  Future<void> _beiUmschlagBezeichnungGeaendert(
+    int index,
+    String wert,
+  ) async {
     if (!_stateController.istUmschlagIndexGueltig(_umschlaege, index)) {
       return;
     }
     setState(() {
       _stateController.setzeUmschlagBezeichnung(_umschlaege, index, wert);
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
-  void _beiUmschlagBetragGeaendert(int index, String wert) {
+  Future<void> _beiUmschlagBetragGeaendert(int index, String wert) async {
     if (!_stateController.istUmschlagIndexGueltig(_umschlaege, index)) {
       return;
     }
@@ -439,7 +442,7 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _stateController.setzeUmschlagBetrag(_umschlaege, index, betragCent);
     });
-    _speichereEntwurf();
+    await _speichereEntwurf();
   }
 
   // Setzt die Sichtbarkeit der Kupfer-Rollen ohne Layout-/Logikaenderung.
@@ -669,7 +672,6 @@ class _TagesabschlussSchritt1SeiteState
   Future<void> _weiterZuSchritt2() async {
     await _orchestrierungHelper.weiterZuSchritt2(
       context: context,
-      usecase: _kassenstandEntwurfUsecase,
       kassenbestandGesamtCent: _kassenbestandGesamtCent,
       speichereEntwurf: _speichereEntwurf,
       isMounted: () => mounted,

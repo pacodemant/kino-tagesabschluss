@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 
 // Zweck: Bündelt Orchestrierungs-, Navigations- und DevTools-Helfer für Schritt 1.
@@ -175,13 +174,12 @@ class Schritt1OrchestrierungHelper {
 
   Future<void> weiterZuSchritt2({
     required BuildContext context,
-    required KassenstandEntwurfUsecase usecase,
     required int kassenbestandGesamtCent,
     required Future<void> Function() speichereEntwurf,
     required bool Function() isMounted,
     required VoidCallback navigiereZuSchritt2,
   }) async {
-    if (usecase.bestaetigungNoetigFuerNullbetrag(kassenbestandGesamtCent)) {
+    if (kassenbestandGesamtCent == 0) {
       final bool? bestaetigt = await showDialog<bool>(
         context: context,
         builder: (BuildContext dialogKontext) {
