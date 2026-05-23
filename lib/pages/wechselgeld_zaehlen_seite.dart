@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
-import 'package:kino_bar_app/domain/usecases/kassenstand_entwurf_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
-import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
@@ -53,8 +52,6 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       const Schritt1OrchestrierungHelper();
   final Schritt1GruppenOrchestrierung _gruppenOrchestrierung =
       const Schritt1GruppenOrchestrierung();
-  final KassenstandEntwurfUsecase _kassenstandEntwurfUsecase =
-      const KassenstandEntwurfUsecase();
   late final Schritt1InitialisierungHelper _initialisierungHelper;
 
   final Map<String, int> _stueckzahlen = <String, int>{};
@@ -681,10 +678,11 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
   }
 
   Future<void> _ladeRollenAusErsterZaehlung() async {
-    final KassenstandEntwurf? entwurf =
-        await _kassenstandEntwurfUsecase.ladeHeutigenEntwurf(widget.kinoId);
+    final Map<String, dynamic>? daten =
+        await AbrechnungSpeicher.laden(widget.kinoId);
     if (!mounted) return;
-    if (entwurf == null) {
+    final Object? stueckzahlenRoh = daten?['stueckzahlen'];
+    if (stueckzahlenRoh is! Map<String, dynamic>) {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(
@@ -693,11 +691,12 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       return;
     }
     setState(() {
-      for (final MapEntry<String, int> e in entwurf.stueckzahlen.entries) {
+      for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
         if (e.key.startsWith('roll_') && _stueckzahlen.containsKey(e.key)) {
-          _stueckzahlen[e.key] = e.value;
+          final int wert = (e.value as num?)?.toInt() ?? 0;
+          _stueckzahlen[e.key] = wert;
           _stueckzahlController[e.key]?.text =
-              e.value != 0 ? e.value.toString() : '';
+              wert != 0 ? wert.toString() : '';
         }
       }
       _rollenUebernommen = true;

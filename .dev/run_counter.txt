@@ -1,4 +1,4 @@
-last_run: 201
-next_run: 202
-last_run_title: Run 201: Speicher-Konsolidierung Tagesabschluss
-last_commit: 11dbd9a
+last_run: 202
+next_run: 203
+last_run_title: Run 202: wechselgeld_zaehlen_seite auf AbrechnungSpeicher migriert
+last_commit: TBD

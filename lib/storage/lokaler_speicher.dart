@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:kino_bar_app/models/kassenstand_entwurf.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -78,40 +77,6 @@ class LokalerSpeicher {
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString('getraenkeliste_$kinoId', jsonEncode(liste));
-  }
-
-  static Future<KassenstandEntwurf?> ladeKassenstandEntwurf({
-    required String kinoId,
-    required String isoDatum,
-  }) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String key = entwurfKey(kinoId: kinoId, isoDatum: isoDatum);
-    final String? rohwert = speicher.getString(key);
-    if (rohwert == null) {
-      return null;
-    }
-
-    try {
-      final Map<String, dynamic> geparst =
-          jsonDecode(rohwert) as Map<String, dynamic>;
-      return KassenstandEntwurf.fromJson(geparst);
-    } catch (_) {
-      return null;
-    }
-  }
-
-  static Future<void> speichereKassenstandEntwurf({
-    required String kinoId,
-    required String isoDatum,
-    required KassenstandEntwurf entwurf,
-  }) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String key = entwurfKey(kinoId: kinoId, isoDatum: isoDatum);
-    await speicher.setString(key, jsonEncode(entwurf.toJson()));
-  }
-
-  static String entwurfKey({required String kinoId, required String isoDatum}) {
-    return 'draft_closure_${kinoId}_$isoDatum';
   }
 
   /// Speichert eine finale Tagesabrechnung im eigenen Key-Namespace je Kino.
@@ -246,15 +211,6 @@ class LokalerSpeicher {
 
   static String schritt2EntwurfKey(String kinoId) =>
       'entwurf_schritt2_$kinoId';
-
-  /// Löscht den Schritt-1-Entwurf für ein Kino und Datum.
-  static Future<void> loescheKassenstandEntwurf({
-    required String kinoId,
-    required String isoDatum,
-  }) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.remove(entwurfKey(kinoId: kinoId, isoDatum: isoDatum));
-  }
 
   /// Löscht den Schritt-2-Entwurf für ein Kino.
   static Future<void> loescheSchritt2Entwurf(String kinoId) async {
