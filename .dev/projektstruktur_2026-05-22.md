@@ -55,7 +55,6 @@ Reine Datenbehälter ohne Logik.
 |-------|-------|
 | `kino.dart` | Was ist ein Kino (Name, Kürzel)? |
 | `kassenzeile.dart` | Eine Zeile in der Kassenzählung (Stückelung + Anzahl) |
-| `kassenstand_entwurf.dart` | Aktueller (noch nicht finalisierter) Kassenzählstand |
 | `tagesabschluss_final.dart` | Fertig gespeicherter Tagesabschluss |
 
 ---
@@ -68,7 +67,6 @@ Geschäftslogik – hier passiert die eigentliche Arbeit.
 |-------|-------|
 | `tagesabschluss_berechnung.dart` | Rechnet Soll, Ist, Differenz (intern in Cent) |
 | `tagesabschluss_finalisieren_usecase.dart` | Wandelt Entwurf in finalen Abschluss um |
-| `usecases/kassenstand_entwurf_usecase.dart` | Entwurf laden/speichern |
 | `usecases/kino_waehlen_usecase.dart` | Kino setzen/lesen |
 | `usecases/speichere_tagesabschluss_usecase.dart` | Fertigen Abschluss dauerhaft speichern |
 | `usecases/startziel_bestimmen_usecase.dart` | Welche Seite soll beim Start angezeigt werden? |
