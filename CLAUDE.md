@@ -97,7 +97,7 @@ Inhalt:
   - Wenn die Änderung mehr als 3 relevante Risiken hat, auch mehr als 3 Tests
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
-- Letzter Commit-Hash
+- Letzter Commit-Hash — daneben: Run-Nummer und ob sie vom User vorgegeben oder von Claude selbst abgeleitet wurde (z. B. „Run 203 – vom User vorgegeben" oder „Run 203 – aus run_counter.txt abgeleitet")
 - Bestätigung: `.dev/run_counter.txt` und `CHANGELOG.md` aktualisiert
   - CHANGELOG.md vor dem Schreiben per Read prüfen — nie behaupten, sie existiere nicht, ohne vorher nachgesehen zu haben
 
