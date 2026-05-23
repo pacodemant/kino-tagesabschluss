@@ -965,16 +965,21 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       'Wechselgeldbestand',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: _wgCtrl.text.isNotEmpty
-                        ? Text(
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        if (_wgCtrl.text.isNotEmpty)
+                          Text(
                             _wgCtrl.text,
                             style: const TextStyle(fontSize: 11),
-                          )
-                        : null,
-                    trailing: Icon(
-                      _wechselgeldAufgeklappt
-                          ? Icons.expand_less
-                          : Icons.expand_more,
+                          ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          _wechselgeldAufgeklappt
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                        ),
+                      ],
                     ),
                     onTap: () => setState(
                       () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
