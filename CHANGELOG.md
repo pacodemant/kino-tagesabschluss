@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 198: Wechselgeld-Fallback in Schritt 1 eingebaut. War: ladeWechselgeldSollwertCent gab 0 zurück wenn SharedPreferences-Key fehlte (z.B. frischer iPhone-Browser) → kein Abzug. Fix: nach dem Usecase-Aufruf wird bei Ergebnis 0 ein zweiter Versuch via WechselgeldConfigService().getWechselgeldBetrag(kinoName) gemacht — exakt wie bereits in EinstellungenSeite implementiert. Betroffene Datei: tagesabschluss_schritt1_seite.dart (_ladeInitialeDaten).
 - Run 197: Einnahmenseite – Zeitstempel „Stand H:mm Uhr" zeigt jetzt die Uhrzeit der letzten Feldänderung (nicht mehr den Seitenöffnungszeitpunkt). Alle onChanged-Callbacks (Kino SOLL, Bistro SOLL, Ausgaben-Label, Ausgaben-Betrag, EC-Beleg-Label, EC-Beleg-Betrag, Differenz Anfangsbestand) sowie strukturelle Aktionen (Beleg/Ausgabe hinzufügen/entfernen, ±-Toggle) aktualisieren _letzteAenderung. Clear-Button löst keinen Zeitstempel aus.
 - R196i: Seitenhintergrund von warmgelbrot (0xFFFFF0EE) auf blasses App-Rot (0xFFFFE4E4) geändert — gleicher Rotton wie AppBar-Rot, deutlich entsättigt.
 - Run 196: AppBar-Layout geändert: Schrittnummer (x/y) aus oberer Zeile entfernt, in untere Zeile hinter Kinoname verschoben → oben nur noch Titel (bold), unten "Tagesabschluss KINONAME (x/y)". Seiten mit schrittNummer 0 (Wechselgeld, Getränke) unverändert. "Einnahmen/Abschluss" → "Einnahmen" in schrittTitel und allen 4 Slider-Bottom-Sheets.

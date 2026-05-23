@@ -1,4 +1,4 @@
-last_run: 197
-next_run: 198
-last_run_title: Run 197: Zeitstempel letzte Feldänderung auf Einnahmenseite
-last_commit: 9277c18
+last_run: 198
+next_run: 199
+last_run_title: Run 198: Wechselgeld-Fallback in Schritt 1 (iPhone)
+last_commit: b08731a
