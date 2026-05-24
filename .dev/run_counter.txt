@@ -1,4 +1,4 @@
-last_run: 206
-next_run: 207
-last_run_title: Run 206: Fix Next-Button Bargeldzählung – zuverlässig, einheitlich, letztes Feld ausgegraut
-last_commit: 1c5aed2
+last_run: 207
+next_run: 208
+last_run_title: Run 207: Next-Button Fixes + Umbenennung Belege
+last_commit: TBD

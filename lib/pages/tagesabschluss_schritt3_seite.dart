@@ -304,7 +304,7 @@ class _TagesabschlussSchritt3SeiteState
               ),
               ListTile(
                 leading: const Icon(Icons.arrow_back),
-                title: const Text('2/4 · Einnahmen'),
+                title: const Text('2/4 · Belege'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   Navigator.of(context)

@@ -125,7 +125,11 @@ class _TagesabschlussSchritt2SeiteState
         _devModusAktiv = aktiv;
       });
     });
-    _ladeEntwurf();
+    _ladeEntwurf().then((_) {
+      if (mounted) {
+        _autoFokussiereNachLaden();
+      }
+    });
   }
 
   @override
@@ -778,10 +782,13 @@ class _TagesabschlussSchritt2SeiteState
     FocusScope.of(context).requestFocus(naechstesFeld);
   }
 
-  /// Uebernimmt das bekannte Footer-Verhalten: ein Klick springt zum naechsten Feld.
   void _weiterZumNaechstenFeldUnten() {
     final FocusNode? aktivesFeld = _aktivesFeldSchritt2();
     if (aktivesFeld == null) {
+      final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
+      if (reihenfolge.isNotEmpty) {
+        FocusScope.of(context).requestFocus(reihenfolge.first);
+      }
       return;
     }
     _beiEingabeAbgeschlossenSchritt2(aktivesFeld);
@@ -794,6 +801,41 @@ class _TagesabschlussSchritt2SeiteState
       }
     }
     return null;
+  }
+
+  FocusNode? _erstesLeeresFeld() {
+    final Map<FocusNode, TextEditingController> lookup =
+        <FocusNode, TextEditingController>{
+      _kinoSollFocusNode: _kinoSollController,
+      _bistroSollFocusNode: _bistroSollController,
+      _differenzAnfangsbestandFocusNode: _differenzAnfangsbestandController,
+      for (int i = 0; i < _ausgabenLabelFocusNode.length; i++)
+        _ausgabenLabelFocusNode[i]: _ausgabenLabelController[i],
+      for (int i = 0; i < _ausgabenBetragFocusNode.length; i++)
+        _ausgabenBetragFocusNode[i]: _ausgabenBetragController[i],
+      for (int i = 0; i < _ecBelegLabelFocusNode.length; i++)
+        _ecBelegLabelFocusNode[i]: _ecBelegLabelController[i],
+      for (int i = 0; i < _ecBelegFocusNode.length; i++)
+        _ecBelegFocusNode[i]: _ecBelegController[i],
+    };
+    for (final FocusNode fn in _fokusReihenfolgeSchritt2()) {
+      if (lookup[fn]?.text.isEmpty ?? true) {
+        return fn;
+      }
+    }
+    return null;
+  }
+
+  void _autoFokussiereNachLaden() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final FocusNode? ziel = _erstesLeeresFeld();
+      if (ziel != null) {
+        FocusScope.of(context).requestFocus(ziel);
+      }
+    });
   }
 
   Widget _baueEingabeZeile({
@@ -880,7 +922,7 @@ class _TagesabschlussSchritt2SeiteState
               const ListTile(
                 leading: Icon(Icons.check_circle),
                 title: Text(
-                  '2/4 · Einnahmen',
+                  '2/4 · Belege',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
                 subtitle: Text('Aktueller Schritt'),
@@ -918,7 +960,7 @@ class _TagesabschlussSchritt2SeiteState
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
-        schrittTitel: 'Einnahmen',
+        schrittTitel: 'Belege',
         kinoName: widget.kinoName,
         onTap: _zeigeSchrittSlider,
         actions: <Widget>[

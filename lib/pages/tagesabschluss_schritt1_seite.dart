@@ -164,7 +164,11 @@ class _TagesabschlussSchritt1SeiteState
         _devModusAktiv = aktiv;
       });
     });
-    _ladeInitialeDaten();
+    _ladeInitialeDaten().then((_) {
+      if (mounted) {
+        _autoFokussiereNachLaden();
+      }
+    });
   }
 
   @override
@@ -464,7 +468,8 @@ class _TagesabschlussSchritt1SeiteState
       _stateController.fokusReihenfolge(
         scheine: _scheine,
         stueckzahlFocusNode: _stueckzahlFocusNode,
-        loseMuenzarten: _loseMuenzarten,
+        loseMuenzarten:
+            _kupferLoseSichtbar ? _loseMuenzarten : _loseMuenzartenOhneKupfer,
         loseMuenzenFocusNode: _loseMuenzenFocusNode,
         rollenSichtbar: _rollenSichtbar,
         umschlaege: _umschlaege,
@@ -613,6 +618,71 @@ class _TagesabschlussSchritt1SeiteState
       }
     });
     return true;
+  }
+
+  FocusNode? _erstesLeeresFeld() {
+    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt1();
+    for (final FocusNode fn in reihenfolge) {
+      String? schluessel;
+      for (final MapEntry<String, FocusNode> entry
+          in _stueckzahlFocusNode.entries) {
+        if (identical(entry.value, fn)) {
+          schluessel = entry.key;
+          break;
+        }
+      }
+      if (schluessel != null) {
+        if (_stueckzahlController[schluessel]?.text.isEmpty ?? true) {
+          return fn;
+        }
+        continue;
+      }
+      for (final MapEntry<String, FocusNode> entry
+          in _loseMuenzenFocusNode.entries) {
+        if (identical(entry.value, fn)) {
+          schluessel = entry.key;
+          break;
+        }
+      }
+      if (schluessel != null) {
+        if (_loseMuenzenController[schluessel]?.text.isEmpty ?? true) {
+          return fn;
+        }
+        continue;
+      }
+      final int bezIdx = _umschlagBezeichnungFocusNode
+          .indexWhere((FocusNode n) => identical(n, fn));
+      if (bezIdx >= 0) {
+        if (bezIdx < _umschlagBezeichnungController.length &&
+            _umschlagBezeichnungController[bezIdx].text.isEmpty) {
+          return fn;
+        }
+        continue;
+      }
+      final int betIdx = _umschlagBetragFocusNode
+          .indexWhere((FocusNode n) => identical(n, fn));
+      if (betIdx >= 0) {
+        if (betIdx < _umschlagBetragController.length &&
+            _umschlagBetragController[betIdx].text.isEmpty) {
+          return fn;
+        }
+        continue;
+      }
+      return fn;
+    }
+    return null;
+  }
+
+  void _autoFokussiereNachLaden() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      final FocusNode? ziel = _erstesLeeresFeld();
+      if (ziel != null) {
+        _fokussiereTextfeld(ziel);
+      }
+    });
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) =>
@@ -949,7 +1019,7 @@ class _TagesabschlussSchritt1SeiteState
                   children: <Widget>[
                     Icon(Icons.arrow_forward),
                     SizedBox(width: 6),
-                    Text('2. Umsätze'),
+                    Text('2. Belege'),
                   ],
                 ),
               ),
