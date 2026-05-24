@@ -72,80 +72,82 @@ class StartmenueSeite extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () => _oeffneTagesabschlussSchritt1(context),
-              child: const Text('Tagesabrechnung'),
+      body: Stack(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => _oeffneTagesabschlussSchritt1(context),
+                  child: const Text('Tagesabrechnung'),
+                ),
+                if (kino.hatWechselgeld) ...<Widget>[
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () => _oeffneWechselgeldZaehlen(context),
+                    child: const Text('Wechselgeld zählen'),
+                  ),
+                ],
+                if (kino.hatGetraenke) ...<Widget>[
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: () => _oeffneGetraenkeAuffuellen(context),
+                    child: const Text('Getränke auffüllen'),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => _oeffneEinstellungen(context),
+                  child: const Text('Einstellungen'),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => _oeffneVerlauf(context),
+                  child: const Text('Verlauf'),
+                ),
+                const Spacer(),
+                const Center(
+                  child: Text(
+                    'Web App @ GitHub:',
+                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Center(
+                  child: Image.asset(
+                    'assets/images/qr_webapp_github.png',
+                    width: 180,
+                  ),
+                ),
+                const SizedBox(height: 8),
+              ],
             ),
-            if (kino.hatWechselgeld) ...<Widget>[
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => _oeffneWechselgeldZaehlen(context),
-                child: const Text('Wechselgeld zählen'),
-              ),
-            ],
-            if (kino.hatGetraenke) ...<Widget>[
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => _oeffneGetraenkeAuffuellen(context),
-                child: const Text('Getränke auffüllen'),
-              ),
-            ],
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => _oeffneEinstellungen(context),
-              child: const Text('Einstellungen'),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: () => _oeffneVerlauf(context),
-              child: const Text('Verlauf'),
-            ),
-            const Spacer(),
-            OverflowBox(
-              maxWidth: double.infinity,
-              child: Transform.rotate(
-                angle: 5 * math.pi / 180,
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width + 20,
-                  child: Container(
-                    color: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: const Text(
-                      'Perso-Getränke nicht vergessen!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 210,
+            child: Transform.rotate(
+              angle: 5 * math.pi / 180,
+              child: Container(
+                color: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: const Text(
+                  'Perso-Getränke nicht vergessen!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            const Center(
-              child: Text(
-                'Web App @ GitHub:',
-                style: TextStyle(fontSize: 13, color: Colors.black54),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Center(
-              child: Image.asset(
-                'assets/images/qr_webapp_github.png',
-                width: 180,
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

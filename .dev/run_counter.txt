@@ -1,4 +1,4 @@
-last_run: 204
-next_run: 205
-last_run_title: Run 204: Fix negativer Margin im Perso-Getränke-Banner
-last_commit: 757e94d
+last_run: 205
+next_run: 206
+last_run_title: Run 205: Fix Perso-Getränke-Banner via Stack-Lösung
+last_commit: TBD

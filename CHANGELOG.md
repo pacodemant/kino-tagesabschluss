@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 205: Fix Perso-Getränke-Banner via Stack-Lösung. OverflowBox entfernt (verursachte Rendering-Assertion und Overflow-Indikator). body ist jetzt ein Stack: Layer 1 = bestehendes Padding(all:16)+Column unverändert (Buttons, Spacer, QR-Code); Layer 2 = Positioned(left:0, right:0, bottom:210) mit Transform.rotate(5°) und schwarzem Container, weißem Bold-Text. Kein OverflowBox, keine negativen Margins.
 - Run 204: Fix Perso-Getränke-Banner: negative Margin (`EdgeInsets.symmetric(horizontal: -26)`) durch `OverflowBox(maxWidth: double.infinity)` + `SizedBox(width: MediaQuery.of(context).size.width + 20)` ersetzt. Kein Flutter-Assertion-Fehler mehr; Banner weiterhin 5° gekippt, rand-zu-rand, schwarzer Hintergrund, weißer Bold-Text.
 - Run 203: Schwarzes Erinnerungs-Banner „Perso-Getränke nicht vergessen!" auf StartmenueSeite ergänzt. Weiße Schrift, 5° gekippt, rand-zu-rand (negative horizontale Margin kompensiert Seiten-Padding). Erscheint zwischen Spacer und QR-Code-Bereich.
 - Run 202c: Bugfix _ladeRollenAusErsterZaehlung – Snackbar erscheint jetzt zuverlässig wenn AbrechnungSpeicher-Eintrag fehlt, die stueckzahlen-Map null ist oder leer ist. Zweiter mounted-Check direkt vor ScaffoldMessenger-Aufruf ergänzt.
