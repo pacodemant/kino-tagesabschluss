@@ -22,31 +22,31 @@ class StueckelungVorschlagArgumente {
 
 // ---------------------------------------------------------------------------
 
-enum _ZeilenArt { stueckzahl, restbetrag, trennlinie }
+enum _ZeilenArt { stueckzahl, betragzeile, restbetrag, trennlinie }
 
-class _Denomination {
-  const _Denomination(this.id, this.bezeichnung, this.einzelwertCent, this.istMuenze);
+class _ScheinDef {
+  const _ScheinDef(this.id, this.bezeichnung, this.einzelwertCent);
   final String id;
   final String bezeichnung;
   final int einzelwertCent;
-  final bool istMuenze;
 }
 
-const List<_Denomination> _alleDenominationen = <_Denomination>[
-  _Denomination('note_100', '100 €', 10000, false),
-  _Denomination('note_50', '50 €', 5000, false),
-  _Denomination('note_20', '20 €', 2000, false),
-  _Denomination('note_10', '10 €', 1000, false),
-  _Denomination('note_5', '5 €', 500, false),
-  _Denomination('coin_2e', '2 €', 200, true),
-  _Denomination('coin_1e', '1 €', 100, true),
-  _Denomination('coin_50c', '0,50 €', 50, true),
-  _Denomination('coin_20c', '0,20 €', 20, true),
-  _Denomination('coin_10c', '0,10 €', 10, true),
-  _Denomination('coin_5c', '0,05 €', 5, true),
-  _Denomination('coin_2c', '0,02 €', 2, true),
-  _Denomination('coin_1c', '0,01 €', 1, true),
+const List<_ScheinDef> _scheinDefinitionen = <_ScheinDef>[
+  _ScheinDef('note_100', '100 €', 10000),
+  _ScheinDef('note_50', '50 €', 5000),
+  _ScheinDef('note_20', '20 €', 2000),
+  _ScheinDef('note_10', '10 €', 1000),
+  _ScheinDef('note_5', '5 €', 500),
 ];
+
+const Set<String> _kupferIds = <String>{'coin_5c', 'coin_2c', 'coin_1c'};
+const Set<String> _silberIds = <String>{
+  'coin_2e',
+  'coin_1e',
+  'coin_50c',
+  'coin_20c',
+  'coin_10c',
+};
 
 class _ErgebnisZeile {
   const _ErgebnisZeile._({
@@ -72,6 +72,18 @@ class _ErgebnisZeile {
         genommen: genommen,
         vorhanden: vorhanden,
         gruen: gruen,
+        ausgegraut: ausgegraut,
+      );
+
+  factory _ErgebnisZeile.betragzeile({
+    required String bezeichnung,
+    required int betragCent,
+    bool ausgegraut = false,
+  }) =>
+      _ErgebnisZeile._(
+        art: _ZeilenArt.betragzeile,
+        bezeichnung: bezeichnung,
+        betragCent: betragCent,
         ausgegraut: ausgegraut,
       );
 
@@ -103,28 +115,18 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     int restCent = argumente.barBestandAbzglWechselgeldCent;
     final List<_ErgebnisZeile> zeilen = <_ErgebnisZeile>[];
 
-    bool trennlinieEingefuegt = false;
-    for (final _Denomination denom in _alleDenominationen) {
-      if (denom.istMuenze && !trennlinieEingefuegt) {
-        zeilen.add(_ErgebnisZeile.trennlinie());
-        trennlinieEingefuegt = true;
-      }
-
-      final int vorhanden = denom.istMuenze
-          ? (argumente.loseMuenzenNachArtCent[denom.id] ?? 0) ~/
-              denom.einzelwertCent
-          : argumente.stueckzahlen[denom.id] ?? 0;
-
+    // Scheine greedy, absteigend
+    for (final _ScheinDef schein in _scheinDefinitionen) {
+      final int vorhanden = argumente.stueckzahlen[schein.id] ?? 0;
       int genommen = 0;
       if (restCent > 0 && vorhanden > 0) {
-        final int maxMoeglich = restCent ~/ denom.einzelwertCent;
+        final int maxMoeglich = restCent ~/ schein.einzelwertCent;
         genommen = maxMoeglich < vorhanden ? maxMoeglich : vorhanden;
-        restCent -= genommen * denom.einzelwertCent;
+        restCent -= genommen * schein.einzelwertCent;
       }
-
       zeilen.add(
         _ErgebnisZeile.stueckzahl(
-          bezeichnung: denom.bezeichnung,
+          bezeichnung: schein.bezeichnung,
           genommen: genommen,
           vorhanden: vorhanden,
           gruen: genommen > 0 && genommen == vorhanden,
@@ -132,6 +134,41 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         ),
       );
     }
+
+    zeilen.add(_ErgebnisZeile.trennlinie());
+
+    // Münzen: Kupfer und Silber aus losen Münzen summieren
+    int kupferCent = 0;
+    for (final String id in _kupferIds) {
+      kupferCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
+    }
+    int silberCent = 0;
+    for (final String id in _silberIds) {
+      silberCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
+    }
+
+    final bool hatKupfer = kupferCent > 0;
+    if (hatKupfer) {
+      zeilen.add(
+        _ErgebnisZeile.betragzeile(
+          bezeichnung: 'Kupfergeld',
+          betragCent: kupferCent,
+        ),
+      );
+      restCent -= kupferCent;
+      if (restCent < 0) restCent = 0;
+    }
+
+    final int silberGenommen =
+        restCent > 0 ? (silberCent < restCent ? silberCent : restCent) : 0;
+    zeilen.add(
+      _ErgebnisZeile.betragzeile(
+        bezeichnung: hatKupfer ? 'Münzgeld (ohne Kupfer)' : 'Münzgeld',
+        betragCent: silberGenommen,
+        ausgegraut: silberGenommen == 0,
+      ),
+    );
+    restCent -= silberGenommen;
 
     if (restCent > 0) {
       zeilen.add(_ErgebnisZeile.restbetrag(restCent));
@@ -184,6 +221,35 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                   style: TextStyle(color: grauFarbe ?? Colors.grey.shade600),
                 ),
               ),
+            ],
+          ),
+        );
+
+      case _ZeilenArt.betragzeile:
+        final Color? grauFarbe =
+            zeile.ausgegraut ? Colors.grey.shade400 : null;
+        return Container(
+          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  zeile.bezeichnung,
+                  style: TextStyle(color: grauFarbe),
+                ),
+              ),
+              SizedBox(
+                width: 96,
+                child: Text(
+                  _euro(zeile.betragCent),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: grauFarbe,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 64),
             ],
           ),
         );

@@ -1,4 +1,4 @@
-last_run: 208
-next_run: 209
-last_run_title: Run 208: Stückelungs-Fix – keine Rollen, Nullwerte ausgegraut
+last_run: 209
+next_run: 210
+last_run_title: Run 209: Stückelung – Scheine einzeln, Münzgeld als Betrag, keine Rollen
 last_commit: TBD
