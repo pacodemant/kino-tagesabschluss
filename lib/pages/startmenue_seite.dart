@@ -119,7 +119,7 @@ class StartmenueSeite extends StatelessWidget {
                 Center(
                   child: Image.asset(
                     'assets/images/qr_webapp_github.png',
-                    width: 180,
+                    width: 100,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -127,9 +127,9 @@ class StartmenueSeite extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: 210,
+            left: -40,
+            right: -40,
+            bottom: 150,
             child: Transform.rotate(
               angle: 5 * math.pi / 180,
               child: Container(
