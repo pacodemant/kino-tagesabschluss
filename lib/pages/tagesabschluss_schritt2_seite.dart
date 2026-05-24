@@ -488,7 +488,11 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegController.add(TextEditingController());
       _ecBelegLabelController.add(TextEditingController());
       _ecBelegFocusNode.add(FocusNode());
-      _ecBelegLabelFocusNode.add(FocusNode());
+      final FocusNode ecBelegLabelFn = FocusNode()
+        ..addListener(() {
+          if (mounted) setState(() {});
+        });
+      _ecBelegLabelFocusNode.add(ecBelegLabelFn);
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
@@ -547,7 +551,11 @@ class _TagesabschlussSchritt2SeiteState
       _ausgabenBetragController.add(TextEditingController());
       _ausgabenLabelController.add(TextEditingController());
       _ausgabenBetragFocusNode.add(FocusNode());
-      _ausgabenLabelFocusNode.add(FocusNode());
+      final FocusNode ausgabenLabelFn = FocusNode()
+        ..addListener(() {
+          if (mounted) setState(() {});
+        });
+      _ausgabenLabelFocusNode.add(ausgabenLabelFn);
       _ausgabenBetrageCent.add(0);
       _ausgabenLabels.add('');
       _ausgabenIds.add(_naechsteAusgabeId++);
@@ -780,6 +788,22 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     FocusScope.of(context).requestFocus(naechstesFeld);
+    _scrolleZurMitteNachFokus(naechstesFeld);
+  }
+
+  void _scrolleZurMitteNachFokus(FocusNode fn) {
+    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
+      if (!mounted || !fn.hasFocus || !context.mounted) return;
+      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+      final BuildContext? ctx = fn.context;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(
+        ctx,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        alignment: 0.3,
+      );
+    });
   }
 
   void _weiterZumNaechstenFeldUnten() {
@@ -912,7 +936,7 @@ class _TagesabschlussSchritt2SeiteState
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.arrow_back),
-                title: const Text('1/4 · Bargeldzählung'),
+                title: const Text('1/4 · Bargeld zählen'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   Navigator.of(context)
@@ -1014,7 +1038,7 @@ class _TagesabschlussSchritt2SeiteState
                     children: const <Widget>[
                       Icon(Icons.arrow_forward),
                       SizedBox(width: 6),
-                      Text('3. Übertrag (Umschlag)'),
+                      Text('Übertrag auf Umschlag (3/4)'),
                     ],
                   ),
                 ),
@@ -1212,8 +1236,15 @@ class _TagesabschlussSchritt2SeiteState
                                       child: TextField(
                                         controller: _ausgabenLabelController[i],
                                         focusNode: _ausgabenLabelFocusNode[i],
-                                        style:
-                                            const TextStyle(fontSize: 15),
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: _ausgabenLabelFocusNode[i].hasFocus
+                                              ? Colors.white
+                                              : null,
+                                        ),
+                                        cursorColor: _ausgabenLabelFocusNode[i].hasFocus
+                                            ? Colors.white
+                                            : null,
                                         textInputAction:
                                             _textInputActionFuerSchritt2(
                                           _ausgabenLabelFocusNode[i],
@@ -1225,12 +1256,16 @@ class _TagesabschlussSchritt2SeiteState
                                           ),
                                           border: const OutlineInputBorder(),
                                           isDense: true,
+                                          filled: _ausgabenLabelFocusNode[i].hasFocus,
+                                          fillColor: _ausgabenLabelFocusNode[i].hasFocus
+                                              ? Colors.black87
+                                              : null,
                                           contentPadding:
                                               const EdgeInsets.symmetric(
                                             horizontal: 8,
                                             vertical: 6,
                                           ),
-                                                          suffixIconConstraints: const BoxConstraints(
+                                          suffixIconConstraints: const BoxConstraints(
                                             minWidth: 0,
                                             minHeight: 0,
                                             maxWidth: 32,
@@ -1241,9 +1276,12 @@ class _TagesabschlussSchritt2SeiteState
                                               : IconButton(
                                                   constraints: const BoxConstraints(),
                                                   padding: EdgeInsets.zero,
-                                                  icon: const Icon(
+                                                  icon: Icon(
                                                     Icons.close,
                                                     size: 18,
+                                                    color: _ausgabenLabelFocusNode[i].hasFocus
+                                                        ? Colors.white
+                                                        : null,
                                                   ),
                                                   onPressed: () {
                                                     _ausgabenLabelController[i].clear();
@@ -1251,6 +1289,7 @@ class _TagesabschlussSchritt2SeiteState
                                                       _ausgabenLabels[i] = '';
                                                     });
                                                     _speichereEntwurf();
+                                                    _ausgabenLabelFocusNode[i].requestFocus();
                                                   },
                                                 ),
                                         ),
@@ -1350,7 +1389,15 @@ class _TagesabschlussSchritt2SeiteState
                                       child: TextField(
                                         controller: _ecBelegLabelController[i],
                                         focusNode: _ecBelegLabelFocusNode[i],
-                                        style: const TextStyle(fontSize: 15),
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: _ecBelegLabelFocusNode[i].hasFocus
+                                              ? Colors.white
+                                              : null,
+                                        ),
+                                        cursorColor: _ecBelegLabelFocusNode[i].hasFocus
+                                            ? Colors.white
+                                            : null,
                                         textInputAction:
                                             _textInputActionFuerSchritt2(
                                           _ecBelegLabelFocusNode[i],
@@ -1362,6 +1409,10 @@ class _TagesabschlussSchritt2SeiteState
                                           ),
                                           border: const OutlineInputBorder(),
                                           isDense: true,
+                                          filled: _ecBelegLabelFocusNode[i].hasFocus,
+                                          fillColor: _ecBelegLabelFocusNode[i].hasFocus
+                                              ? Colors.black87
+                                              : null,
                                           contentPadding:
                                               const EdgeInsets.symmetric(
                                             horizontal: 8,
@@ -1378,9 +1429,12 @@ class _TagesabschlussSchritt2SeiteState
                                               : IconButton(
                                                   constraints: const BoxConstraints(),
                                                   padding: EdgeInsets.zero,
-                                                  icon: const Icon(
+                                                  icon: Icon(
                                                     Icons.close,
                                                     size: 18,
+                                                    color: _ecBelegLabelFocusNode[i].hasFocus
+                                                        ? Colors.white
+                                                        : null,
                                                   ),
                                                   onPressed: () {
                                                     _ecBelegLabelController[i].clear();
@@ -1388,6 +1442,7 @@ class _TagesabschlussSchritt2SeiteState
                                                       _ecBelegLabels[i] = '';
                                                     });
                                                     _speichereEntwurf();
+                                                    _ecBelegLabelFocusNode[i].requestFocus();
                                                   },
                                                 ),
                                         ),

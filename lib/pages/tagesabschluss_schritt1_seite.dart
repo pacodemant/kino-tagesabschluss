@@ -503,15 +503,33 @@ class _TagesabschlussSchritt1SeiteState
         fokussiereTextfeld: _fokussiereTextfeld,
       );
 
-  void _fokussiereTextfeld(FocusNode fokusNode) =>
-      _stateController.fokussiereTextfeld(
-        context: context,
-        fokusNode: fokusNode,
-        aktivesFeld: _aktivesFeldSchritt1,
-        oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
-        fokussiereTextfeldRekursiv: _fokussiereTextfeld,
-        mounted: mounted,
+  void _fokussiereTextfeld(FocusNode fokusNode) {
+    _stateController.fokussiereTextfeld(
+      context: context,
+      fokusNode: fokusNode,
+      aktivesFeld: _aktivesFeldSchritt1,
+      oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
+      fokussiereTextfeldRekursiv: _fokussiereTextfeld,
+      mounted: mounted,
+    );
+    _scrolleZurMitteNachFokus(fokusNode);
+  }
+
+  void _scrolleZurMitteNachFokus(FocusNode fn) {
+    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
+      if (!mounted || !fn.hasFocus || !context.mounted) return;
+      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+      final GlobalKey key = _holeFeldKey(fn);
+      final BuildContext? ctx = key.currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(
+        ctx,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        alignment: 0.3,
       );
+    });
+  }
 
   // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
   int? _sectionIdFuerFokusfeld(FocusNode focusNode) {
@@ -966,7 +984,7 @@ class _TagesabschlussSchritt1SeiteState
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
         schrittNummer: 1,
-        schrittTitel: 'Bargeldzählung',
+        schrittTitel: 'Bargeld zählen',
         kinoName: widget.kinoName,
         onTap: _zeigeSchrittAuswahlBottomSheet,
         actions: <Widget>[
@@ -1019,7 +1037,7 @@ class _TagesabschlussSchritt1SeiteState
                   children: <Widget>[
                     Icon(Icons.arrow_forward),
                     SizedBox(width: 6),
-                    Text('2. Belege'),
+                    Text('Belege eingeben (2/4)'),
                   ],
                 ),
               ),

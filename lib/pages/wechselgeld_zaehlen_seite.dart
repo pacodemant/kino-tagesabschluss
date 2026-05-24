@@ -501,15 +501,33 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     fokussiereTextfeld: _fokussiereTextfeld,
   );
 
-  void _fokussiereTextfeld(FocusNode fokusNode) =>
-      _stateController.fokussiereTextfeld(
-        context: context,
-        fokusNode: fokusNode,
-        aktivesFeld: _aktivesFeld,
-        oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
-        fokussiereTextfeldRekursiv: _fokussiereTextfeld,
-        mounted: mounted,
+  void _fokussiereTextfeld(FocusNode fokusNode) {
+    _stateController.fokussiereTextfeld(
+      context: context,
+      fokusNode: fokusNode,
+      aktivesFeld: _aktivesFeld,
+      oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
+      fokussiereTextfeldRekursiv: _fokussiereTextfeld,
+      mounted: mounted,
+    );
+    _scrolleZurMitteNachFokus(fokusNode);
+  }
+
+  void _scrolleZurMitteNachFokus(FocusNode fn) {
+    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
+      if (!mounted || !fn.hasFocus || !context.mounted) return;
+      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+      final GlobalKey key = _holeFeldKey(fn);
+      final BuildContext? ctx = key.currentContext;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(
+        ctx,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        alignment: 0.3,
       );
+    });
+  }
 
   int? _sectionIdFuerFokusfeld(FocusNode focusNode) {
     if (_scheine.any(

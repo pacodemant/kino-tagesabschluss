@@ -56,6 +56,7 @@ class _ErgebnisZeile {
     this.vorhanden = 0,
     this.betragCent = 0,
     this.gruen = false,
+    this.rot = false,
     this.ausgegraut = false,
   });
 
@@ -79,12 +80,14 @@ class _ErgebnisZeile {
     required String bezeichnung,
     required int betragCent,
     bool ausgegraut = false,
+    bool rot = false,
   }) =>
       _ErgebnisZeile._(
         art: _ZeilenArt.betragzeile,
         bezeichnung: bezeichnung,
         betragCent: betragCent,
         ausgegraut: ausgegraut,
+        rot: rot,
       );
 
   factory _ErgebnisZeile.restbetrag(int betragCent) =>
@@ -99,6 +102,7 @@ class _ErgebnisZeile {
   final int vorhanden;
   final int betragCent;
   final bool gruen;
+  final bool rot;
   final bool ausgegraut;
 }
 
@@ -153,6 +157,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         _ErgebnisZeile.betragzeile(
           bezeichnung: 'Kupfergeld',
           betragCent: kupferCent,
+          rot: true,
         ),
       );
       restCent -= kupferCent;
@@ -229,6 +234,14 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         final Color? grauFarbe =
             zeile.ausgegraut ? Colors.grey.shade400 : null;
         return Container(
+          margin: const EdgeInsets.only(bottom: 4),
+          decoration: zeile.rot
+              ? BoxDecoration(
+                  color: Colors.red.shade50,
+                  border: Border.all(color: Colors.red.shade300),
+                  borderRadius: BorderRadius.circular(6),
+                )
+              : null,
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           child: Row(
             children: <Widget>[
@@ -287,7 +300,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.arrow_back),
-                title: const Text('1/4 · Bargeldzählung'),
+                title: const Text('1/4 · Bargeld zählen'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   Navigator.of(context)

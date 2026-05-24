@@ -128,6 +128,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
                 onPressed: () {
                   widget.textController.clear();
                   widget.onChanged('');
+                  widget.focusNode?.requestFocus();
                 },
               )
             : null,

@@ -67,6 +67,8 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           setState(() {
             _aktuellerFokusIndex = i;
           });
+        } else {
+          setState(() {});
         }
       });
       _mengeController.add(ctrl);
@@ -101,7 +103,23 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     final int naechster = _aktuellerFokusIndex + 1;
     if (naechster < _mengeFocusNode.length) {
       _mengeFocusNode[naechster].requestFocus();
+      _scrolleZurMitteNachFokus(_mengeFocusNode[naechster]);
     }
+  }
+
+  void _scrolleZurMitteNachFokus(FocusNode fn) {
+    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
+      if (!mounted || !fn.hasFocus || !context.mounted) return;
+      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+      final BuildContext? ctx = fn.context;
+      if (ctx == null) return;
+      Scrollable.ensureVisible(
+        ctx,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOutCubic,
+        alignment: 0.3,
+      );
+    });
   }
 
   void _speichereMengen() {
@@ -210,17 +228,22 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           };
 
     TableRow baueEintragZeile(int idx) {
+      final bool feldHatFokus = _mengeFocusNode[idx].hasFocus;
       final Widget feld = TextField(
         controller: _mengeController[idx],
         focusNode: _mengeFocusNode[idx],
         keyboardType: TextInputType.number,
         textAlign: _istLinkshaender ? TextAlign.left : TextAlign.right,
+        style: TextStyle(color: feldHatFokus ? Colors.white : null),
+        cursorColor: feldHatFokus ? Colors.white : null,
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.digitsOnly,
         ],
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           isDense: true,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          filled: feldHatFokus,
+          fillColor: feldHatFokus ? Colors.black87 : null,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         ),
         onChanged: (_) {
           setState(() {});

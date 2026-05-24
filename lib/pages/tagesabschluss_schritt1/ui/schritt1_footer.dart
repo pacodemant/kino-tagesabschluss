@@ -66,7 +66,7 @@ class Schritt1Footer extends StatelessWidget {
                     children: <Widget>[
                       Icon(Icons.arrow_forward),
                       SizedBox(width: 6),
-                      Text('Schritt 2'),
+                      Text('Belege eingeben (2/4)'),
                     ],
                   ),
                 ),

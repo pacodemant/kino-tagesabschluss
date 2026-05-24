@@ -228,7 +228,7 @@ class Schritt1OrchestrierungHelper {
               ListTile(
                 leading: const Icon(Icons.check_circle),
                 title: const Text(
-                  '1/4 · Bargeldzählung',
+                  '1/4 · Bargeld zählen',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
                 subtitle: const Text('Aktueller Schritt'),

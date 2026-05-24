@@ -190,6 +190,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
                   onTap: () {
                     widget.textController.clear();
                     widget.onChanged('');
+                    widget.focusNode?.requestFocus();
                   },
                   child: Icon(
                     Icons.clear,

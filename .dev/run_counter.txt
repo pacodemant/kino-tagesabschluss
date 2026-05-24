@@ -1,4 +1,4 @@
-last_run: 209
-next_run: 210
-last_run_title: Run 209: Stückelung – Scheine einzeln, Münzgeld als Betrag, keine Rollen
+last_run: 210
+next_run: 211
+last_run_title: Run 210: AppBar 'Bargeld zählen', Button-Labels (x/4), Fokus-Schwarz Textfelder, Clear-Fokus-Restore, Scroll-Zentrierung, Kupfergeld rot
 last_commit: TBD

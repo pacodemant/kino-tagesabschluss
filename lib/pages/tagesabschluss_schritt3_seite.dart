@@ -295,7 +295,7 @@ class _TagesabschlussSchritt3SeiteState
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.arrow_back),
-                title: const Text('1/4 · Bargeldzählung'),
+                title: const Text('1/4 · Bargeld zählen'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   Navigator.of(context)
@@ -361,7 +361,7 @@ class _TagesabschlussSchritt3SeiteState
                 style: AppFarben.footerButtonStyle,
                 child: const FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text('Stückelung Barumsatz'),
+                  child: Text('Stückelung (4/4)'),
                 ),
               ),
             ),
