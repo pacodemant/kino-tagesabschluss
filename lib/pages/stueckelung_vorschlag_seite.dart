@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
-import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
-import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -24,7 +22,31 @@ class StueckelungVorschlagArgumente {
 
 // ---------------------------------------------------------------------------
 
-enum _ZeilenArt { stueckzahl, muenzBetrag, restbetrag, trennlinie }
+enum _ZeilenArt { stueckzahl, restbetrag, trennlinie }
+
+class _Denomination {
+  const _Denomination(this.id, this.bezeichnung, this.einzelwertCent, this.istMuenze);
+  final String id;
+  final String bezeichnung;
+  final int einzelwertCent;
+  final bool istMuenze;
+}
+
+const List<_Denomination> _alleDenominationen = <_Denomination>[
+  _Denomination('note_100', '100 €', 10000, false),
+  _Denomination('note_50', '50 €', 5000, false),
+  _Denomination('note_20', '20 €', 2000, false),
+  _Denomination('note_10', '10 €', 1000, false),
+  _Denomination('note_5', '5 €', 500, false),
+  _Denomination('coin_2e', '2 €', 200, true),
+  _Denomination('coin_1e', '1 €', 100, true),
+  _Denomination('coin_50c', '0,50 €', 50, true),
+  _Denomination('coin_20c', '0,20 €', 20, true),
+  _Denomination('coin_10c', '0,10 €', 10, true),
+  _Denomination('coin_5c', '0,05 €', 5, true),
+  _Denomination('coin_2c', '0,02 €', 2, true),
+  _Denomination('coin_1c', '0,01 €', 1, true),
+];
 
 class _ErgebnisZeile {
   const _ErgebnisZeile._({
@@ -34,8 +56,7 @@ class _ErgebnisZeile {
     this.vorhanden = 0,
     this.betragCent = 0,
     this.gruen = false,
-    this.rot = false,
-    this.fett = true,
+    this.ausgegraut = false,
   });
 
   factory _ErgebnisZeile.stueckzahl({
@@ -43,6 +64,7 @@ class _ErgebnisZeile {
     required int genommen,
     required int vorhanden,
     bool gruen = false,
+    bool ausgegraut = false,
   }) =>
       _ErgebnisZeile._(
         art: _ZeilenArt.stueckzahl,
@@ -50,20 +72,7 @@ class _ErgebnisZeile {
         genommen: genommen,
         vorhanden: vorhanden,
         gruen: gruen,
-      );
-
-  factory _ErgebnisZeile.muenzBetrag({
-    required String bezeichnung,
-    required int betragCent,
-    bool rot = false,
-    bool fett = true,
-  }) =>
-      _ErgebnisZeile._(
-        art: _ZeilenArt.muenzBetrag,
-        bezeichnung: bezeichnung,
-        betragCent: betragCent,
-        rot: rot,
-        fett: fett,
+        ausgegraut: ausgegraut,
       );
 
   factory _ErgebnisZeile.restbetrag(int betragCent) =>
@@ -78,8 +87,7 @@ class _ErgebnisZeile {
   final int vorhanden;
   final int betragCent;
   final bool gruen;
-  final bool rot;
-  final bool fett;
+  final bool ausgegraut;
 }
 
 // ---------------------------------------------------------------------------
@@ -91,125 +99,40 @@ class StueckelungVorschlagSeite extends StatelessWidget {
 
   final StueckelungVorschlagArgumente argumente;
 
-  // Baut eine Map id → einzelwertCent aus StueckelungKonfiguration.
-  Map<String, int> _einzelwertMap() {
-    return <String, int>{
-      for (final Kassenzeile z in StueckelungKonfiguration.alleStueckzahlZeilen)
-        z.id: z.einzelwertCent,
-    };
-  }
-
-  Map<String, String> _bezeichnungMap() {
-    return <String, String>{
-      for (final Kassenzeile z in StueckelungKonfiguration.alleStueckzahlZeilen)
-        z.id: z.bezeichnung,
-    };
-  }
-
   List<_ErgebnisZeile> _berechneErgebnis() {
     int restCent = argumente.barBestandAbzglWechselgeldCent;
     final List<_ErgebnisZeile> zeilen = <_ErgebnisZeile>[];
-    final Map<String, int> ew = _einzelwertMap();
-    final Map<String, String> bez = _bezeichnungMap();
 
-    // Schritt 1 — Kupfergeld komplett raus
-    const Set<String> kupferLoseIds = <String>{'coin_5c', 'coin_2c', 'coin_1c'};
-    const Set<String> kupferRollenIds = <String>{
-      'roll_5c',
-      'roll_2c',
-      'roll_1c',
-    };
+    bool trennlinieEingefuegt = false;
+    for (final _Denomination denom in _alleDenominationen) {
+      if (denom.istMuenze && !trennlinieEingefuegt) {
+        zeilen.add(_ErgebnisZeile.trennlinie());
+        trennlinieEingefuegt = true;
+      }
 
-    int kupferCent = 0;
-    for (final String id in kupferLoseIds) {
-      kupferCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
-    }
-    for (final String id in kupferRollenIds) {
-      kupferCent += (argumente.stueckzahlen[id] ?? 0) * (ew[id] ?? 0);
-    }
-    // restCent sofort reduzieren, Zeile erst nach Schritt 2 einfügen
-    _ErgebnisZeile? kupferZeile;
-    if (kupferCent > 0) {
-      kupferZeile = _ErgebnisZeile.muenzBetrag(
-        bezeichnung: 'Kupfermünzen',
-        betragCent: kupferCent,
-        rot: true,
+      final int vorhanden = denom.istMuenze
+          ? (argumente.loseMuenzenNachArtCent[denom.id] ?? 0) ~/
+              denom.einzelwertCent
+          : argumente.stueckzahlen[denom.id] ?? 0;
+
+      int genommen = 0;
+      if (restCent > 0 && vorhanden > 0) {
+        final int maxMoeglich = restCent ~/ denom.einzelwertCent;
+        genommen = maxMoeglich < vorhanden ? maxMoeglich : vorhanden;
+        restCent -= genommen * denom.einzelwertCent;
+      }
+
+      zeilen.add(
+        _ErgebnisZeile.stueckzahl(
+          bezeichnung: denom.bezeichnung,
+          genommen: genommen,
+          vorhanden: vorhanden,
+          gruen: genommen > 0 && genommen == vorhanden,
+          ausgegraut: genommen == 0,
+        ),
       );
-      restCent -= kupferCent;
     }
 
-    // Schritt 2 — Scheine + Silberrollen absteigend
-    const List<String> reihenfolge = <String>[
-      'note_100',
-      'note_50',
-      'note_20',
-      'note_10',
-      'note_5',
-      'roll_2e',
-      'roll_1e',
-      'roll_50c',
-      'roll_20c',
-      'roll_10c',
-    ];
-
-    for (final String id in reihenfolge) {
-      if (restCent <= 0) {
-        break;
-      }
-      final int einzelwert = ew[id] ?? 1;
-      final int maxMoeglich = restCent ~/ einzelwert;
-      final int vorhanden = argumente.stueckzahlen[id] ?? 0;
-      final int genommen =
-          maxMoeglich < vorhanden ? maxMoeglich : vorhanden;
-      if (genommen > 0) {
-        restCent -= genommen * einzelwert;
-        zeilen.add(
-          _ErgebnisZeile.stueckzahl(
-            bezeichnung: bez[id] ?? id,
-            genommen: genommen,
-            vorhanden: vorhanden,
-            gruen: genommen == vorhanden,
-          ),
-        );
-      }
-    }
-
-    // Trennlinie vor Münzzeilen
-    if (zeilen.isNotEmpty) {
-      zeilen.add(_ErgebnisZeile.trennlinie());
-    }
-
-    if (kupferZeile != null) {
-      zeilen.add(kupferZeile);
-    }
-
-    // Schritt 3 — Lose Silbermünzen
-    const List<String> silberLoseIds = <String>[
-      'coin_2e',
-      'coin_1e',
-      'coin_50c',
-      'coin_20c',
-      'coin_10c',
-    ];
-    if (restCent > 0) {
-      int silberVerfuegbar = 0;
-      for (final String id in silberLoseIds) {
-        silberVerfuegbar += argumente.loseMuenzenNachArtCent[id] ?? 0;
-      }
-      final int genommen =
-          restCent < silberVerfuegbar ? restCent : silberVerfuegbar;
-      if (genommen > 0) {
-        zeilen.add(
-          _ErgebnisZeile.muenzBetrag(
-            bezeichnung: 'Münzen',
-            betragCent: genommen,
-          ),
-        );
-        restCent -= genommen;
-      }
-    }
-
-    // Schritt 4 — Restbetrag
     if (restCent > 0) {
       zeilen.add(_ErgebnisZeile.restbetrag(restCent));
     }
@@ -222,6 +145,8 @@ class StueckelungVorschlagSeite extends StatelessWidget {
   Widget _baueZeile(_ErgebnisZeile zeile) {
     switch (zeile.art) {
       case _ZeilenArt.stueckzahl:
+        final Color? grauFarbe =
+            zeile.ausgegraut ? Colors.grey.shade400 : null;
         return Container(
           margin: const EdgeInsets.only(bottom: 4),
           decoration: zeile.gruen
@@ -234,13 +159,21 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           child: Row(
             children: <Widget>[
-              Expanded(child: Text(zeile.bezeichnung)),
+              Expanded(
+                child: Text(
+                  zeile.bezeichnung,
+                  style: TextStyle(color: grauFarbe),
+                ),
+              ),
               SizedBox(
                 width: 96,
                 child: Text(
                   '${zeile.genommen} Stk.',
                   textAlign: TextAlign.right,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: grauFarbe,
+                  ),
                 ),
               ),
               SizedBox(
@@ -248,42 +181,9 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                 child: Text(
                   '/ ${zeile.vorhanden}',
                   textAlign: TextAlign.right,
-                  style: TextStyle(color: Colors.grey.shade600),
+                  style: TextStyle(color: grauFarbe ?? Colors.grey.shade600),
                 ),
               ),
-            ],
-          ),
-        );
-
-      case _ZeilenArt.muenzBetrag:
-        final TextStyle? muenzStyle = zeile.rot
-            ? const TextStyle(
-                color: Color(0xFFB87333),
-                fontWeight: FontWeight.bold,
-              )
-            : null;
-        final TextStyle betragStyle = zeile.rot
-            ? const TextStyle(
-                color: Color(0xFFB87333),
-                fontWeight: FontWeight.bold,
-              )
-            : zeile.fett
-                ? const TextStyle(fontWeight: FontWeight.bold)
-                : const TextStyle();
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-          child: Row(
-            children: <Widget>[
-              Expanded(child: Text(zeile.bezeichnung, style: muenzStyle)),
-              SizedBox(
-                width: 96,
-                child: Text(
-                  _euro(zeile.betragCent),
-                  textAlign: TextAlign.right,
-                  style: betragStyle,
-                ),
-              ),
-              const SizedBox(width: 64),
             ],
           ),
         );
