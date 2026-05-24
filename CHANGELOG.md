@@ -3,6 +3,7 @@
 Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
+- Run 206: Fix Next-Button in der Bargeldzählung. (1) Alle "nächstes Feld"-Buttons in tagesabschluss_schritt1_seite, tagesabschluss_schritt2_seite, wechselgeld_zaehlen_seite und schritt1_footer einheitlich in "Next" umbenannt. (2) Button wird deaktiviert (onPressed: null → ausgegraut), wenn das zuletzt fokussierte Feld das letzte Feld der Seite ist – verhindert unbeabsichtigtes Unfokussieren, Navigation zur nächsten Seite und die "unvollständig"-Warnung. (3) Button bleibt sichtbar aber inaktiv; verschwindet erst wenn Tastatur geschlossen wird.
 - Run 205a: Banner-Position angepasst: Positioned left/right -40 (Banner überragt Stack-Rand → rand-zu-rand nach Clip), bottom 210→150. QR-Code-Breite 180→100.
 - Run 205: Fix Perso-Getränke-Banner via Stack-Lösung. OverflowBox entfernt (verursachte Rendering-Assertion und Overflow-Indikator). body ist jetzt ein Stack: Layer 1 = bestehendes Padding(all:16)+Column unverändert (Buttons, Spacer, QR-Code); Layer 2 = Positioned(left:0, right:0, bottom:210) mit Transform.rotate(5°) und schwarzem Container, weißem Bold-Text. Kein OverflowBox, keine negativen Margins.
 - Run 204: Fix Perso-Getränke-Banner: negative Margin (`EdgeInsets.symmetric(horizontal: -26)`) durch `OverflowBox(maxWidth: double.infinity)` + `SizedBox(width: MediaQuery.of(context).size.width + 20)` ersetzt. Kein Flutter-Assertion-Fehler mehr; Banner weiterhin 5° gekippt, rand-zu-rand, schwarzer Hintergrund, weißer Bold-Text.

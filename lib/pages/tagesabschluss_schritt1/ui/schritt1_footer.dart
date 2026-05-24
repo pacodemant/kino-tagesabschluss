@@ -51,7 +51,7 @@ class Schritt1Footer extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: weiterZumNaechstenFeldUnten,
                     style: kompaktButtonStyle,
-                    child: const Text('nächstes Feld'),
+                    child: const Text('Next'),
                   ),
                 ),
                 const SizedBox(width: 8),

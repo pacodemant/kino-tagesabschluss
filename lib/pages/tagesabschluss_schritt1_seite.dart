@@ -833,6 +833,9 @@ class _TagesabschlussSchritt1SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final FocusNode? aktuellesFeld = _aktivesFeldSchritt1();
+    final bool nextButtonAktiv =
+        aktuellesFeld == null || !_istLetztesFeldSchritt1(aktuellesFeld);
     final bool devToolsStickySichtbar = _devModusAktiv && _devToolsOffen;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
@@ -929,9 +932,10 @@ class _TagesabschlussSchritt1SeiteState
             if (tastaturOffen) ...<Widget>[
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _weiterZumNaechstenFeldUnten,
+                  onPressed:
+                      nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
                   style: AppFarben.footerButtonStyle,
-                  child: const Text('nächstes Feld'),
+                  child: const Text('Next'),
                 ),
               ),
               const SizedBox(width: 8),

@@ -751,6 +751,9 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     }
 
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final FocusNode? aktuellesFeld = _aktivesFeld();
+    final bool nextButtonAktiv =
+        aktuellesFeld == null || !_istLetztesFeld(aktuellesFeld);
     final bool hatUebereinstimmung = _wechselgeldSollwertCent > 0 &&
         _kassenbestandGesamtCent == _wechselgeldSollwertCent;
     final Color hintergrundFarbe = hatUebereinstimmung
@@ -832,9 +835,10 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                 children: <Widget>[
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _weiterZumNaechstenFeld,
+                      onPressed:
+                          nextButtonAktiv ? _weiterZumNaechstenFeld : null,
                       style: AppFarben.footerButtonStyle,
-                      child: const Text('nächstes Feld'),
+                      child: const Text('Next'),
                     ),
                   ),
                 ],
