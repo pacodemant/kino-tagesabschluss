@@ -107,19 +107,24 @@ class StartmenueSeite extends StatelessWidget {
               child: const Text('Verlauf'),
             ),
             const Spacer(),
-            Transform.rotate(
-              angle: 5 * math.pi / 180,
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: -26),
-                color: Colors.black,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: const Text(
-                  'Perso-Getränke nicht vergessen!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            OverflowBox(
+              maxWidth: double.infinity,
+              child: Transform.rotate(
+                angle: 5 * math.pi / 180,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width + 20,
+                  child: Container(
+                    color: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: const Text(
+                      'Perso-Getränke nicht vergessen!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                 ),
               ),
