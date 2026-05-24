@@ -1,4 +1,4 @@
-last_run: 210
-next_run: 211
-last_run_title: Run 210: AppBar 'Bargeld zählen', Button-Labels (x/4), Fokus-Schwarz Textfelder, Clear-Fokus-Restore, Scroll-Zentrierung, Kupfergeld rot
-last_commit: 30154b7
+last_run: 211
+next_run: 212
+last_run_title: Run 211: Next-Button kompakt, FittedBox Nav-Button, Scroll-Zentrierung 0.5, Kupfergeld rot+bold, Kassenabrechnung, Startmenü-Button, Getränke-Filter-Fixes, Kacheln erster Tag
+last_commit: TBD

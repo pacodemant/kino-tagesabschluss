@@ -216,6 +216,8 @@ class _TagesabschlussSchritt1SeiteState
 
     final Map<String, dynamic>? abrechnungDaten =
         await AbrechnungSpeicher.laden(widget.kinoId);
+    final bool erstesOeffnenHeute =
+        await LokalerSpeicher.istErstesSchritt1OeffnenHeute(widget.kinoId);
 
     if (!mounted) {
       return;
@@ -264,7 +266,15 @@ class _TagesabschlussSchritt1SeiteState
       if (hatKupferLoseWerte) {
         _kupferLoseSichtbar = true;
       }
+      if (erstesOeffnenHeute) {
+        _loseMuenzenAufgeklappt = true;
+        _rollenAufgeklappt = true;
+        _umschlaegeAufgeklappt = true;
+      }
     });
+    if (erstesOeffnenHeute) {
+      await LokalerSpeicher.speichereSchritt1OeffnungsDatum(widget.kinoId);
+    }
   }
 
   void _leereUmschlagFelder() => _initialisierungHelper.leereUmschlagFelder();
@@ -515,20 +525,18 @@ class _TagesabschlussSchritt1SeiteState
     _scrolleZurMitteNachFokus(fokusNode);
   }
 
-  void _scrolleZurMitteNachFokus(FocusNode fn) {
-    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
-      if (!mounted || !fn.hasFocus || !context.mounted) return;
-      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-      final GlobalKey key = _holeFeldKey(fn);
-      final BuildContext? ctx = key.currentContext;
-      if (ctx == null) return;
-      Scrollable.ensureVisible(
-        ctx,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        alignment: 0.3,
-      );
-    });
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted || !fn.hasFocus || !context.mounted) return;
+    final BuildContext? ctx = fn.context;
+    if (ctx == null || !ctx.mounted) return;
+    await Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      alignment: 0.5,
+      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+    );
   }
 
   // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.

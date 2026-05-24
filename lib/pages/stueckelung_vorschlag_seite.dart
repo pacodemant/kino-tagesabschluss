@@ -233,22 +233,19 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       case _ZeilenArt.betragzeile:
         final Color? grauFarbe =
             zeile.ausgegraut ? Colors.grey.shade400 : null;
+        final Color? rotFarbe = zeile.rot ? Colors.red.shade700 : null;
         return Container(
           margin: const EdgeInsets.only(bottom: 4),
-          decoration: zeile.rot
-              ? BoxDecoration(
-                  color: Colors.red.shade50,
-                  border: Border.all(color: Colors.red.shade300),
-                  borderRadius: BorderRadius.circular(6),
-                )
-              : null,
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           child: Row(
             children: <Widget>[
               Expanded(
                 child: Text(
                   zeile.bezeichnung,
-                  style: TextStyle(color: grauFarbe),
+                  style: TextStyle(
+                    color: grauFarbe ?? rotFarbe,
+                    fontWeight: zeile.rot ? FontWeight.bold : null,
+                  ),
                 ),
               ),
               SizedBox(
@@ -258,7 +255,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: grauFarbe,
+                    color: grauFarbe ?? rotFarbe,
                   ),
                 ),
               ),
@@ -422,7 +419,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
               foregroundColor: Colors.white,
               minimumSize: const Size(double.infinity, 44),
             ),
-            child: const Text('Tagesabrechnung abschließen'),
+            child: const Text('Kassenabrechnung abschließen'),
           ),
         ],
       ),

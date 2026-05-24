@@ -513,20 +513,18 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     _scrolleZurMitteNachFokus(fokusNode);
   }
 
-  void _scrolleZurMitteNachFokus(FocusNode fn) {
-    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
-      if (!mounted || !fn.hasFocus || !context.mounted) return;
-      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-      final GlobalKey key = _holeFeldKey(fn);
-      final BuildContext? ctx = key.currentContext;
-      if (ctx == null) return;
-      Scrollable.ensureVisible(
-        ctx,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        alignment: 0.3,
-      );
-    });
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted || !fn.hasFocus || !context.mounted) return;
+    final BuildContext? ctx = fn.context;
+    if (ctx == null || !ctx.mounted) return;
+    await Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      alignment: 0.5,
+      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+    );
   }
 
   int? _sectionIdFuerFokusfeld(FocusNode focusNode) {

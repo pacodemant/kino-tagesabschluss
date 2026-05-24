@@ -95,7 +95,9 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     for (final TextEditingController c in _mengeController) {
       c.clear();
     }
-    setState(() {});
+    setState(() {
+      _nurBenoetigte = false;
+    });
     _speichereMengen();
   }
 
@@ -107,19 +109,18 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     }
   }
 
-  void _scrolleZurMitteNachFokus(FocusNode fn) {
-    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
-      if (!mounted || !fn.hasFocus || !context.mounted) return;
-      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-      final BuildContext? ctx = fn.context;
-      if (ctx == null) return;
-      Scrollable.ensureVisible(
-        ctx,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        alignment: 0.3,
-      );
-    });
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted || !fn.hasFocus || !context.mounted) return;
+    final BuildContext? ctx = fn.context;
+    if (ctx == null || !ctx.mounted) return;
+    await Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      alignment: 0.5,
+      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+    );
   }
 
   void _speichereMengen() {
@@ -150,8 +151,12 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Widget _baueFilterTaste() {
+    final bool hatBenoetigte =
+        _mengeController.any((TextEditingController c) => (int.tryParse(c.text) ?? 0) > 0);
     return TextButton(
-      onPressed: () => setState(() => _nurBenoetigte = !_nurBenoetigte),
+      onPressed: hatBenoetigte
+          ? () => setState(() => _nurBenoetigte = !_nurBenoetigte)
+          : null,
       style: TextButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         minimumSize: Size.zero,

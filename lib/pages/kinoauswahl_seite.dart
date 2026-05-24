@@ -35,7 +35,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: const Text(
-          'Schauburg Tagesabrechnung',
+          'Schauburg Kassenabrechnung',
           style: TextStyle(fontWeight: FontWeight.normal),
         ),
       ),

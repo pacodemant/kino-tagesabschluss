@@ -791,19 +791,18 @@ class _TagesabschlussSchritt2SeiteState
     _scrolleZurMitteNachFokus(naechstesFeld);
   }
 
-  void _scrolleZurMitteNachFokus(FocusNode fn) {
-    Future<void>.delayed(const Duration(milliseconds: 300)).then((_) {
-      if (!mounted || !fn.hasFocus || !context.mounted) return;
-      if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-      final BuildContext? ctx = fn.context;
-      if (ctx == null) return;
-      Scrollable.ensureVisible(
-        ctx,
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        alignment: 0.3,
-      );
-    });
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted || !fn.hasFocus || !context.mounted) return;
+    final BuildContext? ctx = fn.context;
+    if (ctx == null || !ctx.mounted) return;
+    await Scrollable.ensureVisible(
+      ctx,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      alignment: 0.5,
+      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
+    );
   }
 
   void _weiterZumNaechstenFeldUnten() {
@@ -1017,13 +1016,17 @@ class _TagesabschlussSchritt2SeiteState
         child: Row(
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
-              Expanded(
-                child: ElevatedButton(
-                  onPressed:
-                      nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
-                  style: AppFarben.footerButtonStyle,
-                  child: const Text('Next'),
+              TextButton(
+                onPressed:
+                    nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white38,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
+                child: const Text('Next'),
               ),
               const SizedBox(width: 8),
             ],
@@ -1075,7 +1078,7 @@ class _TagesabschlussSchritt2SeiteState
                   ),
                 ),
                 Text(
-                  'Tagesabrechnung ${widget.kinoName}',
+                  'Kassenabrechnung ${widget.kinoName}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 20,

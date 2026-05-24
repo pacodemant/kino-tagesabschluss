@@ -47,12 +47,15 @@ class Schritt1Footer extends StatelessWidget {
           child: Row(
             children: <Widget>[
               if (zeigeNaechstesFeld) ...<Widget>[
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: weiterZumNaechstenFeldUnten,
-                    style: kompaktButtonStyle,
-                    child: const Text('Next'),
+                TextButton(
+                  onPressed: weiterZumNaechstenFeldUnten,
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
+                  child: const Text('Next'),
                 ),
                 const SizedBox(width: 8),
               ],
@@ -60,14 +63,16 @@ class Schritt1Footer extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: weiterZuSchritt2,
                   style: kompaktButtonStyle,
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(Icons.arrow_forward),
-                      SizedBox(width: 6),
-                      Text('Belege eingeben (2/4)'),
-                    ],
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const <Widget>[
+                        Icon(Icons.arrow_forward),
+                        SizedBox(width: 6),
+                        Text('Belege eingeben (2/4)'),
+                      ],
+                    ),
                   ),
                 ),
               ),

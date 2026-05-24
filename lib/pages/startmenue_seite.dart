@@ -82,7 +82,7 @@ class StartmenueSeite extends StatelessWidget {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => _oeffneTagesabschlussSchritt1(context),
-                  child: const Text('Bargeld zählen (1/4)'),
+                  child: const Text('Kassenabrechnung (4 Schritte)'),
                 ),
                 if (kino.hatWechselgeld) ...<Widget>[
                   const SizedBox(height: 12),

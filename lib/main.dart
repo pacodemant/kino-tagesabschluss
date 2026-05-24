@@ -46,7 +46,7 @@ class MeineApp extends StatelessWidget {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: MaterialApp(
-      title: 'Schauburg Tagesabrechnung',
+      title: 'Schauburg Kassenabrechnung',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         scaffoldBackgroundColor: AppFarben.seitenHintergrund,

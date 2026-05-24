@@ -64,7 +64,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Eintrag löschen?'),
-        content: const Text('Diesen Tagesabrechnung wirklich löschen?'),
+        content: const Text('Diese Kassenabrechnung wirklich löschen?'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),

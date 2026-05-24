@@ -47,7 +47,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
         title: const Text('Eintrag löschen?'),
-        content: const Text('Diesen Tagesabrechnung wirklich löschen?'),
+        content: const Text('Diese Kassenabrechnung wirklich löschen?'),
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
@@ -383,7 +383,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                         fett: true,
                       ),
                       _zeile(
-                        'Differenz Tagesabrechnung',
+                        'Differenz Kassenabrechnung',
                         _euroMitVorzeichen(a.differenzGesamtCent),
                         fett: true,
                         farbe: differenzFarbe,

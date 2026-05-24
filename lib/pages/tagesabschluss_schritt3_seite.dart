@@ -480,7 +480,7 @@ class _TagesabschlussSchritt3SeiteState
                     child: Column(
                       children: <Widget>[
                         _zeile(
-                          'Differenz Tagesabrechnung',
+                          'Differenz Kassenabrechnung',
                           _euroMitVorzeichen(differenzCent),
                           fett: true,
                           farbe: differenzFarbe,
@@ -501,7 +501,7 @@ class _TagesabschlussSchritt3SeiteState
                     child: Text(
                       _autoSaveLaeuft
                           ? 'Wird gespeichert...'
-                          : 'Tagesabrechnung abschließen',
+                          : 'Kassenabrechnung abschließen',
                     ),
                   ),
                 ),

@@ -31,8 +31,8 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
 
   // Untere Zeile (klein): Kinoname + Schrittnummer wenn vorhanden.
   String get _titelUnten => schrittNummer == 0
-      ? 'Tagesabrechnung ${kinoName.toUpperCase()}'
-      : 'Tagesabrechnung ${kinoName.toUpperCase()} ($schrittNummer/$gesamtSchritte)';
+      ? 'Kassenabrechnung ${kinoName.toUpperCase()}'
+      : 'Kassenabrechnung ${kinoName.toUpperCase()} ($schrittNummer/$gesamtSchritte)';
 
   @override
   Size get preferredSize => Size.fromHeight(toolbarHeight);
