@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -106,6 +107,24 @@ class StartmenueSeite extends StatelessWidget {
               child: const Text('Verlauf'),
             ),
             const Spacer(),
+            Transform.rotate(
+              angle: 5 * math.pi / 180,
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: -26),
+                color: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: const Text(
+                  'Perso-Getränke nicht vergessen!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             const Center(
               child: Text(
                 'Web App @ GitHub:',
