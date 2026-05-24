@@ -792,15 +792,16 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
+    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
     final BuildContext? ctx = fn.context;
     if (ctx == null || !ctx.mounted) return;
     await Scrollable.ensureVisible(
       ctx,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      alignment: 0.5,
+      alignment: 0.3,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
     );
   }
@@ -1016,13 +1017,17 @@ class _TagesabschlussSchritt2SeiteState
         child: Row(
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
-              TextButton(
+              OutlinedButton(
                 onPressed:
                     nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
-                style: TextButton.styleFrom(
+                style: OutlinedButton.styleFrom(
                   foregroundColor: Colors.white,
                   disabledForegroundColor: Colors.white38,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  side: const BorderSide(color: Colors.white54),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),

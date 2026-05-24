@@ -35,7 +35,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: const Text(
-          'Schauburg Kassenabrechnung',
+          'Kassenabrechnung',
           style: TextStyle(fontWeight: FontWeight.normal),
         ),
       ),
@@ -52,7 +52,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
             for (final Kino kino in KinoRepository.kinos) ...<Widget>[
               ElevatedButton(
                 onPressed: () => _waehleKino(kino.id),
-                child: Text(kino.name),
+                child: Text('${kino.name} (${kino.kuerzel})'),
               ),
               const SizedBox(height: 12),
             ],

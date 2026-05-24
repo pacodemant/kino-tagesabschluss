@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_header_section.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
@@ -29,10 +30,17 @@ class TagesabschlussHeader extends StatelessWidget implements PreferredSizeWidge
   // Obere Zeile (bold): nur der Titel ohne Schrittnummer.
   String get _standardUntertitel => schrittTitel;
 
-  // Untere Zeile (klein): Kinoname + Schrittnummer wenn vorhanden.
+  String get _kuerzel {
+    for (final Kino kino in KinoRepository.kinos) {
+      if (kino.name == kinoName) return kino.kuerzel;
+    }
+    return kinoName;
+  }
+
+  // Untere Zeile (klein): Kino-Kürzel + Schrittnummer wenn vorhanden.
   String get _titelUnten => schrittNummer == 0
-      ? 'Kassenabrechnung ${kinoName.toUpperCase()}'
-      : 'Kassenabrechnung ${kinoName.toUpperCase()} ($schrittNummer/$gesamtSchritte)';
+      ? 'Kassenabrechnung ($_kuerzel)'
+      : 'Kassenabrechnung ($_kuerzel) $schrittNummer/$gesamtSchritte';
 
   @override
   Size get preferredSize => Size.fromHeight(toolbarHeight);

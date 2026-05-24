@@ -514,15 +514,17 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
-    final BuildContext? ctx = fn.context;
+    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+    final GlobalKey key = _holeFeldKey(fn);
+    final BuildContext? ctx = key.currentContext;
     if (ctx == null || !ctx.mounted) return;
     await Scrollable.ensureVisible(
       ctx,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      alignment: 0.5,
+      alignment: 0.3,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
     );
   }

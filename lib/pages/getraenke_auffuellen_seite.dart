@@ -110,15 +110,16 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
+    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
     final BuildContext? ctx = fn.context;
     if (ctx == null || !ctx.mounted) return;
     await Scrollable.ensureVisible(
       ctx,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      alignment: 0.5,
+      alignment: 0.3,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
     );
   }

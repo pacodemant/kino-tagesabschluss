@@ -526,15 +526,17 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
-    final BuildContext? ctx = fn.context;
+    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+    final GlobalKey key = _holeFeldKey(fn);
+    final BuildContext? ctx = key.currentContext;
     if (ctx == null || !ctx.mounted) return;
     await Scrollable.ensureVisible(
       ctx,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      alignment: 0.5,
+      alignment: 0.3,
       alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
     );
   }
@@ -1026,13 +1028,21 @@ class _TagesabschlussSchritt1SeiteState
         child: Row(
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
-              Expanded(
-                child: ElevatedButton(
-                  onPressed:
-                      nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
-                  style: AppFarben.footerButtonStyle,
-                  child: const Text('Next'),
+              OutlinedButton(
+                onPressed:
+                    nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white38,
+                  side: const BorderSide(color: Colors.white54),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
+                child: const Text('Next'),
               ),
               const SizedBox(width: 8),
             ],
@@ -1040,13 +1050,16 @@ class _TagesabschlussSchritt1SeiteState
               child: ElevatedButton(
                 onPressed: _pruefeEingabenUndWeiterZuSchritt2,
                 style: AppFarben.footerButtonStyle,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(Icons.arrow_forward),
-                    SizedBox(width: 6),
-                    Text('Belege eingeben (2/4)'),
-                  ],
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const <Widget>[
+                      Icon(Icons.arrow_forward),
+                      SizedBox(width: 6),
+                      Text('Belege eingeben (2/4)'),
+                    ],
+                  ),
                 ),
               ),
             ),
