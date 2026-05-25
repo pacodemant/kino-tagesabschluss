@@ -13,6 +13,7 @@ class GanzzahlEingabefeld extends StatefulWidget {
     this.focusNode,
     this.onSubmitted,
     this.istHervorgehoben = false,
+    this.maxLaenge,
   });
 
   final TextEditingController textController;
@@ -24,6 +25,7 @@ class GanzzahlEingabefeld extends StatefulWidget {
   final FocusNode? focusNode;
   final ValueChanged<String>? onSubmitted;
   final bool istHervorgehoben;
+  final int? maxLaenge;
 
   @override
   State<GanzzahlEingabefeld> createState() => _GanzzahlEingabefeldState();
@@ -92,6 +94,8 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
       ),
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.digitsOnly,
+        if (widget.maxLaenge != null)
+          LengthLimitingTextInputFormatter(widget.maxLaenge),
       ],
       decoration: InputDecoration(
         hintText: widget.hinweisText,

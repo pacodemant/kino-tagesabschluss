@@ -102,6 +102,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
               onChanged: (String wert) => beiStueckzahlGeaendert(zeile, wert),
               onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
               istHervorgehoben: istHervorgehoben,
+              maxLaenge: 2,
             ),
           ),
         ),

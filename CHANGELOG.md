@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 215: iOS-Web Auto-Advance Fix: Timer-Mechanismus (214/214a) durch direkten onChanged-Aufruf ersetzt. GanzzahlEingabefeld erhält neuen optionalen Parameter maxLaenge; Scheine- und Rollen-Felder in Schritt 1 auf maxLaenge: 2 begrenzt. Bei kIsWeb && wert.length >= 2 wird _fokussiereTextfeld(naechstes) sofort (ohne Timer) aufgerufen. dart:async-Import und _starteAutoAdvanceTimer/_autoAdvanceTimer vollständig entfernt.
+
 - Run 214a: Auto-Advance Fix: Timer übergibt jetzt direkt den Quell-FocusNode statt aktivesFeld() zu befragen (umgeht FocusNode.hasFocus-Unzuverlässigkeit auf iOS Web). kIsWeb-Check verhindert Auto-Advance im nativen Simulator.
 
 - Run 214: Auto-Advance in Schritt 1: nach 1,5 Sekunden Pause im Eingabefeld springt der Fokus automatisch zum nächsten Feld. Ersetzt den iOS-Web-unzuverlässigen Footer-Next-Button für die Feldnavigation. Implementiert in tagesabschluss_schritt1_seite.dart via Timer (_starteAutoAdvanceTimer), ausgelöst in _beiStueckzahlGeaendert und _beiLoseMuenzartBetragGeaendert bei nicht-leerer Eingabe.
