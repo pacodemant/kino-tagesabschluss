@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
@@ -517,15 +518,18 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
     if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    final GlobalKey key = _holeFeldKey(fn);
-    final BuildContext? ctx = key.currentContext;
-    if (ctx == null || !ctx.mounted) return;
-    await Scrollable.ensureVisible(
-      ctx,
+    if (!_scrollController.hasClients) return;
+    final RenderObject? ro = _holeFeldKey(fn).currentContext?.findRenderObject();
+    if (ro == null || !ro.attached) return;
+    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(ro);
+    if (viewport == null) return;
+    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
+    final double targetOffset = (revealOffset - _scrollController.position.viewportDimension * 0.3)
+        .clamp(0.0, _scrollController.position.maxScrollExtent);
+    await _scrollController.animateTo(
+      targetOffset,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      alignment: 0.3,
-      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
     );
   }
 

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -529,15 +530,18 @@ class _TagesabschlussSchritt1SeiteState
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
     if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    final GlobalKey key = _holeFeldKey(fn);
-    final BuildContext? ctx = key.currentContext;
-    if (ctx == null || !ctx.mounted) return;
-    await Scrollable.ensureVisible(
-      ctx,
+    if (!_scrollController.hasClients) return;
+    final RenderObject? ro = _holeFeldKey(fn).currentContext?.findRenderObject();
+    if (ro == null || !ro.attached) return;
+    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(ro);
+    if (viewport == null) return;
+    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
+    final double targetOffset = (revealOffset - _scrollController.position.viewportDimension * 0.3)
+        .clamp(0.0, _scrollController.position.maxScrollExtent);
+    await _scrollController.animateTo(
+      targetOffset,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      alignment: 0.3,
-      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
     );
   }
 
@@ -1028,13 +1032,14 @@ class _TagesabschlussSchritt1SeiteState
         child: Row(
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
-              OutlinedButton(
+              ElevatedButton(
                 onPressed:
                     nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  disabledForegroundColor: Colors.white38,
-                  side: const BorderSide(color: Colors.white54),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppFarben.appBarRot,
+                  disabledBackgroundColor: Colors.grey.shade200,
+                  disabledForegroundColor: Colors.grey.shade400,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
