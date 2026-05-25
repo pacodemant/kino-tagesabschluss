@@ -4,7 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
-- Run 213: GestureDetector in main.dart: behavior: HitTestBehavior.translucent hinzugefügt. Behebt iOS-Web-Bug (Safari/Chrome) bei dem der erste Tap auf den "Next"-Button nur unfocus() auslöste statt _weiterZumNaechstenFeldUnten() zu feuern.
+- Run 213a: GestureDetector-Wrapper in main.dart vollständig entfernt. MaterialApp ist jetzt direktes Return-Widget. Behebt iOS-Web-Bug (Safari/Chrome) bei dem der erste Tap auf den "Next"-Button nur unfocus() auslöste statt _weiterZumNaechstenFeldUnten() zu feuern. Trade-off: Tastatur schließt nicht mehr beim Tippen auf leere Fläche.
+- Run 213: GestureDetector in main.dart: behavior: HitTestBehavior.translucent hinzugefügt. (Test fehlgeschlagen — durch 213a ersetzt.)
 
 - Run 212: (1) Next-Button in Schritt 1 und Schritt 2: OutlinedButton → ElevatedButton mit weißem Hintergrund und roter Schrift (wie Weiter-Button), kompakte Größe ohne Expanded. (2) Scroll-Zentrierung in Schritt 1, Schritt 2 und Wechselgeld: Scrollable.ensureVisible durch ScrollController.animateTo + RenderAbstractViewport.getOffsetToReveal ersetzt — Feld wird zuverlässig ins obere Drittel des sichtbaren Bereichs gescrollt.
 

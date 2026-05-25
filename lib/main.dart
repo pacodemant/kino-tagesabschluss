@@ -43,10 +43,7 @@ class MeineApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      behavior: HitTestBehavior.translucent,
-      child: MaterialApp(
+    return MaterialApp(
       title: 'Schauburg Kassenabrechnung',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
@@ -230,7 +227,6 @@ class MeineApp extends StatelessWidget {
 
         return null;
       },
-      ),
     );
   }
 }
