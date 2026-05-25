@@ -41,12 +41,19 @@ class Schritt1MuenzenRollenSection extends StatelessWidget {
                                 'Rollen',
                                 style: TextStyle(fontWeight: FontWeight.w700),
                               ),
-                              Text(
-                                'Anzahl der Rollen',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppFarben.appBarRot,
-                                  fontSize: 12,
+                              Text.rich(
+                                TextSpan(
+                                  style: TextStyle(
+                                    color: AppFarben.appBarRot,
+                                    fontSize: 11,
+                                  ),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Anzahl',
+                                      style: TextStyle(fontWeight: FontWeight.w700),
+                                    ),
+                                    TextSpan(text: ' der Rollen'),
+                                  ],
                                 ),
                               ),
                             ],

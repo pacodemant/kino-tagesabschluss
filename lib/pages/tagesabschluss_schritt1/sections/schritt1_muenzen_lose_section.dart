@@ -41,12 +41,19 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
                                 'Lose Münzen',
                                 style: TextStyle(fontWeight: FontWeight.w700),
                               ),
-                              Text(
-                                'Beträge in Cent',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: AppFarben.appBarRot,
-                                  fontSize: 12,
+                              Text.rich(
+                                TextSpan(
+                                  style: TextStyle(
+                                    color: AppFarben.appBarRot,
+                                    fontSize: 11,
+                                  ),
+                                  children: <TextSpan>[
+                                    TextSpan(
+                                      text: 'Beträge',
+                                      style: TextStyle(fontWeight: FontWeight.w700),
+                                    ),
+                                    TextSpan(text: ' in Cent'),
+                                  ],
                                 ),
                               ),
                             ],
