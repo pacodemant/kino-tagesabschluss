@@ -29,55 +29,54 @@ class Schritt1ScheineSection extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Text(
-                              'Scheine',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.help_outline),
-                              color: AppFarben.appBarRot,
-                              iconSize: 18,
-                              padding: const EdgeInsets.only(left: 4),
-                              constraints: const BoxConstraints(),
-                              onPressed: () => showDialog<void>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Scheine eingeben'),
-                                  content: const Text(
-                                    'Bitte die Anzahl der Scheine eingeben — nicht den Betrag.\n'
-                                    'Also z.B. "3" für drei 50-Euro-Scheine, nicht "150".',
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(),
-                                      child: const Text('Verstanden'),
-                                    ),
-                                  ],
+                        const Flexible(
+                          child: Text.rich(
+                            TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Scheine ',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
                                 ),
-                              ),
+                                TextSpan(
+                                  text: 'Anzahl',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppFarben.appBarRot,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' der Scheine',
+                                  style: TextStyle(fontSize: 11),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        const Text.rich(
-                          TextSpan(
-                            style: TextStyle(
-                              color: AppFarben.appBarRot,
-                              fontSize: 11,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: 'Anzahl',
-                                style: TextStyle(fontWeight: FontWeight.w700),
+                        IconButton(
+                          icon: const Icon(Icons.help_outline),
+                          color: AppFarben.appBarRot,
+                          iconSize: 18,
+                          padding: const EdgeInsets.only(left: 4),
+                          constraints: const BoxConstraints(),
+                          onPressed: () => showDialog<void>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Scheine eingeben'),
+                              content: const Text(
+                                'Bitte die Anzahl der Scheine eingeben — nicht den Betrag.\n'
+                                'Also z.B. "3" für drei 50-Euro-Scheine, nicht "150".',
                               ),
-                              TextSpan(text: ' der Scheine'),
-                            ],
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(),
+                                  child: const Text('Verstanden'),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],

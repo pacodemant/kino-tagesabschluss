@@ -29,56 +29,55 @@ class Schritt1MuenzenRollenSection extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Text(
-                              'Rollen',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.help_outline),
-                              color: AppFarben.appBarRot,
-                              iconSize: 18,
-                              padding: const EdgeInsets.only(left: 4),
-                              constraints: const BoxConstraints(),
-                              onPressed: () => showDialog<void>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Rollen eingeben'),
-                                  content: const Text(
-                                    'Bitte die Anzahl der Münzrollen eingeben — nicht den Betrag.\n'
-                                    'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'
-                                    'Also "2" für zwei Rollen, nicht "100".',
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(),
-                                      child: const Text('Verstanden'),
-                                    ),
-                                  ],
+                        const Flexible(
+                          child: Text.rich(
+                            TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Rollen ',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
                                 ),
-                              ),
+                                TextSpan(
+                                  text: 'Anzahl',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppFarben.appBarRot,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' der Rollen',
+                                  style: TextStyle(fontSize: 11),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                        const Text.rich(
-                          TextSpan(
-                            style: TextStyle(
-                              color: AppFarben.appBarRot,
-                              fontSize: 11,
-                            ),
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: 'Anzahl',
-                                style: TextStyle(fontWeight: FontWeight.w700),
+                        IconButton(
+                          icon: const Icon(Icons.help_outline),
+                          color: AppFarben.appBarRot,
+                          iconSize: 18,
+                          padding: const EdgeInsets.only(left: 4),
+                          constraints: const BoxConstraints(),
+                          onPressed: () => showDialog<void>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Rollen eingeben'),
+                              content: const Text(
+                                'Bitte die Anzahl der Münzrollen eingeben — nicht den Betrag.\n'
+                                'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'
+                                'Also "2" für zwei Rollen, nicht "100".',
                               ),
-                              TextSpan(text: ' der Rollen'),
-                            ],
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(),
+                                  child: const Text('Verstanden'),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
