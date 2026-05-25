@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 
 class Schritt1MuenzenLoseSection extends StatelessWidget {
   const Schritt1MuenzenLoseSection({
@@ -27,10 +28,43 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: <Widget>[
-                  const Expanded(
-                    child: Text(
-                      'Lose Münzen (Beträge)',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const Flexible(
+                          child: Text(
+                            'Lose Münzen (Beträge)',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: AppFarben.appBarRot,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.help_outline),
+                          color: AppFarben.appBarRot,
+                          iconSize: 18,
+                          padding: const EdgeInsets.only(left: 4),
+                          constraints: const BoxConstraints(),
+                          onPressed: () => showDialog<void>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Münzgeld eingeben'),
+                              content: const Text(
+                                'Hier den Gesamtbetrag des losen Münzgelds in Cent eingeben — ohne Komma.\n'
+                                'Also z.B. "340" für drei Euro und vierzig Cent.',
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(),
+                                  child: const Text('Verstanden'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Text(
