@@ -45,6 +45,7 @@ class MeineApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      behavior: HitTestBehavior.translucent,
       child: MaterialApp(
       title: 'Schauburg Kassenabrechnung',
       theme: ThemeData(
