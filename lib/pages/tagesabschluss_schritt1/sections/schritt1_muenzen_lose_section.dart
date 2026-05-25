@@ -33,12 +33,23 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         const Flexible(
-                          child: Text(
-                            'Lose Münzen (Beträge)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: AppFarben.appBarRot,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                'Lose Münzen',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              Text(
+                                'Beträge in Cent',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: AppFarben.appBarRot,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         IconButton(

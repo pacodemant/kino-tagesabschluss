@@ -33,12 +33,23 @@ class Schritt1ScheineSection extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
                         const Flexible(
-                          child: Text(
-                            'Scheine (Anzahl der Scheine)',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: AppFarben.appBarRot,
-                            ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                'Scheine',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              Text(
+                                'Anzahl der Scheine',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: AppFarben.appBarRot,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         IconButton(
