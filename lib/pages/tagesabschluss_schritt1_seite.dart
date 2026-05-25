@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
@@ -389,7 +390,9 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_stueckzahlFocusNode[zeile.id]);
       }
     });
-    if (wert.isNotEmpty) _starteAutoAdvanceTimer();
+    if (kIsWeb && wert.isNotEmpty) {
+      _starteAutoAdvanceTimer(_stueckzahlFocusNode[zeile.id]!);
+    }
     await _speichereEntwurf();
   }
 
@@ -407,7 +410,9 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_loseMuenzenFocusNode[muenzartId]);
       }
     });
-    if (wert.isNotEmpty) _starteAutoAdvanceTimer();
+    if (kIsWeb && wert.isNotEmpty) {
+      _starteAutoAdvanceTimer(_loseMuenzenFocusNode[muenzartId]!);
+    }
     await _speichereEntwurf();
   }
 
@@ -510,14 +515,14 @@ class _TagesabschlussSchritt1SeiteState
   FocusNode? _aktivesFeldSchritt1() =>
       _stateController.aktivesFeld(_fokusReihenfolgeSchritt1());
 
-  void _starteAutoAdvanceTimer() {
+  void _starteAutoAdvanceTimer(FocusNode quellFocus) {
     _autoAdvanceTimer?.cancel();
     _autoAdvanceTimer = Timer(const Duration(milliseconds: 1500), () {
       if (!mounted) return;
-      final FocusNode? aktuell = _aktivesFeldSchritt1();
-      if (aktuell == null) return;
-      if (_istLetztesFeldSchritt1(aktuell)) return;
-      _weiterZumNaechstenFeldUnten();
+      if (_istLetztesFeldSchritt1(quellFocus)) return;
+      final FocusNode? naechstes = _naechstesFeldSchritt1(quellFocus);
+      if (naechstes == null) return;
+      _fokussiereTextfeld(naechstes);
     });
   }
 
