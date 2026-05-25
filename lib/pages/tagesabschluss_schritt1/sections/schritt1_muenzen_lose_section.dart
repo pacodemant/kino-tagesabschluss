@@ -29,57 +29,55 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        const Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Text(
-                                'Lose Münzen',
-                                style: TextStyle(fontWeight: FontWeight.w700),
-                              ),
-                              Text.rich(
-                                TextSpan(
-                                  style: TextStyle(
-                                    color: AppFarben.appBarRot,
-                                    fontSize: 11,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const Text(
+                              'Lose Münzen',
+                              style: TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.help_outline),
+                              color: AppFarben.appBarRot,
+                              iconSize: 18,
+                              padding: const EdgeInsets.only(left: 4),
+                              constraints: const BoxConstraints(),
+                              onPressed: () => showDialog<void>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Münzgeld eingeben'),
+                                  content: const Text(
+                                    'Hier den Gesamtbetrag des losen Münzgelds in Cent eingeben — ohne Komma.\n'
+                                    'Also z.B. "340" für drei Euro und vierzig Cent.',
                                   ),
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: 'Beträge',
-                                      style: TextStyle(fontWeight: FontWeight.w700),
+                                  actions: <Widget>[
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(),
+                                      child: const Text('Verstanden'),
                                     ),
-                                    TextSpan(text: ' in Cent'),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.help_outline),
-                          color: AppFarben.appBarRot,
-                          iconSize: 18,
-                          padding: const EdgeInsets.only(left: 4),
-                          constraints: const BoxConstraints(),
-                          onPressed: () => showDialog<void>(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              title: const Text('Münzgeld eingeben'),
-                              content: const Text(
-                                'Hier den Gesamtbetrag des losen Münzgelds in Cent eingeben — ohne Komma.\n'
-                                'Also z.B. "340" für drei Euro und vierzig Cent.',
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(),
-                                  child: const Text('Verstanden'),
-                                ),
-                              ],
                             ),
+                          ],
+                        ),
+                        const Text.rich(
+                          TextSpan(
+                            style: TextStyle(
+                              color: AppFarben.appBarRot,
+                              fontSize: 11,
+                            ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: 'Beträge',
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              TextSpan(text: ' in Cent'),
+                            ],
                           ),
                         ),
                       ],
