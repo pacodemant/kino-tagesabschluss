@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -108,6 +109,7 @@ class _TagesabschlussSchritt1SeiteState
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
   final Set<FocusNode> _rotHervorgehoben = <FocusNode>{};
+  Timer? _autoAdvanceTimer;
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
@@ -203,6 +205,7 @@ class _TagesabschlussSchritt1SeiteState
     }
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
+    _autoAdvanceTimer?.cancel();
     super.dispose();
   }
 
@@ -386,6 +389,7 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_stueckzahlFocusNode[zeile.id]);
       }
     });
+    if (wert.isNotEmpty) _starteAutoAdvanceTimer();
     await _speichereEntwurf();
   }
 
@@ -403,6 +407,7 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_loseMuenzenFocusNode[muenzartId]);
       }
     });
+    if (wert.isNotEmpty) _starteAutoAdvanceTimer();
     await _speichereEntwurf();
   }
 
@@ -505,14 +510,27 @@ class _TagesabschlussSchritt1SeiteState
   FocusNode? _aktivesFeldSchritt1() =>
       _stateController.aktivesFeld(_fokusReihenfolgeSchritt1());
 
-  void _weiterZumNaechstenFeldUnten() =>
-      _stateController.weiterZumNaechstenFeld(
-        context: context,
-        reihenfolge: _fokusReihenfolgeSchritt1(),
-        aktivesFeld: _aktivesFeldSchritt1(),
-        naechstesFeld: _naechstesFeldSchritt1,
-        fokussiereTextfeld: _fokussiereTextfeld,
-      );
+  void _starteAutoAdvanceTimer() {
+    _autoAdvanceTimer?.cancel();
+    _autoAdvanceTimer = Timer(const Duration(milliseconds: 1500), () {
+      if (!mounted) return;
+      final FocusNode? aktuell = _aktivesFeldSchritt1();
+      if (aktuell == null) return;
+      if (_istLetztesFeldSchritt1(aktuell)) return;
+      _weiterZumNaechstenFeldUnten();
+    });
+  }
+
+  void _weiterZumNaechstenFeldUnten() {
+    _autoAdvanceTimer?.cancel();
+    _stateController.weiterZumNaechstenFeld(
+      context: context,
+      reihenfolge: _fokusReihenfolgeSchritt1(),
+      aktivesFeld: _aktivesFeldSchritt1(),
+      naechstesFeld: _naechstesFeldSchritt1,
+      fokussiereTextfeld: _fokussiereTextfeld,
+    );
+  }
 
   void _fokussiereTextfeld(FocusNode fokusNode) {
     _stateController.fokussiereTextfeld(

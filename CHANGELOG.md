@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 214: Auto-Advance in Schritt 1: nach 1,5 Sekunden Pause im Eingabefeld springt der Fokus automatisch zum nächsten Feld. Ersetzt den iOS-Web-unzuverlässigen Footer-Next-Button für die Feldnavigation. Implementiert in tagesabschluss_schritt1_seite.dart via Timer (_starteAutoAdvanceTimer), ausgelöst in _beiStueckzahlGeaendert und _beiLoseMuenzartBetragGeaendert bei nicht-leerer Eingabe.
+
 - Run 213a: GestureDetector-Wrapper in main.dart vollständig entfernt. MaterialApp ist jetzt direktes Return-Widget. Behebt iOS-Web-Bug (Safari/Chrome) bei dem der erste Tap auf den "Next"-Button nur unfocus() auslöste statt _weiterZumNaechstenFeldUnten() zu feuern. Trade-off: Tastatur schließt nicht mehr beim Tippen auf leere Fläche.
 - Run 213: GestureDetector in main.dart: behavior: HitTestBehavior.translucent hinzugefügt. (Test fehlgeschlagen — durch 213a ersetzt.)
 
