@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_hinweise_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_lose_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_muenzen_rollen_section.dart';
@@ -133,7 +134,7 @@ class Schritt1GruppenOrchestrierung {
     );
 
     final Widget umschlaegeGruppe = _baueEinklappbarenBereich(
-      titel: 'Sonstiges: Umschläge u.a. (Geldbeträge)',
+      titel: 'Sonstiges (Umschläge u.a.)',
       gesamtbetragCent: umschlagSummeCent,
       aufgeklappt: umschlaegeAufgeklappt,
       beimUmschalten: toggleUmschlaege,
@@ -155,6 +156,10 @@ class Schritt1GruppenOrchestrierung {
         umschlagSummeCent: umschlagSummeCent,
       ),
       formatiereEuro: formatiereEuro,
+      hilfeDialogTitel: 'Sonstiges eingeben',
+      hilfeDialogText:
+          'Hier den Betrag für sonstige Einnahmen (z.B. Umschläge) in Cent eingeben — ohne Komma.\n'
+          'Also z.B. "340" für drei Euro und vierzig Cent.',
     );
 
     return Schritt1GruppenWidgets(
@@ -174,7 +179,10 @@ class Schritt1GruppenOrchestrierung {
     required VoidCallback beimUmschalten,
     required Widget inhalt,
     required String Function(int cent) formatiereEuro,
+    String? hilfeDialogTitel,
+    String? hilfeDialogText,
   }) {
+    final bool hatHilfe = hilfeDialogTitel != null && hilfeDialogText != null;
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -187,10 +195,73 @@ class Schritt1GruppenOrchestrierung {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: Text(
-                      titel,
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
+                    child: hatHilfe
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                titel,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Builder(
+                                builder: (BuildContext ctx) => Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    const Text.rich(
+                                      TextSpan(
+                                        children: <TextSpan>[
+                                          TextSpan(
+                                            text: 'Betrag',
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                          TextSpan(
+                                            text: ' in ',
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                          TextSpan(
+                                            text: 'Cent',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: AppFarben.appBarRot,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.help_outline),
+                                      color: AppFarben.appBarRot,
+                                      iconSize: 18,
+                                      padding: const EdgeInsets.only(left: 4),
+                                      constraints: const BoxConstraints(),
+                                      onPressed: () => showDialog<void>(
+                                        context: ctx,
+                                        builder: (dialogCtx) => AlertDialog(
+                                          title: Text(hilfeDialogTitel),
+                                          content: Text(hilfeDialogText),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(dialogCtx).pop(),
+                                              child: const Text('Verstanden'),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : Text(
+                            titel,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
                   ),
                   Text(
                     formatiereEuro(gesamtbetragCent),

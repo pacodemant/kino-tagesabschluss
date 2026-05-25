@@ -45,12 +45,12 @@ class Schritt1ScheineSection extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.w700,
                                     color: AppFarben.appBarRot,
-                                    fontSize: 11,
+                                    fontSize: 10,
                                   ),
                                 ),
                                 TextSpan(
                                   text: ' der Scheine',
-                                  style: TextStyle(fontSize: 11),
+                                  style: TextStyle(fontSize: 10),
                                 ),
                               ],
                             ),
