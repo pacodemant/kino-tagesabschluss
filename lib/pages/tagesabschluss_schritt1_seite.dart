@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
@@ -387,11 +386,6 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.remove(_stueckzahlFocusNode[zeile.id]);
       }
     });
-    if (kIsWeb && wert.length >= 2) {
-      final FocusNode? naechstes =
-          _naechstesFeldSchritt1(_stueckzahlFocusNode[zeile.id]!);
-      if (naechstes != null) _fokussiereTextfeld(naechstes);
-    }
     await _speichereEntwurf();
   }
 
@@ -508,24 +502,11 @@ class _TagesabschlussSchritt1SeiteState
   void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) => _stateController
       .beiEingabeAbgeschlossen(context, _naechstesFeldSchritt1(focusNode));
 
-  FocusNode? _aktivesFeldSchritt1() =>
-      _stateController.aktivesFeld(_fokusReihenfolgeSchritt1());
-
-  void _weiterZumNaechstenFeldUnten() {
-    _stateController.weiterZumNaechstenFeld(
-      context: context,
-      reihenfolge: _fokusReihenfolgeSchritt1(),
-      aktivesFeld: _aktivesFeldSchritt1(),
-      naechstesFeld: _naechstesFeldSchritt1,
-      fokussiereTextfeld: _fokussiereTextfeld,
-    );
-  }
-
   void _fokussiereTextfeld(FocusNode fokusNode) {
     _stateController.fokussiereTextfeld(
       context: context,
       fokusNode: fokusNode,
-      aktivesFeld: _aktivesFeldSchritt1,
+      aktivesFeld: () => _stateController.aktivesFeld(_fokusReihenfolgeSchritt1()),
       oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
       fokussiereTextfeldRekursiv: _fokussiereTextfeld,
       mounted: mounted,
@@ -942,9 +923,6 @@ class _TagesabschlussSchritt1SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final FocusNode? aktuellesFeld = _aktivesFeldSchritt1();
-    final bool nextButtonAktiv =
-        aktuellesFeld == null || !_istLetztesFeldSchritt1(aktuellesFeld);
     final bool devToolsStickySichtbar = _devModusAktiv && _devToolsOffen;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
@@ -1040,8 +1018,7 @@ class _TagesabschlussSchritt1SeiteState
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
               ElevatedButton(
-                onPressed:
-                    nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
+                onPressed: null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: AppFarben.appBarRot,

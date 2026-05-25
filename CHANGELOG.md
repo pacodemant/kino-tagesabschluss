@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 216: Next-Button-Logik vollständig entfernt auf allen Seiten. _weiterZumNaechstenFeldUnten/_aktivesFeld/_springeZumNaechstfeld/_scrolleZurMitteNachFokus (getraenke) entfernt; kIsWeb-Check in _beiStueckzahlGeaendert entfernt; flutter/foundation.dart-Import entfernt. Next-Button bleibt in allen Footern als dauerhaft ausgegrauter Platzhalter (onPressed: null). Tote Datei schritt1_footer.dart gelöscht. maxLaenge-Parameter in GanzzahlEingabefeld und schritt1_ui_builder BEHALTEN – sinnvolle UX-Begrenzung (max. 2 Ziffern) unabhängig von Auto-Advance.
+
 - Run 215: iOS-Web Auto-Advance Fix: Timer-Mechanismus (214/214a) durch direkten onChanged-Aufruf ersetzt. GanzzahlEingabefeld erhält neuen optionalen Parameter maxLaenge; Scheine- und Rollen-Felder in Schritt 1 auf maxLaenge: 2 begrenzt. Bei kIsWeb && wert.length >= 2 wird _fokussiereTextfeld(naechstes) sofort (ohne Timer) aufgerufen. dart:async-Import und _starteAutoAdvanceTimer/_autoAdvanceTimer vollständig entfernt.
 
 - Run 214a: Auto-Advance Fix: Timer übergibt jetzt direkt den Quell-FocusNode statt aktivesFeld() zu befragen (umgeht FocusNode.hasFocus-Unzuverlässigkeit auf iOS Web). kIsWeb-Check verhindert Auto-Advance im nativen Simulator.

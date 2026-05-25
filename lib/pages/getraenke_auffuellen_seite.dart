@@ -27,7 +27,6 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   bool _geladen = false;
   bool _istLinkshaender = false;
   bool _nurBenoetigte = false;
-  int _aktuellerFokusIndex = -1;
 
   @override
   void initState() {
@@ -64,12 +63,8 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       fn.addListener(() {
         if (fn.hasFocus) {
           ctrl.clear();
-          setState(() {
-            _aktuellerFokusIndex = i;
-          });
-        } else {
-          setState(() {});
         }
+        setState(() {});
       });
       _mengeController.add(ctrl);
       _mengeFocusNode.add(fn);
@@ -99,29 +94,6 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       _nurBenoetigte = false;
     });
     _speichereMengen();
-  }
-
-  void _springeZumNaechstfeld() {
-    final int naechster = _aktuellerFokusIndex + 1;
-    if (naechster < _mengeFocusNode.length) {
-      _mengeFocusNode[naechster].requestFocus();
-      _scrolleZurMitteNachFokus(_mengeFocusNode[naechster]);
-    }
-  }
-
-  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted || !fn.hasFocus || !context.mounted) return;
-    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    final BuildContext? ctx = fn.context;
-    if (ctx == null || !ctx.mounted) return;
-    await Scrollable.ensureVisible(
-      ctx,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      alignment: 0.3,
-      alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-    );
   }
 
   void _speichereMengen() {
@@ -358,10 +330,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed:
-                        _aktuellerFokusIndex < _getraenkeliste.length - 1
-                            ? _springeZumNaechstfeld
-                            : null,
+                    onPressed: null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: AppFarben.appBarRot,
@@ -374,10 +343,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                 ]
               : <Widget>[
                   ElevatedButton(
-                    onPressed:
-                        _aktuellerFokusIndex < _getraenkeliste.length - 1
-                            ? _springeZumNaechstfeld
-                            : null,
+                    onPressed: null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: AppFarben.appBarRot,

@@ -811,27 +811,6 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  void _weiterZumNaechstenFeldUnten() {
-    final FocusNode? aktivesFeld = _aktivesFeldSchritt2();
-    if (aktivesFeld == null) {
-      final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
-      if (reihenfolge.isNotEmpty) {
-        FocusScope.of(context).requestFocus(reihenfolge.first);
-      }
-      return;
-    }
-    _beiEingabeAbgeschlossenSchritt2(aktivesFeld);
-  }
-
-  FocusNode? _aktivesFeldSchritt2() {
-    for (final FocusNode focusNode in _fokusReihenfolgeSchritt2()) {
-      if (focusNode.hasFocus) {
-        return focusNode;
-      }
-    }
-    return null;
-  }
-
   FocusNode? _erstesLeeresFeld() {
     final Map<FocusNode, TextEditingController> lookup =
         <FocusNode, TextEditingController>{
@@ -982,9 +961,6 @@ class _TagesabschlussSchritt2SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final FocusNode? aktuellesFeld = _aktivesFeldSchritt2();
-    final bool nextButtonAktiv =
-        aktuellesFeld == null || !_istLetztesFeldSchritt2(aktuellesFeld);
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
@@ -1023,8 +999,7 @@ class _TagesabschlussSchritt2SeiteState
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
               ElevatedButton(
-                onPressed:
-                    nextButtonAktiv ? _weiterZumNaechstenFeldUnten : null,
+                onPressed: null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: AppFarben.appBarRot,

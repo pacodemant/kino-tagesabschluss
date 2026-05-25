@@ -491,22 +491,11 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         _naechstesFeld(focusNode),
       );
 
-  FocusNode? _aktivesFeld() =>
-      _stateController.aktivesFeld(_fokusReihenfolge());
-
-  void _weiterZumNaechstenFeld() => _stateController.weiterZumNaechstenFeld(
-    context: context,
-    reihenfolge: _fokusReihenfolge(),
-    aktivesFeld: _aktivesFeld(),
-    naechstesFeld: _naechstesFeld,
-    fokussiereTextfeld: _fokussiereTextfeld,
-  );
-
   void _fokussiereTextfeld(FocusNode fokusNode) {
     _stateController.fokussiereTextfeld(
       context: context,
       fokusNode: fokusNode,
-      aktivesFeld: _aktivesFeld,
+      aktivesFeld: () => _stateController.aktivesFeld(_fokusReihenfolge()),
       oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
       fokussiereTextfeldRekursiv: _fokussiereTextfeld,
       mounted: mounted,
@@ -843,9 +832,6 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
     }
 
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
-    final FocusNode? aktuellesFeld = _aktivesFeld();
-    final bool nextButtonAktiv =
-        aktuellesFeld == null || !_istLetztesFeld(aktuellesFeld);
     final bool hatUebereinstimmung = _wechselgeldSollwertCent > 0 &&
         _kassenbestandGesamtCent == _wechselgeldSollwertCent;
     final Color hintergrundFarbe = hatUebereinstimmung
@@ -921,20 +907,9 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         ],
       ),
       footerChild: tastaturOffen
-          ? SizedBox(
-              height: 36,
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed:
-                          nextButtonAktiv ? _weiterZumNaechstenFeld : null,
-                      style: AppFarben.footerButtonStyle,
-                      child: const Text('Next'),
-                    ),
-                  ),
-                ],
-              ),
+          ? ElevatedButton(
+              onPressed: null,
+              child: const Text('Next'),
             )
           : null,
       child: Schritt1BodyContent(
