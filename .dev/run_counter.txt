@@ -1,4 +1,4 @@
-last_run: 221
-next_run: 222
-last_run_title: Run 221: Footer-Fix + AppBar-Zeilentausch + Rollen-Dialog
-last_commit: 8851c72
+last_run: 222
+next_run: 223
+last_run_title: Run 222: Next-Button Schritt 1+2 mit Snackbar-Platzhalter
+last_commit: TBD

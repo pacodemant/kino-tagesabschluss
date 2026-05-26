@@ -1018,12 +1018,13 @@ class _TagesabschlussSchritt1SeiteState
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
               ElevatedButton(
-                onPressed: null,
+                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Nächstes Feld – funktioniert noch nicht')),
+                ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppFarben.appBarRot,
-                  disabledBackgroundColor: Colors.grey.shade200,
-                  disabledForegroundColor: Colors.grey.shade400,
+                  backgroundColor: Colors.grey.shade200,
+                  foregroundColor: Colors.grey.shade400,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
