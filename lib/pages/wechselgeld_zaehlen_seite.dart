@@ -297,35 +297,41 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
   }
 
   Future<void> _zeigeUebereinstimmungsDialog() async {
-    final String betragText = _formatiereEuro(_kassenbestandGesamtCent);
-    final bool? zurueck = await showDialog<bool>(
+    final Kino? kino = KinoRepository.nachId(widget.kinoId);
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext dialogKontext) {
         return AlertDialog(
           title: const Text('Wechselgeld stimmt!'),
-          content: Text('Gezählter Betrag: $betragText'),
+          content: const Text('Passt.'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(false),
+              onPressed: () => Navigator.of(dialogKontext).pop(),
               child: const Text('Weiter zählen'),
             ),
+            if (kino?.hatGetraenke == true)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogKontext).pop();
+                  Navigator.of(context).pushNamed(
+                    GetraenkeAuffuellenSeite.routenName,
+                    arguments: widget.kinoId,
+                  );
+                },
+                child: const Text('Getränke auffüllen'),
+              ),
             ElevatedButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(true),
-              child: const Text('Zurück zur Startseite'),
+              onPressed: () {
+                Navigator.of(dialogKontext).pop();
+                _zurueckZurStartseite();
+              },
+              child: const Text('Fertig / Startseite'),
             ),
           ],
         );
       },
     );
-
-    if (!mounted) {
-      return;
-    }
-
-    if (zurueck == true) {
-      _zurueckZurStartseite();
-    }
   }
 
   void _zurueckZurStartseite() {
@@ -345,6 +351,10 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
         return AlertDialog(
           title: const Text('Was möchtest du als nächstes tun?'),
           actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(),
+              child: const Text('Weiter zählen'),
+            ),
             if (kino?.hatGetraenke == true)
               TextButton(
                 onPressed: () {
@@ -361,7 +371,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                 Navigator.of(dialogKontext).pop();
                 _zurueckZurStartseite();
               },
-              child: const Text('Zurück zur Startseite'),
+              child: const Text('Fertig / Startseite'),
             ),
           ],
         );
@@ -942,7 +952,9 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       ),
       footerChild: tastaturOffen
           ? ElevatedButton(
-              onPressed: null,
+              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('funktioniert noch nicht')),
+              ),
               child: const Text('Next'),
             )
           : ElevatedButton(

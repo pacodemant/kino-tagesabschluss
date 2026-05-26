@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 219: (1) Abschluss-Dialog: "Weiter zählen" ergänzt, ElevatedButton → "Fertig / Startseite". (2) Übereinstimmungs-Dialog: content → "Passt.", gleiche Buttonstruktur. (3) Next-Platzhalter: onPressed null → Snackbar "funktioniert noch nicht". (4) Hilfe-Dialoge mit Text.rich: Scheine/Rollen "Anzahl" fett; Münzen/Sonstiges "Beträge" fett; erste Sätze überarbeitet, Beispiele unverändert.
+
 - Run 218: Abschließen-Button auf Wechselgeld-Seite: Footer zeigt ElevatedButton "Abschließen" wenn Tastatur geschlossen. Tap öffnet AlertDialog "Was möchtest du als nächstes tun?" mit TextButton "Getränke auffüllen" (nur wenn hatGetraenke) und ElevatedButton "Zurück zur Startseite".
 
 - Run 217: Hilfe-Buttons in Schritt 1: Abschnittstitel "Scheine", "Rollen" und "Lose Münzen" in AppFarben.appBarRot eingefärbt. Direkt neben jedem Titel ein IconButton (Icons.help_outline, rot, iconSize: 18), der per AlertDialog die korrekte Eingabemethode erklärt (Anzahl für Scheine/Rollen, Cent-Betrag für Münzgeld). Geänderte Dateien: schritt1_scheine_section.dart, schritt1_muenzen_rollen_section.dart, schritt1_muenzen_lose_section.dart.

@@ -66,9 +66,18 @@ class Schritt1ScheineSection extends StatelessWidget {
                             context: context,
                             builder: (ctx) => AlertDialog(
                               title: const Text('Scheine eingeben'),
-                              content: const Text(
-                                'Bitte die Anzahl der Scheine eingeben — nicht den Betrag.\n'
-                                'Also z.B. "3" für drei 50-Euro-Scheine, nicht "150".',
+                              content: const Text.rich(
+                                TextSpan(
+                                  children: <InlineSpan>[
+                                    TextSpan(text: 'Scheine einfach zählen und '),
+                                    TextSpan(
+                                      text: 'Anzahl',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(text: ' eingeben, nicht den Betrag.\n'),
+                                    TextSpan(text: 'Also z.B. "3" für drei 50-Euro-Scheine, nicht "150".'),
+                                  ],
+                                ),
                               ),
                               actions: <Widget>[
                                 TextButton(

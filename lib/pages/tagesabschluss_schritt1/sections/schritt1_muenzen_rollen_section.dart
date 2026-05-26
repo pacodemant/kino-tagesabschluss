@@ -66,10 +66,19 @@ class Schritt1MuenzenRollenSection extends StatelessWidget {
                             context: context,
                             builder: (ctx) => AlertDialog(
                               title: const Text('Rollen eingeben'),
-                              content: const Text(
-                                'Bitte die Anzahl der Münzrollen eingeben — nicht den Betrag.\n'
-                                'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'
-                                'Also "2" für zwei Rollen, nicht "100".',
+                              content: const Text.rich(
+                                TextSpan(
+                                  children: <InlineSpan>[
+                                    TextSpan(text: 'Rollen einfach zählen und '),
+                                    TextSpan(
+                                      text: 'Anzahl',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(text: ' eingeben, nicht den Betrag.\n'),
+                                    TextSpan(text: 'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'),
+                                    TextSpan(text: 'Also "2" für zwei Rollen, nicht "100".'),
+                                  ],
+                                ),
                               ),
                               actions: <Widget>[
                                 TextButton(

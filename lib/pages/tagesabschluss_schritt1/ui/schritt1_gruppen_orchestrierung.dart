@@ -157,9 +157,19 @@ class Schritt1GruppenOrchestrierung {
       ),
       formatiereEuro: formatiereEuro,
       hilfeDialogTitel: 'Sonstiges eingeben',
-      hilfeDialogText:
-          'Hier den Betrag für sonstige Einnahmen (z.B. Umschläge) in Cent eingeben — ohne Komma.\n'
-          'Also z.B. "340" für drei Euro und vierzig Cent.',
+      hilfeDialogContent: const Text.rich(
+        TextSpan(
+          children: <InlineSpan>[
+            TextSpan(text: 'Hier die '),
+            TextSpan(
+              text: 'Beträge',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: ' der verschiedenen Münzen und ggf. Umschläge u.a. eingeben.\n'),
+            TextSpan(text: 'Also z.B. "340" für drei Euro und vierzig Cent.'),
+          ],
+        ),
+      ),
     );
 
     return Schritt1GruppenWidgets(
@@ -180,9 +190,9 @@ class Schritt1GruppenOrchestrierung {
     required Widget inhalt,
     required String Function(int cent) formatiereEuro,
     String? hilfeDialogTitel,
-    String? hilfeDialogText,
+    Widget? hilfeDialogContent,
   }) {
-    final bool hatHilfe = hilfeDialogTitel != null && hilfeDialogText != null;
+    final bool hatHilfe = hilfeDialogTitel != null && hilfeDialogContent != null;
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: Column(
@@ -242,7 +252,7 @@ class Schritt1GruppenOrchestrierung {
                                         context: ctx,
                                         builder: (dialogCtx) => AlertDialog(
                                           title: Text(hilfeDialogTitel),
-                                          content: Text(hilfeDialogText),
+                                          content: hilfeDialogContent,
                                           actions: <Widget>[
                                             TextButton(
                                               onPressed: () =>

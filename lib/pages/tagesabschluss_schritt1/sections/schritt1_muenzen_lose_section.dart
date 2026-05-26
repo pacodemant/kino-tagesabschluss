@@ -70,9 +70,18 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
                             context: context,
                             builder: (ctx) => AlertDialog(
                               title: const Text('Münzgeld eingeben'),
-                              content: const Text(
-                                'Hier den Gesamtbetrag des losen Münzgelds in Cent eingeben — ohne Komma.\n'
-                                'Also z.B. "340" für drei Euro und vierzig Cent.',
+                              content: const Text.rich(
+                                TextSpan(
+                                  children: <InlineSpan>[
+                                    TextSpan(text: 'Hier die '),
+                                    TextSpan(
+                                      text: 'Beträge',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(text: ' der verschiedenen Münzen und ggf. Umschläge u.a. eingeben.\n'),
+                                    TextSpan(text: 'Also z.B. "340" für drei Euro und vierzig Cent.'),
+                                  ],
+                                ),
                               ),
                               actions: <Widget>[
                                 TextButton(
