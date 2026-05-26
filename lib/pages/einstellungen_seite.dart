@@ -837,7 +837,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   void _onGetraenkeReorder(int oldIndex, int newIndex) {
-    if (newIndex > oldIndex) newIndex--;
     setState(() {
       final String item = _getraenkeliste.removeAt(oldIndex);
       _getraenkeliste.insert(newIndex, item);
@@ -875,7 +874,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _getraenkeliste.length,
-          onReorder: _onGetraenkeReorder,
+          onReorderItem: _onGetraenkeReorder,
           itemBuilder: (BuildContext context, int index) {
             return Row(
               key: ObjectKey(_getraenkeController[index]),
