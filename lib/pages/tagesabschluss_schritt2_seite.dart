@@ -311,10 +311,7 @@ class _TagesabschlussSchritt2SeiteState
   /// Gibt den Anzeigetext für das Differenz-Feld zurück (mit Minuszeichen wenn negativ).
   String _differenzAnzeigeText(int cent) {
     if (cent == 0) return '';
-    final int abs = cent.abs();
-    final String betrag =
-        '${abs ~/ 100},${(abs % 100).toString().padLeft(2, '0')}';
-    return cent < 0 ? '-$betrag' : betrag;
+    return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
   }
 
   /// Negiert den Differenz-Anfangsbestand-Wert; ignoriert 0; aktualisiert Controller-Anzeige.

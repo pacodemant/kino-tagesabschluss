@@ -1,4 +1,4 @@
-last_run: 223
-next_run: 224
-last_run_title: Run 223: Wechselgeld zählen → Wechselgeld prüfen
-last_commit: ce76da8
+last_run: 224
+next_run: 225
+last_run_title: Run 224: Tausenderpunkt für alle Geldbeträge (deutsches Format)
+last_commit: TBD

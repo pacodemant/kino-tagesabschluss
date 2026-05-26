@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 224: Tausenderpunkt für alle Geldbeträge (deutsches Format 1.250,30 €). `formatiereEuroEingabe` nutzt jetzt `_tausenderPunkt`. `CentWaehrungsEingabeFormatter` (betrag_cent_eingabefeld.dart) delegiert an `formatiereEuroEingabe`. `_differenzAnzeigeText` in schritt2 auf zentrale Funktion umgestellt.
+
 - Run 223: "Wechselgeld zählen" → "Wechselgeld prüfen" app-weit: AppBar-Titel, Startmenü-Button, Routenpfad (/wechselgeld-pruefen), Datei (wechselgeld_pruefen_seite.dart), Klasse (WechselgeldPruefenSeite), alle Imports und Referenzen. Persistenz-Key unverändert.
 
 - Run 222: Next-Button Schritt 1 und Schritt 2: onPressed: null → Snackbar 'Nächstes Feld – funktioniert noch nicht'; Stil auf grey.shade200/400 umgestellt (wie Wechselgeld-Next).

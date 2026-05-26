@@ -106,9 +106,9 @@ class TagesabschlussFormatierung {
   static String formatiereEuroEingabe(int cent) {
     final String vorzeichen = cent < 0 ? '-' : '';
     final int absolut = cent.abs();
-    final int euro = absolut ~/ 100;
+    final String euroTeil = _tausenderPunkt(absolut ~/ 100);
     final String centTeil = (absolut % 100).toString().padLeft(2, '0');
-    return '$vorzeichen$euro,$centTeil';
+    return '$vorzeichen$euroTeil,$centTeil';
   }
 
   static String formatiereEuroMitVorzeichen(int cent) {

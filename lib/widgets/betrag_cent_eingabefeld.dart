@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 
 class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   static final RegExp _nichtZiffern = RegExp(r'[^0-9]');
@@ -18,9 +19,8 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
     }
 
     final int cent = int.tryParse(ziffern) ?? 0;
-    final int euro = cent ~/ 100;
-    final String centTeil = (cent % 100).toString().padLeft(2, '0');
-    final String formatiert = '$euro,$centTeil';
+    final String formatiert =
+        TagesabschlussFormatierung.formatiereEuroEingabe(cent);
 
     return TextEditingValue(
       text: formatiert,
