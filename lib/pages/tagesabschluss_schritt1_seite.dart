@@ -1020,7 +1020,7 @@ class _TagesabschlussSchritt1SeiteState
               ElevatedButton(
                 onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text('Nächstes Feld – funktioniert noch nicht')),
+                      content: Text('funktioniert noch nicht')),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade200,
