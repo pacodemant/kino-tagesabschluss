@@ -6,6 +6,7 @@ import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
+import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
@@ -332,6 +333,39 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       StartmenueSeite.routenName,
       (Route<dynamic> route) => false,
       arguments: widget.kinoId,
+    );
+  }
+
+  Future<void> _zeigeAbschlussDialog() async {
+    final Kino? kino = KinoRepository.nachId(widget.kinoId);
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext dialogKontext) {
+        return AlertDialog(
+          title: const Text('Was möchtest du als nächstes tun?'),
+          actions: <Widget>[
+            if (kino?.hatGetraenke == true)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogKontext).pop();
+                  Navigator.of(context).pushNamed(
+                    GetraenkeAuffuellenSeite.routenName,
+                    arguments: widget.kinoId,
+                  );
+                },
+                child: const Text('Getränke auffüllen'),
+              ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(dialogKontext).pop();
+                _zurueckZurStartseite();
+              },
+              child: const Text('Zurück zur Startseite'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -911,7 +945,10 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
               onPressed: null,
               child: const Text('Next'),
             )
-          : null,
+          : ElevatedButton(
+              onPressed: _zeigeAbschlussDialog,
+              child: const Text('Abschließen'),
+            ),
       child: Schritt1BodyContent(
         scrollController: _scrollController,
         devToolsStickySichtbar: false,

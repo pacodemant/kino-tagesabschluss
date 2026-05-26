@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 218: Abschließen-Button auf Wechselgeld-Seite: Footer zeigt ElevatedButton "Abschließen" wenn Tastatur geschlossen. Tap öffnet AlertDialog "Was möchtest du als nächstes tun?" mit TextButton "Getränke auffüllen" (nur wenn hatGetraenke) und ElevatedButton "Zurück zur Startseite".
+
 - Run 217: Hilfe-Buttons in Schritt 1: Abschnittstitel "Scheine", "Rollen" und "Lose Münzen" in AppFarben.appBarRot eingefärbt. Direkt neben jedem Titel ein IconButton (Icons.help_outline, rot, iconSize: 18), der per AlertDialog die korrekte Eingabemethode erklärt (Anzahl für Scheine/Rollen, Cent-Betrag für Münzgeld). Geänderte Dateien: schritt1_scheine_section.dart, schritt1_muenzen_rollen_section.dart, schritt1_muenzen_lose_section.dart.
 
 - Run 216: Next-Button-Logik vollständig entfernt auf allen Seiten. _weiterZumNaechstenFeldUnten/_aktivesFeld/_springeZumNaechstfeld/_scrolleZurMitteNachFokus (getraenke) entfernt; kIsWeb-Check in _beiStueckzahlGeaendert entfernt; flutter/foundation.dart-Import entfernt. Next-Button bleibt in allen Footern als dauerhaft ausgegrauter Platzhalter (onPressed: null). Tote Datei schritt1_footer.dart gelöscht. maxLaenge-Parameter in GanzzahlEingabefeld und schritt1_ui_builder BEHALTEN – sinnvolle UX-Begrenzung (max. 2 Ziffern) unabhängig von Auto-Advance.
