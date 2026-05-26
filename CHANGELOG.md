@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 226: Abschluss-Dialog (Schritt 3) erhält neue Option „Barumsatz f. Umschlag stückeln" → navigiert zur Stückelungs-Seite via _navigiereZuSchritt4().
+
 - Run 225: Stückelung-Button (Schritt 3 Footer) erhält Icon(Icons.arrow_forward) analog zu den anderen Navigations-Buttons der App.
 
 - Run 224: Tausenderpunkt für alle Geldbeträge (deutsches Format 1.250,30 €). `formatiereEuroEingabe` nutzt jetzt `_tausenderPunkt`. `CentWaehrungsEingabeFormatter` (betrag_cent_eingabefeld.dart) delegiert an `formatiereEuroEingabe`. `_differenzAnzeigeText` in schritt2 auf zentrale Funktion umgestellt.

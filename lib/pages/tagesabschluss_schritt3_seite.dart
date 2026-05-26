@@ -219,6 +219,13 @@ class _TagesabschlussSchritt3SeiteState
                 },
                 child: const Text('Getränke auffüllen'),
               ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                _navigiereZuSchritt4();
+              },
+              child: const Text('Barumsatz f. Umschlag stückeln'),
+            ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(dialogContext).pop();
