@@ -359,9 +359,16 @@ class _TagesabschlussSchritt3SeiteState
               child: ElevatedButton(
                 onPressed: _navigiereZuSchritt4,
                 style: AppFarben.footerButtonStyle,
-                child: const FittedBox(
+                child: FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Text('Stückelung (4/4)'),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const <Widget>[
+                      Icon(Icons.arrow_forward),
+                      SizedBox(width: 6),
+                      Text('Stückelung (4/4)'),
+                    ],
+                  ),
                 ),
               ),
             ),

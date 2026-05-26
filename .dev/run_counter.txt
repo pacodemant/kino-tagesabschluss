@@ -1,4 +1,4 @@
-last_run: 224
-next_run: 225
-last_run_title: Run 224: Tausenderpunkt für alle Geldbeträge (deutsches Format)
+last_run: 225
+next_run: 226
+last_run_title: Run 225: Pfeil-Icon auf Stückelung-Button (analog andere Nav-Buttons)
 last_commit: TBD
