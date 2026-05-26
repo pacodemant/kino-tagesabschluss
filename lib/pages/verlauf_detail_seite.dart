@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -22,10 +21,6 @@ class VerlaufDetailSeite extends StatefulWidget {
 
 class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   bool _loescht = false;
-  final ScrollController _scrollController = ScrollController();
-  final GlobalKey _geldzahlungKey = GlobalKey();
-  final GlobalKey _belegeKey = GlobalKey();
-  final GlobalKey _ergebnisKey = GlobalKey();
 
   // Lookup-Maps aus StueckelungKonfiguration, einmalig gebaut
   static final Map<String, Kassenzeile> _scheineLookup = <String, Kassenzeile>{
@@ -40,40 +35,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
   String _deutschesDatum(DateTime datum) =>
       TagesabschlussFormatierung.deutschesDatum(datum);
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrolleZurKachelWennNoetig(GlobalKey key) {
-    final BuildContext? ctx = key.currentContext;
-    if (ctx == null || !mounted) return;
-    final RenderBox? box = ctx.findRenderObject() as RenderBox?;
-    if (box == null || !box.hasSize) return;
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(box);
-    if (viewport == null) return;
-    if (!_scrollController.hasClients) return;
-    final ScrollPosition pos = _scrollController.position;
-    final double topOffset = viewport.getOffsetToReveal(box, 0.0).offset;
-    final double cardTopInViewport = topOffset - pos.pixels;
-    final double cardHeight = box.size.height;
-    final double viewportHeight = pos.viewportDimension;
-    final double visibleTop = cardTopInViewport.clamp(0.0, viewportHeight);
-    final double visibleBottom = (cardTopInViewport + cardHeight).clamp(0.0, viewportHeight);
-    if (visibleBottom - visibleTop >= cardHeight / 2) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final BuildContext? ctx2 = key.currentContext;
-      if (ctx2 == null) return;
-      Scrollable.ensureVisible(
-        ctx2,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
-  }
 
   Future<void> _loescheEintrag() async {
     if (_loescht) {
@@ -312,7 +273,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         children: <Widget>[
           Expanded(
             child: ListView(
-              controller: _scrollController,
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               children: <Widget>[
                 // Hinweis-Card – nur für vergangene Einträge
@@ -331,7 +291,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
                 // Abschnitt 1 – Geldzählung
                 Card(
-                  key: _geldzahlungKey,
                   child: ExpansionTile(
                     title: const Text(
                       'Geldzählung',
@@ -339,9 +298,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     ),
                     subtitle: Text(_euro(a.kassenbestandGesamtCent)),
                     initiallyExpanded: false,
-                    onExpansionChanged: (bool isExpanded) {
-                      if (isExpanded) _scrolleZurKachelWennNoetig(_geldzahlungKey);
-                    },
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       _zeile('Scheine', _euro(a.scheineCent)),
@@ -374,7 +330,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
                 // Abschnitt 2 – Einnahmen
                 Card(
-                  key: _belegeKey,
                   child: ExpansionTile(
                     title: const Text(
                       'Belege',
@@ -382,9 +337,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     ),
                     subtitle: Text(_euro(a.gesamtIstCent)),
                     initiallyExpanded: false,
-                    onExpansionChanged: (bool isExpanded) {
-                      if (isExpanded) _scrolleZurKachelWennNoetig(_belegeKey);
-                    },
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       _zeile('Kino SOLL', _euro(a.kinoSollCent)),
@@ -402,7 +354,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
                 // Abschnitt 3 – Ergebnis
                 Card(
-                  key: _ergebnisKey,
                   child: ExpansionTile(
                     title: const Text(
                       'Ergebnis',
@@ -419,9 +370,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       ),
                     ),
                     initiallyExpanded: false,
-                    onExpansionChanged: (bool isExpanded) {
-                      if (isExpanded) _scrolleZurKachelWennNoetig(_ergebnisKey);
-                    },
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       _zeile(

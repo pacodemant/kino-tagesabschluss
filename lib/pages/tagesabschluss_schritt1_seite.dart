@@ -108,10 +108,6 @@ class _TagesabschlussSchritt1SeiteState
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
   final Set<FocusNode> _rotHervorgehoben = <FocusNode>{};
-  final GlobalKey _scheineKey = GlobalKey();
-  final GlobalKey _loseMuenzenKey = GlobalKey();
-  final GlobalKey _rollenKey = GlobalKey();
-  final GlobalKey _umschlaegeKey = GlobalKey();
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
@@ -535,34 +531,6 @@ class _TagesabschlussSchritt1SeiteState
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-  }
-
-  void _scrolleZurKachelWennNoetig(GlobalKey key) {
-    final BuildContext? ctx = key.currentContext;
-    if (ctx == null || !mounted) return;
-    final RenderBox? box = ctx.findRenderObject() as RenderBox?;
-    if (box == null || !box.hasSize) return;
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(box);
-    if (viewport == null) return;
-    if (!_scrollController.hasClients) return;
-    final ScrollPosition pos = _scrollController.position;
-    final double topOffset = viewport.getOffsetToReveal(box, 0.0).offset;
-    final double cardTopInViewport = topOffset - pos.pixels;
-    final double cardHeight = box.size.height;
-    final double viewportHeight = pos.viewportDimension;
-    final double visibleTop = cardTopInViewport.clamp(0.0, viewportHeight);
-    final double visibleBottom = (cardTopInViewport + cardHeight).clamp(0.0, viewportHeight);
-    if (visibleBottom - visibleTop >= cardHeight / 2) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final BuildContext? ctx2 = key.currentContext;
-      if (ctx2 == null) return;
-      Scrollable.ensureVisible(
-        ctx2,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    });
   }
 
   // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
@@ -997,19 +965,15 @@ class _TagesabschlussSchritt1SeiteState
       umschlagHinzufuegen: _umschlagHinzufuegen,
       zeigeKupferRollen: _zeigeKupferRollen,
       toggleScheine: () {
-        if (!_scheineAufgeklappt) _scrolleZurKachelWennNoetig(_scheineKey);
         _toggleSection(_sectionScheine);
       },
       toggleLoseMuenzen: () {
-        if (!_loseMuenzenAufgeklappt) _scrolleZurKachelWennNoetig(_loseMuenzenKey);
         _toggleSection(_sectionLoseMuenzen);
       },
       toggleRollen: () {
-        if (!_rollenAufgeklappt) _scrolleZurKachelWennNoetig(_rollenKey);
         _toggleSection(_sectionRollen);
       },
       toggleUmschlaege: () {
-        if (!_umschlaegeAufgeklappt) _scrolleZurKachelWennNoetig(_umschlaegeKey);
         _toggleSection(_sectionUmschlaege);
       },
       rotHervorgehoben: _rotHervorgehoben,
@@ -1097,10 +1061,10 @@ class _TagesabschlussSchritt1SeiteState
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
         devToolsPanel: _baueDevToolsPanel(),
-        scheineGruppe: KeyedSubtree(key: _scheineKey, child: gruppen.scheineGruppe),
-        loseMuenzenGruppe: KeyedSubtree(key: _loseMuenzenKey, child: gruppen.loseMuenzenGruppe),
-        rollenGruppe: KeyedSubtree(key: _rollenKey, child: gruppen.rollenGruppe),
-        hinweiseSection: KeyedSubtree(key: _umschlaegeKey, child: gruppen.hinweiseSection),
+        scheineGruppe: gruppen.scheineGruppe,
+        loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
+        rollenGruppe: gruppen.rollenGruppe,
+        hinweiseSection: gruppen.hinweiseSection,
         zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
           kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
           wechselgeldSollwert: '− ${_formatiereEuro(_wechselgeldSollwertCent)}',
