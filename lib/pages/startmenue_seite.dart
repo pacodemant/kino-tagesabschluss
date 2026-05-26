@@ -7,7 +7,7 @@ import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
-import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
+import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 
 class StartmenueSeite extends StatelessWidget {
   const StartmenueSeite({super.key, required this.kino});
@@ -34,9 +34,9 @@ class StartmenueSeite extends StatelessWidget {
     Navigator.of(context).pushNamed(VerlaufSeite.routenName, arguments: kino.id);
   }
 
-  void _oeffneWechselgeldZaehlen(BuildContext context) {
+  void _oeffneWechselgeldPruefen(BuildContext context) {
     Navigator.of(context).pushNamed(
-      WechselgeldZaehlenSeite.routenName,
+      WechselgeldPruefenSeite.routenName,
       arguments: kino.id,
     );
   }
@@ -87,8 +87,8 @@ class StartmenueSeite extends StatelessWidget {
                 if (kino.hatWechselgeld) ...<Widget>[
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () => _oeffneWechselgeldZaehlen(context),
-                    child: const Text('Wechselgeld zählen'),
+                    onPressed: () => _oeffneWechselgeldPruefen(context),
+                    child: const Text('Wechselgeld prüfen'),
                   ),
                 ],
                 if (kino.hatGetraenke) ...<Widget>[

@@ -12,7 +12,7 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
-import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
+import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 
 class TagesabschlussSchritt3Argumente {
@@ -202,7 +202,7 @@ class _TagesabschlussSchritt3SeiteState
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
                   Navigator.of(context).pushNamed(
-                    WechselgeldZaehlenSeite.routenName,
+                    WechselgeldPruefenSeite.routenName,
                     arguments: widget.argumente.kinoId,
                   );
                 },

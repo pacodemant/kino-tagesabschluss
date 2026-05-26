@@ -16,7 +16,7 @@ import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
-import 'package:kino_bar_app/pages/wechselgeld_zaehlen_seite.dart';
+import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
@@ -209,10 +209,10 @@ class MeineApp extends StatelessWidget {
           );
         }
 
-        if (settings.name == WechselgeldZaehlenSeite.routenName) {
+        if (settings.name == WechselgeldPruefenSeite.routenName) {
           final String kinoId = (settings.arguments as String?) ?? '';
           return MaterialPageRoute<void>(
-            builder: (_) => WechselgeldZaehlenSeite(kinoId: kinoId),
+            builder: (_) => WechselgeldPruefenSeite(kinoId: kinoId),
             settings: settings,
           );
         }

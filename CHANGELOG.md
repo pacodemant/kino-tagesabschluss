@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 223: "Wechselgeld zählen" → "Wechselgeld prüfen" app-weit: AppBar-Titel, Startmenü-Button, Routenpfad (/wechselgeld-pruefen), Datei (wechselgeld_pruefen_seite.dart), Klasse (WechselgeldPruefenSeite), alle Imports und Referenzen. Persistenz-Key unverändert.
+
 - Run 222: Next-Button Schritt 1 und Schritt 2: onPressed: null → Snackbar 'Nächstes Feld – funktioniert noch nicht'; Stil auf grey.shade200/400 umgestellt (wie Wechselgeld-Next).
 
 - Run 221: (1) Wechselgeld-Footer: zeigeHausButton:false → kein Doppel-HausButton; Next minimumSize 130→0 → Button nimmt nur Textbreite. (2) Rollen expandiert: "Übernehmen" → "Aus Zählung von vorhin übernehmen"; TextButton-Padding verkleinert. (3) schritt1_header_section.dart: Zeilen getauscht (Kassenabrechnung oben, schrittTitel unten) – gilt für alle 6 TagesabschlussHeader-Seiten. (4) einstellungen_seite.dart: AppBar-Zeilen analog getauscht.

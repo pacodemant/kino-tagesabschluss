@@ -21,19 +21,19 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
-class WechselgeldZaehlenSeite extends StatefulWidget {
-  const WechselgeldZaehlenSeite({super.key, required this.kinoId});
+class WechselgeldPruefenSeite extends StatefulWidget {
+  const WechselgeldPruefenSeite({super.key, required this.kinoId});
 
-  static const String routenName = '/wechselgeld-zaehlen';
+  static const String routenName = '/wechselgeld-pruefen';
 
   final String kinoId;
 
   @override
-  State<WechselgeldZaehlenSeite> createState() =>
-      _WechselgeldZaehlenSeiteState();
+  State<WechselgeldPruefenSeite> createState() =>
+      _WechselgeldPruefenSeiteState();
 }
 
-class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
+class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
@@ -938,7 +938,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       zeigeHausButton: false,
       appBar: TagesabschlussHeader(
         schrittNummer: 0,
-        schrittTitel: 'Wechselgeld zählen',
+        schrittTitel: 'Wechselgeld prüfen',
         kinoName: KinoRepository.nachId(widget.kinoId)?.name ?? 'Schauburg',
         actions: <Widget>[
           TextButton(
