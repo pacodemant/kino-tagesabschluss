@@ -1118,6 +1118,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                                 style: TextButton.styleFrom(
                                   textStyle: const TextStyle(fontSize: 10),
                                   padding: const EdgeInsets.only(right: 8),
+                                  minimumSize: Size.zero,
                                   tapTargetSize:
                                       MaterialTapTargetSize.shrinkWrap,
                                 ),
@@ -1128,9 +1129,12 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                                 ),
                               ),
                               IconButton(
-                                iconSize: 18,
-                                onPressed: _zeigeRollenUebernehmenHilfe,
                                 icon: const Icon(Icons.help_outline),
+                                color: AppFarben.appBarRot,
+                                iconSize: 18,
+                                padding: const EdgeInsets.only(left: 4),
+                                constraints: const BoxConstraints(),
+                                onPressed: _zeigeRollenUebernehmenHilfe,
                               ),
                             ],
                           ),
