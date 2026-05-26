@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 220: (1) Wechselgeld-Footer: HausButton | Next (optisch ausgegraut, Snackbar) | Fertig/Startseite → _zeigeAbschlussDialog; kein Tastatur-Conditional mehr. (2) Wechselgeld-Rollen-Header: Text.rich mit "Anzahl" rot/10px + Hilfe-Button + Dialog (wie Schritt 1). (3) Getränke: "Fertig" → "Fertig / Startseite".
+
 - Run 219: (1) Abschluss-Dialog: "Weiter zählen" ergänzt, ElevatedButton → "Fertig / Startseite". (2) Übereinstimmungs-Dialog: content → "Passt.", gleiche Buttonstruktur. (3) Next-Platzhalter: onPressed null → Snackbar "funktioniert noch nicht". (4) Hilfe-Dialoge mit Text.rich: Scheine/Rollen "Anzahl" fett; Münzen/Sonstiges "Beträge" fett; erste Sätze überarbeitet, Beispiele unverändert.
 
 - Run 218: Abschließen-Button auf Wechselgeld-Seite: Footer zeigt ElevatedButton "Abschließen" wenn Tastatur geschlossen. Tap öffnet AlertDialog "Was möchtest du als nächstes tun?" mit TextButton "Getränke auffüllen" (nur wenn hatGetraenke) und ElevatedButton "Zurück zur Startseite".

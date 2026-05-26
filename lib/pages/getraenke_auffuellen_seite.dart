@@ -325,7 +325,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     child: ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: AppFarben.footerButtonStyle,
-                      child: const Text('Fertig'),
+                      child: const Text('Fertig / Startseite'),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -358,7 +358,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     child: ElevatedButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: AppFarben.footerButtonStyle,
-                      child: const Text('Fertig'),
+                      child: const Text('Fertig / Startseite'),
                     ),
                   ),
                 ],

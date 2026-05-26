@@ -8,6 +8,7 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
@@ -875,7 +876,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+
     final bool hatUebereinstimmung = _wechselgeldSollwertCent > 0 &&
         _kassenbestandGesamtCent == _wechselgeldSollwertCent;
     final Color hintergrundFarbe = hatUebereinstimmung
@@ -950,17 +951,34 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
           const SizedBox(width: 8),
         ],
       ),
-      footerChild: tastaturOffen
-          ? ElevatedButton(
+      footerChild: SizedBox(
+        height: 36,
+        child: Row(
+          children: <Widget>[
+            const HausButton(),
+            const SizedBox(width: 8),
+            ElevatedButton(
               onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('funktioniert noch nicht')),
               ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade200,
+                foregroundColor: Colors.grey.shade400,
+                minimumSize: const Size(130, 36),
+              ),
               child: const Text('Next'),
-            )
-          : ElevatedButton(
-              onPressed: _zeigeAbschlussDialog,
-              child: const Text('Abschließen'),
             ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: _zeigeAbschlussDialog,
+                style: AppFarben.footerButtonStyle,
+                child: const Text('Fertig / Startseite'),
+              ),
+            ),
+          ],
+        ),
+      ),
       child: Schritt1BodyContent(
         scrollController: _scrollController,
         devToolsStickySichtbar: false,
@@ -1021,10 +1039,68 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: <Widget>[
-                  const Expanded(
-                    child: Text(
-                      'Rollen (Anzahl der Rollen)',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+                  Expanded(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const Flexible(
+                          child: Text.rich(
+                            TextSpan(
+                              children: <TextSpan>[
+                                TextSpan(
+                                  text: 'Rollen ',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                                TextSpan(
+                                  text: 'Anzahl',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppFarben.appBarRot,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' der Rollen',
+                                  style: TextStyle(fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.help_outline),
+                          color: AppFarben.appBarRot,
+                          iconSize: 18,
+                          padding: const EdgeInsets.only(left: 4),
+                          constraints: const BoxConstraints(),
+                          onPressed: () => showDialog<void>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Rollen eingeben'),
+                              content: const Text.rich(
+                                TextSpan(
+                                  children: <InlineSpan>[
+                                    TextSpan(text: 'Rollen einfach zählen und '),
+                                    TextSpan(
+                                      text: 'Anzahl',
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(text: ' eingeben, nicht den Betrag.\n'),
+                                    TextSpan(text: 'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'),
+                                    TextSpan(text: 'Also "2" für zwei Rollen, nicht "100".'),
+                                  ],
+                                ),
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(),
+                                  child: const Text('Verstanden'),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Text(
