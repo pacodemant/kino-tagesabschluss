@@ -1111,21 +1111,19 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              TextButton(
-                                onPressed: _rollenUebernommen
+                              InkWell(
+                                borderRadius: BorderRadius.circular(2),
+                                onTap: _rollenUebernommen
                                     ? _loescheRollen
                                     : _ladeRollenAusErsterZaehlung,
-                                style: TextButton.styleFrom(
-                                  textStyle: const TextStyle(fontSize: 10),
-                                  padding: const EdgeInsets.only(right: 8),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
-                                ),
                                 child: Text(
                                   _rollenUebernommen
                                       ? 'Geldrollen löschen'
                                       : 'Aus Zählung von vorhin übernehmen',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: AppFarben.appBarRot,
+                                  ),
                                 ),
                               ),
                               IconButton(
