@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 228: GitHub Actions — drei Node.js-20-Actions auf node24 upgraded: actions/checkout@v4→v6, actions/configure-pages@v5→v6, actions/deploy-pages@v4→v5.
+
 - Run 227: (1) PWA-Installation: Einstellungsseite zeigt bei unterstützenden Browsern einen neuen „App installieren"-Bereich (beforeinstallprompt via dart:js_interop). (2) Cache-Kontrolle: index.html erhält Cache-Control-Meta-Tags (no-cache/no-store), serviceWorkerVersion: null war bereits gesetzt.
 
 - Run 226: Abschluss-Dialog (Schritt 3) erhält neue Option „Barumsatz f. Umschlag stückeln" → navigiert zur Stückelungs-Seite via _navigiereZuSchritt4().
