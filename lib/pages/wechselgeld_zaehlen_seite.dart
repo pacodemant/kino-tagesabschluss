@@ -1037,7 +1037,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
           InkWell(
             onTap: () => _toggleSection(_sectionRollen),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
               child: Row(
                 children: <Widget>[
                   Expanded(
@@ -1128,9 +1128,10 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                         ? _loescheRollen
                         : _ladeRollenAusErsterZaehlung,
                     style: TextButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 13),
+                      textStyle: const TextStyle(fontSize: 10),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 2),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
                       _rollenUebernommen
