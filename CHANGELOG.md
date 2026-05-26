@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 227: Auto-Scroll beim Aufklappen von Kacheln — auf Schritt 1 (4 Custom-Cards) und Verlauf-Detail (3 ExpansionTiles): liegt die Kachel zu mehr als der Hälfte unterhalb des sichtbaren Bereichs, scrollt die Seite sie nach dem Aufklappen vollständig ins Bild (maximal bis unter die AppBar). Einklappen löst keinen Scroll aus.
+
 - Run 226: Abschluss-Dialog (Schritt 3) erhält neue Option „Barumsatz f. Umschlag stückeln" → navigiert zur Stückelungs-Seite via _navigiereZuSchritt4().
 
 - Run 225: Stückelung-Button (Schritt 3 Footer) erhält Icon(Icons.arrow_forward) analog zu den anderen Navigations-Buttons der App.
