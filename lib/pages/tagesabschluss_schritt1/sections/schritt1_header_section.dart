@@ -24,12 +24,12 @@ class Schritt1HeaderSection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              untertitel,
-              style: const TextStyle(fontWeight: FontWeight.normal),
-            ),
-            Text(
               titel,
               style: const TextStyle(fontSize: 14),
+            ),
+            Text(
+              untertitel,
+              style: const TextStyle(fontWeight: FontWeight.normal),
             ),
           ],
         ),

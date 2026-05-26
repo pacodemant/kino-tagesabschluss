@@ -935,6 +935,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
 
     return TagesabschlussScaffold(
       backgroundColor: hintergrundFarbe,
+      zeigeHausButton: false,
       appBar: TagesabschlussHeader(
         schrittNummer: 0,
         schrittTitel: 'Wechselgeld zählen',
@@ -964,7 +965,7 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey.shade200,
                 foregroundColor: Colors.grey.shade400,
-                minimumSize: const Size(130, 36),
+                minimumSize: const Size(0, 36),
               ),
               child: const Text('Next'),
             ),
@@ -1128,9 +1129,13 @@ class _WechselgeldZaehlenSeiteState extends State<WechselgeldZaehlenSeite> {
                         : _ladeRollenAusErsterZaehlung,
                     style: TextButton.styleFrom(
                       textStyle: const TextStyle(fontSize: 13),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 2),
                     ),
                     child: Text(
-                      _rollenUebernommen ? 'Geldrollen löschen' : 'Übernehmen',
+                      _rollenUebernommen
+                          ? 'Geldrollen löschen'
+                          : 'Aus Zählung von vorhin übernehmen',
                     ),
                   ),
                   IconButton(

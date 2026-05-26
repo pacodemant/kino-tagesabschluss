@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 221: (1) Wechselgeld-Footer: zeigeHausButton:false → kein Doppel-HausButton; Next minimumSize 130→0 → Button nimmt nur Textbreite. (2) Rollen expandiert: "Übernehmen" → "Aus Zählung von vorhin übernehmen"; TextButton-Padding verkleinert. (3) schritt1_header_section.dart: Zeilen getauscht (Kassenabrechnung oben, schrittTitel unten) – gilt für alle 6 TagesabschlussHeader-Seiten. (4) einstellungen_seite.dart: AppBar-Zeilen analog getauscht.
+
 - Run 220: (1) Wechselgeld-Footer: HausButton | Next (optisch ausgegraut, Snackbar) | Fertig/Startseite → _zeigeAbschlussDialog; kein Tastatur-Conditional mehr. (2) Wechselgeld-Rollen-Header: Text.rich mit "Anzahl" rot/10px + Hilfe-Button + Dialog (wie Schritt 1). (3) Getränke: "Fertig" → "Fertig / Startseite".
 
 - Run 219: (1) Abschluss-Dialog: "Weiter zählen" ergänzt, ElevatedButton → "Fertig / Startseite". (2) Übereinstimmungs-Dialog: content → "Passt.", gleiche Buttonstruktur. (3) Next-Platzhalter: onPressed null → Snackbar "funktioniert noch nicht". (4) Hilfe-Dialoge mit Text.rich: Scheine/Rollen "Anzahl" fett; Münzen/Sonstiges "Beträge" fett; erste Sätze überarbeitet, Beispiele unverändert.

@@ -938,15 +938,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Einstellungen',
-              style: TextStyle(fontWeight: FontWeight.normal),
-            ),
             if (_aktiveKinoName.isNotEmpty)
               Text(
                 _aktiveKinoName,
                 style: const TextStyle(fontSize: 14),
               ),
+            const Text(
+              'Einstellungen',
+              style: TextStyle(fontWeight: FontWeight.normal),
+            ),
           ],
         ),
       ),
