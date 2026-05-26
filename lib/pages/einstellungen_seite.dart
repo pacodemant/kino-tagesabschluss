@@ -5,6 +5,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
+import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
@@ -84,6 +85,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   bool _testwertAufgeklappt = false;
+  bool _pwaInstallVerfuegbar = false;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -109,6 +111,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         _fuegeNeuesGetraenkEin();
       }
     });
+    _pwaInstallVerfuegbar = pwaInstallVerfuegbar;
     _ladeWerte();
   }
 
@@ -816,6 +819,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
   }
 
+  Future<void> _starteInstallation() async {
+    await pwaInstallStarten();
+    if (!mounted) return;
+    setState(() {
+      _pwaInstallVerfuegbar = pwaInstallVerfuegbar;
+    });
+  }
+
   void _fuegeNeuesGetraenkEin() {
     final String name = _neuesGetraenkCtrl.text.trim();
     if (name.isEmpty) return;
@@ -1066,6 +1077,39 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             ),
           ),
+          if (_pwaInstallVerfuegbar) ...<Widget>[
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'App installieren',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        'Füge die App zum Home-Bildschirm hinzu, um sie wie eine native App zu nutzen.',
+                        style: TextStyle(fontSize: 13),
+                      ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: _starteInstallation,
+                          child: const Text('App installieren'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
           Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

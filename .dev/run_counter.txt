@@ -1,4 +1,4 @@
-last_run: 226
-next_run: 227
-last_run_title: Run 226: Abschluss-Dialog Schritt 3 — Option "Barumsatz f. Umschlag stückeln"
+last_run: 227
+next_run: 228
+last_run_title: Run 227: PWA-Installation + Cache-Control
 last_commit: TBD
