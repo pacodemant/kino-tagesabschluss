@@ -4,7 +4,6 @@
 
 - [ ] Offline-Hinweis: App zeigt Banner wenn keine Netzwerkverbindung
       (relevant für Web-Deployment auf Android)
-- [ ] App Icon einbinden
 
 ## Größere Änderungen
 
@@ -19,7 +18,10 @@
       Inline-Styling durch Theme-Konstanten ersetzen, Logik aus Widgets in Services auslagern
 - [ ] Abschluss-Export: Tagesabrechnung als PDF oder Text exportieren/teilen
       (z.B. per WhatsApp an Kinoleitung schicken)
+            
 ## Umfangreiche Änderungen
 
 - [ ] Kinoleitungs-Login: Kinoleitung kann Config-Dateien (Getränkeliste,
       Wechselgeldbestand) selbst bearbeiten
+- [ ] Provider einführen: globalen AppState für Händigkeit,
+      Login-Status und andere seitenübergreifende Daten
