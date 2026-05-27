@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
@@ -357,6 +358,14 @@ class _TagesabschlussSchritt3SeiteState
         schrittTitel: 'Übertrag auf Umschlag',
         kinoName: widget.argumente.kinoName,
         onTap: _zeigeSchrittSlider,
+        actions: <Widget>[
+          const HelpButton(
+            helpText:
+                'Hier wird der Betrag errechnet, der auf den Umschlag gehört. '
+                'Prüfe die Differenz zwischen Soll und Ist. Bei Abweichungen '
+                'zuerst die Ursache klären, dann den Umschlag befüllen.',
+          ),
+        ],
       ),
       footerChild: SizedBox(
         height: 36,

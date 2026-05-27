@@ -9,6 +9,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -966,6 +967,12 @@ class _TagesabschlussSchritt2SeiteState
         kinoName: widget.kinoName,
         onTap: _zeigeSchrittSlider,
         actions: <Widget>[
+          const HelpButton(
+            helpText:
+                'Trage alle Belege ein: Kino- und Bistro-Soll aus dem '
+                'Kassensystem, Ausgaben mit Quittung sowie EC-Belege. '
+                'Daraus errechnet sich die Differenz zum gezählten Bargeld.',
+          ),
           TextButton(
             onPressed: _bestaetigeUndLeereEingaben,
             style: TextButton.styleFrom(

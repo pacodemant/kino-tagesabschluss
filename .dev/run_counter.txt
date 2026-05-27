@@ -1,4 +1,4 @@
-last_run: 231
-next_run: 232
-last_run_title: Run 231: Stückelung — Trennlinie zwischen Scheinen und Münzen sichtbarer
+last_run: 232
+next_run: 233
+last_run_title: Run 232: HelpButton-Widget + Einsatz auf relevanten Seiten
 last_commit: TBD

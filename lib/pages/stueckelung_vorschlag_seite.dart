@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -349,6 +350,14 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         gesamtSchritte: 4,
         kinoName: argumente.kinoName,
         onTap: () => _zeigeSchrittSlider(context),
+        actions: <Widget>[
+          const HelpButton(
+            helpText:
+                'Hier siehst du, wie du den Barumsatz optimal mit den '
+                'verfügbaren Scheinen und Münzen stückeln kannst. '
+                'Grün markierte Einheiten werden vollständig in den Umschlag gegeben.',
+          ),
+        ],
       ),
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),

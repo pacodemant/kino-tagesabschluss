@@ -19,6 +19,7 @@ import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -1008,6 +1009,12 @@ class _TagesabschlussSchritt1SeiteState
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
             child: const Text('Clear'),
+          ),
+          const HelpButton(
+            helpText:
+                'Zähle das gesamte Bargeld in der Kasse. Trage für jede '
+                'Stückelung (Scheine, Münzrollen, lose Münzen, Umschläge) '
+                'die gezählte Anzahl ein. Die Summe wird automatisch berechnet.',
           ),
           const SizedBox(width: 8),
         ],

@@ -4,6 +4,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -312,6 +313,12 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
             child: const Text('Clear'),
+          ),
+          const HelpButton(
+            helpText:
+                'Trage ein, wie viel von jedem Getränk nachgefüllt wurde. '
+                'Die Mengen werden gespeichert und stehen beim nächsten '
+                'Öffnen als Vorschlag bereit.',
           ),
           const SizedBox(width: 8),
         ],

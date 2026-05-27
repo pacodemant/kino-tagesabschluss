@@ -9,6 +9,7 @@ import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
+import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
@@ -948,6 +949,12 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
             child: const Text('Clear'),
+          ),
+          const HelpButton(
+            helpText:
+                'Zähle den Wechselgeldbestand und vergleiche ihn mit dem '
+                'Sollwert. Der Bestand muss täglich stimmen, da er als '
+                'Startkasse für den nächsten Tag dient.',
           ),
           const SizedBox(width: 8),
         ],
