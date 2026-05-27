@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 233: App Icon eingebunden — flutter_launcher_icons als dev_dependency, flutter_launcher_icons.yaml mit Pfad assets/icon/schauburg_kassenapp_icon.png; Icons für Android, iOS und Web generiert.
+
 - Run 232: Neues Widget HelpButton (lib/widgets/help_button.dart) — Icons.help_outline, öffnet AlertDialog mit Hilfetext. Eingesetzt in AppBar von: Schritt 1 (Bargeld zählen), Schritt 2 (Belege), Schritt 3 (Übertrag), Wechselgeld prüfen, Getränke auffüllen, Stückelung Barumsatz.
 
 - Run 231: Stückelung — Trennlinie zwischen Scheinen und Münzen sichtbarer (thickness 1→1.5, height 12→16, color grey.shade300→grey.shade500).
