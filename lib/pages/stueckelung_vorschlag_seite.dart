@@ -278,9 +278,9 @@ class StueckelungVorschlagSeite extends StatelessWidget {
 
       case _ZeilenArt.trennlinie:
         return Divider(
-          height: 12,
-          thickness: 1,
-          color: Colors.grey.shade300,
+          height: 16,
+          thickness: 1.5,
+          color: Colors.grey.shade500,
           indent: 8,
           endIndent: 8,
         );

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 231: Stückelung — Trennlinie zwischen Scheinen und Münzen sichtbarer (thickness 1→1.5, height 12→16, color grey.shade300→grey.shade500).
+
 - Run 230: TODO.md im Projekt-Root angelegt mit geplanten Änderungen (Kleine, Größere, Umfangreiche).
 
 - Run 228: GitHub Actions — drei Node.js-20-Actions auf node24 upgraded: actions/checkout@v4→v6, actions/configure-pages@v5→v6, actions/deploy-pages@v4→v5.
