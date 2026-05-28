@@ -241,24 +241,26 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               : null;
       final Widget nameInhalt;
       if (originalName != null) {
-        final Widget kurzText = Text(
-          _getraenkeliste[idx],
-          style: const TextStyle(fontSize: 15),
-        );
-        final Widget origText = ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 80),
-          child: Text(
-            originalName,
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
-            overflow: TextOverflow.ellipsis,
-          ),
-        );
-        nameInhalt = Row(
+        nameInhalt = Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: _istLinkshaender
-              ? <Widget>[origText, const SizedBox(width: 4), kurzText]
-              : <Widget>[kurzText, const SizedBox(width: 4), origText],
+          crossAxisAlignment: _istLinkshaender
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              _getraenkeliste[idx],
+              style: const TextStyle(fontSize: 15),
+            ),
+            Text(
+              originalName,
+              style: TextStyle(
+                fontSize: 10,
+                color: Colors.grey.shade500,
+                height: 1.1,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         );
       } else {
         nameInhalt = Text(
