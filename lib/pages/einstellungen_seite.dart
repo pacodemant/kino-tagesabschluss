@@ -894,6 +894,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 Expanded(
                   child: TextField(
                     controller: _getraenkeController[index],
+                    maxLength: 20,
                     decoration: const InputDecoration(
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(
@@ -901,6 +902,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                         vertical: 4,
                       ),
                       hintText: 'Getränk',
+                      counterText: '',
                     ),
                     onChanged: (String value) {
                       _getraenkeliste[index] = value;
