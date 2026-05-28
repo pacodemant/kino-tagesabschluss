@@ -74,4 +74,27 @@ class StueckelungKonfiguration {
     ...scheine,
     ...rollen,
   ];
+
+  /// IDs der Kupfer-Rollen (1 ct, 2 ct, 5 ct).
+  static const Set<String> kupferRollenIds = <String>{
+    'roll_1c',
+    'roll_2c',
+    'roll_5c',
+  };
+
+  /// IDs der Kupfer-Münzen (1 ct, 2 ct, 5 ct).
+  static const Set<String> kupferMuenzenIds = <String>{
+    'coin_1c',
+    'coin_2c',
+    'coin_5c',
+  };
+
+  /// IDs der Silber-Münzen (10 ct – 2 €).
+  static const Set<String> silberMuenzenIds = <String>{
+    'coin_2e',
+    'coin_1e',
+    'coin_50c',
+    'coin_20c',
+    'coin_10c',
+  };
 }

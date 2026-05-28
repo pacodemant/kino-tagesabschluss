@@ -1,4 +1,4 @@
-last_run: 234
-next_run: 235
-last_run_title: Run 234: Getränke — Original-Name neben Kurznamen anzeigen
+last_run: 236
+next_run: 237
+last_run_title: Run 236: Frühjahrsputz Runde 1 — Farben, Datum, Münz-IDs
 last_commit: TBD

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 
 class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   static final RegExp _nichtZiffern = RegExp(r'[^0-9]');
@@ -121,11 +122,11 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     if (hatFokus) {
       fuellFarbe = Colors.black87;
     } else if (rotValidierung) {
-      fuellFarbe = Colors.red.shade50;
+      fuellFarbe = AppFarben.validierungFehlerHintergrund;
     } else if (gruenWert) {
-      fuellFarbe = Colors.green.shade50;
+      fuellFarbe = AppFarben.validierungErfolgsHintergrund;
     } else if (rotWert) {
-      fuellFarbe = Colors.red.shade50;
+      fuellFarbe = AppFarben.validierungFehlerHintergrund;
     } else {
       fuellFarbe = null;
     }

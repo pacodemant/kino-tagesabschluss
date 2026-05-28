@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 236: Frühjahrsputz Runde 1 — hardcodierte Farben in AppFarben-Konstanten überführt (differenzPositiv/Negativ, heuteBadgeHintergrund, validierungFehler/ErfolgsHintergrund, stueckelungErfolgsRand, subtilerText); _isoDatum() aus verlauf_seite in DatumsHelper.isoDatum() verschoben; Kupfer/Silber-ID-Sets in StueckelungKonfiguration zentralisiert (kupferRollenIds, kupferMuenzenIds, silberMuenzenIds), lokale Kopien in schritt1_seite, wechselgeld_pruefen_seite und stueckelung_vorschlag_seite entfernt.
+
 - Run 234: Getränke-Kassenabrechnung zeigt Original-Name (aus Asset-Config) neben dem Kurznamen an — klein, grau, mit "…"-Kürzung. Sichtbar nur wenn Kurzname ≠ Original-Name; Position (links/rechts) folgt der Händigkeit.
 
 - Run 233: App Icon eingebunden — flutter_launcher_icons als dev_dependency, flutter_launcher_icons.yaml mit Pfad assets/icon/schauburg_kassenapp_icon.png; Icons für Android, iOS und Web generiert.

@@ -9,9 +9,12 @@ class DatumsHelper {
     return now;
   }
 
+  static String isoDatum(DateTime datum) =>
+      '${datum.year}-${datum.month.toString().padLeft(2, '0')}-'
+      '${datum.day.toString().padLeft(2, '0')}';
+
   static String logischesIsoDatum() {
     final DateTime tag = logischerAbrechnungsTag();
-    return '${tag.year}-${tag.month.toString().padLeft(2, '0')}-'
-        '${tag.day.toString().padLeft(2, '0')}';
+    return isoDatum(tag);
   }
 }

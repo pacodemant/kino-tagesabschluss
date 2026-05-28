@@ -894,7 +894,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 Expanded(
                   child: TextField(
                     controller: _getraenkeController[index],
-                    maxLength: 20,
+                    maxLength: 25,
                     decoration: const InputDecoration(
                       isDense: true,
                       contentPadding: EdgeInsets.symmetric(

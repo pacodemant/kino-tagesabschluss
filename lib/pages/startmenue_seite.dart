@@ -112,7 +112,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Center(
                   child: Text(
                     'Web App @ GitHub:',
-                    style: TextStyle(fontSize: 13, color: Colors.black54),
+                    style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
                 const SizedBox(height: 4),

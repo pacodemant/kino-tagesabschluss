@@ -52,10 +52,6 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
   String _deutschesDatum(DateTime datum) =>
       TagesabschlussFormatierung.deutschesDatum(datum);
 
-  String _isoDatum(DateTime datum) =>
-      '${datum.year}-${datum.month.toString().padLeft(2, '0')}-'
-      '${datum.day.toString().padLeft(2, '0')}';
-
   String _euroMitVorzeichen(int cent) =>
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
 
@@ -141,9 +137,9 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                     final TagesabschlussFinal eintrag = _abschluesse[j];
                     final int differenz = eintrag.differenzGesamtCent;
                     final Color farbe = differenz >= 0
-                        ? Colors.green.shade700
-                        : Colors.red.shade700;
-                    final bool istHeute = _isoDatum(eintrag.datum) ==
+                        ? AppFarben.differenzPositiv
+                        : AppFarben.differenzNegativ;
+                    final bool istHeute = DatumsHelper.isoDatum(eintrag.datum) ==
                         DatumsHelper.logischesIsoDatum();
                     return ListTile(
                       title: Row(
@@ -157,7 +153,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.red.shade600,
+                                color: AppFarben.heuteBadgeHintergrund,
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: const Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -39,15 +40,6 @@ const List<_ScheinDef> _scheinDefinitionen = <_ScheinDef>[
   _ScheinDef('note_10', '10 €', 1000),
   _ScheinDef('note_5', '5 €', 500),
 ];
-
-const Set<String> _kupferIds = <String>{'coin_5c', 'coin_2c', 'coin_1c'};
-const Set<String> _silberIds = <String>{
-  'coin_2e',
-  'coin_1e',
-  'coin_50c',
-  'coin_20c',
-  'coin_10c',
-};
 
 class _ErgebnisZeile {
   const _ErgebnisZeile._({
@@ -144,11 +136,11 @@ class StueckelungVorschlagSeite extends StatelessWidget {
 
     // Münzen: Kupfer und Silber aus losen Münzen summieren
     int kupferCent = 0;
-    for (final String id in _kupferIds) {
+    for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
       kupferCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
     }
     int silberCent = 0;
-    for (final String id in _silberIds) {
+    for (final String id in StueckelungKonfiguration.silberMuenzenIds) {
       silberCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
     }
 
@@ -194,8 +186,8 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 4),
           decoration: zeile.gruen
               ? BoxDecoration(
-                  color: Colors.green.shade50,
-                  border: Border.all(color: Colors.green.shade300),
+                  color: AppFarben.validierungErfolgsHintergrund,
+                  border: Border.all(color: AppFarben.stueckelungErfolgsRand),
                   borderRadius: BorderRadius.circular(6),
                 )
               : null,
@@ -234,7 +226,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       case _ZeilenArt.betragzeile:
         final Color? grauFarbe =
             zeile.ausgegraut ? Colors.grey.shade400 : null;
-        final Color? rotFarbe = zeile.rot ? Colors.red.shade700 : null;
+        final Color? rotFarbe = zeile.rot ? AppFarben.differenzNegativ : null;
         return Container(
           margin: const EdgeInsets.only(bottom: 4),
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
@@ -271,7 +263,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           child: Text(
             'Nicht abdeckbar: ${_euro(zeile.betragCent)}',
             style: TextStyle(
-              color: Colors.red.shade700,
+              color: AppFarben.differenzNegativ,
               fontWeight: FontWeight.w600,
             ),
           ),

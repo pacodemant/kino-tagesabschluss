@@ -57,17 +57,6 @@ class _TagesabschlussSchritt1SeiteState
   static const int _sectionRollen = 2;
   static const int _sectionUmschlaege = 4;
   static const double _devToolsStickyHoehe = 86;
-  static const Set<String> _kupferRollenIds = <String>{
-    'roll_1c',
-    'roll_2c',
-    'roll_5c',
-  };
-  static const Set<String> _kupferLoseMuenzenIds = <String>{
-    'coin_1c',
-    'coin_2c',
-    'coin_5c',
-  };
-
   final Schritt1StateController _stateController =
       const Schritt1StateController();
   final Schritt1OrchestrierungHelper _orchestrierungHelper =
@@ -113,18 +102,18 @@ class _TagesabschlussSchritt1SeiteState
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
   List<Kassenzeile> get _kupferRollen => _rollenAlle
-      .where((Kassenzeile zeile) => _kupferRollenIds.contains(zeile.id))
+      .where((Kassenzeile zeile) => StueckelungKonfiguration.kupferRollenIds.contains(zeile.id))
       .toList();
   List<Kassenzeile> get _rollenOhneKupfer => _rollenAlle
-      .where((Kassenzeile zeile) => !_kupferRollenIds.contains(zeile.id))
+      .where((Kassenzeile zeile) => !StueckelungKonfiguration.kupferRollenIds.contains(zeile.id))
       .toList();
   List<Kassenzeile> get _rollenSichtbar =>
       _kupferRollenSichtbar ? _rollenAlle : _rollenOhneKupfer;
   List<Kassenzeile> get _loseMuenzartenOhneKupfer => _loseMuenzarten
-      .where((Kassenzeile zeile) => !_kupferLoseMuenzenIds.contains(zeile.id))
+      .where((Kassenzeile zeile) => !StueckelungKonfiguration.kupferMuenzenIds.contains(zeile.id))
       .toList();
   List<Kassenzeile> get _kupferLoseMuenzarten => _loseMuenzarten
-      .where((Kassenzeile zeile) => _kupferLoseMuenzenIds.contains(zeile.id))
+      .where((Kassenzeile zeile) => StueckelungKonfiguration.kupferMuenzenIds.contains(zeile.id))
       .toList();
   List<Kassenzeile> get _loseMuenzarten =>
       StueckelungKonfiguration.loseMuenzarten;
@@ -254,8 +243,8 @@ class _TagesabschlussSchritt1SeiteState
     }
 
     final bool hatKupferRollenWerte =
-        _kupferRollenIds.any((String id) => (_stueckzahlen[id] ?? 0) > 0);
-    final bool hatKupferLoseWerte = _kupferLoseMuenzenIds.any(
+        StueckelungKonfiguration.kupferRollenIds.any((String id) => (_stueckzahlen[id] ?? 0) > 0);
+    final bool hatKupferLoseWerte = StueckelungKonfiguration.kupferMuenzenIds.any(
       (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
     );
 
@@ -871,7 +860,7 @@ class _TagesabschlussSchritt1SeiteState
         .where(
           (Kassenzeile zeile) =>
               _loseMuenzenController[zeile.id]!.text.isEmpty &&
-              (!_kupferLoseMuenzenIds.contains(zeile.id) ||
+              (!StueckelungKonfiguration.kupferMuenzenIds.contains(zeile.id) ||
                   _kupferLoseSichtbar),
         )
         .toList();

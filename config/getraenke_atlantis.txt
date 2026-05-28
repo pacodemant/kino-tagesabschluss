@@ -1,34 +1,34 @@
 2026-05-22
-Laut
-Leise
+Wasser Lauter
+Wasser Leise
 Fritz Cola
 Fritz Orange
 Fritz Zitrone
 Bionade Holunder
-Rhabarber
-Apfelschorle
-Mortuacienne P
-Mortuacienne Z
-TH Tonic
-TH Bitter Lemon
-Coke
-Coke Zero
-Saft Banana
-Saft Kirsche
-Saft Orange
-Bx
-Freibier
-Kellerbier
-Radler
+Rhabarber Schorle
+Apfel Schorle
+Mortuacienne Pampelmuse
+Mortuacienne Zitrone
+Tomas Henry Tonic
+Tomas Henry Bitter Lemon
+Coca Cola
+Coke Cpöa Zero
+Bananemsaft
+Kirschsafr
+Orangensaft
+Beck's
+Störtebacker Freibier
+StörtebeckerKellerbier
+Haake Beck Zitrone
 Orangina
 Lemonaid Limette
 Lemonaid Mara
 Lemonaid Ingwer
 Lemonaid Blutorange
 Mate
-Störte Bernstein frei
-Störte Roggen
-Franzi Weizen
-Franzi Frei
+Störtebecker Bernsteinweizen
+Störtebecker Roggenweizen
+Franziskaner Weizen
+Franziskaner Frei
 Milch
 Hafermilch
