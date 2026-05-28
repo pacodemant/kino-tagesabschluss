@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 238: Frühjahrsputz Runde 2 — (1) FooterDecoration als AppFarben.footerDecoration zentralisiert, ersetzt 3 inline-BoxDecorations in tagesabschluss_scaffold, verlauf_seite, verlauf_detail_seite; (2) InfoZeile-Widget (lib/widgets/info_zeile.dart) mit enum InfoZeileStil (unterstrichen/fuehrungslinie) extrahiert, _zeile()-Methode aus verlauf_detail_seite und schritt3_seite entfernt, _FuehrungsLiniePainter nach info_zeile verschoben; (3) zeigeLoeschenDialog() (lib/widgets/loeschen_dialog.dart) extrahiert, inline-AlertDialog aus verlauf_seite und verlauf_detail_seite entfernt; (4) baueClearAktion()/clearIconFarbe() (lib/widgets/eingabefeld_clear_helper.dart) extrahiert, Callback und Iconfarbe in betrag_cent_eingabefeld und ganzzahl_eingabefeld zusammengeführt.
+
 - Run 237: Kupfergeld-Toggle — "hinzufügen"-Buttons (Lose Münzen + Rollen) von OutlinedButton.icon auf TextButton.icon in AppFarben.appBarRot umgestellt; neuer kompakter "Kupfergeld entfernen"-TextButton (rot, fontSize 11, padding zero) erscheint beim Aufklappen oberhalb der Kupfereinträge; Entfernen setzt Flag zurück und löscht alle Kupferwerte auf 0. Gilt für Schritt 1 und Wechselgeld prüfen.
 
 - Run 236: Frühjahrsputz Runde 1 — hardcodierte Farben in AppFarben-Konstanten überführt (differenzPositiv/Negativ, heuteBadgeHintergrund, validierungFehler/ErfolgsHintergrund, stueckelungErfolgsRand, subtilerText); _isoDatum() aus verlauf_seite in DatumsHelper.isoDatum() verschoben; Kupfer/Silber-ID-Sets in StueckelungKonfiguration zentralisiert (kupferRollenIds, kupferMuenzenIds, silberMuenzenIds), lokale Kopien in schritt1_seite, wechselgeld_pruefen_seite und stueckelung_vorschlag_seite entfernt.

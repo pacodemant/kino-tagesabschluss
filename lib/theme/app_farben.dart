@@ -26,4 +26,16 @@ class AppFarben {
     backgroundColor: Colors.white,
     foregroundColor: AppFarben.appBarRot,
   );
+
+  static const BoxDecoration footerDecoration = BoxDecoration(
+    color: Colors.black87,
+    border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
+    boxShadow: <BoxShadow>[
+      BoxShadow(
+        color: Color(0x4D000000),
+        offset: Offset(0, -2),
+        blurRadius: 12,
+      ),
+    ],
+  );
 }

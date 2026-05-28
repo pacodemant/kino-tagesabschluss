@@ -7,6 +7,8 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
+import 'package:kino_bar_app/widgets/info_zeile.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -43,23 +45,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     final NavigatorState navigator = Navigator.of(context);
 
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Eintrag löschen?'),
-        content: const Text('Diese Kassenabrechnung wirklich löschen?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Löschen'),
-          ),
-        ],
-      ),
-    );
+    final bool? bestaetigt = await zeigeLoeschenDialog(context);
 
     if (bestaetigt != true || !mounted) {
       return;
@@ -78,27 +64,6 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       return;
     }
     navigator.pop(true);
-  }
-
-  // Hauptzeile mit Underline-Stil
-  Widget _zeile(String label, String wert, {Color? farbe, bool fett = false}) {
-    final FontWeight gewicht = fett ? FontWeight.bold : FontWeight.normal;
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade300),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(label, style: TextStyle(fontWeight: gewicht)),
-          ),
-          Text(wert, style: TextStyle(fontWeight: gewicht, color: farbe)),
-        ],
-      ),
-    );
   }
 
   // Eingerückte Unterzeile ohne Trennlinie
@@ -249,17 +214,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.black87,
-          border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Color(0x4D000000),
-              offset: Offset(0, -2),
-              blurRadius: 12,
-            ),
-          ],
-        ),
+        decoration: AppFarben.footerDecoration,
         padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
         child: const SizedBox(
           height: 36,
@@ -300,26 +255,26 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
-                      _zeile('Scheine', _euro(a.scheineCent)),
+                      InfoZeile(label: 'Scheine', wert: _euro(a.scheineCent)),
                       ..._scheinUnterzeilen(a),
-                      _zeile('Münzrollen', _euro(a.rollenCent)),
+                      InfoZeile(label: 'Münzrollen', wert: _euro(a.rollenCent)),
                       ..._rollenUnterzeilen(a),
-                      _zeile('Lose Münzen', _euro(a.loseMuenzenCent)),
+                      InfoZeile(label: 'Lose Münzen', wert: _euro(a.loseMuenzenCent)),
                       ..._loseMuenzenUnterzeilen(a),
-                      _zeile('Umschläge', _euro(a.umschlaegeCent)),
+                      InfoZeile(label: 'Umschläge', wert: _euro(a.umschlaegeCent)),
                       ..._umschlagUnterzeilen(a),
-                      _zeile(
-                        'Kassenbestand gesamt',
-                        _euro(a.kassenbestandGesamtCent),
+                      InfoZeile(
+                        label: 'Kassenbestand gesamt',
+                        wert: _euro(a.kassenbestandGesamtCent),
                         fett: true,
                       ),
-                      _zeile(
-                        'Wechselgeld',
-                        '− ${_euro(a.wechselgeldSollwertCent)}',
+                      InfoZeile(
+                        label: 'Wechselgeld',
+                        wert: '− ${_euro(a.wechselgeldSollwertCent)}',
                       ),
-                      _zeile(
-                        'Bar-Bestand bereinigt',
-                        _euro(a.barBestandAbzglWechselgeldCent),
+                      InfoZeile(
+                        label: 'Bar-Bestand bereinigt',
+                        wert: _euro(a.barBestandAbzglWechselgeldCent),
                         fett: true,
                       ),
                     ],
@@ -339,12 +294,12 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
-                      _zeile('Kino SOLL', _euro(a.kinoSollCent)),
+                      InfoZeile(label: 'Kino SOLL', wert: _euro(a.kinoSollCent)),
                       if (a.kinoId != 'kino_04')
-                        _zeile('Bistro SOLL', _euro(a.bistroSollCent)),
-                      _zeile('Ausgaben', _euro(a.ausgabenCent)),
+                        InfoZeile(label: 'Bistro SOLL', wert: _euro(a.bistroSollCent)),
+                      InfoZeile(label: 'Ausgaben', wert: _euro(a.ausgabenCent)),
                       ..._ausgabenUnterzeilen(a),
-                      _zeile('EC-Umsatz gesamt', _euro(a.ecUmsatzGesamtCent)),
+                      InfoZeile(label: 'EC-Umsatz gesamt', wert: _euro(a.ecUmsatzGesamtCent)),
                       ..._ecBelegUnterzeilen(a),
                     ],
                   ),
@@ -372,25 +327,25 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
-                      _zeile(
-                        'Gesamt SOLL',
-                        _euro(a.gesamtSollCent),
+                      InfoZeile(
+                        label: 'Gesamt SOLL',
+                        wert: _euro(a.gesamtSollCent),
                         fett: true,
                       ),
-                      _zeile(
-                        'Gesamt IST',
-                        _euro(a.gesamtIstCent),
+                      InfoZeile(
+                        label: 'Gesamt IST',
+                        wert: _euro(a.gesamtIstCent),
                         fett: true,
                       ),
-                      _zeile(
-                        'Differenz Kassenabrechnung',
-                        _euroMitVorzeichen(a.differenzGesamtCent),
+                      InfoZeile(
+                        label: 'Differenz Kassenabrechnung',
+                        wert: _euroMitVorzeichen(a.differenzGesamtCent),
                         fett: true,
                         farbe: differenzFarbe,
                       ),
-                      _zeile(
-                        'Differenz Anfangsbestand',
-                        _euro(a.differenzAnfangsbestandCent),
+                      InfoZeile(
+                        label: 'Differenz Anfangsbestand',
+                        wert: _euro(a.differenzAnfangsbestandCent),
                       ),
                     ],
                   ),

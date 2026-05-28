@@ -15,6 +15,7 @@ import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/widgets/info_zeile.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -266,33 +267,6 @@ class _TagesabschlussSchritt3SeiteState
   String _deutschesDatum(DateTime zeit) =>
       TagesabschlussFormatierung.deutschesDatum(zeit);
 
-  Widget _zeile(String label, String wert, {bool fett = false, Color? farbe}) {
-    final FontWeight gewicht =
-        fett ? FontWeight.bold : FontWeight.normal;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: <Widget>[
-          Text(label, style: TextStyle(fontWeight: gewicht)),
-          const SizedBox(width: 4),
-          const Expanded(
-            child: CustomPaint(painter: _FuehrungsLiniePainter()),
-          ),
-          const SizedBox(width: 4),
-          Text(
-            wert,
-            style: GoogleFonts.caveat(
-              fontSize: 26,
-              fontWeight: gewicht,
-              color: farbe,
-              height: 1.0,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _zeigeSchrittSlider() {
     showModalBottomSheet<void>(
       context: context,
@@ -430,11 +404,10 @@ class _TagesabschlussSchritt3SeiteState
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: <Widget>[
-                        _zeile(
-                          'Differenz Anfangsbestand',
-                          _euro(
-                            _abschlussVorschau.differenzAnfangsbestandCent,
-                          ),
+                        InfoZeile(
+                          label: 'Differenz Anfangsbestand',
+                          wert: _euro(_abschlussVorschau.differenzAnfangsbestandCent),
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
                       ],
                     ),
@@ -447,23 +420,27 @@ class _TagesabschlussSchritt3SeiteState
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: <Widget>[
-                        _zeile(
-                          '+ Kino Soll',
-                          _euro(_abschlussVorschau.kinoSollCent),
+                        InfoZeile(
+                          label: '+ Kino Soll',
+                          wert: _euro(_abschlussVorschau.kinoSollCent),
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
                         if (widget.argumente.kinoId != 'kino_04')
-                          _zeile(
-                            '+ Bistro Soll',
-                            _euro(_abschlussVorschau.bistroSollCent),
+                          InfoZeile(
+                            label: '+ Bistro Soll',
+                            wert: _euro(_abschlussVorschau.bistroSollCent),
+                            stil: InfoZeileStil.fuehrungslinie,
                           ),
-                        _zeile(
-                          '- Ausgaben',
-                          _euro(_abschlussVorschau.ausgabenCent),
+                        InfoZeile(
+                          label: '- Ausgaben',
+                          wert: _euro(_abschlussVorschau.ausgabenCent),
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
-                        _zeile(
-                          '= Gesamt Soll',
-                          _euro(_abschlussVorschau.gesamtSollCent),
+                        InfoZeile(
+                          label: '= Gesamt Soll',
+                          wert: _euro(_abschlussVorschau.gesamtSollCent),
                           fett: true,
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
                       ],
                     ),
@@ -476,20 +453,21 @@ class _TagesabschlussSchritt3SeiteState
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: <Widget>[
-                        _zeile(
-                          '+ EC IST',
-                          _euro(_abschlussVorschau.ecUmsatzGesamtCent),
+                        InfoZeile(
+                          label: '+ EC IST',
+                          wert: _euro(_abschlussVorschau.ecUmsatzGesamtCent),
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
-                        _zeile(
-                          '+ bar IST',
-                          _euro(
-                            _abschlussVorschau.barBestandAbzglWechselgeldCent,
-                          ),
+                        InfoZeile(
+                          label: '+ bar IST',
+                          wert: _euro(_abschlussVorschau.barBestandAbzglWechselgeldCent),
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
-                        _zeile(
-                          '= Gesamt IST',
-                          _euro(_abschlussVorschau.gesamtIstCent),
+                        InfoZeile(
+                          label: '= Gesamt IST',
+                          wert: _euro(_abschlussVorschau.gesamtIstCent),
                           fett: true,
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
                       ],
                     ),
@@ -502,11 +480,12 @@ class _TagesabschlussSchritt3SeiteState
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: <Widget>[
-                        _zeile(
-                          'Differenz\nKassenabrechnung',
-                          _euroMitVorzeichen(differenzCent),
+                        InfoZeile(
+                          label: 'Differenz\nKassenabrechnung',
+                          wert: _euroMitVorzeichen(differenzCent),
                           fett: true,
                           farbe: differenzFarbe,
+                          stil: InfoZeileStil.fuehrungslinie,
                         ),
                       ],
                     ),
@@ -544,27 +523,4 @@ class _TagesabschlussSchritt3SeiteState
             ),
     );
   }
-}
-
-class _FuehrungsLiniePainter extends CustomPainter {
-  const _FuehrungsLiniePainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = const Color(0xFFCCCCCC)
-      ..strokeWidth = 1.0
-      ..strokeCap = StrokeCap.round;
-    const double dash = 2.0;
-    const double gap = 4.0;
-    final double y = size.height / 2;
-    double x = 0;
-    while (x < size.width) {
-      canvas.drawLine(Offset(x, y), Offset(x + dash, y), paint);
-      x += dash + gap;
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -53,17 +53,7 @@ class TagesabschlussScaffold extends StatelessWidget {
           Expanded(child: child),
           if (zeigeFooter)
             Container(
-              decoration: const BoxDecoration(
-                color: Colors.black87,
-                border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: Color(0x4D000000),
-                    offset: Offset(0, -2),
-                    blurRadius: 12,
-                  ),
-                ],
-              ),
+              decoration: AppFarben.footerDecoration,
               padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + footerBottomPadding),
               child: SizedBox(
                 height: 36,

@@ -7,6 +7,7 @@ import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
 class VerlaufSeite extends StatefulWidget {
   const VerlaufSeite({super.key, required this.kinoId});
@@ -56,23 +57,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
 
   Future<void> _loescheEintrag(TagesabschlussFinal eintrag) async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Eintrag löschen?'),
-        content: const Text('Diese Kassenabrechnung wirklich löschen?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Löschen'),
-          ),
-        ],
-      ),
-    );
+    final bool? bestaetigt = await zeigeLoeschenDialog(context);
     if (bestaetigt != true || !mounted) {
       return;
     }
@@ -104,17 +89,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
         ),
       ),
       bottomNavigationBar: Container(
-        decoration: const BoxDecoration(
-          color: Colors.black87,
-          border: Border(top: BorderSide(color: Color(0x52FFFFFF))),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: Color(0x4D000000),
-              offset: Offset(0, -2),
-              blurRadius: 12,
-            ),
-          ],
-        ),
+        decoration: AppFarben.footerDecoration,
         padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
         child: const SizedBox(
           height: 36,

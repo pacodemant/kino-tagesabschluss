@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 
 class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   static final RegExp _nichtZiffern = RegExp(r'[^0-9]');
@@ -188,15 +189,15 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
             children: <Widget>[
               if (hatText) ...<Widget>[
                 GestureDetector(
-                  onTap: () {
-                    widget.textController.clear();
-                    widget.onChanged('');
-                    widget.focusNode?.requestFocus();
-                  },
+                  onTap: baueClearAktion(
+                    controller: widget.textController,
+                    onChanged: widget.onChanged,
+                    focusNode: widget.focusNode,
+                  ),
                   child: Icon(
                     Icons.clear,
                     size: 16,
-                    color: hatFokus ? Colors.white : Colors.grey.shade600,
+                    color: clearIconFarbe(hatFokus),
                   ),
                 ),
                 const SizedBox(width: 2),

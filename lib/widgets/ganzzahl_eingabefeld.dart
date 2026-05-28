@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 
 class GanzzahlEingabefeld extends StatefulWidget {
   const GanzzahlEingabefeld({
@@ -125,15 +126,15 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
                 icon: Icon(
                   Icons.clear,
                   size: 18,
-                  color: hatFokus ? Colors.white : Colors.grey.shade600,
+                  color: clearIconFarbe(hatFokus),
                 ),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                onPressed: () {
-                  widget.textController.clear();
-                  widget.onChanged('');
-                  widget.focusNode?.requestFocus();
-                },
+                onPressed: baueClearAktion(
+                  controller: widget.textController,
+                  onChanged: widget.onChanged,
+                  focusNode: widget.focusNode,
+                ),
               )
             : null,
       ),
