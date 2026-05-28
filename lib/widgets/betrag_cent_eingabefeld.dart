@@ -100,7 +100,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     if (hatFokusJetzt) {
       // Fokus erhalten → internen Nennwert-Fehler zurücksetzen
       setState(() => _nennwertFehler = false);
-    } else if (widget.nennwertCent != null) {
+    } else if (widget.nennwertCent != null && widget.nennwertCent! > 0) {
       _pruefeNennwert();
     } else {
       setState(() {});
