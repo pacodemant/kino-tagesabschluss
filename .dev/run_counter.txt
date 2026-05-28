@@ -1,4 +1,4 @@
-last_run: 236
-next_run: 237
-last_run_title: Run 236: Frühjahrsputz Runde 1 — Farben, Datum, Münz-IDs
-last_commit: 1005461
+last_run: 237
+next_run: 238
+last_run_title: Run 237: Kupfergeld-Toggle — entfernen-Button + TextButton-Stil
+last_commit: TBD

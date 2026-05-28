@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
@@ -127,6 +128,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
     required this.kupferLoseMuenzarten,
     required this.kupferLoseSichtbar,
     required this.zeigeKupferLose,
+    required this.entferneKupferLose,
     required this.loseMuenzenFocusNode,
     required this.loseMuenzenController,
     required this.baueFeldMitKey,
@@ -142,6 +144,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
   final List<Kassenzeile> kupferLoseMuenzarten;
   final bool kupferLoseSichtbar;
   final VoidCallback zeigeKupferLose;
+  final VoidCallback entferneKupferLose;
   final Map<String, FocusNode> loseMuenzenFocusNode;
   final Map<String, TextEditingController> loseMuenzenController;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
@@ -202,14 +205,32 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
         if (!kupferLoseSichtbar)
           Align(
             alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: AppFarben.appBarRot,
+              ),
               onPressed: zeigeKupferLose,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add, size: 16),
               label: const Text('Kupfermünzen hinzufügen'),
             ),
           ),
         if (kupferLoseSichtbar) ...<Widget>[
           const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: AppFarben.appBarRot,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(fontSize: 11),
+              ),
+              onPressed: entferneKupferLose,
+              child: const Text('Kupfergeld entfernen'),
+            ),
+          ),
+          const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
             Builder(
               builder: (BuildContext ctx) => _baueMuenzzeile(ctx, zeile),
@@ -238,6 +259,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
     required this.summeGruppe,
     required this.formatiereRollenAnzeige,
     required this.zeigeKupferRollen,
+    required this.entferneKupferRollen,
     required this.rollenSichtbar,
   });
 
@@ -248,6 +270,7 @@ class Schritt1RollenInhalt extends StatelessWidget {
   final int Function(List<Kassenzeile> zeilen) summeGruppe;
   final String Function(int cent) formatiereRollenAnzeige;
   final VoidCallback zeigeKupferRollen;
+  final VoidCallback entferneKupferRollen;
   final List<Kassenzeile> rollenSichtbar;
 
   @override
@@ -262,14 +285,32 @@ class Schritt1RollenInhalt extends StatelessWidget {
         if (!kupferRollenSichtbar)
           Align(
             alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: AppFarben.appBarRot,
+              ),
               onPressed: zeigeKupferRollen,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add, size: 16),
               label: const Text('Kupfer-Rollen hinzufügen'),
             ),
           ),
         if (kupferRollenSichtbar) ...<Widget>[
           const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: AppFarben.appBarRot,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(fontSize: 11),
+              ),
+              onPressed: entferneKupferRollen,
+              child: const Text('Kupfergeld entfernen'),
+            ),
+          ),
+          const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
             zeilenEintragBuilder(zeile),
             const SizedBox(height: 8),

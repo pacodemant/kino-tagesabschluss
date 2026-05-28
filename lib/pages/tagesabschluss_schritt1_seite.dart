@@ -457,9 +457,29 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
+  void _entferneKupferLose() {
+    setState(() {
+      _kupferLoseSichtbar = false;
+      for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
+        _loseMuenzenNachArtCent[id] = 0;
+        _loseMuenzenController[id]?.clear();
+      }
+    });
+  }
+
   void _zeigeKupferRollen() {
     setState(() {
       _kupferRollenSichtbar = true;
+    });
+  }
+
+  void _entferneKupferRollen() {
+    setState(() {
+      _kupferRollenSichtbar = false;
+      for (final String id in StueckelungKonfiguration.kupferRollenIds) {
+        _stueckzahlen[id] = 0;
+        _stueckzahlController[id]?.clear();
+      }
     });
   }
 
@@ -929,6 +949,7 @@ class _TagesabschlussSchritt1SeiteState
       kupferLoseSichtbar: _kupferLoseSichtbar,
       kupferRollenSichtbar: _kupferRollenSichtbar,
       zeigeKupferLose: _zeigeKupferLose,
+      entferneKupferLose: _entferneKupferLose,
       stueckzahlen: _stueckzahlen,
       stueckzahlController: _stueckzahlController,
       stueckzahlFocusNode: _stueckzahlFocusNode,
@@ -954,6 +975,7 @@ class _TagesabschlussSchritt1SeiteState
       umschlagEntfernen: _umschlagEntfernen,
       umschlagHinzufuegen: _umschlagHinzufuegen,
       zeigeKupferRollen: _zeigeKupferRollen,
+      entferneKupferRollen: _entferneKupferRollen,
       toggleScheine: () {
         _toggleSection(_sectionScheine);
       },

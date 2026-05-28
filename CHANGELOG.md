@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 237: Kupfergeld-Toggle — "hinzufügen"-Buttons (Lose Münzen + Rollen) von OutlinedButton.icon auf TextButton.icon in AppFarben.appBarRot umgestellt; neuer kompakter "Kupfergeld entfernen"-TextButton (rot, fontSize 11, padding zero) erscheint beim Aufklappen oberhalb der Kupfereinträge; Entfernen setzt Flag zurück und löscht alle Kupferwerte auf 0. Gilt für Schritt 1 und Wechselgeld prüfen.
+
 - Run 236: Frühjahrsputz Runde 1 — hardcodierte Farben in AppFarben-Konstanten überführt (differenzPositiv/Negativ, heuteBadgeHintergrund, validierungFehler/ErfolgsHintergrund, stueckelungErfolgsRand, subtilerText); _isoDatum() aus verlauf_seite in DatumsHelper.isoDatum() verschoben; Kupfer/Silber-ID-Sets in StueckelungKonfiguration zentralisiert (kupferRollenIds, kupferMuenzenIds, silberMuenzenIds), lokale Kopien in schritt1_seite, wechselgeld_pruefen_seite und stueckelung_vorschlag_seite entfernt.
 
 - Run 234: Getränke-Kassenabrechnung zeigt Original-Name (aus Asset-Config) neben dem Kurznamen an — klein, grau, mit "…"-Kürzung. Sichtbar nur wenn Kurzname ≠ Original-Name; Position (links/rechts) folgt der Händigkeit.

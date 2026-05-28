@@ -491,9 +491,29 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     });
   }
 
+  void _entferneKupferLose() {
+    setState(() {
+      _kupferLoseSichtbar = false;
+      for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
+        _loseMuenzenNachArtCent[id] = 0;
+        _loseMuenzenController[id]?.clear();
+      }
+    });
+  }
+
   void _zeigeKupferRollen() {
     setState(() {
       _kupferRollenSichtbar = true;
+    });
+  }
+
+  void _entferneKupferRollen() {
+    setState(() {
+      _kupferRollenSichtbar = false;
+      for (final String id in StueckelungKonfiguration.kupferRollenIds) {
+        _stueckzahlen[id] = 0;
+        _stueckzahlController[id]?.clear();
+      }
     });
   }
 
@@ -888,6 +908,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       kupferLoseSichtbar: _kupferLoseSichtbar,
       kupferRollenSichtbar: _kupferRollenSichtbar,
       zeigeKupferLose: _zeigeKupferLose,
+      entferneKupferLose: _entferneKupferLose,
       stueckzahlen: _stueckzahlen,
       stueckzahlController: _stueckzahlController,
       stueckzahlFocusNode: _stueckzahlFocusNode,
@@ -913,6 +934,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       umschlagEntfernen: _umschlagEntfernen,
       umschlagHinzufuegen: _umschlagHinzufuegen,
       zeigeKupferRollen: _zeigeKupferRollen,
+      entferneKupferRollen: _entferneKupferRollen,
       toggleScheine: () => _toggleSection(_sectionScheine),
       toggleLoseMuenzen: () => _toggleSection(_sectionLoseMuenzen),
       toggleRollen: () => _toggleSection(_sectionRollen),
@@ -1022,6 +1044,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       formatiereRollenAnzeige: (int cent) =>
           schritt1_ui.schritt1FormatiereRollenAnzeige(cent, _formatiereEuro),
       zeigeKupferRollen: _zeigeKupferRollen,
+      entferneKupferRollen: _entferneKupferRollen,
       rollenSichtbar: _rollenSichtbar,
     );
 
