@@ -45,6 +45,7 @@ class BetragCentEingabefeld extends StatefulWidget {
     this.onSubmitted,
     this.istHervorgehoben = false,
     this.farbeNachWert,
+    this.nennwertCent,
   });
 
   final TextEditingController textController;
@@ -60,12 +61,17 @@ class BetragCentEingabefeld extends StatefulWidget {
   /// Farbliche Hervorhebung nach Wert im unfokussierten Zustand:
   /// > 0 → grün, < 0 → rot, == 0 → neutral. Nur sichtbar wenn nicht fokussiert.
   final int? farbeNachWert;
+  /// Wenn gesetzt, wird nach Fokusverlust geprüft ob der Betrag durch diesen
+  /// Nennwert teilbar ist. Bei Verstoß: rotes Feld + AlertDialog.
+  final int? nennwertCent;
 
   @override
   State<BetragCentEingabefeld> createState() => _BetragCentEingabefeldState();
 }
 
 class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
+  bool _nennwertFehler = false;
+
   @override
   void initState() {
     super.initState();
@@ -90,7 +96,53 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     if (!mounted) {
       return;
     }
-    setState(() {});
+    final bool hatFokusJetzt = widget.focusNode?.hasFocus ?? false;
+    if (hatFokusJetzt) {
+      // Fokus erhalten → internen Nennwert-Fehler zurücksetzen
+      setState(() => _nennwertFehler = false);
+    } else if (widget.nennwertCent != null) {
+      _pruefeNennwert();
+    } else {
+      setState(() {});
+    }
+  }
+
+  void _pruefeNennwert() {
+    final int cent = _parseCentAusText(widget.textController.text);
+    final bool fehler = cent > 0 && cent % widget.nennwertCent! != 0;
+    setState(() => _nennwertFehler = fehler);
+    if (fehler) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog<void>(
+            context: context,
+            builder: (BuildContext dialogCtx) => AlertDialog(
+              title: const Text('Betrag prüfen'),
+              content: Text(
+                'Dieser Betrag lässt sich nicht durch '
+                '${_formatiereNennwert(widget.nennwertCent!)} teilen – '
+                'hast du dich vielleicht vertippt?',
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(dialogCtx).pop(),
+                  child: const Text('Verstanden'),
+                ),
+              ],
+            ),
+          );
+        }
+      });
+    }
+  }
+
+  static int _parseCentAusText(String text) {
+    return int.tryParse(text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+  }
+
+  static String _formatiereNennwert(int cent) {
+    if (cent < 100) return '$cent Ct';
+    return '${cent ~/ 100} €';
   }
 
   void _beiTextAenderung() {
@@ -112,8 +164,8 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     final bool hatFokus = widget.focusNode?.hasFocus ?? false;
     final bool hatText = widget.textController.text.isNotEmpty;
 
-    // istHervorgehoben (Validierungsfehler) hat Vorrang vor Wertfarbe.
-    final bool rotValidierung = widget.istHervorgehoben;
+    // istHervorgehoben (Validierungsfehler) und Nennwert-Fehler färben rot.
+    final bool rotValidierung = widget.istHervorgehoben || _nennwertFehler;
     final bool zeigeWertfarbe =
         !hatFokus && !rotValidierung && widget.farbeNachWert != null;
     final bool gruenWert = zeigeWertfarbe && widget.farbeNachWert! > 0;

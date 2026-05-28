@@ -184,6 +184,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
               schriftgroesse: 15,
               hinweisText: '0,00 €',
               istHervorgehoben: rotHervorgehoben.contains(focusNode),
+              nennwertCent: zeile.einzelwertCent,
             ),
           ),
         ),

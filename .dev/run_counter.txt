@@ -1,4 +1,4 @@
-last_run: 239
-next_run: 240
-last_run_title: Run 239: Frühjahrsputz Runde 3 — Kollabierbare Section, dispose-Mixin, FocusNode-Map
-last_commit: 0173391
+last_run: 240
+next_run: 241
+last_run_title: Run 240: Lose-Münzen-Plausibilitätsprüfung
+last_commit: pending
