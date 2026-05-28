@@ -208,9 +208,13 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
             child: TextButton.icon(
               style: TextButton.styleFrom(
                 foregroundColor: AppFarben.appBarRot,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(fontSize: 11),
               ),
               onPressed: zeigeKupferLose,
-              icon: const Icon(Icons.add, size: 16),
+              icon: const Icon(Icons.add, size: 14),
               label: const Text('Kupfermünzen hinzufügen'),
             ),
           ),
@@ -288,9 +292,13 @@ class Schritt1RollenInhalt extends StatelessWidget {
             child: TextButton.icon(
               style: TextButton.styleFrom(
                 foregroundColor: AppFarben.appBarRot,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(fontSize: 11),
               ),
               onPressed: zeigeKupferRollen,
-              icon: const Icon(Icons.add, size: 16),
+              icon: const Icon(Icons.add, size: 14),
               label: const Text('Kupfer-Rollen hinzufügen'),
             ),
           ),
