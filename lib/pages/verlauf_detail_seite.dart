@@ -208,9 +208,34 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: Text(
-          '${_deutschesDatum(a.datum)} – ${a.kinoName}',
-          style: const TextStyle(fontWeight: FontWeight.normal),
+        title: Row(
+          children: <Widget>[
+            Flexible(
+              child: Text(
+                '${_deutschesDatum(a.datum)} – ${a.kinoName}',
+                style: const TextStyle(fontWeight: FontWeight.normal),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (istHeute) ...<Widget>[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppFarben.heuteBadgeHintergrund,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'Heute',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ),
       bottomNavigationBar: Container(
