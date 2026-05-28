@@ -117,7 +117,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
           showDialog<void>(
             context: context,
             builder: (BuildContext dialogCtx) => AlertDialog(
-              title: const Text('Betrag prüfen'),
+              title: const Text('Ooops!'),
               content: Text(
                 'Dieser Betrag lässt sich nicht durch '
                 '${_formatiereNennwert(widget.nennwertCent!)} teilen – '
