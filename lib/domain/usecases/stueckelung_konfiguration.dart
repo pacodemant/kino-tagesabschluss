@@ -58,15 +58,16 @@ class StueckelungKonfiguration {
   ];
 
   /// Definiert Muenzarten fuer lose Muenzen als Betragseingabe.
+  /// einzelwertCent = Nennwert der Münze (für Plausibilitätsprüfung).
   static const List<Kassenzeile> loseMuenzarten = <Kassenzeile>[
-    Kassenzeile(id: 'coin_2e', bezeichnung: '2 €', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_1e', bezeichnung: '1 €', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_50c', bezeichnung: '50 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_20c', bezeichnung: '20 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_10c', bezeichnung: '10 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_5c', bezeichnung: '5 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_2c', bezeichnung: '2 ct', einzelwertCent: 0),
-    Kassenzeile(id: 'coin_1c', bezeichnung: '1 ct', einzelwertCent: 0),
+    Kassenzeile(id: 'coin_2e', bezeichnung: '2 €', einzelwertCent: 200),
+    Kassenzeile(id: 'coin_1e', bezeichnung: '1 €', einzelwertCent: 100),
+    Kassenzeile(id: 'coin_50c', bezeichnung: '50 ct', einzelwertCent: 50),
+    Kassenzeile(id: 'coin_20c', bezeichnung: '20 ct', einzelwertCent: 20),
+    Kassenzeile(id: 'coin_10c', bezeichnung: '10 ct', einzelwertCent: 10),
+    Kassenzeile(id: 'coin_5c', bezeichnung: '5 ct', einzelwertCent: 5),
+    Kassenzeile(id: 'coin_2c', bezeichnung: '2 ct', einzelwertCent: 2),
+    Kassenzeile(id: 'coin_1c', bezeichnung: '1 ct', einzelwertCent: 1),
   ];
 
   /// Kombinierte Liste aller Eingabefelder mit Stueckzahl (Scheine + Rollen).
