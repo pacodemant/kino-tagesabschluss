@@ -251,14 +251,17 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               _getraenkeliste[idx],
               style: const TextStyle(fontSize: 15),
             ),
-            Text(
-              originalName,
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey.shade500,
-                height: 1.1,
+            LimitedBox(
+              maxWidth: 0,
+              child: Text(
+                originalName,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Colors.grey.shade500,
+                  height: 1.1,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         );
