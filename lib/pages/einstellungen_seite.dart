@@ -84,6 +84,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
   bool _devModusAktiv = false;
+  bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   bool _testwertAufgeklappt = false;
@@ -156,10 +157,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   Future<void> _speichereMitarbeiterName() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString(
-      'mitarbeiter_name',
-      _mitarbeiterNameCtrl.text.trim(),
-    );
+    final String name = _mitarbeiterNameCtrl.text.trim();
+    await speicher.setString('mitarbeiter_name', name);
+    if (name.isNotEmpty && mounted) {
+      setState(() => _nameAufgeklappt = false);
+    }
   }
 
   Future<void> _ladeWerte() async {
@@ -220,6 +222,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString('mitarbeiter_name') ?? '';
     if (!mounted) return;
     _mitarbeiterNameCtrl.text = mitarbeiterName;
+    if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
 
     setState(() {
       _devModusAktiv = devAktiv;
@@ -995,31 +998,52 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Card(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    title: const Text(
                       'Dein Name',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: _mitarbeiterNameCtrl,
-                      focusNode: _mitarbeiterNameFocus,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(
-                        hintText: 'z.B. Maria',
-                        isDense: true,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        if (_mitarbeiterNameCtrl.text.isNotEmpty)
+                          Text(
+                            _mitarbeiterNameCtrl.text,
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          _nameAufgeklappt
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                        ),
+                      ],
+                    ),
+                    onTap: () =>
+                        setState(() => _nameAufgeklappt = !_nameAufgeklappt),
+                  ),
+                  if (_nameAufgeklappt) ...<Widget>[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      child: TextField(
+                        controller: _mitarbeiterNameCtrl,
+                        focusNode: _mitarbeiterNameFocus,
+                        textCapitalization: TextCapitalization.words,
+                        decoration: const InputDecoration(
+                          hintText: 'z.B. Maria',
+                          isDense: true,
+                        ),
+                        onEditingComplete: () {
+                          _speichereMitarbeiterName();
+                          _mitarbeiterNameFocus.unfocus();
+                        },
                       ),
-                      onEditingComplete: () {
-                        _speichereMitarbeiterName();
-                        _mitarbeiterNameFocus.unfocus();
-                      },
                     ),
                   ],
-                ),
+                ],
               ),
             ),
           ),
