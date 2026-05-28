@@ -1,4 +1,4 @@
-last_run: 240
-next_run: 241
-last_run_title: Run 240: Lose-Münzen-Plausibilitätsprüfung
+last_run: 241
+next_run: 242
+last_run_title: Run 241: Mitarbeitername in Einstellungen
 last_commit: pending

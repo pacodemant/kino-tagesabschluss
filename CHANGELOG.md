@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 241: Mitarbeitername in Einstellungen — neue Kachel "Dein Name" als erste Kachel in einstellungen_seite.dart; Wert wird unter SharedPreferences-Schlüssel "mitarbeiter_name" gespeichert; automatisches Speichern bei Fokusverlust und onEditingComplete; Laden beim Öffnen der Seite.
+
 - Run 240: Lose-Münzen-Plausibilitätsprüfung — BetragCentEingabefeld erhält optionalen Parameter nennwertCent (int?); bei Fokusverlust wird geprüft ob der eingegebene Betrag durch den Nennwert teilbar ist; bei Verstoß: rotes Feld + AlertDialog mit dynamischem Nennwert-Text; Feld kehrt bei erneutem Fokus und korrekter Eingabe zur Normalfarbe zurück. In Schritt1LoseMuenzenInhalt wird nennwertCent: zeile.einzelwertCent für alle Münzfelder gesetzt.
 
 - Run 239: Frühjahrsputz Runde 3 — (1) CollapsibleCardSection-Widget (lib/widgets/collapsible_card_section.dart) extrahiert; Scheine-, LoseMünzen- und Rollen-Section-Dateien delegieren darauf; (2) ControllerDisposeMixin (lib/utils/controller_dispose_mixin.dart) mit disposeControllers/disposeFocusNodes; Schritt1- und Schritt2-State verwenden das Mixin statt expliziter for-Loops in dispose(); (3) Map<FocusNode, int> _focusNodeZuSection in Schritt1 ersetzt die .any(identical())-Kette in _sectionIdFuerFokusfeld; wird bei initState und nach jeder Umschlag-Operation neu aufgebaut.

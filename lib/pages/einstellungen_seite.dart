@@ -10,6 +10,7 @@ import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EinstellungenSeite extends StatefulWidget {
   const EinstellungenSeite({super.key});
@@ -56,6 +57,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   static const int _umschlagSlots = 3;
 
+  final TextEditingController _mitarbeiterNameCtrl = TextEditingController();
   final TextEditingController _wgCtrl = TextEditingController();
   int _aktiveKinoIndex = -1;
   String _aktiveKinoName = '';
@@ -91,6 +93,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final List<TextEditingController> _getraenkeController =
       <TextEditingController>[];
   final TextEditingController _neuesGetraenkCtrl = TextEditingController();
+  late final FocusNode _mitarbeiterNameFocus;
   late final FocusNode _neuesGetraenkFocus;
 
   @override
@@ -105,6 +108,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final (String id, _, _) in _s1LoseMuenzFelder) {
       _s1LoseMuenzCtrl[id] = TextEditingController();
     }
+    _mitarbeiterNameFocus = FocusNode();
+    _mitarbeiterNameFocus.addListener(() {
+      if (!_mitarbeiterNameFocus.hasFocus) {
+        _speichereMitarbeiterName();
+      }
+    });
     _neuesGetraenkFocus = FocusNode();
     _neuesGetraenkFocus.addListener(() {
       if (!_neuesGetraenkFocus.hasFocus) {
@@ -117,6 +126,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   @override
   void dispose() {
+    _mitarbeiterNameCtrl.dispose();
+    _mitarbeiterNameFocus.dispose();
     _wgCtrl.dispose();
     for (final TextEditingController c in _s1StueckzahlCtrl.values) {
       c.dispose();
@@ -141,6 +152,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _neuesGetraenkCtrl.dispose();
     _neuesGetraenkFocus.dispose();
     super.dispose();
+  }
+
+  Future<void> _speichereMitarbeiterName() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+      'mitarbeiter_name',
+      _mitarbeiterNameCtrl.text.trim(),
+    );
   }
 
   Future<void> _ladeWerte() async {
@@ -196,6 +215,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final String name in getraenkeliste) {
       _getraenkeController.add(TextEditingController(text: name));
     }
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String mitarbeiterName =
+        speicher.getString('mitarbeiter_name') ?? '';
+    if (!mounted) return;
+    _mitarbeiterNameCtrl.text = mitarbeiterName;
+
     setState(() {
       _devModusAktiv = devAktiv;
       _getraenkeliste = getraenkeliste;
@@ -967,6 +992,37 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'Dein Name',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _mitarbeiterNameCtrl,
+                      focusNode: _mitarbeiterNameFocus,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        hintText: 'z.B. Maria',
+                        isDense: true,
+                      ),
+                      onEditingComplete: () {
+                        _speichereMitarbeiterName();
+                        _mitarbeiterNameFocus.unfocus();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Card(
