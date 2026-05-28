@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
 typedef Schritt1FeldMitKeyBuilder = Widget Function({
@@ -118,7 +119,27 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    onPressed: () => umschlagEntfernen(i),
+                    onPressed: () async {
+                      if (umschlaege.length <= 1) return;
+                      final bool? ok = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext dialogCtx) => AlertDialog(
+                          title: const Text('Umschlag entfernen?'),
+                          content: const Text('Diesen Eintrag wirklich löschen?'),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.of(dialogCtx).pop(false),
+                              child: const Text('Abbrechen'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(dialogCtx).pop(true),
+                              child: const Text('Löschen'),
+                            ),
+                          ],
+                        ),
+                      );
+                      if (ok == true) umschlagEntfernen(i);
+                    },
                     icon: const Icon(Icons.delete_outline),
                     tooltip: 'Umschlag entfernen',
                   ),
@@ -131,9 +152,16 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
         if (umschlaege.isNotEmpty && umschlaege.first.betragCent > 0)
           Align(
             alignment: Alignment.centerLeft,
-            child: OutlinedButton.icon(
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                foregroundColor: AppFarben.appBarRot,
+                padding: EdgeInsets.zero,
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                textStyle: const TextStyle(fontSize: 11),
+              ),
               onPressed: umschlagHinzufuegen,
-              icon: const Icon(Icons.add),
+              icon: const Icon(Icons.add, size: 14),
               label: const Text('Umschlag hinzufügen'),
             ),
           ),
