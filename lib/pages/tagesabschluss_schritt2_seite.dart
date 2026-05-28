@@ -8,6 +8,7 @@ import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -77,7 +78,8 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 }
 
 class _TagesabschlussSchritt2SeiteState
-    extends State<TagesabschlussSchritt2Seite> {
+    extends State<TagesabschlussSchritt2Seite>
+    with ControllerDisposeMixin {
   static const double _devToolsPanelHoehe = 68;
 
   final TextEditingController _kinoSollController = TextEditingController();
@@ -143,30 +145,14 @@ class _TagesabschlussSchritt2SeiteState
     _bistroSollFocusNode.dispose();
     _differenzAnfangsbestandFocusNode.dispose();
     _scrollController.dispose();
-    for (final TextEditingController c in _ecBelegController) {
-      c.dispose();
-    }
-    for (final TextEditingController c in _ecBelegLabelController) {
-      c.dispose();
-    }
-    for (final FocusNode fn in _ecBelegFocusNode) {
-      fn.dispose();
-    }
-    for (final FocusNode fn in _ecBelegLabelFocusNode) {
-      fn.dispose();
-    }
-    for (final TextEditingController c in _ausgabenBetragController) {
-      c.dispose();
-    }
-    for (final TextEditingController c in _ausgabenLabelController) {
-      c.dispose();
-    }
-    for (final FocusNode fn in _ausgabenBetragFocusNode) {
-      fn.dispose();
-    }
-    for (final FocusNode fn in _ausgabenLabelFocusNode) {
-      fn.dispose();
-    }
+    disposeControllers(_ecBelegController);
+    disposeControllers(_ecBelegLabelController);
+    disposeFocusNodes(_ecBelegFocusNode);
+    disposeFocusNodes(_ecBelegLabelFocusNode);
+    disposeControllers(_ausgabenBetragController);
+    disposeControllers(_ausgabenLabelController);
+    disposeFocusNodes(_ausgabenBetragFocusNode);
+    disposeFocusNodes(_ausgabenLabelFocusNode);
     super.dispose();
   }
 

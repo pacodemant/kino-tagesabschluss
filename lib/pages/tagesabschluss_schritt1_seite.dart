@@ -19,6 +19,7 @@ import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -51,7 +52,8 @@ class TagesabschlussSchritt1Seite extends StatefulWidget {
 }
 
 class _TagesabschlussSchritt1SeiteState
-    extends State<TagesabschlussSchritt1Seite> {
+    extends State<TagesabschlussSchritt1Seite>
+    with ControllerDisposeMixin {
   static const int _sectionScheine = 0;
   static const int _sectionLoseMuenzen = 1;
   static const int _sectionRollen = 2;
@@ -98,6 +100,7 @@ class _TagesabschlussSchritt1SeiteState
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
   final Set<FocusNode> _rotHervorgehoben = <FocusNode>{};
+  final Map<FocusNode, int> _focusNodeZuSection = <FocusNode, int>{};
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
@@ -149,6 +152,7 @@ class _TagesabschlussSchritt1SeiteState
       _loseMuenzenController[zeile.id] = TextEditingController();
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
     }
+    _baueFocusNodeSectionMap();
     _scrollController.addListener(_beiScrollAenderung);
     DevModus.istAktiv().then((bool aktiv) {
       setState(() {
@@ -164,36 +168,39 @@ class _TagesabschlussSchritt1SeiteState
 
   @override
   void dispose() {
-    for (final TextEditingController controller
-        in _stueckzahlController.values) {
-      controller.dispose();
-    }
-    for (final FocusNode focusNode in _stueckzahlFocusNode.values) {
-      focusNode.dispose();
-    }
-    for (final TextEditingController controller
-        in _loseMuenzenController.values) {
-      controller.dispose();
-    }
-    for (final FocusNode focusNode in _loseMuenzenFocusNode.values) {
-      focusNode.dispose();
-    }
-    for (final TextEditingController controller in _umschlagBetragController) {
-      controller.dispose();
-    }
-    for (final TextEditingController controller
-        in _umschlagBezeichnungController) {
-      controller.dispose();
-    }
-    for (final FocusNode focusNode in _umschlagBetragFocusNode) {
-      focusNode.dispose();
-    }
-    for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
-      focusNode.dispose();
-    }
+    disposeControllers(_stueckzahlController.values);
+    disposeFocusNodes(_stueckzahlFocusNode.values);
+    disposeControllers(_loseMuenzenController.values);
+    disposeFocusNodes(_loseMuenzenFocusNode.values);
+    disposeControllers(_umschlagBetragController);
+    disposeControllers(_umschlagBezeichnungController);
+    disposeFocusNodes(_umschlagBetragFocusNode);
+    disposeFocusNodes(_umschlagBezeichnungFocusNode);
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _baueFocusNodeSectionMap() {
+    _focusNodeZuSection.clear();
+    for (final Kassenzeile zeile in _scheine) {
+      final FocusNode? fn = _stueckzahlFocusNode[zeile.id];
+      if (fn != null) _focusNodeZuSection[fn] = _sectionScheine;
+    }
+    for (final Kassenzeile zeile in _loseMuenzarten) {
+      final FocusNode? fn = _loseMuenzenFocusNode[zeile.id];
+      if (fn != null) _focusNodeZuSection[fn] = _sectionLoseMuenzen;
+    }
+    for (final Kassenzeile zeile in _rollenAlle) {
+      final FocusNode? fn = _stueckzahlFocusNode[zeile.id];
+      if (fn != null) _focusNodeZuSection[fn] = _sectionRollen;
+    }
+    for (final FocusNode fn in _umschlagBezeichnungFocusNode) {
+      _focusNodeZuSection[fn] = _sectionUmschlaege;
+    }
+    for (final FocusNode fn in _umschlagBetragFocusNode) {
+      _focusNodeZuSection[fn] = _sectionUmschlaege;
+    }
   }
 
   Future<void> _ladeInitialeDaten() async {
@@ -268,16 +275,25 @@ class _TagesabschlussSchritt1SeiteState
     }
   }
 
-  void _leereUmschlagFelder() => _initialisierungHelper.leereUmschlagFelder();
+  void _leereUmschlagFelder() {
+    _initialisierungHelper.leereUmschlagFelder();
+    _baueFocusNodeSectionMap();
+  }
 
-  void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) =>
-      _initialisierungHelper.uebernehmeUmschlagEntwurf(umschlagEntwurf);
+  void _uebernehmeUmschlagEntwurf(List<UmschlagEintrag> umschlagEntwurf) {
+    _initialisierungHelper.uebernehmeUmschlagEntwurf(umschlagEntwurf);
+    _baueFocusNodeSectionMap();
+  }
 
-  void _fuegeUmschlagEintragOhneSpeichernHinzu(UmschlagEintrag eintrag) =>
-      _initialisierungHelper.fuegeUmschlagEintragOhneSpeichernHinzu(eintrag);
+  void _fuegeUmschlagEintragOhneSpeichernHinzu(UmschlagEintrag eintrag) {
+    _initialisierungHelper.fuegeUmschlagEintragOhneSpeichernHinzu(eintrag);
+    _baueFocusNodeSectionMap();
+  }
 
-  void _sichereMindestensEinenUmschlag() =>
-      _initialisierungHelper.sichereMindestensEinenUmschlag();
+  void _sichereMindestensEinenUmschlag() {
+    _initialisierungHelper.sichereMindestensEinenUmschlag();
+    _baueFocusNodeSectionMap();
+  }
 
   void _synchronisiereControllerAusState() =>
       _initialisierungHelper.synchronisiereControllerAusState();
@@ -423,6 +439,7 @@ class _TagesabschlussSchritt1SeiteState
         entferneFeldKey: _scrollHelper.entferneFeldKey,
       );
     });
+    _baueFocusNodeSectionMap();
     await _speichereEntwurf();
   }
 
@@ -543,35 +560,8 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  // Ermittelt die Section-ID fuer ein Fokusfeld (0..4) oder null bei unbekannt.
   int? _sectionIdFuerFokusfeld(FocusNode focusNode) {
-    if (_scheine.any(
-      (Kassenzeile zeile) =>
-          identical(_stueckzahlFocusNode[zeile.id], focusNode),
-    )) {
-      return _sectionScheine;
-    }
-    if (_loseMuenzarten.any(
-      (Kassenzeile zeile) =>
-          identical(_loseMuenzenFocusNode[zeile.id], focusNode),
-    )) {
-      return _sectionLoseMuenzen;
-    }
-    if (_rollenSichtbar.any(
-      (Kassenzeile zeile) =>
-          identical(_stueckzahlFocusNode[zeile.id], focusNode),
-    )) {
-      return _sectionRollen;
-    }
-    if (_umschlagBezeichnungFocusNode.any(
-          (FocusNode node) => identical(node, focusNode),
-        ) ||
-        _umschlagBetragFocusNode.any(
-          (FocusNode node) => identical(node, focusNode),
-        )) {
-      return _sectionUmschlaege;
-    }
-    return null;
+    return _focusNodeZuSection[focusNode];
   }
 
   bool _istSectionAufgeklappt(int sectionId) {
