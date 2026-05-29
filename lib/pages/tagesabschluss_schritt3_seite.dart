@@ -8,6 +8,7 @@ import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
+import 'package:kino_bar_app/services/google_sheets_service.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
@@ -89,6 +90,7 @@ class _TagesabschlussSchritt3SeiteState
   bool _autoSaveErledigt = false;
   bool _autoSaveLaeuft = false;
   bool _autoSaveFehler = false;
+  bool _uploadErledigt = false;
 
   @override
   void initState() {
@@ -165,6 +167,27 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
+  Future<void> _triggerUpload() async {
+    try {
+      await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Abrechnung hochgeladen ✓')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Upload fehlgeschlagen — Abrechnung wurde lokal gespeichert',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _zeigeAbschlussDialog() async {
     // Falls Auto-Save noch läuft, kurz warten und erneut prüfen.
     if (_autoSaveLaeuft) {
@@ -189,6 +212,11 @@ class _TagesabschlussSchritt3SeiteState
 
     if (!mounted) {
       return;
+    }
+
+    if (!_uploadErledigt) {
+      _uploadErledigt = true;
+      _triggerUpload().ignore();
     }
 
     await showDialog<void>(
