@@ -15,7 +15,8 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(
 class GoogleSheetsService {
   GoogleSheetsService._();
 
-  static Future<void> uploadAbrechnung(TagesabschlussFinal abrechnung) async {
+  // Gibt Access Token zurück; wirft Exception bei Abbruch oder Fehler.
+  static Future<String> authenticate() async {
     GoogleSignInAccount? account = _googleSignIn.currentUser;
     account ??= await _googleSignIn.signInSilently();
     account ??= await _googleSignIn.signIn();
@@ -24,12 +25,34 @@ class GoogleSheetsService {
       throw Exception('Google Sign-In abgebrochen');
     }
 
-    final GoogleSignInAuthentication auth = await account.authentication;
+    // GIS trennt Authentifizierung (signIn) und Autorisierung (Scope/Token).
+    // canAccessScopes prüft, ob der Sheets-Scope bereits gewährt ist.
+    final bool hasScope = await _googleSignIn.canAccessScopes(
+      <String>[GoogleSheetsConfig.scope],
+    );
+    if (!hasScope) {
+      final bool granted = await _googleSignIn.requestScopes(
+        <String>[GoogleSheetsConfig.scope],
+      );
+      if (!granted) {
+        throw Exception('Zugriff auf Google Sheets verweigert');
+      }
+    }
+
+    final GoogleSignInAccount? current = _googleSignIn.currentUser;
+    final GoogleSignInAuthentication auth =
+        await (current ?? account).authentication;
     final String? accessToken = auth.accessToken;
     if (accessToken == null) {
       throw Exception('Kein Access Token erhalten');
     }
+    return accessToken;
+  }
 
+  static Future<void> uploadAbrechnung(
+    TagesabschlussFinal abrechnung,
+    String accessToken,
+  ) async {
     final Kino? kino = KinoRepository.nachId(abrechnung.kinoId);
     final String tabName = kino?.kuerzel ?? abrechnung.kinoId;
     final String mitarbeiterName = await _ladeMitarbeiterName();

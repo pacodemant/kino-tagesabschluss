@@ -167,9 +167,9 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
-  Future<void> _triggerUpload() async {
+  Future<void> _doUpload(String accessToken) async {
     try {
-      await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau);
+      await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau, accessToken);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Abrechnung hochgeladen ✓')),
@@ -215,8 +215,22 @@ class _TagesabschlussSchritt3SeiteState
     }
 
     if (!_uploadErledigt) {
-      _uploadErledigt = true;
-      _triggerUpload().ignore();
+      try {
+        final String token = await GoogleSheetsService.authenticate();
+        if (!mounted) return;
+        _uploadErledigt = true;
+        _doUpload(token).ignore();
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Upload fehlgeschlagen — Abrechnung wurde lokal gespeichert',
+              ),
+            ),
+          );
+        }
+      }
     }
 
     await showDialog<void>(
