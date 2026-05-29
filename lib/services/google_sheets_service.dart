@@ -70,7 +70,7 @@ class GoogleSheetsService {
     ];
 
     final int? vorhandeneZeile =
-        await _findeZeileNachDatum(tabName, datum, accessToken);
+        await _findeZeileNachDatum(tabName, abrechnung.datum, accessToken);
 
     if (vorhandeneZeile != null) {
       await _aktualisiereZeile(tabName, vorhandeneZeile, zeile, accessToken);
@@ -79,14 +79,20 @@ class GoogleSheetsService {
     }
   }
 
+  /// Liest Spalte A und gibt die 1-basierte Zeilennummer zurück, falls ein
+  /// Eintrag mit gleichem Datum existiert — sonst null.
+  ///
+  /// UNFORMATTED_VALUE wird verwendet, weil Sheets Datumsstrings mit
+  /// USER_ENTERED als Serial-Number (Zahl) speichert. Beide Fälle werden
+  /// geprüft: String-Gleichheit und Serial-Date-Vergleich.
   static Future<int?> _findeZeileNachDatum(
     String tabName,
-    String datum,
+    DateTime datum,
     String accessToken,
   ) async {
     final Uri uri = Uri.parse(
       'https://sheets.googleapis.com/v4/spreadsheets/${GoogleSheetsConfig.sheetId}'
-      '/values/$tabName!A:A',
+      '/values/$tabName!A:A?valueRenderOption=UNFORMATTED_VALUE',
     );
     final http.Response response = await http.get(
       uri,
@@ -94,7 +100,9 @@ class GoogleSheetsService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception('Lesefehler HTTP ${response.statusCode}: ${response.body}');
+      throw Exception(
+        'Lesefehler HTTP ${response.statusCode}: ${response.body}',
+      );
     }
 
     final Map<String, dynamic> body =
@@ -102,13 +110,35 @@ class GoogleSheetsService {
     final List<dynamic>? values = body['values'] as List<dynamic>?;
     if (values == null) return null;
 
+    final String datumString = _formatDatum(datum);
+
     for (int i = 0; i < values.length; i++) {
       final List<dynamic> row = values[i] as List<dynamic>;
-      if (row.isNotEmpty && row[0].toString() == datum) {
-        return i + 1; // 1-basierte Zeilennummer in Sheets
+      if (row.isEmpty) continue;
+      final dynamic wert = row[0];
+
+      // Fall 1: Sheets hat den Wert als Text gespeichert
+      if (wert is String && wert == datumString) {
+        return i + 1;
+      }
+
+      // Fall 2: Sheets hat den Wert als Datums-Serial gespeichert
+      if (wert is num) {
+        final DateTime gespeichert = _datumAusSheetsSerial(wert.toInt());
+        if (gespeichert.year == datum.year &&
+            gespeichert.month == datum.month &&
+            gespeichert.day == datum.day) {
+          return i + 1;
+        }
       }
     }
     return null;
+  }
+
+  /// Google Sheets Serial-Date: Tage seit 30.12.1899 (inkl. Schaltjahr-Bug).
+  /// Formel korrekt für alle Daten ab 1. März 1900.
+  static DateTime _datumAusSheetsSerial(int serial) {
+    return DateTime(1899, 12, 30).add(Duration(days: serial));
   }
 
   static Future<void> _aktualisiereZeile(
