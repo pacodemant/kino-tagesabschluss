@@ -15,7 +15,6 @@ final GoogleSignIn _googleSignIn = GoogleSignIn(
 class GoogleSheetsService {
   GoogleSheetsService._();
 
-  // Gibt Access Token zurück; wirft Exception bei Abbruch oder Fehler.
   static Future<String> authenticate() async {
     GoogleSignInAccount? account = _googleSignIn.currentUser;
     account ??= await _googleSignIn.signInSilently();
@@ -25,8 +24,6 @@ class GoogleSheetsService {
       throw Exception('Google Sign-In abgebrochen');
     }
 
-    // GIS trennt Authentifizierung (signIn) und Autorisierung (Scope/Token).
-    // canAccessScopes prüft, ob der Sheets-Scope bereits gewährt ist.
     final bool hasScope = await _googleSignIn.canAccessScopes(
       <String>[GoogleSheetsConfig.scope],
     );
@@ -56,9 +53,10 @@ class GoogleSheetsService {
     final Kino? kino = KinoRepository.nachId(abrechnung.kinoId);
     final String tabName = kino?.kuerzel ?? abrechnung.kinoId;
     final String mitarbeiterName = await _ladeMitarbeiterName();
+    final String datum = _formatDatum(abrechnung.datum);
 
     final List<Object> zeile = <Object>[
-      _formatDatum(abrechnung.datum),
+      datum,
       mitarbeiterName,
       _euro(abrechnung.differenzAnfangsbestandCent),
       _euro(abrechnung.kinoSollCent),
@@ -71,11 +69,84 @@ class GoogleSheetsService {
       _euro(abrechnung.differenzGesamtCent),
     ];
 
+    final int? vorhandeneZeile =
+        await _findeZeileNachDatum(tabName, datum, accessToken);
+
+    if (vorhandeneZeile != null) {
+      await _aktualisiereZeile(tabName, vorhandeneZeile, zeile, accessToken);
+    } else {
+      await _haengeZeileAn(tabName, zeile, accessToken);
+    }
+  }
+
+  static Future<int?> _findeZeileNachDatum(
+    String tabName,
+    String datum,
+    String accessToken,
+  ) async {
+    final Uri uri = Uri.parse(
+      'https://sheets.googleapis.com/v4/spreadsheets/${GoogleSheetsConfig.sheetId}'
+      '/values/$tabName!A:A',
+    );
+    final http.Response response = await http.get(
+      uri,
+      headers: <String, String>{'Authorization': 'Bearer $accessToken'},
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Lesefehler HTTP ${response.statusCode}: ${response.body}');
+    }
+
+    final Map<String, dynamic> body =
+        jsonDecode(response.body) as Map<String, dynamic>;
+    final List<dynamic>? values = body['values'] as List<dynamic>?;
+    if (values == null) return null;
+
+    for (int i = 0; i < values.length; i++) {
+      final List<dynamic> row = values[i] as List<dynamic>;
+      if (row.isNotEmpty && row[0].toString() == datum) {
+        return i + 1; // 1-basierte Zeilennummer in Sheets
+      }
+    }
+    return null;
+  }
+
+  static Future<void> _aktualisiereZeile(
+    String tabName,
+    int zeilenNummer,
+    List<Object> zeile,
+    String accessToken,
+  ) async {
+    final String range = '$tabName!A$zeilenNummer:K$zeilenNummer';
+    final Uri uri = Uri.parse(
+      'https://sheets.googleapis.com/v4/spreadsheets/${GoogleSheetsConfig.sheetId}'
+      '/values/$range?valueInputOption=USER_ENTERED',
+    );
+    final http.Response response = await http.put(
+      uri,
+      headers: <String, String>{
+        'Authorization': 'Bearer $accessToken',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, Object>{
+        'range': range,
+        'values': <Object>[zeile],
+      }),
+    );
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('HTTP ${response.statusCode}: ${response.body}');
+    }
+  }
+
+  static Future<void> _haengeZeileAn(
+    String tabName,
+    List<Object> zeile,
+    String accessToken,
+  ) async {
     final Uri uri = Uri.parse(
       'https://sheets.googleapis.com/v4/spreadsheets/${GoogleSheetsConfig.sheetId}'
       '/values/$tabName!A1:append?valueInputOption=USER_ENTERED',
     );
-
     final http.Response response = await http.post(
       uri,
       headers: <String, String>{
@@ -86,7 +157,6 @@ class GoogleSheetsService {
         'values': <Object>[zeile],
       }),
     );
-
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception('HTTP ${response.statusCode}: ${response.body}');
     }
