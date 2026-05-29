@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 243: Feature-Flag kUseGoogleSheets — neue Datei lib/config/feature_flags.dart mit boolescher Konstante kUseGoogleSheets (default: true); in tagesabschluss_schritt3_seite.dart wird der gesamte Upload-Block (authenticate, _doUpload, SnackBar-Feedback) nur ausgeführt wenn kUseGoogleSheets == true.
+
 - Run 242: Google Sheets Upload nach Kassenabschluss — neues Package google_sign_in ^6.2.2; lib/services/google_sheets_config.dart mit clientId und sheetId; lib/services/google_sheets_service.dart mit uploadAbrechnung(TagesabschlussFinal): OAuth-Popup via GoogleSignIn, Tab-Name aus Kino-Kürzel (SB/AT/CO/GO), Zeile mit 11 Feldern (Datum, Mitarbeitername, Differenz Anfangsbestand, Kino/Bistro/Ausgaben/Gesamt Soll, EC/bar/Gesamt IST, Differenz Kassenabrechnung), HTTP POST an Sheets API mit Bearer-Token; schritt3_seite.dart ruft _triggerUpload() einmalig nach Auto-Save auf, SnackBar bei Erfolg oder Fehler, kein Blocking des Abschluss-Prozesses.
 
 - Run 241: Mitarbeitername in Einstellungen — neue Kachel "Dein Name" als erste Kachel in einstellungen_seite.dart; Wert wird unter SharedPreferences-Schlüssel "mitarbeiter_name" gespeichert; automatisches Speichern bei Fokusverlust und onEditingComplete; Laden beim Öffnen der Seite.

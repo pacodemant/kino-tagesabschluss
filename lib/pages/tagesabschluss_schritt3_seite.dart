@@ -8,6 +8,7 @@ import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
+import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
@@ -214,7 +215,7 @@ class _TagesabschlussSchritt3SeiteState
       return;
     }
 
-    if (!_uploadErledigt) {
+    if (kUseGoogleSheets && !_uploadErledigt) {
       try {
         final String token = await GoogleSheetsService.authenticate();
         if (!mounted) return;
