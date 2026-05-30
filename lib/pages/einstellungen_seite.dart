@@ -1215,45 +1215,57 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               children: <Widget>[
                 ListTile(
                   title: const Text(
-                    'Dev',
+                    'Entwicklermodus',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  trailing: Icon(
-                    _devAufgeklappt ? Icons.expand_less : Icons.expand_more,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Switch(
+                        value: _devModusAktiv,
+                        onChanged: _onDevModusGeaendert,
+                        activeThumbColor: AppFarben.appBarRot,
+                      ),
+                      Icon(
+                        _devAufgeklappt
+                            ? Icons.expand_less
+                            : Icons.expand_more,
+                      ),
+                    ],
                   ),
                   onTap: () =>
                       setState(() => _devAufgeklappt = !_devAufgeklappt),
                 ),
-                if (_devAufgeklappt) ...<Widget>[
+                if (_devAufgeklappt && _devModusAktiv) ...<Widget>[
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('Entwicklermodus'),
-                    value: _devModusAktiv,
-                    onChanged: _onDevModusGeaendert,
+                    title: const Text('Google Sheets Upload'),
+                    value: _googleSheetsAktiv,
+                    onChanged: _onGoogleSheetsGeaendert,
                     activeThumbColor: AppFarben.appBarRot,
                   ),
-                  if (_devModusAktiv)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          TextButton.icon(
-                            onPressed: () => setState(
-                              () => _testwertAufgeklappt =
-                                  !_testwertAufgeklappt,
-                            ),
-                            icon: Icon(
-                              _testwertAufgeklappt
-                                  ? Icons.expand_less
-                                  : Icons.expand_more,
-                            ),
-                            label: const Text('Testwerte'),
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        TextButton.icon(
+                          onPressed: () => setState(
+                            () => _testwertAufgeklappt =
+                                !_testwertAufgeklappt,
                           ),
-                        ],
-                      ),
+                          icon: Icon(
+                            _testwertAufgeklappt
+                                ? Icons.expand_less
+                                : Icons.expand_more,
+                          ),
+                          label: const Text('Testwerte'),
+                        ),
+                      ],
                     ),
-                  if (_devModusAktiv && _testwertAufgeklappt) ...<Widget>[
+                  ),
+                  if (_testwertAufgeklappt) ...<Widget>[
                     const Divider(height: 1),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
@@ -1268,15 +1280,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: _baueAutoFillInhalt(),
-                    ),
-                  ],
-                  if (_devModusAktiv) ...<Widget>[
-                    const Divider(height: 1),
-                    SwitchListTile(
-                      title: const Text('Google Sheets Upload'),
-                      value: _googleSheetsAktiv,
-                      onChanged: _onGoogleSheetsGeaendert,
-                      activeThumbColor: AppFarben.appBarRot,
                     ),
                   ],
                 ],
