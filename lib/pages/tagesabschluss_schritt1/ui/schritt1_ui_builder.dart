@@ -138,6 +138,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
     required this.formatiereEuro,
     required this.loseMuenzenGesamtCent,
     this.rotHervorgehoben = const <FocusNode>{},
+    this.mitKomma = false,
   });
 
   final List<Kassenzeile> loseMuenzartenOhneKupfer;
@@ -156,6 +157,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
   final String Function(int cent) formatiereEuro;
   final int loseMuenzenGesamtCent;
   final Set<FocusNode> rotHervorgehoben;
+  final bool mitKomma;
 
   Widget _baueMuenzzeile(BuildContext context, Kassenzeile zeile) {
     final FocusNode focusNode = loseMuenzenFocusNode[zeile.id]!;
@@ -185,6 +187,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
               hinweisText: '0,00 €',
               istHervorgehoben: rotHervorgehoben.contains(focusNode),
               nennwertCent: zeile.einzelwertCent,
+              mitKomma: mitKomma,
             ),
           ),
         ),

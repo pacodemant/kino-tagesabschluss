@@ -46,6 +46,7 @@ class BetragCentEingabefeld extends StatefulWidget {
     this.istHervorgehoben = false,
     this.farbeNachWert,
     this.nennwertCent,
+    this.mitKomma = false,
   });
 
   final TextEditingController textController;
@@ -64,6 +65,7 @@ class BetragCentEingabefeld extends StatefulWidget {
   /// Wenn gesetzt, wird nach Fokusverlust geprüft ob der Betrag durch diesen
   /// Nennwert teilbar ist. Bei Verstoß: rotes Feld + AlertDialog.
   final int? nennwertCent;
+  final bool mitKomma;
 
   @override
   State<BetragCentEingabefeld> createState() => _BetragCentEingabefeldState();
@@ -217,7 +219,9 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     return TextField(
       controller: widget.textController,
       focusNode: widget.focusNode,
-      keyboardType: TextInputType.number,
+      keyboardType: widget.mitKomma
+          ? const TextInputType.numberWithOptions(decimal: true)
+          : TextInputType.number,
       textInputAction: widget.textInputAction,
       textAlign: TextAlign.center,
       cursorColor: hatFokus ? Colors.white : null,
@@ -226,10 +230,12 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         color: hatFokus ? Colors.white : null,
         fontWeight: hatFokus ? FontWeight.w700 : FontWeight.normal,
       ),
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly,
-        CentWaehrungsEingabeFormatter(),
-      ],
+      inputFormatters: widget.mitKomma
+          ? <TextInputFormatter>[]
+          : <TextInputFormatter>[
+              FilteringTextInputFormatter.digitsOnly,
+              CentWaehrungsEingabeFormatter(),
+            ],
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,

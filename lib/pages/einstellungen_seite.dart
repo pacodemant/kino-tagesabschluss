@@ -85,6 +85,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
   bool _devModusAktiv = false;
+  bool _eingabeMitKomma = false;
   bool _googleSheetsAktiv = true;
   bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
@@ -224,6 +225,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String mitarbeiterName =
         speicher.getString('mitarbeiter_name') ?? '';
+    final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
     if (!mounted) return;
     _mitarbeiterNameCtrl.text = mitarbeiterName;
     if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
@@ -232,6 +234,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _devModusAktiv = devAktiv;
       _googleSheetsAktiv = googleSheetsAktiv;
       _getraenkeliste = getraenkeliste;
+      _eingabeMitKomma = eingabeMitKomma;
       _geladen = true;
     });
   }
@@ -317,6 +320,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     if (!mounted) return;
     setState(() {
       _googleSheetsAktiv = wert;
+    });
+  }
+
+  Future<void> _onEingabeMitKommaGeaendert(bool wert) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setBool('eingabe_mit_komma', wert);
+    if (!mounted) return;
+    setState(() {
+      _eingabeMitKomma = wert;
     });
   }
 
@@ -1134,6 +1146,22 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     ),
                   ],
                 ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              child: SwitchListTile(
+                title: const Text(
+                  'Eingabe',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: const Text('Beträge mit Komma eingeben'),
+                value: _eingabeMitKomma,
+                onChanged: _onEingabeMitKommaGeaendert,
+                activeThumbColor: AppFarben.appBarRot,
               ),
             ),
           ),

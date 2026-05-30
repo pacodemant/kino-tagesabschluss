@@ -16,6 +16,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenf
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -96,6 +97,7 @@ class _TagesabschlussSchritt1SeiteState
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
+  bool _eingabeMitKomma = false;
   final ScrollController _scrollController = ScrollController();
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
@@ -217,6 +219,9 @@ class _TagesabschlussSchritt1SeiteState
     final bool erstesOeffnenHeute =
         await LokalerSpeicher.istErstesSchritt1OeffnenHeute(widget.kinoId);
 
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bool eingabeMitKomma = prefs.getBool('eingabe_mit_komma') ?? false;
+
     if (!mounted) {
       return;
     }
@@ -257,6 +262,7 @@ class _TagesabschlussSchritt1SeiteState
 
     setState(() {
       _wechselgeldSollwertCent = wechselgeld;
+      _eingabeMitKomma = eingabeMitKomma;
       _laedt = false;
       if (hatKupferRollenWerte) {
         _kupferRollenSichtbar = true;
@@ -979,6 +985,7 @@ class _TagesabschlussSchritt1SeiteState
         _toggleSection(_sectionUmschlaege);
       },
       rotHervorgehoben: _rotHervorgehoben,
+      mitKomma: _eingabeMitKomma,
     );
 
     return TagesabschlussScaffold(

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 248: Eingabemodus-Einstellung (Komma ja/nein) — SharedPreferences-Key "eingabe_mit_komma" (bool, default: false); neue Kachel "Eingabe" in Einstellungen mit SwitchListTile "Beträge mit Komma eingeben"; BetragCentEingabefeld erhält Parameter mitKomma: false → keyboardType.number + Cent-Formatter, mitKomma: true → numberWithOptions(decimal:true) + kein Formatter; Wert wird in Schritt 1 (lose Münzen + Umschläge) und Schritt 2 (alle Betrag-Felder) beim Laden gelesen und per Widget-Parameter weitergereicht; parseCentZiffern funktioniert für beide Modi.
+
 - Run 247: Testwerte-Button in Dev-Kachel direkt unter Entwicklermodus verschoben — Google-Sheets-Toggle ans Ende der Kachel gesetzt.
 
 - Run 246: Wechselgeld-Eingabe in Einstellungen auf Cent-Eingabe umgestellt — keyboardType auf TextInputType.number, inputFormatters [FilteringTextInputFormatter.digitsOnly, CentWaehrungsEingabeFormatter()] analog zu BetragCentEingabefeld; initialer Wert war bereits korrekt formatiert (formatiereEuroEingabe).

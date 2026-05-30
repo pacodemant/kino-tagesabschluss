@@ -27,6 +27,7 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
     required this.umschlagHinzufuegen,
     required this.formatiereEuro,
     required this.umschlagSummeCent,
+    this.mitKomma = false,
   });
 
   final List<UmschlagEintrag> umschlaege;
@@ -44,6 +45,7 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
   final VoidCallback umschlagHinzufuegen;
   final String Function(int cent) formatiereEuro;
   final int umschlagSummeCent;
+  final bool mitKomma;
 
   @override
   Widget build(BuildContext context) {
@@ -115,6 +117,7 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                         schriftgroesse: 14,
                         hinweisText: '0,00 €',
                         labelText: 'Betrag €',
+                        mitKomma: mitKomma,
                       ),
                     ),
                   ),

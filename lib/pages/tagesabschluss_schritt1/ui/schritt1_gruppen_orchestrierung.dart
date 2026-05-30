@@ -64,6 +64,7 @@ class Schritt1GruppenOrchestrierung {
     required VoidCallback toggleRollen,
     required VoidCallback toggleUmschlaege,
     required Set<FocusNode> rotHervorgehoben,
+    bool mitKomma = false,
   }) {
     Widget baueZeilenEintrag(Kassenzeile zeile) {
       return _baueZeilenEintrag(
@@ -113,6 +114,7 @@ class Schritt1GruppenOrchestrierung {
         formatiereEuro: formatiereEuro,
         loseMuenzenGesamtCent: loseMuenzenGesamtCent,
         rotHervorgehoben: rotHervorgehoben,
+        mitKomma: mitKomma,
       ),
     );
 
@@ -158,6 +160,7 @@ class Schritt1GruppenOrchestrierung {
         umschlagHinzufuegen: umschlagHinzufuegen,
         formatiereEuro: formatiereEuro,
         umschlagSummeCent: umschlagSummeCent,
+        mitKomma: mitKomma,
       ),
       formatiereEuro: formatiereEuro,
       hilfeDialogTitel: 'Sonstiges eingeben',

@@ -6,6 +6,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
@@ -113,6 +114,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<int> _ecBelegeCent = <int>[];
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
+  bool _eingabeMitKomma = false;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
@@ -128,6 +130,13 @@ class _TagesabschlussSchritt2SeiteState
       setState(() {
         _devModusAktiv = aktiv;
       });
+    });
+    SharedPreferences.getInstance().then((SharedPreferences prefs) {
+      if (mounted) {
+        setState(() {
+          _eingabeMitKomma = prefs.getBool('eingabe_mit_komma') ?? false;
+        });
+      }
     });
     _ladeEntwurf().then((_) {
       if (mounted) {
@@ -854,6 +863,7 @@ class _TagesabschlussSchritt2SeiteState
         hinweisText: '0,00 €',
         fehlermeldungText: fehlermeldungText,
         farbeNachWert: farbeNachWert,
+        mitKomma: _eingabeMitKomma,
       );
     }
 
@@ -879,6 +889,7 @@ class _TagesabschlussSchritt2SeiteState
               hinweisText: '0,00 €',
               fehlermeldungText: fehlermeldungText,
               farbeNachWert: farbeNachWert,
+              mitKomma: _eingabeMitKomma,
             ),
           ),
           if (zeigeLoeschen) ...<Widget>[
@@ -1311,6 +1322,7 @@ class _TagesabschlussSchritt2SeiteState
                                         },
                                         schriftgroesse: 15,
                                         hinweisText: '0,00 €',
+                                        mitKomma: _eingabeMitKomma,
                                       ),
                                     ),
                                     if (_ausgabenBetragController.length >
@@ -1473,6 +1485,7 @@ class _TagesabschlussSchritt2SeiteState
                                                     _ecBelegController.first,
                                               )
                                             : null,
+                                        mitKomma: _eingabeMitKomma,
                                       ),
                                     ),
                                     if (_ecBelegController.length > 1) ...<Widget>[

@@ -1,4 +1,4 @@
-last_run: 247
-next_run: 248
-last_run_title: Run 247: Testwerte-Button unter Entwicklermodus verschoben
+last_run: 248
+next_run: 249
+last_run_title: Run 248: Eingabemodus-Einstellung (Komma ja/nein)
 last_commit: TBD
