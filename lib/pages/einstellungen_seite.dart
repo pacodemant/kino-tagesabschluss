@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
@@ -84,6 +85,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
   bool _devModusAktiv = false;
+  bool _googleSheetsAktiv = true;
   bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
@@ -187,6 +189,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _aktiveKinoName = aktiveKino.name;
     }
     final bool devAktiv = await DevModus.istAktiv();
+    final bool googleSheetsAktiv = await FeatureFlags.googleSheetsAktiv();
     if (!mounted) {
       return;
     }
@@ -226,6 +229,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     setState(() {
       _devModusAktiv = devAktiv;
+      _googleSheetsAktiv = googleSheetsAktiv;
       _getraenkeliste = getraenkeliste;
       _geladen = true;
     });
@@ -301,6 +305,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     setState(() {
       _devModusAktiv = wert;
+    });
+  }
+
+  Future<void> _onGoogleSheetsGeaendert(bool wert) async {
+    await FeatureFlags.googleSheetsSetzen(wert);
+    if (!mounted) return;
+    setState(() {
+      _googleSheetsAktiv = wert;
     });
   }
 
@@ -1202,6 +1214,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   onChanged: _onDevModusGeaendert,
                   activeThumbColor: AppFarben.appBarRot,
                 ),
+                if (_devModusAktiv) ...<Widget>[
+                  const Divider(height: 1),
+                  SwitchListTile(
+                    title: const Text('Google Sheets Upload'),
+                    value: _googleSheetsAktiv,
+                    onChanged: _onGoogleSheetsGeaendert,
+                    activeThumbColor: AppFarben.appBarRot,
+                  ),
+                ],
                 if (_devModusAktiv)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),

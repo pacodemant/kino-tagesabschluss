@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 244: Google-Sheets-Toggle in Entwickler-Einstellungen — feature_flags.dart zu FeatureFlags-Klasse (analog DevModus) mit SharedPreferences-Key dev_google_sheets_aktiv; SwitchListTile "Google Sheets Upload" im Entwicklermodus-Bereich der Einstellungsseite; schritt3_seite.dart liest Wert zur Laufzeit via FeatureFlags.googleSheetsAktiv() statt compile-time const.
+
 - Run 243: Feature-Flag kUseGoogleSheets — neue Datei lib/config/feature_flags.dart mit boolescher Konstante kUseGoogleSheets (default: true); in tagesabschluss_schritt3_seite.dart wird der gesamte Upload-Block (authenticate, _doUpload, SnackBar-Feedback) nur ausgeführt wenn kUseGoogleSheets == true.
 
 - Run 242: Google Sheets Upload nach Kassenabschluss — neues Package google_sign_in ^6.2.2; lib/services/google_sheets_config.dart mit clientId und sheetId; lib/services/google_sheets_service.dart mit uploadAbrechnung(TagesabschlussFinal): OAuth-Popup via GoogleSignIn, Tab-Name aus Kino-Kürzel (SB/AT/CO/GO), Zeile mit 11 Feldern (Datum, Mitarbeitername, Differenz Anfangsbestand, Kino/Bistro/Ausgaben/Gesamt Soll, EC/bar/Gesamt IST, Differenz Kassenabrechnung), HTTP POST an Sheets API mit Bearer-Token; schritt3_seite.dart ruft _triggerUpload() einmalig nach Auto-Save auf, SnackBar bei Erfolg oder Fehler, kein Blocking des Abschluss-Prozesses.

@@ -215,21 +215,25 @@ class _TagesabschlussSchritt3SeiteState
       return;
     }
 
-    if (kUseGoogleSheets && !_uploadErledigt) {
-      try {
-        final String token = await GoogleSheetsService.authenticate();
-        if (!mounted) return;
-        _uploadErledigt = true;
-        _doUpload(token).ignore();
-      } catch (_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Upload fehlgeschlagen — Abrechnung wurde lokal gespeichert',
+    if (!_uploadErledigt) {
+      final bool googleSheetsAktiv = await FeatureFlags.googleSheetsAktiv();
+      if (!mounted) return;
+      if (googleSheetsAktiv) {
+        try {
+          final String token = await GoogleSheetsService.authenticate();
+          if (!mounted) return;
+          _uploadErledigt = true;
+          _doUpload(token).ignore();
+        } catch (_) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Upload fehlgeschlagen — Abrechnung wurde lokal gespeichert',
+                ),
               ),
-            ),
-          );
+            );
+          }
         }
       }
     }
