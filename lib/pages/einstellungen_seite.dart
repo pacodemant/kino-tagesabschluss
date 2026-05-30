@@ -1109,10 +1109,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                             width: 120,
                             child: TextField(
                               controller: _wgCtrl,
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(
-                                decimal: true,
-                              ),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                                CentWaehrungsEingabeFormatter(),
+                              ],
                               textAlign: TextAlign.right,
                               decoration: const InputDecoration(
                                 isDense: true,

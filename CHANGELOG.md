@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 246: Wechselgeld-Eingabe in Einstellungen auf Cent-Eingabe umgestellt — keyboardType auf TextInputType.number, inputFormatters [FilteringTextInputFormatter.digitsOnly, CentWaehrungsEingabeFormatter()] analog zu BetragCentEingabefeld; initialer Wert war bereits korrekt formatiert (formatiereEuroEingabe).
+
 - Run 245: Dev-Kachel mit Klapp-Header — ListTile "Dev" immer sichtbar (Default: eingeklappt); Entwicklermodus-Switch, Google-Sheets-Toggle und Testwerte-Bereich erscheinen erst nach Aufklappen.
 
 - Run 244: Google-Sheets-Toggle in Entwickler-Einstellungen — feature_flags.dart zu FeatureFlags-Klasse (analog DevModus) mit SharedPreferences-Key dev_google_sheets_aktiv; SwitchListTile "Google Sheets Upload" im Entwicklermodus-Bereich der Einstellungsseite; schritt3_seite.dart liest Wert zur Laufzeit via FeatureFlags.googleSheetsAktiv() statt compile-time const.
