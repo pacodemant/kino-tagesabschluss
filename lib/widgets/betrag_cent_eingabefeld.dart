@@ -73,6 +73,7 @@ class BetragCentEingabefeld extends StatefulWidget {
 
 class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
   bool _nennwertFehler = false;
+  bool _kommaAnpassungAktiv = false;
 
   @override
   void initState() {
@@ -95,14 +96,42 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
   }
 
   void _beiFokuswechsel() {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
     final bool hatFokusJetzt = widget.focusNode?.hasFocus ?? false;
     if (hatFokusJetzt) {
-      // Fokus erhalten → internen Nennwert-Fehler zurücksetzen
       setState(() => _nennwertFehler = false);
-    } else if (widget.nennwertCent != null && widget.nennwertCent! > 0) {
+      return;
+    }
+    _pruefeNachFokusverlust();
+  }
+
+  void _pruefeNachFokusverlust() {
+    final String text = widget.textController.text.trim();
+    final int cent = _parseCentAusText(widget.textController.text);
+    if (text.isNotEmpty && cent == 0 && text != '0,00' && text != '0') {
+      setState(() => _nennwertFehler = true);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog<void>(
+            context: context,
+            builder: (BuildContext dialogCtx) => AlertDialog(
+              title: const Text('Ooops!'),
+              content: const Text(
+                'Der eingegebene Betrag ergibt 0 – bitte prüfen.',
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(dialogCtx).pop(),
+                  child: const Text('Verstanden'),
+                ),
+              ],
+            ),
+          );
+        }
+      });
+      return;
+    }
+    if (widget.nennwertCent != null && widget.nennwertCent! > 0) {
       _pruefeNennwert();
     } else {
       setState(() {});
@@ -138,7 +167,10 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     }
   }
 
-  static int _parseCentAusText(String text) {
+  int _parseCentAusText(String text) {
+    if (widget.mitKomma) {
+      return TagesabschlussBerechnung.parseCentKomma(text);
+    }
     return int.tryParse(text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
   }
 
@@ -148,8 +180,24 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
   }
 
   void _beiTextAenderung() {
-    if (!mounted) {
-      return;
+    if (!mounted) return;
+    if (widget.mitKomma && !_kommaAnpassungAktiv) {
+      final String text = widget.textController.text;
+      if (text.startsWith(',') || text.startsWith('.')) {
+        _kommaAnpassungAktiv = true;
+        try {
+          final String neuerText = '0$text';
+          widget.textController.value = TextEditingValue(
+            text: neuerText,
+            selection: TextSelection.collapsed(offset: neuerText.length),
+          );
+          widget.onChanged(neuerText);
+        } finally {
+          _kommaAnpassungAktiv = false;
+        }
+        setState(() {});
+        return;
+      }
     }
     setState(() {});
   }

@@ -461,6 +461,10 @@ class _TagesabschlussSchritt2SeiteState
     _speichereEntwurf();
   }
 
+  int _parsiereBetragCent(String wert) => _eingabeMitKomma
+      ? TagesabschlussBerechnung.parseCentKomma(wert)
+      : TagesabschlussBerechnung.parseCentZiffern(wert);
+
   void _setzeControllerText(TextEditingController controller, String text) {
     controller.value = TextEditingValue(
       text: text,
@@ -1114,7 +1118,7 @@ class _TagesabschlussSchritt2SeiteState
                                         setState(() {
                                           _letzteAenderung = DateTime.now();
                                           final int absolutWert =
-                                              TagesabschlussBerechnung.parseCentZiffern(wert);
+                                              _parsiereBetragCent(wert);
                                           final bool istNegativ =
                                               _differenzAnfangsbestandCent < 0;
                                           _differenzAnfangsbestandCent =
@@ -1181,7 +1185,7 @@ class _TagesabschlussSchritt2SeiteState
                               setState(() {
                                 _letzteAenderung = DateTime.now();
                                 _kinoSollBeruehrt = true;
-                                _kinoSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
+                                _kinoSollCent = _parsiereBetragCent(wert);
                               });
                               _speichereEntwurf();
                             },
@@ -1199,7 +1203,7 @@ class _TagesabschlussSchritt2SeiteState
                                 setState(() {
                                   _letzteAenderung = DateTime.now();
                                   _bistroSollBeruehrt = true;
-                                  _bistroSollCent = TagesabschlussBerechnung.parseCentZiffern(wert);
+                                  _bistroSollCent = _parsiereBetragCent(wert);
                                 });
                                 _speichereEntwurf();
                               },
@@ -1316,7 +1320,7 @@ class _TagesabschlussSchritt2SeiteState
                                           setState(() {
                                             _letzteAenderung = DateTime.now();
                                             _ausgabenBetrageCent[i] =
-                                                TagesabschlussBerechnung.parseCentZiffern(wert);
+                                                _parsiereBetragCent(wert);
                                           });
                                           _speichereEntwurf();
                                         },
@@ -1472,7 +1476,7 @@ class _TagesabschlussSchritt2SeiteState
                                               _ecBeleg1Beruehrt = true;
                                             }
                                             _ecBelegeCent[i] =
-                                                TagesabschlussBerechnung.parseCentZiffern(wert);
+                                                _parsiereBetragCent(wert);
                                           });
                                           _speichereEntwurf();
                                         },

@@ -1,7 +1,37 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:github.com)"
+      "Read",
+      "Edit",
+      "Write",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git rm *)",
+      "Bash(git reset *)",
+      "Bash(git log *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(flutter *)",
+      "Bash(dart run *)",
+      "Bash(cat *)",
+      "Bash(ls)",
+      "Bash(ls *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(find *)",
+      "Bash(cd *)",
+      "Bash(cd * && *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(xargs cat -n)",
+      "Bash(./scripts/project_snapshot/project_snapshot.sh)",
+      "Bash(zsh scripts/flutter_maintenance.sh *)",
+      "Bash(gh api *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.google.com)"
     ]
   }
 }

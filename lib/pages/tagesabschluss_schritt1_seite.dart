@@ -506,7 +506,9 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
-  int _parseCentZiffern(String wert) => _stateController.parseCentZiffern(wert);
+  int _parseCentZiffern(String wert) => _eingabeMitKomma
+      ? TagesabschlussBerechnung.parseCentKomma(wert)
+      : _stateController.parseCentZiffern(wert);
 
   List<FocusNode> _fokusReihenfolgeSchritt1() =>
       _stateController.fokusReihenfolge(

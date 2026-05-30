@@ -1030,7 +1030,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 children: <Widget>[
                   ListTile(
                     title: const Text(
-                      'Dein Name',
+                      'Persönliche Einstellungen',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                     trailing: Row(
@@ -1055,7 +1055,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   if (_nameAufgeklappt) ...<Widget>[
                     const Divider(height: 1),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                       child: TextField(
                         controller: _mitarbeiterNameCtrl,
                         focusNode: _mitarbeiterNameFocus,
@@ -1068,6 +1068,25 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                           _speichereMitarbeiterName();
                           _mitarbeiterNameFocus.unfocus();
                         },
+                      ),
+                    ),
+                    const Divider(height: 1),
+                    SwitchListTile(
+                      title: const Text('Beträge mit Komma eingeben'),
+                      value: _eingabeMitKomma,
+                      onChanged: _onEingabeMitKommaGeaendert,
+                      activeThumbColor: AppFarben.appBarRot,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      child: Text(
+                        _eingabeMitKomma
+                            ? 'Du musst die Beträge mit Komma eingeben, also „6,40" für 6 Euro 40 Cent.'
+                            : 'Du gibst die Beträge in Cent ein, also „640" für 6 Euro 40 Cent.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ),
                   ],
@@ -1146,22 +1165,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     ),
                   ],
                 ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Card(
-              child: SwitchListTile(
-                title: const Text(
-                  'Eingabe',
-                  style: TextStyle(fontWeight: FontWeight.w600),
-                ),
-                subtitle: const Text('Beträge mit Komma eingeben'),
-                value: _eingabeMitKomma,
-                onChanged: _onEingabeMitKommaGeaendert,
-                activeThumbColor: AppFarben.appBarRot,
               ),
             ),
           ),

@@ -11,6 +11,33 @@ class TagesabschlussBerechnung {
     return int.tryParse(nurZiffern) ?? 0;
   }
 
+  /// Parst Euro-Komma-Eingabe: "6,40" → 640, "380" → 38000, "0,0" → 0.
+  static int parseCentKomma(String wert) {
+    final String s = wert.trim().replaceAll('€', '').trim();
+    if (s.isEmpty) return 0;
+    final int kommaIdx = s.lastIndexOf(',');
+    final int dotIdx = s.lastIndexOf('.');
+    final int sepIdx = (kommaIdx < 0 && dotIdx < 0)
+        ? -1
+        : (kommaIdx < 0 ? dotIdx : (dotIdx < 0 ? kommaIdx : (kommaIdx > dotIdx ? kommaIdx : dotIdx)));
+    if (sepIdx < 0) {
+      final int euro = int.tryParse(s.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+      return euro * 100;
+    }
+    final String euroTeil = s.substring(0, sepIdx).replaceAll(RegExp(r'[^0-9]'), '');
+    final String centRoh = s.substring(sepIdx + 1).replaceAll(RegExp(r'[^0-9]'), '');
+    final int euro = euroTeil.isEmpty ? 0 : (int.tryParse(euroTeil) ?? 0);
+    final int cent;
+    if (centRoh.isEmpty) {
+      cent = 0;
+    } else if (centRoh.length == 1) {
+      cent = (int.tryParse(centRoh) ?? 0) * 10;
+    } else {
+      cent = int.tryParse(centRoh.substring(0, 2)) ?? 0;
+    }
+    return euro * 100 + cent;
+  }
+
   static int summeStueckzahlGruppeCent({
     required List<Kassenzeile> zeilen,
     required Map<String, int> stueckzahlen,
