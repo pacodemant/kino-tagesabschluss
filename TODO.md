@@ -1,10 +1,6 @@
 # TODO — kino_bar_app
 
 ## Kleine Änderungen
-- [x] In den Einstellungen soll der Mitarbeiter seinen (Vor-)Namen eingeben. (Run 241)
-- [x] Mitarbeitername im Google-Sheets-Upload mitschicken. (Run 242)
-- [x] Eingabemodus wählen: Beträge mit Komma oder in Cent — Kachel „Persönliche Einstellungen". (Run 248)
-- [x] Wechselgeldbestand in Einstellungen: Cent-Eingabe ohne Komma. (Run 246)
 - [ ] Mitarbeitername auch in den lokalen Verlauf-Datensätzen speichern und in der Verlaufsansicht anzeigen.
 - [ ] Dieser DEV-Button, der die Felder mit vorgegebenen Werten ausfüllt, soll auch in der Web-App funktionieren.
 - [ ] Seite für Beleg-Eingabe: die Buttons zum Hinzufügen sollen zu Textbuttons werden.
