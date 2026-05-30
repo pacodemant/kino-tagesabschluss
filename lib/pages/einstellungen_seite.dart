@@ -89,6 +89,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
+  bool _devAufgeklappt = false;
   bool _testwertAufgeklappt = false;
   bool _pwaInstallVerfuegbar = false;
 
@@ -1211,58 +1212,72 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                SwitchListTile(
-                  title: const Text('Entwicklermodus'),
-                  value: _devModusAktiv,
-                  onChanged: _onDevModusGeaendert,
-                  activeThumbColor: AppFarben.appBarRot,
+                ListTile(
+                  title: const Text(
+                    'Dev',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  trailing: Icon(
+                    _devAufgeklappt ? Icons.expand_less : Icons.expand_more,
+                  ),
+                  onTap: () =>
+                      setState(() => _devAufgeklappt = !_devAufgeklappt),
                 ),
-                if (_devModusAktiv) ...<Widget>[
+                if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('Google Sheets Upload'),
-                    value: _googleSheetsAktiv,
-                    onChanged: _onGoogleSheetsGeaendert,
+                    title: const Text('Entwicklermodus'),
+                    value: _devModusAktiv,
+                    onChanged: _onDevModusGeaendert,
                     activeThumbColor: AppFarben.appBarRot,
                   ),
-                ],
-                if (_devModusAktiv)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        TextButton.icon(
-                          onPressed: () => setState(
-                            () =>
-                                _testwertAufgeklappt = !_testwertAufgeklappt,
-                          ),
-                          icon: Icon(
-                            _testwertAufgeklappt
-                                ? Icons.expand_less
-                                : Icons.expand_more,
-                          ),
-                          label: const Text('Testwerte'),
-                        ),
-                      ],
+                  if (_devModusAktiv) ...<Widget>[
+                    const Divider(height: 1),
+                    SwitchListTile(
+                      title: const Text('Google Sheets Upload'),
+                      value: _googleSheetsAktiv,
+                      onChanged: _onGoogleSheetsGeaendert,
+                      activeThumbColor: AppFarben.appBarRot,
                     ),
-                  ),
-                if (_devModusAktiv && _testwertAufgeklappt) ...<Widget>[
-                  const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: TextButton(
-                        onPressed: _setzeStandardTestwerte,
-                        child: const Text('Standard-Testwerte übernehmen'),
+                  ],
+                  if (_devModusAktiv)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          TextButton.icon(
+                            onPressed: () => setState(
+                              () => _testwertAufgeklappt =
+                                  !_testwertAufgeklappt,
+                            ),
+                            icon: Icon(
+                              _testwertAufgeklappt
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                            ),
+                            label: const Text('Testwerte'),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: _baueAutoFillInhalt(),
-                  ),
+                  if (_devModusAktiv && _testwertAufgeklappt) ...<Widget>[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: TextButton(
+                          onPressed: _setzeStandardTestwerte,
+                          child: const Text('Standard-Testwerte übernehmen'),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: _baueAutoFillInhalt(),
+                    ),
+                  ],
                 ],
               ],
             ),
