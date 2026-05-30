@@ -300,11 +300,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   Future<void> _onDevModusGeaendert(bool wert) async {
     await DevModus.setzen(wert);
-    if (!mounted) {
-      return;
+    if (!mounted) return;
+    if (!wert) {
+      await FeatureFlags.googleSheetsSetzen(true);
+      if (!mounted) return;
     }
     setState(() {
       _devModusAktiv = wert;
+      if (!wert) _googleSheetsAktiv = true;
     });
   }
 
