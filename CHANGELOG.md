@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 247: Testwerte-Button in Dev-Kachel direkt unter Entwicklermodus verschoben — Google-Sheets-Toggle ans Ende der Kachel gesetzt.
+
 - Run 246: Wechselgeld-Eingabe in Einstellungen auf Cent-Eingabe umgestellt — keyboardType auf TextInputType.number, inputFormatters [FilteringTextInputFormatter.digitsOnly, CentWaehrungsEingabeFormatter()] analog zu BetragCentEingabefeld; initialer Wert war bereits korrekt formatiert (formatiereEuroEingabe).
 
 - Run 245: Dev-Kachel mit Klapp-Header — ListTile "Dev" immer sichtbar (Default: eingeklappt); Entwicklermodus-Switch, Google-Sheets-Toggle und Testwerte-Bereich erscheinen erst nach Aufklappen.

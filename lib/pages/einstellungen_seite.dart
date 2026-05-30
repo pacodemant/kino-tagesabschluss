@@ -1232,15 +1232,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     onChanged: _onDevModusGeaendert,
                     activeThumbColor: AppFarben.appBarRot,
                   ),
-                  if (_devModusAktiv) ...<Widget>[
-                    const Divider(height: 1),
-                    SwitchListTile(
-                      title: const Text('Google Sheets Upload'),
-                      value: _googleSheetsAktiv,
-                      onChanged: _onGoogleSheetsGeaendert,
-                      activeThumbColor: AppFarben.appBarRot,
-                    ),
-                  ],
                   if (_devModusAktiv)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
@@ -1277,6 +1268,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: _baueAutoFillInhalt(),
+                    ),
+                  ],
+                  if (_devModusAktiv) ...<Widget>[
+                    const Divider(height: 1),
+                    SwitchListTile(
+                      title: const Text('Google Sheets Upload'),
+                      value: _googleSheetsAktiv,
+                      onChanged: _onGoogleSheetsGeaendert,
+                      activeThumbColor: AppFarben.appBarRot,
                     ),
                   ],
                 ],
