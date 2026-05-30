@@ -1248,8 +1248,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
+                        const Text(
+                          'Testwerte',
+                          style: TextStyle(fontSize: 16),
+                        ),
                         TextButton.icon(
                           onPressed: () => setState(
                             () => _testwertAufgeklappt =
@@ -1260,7 +1264,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                                 ? Icons.expand_less
                                 : Icons.expand_more,
                           ),
-                          label: const Text('Testwerte'),
+                          label: const Text('Werte eingeben'),
                         ),
                       ],
                     ),
