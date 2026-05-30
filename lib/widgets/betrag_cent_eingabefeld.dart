@@ -131,6 +131,18 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       });
       return;
     }
+    // Komma-Modus: Ganzzahl oder kurze Dezimalzahl auf "X,XX" auffüllen
+    if (widget.mitKomma && text.isNotEmpty && cent > 0) {
+      final String formatiert =
+          TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+      if (widget.textController.text != formatiert) {
+        widget.textController.value = TextEditingValue(
+          text: formatiert,
+          selection: TextSelection.collapsed(offset: formatiert.length),
+        );
+      }
+    }
+
     if (widget.nennwertCent != null && widget.nennwertCent! > 0) {
       _pruefeNennwert();
     } else {
@@ -195,11 +207,11 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         } finally {
           _kommaAnpassungAktiv = false;
         }
-        setState(() {});
+        setState(() => _nennwertFehler = false);
         return;
       }
     }
-    setState(() {});
+    setState(() => _nennwertFehler = false);
   }
 
   @override
