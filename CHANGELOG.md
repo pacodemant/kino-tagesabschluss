@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 251: Google Sheets Credentials als temporäre Fallback-Werte in google_sheets_config.dart eingetragen (defaultValue für GOOGLE_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, GOOGLE_SHEET_ID); String.fromEnvironment-Struktur bleibt erhalten.
+
 - Run 250: Google Sign-In für iOS konfiguriert — Info.plist: GIDClientID und CFBundleURLTypes auf iOS-Client-ID umgestellt; google_sheets_config.dart: iosClientId per String.fromEnvironment('GOOGLE_IOS_CLIENT_ID') ergänzt; google_sheets_service.dart: authenticate() wählt per kIsWeb zwischen clientId (Web) und iosClientId (iOS).
 
 - Run 249: Google Sheets Credentials aus Code entfernt — clientId und sheetId lesen jetzt per String.fromEnvironment() aus --dart-define-Parametern (GOOGLE_CLIENT_ID, GOOGLE_SHEET_ID), Fallback leerer String; .gitignore um secrets/ und secrets/* ergänzt. (249a) GoogleSignIn-Instanz lazy in authenticate() statt top-level, um Crash beim App-Start zu vermeiden. (249b) authenticate() wirft sofort Exception wenn clientId leer ist, verhindert nativen iOS-Crash wenn kein --dart-define gesetzt wurde.
