@@ -7,7 +7,7 @@ class FeatureFlags {
 
   static Future<bool> googleSheetsAktiv() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_keyGoogleSheets) ?? true;
+    return prefs.getBool(_keyGoogleSheets) ?? false;
   }
 
   static Future<void> googleSheetsSetzen(bool wert) async {
