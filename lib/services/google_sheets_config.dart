@@ -5,6 +5,10 @@ class GoogleSheetsConfig {
     'GOOGLE_CLIENT_ID',
     defaultValue: '',
   );
+  static const String iosClientId = String.fromEnvironment(
+    'GOOGLE_IOS_CLIENT_ID',
+    defaultValue: '',
+  );
   static const String sheetId = String.fromEnvironment(
     'GOOGLE_SHEET_ID',
     defaultValue: '',

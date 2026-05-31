@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/kino.dart';
@@ -11,12 +12,16 @@ class GoogleSheetsService {
   GoogleSheetsService._();
 
   static Future<String> authenticate() async {
-    if (GoogleSheetsConfig.clientId.isEmpty) {
+    final String effectiveClientId = kIsWeb
+        ? GoogleSheetsConfig.clientId
+        : GoogleSheetsConfig.iosClientId;
+
+    if (effectiveClientId.isEmpty) {
       throw Exception('Google Sheets nicht konfiguriert (kein clientId)');
     }
 
     final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: GoogleSheetsConfig.clientId,
+      clientId: effectiveClientId,
       scopes: <String>[GoogleSheetsConfig.scope],
     );
 

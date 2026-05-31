@@ -1,4 +1,4 @@
-last_run: 249
-next_run: 250
-last_run_title: Run 249: Google Sheets Credentials aus Code entfernt
-last_commit: 09074cd
+last_run: 250
+next_run: 251
+last_run_title: Run 250: Google Sign-In für iOS konfigurieren
+last_commit: TBD
