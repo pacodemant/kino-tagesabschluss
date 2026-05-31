@@ -4,7 +4,7 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
-- Run 249: Google Sheets Credentials aus Code entfernt — clientId und sheetId lesen jetzt per String.fromEnvironment() aus --dart-define-Parametern (GOOGLE_CLIENT_ID, GOOGLE_SHEET_ID), Fallback leerer String; .gitignore um secrets/ und secrets/* ergänzt.
+- Run 249: Google Sheets Credentials aus Code entfernt — clientId und sheetId lesen jetzt per String.fromEnvironment() aus --dart-define-Parametern (GOOGLE_CLIENT_ID, GOOGLE_SHEET_ID), Fallback leerer String; .gitignore um secrets/ und secrets/* ergänzt. (249a) GoogleSignIn-Instanz lazy in authenticate() statt top-level, um Crash beim App-Start zu vermeiden. (249b) authenticate() wirft sofort Exception wenn clientId leer ist, verhindert nativen iOS-Crash wenn kein --dart-define gesetzt wurde.
 
 - Run 248: Eingabemodus-Einstellung (Komma ja/nein) — SharedPreferences-Key "eingabe_mit_komma" (bool, default: false); neue Kachel "Eingabe" in Einstellungen mit SwitchListTile "Beträge mit Komma eingeben"; BetragCentEingabefeld erhält Parameter mitKomma: false → keyboardType.number + Cent-Formatter, mitKomma: true → numberWithOptions(decimal:true) + kein Formatter; Wert wird in Schritt 1 (lose Münzen + Umschläge) und Schritt 2 (alle Betrag-Felder) beim Laden gelesen und per Widget-Parameter weitergereicht; parseCentZiffern funktioniert für beide Modi.
 
