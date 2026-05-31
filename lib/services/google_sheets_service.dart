@@ -7,28 +7,28 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/google_sheets_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-final GoogleSignIn _googleSignIn = GoogleSignIn(
-  clientId: GoogleSheetsConfig.clientId,
-  scopes: <String>[GoogleSheetsConfig.scope],
-);
-
 class GoogleSheetsService {
   GoogleSheetsService._();
 
   static Future<String> authenticate() async {
-    GoogleSignInAccount? account = _googleSignIn.currentUser;
-    account ??= await _googleSignIn.signInSilently();
-    account ??= await _googleSignIn.signIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      clientId: GoogleSheetsConfig.clientId,
+      scopes: <String>[GoogleSheetsConfig.scope],
+    );
+
+    GoogleSignInAccount? account = googleSignIn.currentUser;
+    account ??= await googleSignIn.signInSilently();
+    account ??= await googleSignIn.signIn();
 
     if (account == null) {
       throw Exception('Google Sign-In abgebrochen');
     }
 
-    final bool hasScope = await _googleSignIn.canAccessScopes(
+    final bool hasScope = await googleSignIn.canAccessScopes(
       <String>[GoogleSheetsConfig.scope],
     );
     if (!hasScope) {
-      final bool granted = await _googleSignIn.requestScopes(
+      final bool granted = await googleSignIn.requestScopes(
         <String>[GoogleSheetsConfig.scope],
       );
       if (!granted) {
@@ -36,7 +36,7 @@ class GoogleSheetsService {
       }
     }
 
-    final GoogleSignInAccount? current = _googleSignIn.currentUser;
+    final GoogleSignInAccount? current = googleSignIn.currentUser;
     final GoogleSignInAuthentication auth =
         await (current ?? account).authentication;
     final String? accessToken = auth.accessToken;
