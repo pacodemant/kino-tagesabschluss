@@ -1,6 +1,7 @@
 # TODO — kino_bar_app
 
 ## Kleine Änderungen
+- [ ] Bargeld und Wechselgeld zählen: wenn die Felder für Kupergeld einen Inhalt haben, müssen der Bereich für Kupfer in den Kacheln aufgeklappt sein.
 - [ ] Mitarbeitername auch in den lokalen Verlauf-Datensätzen speichern und in der Verlaufsansicht anzeigen.
 - [ ] Dieser DEV-Button, der die Felder mit vorgegebenen Werten ausfüllt, soll auch in der Web-App funktionieren.
 - [ ] Seite für Beleg-Eingabe: die Buttons zum Hinzufügen sollen zu Textbuttons werden.
@@ -8,6 +9,7 @@
 - [ ] Stückelung: Unten soll in kleiner Schrift erklärt werden, was es bedeutet, wenn eine Zeile grün ist.
 - [ ] Wenn die App mit einem Desktop-Browser abgerufen wird, sollen die Inhalte auf einer Breite dargestellt werden, die etwa einer üblichen Displaybreite entspricht.
 - [ ] Dem Tagesabschluss soll noch eine Anmerkung beigefügt werden können.
+- [ ] der Nutzer soll in den Einstellungen die WebApp auf seinem Smartphone installieren können, dazu soll es dazu einen Tet-Button geben.
 
 ## Größere Änderungen
 
