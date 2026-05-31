@@ -11,6 +11,10 @@ class GoogleSheetsService {
   GoogleSheetsService._();
 
   static Future<String> authenticate() async {
+    if (GoogleSheetsConfig.clientId.isEmpty) {
+      throw Exception('Google Sheets nicht konfiguriert (kein clientId)');
+    }
+
     final GoogleSignIn googleSignIn = GoogleSignIn(
       clientId: GoogleSheetsConfig.clientId,
       scopes: <String>[GoogleSheetsConfig.scope],
