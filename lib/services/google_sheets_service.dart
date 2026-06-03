@@ -64,8 +64,11 @@ class GoogleSheetsService {
     final String mitarbeiterName = await _ladeMitarbeiterName();
     final String datum = _formatDatum(abrechnung.datum);
 
+    final String uhrzeit = _formatUhrzeit();
+
     final List<Object> zeile = <Object>[
       datum,
+      uhrzeit,
       mitarbeiterName,
       _euro(abrechnung.differenzAnfangsbestandCent),
       _euro(abrechnung.kinoSollCent),
@@ -156,7 +159,7 @@ class GoogleSheetsService {
     List<Object> zeile,
     String accessToken,
   ) async {
-    final String range = '$tabName!A$zeilenNummer:K$zeilenNummer';
+    final String range = '$tabName!A$zeilenNummer:L$zeilenNummer';
     final Uri uri = Uri.parse(
       'https://sheets.googleapis.com/v4/spreadsheets/${GoogleSheetsConfig.sheetId}'
       '/values/$range?valueInputOption=USER_ENTERED',
@@ -204,6 +207,13 @@ class GoogleSheetsService {
   static Future<String> _ladeMitarbeiterName() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('mitarbeiter_name') ?? '';
+  }
+
+  static String _formatUhrzeit() {
+    final DateTime now = DateTime.now();
+    final String stunde = now.hour.toString().padLeft(2, '0');
+    final String minute = now.minute.toString().padLeft(2, '0');
+    return '$stunde:$minute';
   }
 
   static String _formatDatum(DateTime datum) {

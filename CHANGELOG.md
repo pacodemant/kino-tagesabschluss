@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 254: Uhrzeit des Uploads als zweite Spalte (nach Datum) in Google Sheets eingetragen; _formatUhrzeit() ergänzt; Aktualisierungs-Range von A:K auf A:L erweitert.
+
 - Run 253: Browser-Tab-Titel korrigiert — MaterialApp(title:) in main.dart von "Schauburg Kassenabrechnung" auf "Kassenabrechnung" gesetzt.
 
 - Run 252: Web-Metadaten und Bundle-Identifier bereinigt — web/index.html: title, apple-mobile-web-app-title und description aktualisiert; web/manifest.json: name, short_name, description, theme_color, background_color auf App-Werte gesetzt; ios/Runner/Info.plist: CFBundleDisplayName auf "Kassenabrechnung" gesetzt.
