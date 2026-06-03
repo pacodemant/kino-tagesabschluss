@@ -4,11 +4,13 @@ import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -23,6 +25,7 @@ class VerlaufDetailSeite extends StatefulWidget {
 
 class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   bool _loescht = false;
+  bool _sendet = false;
 
   // Lookup-Maps aus StueckelungKonfiguration, einmalig gebaut
   static final Map<String, Kassenzeile> _scheineLookup = <String, Kassenzeile>{
@@ -37,6 +40,50 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
   String _deutschesDatum(DateTime datum) =>
       TagesabschlussFormatierung.deutschesDatum(datum);
+
+  Future<void> _erneuthSenden() async {
+    if (_sendet) return;
+    setState(() => _sendet = true);
+
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String url = prefs.getString('api_upload_url') ?? '';
+      final String key = prefs.getString('api_upload_key') ?? '';
+
+      if (url.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('API-Upload nicht konfiguriert')),
+          );
+        }
+        return;
+      }
+
+      await ApiUploadService.upload(widget.abschluss, url, key);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('API Upload erfolgreich ✓')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        final String fehler = e.toString();
+        final String anzeige =
+            fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('API Upload fehlgeschlagen\n$anzeige'),
+            duration: const Duration(seconds: 8),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _sendet = false);
+      }
+    }
+  }
 
   Future<void> _loescheEintrag() async {
     if (_loescht) {
@@ -377,6 +424,31 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                 ),
 
                 const SizedBox(height: 24),
+                SizedBox(
+                  height: 44,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _sendet ? null : _erneuthSenden,
+                    child: _sendet
+                        ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 8),
+                              Text('Wird gesendet...'),
+                            ],
+                          )
+                        : const Text('Erneut senden'),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 SizedBox(
                   height: 44,
                   width: double.infinity,

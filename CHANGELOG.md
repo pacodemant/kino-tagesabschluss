@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 259: "Erneut senden"-Button in der Verlauf-Detailansicht — löst den Webhook-Upload für den angezeigten Eintrag erneut aus; Button deaktiviert sich während des Uploads, SnackBar bei Erfolg/Fehler analog zu Schritt 3.
+
 - Run 258: Body-Encoding von JSON auf application/x-www-form-urlencoded umgestellt — garantiert kein CORS-Preflight, POST geht direkt durch. Werte in webhook.site unter "Form values" sichtbar.
 
 - Run 257: Content-Type von application/json auf text/plain geändert (api_upload_service.dart) — vermeidet CORS-Preflight bei webhook.site-Test. Beim echten Kino-Server mit CORS-Headern auf application/json zurückwechseln.
