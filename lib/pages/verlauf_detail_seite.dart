@@ -68,15 +68,23 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       }
     } catch (e) {
       if (mounted) {
-        final String fehler = e.toString();
-        final String anzeige =
-            fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('API Upload fehlgeschlagen\n$anzeige'),
-            duration: const Duration(seconds: 8),
-          ),
-        );
+        if (ApiUploadService.isCorsArtFehler(e)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Upload gesendet — Empfang nicht bestätigbar'),
+            ),
+          );
+        } else {
+          final String fehler = e.toString();
+          final String anzeige =
+              fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('API Upload fehlgeschlagen\n$anzeige'),
+              duration: const Duration(seconds: 8),
+            ),
+          );
+        }
       }
     } finally {
       if (mounted) {

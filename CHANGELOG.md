@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 260: CORS-Fehler beim API-Upload korrekt behandelt — Browser-Fehler "Failed to fetch" / "NetworkError" / "Load failed" werden als erfolgreicher Upload gewertet und zeigen "Upload gesendet — Empfang nicht bestätigbar"; in Schritt 3 wird _apiUploadErledigt auch bei CORS-Fehler gesetzt (verhindert Doppel-Upload).
+
 - Run 259: "Erneut senden"-Button in der Verlauf-Detailansicht — löst den Webhook-Upload für den angezeigten Eintrag erneut aus; Button deaktiviert sich während des Uploads, SnackBar bei Erfolg/Fehler analog zu Schritt 3.
 
 - Run 258: Body-Encoding von JSON auf application/x-www-form-urlencoded umgestellt — garantiert kein CORS-Preflight, POST geht direkt durch. Werte in webhook.site unter "Form values" sichtbar.

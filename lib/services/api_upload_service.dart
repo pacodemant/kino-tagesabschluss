@@ -61,4 +61,13 @@ class ApiUploadService {
   }
 
   static double _euro(int cent) => cent / 100.0;
+
+  // Browser blockiert das Lesen der Antwort bei fehlendem CORS-Header,
+  // obwohl der POST beim Server ankam. Diese Fehlertexte kommen vom Browser.
+  static bool isCorsArtFehler(Object e) {
+    final String text = e.toString().toLowerCase();
+    return text.contains('failed to fetch') ||
+        text.contains('networkerror') ||
+        text.contains('load failed');
+  }
 }

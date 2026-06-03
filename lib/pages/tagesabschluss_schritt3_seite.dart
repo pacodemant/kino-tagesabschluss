@@ -181,18 +181,29 @@ class _TagesabschlussSchritt3SeiteState
         );
       }
     } catch (e) {
-      if (mounted) {
-        final String fehler = e.toString();
-        final String anzeige =
-            fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
+      if (ApiUploadService.isCorsArtFehler(e)) {
+        _apiUploadErledigt = true;
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Upload gesendet — Empfang nicht bestätigbar'),
             ),
-            duration: const Duration(seconds: 8),
-          ),
-        );
+          );
+        }
+      } else {
+        if (mounted) {
+          final String fehler = e.toString();
+          final String anzeige =
+              fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
+              ),
+              duration: const Duration(seconds: 8),
+            ),
+          );
+        }
       }
     }
   }
