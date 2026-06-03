@@ -1,4 +1,4 @@
-last_run: 252
-next_run: 253
-last_run_title: Run 252: Web-Metadaten und Bundle-Identifier bereinigen
-last_commit: cbf1840
+last_run: 253
+next_run: 254
+last_run_title: Run 253: Browser-Tab-Titel korrigieren
+last_commit: TBD

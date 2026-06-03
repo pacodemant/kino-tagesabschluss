@@ -44,7 +44,7 @@ class MeineApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Schauburg Kassenabrechnung',
+      title: 'Kassenabrechnung',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         scaffoldBackgroundColor: AppFarben.seitenHintergrund,
