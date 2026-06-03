@@ -174,15 +174,24 @@ class _TagesabschlussSchritt3SeiteState
   Future<void> _doApiUpload(String url, String apiKey) async {
     try {
       await ApiUploadService.upload(_abschlussVorschau, url, apiKey);
+      _apiUploadErledigt = true;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('API Upload erfolgreich ✓')),
         );
       }
-    } catch (_) {
+    } catch (e) {
       if (mounted) {
+        final String fehler = e.toString();
+        final String anzeige =
+            fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('API Upload fehlgeschlagen')),
+          SnackBar(
+            content: Text(
+              'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
+            ),
+            duration: const Duration(seconds: 8),
+          ),
         );
       }
     }
@@ -267,7 +276,6 @@ class _TagesabschlussSchritt3SeiteState
         final String url = prefs.getString('api_upload_url') ?? '';
         final String key = prefs.getString('api_upload_key') ?? '';
         if (url.isNotEmpty) {
-          _apiUploadErledigt = true;
           _doApiUpload(url, key).ignore();
         }
       }

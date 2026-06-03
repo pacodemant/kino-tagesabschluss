@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 256: API-Upload-Fehlerbehandlung verbessert — echter Fehlertext in Snackbar (8 Sek.), _apiUploadErledigt erst bei Erfolg gesetzt (Wiederholung bei Fehler möglich), Fehlermeldung mit "lokal gespeichert" ergänzt.
+
 - Run 255: API-Upload-Infrastruktur für Browser-Kompatibilitätstest — api_upload_service.dart (HTTP POST + API-Key), Feature-Flag apiUploadAktiv, Einstellungen: URL + API-Key-Felder im Dev-Bereich, tagesabschluss_schritt3_seite.dart: Upload-Aufruf parallel zu Google Sheets.
 
 - Run 254: Uhrzeit des Uploads als zweite Spalte (nach Datum) in Google Sheets eingetragen; _formatUhrzeit() ergänzt; Aktualisierungs-Range von A:K auf A:L erweitert.
