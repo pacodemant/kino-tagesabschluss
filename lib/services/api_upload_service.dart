@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,34 +14,27 @@ class ApiUploadService {
     final String datum = _formatDatum(abrechnung.datum);
     final String uhrzeit = _formatUhrzeit();
 
-    final Map<String, Object> body = <String, Object>{
+    // application/x-www-form-urlencoded ist ein CORS-"simple request" —
+    // kein Preflight, funktioniert in allen Browsern ohne Serveranpassung.
+    // Sobald der echte Kino-Server CORS-Header setzt, auf JSON umstellen.
+    final Map<String, String> formBody = <String, String>{
       'datum': datum,
       'uhrzeit': uhrzeit,
       'mitarbeiter': mitarbeiterName,
-      'differenzAnfangsbestand': _euro(abrechnung.differenzAnfangsbestandCent),
-      'kinoSoll': _euro(abrechnung.kinoSollCent),
-      'bistroSoll': _euro(abrechnung.bistroSollCent),
-      'ausgaben': _euro(abrechnung.ausgabenCent),
-      'gesamtSoll': _euro(abrechnung.gesamtSollCent),
-      'ecUmsatz': _euro(abrechnung.ecUmsatzGesamtCent),
-      'barBestand': _euro(abrechnung.barBestandAbzglWechselgeldCent),
-      'gesamtIst': _euro(abrechnung.gesamtIstCent),
-      'differenzGesamt': _euro(abrechnung.differenzGesamtCent),
+      'differenzAnfangsbestand': _euro(abrechnung.differenzAnfangsbestandCent).toString(),
+      'kinoSoll': _euro(abrechnung.kinoSollCent).toString(),
+      'bistroSoll': _euro(abrechnung.bistroSollCent).toString(),
+      'ausgaben': _euro(abrechnung.ausgabenCent).toString(),
+      'gesamtSoll': _euro(abrechnung.gesamtSollCent).toString(),
+      'ecUmsatz': _euro(abrechnung.ecUmsatzGesamtCent).toString(),
+      'barBestand': _euro(abrechnung.barBestandAbzglWechselgeldCent).toString(),
+      'gesamtIst': _euro(abrechnung.gesamtIstCent).toString(),
+      'differenzGesamt': _euro(abrechnung.differenzGesamtCent).toString(),
     };
-
-    // text/plain vermeidet CORS-Preflight (webhook.site-Testphase).
-    // Auf application/json wechseln, sobald der echte Kino-Server steht.
-    final Map<String, String> headers = <String, String>{
-      'Content-Type': 'text/plain',
-    };
-    if (apiKey.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $apiKey';
-    }
 
     final http.Response response = await http.post(
       Uri.parse(url),
-      headers: headers,
-      body: jsonEncode(body),
+      body: formBody,
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
