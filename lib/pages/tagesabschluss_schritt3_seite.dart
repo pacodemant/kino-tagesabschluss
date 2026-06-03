@@ -9,7 +9,9 @@ import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/config/feature_flags.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
@@ -92,6 +94,7 @@ class _TagesabschlussSchritt3SeiteState
   bool _autoSaveLaeuft = false;
   bool _autoSaveFehler = false;
   bool _uploadErledigt = false;
+  bool _apiUploadErledigt = false;
 
   @override
   void initState() {
@@ -168,6 +171,23 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
+  Future<void> _doApiUpload(String url, String apiKey) async {
+    try {
+      await ApiUploadService.upload(_abschlussVorschau, url, apiKey);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('API Upload erfolgreich ✓')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('API Upload fehlgeschlagen')),
+        );
+      }
+    }
+  }
+
   Future<void> _doUpload(String accessToken) async {
     try {
       await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau, accessToken);
@@ -234,6 +254,21 @@ class _TagesabschlussSchritt3SeiteState
               ),
             );
           }
+        }
+      }
+    }
+
+    if (!_apiUploadErledigt) {
+      final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
+      if (!mounted) return;
+      if (apiAktiv) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        if (!mounted) return;
+        final String url = prefs.getString('api_upload_url') ?? '';
+        final String key = prefs.getString('api_upload_key') ?? '';
+        if (url.isNotEmpty) {
+          _apiUploadErledigt = true;
+          _doApiUpload(url, key).ignore();
         }
       }
     }

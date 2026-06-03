@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 255: API-Upload-Infrastruktur für Browser-Kompatibilitätstest — api_upload_service.dart (HTTP POST + API-Key), Feature-Flag apiUploadAktiv, Einstellungen: URL + API-Key-Felder im Dev-Bereich, tagesabschluss_schritt3_seite.dart: Upload-Aufruf parallel zu Google Sheets.
+
 - Run 254: Uhrzeit des Uploads als zweite Spalte (nach Datum) in Google Sheets eingetragen; _formatUhrzeit() ergänzt; Aktualisierungs-Range von A:K auf A:L erweitert.
 
 - Run 253: Browser-Tab-Titel korrigiert — MaterialApp(title:) in main.dart von "Schauburg Kassenabrechnung" auf "Kassenabrechnung" gesetzt.

@@ -87,6 +87,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _devModusAktiv = false;
   bool _eingabeMitKomma = false;
   bool _googleSheetsAktiv = true;
+  bool _apiUploadAktiv = false;
   bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
@@ -98,6 +99,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final List<TextEditingController> _getraenkeController =
       <TextEditingController>[];
   final TextEditingController _neuesGetraenkCtrl = TextEditingController();
+  final TextEditingController _apiUploadUrlCtrl = TextEditingController();
+  final TextEditingController _apiUploadKeyCtrl = TextEditingController();
   late final FocusNode _mitarbeiterNameFocus;
   late final FocusNode _neuesGetraenkFocus;
 
@@ -156,6 +159,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     _neuesGetraenkCtrl.dispose();
     _neuesGetraenkFocus.dispose();
+    _apiUploadUrlCtrl.dispose();
+    _apiUploadKeyCtrl.dispose();
     super.dispose();
   }
 
@@ -192,6 +197,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     final bool devAktiv = await DevModus.istAktiv();
     final bool googleSheetsAktiv = await FeatureFlags.googleSheetsAktiv();
+    final bool apiUploadAktiv = await FeatureFlags.apiUploadAktiv();
     if (!mounted) {
       return;
     }
@@ -226,13 +232,18 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String mitarbeiterName =
         speicher.getString('mitarbeiter_name') ?? '';
     final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
+    final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
+    final String apiUploadKey = speicher.getString('api_upload_key') ?? '';
     if (!mounted) return;
     _mitarbeiterNameCtrl.text = mitarbeiterName;
     if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
+    _apiUploadUrlCtrl.text = apiUploadUrl;
+    _apiUploadKeyCtrl.text = apiUploadKey;
 
     setState(() {
       _devModusAktiv = devAktiv;
       _googleSheetsAktiv = googleSheetsAktiv;
+      _apiUploadAktiv = apiUploadAktiv;
       _getraenkeliste = getraenkeliste;
       _eingabeMitKomma = eingabeMitKomma;
       _geladen = true;
@@ -321,6 +332,20 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     setState(() {
       _googleSheetsAktiv = wert;
     });
+  }
+
+  Future<void> _onApiUploadGeaendert(bool wert) async {
+    await FeatureFlags.apiUploadSetzen(wert);
+    if (!mounted) return;
+    setState(() {
+      _apiUploadAktiv = wert;
+    });
+  }
+
+  Future<void> _speichereApiUploadKonfig() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString('api_upload_url', _apiUploadUrlCtrl.text.trim());
+    await speicher.setString('api_upload_key', _apiUploadKeyCtrl.text.trim());
   }
 
   Future<void> _onEingabeMitKommaGeaendert(bool wert) async {
@@ -1275,6 +1300,42 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     onChanged: _onGoogleSheetsGeaendert,
                     activeThumbColor: AppFarben.appBarRot,
                   ),
+                  const Divider(height: 1),
+                  SwitchListTile(
+                    title: const Text('API Upload (Test)'),
+                    value: _apiUploadAktiv,
+                    onChanged: _onApiUploadGeaendert,
+                    activeThumbColor: AppFarben.appBarRot,
+                  ),
+                  if (_apiUploadAktiv) ...<Widget>[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          TextField(
+                            controller: _apiUploadUrlCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'Upload-URL',
+                              hintText: 'https://...',
+                              isDense: true,
+                            ),
+                            onChanged: (_) => _speichereApiUploadKonfig(),
+                          ),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _apiUploadKeyCtrl,
+                            decoration: const InputDecoration(
+                              labelText: 'API-Key',
+                              isDense: true,
+                            ),
+                            onChanged: (_) => _speichereApiUploadKonfig(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const Divider(height: 1),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
