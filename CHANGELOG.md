@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 257: Content-Type von application/json auf text/plain geändert (api_upload_service.dart) — vermeidet CORS-Preflight bei webhook.site-Test. Beim echten Kino-Server mit CORS-Headern auf application/json zurückwechseln.
+
 - Run 256: API-Upload-Fehlerbehandlung verbessert — echter Fehlertext in Snackbar (8 Sek.), _apiUploadErledigt erst bei Erfolg gesetzt (Wiederholung bei Fehler möglich), Fehlermeldung mit "lokal gespeichert" ergänzt.
 
 - Run 255: API-Upload-Infrastruktur für Browser-Kompatibilitätstest — api_upload_service.dart (HTTP POST + API-Key), Feature-Flag apiUploadAktiv, Einstellungen: URL + API-Key-Felder im Dev-Bereich, tagesabschluss_schritt3_seite.dart: Upload-Aufruf parallel zu Google Sheets.

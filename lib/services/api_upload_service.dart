@@ -31,8 +31,10 @@ class ApiUploadService {
       'differenzGesamt': _euro(abrechnung.differenzGesamtCent),
     };
 
+    // text/plain vermeidet CORS-Preflight (webhook.site-Testphase).
+    // Auf application/json wechseln, sobald der echte Kino-Server steht.
     final Map<String, String> headers = <String, String>{
-      'Content-Type': 'application/json',
+      'Content-Type': 'text/plain',
     };
     if (apiKey.isNotEmpty) {
       headers['Authorization'] = 'Bearer $apiKey';
