@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 252: Web-Metadaten und Bundle-Identifier bereinigt — web/index.html: title, apple-mobile-web-app-title und description aktualisiert; web/manifest.json: name, short_name, description, theme_color, background_color auf App-Werte gesetzt; ios/Runner/Info.plist: CFBundleDisplayName auf "Kassenabrechnung" gesetzt.
+
 - Run 251: Google Sheets Credentials als temporäre Fallback-Werte in google_sheets_config.dart eingetragen (defaultValue für GOOGLE_CLIENT_ID, GOOGLE_IOS_CLIENT_ID, GOOGLE_SHEET_ID); String.fromEnvironment-Struktur bleibt erhalten.
 
 - Run 250: Google Sign-In für iOS konfiguriert — Info.plist: GIDClientID und CFBundleURLTypes auf iOS-Client-ID umgestellt; google_sheets_config.dart: iosClientId per String.fromEnvironment('GOOGLE_IOS_CLIENT_ID') ergänzt; google_sheets_service.dart: authenticate() wählt per kIsWeb zwischen clientId (Web) und iosClientId (iOS).
