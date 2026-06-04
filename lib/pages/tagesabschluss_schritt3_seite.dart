@@ -87,7 +87,8 @@ class _TagesabschlussSchritt3SeiteState
   final SpeichereTagesabschlussUsecase _speichereUsecase =
       const SpeichereTagesabschlussUsecase();
 
-  late final TagesabschlussFinal _abschlussVorschau;
+  // null solange die async-Initialisierung noch läuft
+  TagesabschlussFinal? _abschlussVorschau;
 
   // true = Auto-Save läuft oder abgeschlossen, false = noch ausstehend
   bool _autoSaveErledigt = false;
@@ -99,7 +100,13 @@ class _TagesabschlussSchritt3SeiteState
   @override
   void initState() {
     super.initState();
-    _abschlussVorschau = _finalisierenUsecase.finalisieren(
+    _initialisierenAsync();
+  }
+
+  Future<void> _initialisierenAsync() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? mitarbeiterName = prefs.getString('mitarbeiter_name');
+    final TagesabschlussFinal abschluss = _finalisierenUsecase.finalisieren(
       eingabe: TagesabschlussFinalisierenEingabe(
         kinoId: widget.argumente.kinoId,
         kinoName: widget.argumente.kinoName,
@@ -120,10 +127,14 @@ class _TagesabschlussSchritt3SeiteState
         ausgabenBetraegeCent: widget.argumente.ausgabenBetraegeCent,
         ausgabenLabels: widget.argumente.ausgabenLabels,
         ecBelegeLabels: widget.argumente.ecBelegeLabels,
+        mitarbeiterName: mitarbeiterName?.isNotEmpty == true
+            ? mitarbeiterName
+            : null,
       ),
       jetzt: DateTime.now(),
     );
-
+    if (!mounted) return;
+    setState(() => _abschlussVorschau = abschluss);
     _autoSaveImHintergrund();
   }
 
@@ -140,14 +151,14 @@ class _TagesabschlussSchritt3SeiteState
 
     try {
       final SpeichereTagesabschlussErgebnis ergebnis =
-          await _speichereUsecase.ausfuehren(_abschlussVorschau);
+          await _speichereUsecase.ausfuehren(_abschlussVorschau!);
       if (!mounted) {
         return;
       }
 
       if (ergebnis.bereitsVorhanden) {
         await _speichereUsecase.ausfuehren(
-          _abschlussVorschau,
+          _abschlussVorschau!,
           ueberschreiben: true,
         );
         if (!mounted) {
@@ -173,7 +184,7 @@ class _TagesabschlussSchritt3SeiteState
 
   Future<void> _doApiUpload(String url, String apiKey) async {
     try {
-      await ApiUploadService.upload(_abschlussVorschau, url, apiKey);
+      await ApiUploadService.upload(_abschlussVorschau!, url, apiKey);
       _apiUploadErledigt = true;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -210,7 +221,7 @@ class _TagesabschlussSchritt3SeiteState
 
   Future<void> _doUpload(String accessToken) async {
     try {
-      await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau, accessToken);
+      await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau!, accessToken);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Abrechnung hochgeladen ✓')),
@@ -351,7 +362,7 @@ class _TagesabschlussSchritt3SeiteState
       StueckelungVorschlagSeite.routenName,
       arguments: StueckelungVorschlagArgumente(
         barBestandAbzglWechselgeldCent:
-            _abschlussVorschau.barBestandAbzglWechselgeldCent,
+            _abschlussVorschau!.barBestandAbzglWechselgeldCent,
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
         kinoName: widget.argumente.kinoName,
@@ -420,7 +431,14 @@ class _TagesabschlussSchritt3SeiteState
 
   @override
   Widget build(BuildContext context) {
-    final int differenzCent = _abschlussVorschau.differenzGesamtCent;
+    final TagesabschlussFinal? vorschau = _abschlussVorschau;
+    if (vorschau == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final int differenzCent = vorschau.differenzGesamtCent;
     final Color differenzFarbe =
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
@@ -507,7 +525,7 @@ class _TagesabschlussSchritt3SeiteState
                       children: <Widget>[
                         InfoZeile(
                           label: 'Differenz Anfangsbestand',
-                          wert: _euro(_abschlussVorschau.differenzAnfangsbestandCent),
+                          wert: _euro(vorschau.differenzAnfangsbestandCent),
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
                       ],
@@ -523,23 +541,23 @@ class _TagesabschlussSchritt3SeiteState
                       children: <Widget>[
                         InfoZeile(
                           label: '+ Kino Soll',
-                          wert: _euro(_abschlussVorschau.kinoSollCent),
+                          wert: _euro(vorschau.kinoSollCent),
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
                         if (widget.argumente.kinoId != 'kino_04')
                           InfoZeile(
                             label: '+ Bistro Soll',
-                            wert: _euro(_abschlussVorschau.bistroSollCent),
+                            wert: _euro(vorschau.bistroSollCent),
                             stil: InfoZeileStil.fuehrungslinie,
                           ),
                         InfoZeile(
                           label: '- Ausgaben',
-                          wert: _euro(_abschlussVorschau.ausgabenCent),
+                          wert: _euro(vorschau.ausgabenCent),
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
                         InfoZeile(
                           label: '= Gesamt Soll',
-                          wert: _euro(_abschlussVorschau.gesamtSollCent),
+                          wert: _euro(vorschau.gesamtSollCent),
                           fett: true,
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
@@ -556,17 +574,17 @@ class _TagesabschlussSchritt3SeiteState
                       children: <Widget>[
                         InfoZeile(
                           label: '+ EC IST',
-                          wert: _euro(_abschlussVorschau.ecUmsatzGesamtCent),
+                          wert: _euro(vorschau.ecUmsatzGesamtCent),
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
                         InfoZeile(
                           label: '+ bar IST',
-                          wert: _euro(_abschlussVorschau.barBestandAbzglWechselgeldCent),
+                          wert: _euro(vorschau.barBestandAbzglWechselgeldCent),
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
                         InfoZeile(
                           label: '= Gesamt IST',
-                          wert: _euro(_abschlussVorschau.gesamtIstCent),
+                          wert: _euro(vorschau.gesamtIstCent),
                           fett: true,
                           stil: InfoZeileStil.fuehrungslinie,
                         ),
@@ -604,7 +622,7 @@ class _TagesabschlussSchritt3SeiteState
                     child: Text(
                       _autoSaveLaeuft
                           ? 'Wird gespeichert...'
-                          : 'Kassenabrechnung abschließen',
+                          : 'Kassenabrechnung senden',
                     ),
                   ),
                 ),

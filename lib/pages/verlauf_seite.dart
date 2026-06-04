@@ -117,6 +117,13 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                     final bool istHeute = DatumsHelper.isoDatum(eintrag.datum) ==
                         DatumsHelper.logischesIsoDatum();
                     return ListTile(
+                      subtitle: (eintrag.mitarbeiterName != null &&
+                              eintrag.mitarbeiterName!.isNotEmpty)
+                          ? Text(
+                              eintrag.mitarbeiterName!,
+                              style: const TextStyle(fontSize: 12),
+                            )
+                          : null,
                       title: Row(
                         children: <Widget>[
                           Text(_deutschesDatum(eintrag.datum)),

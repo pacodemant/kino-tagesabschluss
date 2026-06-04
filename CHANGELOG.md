@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 261: Mitarbeitername im Datensatz — `TagesabschlussFinal` um optionales Feld `mitarbeiterName` erweitert; beim Abschluss wird der Wert aus SharedPreferences-Key `mitarbeiter_name` gelesen und im lokalen Datensatz gespeichert; in der Verlaufsliste als Untertitel, in der Detailansicht als graue Zeile oben angezeigt (je nur wenn vorhanden).
+
 - Run 260: CORS-Fehler beim API-Upload korrekt behandelt — Browser-Fehler "Failed to fetch" / "NetworkError" / "Load failed" werden als erfolgreicher Upload gewertet und zeigen "Upload gesendet — Empfang nicht bestätigbar"; in Schritt 3 wird _apiUploadErledigt auch bei CORS-Fehler gesetzt (verhindert Doppel-Upload).
 
 - Run 259: "Erneut senden"-Button in der Verlauf-Detailansicht — löst den Webhook-Upload für den angezeigten Eintrag erneut aus; Button deaktiviert sich während des Uploads, SnackBar bei Erfolg/Fehler analog zu Schritt 3.

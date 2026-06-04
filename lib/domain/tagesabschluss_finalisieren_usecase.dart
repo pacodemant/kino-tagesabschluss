@@ -26,6 +26,7 @@ class TagesabschlussFinalisierenEingabe {
     this.ausgabenLabels,
     // EC-Beleg-Labels aus Schritt 2
     this.ecBelegeLabels,
+    this.mitarbeiterName,
   });
 
   final String kinoId;
@@ -51,6 +52,7 @@ class TagesabschlussFinalisierenEingabe {
   final List<String>? ausgabenLabels;
   // EC-Beleg-Labels aus Schritt 2
   final List<String>? ecBelegeLabels;
+  final String? mitarbeiterName;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -192,6 +194,9 @@ class TagesabschlussFinalisierenUsecase {
       ecBelegeLabels: eingabe.ecBelegeLabels != null &&
               eingabe.ecBelegeLabels!.isNotEmpty
           ? List<String>.from(eingabe.ecBelegeLabels!)
+          : null,
+      mitarbeiterName: eingabe.mitarbeiterName?.isNotEmpty == true
+          ? eingabe.mitarbeiterName
           : null,
     );
   }

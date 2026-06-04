@@ -29,6 +29,7 @@ class TagesabschlussFinal {
     this.ausgabenBetraegeCent,
     this.ausgabenLabels,
     this.ecBelegeLabels,
+    this.mitarbeiterName,
   });
 
   final String kinoId;
@@ -66,6 +67,7 @@ class TagesabschlussFinal {
   final List<int>? ausgabenBetraegeCent;
   final List<String>? ausgabenLabels;
   final List<String>? ecBelegeLabels;
+  final String? mitarbeiterName;
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -101,6 +103,7 @@ class TagesabschlussFinal {
         'ausgabenBetraegeCent': ausgabenBetraegeCent,
       if (ausgabenLabels != null) 'ausgabenLabels': ausgabenLabels,
       if (ecBelegeLabels != null) 'ecBelegeLabels': ecBelegeLabels,
+      if (mitarbeiterName != null) 'mitarbeiterName': mitarbeiterName,
     };
   }
 
@@ -195,6 +198,7 @@ class TagesabschlussFinal {
       ausgabenBetraegeCent: ausgabenBetraegeCent,
       ausgabenLabels: ausgabenLabels,
       ecBelegeLabels: ecBelegeLabels,
+      mitarbeiterName: json['mitarbeiterName'] as String?,
     );
   }
 }

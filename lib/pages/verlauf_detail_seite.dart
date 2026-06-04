@@ -310,6 +310,19 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               children: <Widget>[
+                if (a.mitarbeiterName != null &&
+                    a.mitarbeiterName!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                    child: Text(
+                      a.mitarbeiterName!,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+
                 // Hinweis-Card – nur für vergangene Einträge
                 if (!istHeute)
                   Card(
