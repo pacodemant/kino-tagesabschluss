@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 262: Version auf 0.9.1 gesetzt (pubspec.yaml); Startmenü-Label auf "TEST Web App 0.9.1 @ GitHub:" aktualisiert.
+
 - Run 261: Mitarbeitername im Datensatz — `TagesabschlussFinal` um optionales Feld `mitarbeiterName` erweitert; beim Abschluss wird der Wert aus SharedPreferences-Key `mitarbeiter_name` gelesen und im lokalen Datensatz gespeichert; in der Verlaufsliste als Untertitel, in der Detailansicht als graue Zeile oben angezeigt (je nur wenn vorhanden).
 
 - Run 260: CORS-Fehler beim API-Upload korrekt behandelt — Browser-Fehler "Failed to fetch" / "NetworkError" / "Load failed" werden als erfolgreicher Upload gewertet und zeigen "Upload gesendet — Empfang nicht bestätigbar"; in Schritt 3 wird _apiUploadErledigt auch bei CORS-Fehler gesetzt (verhindert Doppel-Upload).
