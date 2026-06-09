@@ -17,6 +17,7 @@ import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
+import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
@@ -221,6 +222,13 @@ class MeineApp extends StatelessWidget {
           final String kinoId = (settings.arguments as String?) ?? '';
           return MaterialPageRoute<void>(
             builder: (_) => GetraenkeAuffuellenSeite(kinoId: kinoId),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == DatenschutzSeite.routenName) {
+          return MaterialPageRoute<void>(
+            builder: (_) => const DatenschutzSeite(),
             settings: settings,
           );
         }

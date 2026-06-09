@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 263: Datenschutzhinweise-Seite eingebaut — neue Seite datenschutz_seite.dart mit Einleitungstext und aufklappbarem DSGVO-Detailbereich; Route in main.dart registriert; dezenter Textlink im Startmenü (unterhalb der Buttons, vor dem Footer).
+
 - Run 262: Version auf 0.9.1 gesetzt (pubspec.yaml); Startmenü-Label auf "TEST Web App 0.9.1 @ GitHub:" aktualisiert.
 
 - Run 261: Mitarbeitername im Datensatz — `TagesabschlussFinal` um optionales Feld `mitarbeiterName` erweitert; beim Abschluss wird der Wert aus SharedPreferences-Key `mitarbeiter_name` gelesen und im lokalen Datensatz gespeichert; in der Verlaufsliste als Untertitel, in der Detailansicht als graue Zeile oben angezeigt (je nur wenn vorhanden).
