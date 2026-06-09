@@ -8,7 +8,6 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
-import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 
 class StartmenueSeite extends StatelessWidget {
   const StartmenueSeite({super.key, required this.kino});
@@ -108,22 +107,6 @@ class StartmenueSeite extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () => _oeffneVerlauf(context),
                   child: const Text('Verlauf'),
-                ),
-                const SizedBox(height: 12),
-                Center(
-                  child: GestureDetector(
-                    onTap: () => Navigator.of(context)
-                        .pushNamed(DatenschutzSeite.routenName),
-                    child: const Text(
-                      'Datenschutzhinweise',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppFarben.subtilerText,
-                        decoration: TextDecoration.underline,
-                        decorationColor: AppFarben.subtilerText,
-                      ),
-                    ),
-                  ),
                 ),
                 const Spacer(),
                 const Center(

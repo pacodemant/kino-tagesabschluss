@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/usecases/kino_waehlen_usecase.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 class KinoauswahlSeite extends StatefulWidget {
@@ -56,6 +57,22 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
               ),
               const SizedBox(height: 12),
             ],
+            const SizedBox(height: 4),
+            Center(
+              child: GestureDetector(
+                onTap: () =>
+                    Navigator.of(context).pushNamed(DatenschutzSeite.routenName),
+                child: const Text(
+                  'Datenschutzhinweise',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppFarben.subtilerText,
+                    decoration: TextDecoration.underline,
+                    decorationColor: AppFarben.subtilerText,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
