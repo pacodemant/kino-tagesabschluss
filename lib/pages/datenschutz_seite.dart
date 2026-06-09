@@ -20,7 +20,7 @@ class DatenschutzSeite extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const Text(
-              'Dein Name bleibt auf deinem Handy. Die Abrechnung geht nur ans Kino-Büro — sonst nirgendwo hin. Kein Account, kein Cloud-Speicher, kein Tracking. Fotografierst du einen EC-Beleg, liest eine KI kurz die Zahlen aus — das Foto selbst wird nicht gespeichert.',
+              'Dein Name und deine Abrechnung gehen nur ans Kino-Büro — sonst nirgendwo hin. Kein Account, kein Cloud-Speicher, kein Tracking. Fotografierst du einen EC-Beleg, liest eine KI kurz die Zahlen aus — das Foto selbst wird nicht gespeichert.',
               style: TextStyle(fontSize: 15, height: 1.5),
             ),
             const SizedBox(height: 20),
