@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassenabrechnung – Konzept: EC-Beleg-Scan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f2eb;
+    --accent: #c8501a;
+    --rule: #d4cfc3;
+    --muted: #7a7568;
+    --code-bg: #f0ede6;
+    --code-ink: #2a2a28;
+    --highlight: #fff8f0;
+    --tag-v1: #e8f0e4;
+    --tag-v1-ink: #3a6b2a;
+    --tag-pilot: #fef3e2;
+    --tag-pilot-ink: #9a5a10;
+    --tag-open: #eef2f8;
+    --tag-open-ink: #2a4a7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .header h1 em { color: var(--accent); font-style: italic; }
+
+  .header-h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 520px;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .prose {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .prose strong { color: var(--ink); font-weight: 500; }
+
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--code-ink);
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 16px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--code-ink);
+    line-height: 1.8;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Value box — Mehrwert */
+  .value-box {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 20px;
+    margin-bottom: 16px;
+  }
+
+  .value-box p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .value-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 24px;
+    font-size: 13px;
+    align-items: baseline;
+  }
+
+  .value-grid .v-label { color: var(--muted); }
+  .value-grid .v-value { font-weight: 500; text-align: right; white-space: nowrap; }
+  .value-grid .v-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--rule);
+    margin: 4px 0;
+  }
+  .value-grid .v-total {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .value-grid .v-total-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  /* Datenfluss */
+  .flow {
+    display: grid;
+    gap: 0;
+    margin-bottom: 16px;
+  }
+
+  .flow-item {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .flow-line {
+    width: 1px;
+    flex: 1;
+    background: var(--rule);
+    margin: 4px auto 0;
+    min-height: 20px;
+  }
+
+  .flow-item:last-child .flow-line { display: none; }
+
+  .flow-content {
+    padding: 4px 0 20px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .flow-content strong {
+    display: block;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+
+  .flow-content span { color: var(--muted); }
+
+  /* Def list */
+  .def-list { display: grid; gap: 10px; margin-bottom: 16px; }
+
+  .def-item {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    align-items: start;
+    font-size: 13px;
+  }
+
+  .def-term {
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    word-break: break-all;
+  }
+
+  .def-desc { color: var(--muted); line-height: 1.5; }
+
+  /* Feature list */
+  .feature-list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .feature-item {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: 12px;
+    align-items: start;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+
+  .feature-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .feature-text { font-size: 14px; line-height: 1.5; }
+  .feature-text strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  .feature-text span { color: var(--muted); font-size: 13px; }
+
+  .tag {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: start;
+    margin-top: 2px;
+  }
+
+  .tag-v1 { background: var(--tag-v1); color: var(--tag-v1-ink); }
+  .tag-pilot { background: var(--tag-pilot); color: var(--tag-pilot-ink); }
+  .tag-open { background: var(--tag-open); color: var(--tag-open-ink); }
+
+  /* Note */
+  .note {
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .note strong { color: var(--ink); font-weight: 500; }
+
+  /* Felder-Tabelle */
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .field-table th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .field-table td {
+    padding: 9px 12px 9px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .field-table td:first-child {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .field-table td.new {
+    color: var(--tag-v1-ink);
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 56px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .footer-left strong { display: block; font-size: 13px; color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+  .footer-right { font-size: 11px; color: var(--rule); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 32px 40px 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-meta">Konzeptdokument · Stand Juni 2026 · Intern</div>
+    <h1>Kassen<em>abrechnung</em></h1>
+    <div class="header-h2">Konzept: EC-Beleg-Scan</div>
+    <p class="header-sub">Automatische Erfassung und Aufschlüsselung von EC-Kartenumsätzen per Kamerascan. Pilot: Schauburg. Ziel: V1.</p>
+  </header>
+
+  <!-- Ausgangslage & Mehrwert -->
+  <section class="section">
+    <div class="section-label">Ausgangslage &amp; Mehrwert</div>
+    <div class="value-box">
+      <p>Heute notiert der Mitarbeiter beim Abschluss nur den <strong>Gesamtbetrag des EC-Umsatzes</strong> — abgelesen vom Kassenschnitt-Ausdruck des Terminals. Die Buchhaltung muss anschließend <strong>jeden einzelnen EC-Beleg manuell nach Kartenart aufschlüsseln</strong>: girocard, SEPA Lastschrift, MasterCard, VISA. Das kostet Zeit und ist fehleranfällig.</p>
+      <div class="value-grid">
+        <span class="v-label">Heute: Mitarbeiter liest ab</span>
+        <span class="v-value">1 Zahl, manuell</span>
+        <span class="v-label">Heute: Buchhaltung schlüsselt auf</span>
+        <span class="v-value">je Beleg, manuell</span>
+        <div class="v-divider"></div>
+        <span class="v-label">Künftig: Mitarbeiter fotografiert Bon</span>
+        <span class="v-value">1 Tap</span>
+        <span class="v-label">Künftig: App liefert Aufschlüsselung</span>
+        <span class="v-value">automatisch, strukturiert</span>
+        <span class="v-label">Künftig: Buchhaltung erhält pro Abschluss</span>
+        <span class="v-value">Terminal-ID, Kartenart, Anz., Betrag</span>
+        <div class="v-divider"></div>
+        <span class="v-total">Aufwand Buchhaltung</span>
+        <span class="v-total-value">entfällt</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Datenfluss -->
+  <section class="section">
+    <div class="section-label">Datenfluss</div>
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Mitarbeiter tippt „Scan" in Schritt 2</strong>
+          <span>Kamera-Button neben dem EC-Betragsfeld. Kamera öffnet sich via <code>image_picker</code>.</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Foto wird aufgenommen</strong>
+          <span>Mitarbeiter fotografiert den Kassenschnitt-Ausdruck des EC-Terminals.</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">3</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Bild + Prompt → Anthropic API</strong>
+          <span>App kodiert das Bild als base64. HTTP POST an Anthropic API mit festem System-Prompt und API-Key aus den Einstellungen. Kein eigenes Backend nötig.</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">4</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Anthropic antwortet mit JSON</strong>
+          <span>Strukturierte Daten: Terminal-ID, Datum, Kartenarten mit Anzahl und Betrag in Cent, Gesamtsaldo.</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">5</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Felder werden automatisch befüllt</strong>
+          <span>EC-Gesamtbetrag, Aufschlüsselung nach Kartenart, Terminal-ID. Mitarbeiter prüft kurz, bestätigt.</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">6</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Export wie bisher — mit neuen Feldern</strong>
+          <span>Kartenarten-Aufschlüsselung geht zusätzlich in den HTTP POST an die Buchhaltungs-API.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- System-Prompt -->
+  <section class="section">
+    <div class="section-label">System-Prompt (fest in der App)</div>
+    <p class="prose">Der Prompt ist eine Konstante im <code>BelegScanService</code> — nicht vom Nutzer editierbar, nicht in einer Config-Datei. Anpassungen nur durch einen CC-Run.</p>
+    <div class="code-block">Du bist ein Belegscanner für Kassensysteme.
+Du bekommst ein Foto eines EC-Kartenbelegs (Kassenschnitt).
+Extrahiere folgende Felder und antworte NUR mit JSON,
+ohne Erklärung, ohne Markdown-Backticks:
+
+{
+  "terminal_id": "...",
+  "datum": "TT.MM.JJJJ",
+  "uhrzeit": "HH:MM",
+  "zahlungsarten": [
+    { "art": "girocard", "anzahl": 2, "betrag_cent": 7920 },
+    { "art": "SEPA Lastschrift", "anzahl": 4, "betrag_cent": 6890 },
+    { "art": "MasterCard", "anzahl": 1, "betrag_cent": 2600 },
+    { "art": "VISA", "anzahl": 1, "betrag_cent": 3720 }
+  ],
+  "gesamt_anzahl": 8,
+  "gesamt_betrag_cent": 21130
+}
+
+Beträge immer in Cent (ganzzahlig, kein Komma).
+Wenn ein Feld nicht lesbar ist: null.
+Nur die Zahlungsarten ausgeben die auf dem Beleg stehen.</div>
+    <div class="note"><strong>Warum Cent:</strong> Die App rechnet intern ausschließlich in Cent (kein Float, keine Rundungsfehler). Das JSON-Format ist darauf abgestimmt — kein Umrechnungsschritt nötig.</div>
+  </section>
+
+  <!-- Felder -->
+  <section class="section">
+    <div class="section-label">Automatisch befüllte Felder in Schritt 2</div>
+    <table class="field-table">
+      <tr><th>Feld</th><th>Quelle im JSON</th><th>Status</th></tr>
+      <tr>
+        <td>ecUmsatz</td>
+        <td>gesamt_betrag_cent</td>
+        <td>Bestehendes Feld, bisher manuell</td>
+      </tr>
+      <tr>
+        <td>zahlungsarten[]</td>
+        <td>zahlungsarten</td>
+        <td class="new">Neu — Kartenart, Anzahl, Betrag</td>
+      </tr>
+      <tr>
+        <td>terminal_id</td>
+        <td>terminal_id</td>
+        <td class="new">Neu — wird mitexportiert</td>
+      </tr>
+      <tr>
+        <td>datum (Prüfung)</td>
+        <td>datum</td>
+        <td>Plausibilitätsprüfung gegen logischen Abrechnungstag</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Was gebaut werden muss -->
+  <section class="section">
+    <div class="section-label">Bauteile</div>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>BelegScanService</strong>
+          <span>Neuer Service: Kamera-Aufruf via image_picker, base64-Kodierung, HTTP POST an Anthropic API, JSON-Parser mit null-safe Deserialisierung.</span>
+        </div>
+        <span class="tag tag-pilot">Neu</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Kamera-Button in Schritt 2</strong>
+          <span>Kleiner Icon-Button neben dem EC-Betragsfeld. Zeigt Ladeindikator während API-Call läuft. Befüllt Felder nach Antwort.</span>
+        </div>
+        <span class="tag tag-pilot">Neu</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Neue Felder in TagesabschlussFinal</strong>
+          <span>zahlungsartenAufschluesselung (Liste), terminalId (String). Null-safe — App funktioniert weiterhin ohne Scan.</span>
+        </div>
+        <span class="tag tag-pilot">Neu</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Export erweitert</strong>
+          <span>ApiUploadService sendet zusätzlich terminalId und je Kartenart einen eigenen Key (z. B. ec_girocard_betrag_cent, ec_girocard_anzahl).</span>
+        </div>
+        <span class="tag tag-pilot">Neu</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>API-Key-Feld in Einstellungen</strong>
+          <span>Neues Eingabefeld im Dev-Bereich: „Anthropic API-Key". Wird in SharedPreferences gespeichert (Key: anthropic_api_key). Liegt nie im Code.</span>
+        </div>
+        <span class="tag tag-v1">Erweiterung</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- API-Key-Flow -->
+  <section class="section">
+    <div class="section-label">API-Key — Verantwortung &amp; Setup</div>
+    <div class="def-list">
+      <div class="def-item">
+        <div class="def-term">Wer erstellt den Key</div>
+        <div class="def-desc">Die Kino-IT legt ein Konto auf console.anthropic.com an, hinterlegt eine Kreditkarte und generiert einen API-Key. Eigener Account, eigene Kostenkontrolle.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Wo liegt der Key</div>
+        <div class="def-desc">Nur in den App-Einstellungen (Dev-Modus) — in SharedPreferences des jeweiligen Geräts. Nie im Quellcode, nie im Repository.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Einmalig pro Gerät</div>
+        <div class="def-desc">Jedes Gerät auf dem die App läuft muss den Key einmal eingetragen bekommen. Danach persistent gespeichert.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Kosten</div>
+        <div class="def-desc">Ca. 1.000–2.000 Token pro Scan (Bild + JSON-Antwort). Bei Sonnet: Bruchteile eines Cents. Bei 180 Abrechnungen/Monat unter 1 €/Monat.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Sicherheit</div>
+        <div class="def-desc">Der Key liegt im Browser-LocalStorage — sicherer als im Code, aber nicht produktions-sicher gegen einen entschlossenen Angreifer mit Gerätezugang. Für den internen Einsatz auf Mitarbeitergeräten akzeptables Risiko. Bei höherem Sicherheitsbedarf: Proxy-Server (Cloudflare Worker o. ä.) als nächste Stufe.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pilot & Rollout -->
+  <section class="section">
+    <div class="section-label">Pilot &amp; Rollout</div>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Pilot: Schauburg (kino_01 · SB)</strong>
+          <span>Vollständig implementierter Standort, dem ITler bekannt. Scan-Funktion wird zuerst hier gebaut und getestet.</span>
+        </div>
+        <span class="tag tag-pilot">Pilot</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Rollout: Atlantis, Cinema Ostertor</strong>
+          <span>Nach erfolgreichem Pilot automatisch verfügbar — gleiche Implementierung, keine standortspezifischen Anpassungen nötig.</span>
+        </div>
+        <span class="tag tag-open">Folgt</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Gondel, Bar Tabak</strong>
+          <span>Sobald die jeweilige Standort-Implementierung abgeschlossen ist.</span>
+        </div>
+        <span class="tag tag-open">Offen</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Offene Fragen -->
+  <section class="section">
+    <div class="section-label">Offene Fragen vor Umsetzung</div>
+    <div class="def-list">
+      <div class="def-item">
+        <div class="def-term">Export-Format Kartenarten</div>
+        <div class="def-desc">Wie sollen die Zahlungsarten im HTTP POST an die Buchhaltungs-API übergeben werden? Flache Keys (ec_girocard_betrag_cent) oder JSON-Array? Abhängig vom Format das die Kino-IT vorgibt.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Fallback bei schlechtem Foto</div>
+        <div class="def-desc">Wenn der Scan ein Feld nicht lesen kann (null), bleiben die betroffenen Felder leer und werden rot hervorgehoben — Mitarbeiter trägt manuell ein. Kein harter Fehler, kein Scan-Zwang.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Offline-Verhalten</div>
+        <div class="def-desc">Kein Netz = kein Scan. Button wird ausgegraut, Felder bleiben manuell eingebbar. Kein Datenverlust, kein Workflow-Stopp.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <strong>Paco Demant</strong>
+      Entwicklung &amp; Konzept
+    </div>
+    <div class="footer-right">Juni 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>

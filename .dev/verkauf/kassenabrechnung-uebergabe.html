@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassenabrechnung – Technische Übergabedokumentation</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f2eb;
+    --accent: #c8501a;
+    --rule: #d4cfc3;
+    --muted: #7a7568;
+    --code-bg: #f0ede6;
+    --code-ink: #2a2a28;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .header h1 em { color: var(--accent); font-style: italic; }
+
+  .header-h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 520px;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .prose {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .prose strong { color: var(--ink); font-weight: 500; }
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--code-ink);
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--code-ink);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  .def-list { display: grid; gap: 10px; margin-bottom: 16px; }
+
+  .def-item {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    align-items: start;
+    font-size: 13px;
+  }
+
+  .def-term {
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    word-break: break-all;
+  }
+
+  .def-desc { color: var(--muted); line-height: 1.5; }
+
+  .step-list { display: grid; gap: 10px; margin-bottom: 16px; }
+
+  .step-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 22px;
+    height: 22px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .step-content { font-size: 13px; line-height: 1.5; }
+  .step-content strong { display: block; font-weight: 500; margin-bottom: 2px; color: var(--ink); }
+  .step-content span { color: var(--muted); }
+
+  .note {
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .note strong { color: var(--ink); font-weight: 500; }
+
+  /* Dateibaum */
+  .file-tree {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .file-tree table {
+    border-collapse: collapse;
+    width: 100%;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.9;
+  }
+
+  .file-tree td { vertical-align: top; padding: 0; }
+  .file-tree td:first-child { white-space: nowrap; padding-right: 20px; color: var(--code-ink); }
+  .file-tree td:last-child { color: var(--muted); }
+  .file-tree .dir { color: var(--accent); font-weight: bold; }
+  .file-tree .sep { border-top: 1px solid var(--rule); height: 8px; }
+
+  /* Routen-Tabelle */
+  .route-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .route-table th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .route-table td {
+    padding: 9px 12px 9px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .route-table td:first-child {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 56px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .footer-left strong { display: block; font-size: 13px; color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+  .footer-right { font-size: 11px; color: var(--rule); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 32px 40px 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-meta">Stand Juni 2026 · Vertraulich</div>
+    <h1>Kassen<em>abrechnung</em></h1>
+    <div class="header-h2">Technische Übergabedokumentation</div>
+    <p class="header-sub">Dieses Dokument richtet sich an die Kino-IT. Es beschreibt Aufbau, Konfiguration, Deployment und Wartung der App vollständig genug, um ohne Rückfragen einsteigen zu können.</p>
+  </header>
+
+  <!-- Entwicklungsumgebung einrichten -->
+  <section class="section">
+    <div class="section-label">Entwicklungsumgebung einrichten</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Flutter installieren</strong>
+          <span>Flutter SDK von <code>flutter.dev</code> herunterladen. Version: SDK <code>^3.8.0</code> oder neuer. Nach Installation: <code>flutter doctor</code> ausführen — alle Checkmarks sollten grün sein (Chrome reicht, iOS/Android nicht zwingend nötig).</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Repository klonen</strong>
+          <span><code>git clone [repo-url]</code> — Branch <code>master</code> ist der Hauptbranch. Kein Develop-Branch.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Abhängigkeiten installieren</strong>
+          <span><code>flutter pub get</code> im Projektverzeichnis ausführen.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>App lokal starten</strong>
+          <span><code>flutter run -d chrome</code> — öffnet die App direkt im Browser. Änderungen im Code werden mit <code>r</code> (Hot Reload) oder <code>R</code> (Hot Restart) sofort sichtbar.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <strong>Codequalität prüfen</strong>
+          <span><code>flutter analyze</code> — zeigt Warnungen und Fehler. Keine offenen Warnungen vor einem Commit.</span>
+        </div>
+      </div>
+    </div>
+    <div class="note"><strong>Kein manueller Build nötig:</strong> GitHub Actions baut und deployt automatisch bei jedem Push auf <code>master</code>. Lokale Builds nur für Tests.</div>
+  </section>
+
+  <!-- Stack -->
+  <section class="section">
+    <div class="section-label">Technischer Stack</div>
+    <div class="def-list">
+      <div class="def-item">
+        <div class="def-term">Framework</div>
+        <div class="def-desc">Flutter (Dart) — kompiliert zu einer statischen Web-App. Kein Backend, keine Datenbank serverseitig. Kein App-Store.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Deployment</div>
+        <div class="def-desc">GitHub Actions — bei jedem Push auf <code>master</code> automatisch Build + Deploy. Konfiguration unter <code>.github/workflows/</code>.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Datenpersistenz</div>
+        <div class="def-desc">SharedPreferences = localStorage im Browser. Daten bleiben gerätespezifisch erhalten bis der Browser-Cache geleert wird. Wird vom Cache geleert: nur lokaler Verlauf, nicht die bereits exportierten Abrechnungen.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Datenexport</div>
+        <div class="def-desc">HTTP POST nach Abschluss an konfigurierbare URL. Format: <code>application/x-www-form-urlencoded</code> (kein CORS-Preflight). URL und API-Key in den App-Einstellungen (Dev-Bereich).</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Konfigurationsdateien</div>
+        <div class="def-desc">Getränkelisten und Wechselgeldbestand als Textdateien im Repo unter <code>config/</code>. App lädt sie beim Start und cached sie lokal in SharedPreferences.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Service Worker</div>
+        <div class="def-desc">Bewusst deaktiviert. Jeder App-Aufruf lädt die aktuelle Version frisch vom Server — kein veralteter Cache auf Mitarbeiter-Geräten.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projektstruktur -->
+  <section class="section">
+    <div class="section-label">Projektstruktur</div>
+    <div class="file-tree">
+      <table>
+        <tr><td><span class="dir">lib/config/</span></td><td>Feature-Flags — z. B. API-Upload ein/aus</td></tr>
+        <tr><td><span class="dir">lib/domain/</span></td><td>Berechnungslogik und Use Cases (keine UI)</td></tr>
+        <tr><td><span class="dir">lib/models/</span></td><td>Datenmodelle: Kino, TagesabschlussFinal, Kassenzeile</td></tr>
+        <tr><td><span class="dir">lib/pages/</span></td><td>UI-Seiten — je eine Datei pro Screen</td></tr>
+        <tr><td><span class="dir">lib/services/</span></td><td>Externe Dienste: Upload, Getränke-Config, Wechselgeld-Config</td></tr>
+        <tr><td><span class="dir">lib/storage/</span></td><td>SharedPreferences-Zugriff (lokaler_speicher.dart)</td></tr>
+        <tr><td><span class="dir">lib/theme/</span></td><td>Farben und Design-Konstanten (app_farben.dart)</td></tr>
+        <tr><td><span class="dir">lib/utils/</span></td><td>Hilfsfunktionen: DatumsHelper, Formatierung</td></tr>
+        <tr><td><span class="dir">lib/widgets/</span></td><td>Wiederverwendbare UI-Komponenten</td></tr>
+        <tr><td class="sep" colspan="2"></td></tr>
+        <tr><td><span class="dir">config/</span></td><td>Betriebliche Konfiguration (Getränken, Wechselgeld)</td></tr>
+        <tr><td>config/wechselgeld.txt</td><td>Wechselgeldbestand je Kino</td></tr>
+        <tr><td>config/getraenke_schauburg.txt</td><td>Getränkeliste Schauburg</td></tr>
+        <tr><td>config/getraenke_atlantis.txt</td><td>Getränkeliste Atlantis</td></tr>
+        <tr><td>config/getraenke_cinema_ostertor.txt</td><td>Getränkeliste Cinema Ostertor</td></tr>
+        <tr><td class="sep" colspan="2"></td></tr>
+        <tr><td><span class="dir">.github/workflows/</span></td><td>GitHub Actions — automatisches Deployment</td></tr>
+        <tr><td>pubspec.yaml</td><td>Abhängigkeiten und Asset-Registrierung</td></tr>
+        <tr><td>CHANGELOG.md</td><td>Vollständiges Änderungsprotokoll (alle Runs)</td></tr>
+        <tr><td>AGENTS.md</td><td>Arbeitsregeln für KI-Coding-Agenten</td></tr>
+        <tr><td>lib/main.dart</td><td>App-Einstiegspunkt, Routing, Theme</td></tr>
+      </table>
+    </div>
+    <div class="note"><strong>Namenskonvention:</strong> Der gesamte Code ist auf Deutsch benannt (<code>kinoauswahl_seite.dart</code>, <code>tagesabschluss_schritt1_seite.dart</code> usw.). Das ist bewusst — die Domänensprache ist Deutsch, was den Code für das Kino-Team lesbar macht.</div>
+  </section>
+
+  <!-- App-Routing -->
+  <section class="section">
+    <div class="section-label">Seiten &amp; Routing</div>
+    <p class="prose">Alle Routen sind in <strong>lib/main.dart</strong> unter <code>onGenerateRoute</code> registriert. Jede Seite hat eine statische <code>routenName</code>-Konstante.</p>
+    <table class="route-table">
+      <tr><th>Route</th><th>Seite</th><th>Zweck</th></tr>
+      <tr><td>/start</td><td>StartpruefungSeite</td><td>Prüft ob Kino bereits gewählt, leitet weiter</td></tr>
+      <tr><td>/kinoauswahl</td><td>KinoauswahlSeite</td><td>Kino-Auswahl beim ersten Start</td></tr>
+      <tr><td>/startmenue</td><td>StartmenueSeite</td><td>Hauptmenü je Kino</td></tr>
+      <tr><td>/closure-step-1</td><td>TagesabschlussSchritt1Seite</td><td>Bargeld zählen</td></tr>
+      <tr><td>/closure-step-2</td><td>TagesabschlussSchritt2Seite</td><td>Belege &amp; Einnahmen eingeben</td></tr>
+      <tr><td>/closure-step-3</td><td>TagesabschlussSchritt3Seite</td><td>Übertrag auf Umschlag, Abschluss &amp; Export</td></tr>
+      <tr><td>/closure-step-4</td><td>StueckelungVorschlagSeite</td><td>Stückelungsvorschlag Barumsatz</td></tr>
+      <tr><td>/wechselgeld-pruefen</td><td>WechselgeldPruefenSeite</td><td>Wechselgeldkasse prüfen</td></tr>
+      <tr><td>/getraenke-auffuellen</td><td>GetraenkeAuffuellenSeite</td><td>Getränke-Auffüll-Liste</td></tr>
+      <tr><td>/verlauf</td><td>VerlaufSeite</td><td>Abschluss-Verlauf je Kino</td></tr>
+      <tr><td>/verlauf-detail</td><td>VerlaufDetailSeite</td><td>Detailansicht eines Abschlusses</td></tr>
+      <tr><td>/einstellungen</td><td>EinstellungenSeite</td><td>Einstellungen, Dev-Modus, API-Konfiguration</td></tr>
+    </table>
+  </section>
+
+  <!-- Datenfluss -->
+  <section class="section">
+    <div class="section-label">Datenfluss einer Abrechnung</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <strong>Schritt 1 — Bargeld zählen</strong>
+          <span>Mitarbeiter zählt Scheine, Münzrollen und lose Münzen. Zwischenspeicherung nach jeder Eingabe in SharedPreferences (Key: <code>abrechnung_[kinoId]_[datum]</code>). Wechselgeldkontrolle läuft parallel.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <strong>Schritt 2 — Belege &amp; Einnahmen</strong>
+          <span>Kino-Soll, Bistro-Soll, Ausgaben und EC-Belege werden eingegeben. Differenz Anfangsbestand. Entwurf ebenfalls in SharedPreferences gespeichert.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <strong>Schritt 3 — Abschluss</strong>
+          <span>Alle Werte aus Schritt 1 und 2 werden über <code>TagesabschlussFinalisierenUsecase</code> zu einem <code>TagesabschlussFinal</code>-Objekt zusammengeführt. Lokal in SharedPreferences gespeichert. HTTP POST an konfigurierte URL gesendet.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <strong>Export</strong>
+          <span><code>ApiUploadService.upload()</code> sendet alle Felder als Form-POST. Bei CORS-Fehler: Upload gilt als gesendet, Empfang nicht bestätigbar — kein Doppel-Upload. Erneut senden möglich aus dem Verlauf heraus.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Standorte -->
+  <section class="section">
+    <div class="section-label">Standorte</div>
+    <p class="prose">Definiert in <strong>lib/models/kino.dart</strong>. Jedes Kino hat ID, Name, Kürzel und Flags für Getränke- und Wechselgeld-Funktion.</p>
+    <div class="def-list">
+      <div class="def-item"><div class="def-term">kino_01 · SB</div><div class="def-desc">Schauburg — Kino- &amp; Barkasse, Getränkeliste, Wechselgeld. Vollständig implementiert.</div></div>
+      <div class="def-item"><div class="def-term">kino_02 · GO</div><div class="def-desc">Gondel — angelegt, Detail-Implementierung ausstehend.</div></div>
+      <div class="def-item"><div class="def-term">kino_03 · AT</div><div class="def-desc">Atlantis — Kino- &amp; Barkasse, Getränkeliste, Wechselgeld. Vollständig implementiert.</div></div>
+      <div class="def-item"><div class="def-term">kino_04 · CO</div><div class="def-desc">Cinema Ostertor — eine gemeinsame Kasse, Getränkeliste, Wechselgeld. Vollständig implementiert.</div></div>
+      <div class="def-item"><div class="def-term">kino_05 · BT</div><div class="def-desc">Bar Tabak — angelegt, Detail-Implementierung ausstehend (komplexere Kassenstruktur).</div></div>
+    </div>
+    <div class="note"><strong>Neuen Standort hinzufügen:</strong> (1) Eintrag in <code>KinoRepository.kinos</code> ergänzen. (2) Ggf. neue Getränkedatei unter <code>config/</code> anlegen. (3) Asset in <code>pubspec.yaml</code> unter <code>assets:</code> registrieren. (4) <code>GetraenkeConfigService</code>: Mapping in <code>_assetPfad()</code> ergänzen.</div>
+  </section>
+
+  <!-- Konfiguration -->
+  <section class="section">
+    <div class="section-label">Konfiguration</div>
+    <p class="prose"><strong>config/wechselgeld.txt</strong> — Wechselgeldbestand pro Kino:</p>
+    <div class="code-block"># Datum der letzten Änderung
+2026-06-01
+Schauburg
+1400
+Atlantis
+500
+Cinema Ostertor
+400</div>
+
+    <p class="prose"><strong>config/getraenke_[kino].txt</strong> — eine Zeile pro Eintrag, Reihenfolge = Regal-Reihenfolge:</p>
+    <div class="code-block">Club Mate
+Bionade Holunder
+Wasser still 0,5l
+Kaffee</div>
+
+    <div class="note"><strong>Änderungen deployen:</strong> Datei bearbeiten → committen → pushen. GitHub Actions deployt automatisch. Mitarbeiter sehen die Änderung beim nächsten App-Start (oder manuell unter Einstellungen → Getränkeliste → „Standard-Liste herunterladen").</div>
+  </section>
+
+  <!-- SharedPreferences Keys -->
+  <section class="section">
+    <div class="section-label">SharedPreferences — Schlüsselverzeichnis</div>
+    <p class="prose">Alle Daten liegen im Browser-LocalStorage des jeweiligen Geräts. Wird der Cache geleert, gehen lokale Entwürfe und der Verlauf verloren — exportierte Abrechnungen sind bereits beim Kino-Server angekommen.</p>
+    <div class="def-list">
+      <div class="def-item"><div class="def-term">abrechnung_[kinoId]_[yyyy-MM-dd]</div><div class="def-desc">Zwischengespeicherter Entwurf Schritt 1 je Kino und logischem Abrechnungsdatum</div></div>
+      <div class="def-item"><div class="def-term">entwurf_schritt2_[kinoId]</div><div class="def-desc">Zwischengespeicherter Entwurf Schritt 2</div></div>
+      <div class="def-item"><div class="def-term">finale_tagesabschluesse_[kinoId]</div><div class="def-desc">Liste aller abgeschlossenen Abrechnungen je Kino (JSON-Array)</div></div>
+      <div class="def-item"><div class="def-term">change_target_cents_[kinoId]</div><div class="def-desc">Wechselgeld-Sollwert in Cent je Kino</div></div>
+      <div class="def-item"><div class="def-term">mitarbeiter_name</div><div class="def-desc">Name des Mitarbeiters (gerätespezifisch gespeichert)</div></div>
+      <div class="def-item"><div class="def-term">linkshaender_modus</div><div class="def-desc">Boolean — Händigkeit für Layout-Spiegelung</div></div>
+      <div class="def-item"><div class="def-term">getraenkeliste_[kinoId]</div><div class="def-desc">Lokal gecachte Getränkeliste je Kino</div></div>
+      <div class="def-item"><div class="def-term">getraenke_mengen_[kinoId]_[datum]</div><div class="def-desc">Eingetragene Mengen der Getränke-Auffüll-Liste</div></div>
+      <div class="def-item"><div class="def-term">dev_modus_aktiv</div><div class="def-desc">Boolean — Entwicklermodus (zeigt API-Felder, Testwerte etc.)</div></div>
+      <div class="def-item"><div class="def-term">activeCinemaId</div><div class="def-desc">Zuletzt gewähltes Kino</div></div>
+    </div>
+  </section>
+
+  <!-- Datenexport -->
+  <section class="section">
+    <div class="section-label">Datenexport — Felder</div>
+    <p class="prose">Nach Abschluss sendet die App einen HTTP POST. Format: <code>application/x-www-form-urlencoded</code>. URL und API-Key in den Einstellungen (Dev-Modus muss aktiv sein).</p>
+    <div class="def-list">
+      <div class="def-item"><div class="def-term">datum</div><div class="def-desc">Abrechnungsdatum (DD.MM.YYYY)</div></div>
+      <div class="def-item"><div class="def-term">uhrzeit</div><div class="def-desc">Uhrzeit des Abschlusses (HH:MM)</div></div>
+      <div class="def-item"><div class="def-term">mitarbeiter</div><div class="def-desc">Name des Mitarbeiters</div></div>
+      <div class="def-item"><div class="def-term">differenzAnfangsbestand</div><div class="def-desc">Differenz zum Anfangsbestand (Euro)</div></div>
+      <div class="def-item"><div class="def-term">kinoSoll / bistroSoll</div><div class="def-desc">Soll-Einnahmen Kino und Bistro/Bar (Euro)</div></div>
+      <div class="def-item"><div class="def-term">ausgaben</div><div class="def-desc">Ausgaben/Belege gesamt (Euro)</div></div>
+      <div class="def-item"><div class="def-term">gesamtSoll</div><div class="def-desc">Gesamt-Soll (Euro)</div></div>
+      <div class="def-item"><div class="def-term">ecUmsatz</div><div class="def-desc">EC-Kartenumsatz gesamt (Euro)</div></div>
+      <div class="def-item"><div class="def-term">barBestand</div><div class="def-desc">Bargeldbestand abzgl. Wechselgeld (Euro)</div></div>
+      <div class="def-item"><div class="def-term">gesamtIst</div><div class="def-desc">Gesamt-Ist (Euro)</div></div>
+      <div class="def-item"><div class="def-term">differenzGesamt</div><div class="def-desc">Differenz Soll/Ist (Euro)</div></div>
+    </div>
+    <div class="note"><strong>Format ändern:</strong> Für JSON-Format <code>Content-Type: application/json</code> setzen und <code>http.post(body: jsonEncode(formBody))</code> in <code>api_upload_service.dart</code> anpassen. Voraussetzung: Kino-Server sendet CORS-Header <code>Access-Control-Allow-Origin: *</code>.</div>
+  </section>
+
+  <!-- Wichtige technische Details -->
+  <section class="section">
+    <div class="section-label">Wichtige technische Details</div>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">€</div>
+        <div class="step-content">
+          <strong>Geldbeträge intern in Cent</strong>
+          <span>Alle Beträge werden als <code>int</code> in Cent gespeichert und verarbeitet — keine Gleitkomma-Rundungsfehler. Konvention: Variablenname endet auf <code>Cent</code> (z. B. <code>kinoSollCent</code>). Anzeige und Export in Euro.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">⏰</div>
+        <div class="step-content">
+          <strong>Logischer Abrechnungstag (6-Uhr-Knick)</strong>
+          <span>0:00–5:59 Uhr = Vortag. Ab 6:00 Uhr = heute. Implementiert in <code>DatumsHelper.logischerAbrechnungsTag()</code>. Steuert alle Datums-Zuordnungen.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">🔑</div>
+        <div class="step-content">
+          <strong>Kino-IDs sind stabile Schlüssel</strong>
+          <span>Die IDs <code>kino_01</code> bis <code>kino_05</code> dürfen nie geändert werden — sie sind Teil der SharedPreferences-Keys. Eine Änderung würde alle gespeicherten Daten auf den Geräten der Mitarbeiter unzugänglich machen.</span>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">📋</div>
+        <div class="step-content">
+          <strong>Bekannte offene Punkte (Stand Juni 2026)</strong>
+          <span>Gondel (kino_02) und Bar Tabak (kino_05) sind noch nicht vollständig implementiert. Kein globaler State-Management-Layer (Provider) — jede Seite lädt ihren Zustand selbst. Geplant für einen späteren Refactoring-Run.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Troubleshooting -->
+  <section class="section">
+    <div class="section-label">Häufige Probleme</div>
+    <div class="def-list">
+      <div class="def-item">
+        <div class="def-term">Export schlägt fehl</div>
+        <div class="def-desc">Häufig CORS. Der POST kommt am Server an, der Browser liest die Antwort nicht. Lösung: Server muss Header <code>Access-Control-Allow-Origin: *</code> senden. Aus dem Verlauf kann ein fehlgeschlagener Export manuell wiederholt werden.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Getränkeliste leer</div>
+        <div class="def-desc">Config-Datei beim Start nicht erreichbar (kein Netz). Einstellungen → Getränkeliste → „Standard-Liste herunterladen" ausführen.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Falscher Wechselgeldbestand</div>
+        <div class="def-desc"><code>config/wechselgeld.txt</code> aktualisieren und pushen. Mitarbeiter beim nächsten App-Start informieren — der Wert aktualisiert sich automatisch.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Daten nach Browser-Reset weg</div>
+        <div class="def-desc">SharedPreferences = localStorage. Wird beim Löschen des Browser-Caches geleert. Bereits exportierte Abrechnungen sind beim Kino-Server — nur der lokale Verlauf geht verloren.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">App zeigt alte Version</div>
+        <div class="def-desc">Service Worker ist deaktiviert, sollte nicht auftreten. Harter Reload: Strg+Shift+R (Windows) / Cmd+Shift+R (Mac).</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Dev-Modus aktivieren</div>
+        <div class="def-desc">Einstellungen → ganz nach unten scrollen → Dev-Kachel antippen → Entwicklermodus einschalten. Zeigt API-URL/Key-Felder, Testwerte-Button und weitere Debug-Funktionen.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Datenschutz -->
+  <section class="section">
+    <div class="section-label">Datenschutz &amp; DSGVO</div>
+    <p class="prose">Dein Name bleibt auf deinem Handy. Die Abrechnung geht nur ans Kino-Büro — sonst nirgendwo hin. Kein Account, kein Cloud-Speicher, kein Tracking. Fotografierst du einen EC-Beleg, liest eine KI kurz die Zahlen aus — das Foto selbst wird nicht gespeichert.</p>
+
+    <details style="margin-top: 4px;">
+      <summary style="font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; padding: 8px 0; list-style: none; display: flex; align-items: center; gap: 6px;">
+        <span style="font-size: 10px;">▶</span> Für alle, die es genau wissen wollen
+      </summary>
+      <div style="margin-top: 12px;">
+        <div class="def-list">
+
+          <div class="def-item">
+            <div class="def-term">Verantwortlicher</div>
+            <div class="def-desc">Schauburg GmbH, Bremen. Zuständig für Information der Mitarbeitenden gemäß Art. 13/14 DSGVO sowie ggf. Abschluss einer Betriebsvereinbarung.</div>
+          </div>
+
+          <div class="def-item">
+            <div class="def-term">Verarbeitete Daten</div>
+            <div class="def-desc">Mitarbeitername (gerätespezifisch, selbst eingetragen) · Abrechnungsdatum und -uhrzeit · Kassenwerte (Beträge, Differenzen) · Gerätespezifische Einstellungen (Händigkeit, bevorzugtes Kino). Keine Passwörter, keine Bankdaten, keine Authentifizierung.</div>
+          </div>
+
+          <div class="def-item">
+            <div class="def-term">Datenspeicherung</div>
+            <div class="def-desc">Lokal im Browser-LocalStorage des jeweiligen Geräts. Kein zentraler Nutzer-Account, kein Cloud-Speicher. Abgeschlossene Abrechnungen werden zusätzlich an den Kino-Server der Schauburg GmbH übertragen — ausschließlich intern.</div>
+          </div>
+
+          <div class="def-item">
+            <div class="def-term">Keine Weitergabe an Dritte</div>
+            <div class="def-desc">Abrechnungsdaten verlassen das System ausschließlich über die definierte Schnittstelle zur Kino-IT der Schauburg GmbH. Kein Tracking, keine Analyse-Dienste, keine Weitergabe an externe Anbieter.</div>
+          </div>
+
+          <div class="def-item">
+            <div class="def-term">Ausnahme: BelegScan (optional)</div>
+            <div class="def-desc">Wird der optionale BelegScan verwendet, wird das aufgenommene Belegfoto zur Auswertung an die Anthropic API (USA) übermittelt. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung) bzw. berechtigtes Interesse. Anthropic verarbeitet die Daten nach eigenem Datenschutzdokument (DPA verfügbar unter console.anthropic.com). An die Buchhaltung werden ausschließlich die ausgelesenen Zahlenwerte übergeben — kein Foto wird gespeichert oder weitergeleitet. Die Funktion ist deaktivierbar; der Rest der App ist davon unabhängig.</div>
+          </div>
+
+          <div class="def-item">
+            <div class="def-term">Empfehlung an die Schauburg GmbH</div>
+            <div class="def-desc">Mitarbeitende vor Inbetriebnahme schriftlich über die Datenverarbeitung informieren (Art. 13 DSGVO). Auftragsverarbeitungsvertrag (AVV) mit dem App-Entwickler prüfen. Bei Einsatz von BelegScan: AVV mit Anthropic abschließen (über console.anthropic.com verfügbar).</div>
+          </div>
+
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <strong>Paco Demant</strong>
+      Entwicklung &amp; Konzept
+    </div>
+    <div class="footer-right">Juni 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -20,7 +20,7 @@ class DatenschutzSeite extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const Text(
-              'Dein Name und deine Abrechnung gehen nur ans Kino-Büro — sonst nirgendwo hin. Kein Account, kein Cloud-Speicher, kein Tracking. Fotografierst du einen EC-Beleg, liest eine KI kurz die Zahlen aus — das Foto selbst wird nicht gespeichert.',
+              'Dein Name und deine Abrechnung gehen nur ans Kino-Büro — sonst nirgendwo hin. Kein Account, kein Cloud-Speicher, kein Tracking. Fotografierst du einen EC-Beleg, liest eine KI kurz die Zahlen aus — nur die Beträge, nichts Persönliches.',
               style: TextStyle(fontSize: 15, height: 1.5),
             ),
             const SizedBox(height: 20),
@@ -57,11 +57,7 @@ class DatenschutzSeite extends StatelessWidget {
                   text:
                       'Wird der optionale BelegScan verwendet, wird das aufgenommene Belegfoto zur Auswertung an die Anthropic API (USA) übermittelt. An die Buchhaltung werden ausschließlich die ausgelesenen Zahlenwerte übergeben — kein Foto wird gespeichert oder weitergeleitet. Die Funktion ist deaktivierbar.',
                 ),
-                _DatenschutzAbschnitt(
-                  titel: 'Empfehlung an die Schauburg GmbH',
-                  text:
-                      'Mitarbeitende vor Inbetriebnahme schriftlich über die Datenverarbeitung informieren (Art. 13 DSGVO). Bei Einsatz von BelegScan: AVV mit Anthropic abschließen (über console.anthropic.com verfügbar).',
-                ),
+
               ],
             ),
           ],

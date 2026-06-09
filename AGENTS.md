@@ -106,6 +106,16 @@ Nach einem erfolgreichen Run sollen zusätzlich aktualisiert werden:
 
 - `.dev/run_counter.txt`
 - `CHANGELOG.md`
+## Versionierung
+
+Am Ende jedes Runs die Versionsnummer in `pubspec.yaml` unter `version:` aktualisieren.
+Die neue Nummer wird im Run-Prompt vorgegeben. Keine eigene Entscheidung treffen —
+nur den vorgegebenen Wert eintragen.
+
+Zusätzlich denselben Versionswert in `lib/pages/startmenue_seite.dart` in den Text
+'Web App @ GitHub:' eintragen, sodass er lautet:
+'Web App 0.9.1 @ GitHub:'
+Die Versionsnummer dabei immer durch die im Run-Prompt vorgegebene ersetzen.
 
 ## Antwortverhalten beim Laden dieser Datei
 

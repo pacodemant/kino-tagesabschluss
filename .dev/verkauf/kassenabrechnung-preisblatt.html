@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassenabrechnung – Zusammenarbeit & Konditionen</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f2eb;
+    --accent: #c8501a;
+    --rule: #d4cfc3;
+    --muted: #7a7568;
+    --highlight: #fff8f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .header h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .header-h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 520px;
+  }
+
+  .section {
+    margin-bottom: 44px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* Option label */
+  .option-intro {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .option-block {
+    margin-bottom: 28px;
+  }
+
+  .option-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .option-badge {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 2px;
+    background: var(--highlight);
+    color: var(--accent);
+    border: 1px solid #f0cba8;
+  }
+
+  /* Pricing cards */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+  }
+
+  .pricing-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .price-card {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 18px;
+  }
+
+  .price-card.featured {
+    border-color: var(--accent);
+    background: var(--highlight);
+  }
+
+  .price-card-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .price-card.featured .price-card-label {
+    color: var(--accent);
+  }
+
+  .price-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+
+  .price-amount {
+    font-size: 28px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .price-amount sup {
+    font-size: 14px;
+    font-weight: 300;
+    vertical-align: super;
+  }
+
+  .price-period {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .price-divider {
+    height: 1px;
+    background: var(--rule);
+    margin-bottom: 14px;
+  }
+
+  .price-includes {
+    list-style: none;
+    display: grid;
+    gap: 7px;
+  }
+
+  .price-includes li {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.4;
+  }
+
+  .price-includes li::before {
+    content: '—';
+    color: var(--rule);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .price-includes li.included {
+    color: var(--ink);
+  }
+
+  .price-includes li.included::before {
+    content: '✓';
+    color: var(--accent);
+  }
+
+  .note {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .note strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Definitions */
+  .definition-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .definition {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 20px;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    align-items: start;
+  }
+
+  .definition-term {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .definition-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Value box */
+  .value-box {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 20px;
+  }
+
+  .value-box p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .value-calc {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px 24px;
+    font-size: 13px;
+    align-items: baseline;
+  }
+
+  .value-calc .calc-label { color: var(--muted); }
+  .value-calc .calc-value { font-weight: 500; text-align: right; white-space: nowrap; }
+  .value-calc .calc-total {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--ink);
+  }
+  .value-calc .calc-total-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  .value-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: var(--rule);
+    margin: 4px 0;
+  }
+
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 56px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .footer-left strong {
+    display: block;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .footer-right {
+    font-size: 11px;
+    color: var(--rule);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Marktvergleich */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .compare-table th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 0 16px 10px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .compare-table th:last-child {
+    color: var(--accent);
+    text-align: right;
+  }
+
+  .compare-table th:nth-child(2) {
+    text-align: right;
+  }
+
+  .compare-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+    line-height: 1.4;
+  }
+
+  .compare-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .compare-table td:nth-child(2) {
+    text-align: right;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .compare-table td:last-child {
+    text-align: right;
+    font-weight: 500;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .compare-table td:first-child {
+    color: var(--muted);
+  }
+
+  .compare-wrap {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .compare-intro {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 32px 40px 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-meta">Stand Juni 2026</div>
+    <h1>Kassen<em>abrechnung</em></h1>
+    <div class="header-h2">Zusammenarbeit &amp; Konditionen</div>
+    <p class="header-sub">Digitale Tagesabrechnung für Schauburg GmbH, Bremen. Dieses Dokument beschreibt Leistungsumfang, Preisstruktur und Bedingungen.</p>
+  </header>
+
+  <!-- Einsparpotenzial -->
+  <section class="section">
+    <div class="section-label">Einsparpotenzial</div>
+    <div class="value-box">
+      <p>Eine Abrechnung umfasst heute: Bargeld zählen, Umsätze ermitteln, Differenz berechnen, Umschlag beschriften — plus einmal wöchentlich das manuelle Abtippen aller Umschläge, inklusive Entziffern unleserlicher Handschriften, Korrigieren von Rechenfehlern und Aufschlüsseln der EC-Belege nach Kartenanbieter. Die App ersetzt diesen gesamten manuellen Prozess. Gesamtkosten je Mitarbeiterstunde (Brutto inkl. Arbeitgeberanteile): Service ca. 20 €, Verwaltung ca. 20 €.</p>
+      <div class="value-calc">
+        <span class="calc-label">Abrechnungen pro Monat (6 täglich)</span>
+        <span class="calc-value">ca. 180</span>
+
+        <div class="value-divider"></div>
+
+        <span class="calc-label" style="font-weight:500; color: var(--ink)">Mindestschätzung</span>
+        <span class="calc-value"></span>
+        <span class="calc-label">Zeitersparnis pro Abrechnung</span>
+        <span class="calc-value">10 Min.</span>
+        <span class="calc-label">Eingesparte Mitarbeiterzeit (Service)</span>
+        <span class="calc-value">30 Std. × 20 €</span>
+        <span class="calc-label">Verwaltung (Abtippen entfällt)</span>
+        <span class="calc-value">5 Std. × 20 €</span>
+        <span class="calc-total">Wert</span>
+        <span class="calc-total-value">~ 700 €/Monat</span>
+
+        <div class="value-divider"></div>
+
+        <span class="calc-label" style="font-weight:500; color: var(--ink)">Realistisch</span>
+        <span class="calc-value"></span>
+        <span class="calc-label">Zeitersparnis pro Abrechnung</span>
+        <span class="calc-value">15 Min.</span>
+        <span class="calc-label">Eingesparte Mitarbeiterzeit (Service)</span>
+        <span class="calc-value">45 Std. × 20 €</span>
+        <span class="calc-label">Verwaltung (Abtippen, Fehler, EC-Aufschlüsselung)</span>
+        <span class="calc-value">16 Std. × 20 €</span>
+        <span class="calc-total">Wert</span>
+        <span class="calc-total-value">~ 1.220 €/Monat</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modelle -->
+  <section class="section">
+    <div class="section-label">Konditionen</div>
+
+    <!-- Marktvergleich -->
+    <section class="section" style="margin-bottom: 32px;">
+      <div class="section-label">Marktvergleich</div>
+      <p class="compare-intro">Zum Einordnen: Was vergleichbare maßgeschneiderte Software am Markt kostet — entwickelt von einer deutschen Agentur, ohne Branchen- und Betriebskenntnis.</p>
+      <div class="compare-wrap">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Leistung</th>
+              <th>Externe Agentur</th>
+              <th>Dieses Angebot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Entwicklung einmalig</td>
+              <td>20.000 – 40.000 €</td>
+              <td>8.500 €</td>
+            </tr>
+            <tr>
+              <td>Monatliche Lizenz</td>
+              <td>400 – 800 €/Monat</td>
+              <td>390 €/Monat</td>
+            </tr>
+            <tr>
+              <td>Stundensatz Entwicklung</td>
+              <td>120 – 150 €/Std.</td>
+              <td>110 €/Std.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="option-intro">Zwei Modelle stehen zur Wahl — je nach Präferenz der Kinoleitung.</p>
+
+    <!-- Modell A -->
+    <div class="option-block">
+      <div class="option-heading">
+        Modell A · Monatliche Lizenz
+        <span class="option-badge">Empfohlen</span>
+      </div>
+      <div class="pricing-grid">
+
+        <div class="price-card featured">
+          <div class="price-card-label">Lizenz</div>
+          <h3>Nutzungsrecht</h3>
+          <div class="price-amount"><sup>€</sup>390</div>
+          <div class="price-period">pro Monat, netto</div>
+          <div class="price-divider"></div>
+          <ul class="price-includes">
+            <li class="included">Nutzungsrecht der App</li>
+            <li class="included">Alle 5 Standorte</li>
+            <li class="included">Updates &amp; Verbesserungen</li>
+            <li class="included">Kritische Bugs werden behoben</li>
+            <li>Support nicht inkl.</li>
+            <li>Neue Features nicht inkl.</li>
+          </ul>
+        </div>
+
+        <div class="price-card">
+          <div class="price-card-label">Hypercare · Monat 1–3 inkludiert</div>
+          <h3>Support­pauschale</h3>
+          <div class="price-amount" style="font-size:20px; padding-top:4px;">0 €</div>
+          <div class="price-period">Monat 1–3 · danach 120 €/Monat (optional)</div>
+          <div class="price-divider"></div>
+          <ul class="price-includes">
+            <li class="included">Bis 2 Std. Remote/Monat</li>
+            <li class="included">Bugfixes &amp; kleine Anpassungen</li>
+            <li class="included">Rückfragen &amp; Einweisung</li>
+            <li class="included">Monat 1–3 ohne Aufpreis</li>
+            <li>Ab Monat 4 optional buchbar</li>
+            <li>Neue Features nicht inkl.</li>
+          </ul>
+        </div>
+
+        <div class="price-card">
+          <div class="price-card-label">Nach Bedarf · Stundensätze</div>
+          <h3>Entwicklung &amp; Support</h3>
+          <div class="price-divider" style="margin-top:12px;"></div>
+          <ul class="price-includes" style="gap:10px;">
+            <li class="included" style="flex-direction:column; gap:2px;">
+              <span style="font-weight:500; color:var(--ink);">Feature-Entwicklung · 110 €/Std.</span>
+              <span>Neue Features, KI-Erfassung, Dashboard u.&nbsp;ä.</span>
+            </li>
+            <li class="included" style="flex-direction:column; gap:2px;">
+              <span style="font-weight:500; color:var(--ink);">Ad-hoc Remote-Support · 125 €/Std.</span>
+              <span>Ohne aktive Pauschale. 15-Min.-Takt, mind. 30 Min.</span>
+            </li>
+            <li class="included" style="flex-direction:column; gap:2px;">
+              <span style="font-weight:500; color:var(--ink);">Vor-Ort Bremen · 160 €/Std. + 150 € Anreise</span>
+              <span>Stark limitiert, nur nach Absprache.</span>
+            </li>
+            <li>Schriftliche Vereinbarung</li>
+            <li>Vorab-Kostenrahmen</li>
+          </ul>
+        </div>
+    </div>
+    <div class="note">
+      <strong>Mindestlaufzeit:</strong> 12 Monate. Danach monatlich zum Monatsende kündbar.
+    </div>
+
+    <!-- Modell B -->
+    <div class="option-block">
+      <div class="option-heading">
+        Modell B · Einmalzahlung
+        <span class="option-badge">Einmalig</span>
+      </div>
+      <div class="pricing-grid-2">
+
+        <div class="price-card featured">
+          <div class="price-card-label">Einmalig</div>
+          <h3>App-Kauf</h3>
+          <div class="price-amount"><sup>€</sup>8.500</div>
+          <div class="price-period">einmalig, netto</div>
+          <div class="price-divider"></div>
+          <ul class="price-includes">
+            <li class="included">Vollständige V1-App</li>
+            <li class="included">Alle 5 Standorte</li>
+            <li class="included">Übergabedokumentation für Kino-IT</li>
+            <li class="included">3 Monate Rückfragen kostenfrei</li>
+            <li>Keine laufenden Kosten</li>
+            <li>Wartung danach durch Kino-IT</li>
+          </ul>
+        </div>
+
+        <div class="price-card">
+          <div class="price-card-label">Nach Bedarf · Stundensätze</div>
+          <h3>Entwicklung &amp; Support</h3>
+          <div class="price-divider" style="margin-top:12px;"></div>
+          <ul class="price-includes" style="gap:10px;">
+            <li class="included" style="flex-direction:column; gap:2px;">
+              <span style="font-weight:500; color:var(--ink);">Feature-Entwicklung · 110 €/Std.</span>
+              <span>Neue Features, KI-Erfassung, Dashboard u.&nbsp;ä.</span>
+            </li>
+            <li class="included" style="flex-direction:column; gap:2px;">
+              <span style="font-weight:500; color:var(--ink);">Ad-hoc Remote-Support · 125 €/Std.</span>
+              <span>15-Min.-Takt, Mindestabrechnung 30 Min.</span>
+            </li>
+            <li class="included" style="flex-direction:column; gap:2px;">
+              <span style="font-weight:500; color:var(--ink);">Vor-Ort Bremen · 160 €/Std. + 150 € Anreise</span>
+              <span>Stark limitiert, nur nach Absprache.</span>
+            </li>
+            <li>Schriftliche Vereinbarung</li>
+            <li>Vorab-Kostenrahmen</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="note">
+        <strong>Hinweis:</strong> Bei Modell B übernimmt die Kino-IT die laufende Wartung. Eine vollständige Übergabedokumentation wird bereitgestellt.
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Definitionen -->
+  <section class="section">
+    <div class="section-label">Begriffe &amp; Bedingungen</div>
+    <div class="definition-list">
+      <div class="definition">
+        <div class="definition-term">Bugfix</div>
+        <div class="definition-desc">Behebung eines technischen Fehlers, der eine bestehende, dokumentierte Funktion beeinträchtigt. Kein Bugfix: geänderte Anforderungen oder neue Wünsche.</div>
+      </div>
+      <div class="definition">
+        <div class="definition-term">Kleine Anpassung</div>
+        <div class="definition-desc">Änderungen die weniger als 30 Minuten Entwicklungszeit erfordern und keine neue Logik einführen — z. B. Texte, Bezeichnungen, Reihenfolgen.</div>
+      </div>
+      <div class="definition">
+        <div class="definition-term">Neues Feature</div>
+        <div class="definition-desc">Jede Funktion die über den in der Feature-Übersicht beschriebenen Stand hinausgeht. Wird nach Aufwand abgerechnet, vorher schriftlich vereinbart.</div>
+      </div>
+      <div class="definition">
+        <div class="definition-term">Übergabedokumentation</div>
+        <div class="definition-desc">Technische Beschreibung der App-Struktur, Konfigurationsdateien und Deployment-Prozess — damit die Kino-IT die Wartung selbst übernehmen kann.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <strong>Paco Demant</strong>
+      Entwicklung &amp; Konzept
+    </div>
+    <div class="footer-right">Juni 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>
