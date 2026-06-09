@@ -109,7 +109,7 @@ class StartmenueSeite extends StatelessWidget {
                   onPressed: () => _oeffneVerlauf(context),
                   child: const Text('Verlauf'),
                 ),
-                const Spacer(),
+                const SizedBox(height: 12),
                 Center(
                   child: GestureDetector(
                     onTap: () => Navigator.of(context)
@@ -125,7 +125,7 @@ class StartmenueSeite extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
+                const Spacer(),
                 const Center(
                   child: Text(
                     'Web App 0.9.1 @ GitHub:',
