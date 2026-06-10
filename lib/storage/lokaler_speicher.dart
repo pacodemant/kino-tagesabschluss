@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/services/storage_persist_service.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -105,6 +106,7 @@ class LokalerSpeicher {
 
     vorhandeneAbschluesse.add(abschluss.toJson());
     await box.put(key, jsonEncode(vorhandeneAbschluesse));
+    await StoragePersistService.requestIfNeeded();
   }
 
   /// Ersetzt die finale Tagesabrechnung desselben Kalendertags.

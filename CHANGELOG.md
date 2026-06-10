@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 268: StoragePersistService.requestIfNeeded() nach speichereFinalenTagesabschluss() aufgerufen (kein Dialog, still im Hintergrund); BuildContext-Parameter aus requestIfNeeded() entfernt; Version auf 0.9.6.
+
 - Run 267: AbrechnungSpeicher von SharedPreferences auf Hive (box_abrechnung_entwuerfe) umgestellt; Version auf 0.9.5.
 
 - Run 266: Weitere Methoden in LokalerSpeicher von SharedPreferences auf Hive umgestellt — box_schritt2_entwuerfe (3 Methoden), box_wechselgeld_entwuerfe (3 Methoden), box_getraenke_mengen (2 Methoden), box_getraenkeliste (2 Methoden); Version auf 0.9.4.
