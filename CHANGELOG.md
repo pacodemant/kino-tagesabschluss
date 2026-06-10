@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 265: Finale Tagesabschlüsse von SharedPreferences auf Hive (box_tagesabschluesse) umgestellt; mitarbeiter_name neu in box_einstellungen via LokalerSpeicher.ladeMitarbeiterName/speichereMitarbeiterName; alle Aufrufer (einstellungen_seite, schritt3, api_upload_service, google_sheets_service) aktualisiert; Version auf 0.9.3.
+
 - Run 264: Hive initialisiert — alle 7 Boxes beim App-Start geöffnet (main.dart); StoragePersistService vorbereitet (storage_persist_service.dart + web/stub-Varianten) mit Dialog und Key 'storage_persist_granted' in box_einstellungen; Version auf 0.9.2+1 gesetzt.
 
 - Run 263: Datenschutzhinweise-Seite eingebaut — neue Seite datenschutz_seite.dart mit Einleitungstext und aufklappbarem DSGVO-Detailbereich; Route in main.dart registriert; dezenter Textlink im Startmenü (unterhalb der Buttons, vor dem Footer).

@@ -11,6 +11,7 @@ import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.da
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
@@ -104,8 +105,7 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   Future<void> _initialisierenAsync() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? mitarbeiterName = prefs.getString('mitarbeiter_name');
+    final String? mitarbeiterName = await LokalerSpeicher.ladeMitarbeiterName();
     final TagesabschlussFinal abschluss = _finalisierenUsecase.finalisieren(
       eingabe: TagesabschlussFinalisierenEingabe(
         kinoId: widget.argumente.kinoId,

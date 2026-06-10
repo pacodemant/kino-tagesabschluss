@@ -165,9 +165,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _speichereMitarbeiterName() async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String name = _mitarbeiterNameCtrl.text.trim();
-    await speicher.setString('mitarbeiter_name', name);
+    await LokalerSpeicher.speichereMitarbeiterName(name);
     if (name.isNotEmpty && mounted) {
       setState(() => _nameAufgeklappt = false);
     }
@@ -228,9 +227,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final String name in getraenkeliste) {
       _getraenkeController.add(TextEditingController(text: name));
     }
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String mitarbeiterName =
-        speicher.getString('mitarbeiter_name') ?? '';
+        (await LokalerSpeicher.ladeMitarbeiterName()) ?? '';
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
     final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
     final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
     final String apiUploadKey = speicher.getString('api_upload_key') ?? '';

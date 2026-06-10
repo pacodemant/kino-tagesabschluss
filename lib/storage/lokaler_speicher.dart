@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -83,9 +84,9 @@ class LokalerSpeicher {
   static Future<void> speichereFinalenTagesabschluss(
     TagesabschlussFinal abschluss,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
     final String key = finaleTagesabschluesseKey(abschluss.kinoId);
-    final String? rohwert = speicher.getString(key);
+    final String? rohwert = box.get(key) as String?;
 
     final List<Map<String, dynamic>> vorhandeneAbschluesse =
         <Map<String, dynamic>>[];
@@ -103,16 +104,16 @@ class LokalerSpeicher {
     }
 
     vorhandeneAbschluesse.add(abschluss.toJson());
-    await speicher.setString(key, jsonEncode(vorhandeneAbschluesse));
+    await box.put(key, jsonEncode(vorhandeneAbschluesse));
   }
 
   /// Ersetzt die finale Tagesabrechnung desselben Kalendertags.
   static Future<void> ersetzeFinalenTagesabschluss(
     TagesabschlussFinal abschluss,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
     final String key = finaleTagesabschluesseKey(abschluss.kinoId);
-    final String? rohwert = speicher.getString(key);
+    final String? rohwert = box.get(key) as String?;
 
     final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
     if (rohwert != null) {
@@ -137,16 +138,16 @@ class LokalerSpeicher {
     }
 
     aktualisiert.add(abschluss.toJson());
-    await speicher.setString(key, jsonEncode(aktualisiert));
+    await box.put(key, jsonEncode(aktualisiert));
   }
 
   /// Laedt alle finalen Tagesabschluesse fuer ein Kino (neueste zuerst).
   static Future<List<TagesabschlussFinal>> ladeFinaleTagesabschluesse(
     String kinoId,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
     final String key = finaleTagesabschluesseKey(kinoId);
-    final String? rohwert = speicher.getString(key);
+    final String? rohwert = box.get(key) as String?;
     if (rohwert == null) {
       return <TagesabschlussFinal>[];
     }
@@ -392,9 +393,9 @@ class LokalerSpeicher {
     String kinoId,
     DateTime datum,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
     final String key = finaleTagesabschluesseKey(kinoId);
-    final String? rohwert = speicher.getString(key);
+    final String? rohwert = box.get(key) as String?;
     if (rohwert == null) {
       return;
     }
@@ -419,7 +420,7 @@ class LokalerSpeicher {
       return;
     }
 
-    await speicher.setString(key, jsonEncode(aktualisiert));
+    await box.put(key, jsonEncode(aktualisiert));
   }
 
   static Future<bool> istErstesSchritt1OeffnenHeute(String kinoId) async {
@@ -434,5 +435,15 @@ class LokalerSpeicher {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String heute = DateTime.now().toIso8601String().substring(0, 10);
     await speicher.setString('schritt1_letztesOeffnen_$kinoId', heute);
+  }
+
+  static Future<String?> ladeMitarbeiterName() async {
+    final Box<dynamic> box = Hive.box('box_einstellungen');
+    return box.get('mitarbeiter_name') as String?;
+  }
+
+  static Future<void> speichereMitarbeiterName(String name) async {
+    final Box<dynamic> box = Hive.box('box_einstellungen');
+    await box.put('mitarbeiter_name', name);
   }
 }

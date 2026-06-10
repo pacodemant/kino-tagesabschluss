@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class ApiUploadService {
   ApiUploadService._();
@@ -43,8 +43,7 @@ class ApiUploadService {
   }
 
   static Future<String> _ladeMitarbeiterName() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('mitarbeiter_name') ?? '';
+    return (await LokalerSpeicher.ladeMitarbeiterName()) ?? '';
   }
 
   static String _formatDatum(DateTime datum) {

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/google_sheets_config.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class GoogleSheetsService {
   GoogleSheetsService._();
@@ -205,8 +205,7 @@ class GoogleSheetsService {
   }
 
   static Future<String> _ladeMitarbeiterName() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('mitarbeiter_name') ?? '';
+    return (await LokalerSpeicher.ladeMitarbeiterName()) ?? '';
   }
 
   static String _formatUhrzeit() {
