@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
@@ -28,6 +29,17 @@ Future<void> main() async {
 
   // Wichtig für DateFormat(..., 'de_DE') in Schritt 2 (sonst LocaleDataException).
   await initializeDateFormatting('de_DE', null);
+
+  await Hive.initFlutter();
+  await Future.wait(<Future<Box<dynamic>>>[
+    Hive.openBox('box_tagesabschluesse'),
+    Hive.openBox('box_abrechnung_entwuerfe'),
+    Hive.openBox('box_schritt2_entwuerfe'),
+    Hive.openBox('box_getraenke_mengen'),
+    Hive.openBox('box_wechselgeld_entwuerfe'),
+    Hive.openBox('box_getraenkeliste'),
+    Hive.openBox('box_einstellungen'),
+  ]);
 
   for (final Kino kino in KinoRepository.kinos) {
     if (kino.hatGetraenke) {

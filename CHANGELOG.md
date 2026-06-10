@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 264: Hive initialisiert — alle 7 Boxes beim App-Start geöffnet (main.dart); StoragePersistService vorbereitet (storage_persist_service.dart + web/stub-Varianten) mit Dialog und Key 'storage_persist_granted' in box_einstellungen; Version auf 0.9.2+1 gesetzt.
+
 - Run 263: Datenschutzhinweise-Seite eingebaut — neue Seite datenschutz_seite.dart mit Einleitungstext und aufklappbarem DSGVO-Detailbereich; Route in main.dart registriert; dezenter Textlink im Startmenü (unterhalb der Buttons, vor dem Footer).
 
 - Run 262: Version auf 0.9.1 gesetzt (pubspec.yaml); Startmenü-Label auf "TEST Web App 0.9.1 @ GitHub:" aktualisiert.
