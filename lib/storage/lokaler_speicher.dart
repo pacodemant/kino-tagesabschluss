@@ -34,10 +34,10 @@ class LokalerSpeicher {
   static Future<Map<String, dynamic>?> ladeGetraenkeMengen(
     String kinoId,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final Box<dynamic> box = Hive.box('box_getraenke_mengen');
     final String key =
         'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
-    final String? rohwert = speicher.getString(key);
+    final String? rohwert = box.get(key) as String?;
     if (rohwert == null) {
       return null;
     }
@@ -52,15 +52,15 @@ class LokalerSpeicher {
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final Box<dynamic> box = Hive.box('box_getraenke_mengen');
     final String key =
         'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
-    await speicher.setString(key, jsonEncode(daten));
+    await box.put(key, jsonEncode(daten));
   }
 
   static Future<List<String>> ladeGetraenkeliste(String kinoId) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? rohwert = speicher.getString('getraenkeliste_$kinoId');
+    final Box<dynamic> box = Hive.box('box_getraenkeliste');
+    final String? rohwert = box.get('getraenkeliste_$kinoId') as String?;
     if (rohwert == null) {
       return <String>[];
     }
@@ -76,8 +76,8 @@ class LokalerSpeicher {
     String kinoId,
     List<String> liste,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString('getraenkeliste_$kinoId', jsonEncode(liste));
+    final Box<dynamic> box = Hive.box('box_getraenkeliste');
+    await box.put('getraenkeliste_$kinoId', jsonEncode(liste));
   }
 
   /// Speichert eine finale Tagesabrechnung im eigenen Key-Namespace je Kino.
@@ -190,16 +190,16 @@ class LokalerSpeicher {
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString(schritt2EntwurfKey(kinoId), jsonEncode(daten));
+    final Box<dynamic> box = Hive.box('box_schritt2_entwuerfe');
+    await box.put(schritt2EntwurfKey(kinoId), jsonEncode(daten));
   }
 
   /// Laedt den Schritt-2-Entwurf fuer ein Kino, oder null wenn keiner vorhanden.
   static Future<Map<String, dynamic>?> ladeSchritt2Entwurf(
     String kinoId,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? rohwert = speicher.getString(schritt2EntwurfKey(kinoId));
+    final Box<dynamic> box = Hive.box('box_schritt2_entwuerfe');
+    final String? rohwert = box.get(schritt2EntwurfKey(kinoId)) as String?;
     if (rohwert == null) {
       return null;
     }
@@ -215,8 +215,8 @@ class LokalerSpeicher {
 
   /// Löscht den Schritt-2-Entwurf für ein Kino.
   static Future<void> loescheSchritt2Entwurf(String kinoId) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.remove(schritt2EntwurfKey(kinoId));
+    final Box<dynamic> box = Hive.box('box_schritt2_entwuerfe');
+    await box.delete(schritt2EntwurfKey(kinoId));
   }
 
   static Map<String, dynamic> _schritt1StandardWerte(String kinoId) {
@@ -355,10 +355,9 @@ class LokalerSpeicher {
   static Future<Map<String, dynamic>?> ladeWechselgeldZaehlEntwurf(
     String kinoId,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? rohwert = speicher.getString(
-      _wechselgeldZaehlEntwurfKey(kinoId),
-    );
+    final Box<dynamic> box = Hive.box('box_wechselgeld_entwuerfe');
+    final String? rohwert =
+        box.get(_wechselgeldZaehlEntwurfKey(kinoId)) as String?;
     if (rohwert == null) {
       return null;
     }
@@ -373,16 +372,16 @@ class LokalerSpeicher {
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString(
+    final Box<dynamic> box = Hive.box('box_wechselgeld_entwuerfe');
+    await box.put(
       _wechselgeldZaehlEntwurfKey(kinoId),
       jsonEncode(daten),
     );
   }
 
   static Future<void> loescheWechselgeldZaehlEntwurf(String kinoId) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.remove(_wechselgeldZaehlEntwurfKey(kinoId));
+    final Box<dynamic> box = Hive.box('box_wechselgeld_entwuerfe');
+    await box.delete(_wechselgeldZaehlEntwurfKey(kinoId));
   }
 
   static String _wechselgeldZaehlEntwurfKey(String kinoId) =>
