@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Speichert und lädt die Eingabewerte von Schritt 1 je Kino und Abrechnungsdatum.
 ///
@@ -18,13 +18,13 @@ class AbrechnungSpeicher {
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString(abrechnungsDatumKey(kinoId), jsonEncode(daten));
+    final Box<dynamic> box = Hive.box('box_abrechnung_entwuerfe');
+    await box.put(abrechnungsDatumKey(kinoId), jsonEncode(daten));
   }
 
   static Future<Map<String, dynamic>?> laden(String kinoId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? rohwert = prefs.getString(abrechnungsDatumKey(kinoId));
+    final Box<dynamic> box = Hive.box('box_abrechnung_entwuerfe');
+    final String? rohwert = box.get(abrechnungsDatumKey(kinoId)) as String?;
     if (rohwert == null) {
       return null;
     }

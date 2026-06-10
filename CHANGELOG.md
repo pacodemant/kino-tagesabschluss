@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 267: AbrechnungSpeicher von SharedPreferences auf Hive (box_abrechnung_entwuerfe) umgestellt; Version auf 0.9.5.
+
 - Run 266: Weitere Methoden in LokalerSpeicher von SharedPreferences auf Hive umgestellt — box_schritt2_entwuerfe (3 Methoden), box_wechselgeld_entwuerfe (3 Methoden), box_getraenke_mengen (2 Methoden), box_getraenkeliste (2 Methoden); Version auf 0.9.4.
 
 - Run 265: Finale Tagesabschlüsse von SharedPreferences auf Hive (box_tagesabschluesse) umgestellt; mitarbeiter_name neu in box_einstellungen via LokalerSpeicher.ladeMitarbeiterName/speichereMitarbeiterName; alle Aufrufer (einstellungen_seite, schritt3, api_upload_service, google_sheets_service) aktualisiert; Version auf 0.9.3.
