@@ -60,13 +60,13 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 29),
+              padding: const EdgeInsets.only(bottom: 34),
               child: GestureDetector(
                 onTap: () => Navigator.of(context)
                     .pushNamed(UeberEntwicklerSeite.routenName),
                 child: Image.asset(
                   'assets/images/logo_apprev.png',
-                  width: 60,
+                  width: 90,
                 ),
               ),
             ),
