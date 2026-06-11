@@ -51,6 +51,8 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
               child: Image.asset(
                 'assets/images/demo_people.png',
                 fit: BoxFit.fitWidth,
+                color: AppFarben.appBarRot,
+                colorBlendMode: BlendMode.srcATop,
               ),
             ),
           ),
