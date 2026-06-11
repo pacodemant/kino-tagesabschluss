@@ -74,6 +74,18 @@ class StartmenueSeite extends StatelessWidget {
       ),
       body: Stack(
         children: <Widget>[
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Opacity(
+              opacity: 0.3,
+              child: Image.asset(
+                'assets/images/demo_people.png',
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -111,7 +123,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.6 @ GitHub:',
+                    'Web App 0.9.6 · r268 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
