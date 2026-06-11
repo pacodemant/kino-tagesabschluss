@@ -19,6 +19,7 @@ import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
+import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
@@ -88,6 +89,7 @@ class MeineApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         StartpruefungSeite.routenName: (_) => const StartpruefungSeite(),
         KinoauswahlSeite.routenName: (_) => const KinoauswahlSeite(),
+        UeberEntwicklerSeite.routenName: (_) => const UeberEntwicklerSeite(),
       },
       onUnknownRoute: (RouteSettings settings) => MaterialPageRoute<void>(
         builder: (_) => const KinoauswahlSeite(),

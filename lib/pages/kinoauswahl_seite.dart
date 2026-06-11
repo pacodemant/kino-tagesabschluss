@@ -3,6 +3,7 @@ import 'package:kino_bar_app/domain/usecases/kino_waehlen_usecase.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
+import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 class KinoauswahlSeite extends StatefulWidget {
@@ -53,6 +54,20 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
                 fit: BoxFit.fitWidth,
                 color: AppFarben.appBarRot,
                 colorBlendMode: BlendMode.srcATop,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 24),
+              child: GestureDetector(
+                onTap: () => Navigator.of(context)
+                    .pushNamed(UeberEntwicklerSeite.routenName),
+                child: Image.asset(
+                  'assets/images/logo_apprev.png',
+                  width: 120,
+                ),
               ),
             ),
           ),

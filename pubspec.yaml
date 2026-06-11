@@ -71,6 +71,7 @@ flutter:
     - config/getraenke_cinema_ostertor.txt
     - assets/images/qr_webapp_github.png
     - assets/images/demo_people.png
+    - assets/images/logo_apprev.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
