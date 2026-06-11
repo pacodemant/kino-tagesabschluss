@@ -40,9 +40,23 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
           style: TextStyle(fontWeight: FontWeight.normal),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      body: Stack(
+        children: <Widget>[
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: -5,
+            child: Opacity(
+              opacity: 0.3,
+              child: Image.asset(
+                'assets/images/demo_people.png',
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
@@ -75,6 +89,8 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
             ),
           ],
         ),
+          ),
+        ],
       ),
     );
   }

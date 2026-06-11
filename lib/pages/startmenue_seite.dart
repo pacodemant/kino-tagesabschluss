@@ -77,7 +77,7 @@ class StartmenueSeite extends StatelessWidget {
           Positioned(
             left: 0,
             right: 0,
-            bottom: 0,
+            bottom: -5,
             child: Opacity(
               opacity: 0.3,
               child: Image.asset(
