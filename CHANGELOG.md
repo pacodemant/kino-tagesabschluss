@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 270: Neues Datenmodell BelegScanErgebnis (beleg_scan_ergebnis.dart) mit ZahlungsartErgebnis, Plausibilitäts-Gettern und fromJson(); neuer BelegScanService (beleg_scan_service.dart) mit BelegScanException, liest Anthropic API-Key aus SharedPreferences, sendet Bilddaten base64-kodiert an Anthropic Messages API (claude-sonnet-4-6), parst Antwort zu BelegScanErgebnis; image_picker ^1.1.2 als Dependency ergänzt; Version auf 0.9.8.
+
 - Run 269: Neues Eingabefeld „Anthropic API-Key" im Dev-Bereich der Einstellungsseite; Untersektion „KI-Belegscan (Anthropic)" mit verdecktem Eingabefeld und Sichtbarkeits-Toggle; Schlüssel wird unter 'anthropic_api_key' in SharedPreferences gespeichert; Version auf 0.9.7.
 
 - Run 268: StoragePersistService.requestIfNeeded() nach speichereFinalenTagesabschluss() aufgerufen (kein Dialog, still im Hintergrund); BuildContext-Parameter aus requestIfNeeded() entfernt; Version auf 0.9.6.
