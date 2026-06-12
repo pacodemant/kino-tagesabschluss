@@ -93,8 +93,12 @@ class BelegScanService {
           jsonDecode(response.body) as Map<String, dynamic>;
       final List<dynamic> content =
           responseJson['content'] as List<dynamic>;
-      final String text =
+      String text =
           (content[0] as Map<String, dynamic>)['text'] as String;
+      final Match? block =
+          RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```').firstMatch(text);
+      if (block != null) text = block.group(1)!;
+      text = text.trim();
       final Map<String, dynamic> ergebnisJson =
           jsonDecode(text) as Map<String, dynamic>;
       return BelegScanErgebnis.fromJson(ergebnisJson);
