@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -114,6 +116,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<int> _ecBelegeCent = <int>[];
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
+  bool _scanLaeuft = false;
   bool _eingabeMitKomma = false;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
@@ -678,6 +681,40 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_ausgabenLabelController[0], '');
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
+  }
+
+  Future<void> _starteEcBelegScan() async {
+    final XFile? bild =
+        await ImagePicker().pickImage(source: ImageSource.camera);
+    if (bild == null) return;
+    setState(() => _scanLaeuft = true);
+    try {
+      final ergebnis = await BelegScanService.scan(bild);
+      debugPrint('BelegScan terminalId: ${ergebnis.terminalId}');
+      debugPrint('BelegScan datum: ${ergebnis.datum}');
+      debugPrint('BelegScan uhrzeit: ${ergebnis.uhrzeit}');
+      debugPrint('BelegScan belegNrVon: ${ergebnis.belegNrVon}');
+      debugPrint('BelegScan belegNrBis: ${ergebnis.belegNrBis}');
+      for (final z in ergebnis.zahlungsarten) {
+        debugPrint(
+            'BelegScan zahlungsart: ${z.art}, anzahl: ${z.anzahl}, betragCent: ${z.betragCent}');
+      }
+      debugPrint('BelegScan gesamtAnzahl: ${ergebnis.gesamtAnzahl}');
+      debugPrint('BelegScan gesamtBetragCent: ${ergebnis.gesamtBetragCent}');
+      debugPrint('BelegScan hinweis: ${ergebnis.hinweis}');
+      debugPrint('BelegScan istPlausibel: ${ergebnis.istPlausibel}');
+    } on BelegScanException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Scan fehlgeschlagen. Bitte erneut versuchen.')),
+      );
+    } finally {
+      if (mounted) setState(() => _scanLaeuft = false);
+    }
   }
 
   Future<void> _bestaetigeUndLeereEingaben() async {
@@ -1504,13 +1541,28 @@ class _TagesabschlussSchritt2SeiteState
                                 ),
                               ),
                             ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: OutlinedButton.icon(
-                              onPressed: _ecBelegHinzufuegen,
-                              icon: const Icon(Icons.add),
-                              label: const Text('+ EC-Beleg hinzufügen'),
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              OutlinedButton.icon(
+                                onPressed: _ecBelegHinzufuegen,
+                                icon: const Icon(Icons.add),
+                                label: const Text('+ EC-Beleg hinzufügen'),
+                              ),
+                              IconButton(
+                                tooltip: 'EC-Beleg scannen',
+                                onPressed:
+                                    _scanLaeuft ? null : _starteEcBelegScan,
+                                icon: _scanLaeuft
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                    : const Icon(Icons.camera_alt_outlined),
+                              ),
+                            ],
                           ),
                         ],
                       ),
