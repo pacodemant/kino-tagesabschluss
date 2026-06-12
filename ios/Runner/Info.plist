@@ -30,6 +30,8 @@
 	<array>
 		<string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Die Kamera wird zum Fotografieren von EC-Kartenbelegen benötigt.</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Lokales Netzwerk wird für Debug/Service-Erkennung benötigt.</string>
 	<key>UIApplicationSceneManifest</key>
