@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
@@ -30,7 +31,26 @@ class ApiUploadService {
       'barBestand': _euro(abrechnung.barBestandAbzglWechselgeldCent).toString(),
       'gesamtIst': _euro(abrechnung.gesamtIstCent).toString(),
       'differenzGesamt': _euro(abrechnung.differenzGesamtCent).toString(),
+      if (abrechnung.terminalId != null)
+        'terminal_id': abrechnung.terminalId!,
+      if (abrechnung.belegNrVon != null)
+        'beleg_nr_von': abrechnung.belegNrVon!,
+      if (abrechnung.belegNrBis != null)
+        'beleg_nr_bis': abrechnung.belegNrBis!,
+      if (abrechnung.ecUhrzeit != null)
+        'ec_uhrzeit': abrechnung.ecUhrzeit!,
     };
+
+    if (abrechnung.zahlungsartenAufschluesselung != null) {
+      for (final ZahlungsartErgebnis z
+          in abrechnung.zahlungsartenAufschluesselung!) {
+        final String key = _kartenartZuSnakeCase(z.art);
+        if (z.betragCent != null) {
+          formBody['ec_${key}_betrag_cent'] = z.betragCent!.toString();
+        }
+        formBody['ec_${key}_anzahl'] = z.anzahl.toString();
+      }
+    }
 
     final http.Response response = await http.post(
       Uri.parse(url),
@@ -60,6 +80,13 @@ class ApiUploadService {
   }
 
   static double _euro(int cent) => cent / 100.0;
+
+  static String _kartenartZuSnakeCase(String art) {
+    return art
+        .toLowerCase()
+        .replaceAll(' ', '_')
+        .replaceAll(RegExp(r'[^a-z0-9_]'), '');
+  }
 
   // Browser blockiert das Lesen der Antwort bei fehlendem CORS-Header,
   // obwohl der POST beim Server ankam. Diese Fehlertexte kommen vom Browser.

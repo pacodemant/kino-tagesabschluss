@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274: ZahlungsartenConfigService + config/zahlungsarten.txt (girocard, SEPA Lastschrift, Mastercard, Visa); BelegScanGegenpruefDialog: Buttons auf „Korrigieren" (kachelOeffnen:true) + „Bestätigen" (kachelOeffnen:false), ✕ im Header, BelegScanDialogErgebnis als Rückgabewert; TagesabschlussFinal: 5 neue nullable Felder (terminalId, belegNrVon, belegNrBis, ecUhrzeit, zahlungsartenAufschluesselung) mit toJson/fromJson; Chain Finalisieren­Eingabe→Usecase→Schritt3Argumente aktualisiert; EC-Belege-Kachel in Schritt2 kollapsierbar mit Scan-Metadaten-Block (3a) und Kartenarten-Tabelle (3b); _starteEcBelegScan füllt EC-Gesamtbetrag, Metadata und Kartenarten-Felder; ApiUploadService exportiert neue Felder; Version 0.9.11 · r274.
+
 - Run 273: Gegenprüf-Popup nach erfolgreichem BelegScan; BelegScanGegenpruefDialog zeigt Terminal-ID, Datum, Uhrzeit, Beleg-Nr. von/bis, Zahlungsarten mit Betrag, Gesamtbetrag; null-Felder (abrechnungsrelevant) als „unleserlich" mit Pflicht-Eingabefeld; Bestätigen-Button deaktiviert bis alle Pflichtfelder ausgefüllt; Plausibilitäts-Warnung (rot) bei istPlausibel==false; KI-Hinweis-Box (gelb) bei hinweis!=null; ZahlungsartErgebnis.betragCent auf int? umgestellt.
 
 - Run 272: BelegScanService auf Cloudflare Worker als Proxy umgestellt (kartenzahlungsbelegscan.pacodemant.workers.dev); x-api-key- und anthropic-version-Header entfernt; SharedPreferences-API-Key-Prüfung entfernt; Version auf 0.9.10.

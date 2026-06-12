@@ -1,4 +1,5 @@
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 
@@ -27,6 +28,12 @@ class TagesabschlussFinalisierenEingabe {
     // EC-Beleg-Labels aus Schritt 2
     this.ecBelegeLabels,
     this.mitarbeiterName,
+    // EC-Belegscan-Metadaten aus Schritt 2
+    this.terminalId,
+    this.belegNrVon,
+    this.belegNrBis,
+    this.ecUhrzeit,
+    this.zahlungsartenAufschluesselung,
   });
 
   final String kinoId;
@@ -53,6 +60,12 @@ class TagesabschlussFinalisierenEingabe {
   // EC-Beleg-Labels aus Schritt 2
   final List<String>? ecBelegeLabels;
   final String? mitarbeiterName;
+  // EC-Belegscan-Metadaten aus Schritt 2
+  final String? terminalId;
+  final String? belegNrVon;
+  final String? belegNrBis;
+  final String? ecUhrzeit;
+  final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -198,6 +211,11 @@ class TagesabschlussFinalisierenUsecase {
       mitarbeiterName: eingabe.mitarbeiterName?.isNotEmpty == true
           ? eingabe.mitarbeiterName
           : null,
+      terminalId: eingabe.terminalId,
+      belegNrVon: eingabe.belegNrVon,
+      belegNrBis: eingabe.belegNrBis,
+      ecUhrzeit: eingabe.ecUhrzeit,
+      zahlungsartenAufschluesselung: eingabe.zahlungsartenAufschluesselung,
     );
   }
 

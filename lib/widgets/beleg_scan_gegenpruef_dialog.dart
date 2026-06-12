@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 
+
 class BelegScanGegenpruefDialog extends StatefulWidget {
   const BelegScanGegenpruefDialog({
     super.key,
@@ -361,17 +362,24 @@ class _BelegScanGegenpruefDialogState
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+              padding: const EdgeInsets.fromLTRB(16, 14, 4, 10),
               child: Row(
-                children: const <Widget>[
-                  Icon(Icons.receipt_long_outlined, size: 20),
-                  SizedBox(width: 8),
-                  Text(
-                    'EC-Beleg prüfen',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
+                children: <Widget>[
+                  const Icon(Icons.receipt_long_outlined, size: 20),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'EC-Beleg prüfen',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Schließen',
+                    onPressed: () => Navigator.of(context).pop(null),
                   ),
                 ],
               ),
@@ -528,16 +536,25 @@ class _BelegScanGegenpruefDialogState
                 children: <Widget>[
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(null),
-                      child: const Text('Abbrechen'),
+                      onPressed: () => Navigator.of(context).pop(
+                        BelegScanDialogErgebnis(
+                          ergebnis: _ergebnisMitManuellen(),
+                          kachelOeffnen: true,
+                        ),
+                      ),
+                      child: const Text('Korrigieren'),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _allePflichtfelderAusgefuellt
-                          ? () => Navigator.of(context)
-                              .pop(_ergebnisMitManuellen())
+                          ? () => Navigator.of(context).pop(
+                              BelegScanDialogErgebnis(
+                                ergebnis: _ergebnisMitManuellen(),
+                                kachelOeffnen: false,
+                              ),
+                            )
                           : null,
                       child: const Text('Bestätigen'),
                     ),

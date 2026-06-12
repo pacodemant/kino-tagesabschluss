@@ -8,6 +8,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_gegenpruef_dialog.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
@@ -127,6 +128,27 @@ class _TagesabschlussSchritt2SeiteState
   bool _ecBeleg1Beruehrt = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
+
+  // Scan-Metadaten
+  String? _scanTerminalId;
+  String? _scanDatum;
+  String? _scanUhrzeit;
+  String? _scanBelegNrVon;
+  String? _scanBelegNrBis;
+  bool _scanHatStattgefunden = false;
+
+  // EC-Kachel
+  bool _ecKachelAufgeklappt = true;
+
+  // Zahlungsarten-Tabelle
+  List<String> _zahlungsartenListe = const <String>[];
+  List<TextEditingController> _zahlungsartAnzahlController =
+      <TextEditingController>[];
+  List<TextEditingController> _zahlungsartBetragController =
+      <TextEditingController>[];
+  List<int?> _zahlungsartAnzahlWerte = <int?>[];
+  List<int?> _zahlungsartBetragCentWerte = <int?>[];
+  List<bool> _zahlungsartNichtPlausibel = <bool>[];
   @override
   void initState() {
     super.initState();
@@ -149,6 +171,23 @@ class _TagesabschlussSchritt2SeiteState
         _autoFokussiereNachLaden();
       }
     });
+    ZahlungsartenConfigService.laden().then((List<String> liste) {
+      if (!mounted) return;
+      setState(() {
+        _zahlungsartenListe = liste;
+        _zahlungsartAnzahlController = List<TextEditingController>.generate(
+          liste.length,
+          (_) => TextEditingController(),
+        );
+        _zahlungsartBetragController = List<TextEditingController>.generate(
+          liste.length,
+          (_) => TextEditingController(),
+        );
+        _zahlungsartAnzahlWerte = List<int?>.filled(liste.length, null);
+        _zahlungsartBetragCentWerte = List<int?>.filled(liste.length, null);
+        _zahlungsartNichtPlausibel = List<bool>.filled(liste.length, false);
+      });
+    });
   }
 
   @override
@@ -168,6 +207,8 @@ class _TagesabschlussSchritt2SeiteState
     disposeControllers(_ausgabenLabelController);
     disposeFocusNodes(_ausgabenBetragFocusNode);
     disposeFocusNodes(_ausgabenLabelFocusNode);
+    disposeControllers(_zahlungsartAnzahlController);
+    disposeControllers(_zahlungsartBetragController);
     super.dispose();
   }
 
@@ -362,6 +403,11 @@ class _TagesabschlussSchritt2SeiteState
         ausgabenBetraegeCent: List<int>.from(_ausgabenBetrageCent),
         ausgabenLabels: List<String>.from(_ausgabenLabels),
         ecBelegeLabels: List<String>.from(_ecBelegLabels),
+        terminalId: _scanTerminalId,
+        belegNrVon: _scanBelegNrVon,
+        belegNrBis: _scanBelegNrBis,
+        ecUhrzeit: _scanUhrzeit,
+        zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
       ),
     );
   }
@@ -700,18 +746,43 @@ class _TagesabschlussSchritt2SeiteState
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (bild == null) return;
     setState(() => _scanLaeuft = true);
+    BelegScanErgebnis? originalErgebnis;
     try {
       final BelegScanErgebnis ergebnis = await BelegScanService.scan(bild);
+      originalErgebnis = ergebnis;
       if (!mounted) return;
       setState(() => _scanLaeuft = false);
-      final BelegScanErgebnis? geprueftes = await showDialog<BelegScanErgebnis>(
+      final BelegScanDialogErgebnis? dialogErgebnis =
+          await showDialog<BelegScanDialogErgebnis>(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext dialogContext) =>
             BelegScanGegenpruefDialog(ergebnis: ergebnis),
       );
       if (!mounted) return;
-      if (geprueftes != null) {
+      if (dialogErgebnis != null) {
+        final BelegScanErgebnis geprueftes = dialogErgebnis.ergebnis;
+        setState(() {
+          if (geprueftes.gesamtBetragCent != null) {
+            _ecBelegeCent[0] = geprueftes.gesamtBetragCent!;
+            _setzeControllerText(
+              _ecBelegController[0],
+              TagesabschlussFormatierung.formatiereEuroEingabe(
+                  geprueftes.gesamtBetragCent!),
+            );
+            _ecBeleg1Beruehrt = true;
+          }
+          _scanTerminalId = _feldWertOderNull(geprueftes.terminalId);
+          _scanDatum = _feldWertOderNull(geprueftes.datum);
+          _scanUhrzeit = _feldWertOderNull(geprueftes.uhrzeit);
+          _scanBelegNrVon = _feldWertOderNull(geprueftes.belegNrVon);
+          _scanBelegNrBis = _feldWertOderNull(geprueftes.belegNrBis);
+          _scanHatStattgefunden = true;
+          if (dialogErgebnis.kachelOeffnen) _ecKachelAufgeklappt = true;
+          _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
+          _letzteAenderung = DateTime.now();
+        });
+        _speichereEntwurf();
         final String betrag = geprueftes.gesamtBetragCent != null
             ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
             : '—';
@@ -736,6 +807,86 @@ class _TagesabschlussSchritt2SeiteState
     } finally {
       if (mounted) setState(() => _scanLaeuft = false);
     }
+  }
+
+  String? _feldWertOderNull(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    return value.trim();
+  }
+
+  void _preFillZahlungsartenFromScan(
+    BelegScanErgebnis geprueftes,
+    BelegScanErgebnis? original,
+  ) {
+    for (int i = 0; i < _zahlungsartenListe.length; i++) {
+      final String art = _zahlungsartenListe[i].trim().toLowerCase();
+      ZahlungsartErgebnis? matching;
+      for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
+        if (z.art.trim().toLowerCase() == art) {
+          matching = z;
+          break;
+        }
+      }
+      if (matching == null) continue;
+
+      _zahlungsartAnzahlWerte[i] = matching.anzahl;
+      _setzeControllerText(
+          _zahlungsartAnzahlController[i], '${matching.anzahl}');
+
+      if (matching.betragCent != null) {
+        _zahlungsartBetragCentWerte[i] = matching.betragCent;
+        _setzeControllerText(
+          _zahlungsartBetragController[i],
+          TagesabschlussFormatierung.formatiereEuroEingabe(matching.betragCent!),
+        );
+      } else {
+        _zahlungsartBetragCentWerte[i] = null;
+        _setzeControllerText(_zahlungsartBetragController[i], '');
+      }
+
+      // Rot markieren wenn Original-Scan betragCent null hatte
+      bool origNichtPlausibel = false;
+      if (original != null) {
+        for (final ZahlungsartErgebnis z in original.zahlungsarten) {
+          if (z.art.trim().toLowerCase() == art) {
+            origNichtPlausibel = z.betragCent == null;
+            break;
+          }
+        }
+      }
+      _zahlungsartNichtPlausibel[i] = origNichtPlausibel;
+    }
+  }
+
+  int? _parseEuroKommaCent(String text) {
+    final String cleaned = text
+        .trim()
+        .replaceAll(' ', '')
+        .replaceAll('.', '')
+        .replaceAll(',', '.')
+        .replaceAll('€', '');
+    final double? value = double.tryParse(cleaned);
+    if (value == null) return null;
+    return (value * 100).round();
+  }
+
+  List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
+    final List<ZahlungsartErgebnis> liste = <ZahlungsartErgebnis>[];
+    for (int i = 0; i < _zahlungsartenListe.length; i++) {
+      final int? anzahl = i < _zahlungsartAnzahlWerte.length
+          ? _zahlungsartAnzahlWerte[i]
+          : null;
+      final int? betrag = i < _zahlungsartBetragCentWerte.length
+          ? _zahlungsartBetragCentWerte[i]
+          : null;
+      if (anzahl == null && betrag == null) continue;
+      liste.add(ZahlungsartErgebnis(
+        art: _zahlungsartenListe[i],
+        anzahl: anzahl ?? 0,
+        betragCent: betrag,
+      ));
+    }
+    return liste.isEmpty ? null : liste;
   }
 
   Future<void> _bestaetigeUndLeereEingaben() async {
@@ -1009,6 +1160,237 @@ class _TagesabschlussSchritt2SeiteState
           ),
         );
       },
+    );
+  }
+
+  Widget _baueMetadatenInfoZeile(String label, String? wert) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 110,
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: Colors.black54),
+            ),
+          ),
+          Expanded(
+            child: wert != null
+                ? Text(wert, style: const TextStyle(fontSize: 13))
+                : const Text(
+                    'unleserlich',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.black38,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _baueMetadatenBlock() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.only(bottom: 6),
+            child: Text(
+              'Scan-Metadaten',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+          _baueMetadatenInfoZeile('Terminal-ID', _scanTerminalId),
+          _baueMetadatenInfoZeile('Datum', _scanDatum),
+          _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
+          _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
+          _baueMetadatenInfoZeile('Beleg-Nr. bis', _scanBelegNrBis),
+        ],
+      ),
+    );
+  }
+
+  Widget _baueKartenartenZeile(int index) {
+    final bool nichtPlausibel = index < _zahlungsartNichtPlausibel.length &&
+        _zahlungsartNichtPlausibel[index];
+    final OutlineInputBorder? roteBorder = nichtPlausibel
+        ? OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.red.shade300),
+          )
+        : null;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              _zahlungsartenListe[index],
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+          SizedBox(
+            width: 52,
+            child: TextField(
+              controller: _zahlungsartAnzahlController[index],
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 13),
+              decoration: InputDecoration(
+                hintText: '—',
+                isDense: true,
+                border: const OutlineInputBorder(),
+                enabledBorder: roteBorder,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+              ),
+              onChanged: (String wert) {
+                setState(() {
+                  _zahlungsartAnzahlWerte[index] =
+                      int.tryParse(wert.trim());
+                });
+              },
+            ),
+          ),
+          const SizedBox(width: 6),
+          SizedBox(
+            width: 104,
+            child: TextField(
+              controller: _zahlungsartBetragController[index],
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 13),
+              decoration: InputDecoration(
+                hintText: '0,00',
+                isDense: true,
+                border: const OutlineInputBorder(),
+                enabledBorder: roteBorder,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+              ),
+              onChanged: (String wert) {
+                setState(() {
+                  _zahlungsartBetragCentWerte[index] =
+                      _parseEuroKommaCent(wert);
+                });
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _baueZahlungsartenTabelle() {
+    int tabellenSummeCent = 0;
+    for (int i = 0; i < _zahlungsartenListe.length; i++) {
+      final int? betrag = i < _zahlungsartBetragCentWerte.length
+          ? _zahlungsartBetragCentWerte[i]
+          : null;
+      if (betrag != null) tabellenSummeCent += betrag;
+    }
+    final int ecGesamtCent =
+        _ecBelegeCent.fold(0, (int a, int b) => a + b);
+    final bool summePasstNicht =
+        tabellenSummeCent > 0 && tabellenSummeCent != ecGesamtCent;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              children: const <Widget>[
+                Expanded(
+                  child: Text(
+                    'Kartenart',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  width: 52,
+                  child: Text(
+                    'Anz.',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 6),
+                SizedBox(
+                  width: 104,
+                  child: Text(
+                    'Betrag',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          for (int i = 0; i < _zahlungsartenListe.length; i++)
+            _baueKartenartenZeile(i),
+          const Divider(height: 10),
+          Row(
+            children: <Widget>[
+              const Expanded(
+                child: Text(
+                  'Gesamt Karten',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              Text(
+                TagesabschlussFormatierung.formatiereEuro(tabellenSummeCent),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                  color: summePasstNicht ? Colors.orange.shade700 : null,
+                ),
+              ),
+            ],
+          ),
+          if (summePasstNicht)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Hinweis: Kartensumme weicht vom EC-Gesamtbetrag ab.',
+                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -1417,178 +1799,248 @@ class _TagesabschlussSchritt2SeiteState
                   ),
                 const SizedBox(height: 10),
                 Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: Text(
-                              'EC-Belege',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          for (int i = 0; i < _ecBelegController.length; i++)
-                            KeyedSubtree(
-                              key: ValueKey<int>(_ecBelegIds[i]),
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _ecBelegLabelController[i],
-                                        focusNode: _ecBelegLabelFocusNode[i],
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: _ecBelegLabelFocusNode[i].hasFocus
-                                              ? Colors.white
-                                              : null,
-                                        ),
-                                        cursorColor: _ecBelegLabelFocusNode[i].hasFocus
-                                            ? Colors.white
-                                            : null,
-                                        textInputAction:
-                                            _textInputActionFuerSchritt2(
-                                          _ecBelegLabelFocusNode[i],
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: 'Bezeichnung (optional)',
-                                          hintStyle: const TextStyle(
-                                            fontSize: 15,
-                                          ),
-                                          border: const OutlineInputBorder(),
-                                          isDense: true,
-                                          filled: _ecBelegLabelFocusNode[i].hasFocus,
-                                          fillColor: _ecBelegLabelFocusNode[i].hasFocus
-                                              ? Colors.black87
-                                              : null,
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 6,
-                                          ),
-                                          suffixIconConstraints: const BoxConstraints(
-                                            minWidth: 0,
-                                            minHeight: 0,
-                                            maxWidth: 32,
-                                            maxHeight: 32,
-                                          ),
-                                          suffixIcon: _ecBelegLabelController[i].text.isEmpty
-                                              ? null
-                                              : IconButton(
-                                                  constraints: const BoxConstraints(),
-                                                  padding: EdgeInsets.zero,
-                                                  icon: Icon(
-                                                    Icons.close,
-                                                    size: 18,
-                                                    color: _ecBelegLabelFocusNode[i].hasFocus
-                                                        ? Colors.white
-                                                        : null,
-                                                  ),
-                                                  onPressed: () {
-                                                    _ecBelegLabelController[i].clear();
-                                                    setState(() {
-                                                      _ecBelegLabels[i] = '';
-                                                    });
-                                                    _speichereEntwurf();
-                                                    _ecBelegLabelFocusNode[i].requestFocus();
-                                                  },
-                                                ),
-                                        ),
-                                        onSubmitted: (_) =>
-                                            _beiEingabeAbgeschlossenSchritt2(
-                                          _ecBelegLabelFocusNode[i],
-                                        ),
-                                        onChanged: (String wert) {
-                                          setState(() {
-                                            _letzteAenderung = DateTime.now();
-                                            _ecBelegLabels[i] = wert;
-                                          });
-                                          _speichereEntwurf();
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    SizedBox(
-                                      width: 120,
-                                      child: BetragCentEingabefeld(
-                                        textController: _ecBelegController[i],
-                                        focusNode: _ecBelegFocusNode[i],
-                                        textInputAction:
-                                            _textInputActionFuerSchritt2(
-                                          _ecBelegFocusNode[i],
-                                        ),
-                                        onSubmitted: (_) =>
-                                            _beiEingabeAbgeschlossenSchritt2(
-                                          _ecBelegFocusNode[i],
-                                        ),
-                                        onChanged: (String wert) {
-                                          setState(() {
-                                            _letzteAenderung = DateTime.now();
-                                            if (i == 0) {
-                                              _ecBeleg1Beruehrt = true;
-                                            }
-                                            _ecBelegeCent[i] =
-                                                _parsiereBetragCent(wert);
-                                          });
-                                          _speichereEntwurf();
-                                        },
-                                        schriftgroesse: 15,
-                                        hinweisText: '0,00 €',
-                                        fehlermeldungText: i == 0
-                                            ? _pflichtfeldFehlertext(
-                                                feldBeruehrt: _ecBeleg1Beruehrt,
-                                                controller:
-                                                    _ecBelegController.first,
-                                              )
-                                            : null,
-                                        mitKomma: _eingabeMitKomma,
-                                      ),
-                                    ),
-                                    if (_ecBelegController.length > 1) ...<Widget>[
-                                      const SizedBox(width: 6),
-                                      IconButton(
-                                        onPressed: () => _ecBelegEntfernen(i),
-                                        icon: const Icon(Icons.delete_outline),
-                                        tooltip: 'EC-Beleg entfernen',
-                                      ),
-                                    ],
-                                  ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      // Header
+                      InkWell(
+                        onTap: () => setState(
+                          () => _ecKachelAufgeklappt = !_ecKachelAufgeklappt,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
+                          child: Row(
+                            children: <Widget>[
+                              const Expanded(
+                                child: Text(
+                                  'EC-Belege',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
-                            ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              OutlinedButton.icon(
-                                onPressed: _ecBelegHinzufuegen,
-                                icon: const Icon(Icons.add),
-                                label: const Text('+ EC-Beleg hinzufügen'),
+                              SizedBox(
+                                width: 36,
+                                height: 36,
+                                child: IconButton(
+                                  tooltip: 'EC-Beleg scannen',
+                                  padding: EdgeInsets.zero,
+                                  onPressed: _scanLaeuft
+                                      ? null
+                                      : _starteEcBelegScan,
+                                  icon: _scanLaeuft
+                                      ? const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                              strokeWidth: 2),
+                                        )
+                                      : const Icon(Icons.camera_alt_outlined),
+                                ),
                               ),
-                              IconButton(
-                                tooltip: 'EC-Beleg scannen',
-                                onPressed:
-                                    _scanLaeuft ? null : _starteEcBelegScan,
-                                icon: _scanLaeuft
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2),
-                                      )
-                                    : const Icon(Icons.camera_alt_outlined),
+                              const SizedBox(width: 4),
+                              Icon(
+                                _ecKachelAufgeklappt
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
                               ),
+                              const SizedBox(width: 4),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                      if (_ecKachelAufgeklappt) ...<Widget>[
+                        const Divider(height: 1),
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: <Widget>[
+                              for (int i = 0;
+                                  i < _ecBelegController.length;
+                                  i++)
+                                KeyedSubtree(
+                                  key: ValueKey<int>(_ecBelegIds[i]),
+                                  child: Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 10),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: TextField(
+                                            controller:
+                                                _ecBelegLabelController[i],
+                                            focusNode:
+                                                _ecBelegLabelFocusNode[i],
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              color: _ecBelegLabelFocusNode[i]
+                                                      .hasFocus
+                                                  ? Colors.white
+                                                  : null,
+                                            ),
+                                            cursorColor:
+                                                _ecBelegLabelFocusNode[i]
+                                                        .hasFocus
+                                                    ? Colors.white
+                                                    : null,
+                                            textInputAction:
+                                                _textInputActionFuerSchritt2(
+                                              _ecBelegLabelFocusNode[i],
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  'Bezeichnung (optional)',
+                                              hintStyle: const TextStyle(
+                                                  fontSize: 15),
+                                              border:
+                                                  const OutlineInputBorder(),
+                                              isDense: true,
+                                              filled: _ecBelegLabelFocusNode[i]
+                                                  .hasFocus,
+                                              fillColor:
+                                                  _ecBelegLabelFocusNode[i]
+                                                          .hasFocus
+                                                      ? Colors.black87
+                                                      : null,
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 6,
+                                              ),
+                                              suffixIconConstraints:
+                                                  const BoxConstraints(
+                                                minWidth: 0,
+                                                minHeight: 0,
+                                                maxWidth: 32,
+                                                maxHeight: 32,
+                                              ),
+                                              suffixIcon:
+                                                  _ecBelegLabelController[i]
+                                                          .text.isEmpty
+                                                      ? null
+                                                      : IconButton(
+                                                          constraints:
+                                                              const BoxConstraints(),
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          icon: Icon(
+                                                            Icons.close,
+                                                            size: 18,
+                                                            color: _ecBelegLabelFocusNode[
+                                                                        i]
+                                                                    .hasFocus
+                                                                ? Colors.white
+                                                                : null,
+                                                          ),
+                                                          onPressed: () {
+                                                            _ecBelegLabelController[
+                                                                    i]
+                                                                .clear();
+                                                            setState(() {
+                                                              _ecBelegLabels[
+                                                                  i] = '';
+                                                            });
+                                                            _speichereEntwurf();
+                                                            _ecBelegLabelFocusNode[
+                                                                    i]
+                                                                .requestFocus();
+                                                          },
+                                                        ),
+                                            ),
+                                            onSubmitted: (_) =>
+                                                _beiEingabeAbgeschlossenSchritt2(
+                                              _ecBelegLabelFocusNode[i],
+                                            ),
+                                            onChanged: (String wert) {
+                                              setState(() {
+                                                _letzteAenderung =
+                                                    DateTime.now();
+                                                _ecBelegLabels[i] = wert;
+                                              });
+                                              _speichereEntwurf();
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        SizedBox(
+                                          width: 120,
+                                          child: BetragCentEingabefeld(
+                                            textController:
+                                                _ecBelegController[i],
+                                            focusNode: _ecBelegFocusNode[i],
+                                            textInputAction:
+                                                _textInputActionFuerSchritt2(
+                                              _ecBelegFocusNode[i],
+                                            ),
+                                            onSubmitted: (_) =>
+                                                _beiEingabeAbgeschlossenSchritt2(
+                                              _ecBelegFocusNode[i],
+                                            ),
+                                            onChanged: (String wert) {
+                                              setState(() {
+                                                _letzteAenderung =
+                                                    DateTime.now();
+                                                if (i == 0) {
+                                                  _ecBeleg1Beruehrt = true;
+                                                }
+                                                _ecBelegeCent[i] =
+                                                    _parsiereBetragCent(wert);
+                                              });
+                                              _speichereEntwurf();
+                                            },
+                                            schriftgroesse: 15,
+                                            hinweisText: '0,00 €',
+                                            fehlermeldungText: i == 0
+                                                ? _pflichtfeldFehlertext(
+                                                    feldBeruehrt:
+                                                        _ecBeleg1Beruehrt,
+                                                    controller:
+                                                        _ecBelegController
+                                                            .first,
+                                                  )
+                                                : null,
+                                            mitKomma: _eingabeMitKomma,
+                                          ),
+                                        ),
+                                        if (_ecBelegController.length >
+                                            1) ...<Widget>[
+                                          const SizedBox(width: 6),
+                                          IconButton(
+                                            onPressed: () =>
+                                                _ecBelegEntfernen(i),
+                                            icon: const Icon(
+                                                Icons.delete_outline),
+                                            tooltip: 'EC-Beleg entfernen',
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: OutlinedButton.icon(
+                                  onPressed: _ecBelegHinzufuegen,
+                                  icon: const Icon(Icons.add),
+                                  label:
+                                      const Text('+ EC-Beleg hinzufügen'),
+                                ),
+                              ),
+                              // 3a: Scan-Metadaten (nur nach Scan)
+                              if (_scanHatStattgefunden)
+                                _baueMetadatenBlock(),
+                              // 3b: Kartenarten-Tabelle (immer)
+                              if (_zahlungsartenListe.isNotEmpty)
+                                _baueZahlungsartenTabelle(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
+                ),
                 const SizedBox(height: 8),
               ],
         ),

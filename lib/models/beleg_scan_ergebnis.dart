@@ -80,3 +80,13 @@ class BelegScanErgebnis {
 
   bool get istPlausibel => betraegePlausibel && anzahlPlausibel;
 }
+
+class BelegScanDialogErgebnis {
+  const BelegScanDialogErgebnis({
+    required this.ergebnis,
+    required this.kachelOeffnen,
+  });
+
+  final BelegScanErgebnis ergebnis;
+  final bool kachelOeffnen;
+}

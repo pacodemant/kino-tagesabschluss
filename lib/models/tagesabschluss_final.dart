@@ -1,3 +1,5 @@
+import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+
 class TagesabschlussFinal {
   const TagesabschlussFinal({
     required this.kinoId,
@@ -30,6 +32,11 @@ class TagesabschlussFinal {
     this.ausgabenLabels,
     this.ecBelegeLabels,
     this.mitarbeiterName,
+    this.terminalId,
+    this.belegNrVon,
+    this.belegNrBis,
+    this.ecUhrzeit,
+    this.zahlungsartenAufschluesselung,
   });
 
   final String kinoId;
@@ -69,6 +76,13 @@ class TagesabschlussFinal {
   final List<String>? ecBelegeLabels;
   final String? mitarbeiterName;
 
+  // EC-Belegscan-Metadaten – seit Run 274
+  final String? terminalId;
+  final String? belegNrVon;
+  final String? belegNrBis;
+  final String? ecUhrzeit;
+  final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
+
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'kinoId': kinoId,
@@ -104,6 +118,18 @@ class TagesabschlussFinal {
       if (ausgabenLabels != null) 'ausgabenLabels': ausgabenLabels,
       if (ecBelegeLabels != null) 'ecBelegeLabels': ecBelegeLabels,
       if (mitarbeiterName != null) 'mitarbeiterName': mitarbeiterName,
+      if (terminalId != null) 'terminalId': terminalId,
+      if (belegNrVon != null) 'belegNrVon': belegNrVon,
+      if (belegNrBis != null) 'belegNrBis': belegNrBis,
+      if (ecUhrzeit != null) 'ecUhrzeit': ecUhrzeit,
+      if (zahlungsartenAufschluesselung != null)
+        'zahlungsartenAufschluesselung': zahlungsartenAufschluesselung!
+            .map((ZahlungsartErgebnis z) => <String, dynamic>{
+                  'art': z.art,
+                  'anzahl': z.anzahl,
+                  if (z.betragCent != null) 'betrag_cent': z.betragCent,
+                })
+            .toList(),
     };
   }
 
@@ -199,6 +225,18 @@ class TagesabschlussFinal {
       ausgabenLabels: ausgabenLabels,
       ecBelegeLabels: ecBelegeLabels,
       mitarbeiterName: json['mitarbeiterName'] as String?,
+      terminalId: json['terminalId'] as String?,
+      belegNrVon: json['belegNrVon'] as String?,
+      belegNrBis: json['belegNrBis'] as String?,
+      ecUhrzeit: json['ecUhrzeit'] as String?,
+      zahlungsartenAufschluesselung: () {
+        final Object? rohwert = json['zahlungsartenAufschluesselung'];
+        if (rohwert is! List) return null;
+        return rohwert
+            .whereType<Map<String, dynamic>>()
+            .map(ZahlungsartErgebnis.fromJson)
+            .toList();
+      }(),
     );
   }
 }

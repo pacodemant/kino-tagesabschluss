@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
@@ -42,6 +43,11 @@ class TagesabschlussSchritt3Argumente {
     this.ausgabenBetraegeCent,
     this.ausgabenLabels,
     this.ecBelegeLabels,
+    this.terminalId,
+    this.belegNrVon,
+    this.belegNrBis,
+    this.ecUhrzeit,
+    this.zahlungsartenAufschluesselung,
   });
 
   final String kinoId;
@@ -64,6 +70,11 @@ class TagesabschlussSchritt3Argumente {
   final List<int>? ausgabenBetraegeCent;
   final List<String>? ausgabenLabels;
   final List<String>? ecBelegeLabels;
+  final String? terminalId;
+  final String? belegNrVon;
+  final String? belegNrBis;
+  final String? ecUhrzeit;
+  final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -130,6 +141,12 @@ class _TagesabschlussSchritt3SeiteState
         mitarbeiterName: mitarbeiterName?.isNotEmpty == true
             ? mitarbeiterName
             : null,
+        terminalId: widget.argumente.terminalId,
+        belegNrVon: widget.argumente.belegNrVon,
+        belegNrBis: widget.argumente.belegNrBis,
+        ecUhrzeit: widget.argumente.ecUhrzeit,
+        zahlungsartenAufschluesselung:
+            widget.argumente.zahlungsartenAufschluesselung,
       ),
       jetzt: DateTime.now(),
     );
