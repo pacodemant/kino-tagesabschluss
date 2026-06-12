@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_gegenpruef_dialog.dart';
@@ -686,6 +687,15 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Future<void> _starteEcBelegScan() async {
+    final List<ConnectivityResult> verbindung =
+        await Connectivity().checkConnectivity();
+    if (verbindung.contains(ConnectivityResult.none)) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Kein Internet – Scan nicht möglich.')),
+      );
+      return;
+    }
     final XFile? bild =
         await ImagePicker().pickImage(source: ImageSource.camera);
     if (bild == null) return;

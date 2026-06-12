@@ -45,6 +45,10 @@ class BelegScanService {
       '  MasterCard, SEPA Lastschrift, Visa und alle weiteren Kartenarten.\n'
       '- Nur Kartenarten ausgeben die auf dem Beleg stehen.\n'
       '- Wenn ein Feld nicht lesbar ist: null.\n'
+      '- Schätzen, Interpolieren und Ergänzen ist strikt verboten. Gib nur\n'
+      '  Werte aus, die auf dem Foto zweifelsfrei und vollständig lesbar sind.\n'
+      '  Ist ein Feld auch nur teilweise unleserlich, verdeckt, unscharf oder\n'
+      '  abgeschnitten: null – auch wenn ein Wert plausibel erscheint.\n'
       '- Wenn du eine Unstimmigkeit erkennst (Summe passt nicht, Beleg\n'
       '  abgeschnitten, Wert unleserlich): kurzen deutschen Hinweistext in\n'
       '  "hinweis" eintragen. Sonst: null.';
