@@ -31,7 +31,9 @@
       "Bash(gh api *)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:docs.google.com)"
+      "WebFetch(domain:docs.google.com)",
+      "Bash(git -C '/Users/pacodemant/Coding_local/Schauburg GmbH Tagesabschluss/kino_bar_app' add .dev/run_counter.txt CHANGELOG.md lib/pages/einstellungen_seite.dart lib/pages/startmenue_seite.dart lib/pages/tagesabschluss_schritt3_seite.dart lib/services/api_upload_service.dart lib/services/google_sheets_service.dart lib/storage/lokaler_speicher.dart pubspec.yaml)",
+      "Bash(git -C '/Users/pacodemant/Coding_local/Schauburg GmbH Tagesabschluss/kino_bar_app' commit -m ' *)"
     ]
   }
 }

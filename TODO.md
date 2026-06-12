@@ -58,6 +58,8 @@
       Schauburg") in iOS Dateien / Android Downloads. Mitarbeiter kann sie von dort
       per Mail weiterleiten.
 
+- [ ] **Config-Dateien** für: Getränkelisten, individuelle Wechselgeldbestände, 
+      Zugangsberechtigungen, API-Keys (Kino-IT, KI-API)
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
@@ -85,10 +87,15 @@
       Hintergrund erneut, sobald wieder eine Verbindung besteht. Das Geräte-Backup
       ist in jedem Fall vorhanden.
 
+- [ ] **Verlauf — 30-Tage-Bereinigung:** Abgeschlossene Abrechnungen im Verlauf
+      automatisch nach 30 Tagen löschen (Datenschutz: Daten auf Gerät ausgeschiedener
+      Mitarbeiter).
+
 - [ ] **BelegScan — Implementierung:** EC-Beleg fotografieren, Anthropic Vision API
       ermittelt Kartenanbieter und Beträge automatisch. Konzept steht (Pilot: Schauburg).
 
-- [ ] 
+- [ ] **optionaler Abrechnungshinweis**Möglichkeit einbauen, dass MA der Abrechnung 
+      ggf. noch Hinweise geben können (optional).
 
 ---
 
@@ -103,7 +110,7 @@
       einführen (Händigkeit, ggf. Login-Status, seitenübergreifende Daten).
 
 - [ ] **Kinoleitungs-Login + Config-Editor:** Kinoleitung kann Getränkeliste
-      und Wechselgeldbestand direkt in der App bearbeiten — kein Git-Commit nötig.
+      und Wechselgeldbestand, Zugänge,  direkt in der App bearbeiten — kein Git-Commit nötig.
 
 - [ ] **Getränke-Audioeingabe:** Aufnahme direkt in der App → Audio + Getränkeliste
       an KI → KI füllt Felder aus (Fuzzy Matching), unsichere Zuordnungen
@@ -111,6 +118,11 @@
 
 - [ ] **Hilfe-System:** Kontextsensitive Hilfe pro Schritt, langfristig mit
       Video-Clips für neue Mitarbeiter.
+- [ ] **Konfig-Zugang** (Passwort) von jeder App aus (entwicklermodus), damit können 
+      Getränkelisten, individuelle Wechselgeldbestände, Zugangsberechtigungen, API-Keys 
+      (Kino-IT, KI-API), ggf. KI-Prompts (zb. für die EC-Belege), Liste akzeptierter 
+      Zahlungssysteme u.a. eingerichtet werden.
+- [ ] Admin-Dashboard für Kino-IT: API-Key-Verwaltung, Konfiguration, ggf. weitere Einstellungen
 
 ---
 

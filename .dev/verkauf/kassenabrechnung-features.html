@@ -519,7 +519,7 @@
         <div class="feature-dot"></div>
         <div class="feature-text">
           <strong>Getränke-Auffüll-Liste</strong>
-          <span>Praktisches Werkzeug für alle Mitarbeiter: Getränkebestand am Ende der Schicht direkt in der App erfassen, ohne Zettelwirtschaft – nicht direkt Teil der Kassenabrechnung, aber als integriertes Tool jederzeit griffbereit.<br>Optional (geplant): Sprachsteuerung per KI — der Mitarbeiter spricht die fehlenden Getränke ein, die KI gleicht sie mit der Getränkeliste des jeweiligen Kinos ab und trägt die Positionen automatisch ein. Im Lager kann er sich die Liste anschließend postenweise vorlesen lassen — die KI wartet jeweils auf ein frei wählbares Sprachsignal (z.&nbsp;B. „weiter", „next" oder „hab ich"), bevor sie den nächsten Posten nennt.</span>
+          <span>Praktisches Werkzeug für alle Mitarbeiter: Getränkebestand am Ende der Schicht direkt in der App erfassen, ohne Zettelwirtschaft – nicht direkt Teil der Kassenabrechnung, aber als integriertes Tool jederzeit griffbereit.</span>
         </div>
         <span class="tag tag-v1">V 1</span>
       </li>
@@ -537,7 +537,7 @@
         <div class="feature-dot"></div>
         <div class="feature-text">
           <strong>Fallback: Abrechnung als Datei speichern</strong>
-          <span>Beim Tippen auf „Abrechnung senden" speichert die App die Abrechnung automatisch und gleichzeitig als Datei auf dem Smartphone — z.&nbsp;B. in „Dateien" unter iOS. Keine separate Aktion nötig; die Datei ist als Backup sofort vorhanden und kann bei Bedarf per Mail weitergeleitet werden.</span>
+          <span>Beim Tippen auf „Abrechnung senden" wird die Abrechnung automatisch als Datei im App-eigenen Speicherbereich gesichert — keine separate Aktion nötig. Die Datei ist über die Verlaufsansicht jederzeit abrufbar und kann von dort per Mail oder Teilen-Funktion weitergeleitet werden.</span>
         </div>
         <span class="tag tag-v1">V 1</span>
       </li>
@@ -546,7 +546,7 @@
         <div class="feature-dot"></div>
         <div class="feature-text">
           <strong>Verlaufsansicht</strong>
-          <span>Alle abgeschlossenen Abrechnungen bleiben auf dem Gerät einsehbar — mit Datum, Mitarbeitername und vollständiger Umschlag-Ansicht, genau so wie beim Abschluss.</span>
+          <span>Alle abgeschlossenen Abrechnungen bleiben auf dem Gerät einsehbar — mit Datum, Mitarbeitername und vollständiger Umschlag-Ansicht, genau so wie beim Abschluss. Einträge werden nach 30 Tagen automatisch gelöscht.</span>
         </div>
         <span class="tag tag-v1">V 1</span>
       </li>
@@ -564,7 +564,7 @@
         <div class="feature-dot"></div>
         <div class="feature-text">
           <strong>Zentrale Konfiguration durch die Kinoleitung</strong>
-          <span>Wechselgeldbestand, Getränkeliste, Zugangsdaten und andere standortspezifische Werte werden zentral gepflegt — Änderungen sind sofort auf allen Geräten wirksam.</span>
+          <span>Wechselgeldbetrag pro Standort, Getränkeliste, API-Endpunkt und Zugangsdaten sowie standortspezifische Hinweise werden in einfachen Konfigurationsdateien zentral gepflegt — Änderungen sind sofort auf allen Geräten wirksam.</span>
         </div>
         <span class="tag tag-v1">V 1</span>
       </li>
@@ -617,16 +617,7 @@
         <div class="feature-dot"></div>
         <div class="feature-text">
           <strong>Weiche Hinweise — immer weitermachen möglich</strong>
-          <span>500-€-Scheine in der Kinokasse, einzelne Stückelung über 80&nbsp;% des Gesamtbestands, EC-Betrag gleich null — die App weist hin, blockiert aber nicht.</span>
-        </div>
-        <span class="tag tag-v1">V 1</span>
-      </li>
-
-      <li class="feature-item">
-        <div class="feature-dot"></div>
-        <div class="feature-text">
-          <strong>Hilfe bei der Fehlersuche — "Stimmt was nicht?"</strong>
-          <span>Ein jederzeit erreichbarer Hilfebereich listet häufige Fehlerquellen mit konkreten Hinweisen, beispielsweise: vergessenes Kellnerportemonnaie, große Scheine unter dem Münzgeld, falsch abgelesener Kassenwert. Die Liste lässt sich mit standortspezifischen Erfahrungswerten ergänzen.</span>
+          <span>Einzelne Stückelung über 80&nbsp;% des Gesamtbestands, EC-Betrag gleich null — die App weist hin, blockiert aber nicht.</span>
         </div>
         <span class="tag tag-v1">V 1</span>
       </li>
@@ -686,8 +677,17 @@
       <li class="feature-item">
         <div class="feature-dot"></div>
         <div class="feature-text">
-          <strong>Sprachgesteuerte Getränkeeingabe</strong>
-          <span>Getränkebestand per Sprache erfassen — die App erkennt die Eingabe und füllt die Felder automatisch aus. Funktioniert ohne KI-Dienst über den integrierten Browser-Sprachassistenten (kostenlos). Für intelligenteres Fuzzy-Matching wäre eine KI-API nötig — Kosten: ca.&nbsp;1–3&nbsp;€/Jahr für alle Standorte.</span>
+          <strong>Hilfe bei der Fehlersuche — „Stimmt was nicht?"</strong>
+          <span>Ein jederzeit erreichbarer Hilfebereich listet häufige Fehlerquellen mit konkreten Hinweisen, beispielsweise: vergessenes Kellnerportemonnaie, große Scheine unter dem Münzgeld, falsch abgelesener Kassenwert. Die Liste lässt sich mit standortspezifischen Erfahrungswerten ergänzen.</span>
+        </div>
+        <span class="tag tag-plan">Idee</span>
+      </li>
+
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Sprachsteuerung für die Getränke-Auffüll-Liste</strong>
+          <span>Der Mitarbeiter spricht die fehlenden Getränke ein, die KI gleicht sie mit der Getränkeliste des jeweiligen Kinos ab und trägt die Positionen automatisch ein. Im Lager kann er sich die Liste anschließend postenweise vorlesen lassen — die KI wartet auf ein frei wählbares Sprachsignal (z.&nbsp;B. „weiter", „next" oder „hab ich"), bevor sie den nächsten Posten nennt. Einfache Erkennung ist über den integrierten Browser-Sprachassistenten möglich (kostenlos); für besseres Fuzzy-Matching wäre eine KI-API nötig — ca.&nbsp;1–3&nbsp;€/Jahr für alle Standorte.</span>
         </div>
         <span class="tag tag-plan">Idee</span>
       </li>
@@ -710,6 +710,7 @@
         <span class="tag tag-plan">Idee</span>
       </li>
 
+
     </ul>
   </section>
 
@@ -719,7 +720,7 @@
     <div class="access-block">
       <div class="access-text">
         <strong>Aktueller Entwicklungsstand</strong>
-        <span style="color: var(--muted); font-size: 13px;">Die App läuft bereits — dieser Link zeigt den aktuellen Entwurf. Schauburg, Atlantis und Cinema Ostertor sind nahezu vollständig implementiert.</span>
+        <span style="color: var(--muted); font-size: 13px;">Die App läuft bereits — dieser Link zeigt den aktuellen Entwurf. Schauburg, Atlantis und Cinema Ostertor sind nahezu vollständig implementiert.(QRC funzt jetzt auch😁)</span>
         <br><br>
         <a href="https://pacodemant.github.io/kino-tagesabschluss/#/start-menu">pacodemant.github.io/kino-tagesabschluss</a>
       </div>
@@ -776,22 +777,12 @@
       </div>
       <div class="info-block">
         <strong>Datenübertragung</strong>
-        <p>Webhook / REST-API. Endpunkt und Format werden gemeinsam definiert — die App passt sich an.</p>
+        <p>REST-API nach Vorgabe der Kino-IT. Im aktuellen Testbetrieb auf GitHub Pages wird ein externer Webhook-Dienst genutzt. Für aussagekräftige Tests vor dem Produktivbetrieb empfiehlt sich frühzeitig ein Endpunkt auf dem Kino-Server — Endpunkt und Format werden gemeinsam definiert, die App passt sich an.</p>
       </div>
       <div class="info-block full">
         <strong>Was die Kino-IT bereitstellen muss</strong>
         <p>Einen HTTPS-Endpunkt, der JSON-Daten entgegennimmt. Webspace für den Flutter Web Build. Format und Authentifizierung nach Vorgabe. Für die optionalen Features BelegScan und sprachgesteuerte Getränkeeingabe wird zusätzlich ein KI-API-Schlüssel benötigt — geschätzte Kosten ca.&nbsp;6–18&nbsp;€/Jahr für alle Standorte zusammen. Sonst keine weitere Infrastruktur notwendig.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- Konfiguration -->
-  <section class="section">
-    <div class="section-label">Konfiguration</div>
-    <div class="info-block full">
-      <strong>Was die Kinoleitung zentral pflegt</strong>
-      <p style="margin-bottom: 10px;">Folgende Werte werden zentral konfiguriert und sind sofort auf allen Geräten wirksam:</p>
-      <p>Wechselgeldbetrag pro Standort · Getränkeliste · API-Endpunkt und Zugangsdaten · standortspezifische Hinweise und Fehlerhilfe-Texte</p>
     </div>
   </section>
 

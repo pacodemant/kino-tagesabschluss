@@ -36,6 +36,7 @@ Ohne Run-Prompt erlaubt:
 - Verständnisfragen beantworten
 - Risiken oder Unklarheiten benennen
 - Nächsten Mini-Run vorschlagen
+- Lesende Shell-Befehle ausführen (cat, sed -n, grep, ls, find, git log, git diff)
 
 ## Run-Ablauf
 
@@ -124,3 +125,15 @@ Antworte immer auf Deutsch.
 Führe zu Beginn jeder neuen Session aus:
     flutter clean
     flutter pub get
+
+## Versionierung
+
+Am Ende jedes Runs die Versionsnummer in `pubspec.yaml` unter `version:`
+aktualisieren. Die neue Nummer wird im Run-Prompt vorgegeben.
+
+Zusätzlich denselben Versionswert und die Run-Nummer in
+`lib/pages/startmenue_seite.dart` in den Versionsstring eintragen,
+sodass er lautet:
+'Web App X.X.X · rNNN @ GitHub:'
+Versionsnummer und Run-Nummer immer durch die im Run-Prompt
+vorgegebenen Werte ersetzen.

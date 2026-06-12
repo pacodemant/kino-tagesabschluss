@@ -32,6 +32,7 @@ Erlaubt ohne Run-Prompt:
 - Verständnisfragen beantworten
 - Risiken oder Unklarheiten benennen
 - einen nächsten Mini-Run vorschlagen
+- Lesende Shell-Befehle ausführen (cat, sed -n, grep, ls, find, git log, git diff)
 
 ## Snapshot-Regel
 
@@ -114,8 +115,8 @@ nur den vorgegebenen Wert eintragen.
 
 Zusätzlich denselben Versionswert in `lib/pages/startmenue_seite.dart` in den Text
 'Web App @ GitHub:' eintragen, sodass er lautet:
-'Web App 0.9.1 @ GitHub:'
-Die Versionsnummer dabei immer durch die im Run-Prompt vorgegebene ersetzen.
+'Web App 0.9.6 · r268 @ GitHub:'
+Die Versionsnummer und Run-Nummer dabei immer durch die im Run-Prompt vorgegebenen Werte ersetzen. Format: 'Web App X.X.X · rNNN @ GitHub:'
 
 ## Antwortverhalten beim Laden dieser Datei
 
