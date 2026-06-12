@@ -700,7 +700,19 @@ class _TagesabschlussSchritt2SeiteState
         builder: (BuildContext dialogContext) =>
             BelegScanGegenpruefDialog(ergebnis: ergebnis),
       );
-      debugPrint('BelegScan Gegenprüf-Ergebnis: $geprueftes');
+      if (!mounted) return;
+      if (geprueftes != null) {
+        final String betrag = geprueftes.gesamtBetragCent != null
+            ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
+            : '—';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Scan bestätigt · Gesamt: $betrag')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Scan abgebrochen.')),
+        );
+      }
     } on BelegScanException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)

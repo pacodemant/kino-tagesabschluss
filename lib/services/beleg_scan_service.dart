@@ -75,13 +75,19 @@ class BelegScanService {
       ],
     };
 
-    final http.Response response = await http.post(
-      Uri.parse(_workerUrl),
-      headers: <String, String>{
-        'content-type': 'application/json',
-      },
-      body: jsonEncode(requestBody),
-    );
+    final http.Response response;
+    try {
+      response = await http.post(
+        Uri.parse(_workerUrl),
+        headers: <String, String>{
+          'content-type': 'application/json',
+        },
+        body: jsonEncode(requestBody),
+      );
+    } catch (_) {
+      throw BelegScanException(
+          'Keine Internetverbindung. Bitte Verbindung prüfen.');
+    }
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw BelegScanException(
