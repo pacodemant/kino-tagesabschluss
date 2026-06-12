@@ -60,14 +60,32 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 34),
-              child: GestureDetector(
-                onTap: () => Navigator.of(context)
-                    .pushNamed(UeberEntwicklerSeite.routenName),
-                child: Image.asset(
-                  'assets/images/logo_apprev.png',
-                  width: 90,
-                ),
+              padding: const EdgeInsets.only(bottom: 17),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text(
+                    'Web App 0.9.6 · r268 @ GitHub:',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppFarben.subtilerText,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Image.asset(
+                    'assets/images/qr_webapp_github.png',
+                    width: 100,
+                  ),
+                  const SizedBox(height: 12),
+                  GestureDetector(
+                    onTap: () => Navigator.of(context)
+                        .pushNamed(UeberEntwicklerSeite.routenName),
+                    child: Image.asset(
+                      'assets/images/logo_apprev.png',
+                      width: 90,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
