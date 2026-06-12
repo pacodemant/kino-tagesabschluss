@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 272: BelegScanService auf Cloudflare Worker als Proxy umgestellt (kartenzahlungsbelegscan.pacodemant.workers.dev); x-api-key- und anthropic-version-Header entfernt; SharedPreferences-API-Key-Prüfung entfernt; Version auf 0.9.10.
+
 - Run 271: Kamera-Button in der EC-Belege-Kachel von Schritt 2; ruft BelegScanService.scan() auf und gibt Ergebnis per debugPrint aus; _scanLaeuft-State mit CircularProgressIndicator und deaktiviertem Button während des Scans; Version auf 0.9.9.
 
 - Run 270: Neues Datenmodell BelegScanErgebnis (beleg_scan_ergebnis.dart) mit ZahlungsartErgebnis, Plausibilitäts-Gettern und fromJson(); neuer BelegScanService (beleg_scan_service.dart) mit BelegScanException, liest Anthropic API-Key aus SharedPreferences, sendet Bilddaten base64-kodiert an Anthropic Messages API (claude-sonnet-4-6), parst Antwort zu BelegScanErgebnis; image_picker ^1.1.2 als Dependency ergänzt; Version auf 0.9.8.

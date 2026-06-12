@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BelegScanException implements Exception {
   BelegScanException(this.message);
@@ -15,6 +14,9 @@ class BelegScanException implements Exception {
 
 class BelegScanService {
   BelegScanService._();
+
+  static const String _workerUrl =
+      'https://kartenzahlungsbelegscan.pacodemant.workers.dev';
 
   static const String _systemPrompt =
       'Du bist ein Belegscanner für Kassensysteme.\n'
@@ -48,15 +50,6 @@ class BelegScanService {
       '  "hinweis" eintragen. Sonst: null.';
 
   static Future<BelegScanErgebnis> scan(XFile bild) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String apiKey = speicher.getString('anthropic_api_key') ?? '';
-    if (apiKey.isEmpty) {
-      throw BelegScanException(
-        'Kein Anthropic API-Key hinterlegt. '
-        'Bitte in den Einstellungen eintragen.',
-      );
-    }
-
     final List<int> bytes = await bild.readAsBytes();
     final String base64Bild = base64Encode(bytes);
     final String mimeType = bild.mimeType ?? 'image/jpeg';
@@ -83,10 +76,8 @@ class BelegScanService {
     };
 
     final http.Response response = await http.post(
-      Uri.parse('https://api.anthropic.com/v1/messages'),
+      Uri.parse(_workerUrl),
       headers: <String, String>{
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
         'content-type': 'application/json',
       },
       body: jsonEncode(requestBody),
