@@ -9,13 +9,13 @@ class ZahlungsartErgebnis {
     return ZahlungsartErgebnis(
       art: json['art'] as String? ?? '',
       anzahl: (json['anzahl'] as num?)?.toInt() ?? 0,
-      betragCent: (json['betrag_cent'] as num?)?.toInt() ?? 0,
+      betragCent: (json['betrag_cent'] as num?)?.toInt(),
     );
   }
 
   final String art;
   final int anzahl;
-  final int betragCent;
+  final int? betragCent;
 }
 
 class BelegScanErgebnis {
@@ -63,8 +63,11 @@ class BelegScanErgebnis {
 
   bool get betraegePlausibel {
     if (gesamtBetragCent == null) return false;
+    if (zahlungsarten.any((ZahlungsartErgebnis z) => z.betragCent == null)) {
+      return false;
+    }
     final int summe = zahlungsarten.fold(
-        0, (int s, ZahlungsartErgebnis z) => s + z.betragCent);
+        0, (int s, ZahlungsartErgebnis z) => s + (z.betragCent ?? 0));
     return summe == gesamtBetragCent;
   }
 

@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/widgets/beleg_scan_gegenpruef_dialog.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -689,20 +691,16 @@ class _TagesabschlussSchritt2SeiteState
     if (bild == null) return;
     setState(() => _scanLaeuft = true);
     try {
-      final ergebnis = await BelegScanService.scan(bild);
-      debugPrint('BelegScan terminalId: ${ergebnis.terminalId}');
-      debugPrint('BelegScan datum: ${ergebnis.datum}');
-      debugPrint('BelegScan uhrzeit: ${ergebnis.uhrzeit}');
-      debugPrint('BelegScan belegNrVon: ${ergebnis.belegNrVon}');
-      debugPrint('BelegScan belegNrBis: ${ergebnis.belegNrBis}');
-      for (final z in ergebnis.zahlungsarten) {
-        debugPrint(
-            'BelegScan zahlungsart: ${z.art}, anzahl: ${z.anzahl}, betragCent: ${z.betragCent}');
-      }
-      debugPrint('BelegScan gesamtAnzahl: ${ergebnis.gesamtAnzahl}');
-      debugPrint('BelegScan gesamtBetragCent: ${ergebnis.gesamtBetragCent}');
-      debugPrint('BelegScan hinweis: ${ergebnis.hinweis}');
-      debugPrint('BelegScan istPlausibel: ${ergebnis.istPlausibel}');
+      final BelegScanErgebnis ergebnis = await BelegScanService.scan(bild);
+      if (!mounted) return;
+      setState(() => _scanLaeuft = false);
+      final BelegScanErgebnis? geprueftes = await showDialog<BelegScanErgebnis>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext dialogContext) =>
+            BelegScanGegenpruefDialog(ergebnis: ergebnis),
+      );
+      debugPrint('BelegScan Gegenprüf-Ergebnis: $geprueftes');
     } on BelegScanException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
@@ -710,7 +708,8 @@ class _TagesabschlussSchritt2SeiteState
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Scan fehlgeschlagen. Bitte erneut versuchen.')),
+        const SnackBar(
+            content: Text('Scan fehlgeschlagen. Bitte erneut versuchen.')),
       );
     } finally {
       if (mounted) setState(() => _scanLaeuft = false);

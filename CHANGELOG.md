@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 273: Gegenprüf-Popup nach erfolgreichem BelegScan; BelegScanGegenpruefDialog zeigt Terminal-ID, Datum, Uhrzeit, Beleg-Nr. von/bis, Zahlungsarten mit Betrag, Gesamtbetrag; null-Felder (abrechnungsrelevant) als „unleserlich" mit Pflicht-Eingabefeld; Bestätigen-Button deaktiviert bis alle Pflichtfelder ausgefüllt; Plausibilitäts-Warnung (rot) bei istPlausibel==false; KI-Hinweis-Box (gelb) bei hinweis!=null; ZahlungsartErgebnis.betragCent auf int? umgestellt.
+
 - Run 272: BelegScanService auf Cloudflare Worker als Proxy umgestellt (kartenzahlungsbelegscan.pacodemant.workers.dev); x-api-key- und anthropic-version-Header entfernt; SharedPreferences-API-Key-Prüfung entfernt; Version auf 0.9.10.
 
 - Run 271: Kamera-Button in der EC-Belege-Kachel von Schritt 2; ruft BelegScanService.scan() auf und gibt Ergebnis per debugPrint aus; _scanLaeuft-State mit CircularProgressIndicator und deaktiviertem Button während des Scans; Version auf 0.9.9.
