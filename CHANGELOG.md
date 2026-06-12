@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 269: Neues Eingabefeld „Anthropic API-Key" im Dev-Bereich der Einstellungsseite; Untersektion „KI-Belegscan (Anthropic)" mit verdecktem Eingabefeld und Sichtbarkeits-Toggle; Schlüssel wird unter 'anthropic_api_key' in SharedPreferences gespeichert; Version auf 0.9.7.
+
 - Run 268: StoragePersistService.requestIfNeeded() nach speichereFinalenTagesabschluss() aufgerufen (kein Dialog, still im Hintergrund); BuildContext-Parameter aus requestIfNeeded() entfernt; Version auf 0.9.6.
 
 - Run 267: AbrechnungSpeicher von SharedPreferences auf Hive (box_abrechnung_entwuerfe) umgestellt; Version auf 0.9.5.

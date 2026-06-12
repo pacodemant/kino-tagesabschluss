@@ -94,6 +94,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _devAufgeklappt = false;
   bool _testwertAufgeklappt = false;
   bool _pwaInstallVerfuegbar = false;
+  bool _anthropicKeyVerdeckt = true;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -101,6 +102,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final TextEditingController _neuesGetraenkCtrl = TextEditingController();
   final TextEditingController _apiUploadUrlCtrl = TextEditingController();
   final TextEditingController _apiUploadKeyCtrl = TextEditingController();
+  final TextEditingController _anthropicApiKeyCtrl = TextEditingController();
   late final FocusNode _mitarbeiterNameFocus;
   late final FocusNode _neuesGetraenkFocus;
 
@@ -161,6 +163,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _neuesGetraenkFocus.dispose();
     _apiUploadUrlCtrl.dispose();
     _apiUploadKeyCtrl.dispose();
+    _anthropicApiKeyCtrl.dispose();
     super.dispose();
   }
 
@@ -233,11 +236,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
     final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
     final String apiUploadKey = speicher.getString('api_upload_key') ?? '';
+    final String anthropicApiKey =
+        speicher.getString('anthropic_api_key') ?? '';
     if (!mounted) return;
     _mitarbeiterNameCtrl.text = mitarbeiterName;
     if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
     _apiUploadUrlCtrl.text = apiUploadUrl;
     _apiUploadKeyCtrl.text = apiUploadKey;
+    _anthropicApiKeyCtrl.text = anthropicApiKey;
 
     setState(() {
       _devModusAktiv = devAktiv;
@@ -345,6 +351,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString('api_upload_url', _apiUploadUrlCtrl.text.trim());
     await speicher.setString('api_upload_key', _apiUploadKeyCtrl.text.trim());
+  }
+
+  Future<void> _speichereAnthropicApiKey() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+        'anthropic_api_key', _anthropicApiKeyCtrl.text.trim());
   }
 
   Future<void> _onEingabeMitKommaGeaendert(bool wert) async {
@@ -1335,6 +1347,37 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       ),
                     ),
                   ],
+                  const Divider(),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                    child: Text(
+                      'KI-Belegscan (Anthropic)',
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4),
+                    child: TextField(
+                      controller: _anthropicApiKeyCtrl,
+                      obscureText: _anthropicKeyVerdeckt,
+                      decoration: InputDecoration(
+                        labelText: 'Anthropic API-Key',
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _anthropicKeyVerdeckt
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () => setState(
+                            () => _anthropicKeyVerdeckt =
+                                !_anthropicKeyVerdeckt,
+                          ),
+                        ),
+                      ),
+                      onChanged: (_) => _speichereAnthropicApiKey(),
+                    ),
+                  ),
                   const Divider(height: 1),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
