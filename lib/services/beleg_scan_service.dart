@@ -55,9 +55,10 @@ class BelegScanService {
       '  Werte aus, die auf dem Foto zweifelsfrei und vollständig lesbar sind.\n'
       '  Ist ein Feld auch nur teilweise unleserlich, verdeckt, unscharf oder\n'
       '  abgeschnitten: null – auch wenn ein Wert plausibel erscheint.\n'
-      '- Wenn du eine Unstimmigkeit erkennst (Summe passt nicht, Beleg\n'
-      '  abgeschnitten, Wert unleserlich): kurzen deutschen Hinweistext in\n'
-      '  "hinweis" eintragen. Sonst: null.';
+      '- Wenn die Summe der Zahlungsarten NICHT mit gesamt_betrag_cent übereinstimmt\n'
+      '  oder der Beleg erkennbar abgeschnitten ist: kurzen deutschen Satz in\n'
+      '  "hinweis" (max. 8 Wörter, keine Zahlen, keine Rechenformeln). Sonst: null.\n'
+      '  Was korrekt ist oder nur ungewöhnlich wirkt: niemals in "hinweis" erwähnen.';
 
   static Future<BelegScanErgebnis> scan(XFile bild) async {
     final List<int> bytes = await bild.readAsBytes();

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274d: Kein-Terminal-Beleg-Dialog zeigt fixen Text statt AI-hinweis; AI-Prompt: hinweis nur bei echter Summen-Abweichung oder abgeschnittenem Beleg (max. 8 Wörter, keine Zahlen, kein Loben was stimmt); Terminal-ID immer im Prüf-Popup sichtbar (erforderlich:true), bei leer → "nicht vorhanden/unleserlich" als Fallback-String (auch im JSON); r274d.
+
 - Run 274c: Kein-Terminal-Beleg-Erkennung: AI-Prompt erweitert mit kein_terminal_beleg-Flag; bei positivem Flag einfacher Dialog ("Kein Terminal-Beleg") mit "nochmal"-Button statt Vollprüfung; BelegScanErgebnis.keinTerminalBeleg-Feld; null-Felder im Prüf-Popup werden ausgeblendet (statt "unleserlich"); gleiches Verhalten in _baueMetadatenInfoZeile (EC-Kachel); ApiUploadService: null-Metadaten als "nicht vorhanden" übermitteln wenn Scan stattgefunden; r274c.
 
 - Run 274b: Löschen-Button löscht jetzt auch EC-Betrag[0] (ergibt Sinn nach Fehlscan); Dialog-Button "Korrigieren" umbenannt in "nochmal" mit Kamera-Icon.

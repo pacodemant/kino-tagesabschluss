@@ -130,7 +130,10 @@ class _BelegScanGegenpruefDialogState
       ));
     }
     return BelegScanErgebnis(
-      terminalId: e.terminalId ?? _terminalIdController?.text.trim(),
+      terminalId: e.terminalId ??
+          (_terminalIdController?.text.trim().isNotEmpty == true
+              ? _terminalIdController!.text.trim()
+              : 'nicht vorhanden/unleserlich'),
       datum: e.datum,
       uhrzeit: e.uhrzeit ?? _uhrzeitController?.text.trim(),
       belegNrVon: e.belegNrVon ?? _belegNrVonController?.text.trim(),
@@ -149,10 +152,38 @@ class _BelegScanGegenpruefDialogState
     String label,
     String? wert, {
     TextEditingController? controller,
+    bool erforderlich = false,
   }) {
-    if (wert == null && !_manuellEintragenAufgeklappt) {
-      return const SizedBox.shrink();
+    final bool zeigeZeile = wert != null ||
+        erforderlich ||
+        (_manuellEintragenAufgeklappt && controller != null);
+    if (!zeigeZeile) return const SizedBox.shrink();
+
+    final Widget wertWidget;
+    if (wert != null) {
+      wertWidget = Text(wert, style: const TextStyle(fontSize: 14));
+    } else if (_manuellEintragenAufgeklappt && controller != null) {
+      wertWidget = TextField(
+        controller: controller,
+        style: const TextStyle(fontSize: 13),
+        decoration: const InputDecoration(
+          hintText: 'Bitte manuell eintragen',
+          isDense: true,
+          border: OutlineInputBorder(),
+          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        ),
+      );
+    } else {
+      wertWidget = const Text(
+        'nicht vorhanden/unleserlich',
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black38,
+          fontStyle: FontStyle.italic,
+        ),
+      );
     }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -165,28 +196,7 @@ class _BelegScanGegenpruefDialogState
               style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ),
-          Expanded(
-            child: wert != null
-                ? Text(wert, style: const TextStyle(fontSize: 14))
-                : controller != null
-                    ? TextField(
-                        controller: controller,
-                        style: const TextStyle(fontSize: 13),
-                        decoration: const InputDecoration(
-                          hintText: 'Bitte manuell eintragen',
-                          isDense: true,
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
-                          ),
-                        ),
-                      )
-                    : const Text(
-                        '—',
-                        style: TextStyle(fontSize: 14, color: Colors.black38),
-                      ),
-          ),
+          Expanded(child: wertWidget),
         ],
       ),
     );
@@ -441,6 +451,7 @@ class _BelegScanGegenpruefDialogState
                       'Terminal-ID',
                       e.terminalId,
                       controller: _terminalIdController,
+                      erforderlich: true,
                     ),
                     _baueInfoZeile('Datum', e.datum),
                     _baueInfoZeile(
