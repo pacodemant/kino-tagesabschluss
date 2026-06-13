@@ -564,11 +564,12 @@ class _BelegScanGegenpruefDialogState
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: OutlinedButton(
+                    child: OutlinedButton.icon(
                       onPressed: () => Navigator.of(context).pop(
                         const BelegScanDialogErgebnis.nochmalScannen(),
                       ),
-                      child: const Text('Korrigieren'),
+                      icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                      label: const Text('nochmal'),
                     ),
                   ),
                   const SizedBox(width: 12),

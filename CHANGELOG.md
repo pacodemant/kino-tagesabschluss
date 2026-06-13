@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274b: Löschen-Button löscht jetzt auch EC-Betrag[0] (ergibt Sinn nach Fehlscan); Dialog-Button "Korrigieren" umbenannt in "nochmal" mit Kamera-Icon.
+
 - Run 274a: Persistenz von Kartenarten-Tabelle und Scan-Metadaten in _speichereEntwurf/_ladeEntwurf (Hive); initState: zahlungsarten-Laden vor _ladeEntwurf gekettet; Anzahl-Summe in Gesamt-Zeile der Kartenarten-Tabelle; Löschen-Button (delete_sweep) im EC-Kachel-Header; AppBar-Clear + Dev-Alles-leeren setzen Kartenarten zurück; Scroll-Indikator (Pfeil nach unten) wenn EC-Kachel über Viewport hinausragt; Dialog: „Korrigieren" löst neue Kamera-Aufnahme aus (do-while-Loop in _starteEcBelegScan); Gelbe Box nur bei unleserlichen Feldern oder Betrag-Fehler; „Manuell eintragen (optional)" TextButton klappt Eingabefelder auf; r274a.
 
 - Run 274: ZahlungsartenConfigService + config/zahlungsarten.txt (girocard, SEPA Lastschrift, Mastercard, Visa); BelegScanGegenpruefDialog: Buttons auf „Korrigieren" (kachelOeffnen:true) + „Bestätigen" (kachelOeffnen:false), ✕ im Header, BelegScanDialogErgebnis als Rückgabewert; TagesabschlussFinal: 5 neue nullable Felder (terminalId, belegNrVon, belegNrBis, ecUhrzeit, zahlungsartenAufschluesselung) mit toJson/fromJson; Chain Finalisieren­Eingabe→Usecase→Schritt3Argumente aktualisiert; EC-Belege-Kachel in Schritt2 kollapsierbar mit Scan-Metadaten-Block (3a) und Kartenarten-Tabelle (3b); _starteEcBelegScan füllt EC-Gesamtbetrag, Metadata und Kartenarten-Felder; ApiUploadService exportiert neue Felder; Version 0.9.11 · r274.

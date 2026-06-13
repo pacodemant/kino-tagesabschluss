@@ -1170,6 +1170,11 @@ class _TagesabschlussSchritt2SeiteState
       _scanBelegNrVon = null;
       _scanBelegNrBis = null;
       _scanHatStattgefunden = false;
+      if (_ecBelegeCent.isNotEmpty) {
+        _ecBelegeCent[0] = 0;
+        _setzeControllerText(_ecBelegController[0], '');
+        _ecBeleg1Beruehrt = false;
+      }
       for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
         _zahlungsartAnzahlController[i].clear();
         _zahlungsartBetragController[i].clear();
