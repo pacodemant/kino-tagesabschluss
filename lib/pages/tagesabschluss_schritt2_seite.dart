@@ -851,10 +851,16 @@ class _TagesabschlussSchritt2SeiteState
                   onPressed: () => Navigator.of(ctx).pop(false),
                   child: const Text('Abbrechen'),
                 ),
-                OutlinedButton.icon(
+                OutlinedButton(
                   onPressed: () => Navigator.of(ctx).pop(true),
-                  icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                  label: const Text('nochmal'),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text('nochmal'),
+                      SizedBox(width: 6),
+                      Icon(Icons.camera_alt_outlined, size: 18),
+                    ],
+                  ),
                 ),
               ],
             ),

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274e4: Eingabefelder mit sichtbarem OutlineInputBorder (statt InputBorder.none); Felder Uhrzeit, Beleg-Nr. von/bis erscheinen nicht mehr im Manuell-Modus (kein zeigeInManuell); _hatUnleserlicheFelder nur noch terminalId, gesamtBetragCent, zahlungsarten.betragCent; nochmal-Button: Kamera-Icon jetzt hinter dem Text; r274e4.
+
 - Run 274e3: CLAUDE.md: kinoauswahl_seite.dart in Versionierung ergänzt; beide Versionsstrings r274e3; Zeilenumbruch nach "dunkel" im Kein-Beleg-Dialog entfernt; Dialog: "Bestätigen" → "Übernehmen"; gelbe Box zeigt immer wenn Felder fehlen (auch ohne AI-hinweis); Null-Felder orange statt grau (Terminal-ID, Zahlungsart-Beträge, Gesamt); Betrag-Eingabe in Cent (int, kein Euro-Format); Hint-Text "z. B. 1490"; keyboard-aware maxHeight in ConstrainedBox (scrollt zu fokussiertem Feld); _parseCentEingabe statt _parseEuroToCent; r274e3.
 
 - Run 274e2: Snackbar-Filter in _starteEcBelegScan: technischer Text wird nie angezeigt; Netz-Fehler bleibt spezifisch, alle anderen Scan-Fehler → "Scan nicht lesbar – bitte erneut versuchen (z.B. unscharf, zu dunkel oder kein Beleg)"; Kein-Terminal-Beleg-Dialog: "zu dunkel" ergänzt; Dialog-TextFields: inline statt ganzzeilig (UnderlineInputBorder, InputBorder.none, scrollPadding 200), Betrag-Felder in Zahlungsart- und Gesamt-Zeile jetzt direkt in der Spalte statt darunter; r274e2.

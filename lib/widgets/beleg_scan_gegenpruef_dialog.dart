@@ -87,9 +87,6 @@ class _BelegScanGegenpruefDialogState
   bool get _hatUnleserlicheFelder {
     final BelegScanErgebnis e = widget.ergebnis;
     return e.terminalId == null ||
-        e.belegNrVon == null ||
-        e.belegNrBis == null ||
-        e.uhrzeit == null ||
         e.gesamtBetragCent == null ||
         e.zahlungsarten.any((ZahlungsartErgebnis z) => z.betragCent == null);
   }
@@ -146,10 +143,11 @@ class _BelegScanGegenpruefDialogState
     String? wert, {
     TextEditingController? controller,
     bool erforderlich = false,
+    bool zeigeInManuell = false,
   }) {
     final bool zeigeZeile = wert != null ||
         erforderlich ||
-        (_manuellEintragenAufgeklappt && controller != null);
+        (zeigeInManuell && _manuellEintragenAufgeklappt && controller != null);
     if (!zeigeZeile) return const SizedBox.shrink();
 
     final Widget wertWidget;
@@ -164,11 +162,15 @@ class _BelegScanGegenpruefDialogState
           hintText: 'Bitte eintragen',
           hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           isDense: true,
-          border: InputBorder.none,
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade500),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide(color: Colors.grey.shade400),
           ),
-          contentPadding: EdgeInsets.zero,
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide(color: Colors.grey.shade700),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         ),
       );
     } else {
@@ -242,13 +244,16 @@ class _BelegScanGegenpruefDialogState
                             fontSize: 14,
                           ),
                           isDense: true,
-                          border: InputBorder.none,
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.grey.shade500),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: BorderSide(color: Colors.grey.shade400),
                           ),
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 2),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(4),
+                            borderSide: BorderSide(color: Colors.grey.shade700),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
                         ),
                       )
                     : Text(
@@ -318,13 +323,18 @@ class _BelegScanGegenpruefDialogState
                                 fontWeight: FontWeight.w700,
                               ),
                               isDense: true,
-                              border: InputBorder.none,
-                              focusedBorder: UnderlineInputBorder(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(4),
                                 borderSide:
-                                    BorderSide(color: Colors.grey.shade500),
+                                    BorderSide(color: Colors.grey.shade400),
                               ),
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 2),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(4),
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade700),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 4),
                             ),
                           )
                         : Text(
@@ -467,23 +477,12 @@ class _BelegScanGegenpruefDialogState
                       e.terminalId,
                       controller: _terminalIdController,
                       erforderlich: true,
+                      zeigeInManuell: true,
                     ),
                     _baueInfoZeile('Datum', e.datum),
-                    _baueInfoZeile(
-                      'Uhrzeit',
-                      e.uhrzeit,
-                      controller: _uhrzeitController,
-                    ),
-                    _baueInfoZeile(
-                      'Beleg-Nr. von',
-                      e.belegNrVon,
-                      controller: _belegNrVonController,
-                    ),
-                    _baueInfoZeile(
-                      'Beleg-Nr. bis',
-                      e.belegNrBis,
-                      controller: _belegNrBisController,
-                    ),
+                    _baueInfoZeile('Uhrzeit', e.uhrzeit),
+                    _baueInfoZeile('Beleg-Nr. von', e.belegNrVon),
+                    _baueInfoZeile('Beleg-Nr. bis', e.belegNrBis),
                     const SizedBox(height: 10),
                     const Divider(),
                     Padding(
@@ -574,12 +573,18 @@ class _BelegScanGegenpruefDialogState
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: OutlinedButton.icon(
+                    child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(
                         const BelegScanDialogErgebnis.nochmalScannen(),
                       ),
-                      icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                      label: const Text('nochmal'),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text('nochmal'),
+                          SizedBox(width: 6),
+                          Icon(Icons.camera_alt_outlined, size: 18),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
