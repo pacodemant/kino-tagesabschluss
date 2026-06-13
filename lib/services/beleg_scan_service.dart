@@ -126,7 +126,10 @@ class BelegScanService {
       return BelegScanErgebnis.fromJson(ergebnisJson);
     } on BelegScanException {
       rethrow;
-    } catch (e) {
+    } on FormatException {
+      throw BelegScanException(
+          'Beleg war nicht eindeutig lesbar – bitte erneut scannen.');
+    } catch (_) {
       throw BelegScanException(
           'Scan fehlgeschlagen – bitte erneut versuchen.');
     }
