@@ -835,6 +835,36 @@ class _TagesabschlussSchritt2SeiteState
         originalErgebnis = ergebnis;
         if (!mounted) return;
         setState(() => _scanLaeuft = false);
+        if (ergebnis.keinTerminalBeleg) {
+          final bool? nochmal = await showDialog<bool>(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext ctx) => AlertDialog(
+              title: const Text('Kein Terminal-Beleg'),
+              content: Text(
+                ergebnis.hinweis ??
+                    'Das Foto zeigt keinen EC-Terminal-Beleg.',
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: const Text('Abbrechen'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  icon: const Icon(Icons.camera_alt_outlined, size: 18),
+                  label: const Text('nochmal'),
+                ),
+              ],
+            ),
+          );
+          if (!mounted) return;
+          if (nochmal == true) {
+            wiederholen = true;
+            continue;
+          }
+          return;
+        }
         final BelegScanDialogErgebnis? dialogErgebnis =
             await showDialog<BelegScanDialogErgebnis>(
           context: context,
@@ -1299,6 +1329,7 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Widget _baueMetadatenInfoZeile(String label, String? wert) {
+    if (wert == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
@@ -1312,16 +1343,7 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           Expanded(
-            child: wert != null
-                ? Text(wert, style: const TextStyle(fontSize: 13))
-                : const Text(
-                    'unleserlich',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.black38,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+            child: Text(wert, style: const TextStyle(fontSize: 13)),
           ),
         ],
       ),

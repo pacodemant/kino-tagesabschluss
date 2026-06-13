@@ -31,15 +31,19 @@ class ApiUploadService {
       'barBestand': _euro(abrechnung.barBestandAbzglWechselgeldCent).toString(),
       'gesamtIst': _euro(abrechnung.gesamtIstCent).toString(),
       'differenzGesamt': _euro(abrechnung.differenzGesamtCent).toString(),
-      if (abrechnung.terminalId != null)
-        'terminal_id': abrechnung.terminalId!,
-      if (abrechnung.belegNrVon != null)
-        'beleg_nr_von': abrechnung.belegNrVon!,
-      if (abrechnung.belegNrBis != null)
-        'beleg_nr_bis': abrechnung.belegNrBis!,
-      if (abrechnung.ecUhrzeit != null)
-        'ec_uhrzeit': abrechnung.ecUhrzeit!,
     };
+
+    final bool hatScanDaten = abrechnung.terminalId != null ||
+        abrechnung.belegNrVon != null ||
+        abrechnung.belegNrBis != null ||
+        abrechnung.ecUhrzeit != null ||
+        (abrechnung.zahlungsartenAufschluesselung?.isNotEmpty ?? false);
+    if (hatScanDaten) {
+      formBody['terminal_id'] = abrechnung.terminalId ?? 'nicht vorhanden';
+      formBody['beleg_nr_von'] = abrechnung.belegNrVon ?? 'nicht vorhanden';
+      formBody['beleg_nr_bis'] = abrechnung.belegNrBis ?? 'nicht vorhanden';
+      formBody['ec_uhrzeit'] = abrechnung.ecUhrzeit ?? 'nicht vorhanden';
+    }
 
     if (abrechnung.zahlungsartenAufschluesselung != null) {
       for (final ZahlungsartErgebnis z

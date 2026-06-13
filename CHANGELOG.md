@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274c: Kein-Terminal-Beleg-Erkennung: AI-Prompt erweitert mit kein_terminal_beleg-Flag; bei positivem Flag einfacher Dialog ("Kein Terminal-Beleg") mit "nochmal"-Button statt Vollprüfung; BelegScanErgebnis.keinTerminalBeleg-Feld; null-Felder im Prüf-Popup werden ausgeblendet (statt "unleserlich"); gleiches Verhalten in _baueMetadatenInfoZeile (EC-Kachel); ApiUploadService: null-Metadaten als "nicht vorhanden" übermitteln wenn Scan stattgefunden; r274c.
+
 - Run 274b: Löschen-Button löscht jetzt auch EC-Betrag[0] (ergibt Sinn nach Fehlscan); Dialog-Button "Korrigieren" umbenannt in "nochmal" mit Kamera-Icon.
 
 - Run 274a: Persistenz von Kartenarten-Tabelle und Scan-Metadaten in _speichereEntwurf/_ladeEntwurf (Hive); initState: zahlungsarten-Laden vor _ladeEntwurf gekettet; Anzahl-Summe in Gesamt-Zeile der Kartenarten-Tabelle; Löschen-Button (delete_sweep) im EC-Kachel-Header; AppBar-Clear + Dev-Alles-leeren setzen Kartenarten zurück; Scroll-Indikator (Pfeil nach unten) wenn EC-Kachel über Viewport hinausragt; Dialog: „Korrigieren" löst neue Kamera-Aufnahme aus (do-while-Loop in _starteEcBelegScan); Gelbe Box nur bei unleserlichen Feldern oder Betrag-Fehler; „Manuell eintragen (optional)" TextButton klappt Eingabefelder auf; r274a.

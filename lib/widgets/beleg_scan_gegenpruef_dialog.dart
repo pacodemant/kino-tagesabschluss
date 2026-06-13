@@ -150,55 +150,43 @@ class _BelegScanGegenpruefDialogState
     String? wert, {
     TextEditingController? controller,
   }) {
-    final bool hatController = controller != null;
+    if (wert == null && !_manuellEintragenAufgeklappt) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(
-                width: 115,
-                child: Text(
-                  label,
-                  style: const TextStyle(fontSize: 13, color: Colors.black54),
-                ),
-              ),
-              Expanded(
-                child: wert != null
-                    ? Text(wert, style: const TextStyle(fontSize: 14))
-                    : Text(
-                        hatController ? 'unleserlich' : '—',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: hatController
-                              ? Colors.orange.shade700
-                              : Colors.black54,
-                          fontStyle: hatController
-                              ? FontStyle.italic
-                              : FontStyle.normal,
-                        ),
-                      ),
-              ),
-            ],
-          ),
-          if (wert == null && controller != null && _manuellEintragenAufgeklappt)
-            Padding(
-              padding: const EdgeInsets.only(top: 4, left: 115),
-              child: TextField(
-                controller: controller,
-                style: const TextStyle(fontSize: 13),
-                decoration: const InputDecoration(
-                  hintText: 'Bitte manuell eintragen',
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                ),
-              ),
+          SizedBox(
+            width: 115,
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 13, color: Colors.black54),
             ),
+          ),
+          Expanded(
+            child: wert != null
+                ? Text(wert, style: const TextStyle(fontSize: 14))
+                : controller != null
+                    ? TextField(
+                        controller: controller,
+                        style: const TextStyle(fontSize: 13),
+                        decoration: const InputDecoration(
+                          hintText: 'Bitte manuell eintragen',
+                          isDense: true,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
+                        ),
+                      )
+                    : const Text(
+                        '—',
+                        style: TextStyle(fontSize: 14, color: Colors.black38),
+                      ),
+          ),
         ],
       ),
     );
@@ -234,14 +222,10 @@ class _BelegScanGegenpruefDialogState
               SizedBox(
                 width: 104,
                 child: betragNull
-                    ? Text(
-                        'unleserlich',
+                    ? const Text(
+                        '—',
                         textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.orange.shade700,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black38),
                       )
                     : Text(
                         _formatCent(z.betragCent!),
@@ -302,13 +286,13 @@ class _BelegScanGegenpruefDialogState
               SizedBox(
                 width: 104,
                 child: gesamtNull
-                    ? Text(
-                        'unleserlich',
+                    ? const Text(
+                        '—',
                         textAlign: TextAlign.right,
                         style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.orange.shade700,
-                          fontStyle: FontStyle.italic,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black38,
                         ),
                       )
                     : Text(

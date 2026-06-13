@@ -20,6 +20,7 @@ class ZahlungsartErgebnis {
 
 class BelegScanErgebnis {
   BelegScanErgebnis({
+    this.keinTerminalBeleg = false,
     this.terminalId,
     this.datum,
     this.uhrzeit,
@@ -35,6 +36,7 @@ class BelegScanErgebnis {
     final List<dynamic>? zahlungsartenRoh =
         json['zahlungsarten'] as List<dynamic>?;
     return BelegScanErgebnis(
+      keinTerminalBeleg: (json['kein_terminal_beleg'] as bool?) ?? false,
       terminalId: json['terminal_id'] as String?,
       datum: json['datum'] as String?,
       uhrzeit: json['uhrzeit'] as String?,
@@ -51,6 +53,7 @@ class BelegScanErgebnis {
     );
   }
 
+  final bool keinTerminalBeleg;
   final String? terminalId;
   final String? datum;
   final String? uhrzeit;
