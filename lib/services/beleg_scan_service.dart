@@ -19,16 +19,17 @@ class BelegScanService {
       'https://kartenzahlungsbelegscan.pacodemant.workers.dev';
 
   static const String _systemPrompt =
-      'Du bist ein Belegscanner für Kassensysteme.\n'
+      'Du bist ein Belegscanner für Kassensysteme. '
+      'Antworte IMMER und ausschließlich mit reinem JSON – '
+      'kein Fließtext, keine Erklärungen, kein Satz außerhalb des JSON.\n'
+      '\n'
       'Du bekommst ein Foto. Prüfe zuerst: Zeigt es einen EC-Terminal-Beleg\n'
       '(Kassenschnitt, Tagessaldo, Händler-Abschlussbeleg)?\n'
       '\n'
-      'Wenn NEIN: Antworte ausschließlich mit:\n'
-      '{"kein_terminal_beleg": true, "hinweis": "Kurze Beschreibung was zu sehen ist"}\n'
+      'Wenn NEIN – antworte NUR mit diesem JSON:\n'
+      '{"kein_terminal_beleg": true, "hinweis": "..."}\n'
       '\n'
-      'Wenn JA: Extrahiere folgende Felder und antworte NUR mit JSON,\n'
-      'ohne Erklärung, ohne Markdown-Backticks:\n'
-      '\n'
+      'Wenn JA – antworte NUR mit diesem JSON (keine Backticks, kein Markdown):\n'
       '{\n'
       '  "kein_terminal_beleg": false,\n'
       '  "terminal_id": "...",\n'
@@ -55,10 +56,10 @@ class BelegScanService {
       '  Werte aus, die auf dem Foto zweifelsfrei und vollständig lesbar sind.\n'
       '  Ist ein Feld auch nur teilweise unleserlich, verdeckt, unscharf oder\n'
       '  abgeschnitten: null – auch wenn ein Wert plausibel erscheint.\n'
-      '- Wenn die Summe der Zahlungsarten NICHT mit gesamt_betrag_cent übereinstimmt\n'
-      '  oder der Beleg erkennbar abgeschnitten ist: kurzen deutschen Satz in\n'
-      '  "hinweis" (max. 8 Wörter, keine Zahlen, keine Rechenformeln). Sonst: null.\n'
-      '  Was korrekt ist oder nur ungewöhnlich wirkt: niemals in "hinweis" erwähnen.';
+      '- "hinweis" NUR setzen wenn die Summe der einzelnen Zahlungsart-Beträge\n'
+      '  rechnerisch NICHT mit gesamt_betrag_cent übereinstimmt: dann einen kurzen\n'
+      '  deutschen Satz (max. 8 Wörter, keine Zahlen). In ALLEN anderen Fällen: null.\n'
+      '  Keine visuellen Einschätzungen, keine Warnungen, kein Freitext in hinweis.';
 
   static Future<BelegScanErgebnis> scan(XFile bild) async {
     final List<int> bytes = await bild.readAsBytes();
@@ -116,12 +117,18 @@ class BelegScanService {
           RegExp(r'```(?:json)?\s*([\s\S]*?)\s*```').firstMatch(text);
       if (block != null) text = block.group(1)!;
       text = text.trim();
+      if (!text.startsWith('{')) {
+        throw BelegScanException(
+            'Bitte erneut scannen – Beleg war nicht eindeutig erkennbar.');
+      }
       final Map<String, dynamic> ergebnisJson =
           jsonDecode(text) as Map<String, dynamic>;
       return BelegScanErgebnis.fromJson(ergebnisJson);
+    } on BelegScanException {
+      rethrow;
     } catch (e) {
       throw BelegScanException(
-          'Antwort konnte nicht geparst werden: $e');
+          'Scan fehlgeschlagen – bitte erneut versuchen.');
     }
   }
 }

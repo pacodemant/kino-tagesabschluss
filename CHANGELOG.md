@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274e: BelegScanService: Prompt-Einstieg mit explizitem JSON-only-Gebot; hinweis nur noch bei rechnerischer Summen-Abweichung (keine visuellen Einschätzungen); parse-Fehler: Nicht-JSON-Antwort (kein '{'-Start) → sprechende BelegScanException statt technischer FormatException; alle anderen Catch-Zweige auf nutzerfreundlichen Text vereinheitlicht; r274e.
+
 - Run 274d: Kein-Terminal-Beleg-Dialog zeigt fixen Text statt AI-hinweis; AI-Prompt: hinweis nur bei echter Summen-Abweichung oder abgeschnittenem Beleg (max. 8 Wörter, keine Zahlen, kein Loben was stimmt); Terminal-ID immer im Prüf-Popup sichtbar (erforderlich:true), bei leer → "nicht vorhanden/unleserlich" als Fallback-String (auch im JSON); r274d.
 
 - Run 274c: Kein-Terminal-Beleg-Erkennung: AI-Prompt erweitert mit kein_terminal_beleg-Flag; bei positivem Flag einfacher Dialog ("Kein Terminal-Beleg") mit "nochmal"-Button statt Vollprüfung; BelegScanErgebnis.keinTerminalBeleg-Feld; null-Felder im Prüf-Popup werden ausgeblendet (statt "unleserlich"); gleiches Verhalten in _baueMetadatenInfoZeile (EC-Kachel); ApiUploadService: null-Metadaten als "nicht vorhanden" übermitteln wenn Scan stattgefunden; r274c.
