@@ -83,10 +83,16 @@ class BelegScanErgebnis {
 
 class BelegScanDialogErgebnis {
   const BelegScanDialogErgebnis({
-    required this.ergebnis,
+    required BelegScanErgebnis this.ergebnis,
     required this.kachelOeffnen,
   });
 
-  final BelegScanErgebnis ergebnis;
+  const BelegScanDialogErgebnis.nochmalScannen()
+      : ergebnis = null,
+        kachelOeffnen = false;
+
+  final BelegScanErgebnis? ergebnis;
   final bool kachelOeffnen;
+
+  bool get istNeueScanAnfrage => ergebnis == null;
 }

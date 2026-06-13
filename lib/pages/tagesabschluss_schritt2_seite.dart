@@ -139,6 +139,8 @@ class _TagesabschlussSchritt2SeiteState
 
   // EC-Kachel
   bool _ecKachelAufgeklappt = true;
+  final GlobalKey _ecKachelKey = GlobalKey();
+  bool _ecKachelZeigeScrollPfeil = false;
 
   // Zahlungsarten-Tabelle
   List<String> _zahlungsartenListe = const <String>[];
@@ -166,12 +168,8 @@ class _TagesabschlussSchritt2SeiteState
         });
       }
     });
-    _ladeEntwurf().then((_) {
-      if (mounted) {
-        _autoFokussiereNachLaden();
-      }
-    });
-    ZahlungsartenConfigService.laden().then((List<String> liste) {
+    _scrollController.addListener(_aktualisiereScrollPfeil);
+    ZahlungsartenConfigService.laden().then((List<String> liste) async {
       if (!mounted) return;
       setState(() {
         _zahlungsartenListe = liste;
@@ -186,6 +184,12 @@ class _TagesabschlussSchritt2SeiteState
         _zahlungsartAnzahlWerte = List<int?>.filled(liste.length, null);
         _zahlungsartBetragCentWerte = List<int?>.filled(liste.length, null);
         _zahlungsartNichtPlausibel = List<bool>.filled(liste.length, false);
+      });
+      await _ladeEntwurf();
+      if (!mounted) return;
+      _autoFokussiereNachLaden();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _aktualisiereScrollPfeil();
       });
     });
   }
@@ -291,6 +295,13 @@ class _TagesabschlussSchritt2SeiteState
         _ausgabenBetrageCent[i] = ausgabenBetraege[i];
         _ausgabenLabels[i] = ausgabenLabelListe[i];
       }
+      _scanHatStattgefunden =
+          (daten['scanHatStattgefunden'] as bool?) ?? false;
+      _scanTerminalId = daten['scanTerminalId'] as String?;
+      _scanDatum = daten['scanDatum'] as String?;
+      _scanUhrzeit = daten['scanUhrzeit'] as String?;
+      _scanBelegNrVon = daten['scanBelegNrVon'] as String?;
+      _scanBelegNrBis = daten['scanBelegNrBis'] as String?;
     });
 
     if (kinoSollCent != 0) {
@@ -331,6 +342,39 @@ class _TagesabschlussSchritt2SeiteState
         _setzeControllerText(_ausgabenLabelController[i], ausgabenLabelListe[i]);
       }
     }
+
+    // Zahlungsarten-Tabelle wiederherstellen
+    final Object? anzahlRoh = daten['zahlungsartAnzahlWerte'];
+    final Object? betragRoh = daten['zahlungsartBetragCentWerte'];
+    if (mounted && anzahlRoh is List<dynamic> && betragRoh is List<dynamic>) {
+      setState(() {
+        for (int i = 0;
+            i < _zahlungsartenListe.length &&
+                i < anzahlRoh.length &&
+                i < betragRoh.length;
+            i++) {
+          _zahlungsartAnzahlWerte[i] = (anzahlRoh[i] as num?)?.toInt();
+          _zahlungsartBetragCentWerte[i] = (betragRoh[i] as num?)?.toInt();
+        }
+      });
+      for (int i = 0;
+          i < _zahlungsartenListe.length &&
+              i < anzahlRoh.length &&
+              i < betragRoh.length;
+          i++) {
+        final int? anzahl = _zahlungsartAnzahlWerte[i];
+        final int? betrag = _zahlungsartBetragCentWerte[i];
+        if (anzahl != null) {
+          _setzeControllerText(_zahlungsartAnzahlController[i], '$anzahl');
+        }
+        if (betrag != null) {
+          _setzeControllerText(
+            _zahlungsartBetragController[i],
+            TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _speichereEntwurf() async {
@@ -347,6 +391,16 @@ class _TagesabschlussSchritt2SeiteState
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
         'ecBelegeCent': List<int>.from(_ecBelegeCent),
         'ecBelegeLabels': List<String>.from(_ecBelegLabels),
+        'scanHatStattgefunden': _scanHatStattgefunden,
+        'scanTerminalId': _scanTerminalId,
+        'scanDatum': _scanDatum,
+        'scanUhrzeit': _scanUhrzeit,
+        'scanBelegNrVon': _scanBelegNrVon,
+        'scanBelegNrBis': _scanBelegNrBis,
+        'zahlungsartAnzahlWerte':
+            List<dynamic>.from(_zahlungsartAnzahlWerte),
+        'zahlungsartBetragCentWerte':
+            List<dynamic>.from(_zahlungsartBetragCentWerte),
       },
     );
   }
@@ -699,6 +753,19 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(_ecBelegController[0], '');
       _setzeControllerText(_ecBelegLabelController[0], '');
+      _scanTerminalId = null;
+      _scanDatum = null;
+      _scanUhrzeit = null;
+      _scanBelegNrVon = null;
+      _scanBelegNrBis = null;
+      _scanHatStattgefunden = false;
+      for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
+        _zahlungsartAnzahlController[i].clear();
+        _zahlungsartBetragController[i].clear();
+        _zahlungsartAnzahlWerte[i] = null;
+        _zahlungsartBetragCentWerte[i] = null;
+        _zahlungsartNichtPlausibel[i] = false;
+      }
     });
   }
 
@@ -728,6 +795,19 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_ecBelegLabelController[0], '');
       _setzeControllerText(_ausgabenBetragController[0], '');
       _setzeControllerText(_ausgabenLabelController[0], '');
+      _scanTerminalId = null;
+      _scanDatum = null;
+      _scanUhrzeit = null;
+      _scanBelegNrVon = null;
+      _scanBelegNrBis = null;
+      _scanHatStattgefunden = false;
+      for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
+        _zahlungsartAnzahlController[i].clear();
+        _zahlungsartBetragController[i].clear();
+        _zahlungsartAnzahlWerte[i] = null;
+        _zahlungsartBetragCentWerte[i] = null;
+        _zahlungsartNichtPlausibel[i] = false;
+      }
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
   }
@@ -742,26 +822,38 @@ class _TagesabschlussSchritt2SeiteState
       );
       return;
     }
-    final XFile? bild =
-        await ImagePicker().pickImage(source: ImageSource.camera);
-    if (bild == null) return;
-    setState(() => _scanLaeuft = true);
-    BelegScanErgebnis? originalErgebnis;
-    try {
-      final BelegScanErgebnis ergebnis = await BelegScanService.scan(bild);
-      originalErgebnis = ergebnis;
-      if (!mounted) return;
-      setState(() => _scanLaeuft = false);
-      final BelegScanDialogErgebnis? dialogErgebnis =
-          await showDialog<BelegScanDialogErgebnis>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext dialogContext) =>
-            BelegScanGegenpruefDialog(ergebnis: ergebnis),
-      );
-      if (!mounted) return;
-      if (dialogErgebnis != null) {
-        final BelegScanErgebnis geprueftes = dialogErgebnis.ergebnis;
+    bool wiederholen;
+    do {
+      wiederholen = false;
+      final XFile? bild =
+          await ImagePicker().pickImage(source: ImageSource.camera);
+      if (bild == null) return;
+      setState(() => _scanLaeuft = true);
+      BelegScanErgebnis? originalErgebnis;
+      try {
+        final BelegScanErgebnis ergebnis = await BelegScanService.scan(bild);
+        originalErgebnis = ergebnis;
+        if (!mounted) return;
+        setState(() => _scanLaeuft = false);
+        final BelegScanDialogErgebnis? dialogErgebnis =
+            await showDialog<BelegScanDialogErgebnis>(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext dialogContext) =>
+              BelegScanGegenpruefDialog(ergebnis: ergebnis),
+        );
+        if (!mounted) return;
+        if (dialogErgebnis == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Scan abgebrochen.')),
+          );
+          return;
+        }
+        if (dialogErgebnis.istNeueScanAnfrage) {
+          wiederholen = true;
+          continue;
+        }
+        final BelegScanErgebnis geprueftes = dialogErgebnis.ergebnis!;
         setState(() {
           if (geprueftes.gesamtBetragCent != null) {
             _ecBelegeCent[0] = geprueftes.gesamtBetragCent!;
@@ -783,30 +875,29 @@ class _TagesabschlussSchritt2SeiteState
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _aktualisiereScrollPfeil();
+        });
         final String betrag = geprueftes.gesamtBetragCent != null
             ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
             : '—';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Scan bestätigt · Gesamt: $betrag')),
         );
-      } else {
+      } on BelegScanException catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.message)));
+      } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Scan abgebrochen.')),
+          const SnackBar(
+              content: Text('Scan fehlgeschlagen. Bitte erneut versuchen.')),
         );
+      } finally {
+        if (mounted) setState(() => _scanLaeuft = false);
       }
-    } on BelegScanException catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Scan fehlgeschlagen. Bitte erneut versuchen.')),
-      );
-    } finally {
-      if (mounted) setState(() => _scanLaeuft = false);
-    }
+    } while (wiederholen);
   }
 
   String? _feldWertOderNull(String? value) {
@@ -1050,6 +1141,45 @@ class _TagesabschlussSchritt2SeiteState
         FocusScope.of(context).requestFocus(ziel);
       }
     });
+  }
+
+  void _aktualisiereScrollPfeil() {
+    if (!mounted) return;
+    if (!_ecKachelAufgeklappt) {
+      if (_ecKachelZeigeScrollPfeil) {
+        setState(() => _ecKachelZeigeScrollPfeil = false);
+      }
+      return;
+    }
+    final RenderObject? ro = _ecKachelKey.currentContext?.findRenderObject();
+    if (ro == null || !ro.attached) return;
+    final RenderAbstractViewport? vp = RenderAbstractViewport.maybeOf(ro);
+    if (vp == null || !_scrollController.hasClients) return;
+    final double scrollFuerUnten = vp.getOffsetToReveal(ro, 1.0).offset;
+    final bool zeige = scrollFuerUnten > _scrollController.offset + 1.0;
+    if (zeige != _ecKachelZeigeScrollPfeil) {
+      setState(() => _ecKachelZeigeScrollPfeil = zeige);
+    }
+  }
+
+  void _loescheKartenDaten() {
+    setState(() {
+      _scanTerminalId = null;
+      _scanDatum = null;
+      _scanUhrzeit = null;
+      _scanBelegNrVon = null;
+      _scanBelegNrBis = null;
+      _scanHatStattgefunden = false;
+      for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
+        _zahlungsartAnzahlController[i].clear();
+        _zahlungsartBetragController[i].clear();
+        _zahlungsartAnzahlWerte[i] = null;
+        _zahlungsartBetragCentWerte[i] = null;
+        _zahlungsartNichtPlausibel[i] = false;
+      }
+      _letzteAenderung = DateTime.now();
+    });
+    _speichereEntwurf();
   }
 
   Widget _baueEingabeZeile({
@@ -1299,11 +1429,16 @@ class _TagesabschlussSchritt2SeiteState
 
   Widget _baueZahlungsartenTabelle() {
     int tabellenSummeCent = 0;
+    int tabellenSummeAnzahl = 0;
     for (int i = 0; i < _zahlungsartenListe.length; i++) {
       final int? betrag = i < _zahlungsartBetragCentWerte.length
           ? _zahlungsartBetragCentWerte[i]
           : null;
       if (betrag != null) tabellenSummeCent += betrag;
+      final int? anzahl = i < _zahlungsartAnzahlWerte.length
+          ? _zahlungsartAnzahlWerte[i]
+          : null;
+      if (anzahl != null) tabellenSummeAnzahl += anzahl;
     }
     final int ecGesamtCent =
         _ecBelegeCent.fold(0, (int a, int b) => a + b);
@@ -1371,12 +1506,28 @@ class _TagesabschlussSchritt2SeiteState
                   ),
                 ),
               ),
-              Text(
-                TagesabschlussFormatierung.formatiereEuro(tabellenSummeCent),
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13,
-                  color: summePasstNicht ? Colors.orange.shade700 : null,
+              SizedBox(
+                width: 52,
+                child: Text(
+                  tabellenSummeAnzahl > 0 ? '$tabellenSummeAnzahl' : '',
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 6),
+              SizedBox(
+                width: 104,
+                child: Text(
+                  TagesabschlussFormatierung.formatiereEuro(tabellenSummeCent),
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: summePasstNicht ? Colors.orange.shade700 : null,
+                  ),
                 ),
               ),
             ],
@@ -1798,15 +1949,22 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 const SizedBox(height: 10),
+                Stack(
+                  children: <Widget>[
                 Card(
+                  key: _ecKachelKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       // Header
                       InkWell(
-                        onTap: () => setState(
-                          () => _ecKachelAufgeklappt = !_ecKachelAufgeklappt,
-                        ),
+                        onTap: () {
+                          setState(() =>
+                              _ecKachelAufgeklappt = !_ecKachelAufgeklappt);
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            if (mounted) _aktualisiereScrollPfeil();
+                          });
+                        },
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
                           child: Row(
@@ -1839,6 +1997,22 @@ class _TagesabschlussSchritt2SeiteState
                                       : const Icon(Icons.camera_alt_outlined),
                                 ),
                               ),
+                              if (_scanHatStattgefunden) ...<Widget>[
+                                const SizedBox(width: 2),
+                                SizedBox(
+                                  width: 36,
+                                  height: 36,
+                                  child: IconButton(
+                                    tooltip: 'Scan-Daten löschen',
+                                    padding: EdgeInsets.zero,
+                                    onPressed: _loescheKartenDaten,
+                                    icon: const Icon(
+                                      Icons.delete_sweep_outlined,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                              ],
                               const SizedBox(width: 4),
                               Icon(
                                 _ecKachelAufgeklappt
@@ -2040,6 +2214,36 @@ class _TagesabschlussSchritt2SeiteState
                       ],
                     ],
                   ),
+                ),
+                    if (_ecKachelAufgeklappt && _ecKachelZeigeScrollPfeil)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: 44,
+                        child: IgnorePointer(
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: <Color>[
+                                  Color(0x00FFFFFF),
+                                  Color(0xD0FFFFFF),
+                                ],
+                              ),
+                            ),
+                            alignment: Alignment.bottomCenter,
+                            padding: const EdgeInsets.only(bottom: 6),
+                            child: const Icon(
+                              Icons.keyboard_arrow_down,
+                              size: 28,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 8),
               ],

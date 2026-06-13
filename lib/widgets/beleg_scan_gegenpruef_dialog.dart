@@ -26,6 +26,8 @@ class _BelegScanGegenpruefDialogState
   final List<TextEditingController?> _zahlungsartBetragController =
       <TextEditingController?>[];
 
+  bool _manuellEintragenAufgeklappt = false;
+
   static final NumberFormat _euroFormat = NumberFormat.currency(
     locale: 'de_DE',
     symbol: '€',
@@ -82,16 +84,14 @@ class _BelegScanGegenpruefDialogState
     super.dispose();
   }
 
-  bool get _allePflichtfelderAusgefuellt {
-    if (_terminalIdController?.text.trim().isEmpty ?? false) return false;
-    if (_belegNrVonController?.text.trim().isEmpty ?? false) return false;
-    if (_belegNrBisController?.text.trim().isEmpty ?? false) return false;
-    if (_uhrzeitController?.text.trim().isEmpty ?? false) return false;
-    if (_gesamtBetragController?.text.trim().isEmpty ?? false) return false;
-    for (final TextEditingController? c in _zahlungsartBetragController) {
-      if (c != null && c.text.trim().isEmpty) return false;
-    }
-    return true;
+  bool get _hatUnleserlicheFelder {
+    final BelegScanErgebnis e = widget.ergebnis;
+    return e.terminalId == null ||
+        e.belegNrVon == null ||
+        e.belegNrBis == null ||
+        e.uhrzeit == null ||
+        e.gesamtBetragCent == null ||
+        e.zahlungsarten.any((ZahlungsartErgebnis z) => z.betragCent == null);
   }
 
   int? _parseEuroToCent(String text) {
@@ -184,7 +184,7 @@ class _BelegScanGegenpruefDialogState
               ),
             ],
           ),
-          if (wert == null && controller != null)
+          if (wert == null && controller != null && _manuellEintragenAufgeklappt)
             Padding(
               padding: const EdgeInsets.only(top: 4, left: 115),
               child: TextField(
@@ -251,7 +251,7 @@ class _BelegScanGegenpruefDialogState
               ),
             ],
           ),
-          if (betragNull && c != null)
+          if (betragNull && c != null && _manuellEintragenAufgeklappt)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: TextField(
@@ -325,7 +325,9 @@ class _BelegScanGegenpruefDialogState
             ],
           ),
         ),
-        if (gesamtNull && _gesamtBetragController != null)
+        if (gesamtNull &&
+            _gesamtBetragController != null &&
+            _manuellEintragenAufgeklappt)
           Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: TextField(
@@ -391,7 +393,8 @@ class _BelegScanGegenpruefDialogState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    if (e.hinweis != null)
+                    if (e.hinweis != null &&
+                        (_hatUnleserlicheFelder || !e.istPlausibel))
                       Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.symmetric(
@@ -403,24 +406,50 @@ class _BelegScanGegenpruefDialogState
                           border: Border.all(color: const Color(0xFFFFC107)),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Row(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            const Icon(
-                              Icons.warning_amber_rounded,
-                              size: 18,
-                              color: Color(0xFFF57F17),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Icon(
+                                  Icons.warning_amber_rounded,
+                                  size: 18,
+                                  color: Color(0xFFF57F17),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    e.hinweis!,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      color: Color(0xFF5D4037),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                e.hinweis!,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF5D4037),
+                            if (_hatUnleserlicheFelder &&
+                                !_manuellEintragenAufgeklappt)
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    padding: EdgeInsets.zero,
+                                    minimumSize: Size.zero,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                    foregroundColor: const Color(0xFFF57F17),
+                                  ),
+                                  onPressed: () => setState(
+                                    () => _manuellEintragenAufgeklappt = true,
+                                  ),
+                                  child: const Text(
+                                    'Manuell eintragen (optional)',
+                                    style: TextStyle(fontSize: 12),
+                                  ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),
@@ -537,10 +566,7 @@ class _BelegScanGegenpruefDialogState
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.of(context).pop(
-                        BelegScanDialogErgebnis(
-                          ergebnis: _ergebnisMitManuellen(),
-                          kachelOeffnen: true,
-                        ),
+                        const BelegScanDialogErgebnis.nochmalScannen(),
                       ),
                       child: const Text('Korrigieren'),
                     ),
@@ -548,14 +574,12 @@ class _BelegScanGegenpruefDialogState
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: _allePflichtfelderAusgefuellt
-                          ? () => Navigator.of(context).pop(
-                              BelegScanDialogErgebnis(
-                                ergebnis: _ergebnisMitManuellen(),
-                                kachelOeffnen: false,
-                              ),
-                            )
-                          : null,
+                      onPressed: () => Navigator.of(context).pop(
+                        BelegScanDialogErgebnis(
+                          ergebnis: _ergebnisMitManuellen(),
+                          kachelOeffnen: false,
+                        ),
+                      ),
                       child: const Text('Bestätigen'),
                     ),
                   ),
