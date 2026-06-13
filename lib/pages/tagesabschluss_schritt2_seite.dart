@@ -842,8 +842,8 @@ class _TagesabschlussSchritt2SeiteState
             builder: (BuildContext ctx) => AlertDialog(
               title: const Text('Kein Terminal-Beleg'),
               content: const Text(
-                'Das Foto zeigt keinen EC-Terminal-Beleg,\n'
-                'oder die Aufnahme ist unscharf, zu dunkel\n'
+                'Das Foto zeigt keinen EC-Terminal-Beleg, '
+                'oder die Aufnahme ist unscharf, zu dunkel '
                 'oder unvollständig.',
               ),
               actions: <Widget>[

@@ -94,16 +94,9 @@ class _BelegScanGegenpruefDialogState
         e.zahlungsarten.any((ZahlungsartErgebnis z) => z.betragCent == null);
   }
 
-  int? _parseEuroToCent(String text) {
-    final String cleaned = text
-        .trim()
-        .replaceAll(' ', '')
-        .replaceAll('.', '')
-        .replaceAll(',', '.')
-        .replaceAll('€', '');
-    final double? value = double.tryParse(cleaned);
-    if (value == null) return null;
-    return (value * 100).round();
+  int? _parseCentEingabe(String text) {
+    final String digits = text.trim().replaceAll(RegExp(r'[^0-9]'), '');
+    return digits.isEmpty ? null : int.tryParse(digits);
   }
 
   String _formatCent(int cent) => _euroFormat.format(cent / 100.0);
@@ -121,7 +114,7 @@ class _BelegScanGegenpruefDialogState
             i < _zahlungsartBetragController.length
                 ? _zahlungsartBetragController[i]
                 : null;
-        betrag = c != null ? _parseEuroToCent(c.text) : null;
+        betrag = c != null ? _parseCentEingabe(c.text) : null;
       }
       zahlungsarten.add(ZahlungsartErgebnis(
         art: z.art,
@@ -142,7 +135,7 @@ class _BelegScanGegenpruefDialogState
       gesamtAnzahl: e.gesamtAnzahl,
       gesamtBetragCent: e.gesamtBetragCent ??
           (_gesamtBetragController != null
-              ? _parseEuroToCent(_gesamtBetragController!.text)
+              ? _parseCentEingabe(_gesamtBetragController!.text)
               : null),
       hinweis: e.hinweis,
     );
@@ -179,11 +172,11 @@ class _BelegScanGegenpruefDialogState
         ),
       );
     } else {
-      wertWidget = const Text(
+      wertWidget = Text(
         'nicht vorhanden/unleserlich',
         style: TextStyle(
           fontSize: 13,
-          color: Colors.black38,
+          color: Colors.orange.shade700,
           fontStyle: FontStyle.italic,
         ),
       );
@@ -243,7 +236,7 @@ class _BelegScanGegenpruefDialogState
                         style: const TextStyle(fontSize: 14),
                         scrollPadding: const EdgeInsets.only(bottom: 200),
                         decoration: InputDecoration(
-                          hintText: '0,00 €',
+                          hintText: 'z. B. 1490',
                           hintStyle: TextStyle(
                             color: Colors.grey.shade400,
                             fontSize: 14,
@@ -258,10 +251,11 @@ class _BelegScanGegenpruefDialogState
                               const EdgeInsets.symmetric(vertical: 2),
                         ),
                       )
-                    : const Text(
+                    : Text(
                         '—',
                         textAlign: TextAlign.right,
-                        style: TextStyle(fontSize: 14, color: Colors.black38),
+                        style: TextStyle(
+                            fontSize: 14, color: Colors.orange.shade700),
                       ))
                 : Text(
                     _formatCent(z.betragCent!),
@@ -317,7 +311,7 @@ class _BelegScanGegenpruefDialogState
                             scrollPadding:
                                 const EdgeInsets.only(bottom: 200),
                             decoration: InputDecoration(
-                              hintText: '0,00 €',
+                              hintText: 'z. B. 1490',
                               hintStyle: TextStyle(
                                 color: Colors.grey.shade400,
                                 fontSize: 14,
@@ -333,13 +327,13 @@ class _BelegScanGegenpruefDialogState
                                   const EdgeInsets.symmetric(vertical: 2),
                             ),
                           )
-                        : const Text(
+                        : Text(
                             '—',
                             textAlign: TextAlign.right,
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black38,
+                              color: Colors.orange.shade700,
                             ),
                           ))
                     : Text(
@@ -369,7 +363,9 @@ class _BelegScanGegenpruefDialogState
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: 500,
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
+          maxHeight: (MediaQuery.of(context).size.height * 0.85 -
+                  MediaQuery.of(context).viewInsets.bottom)
+              .clamp(200.0, double.infinity),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -404,8 +400,8 @@ class _BelegScanGegenpruefDialogState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    if (e.hinweis != null &&
-                        (_hatUnleserlicheFelder || !e.istPlausibel))
+                    if (_hatUnleserlicheFelder ||
+                        (e.hinweis != null && !e.istPlausibel))
                       Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.symmetric(
@@ -431,7 +427,9 @@ class _BelegScanGegenpruefDialogState
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
-                                    e.hinweis!,
+                                    e.hinweis ??
+                                        'Bitte die markierten Felder '
+                                            'manuell prüfen.',
                                     style: const TextStyle(
                                       fontSize: 13,
                                       color: Color(0xFF5D4037),
@@ -593,7 +591,7 @@ class _BelegScanGegenpruefDialogState
                           kachelOeffnen: false,
                         ),
                       ),
-                      child: const Text('Bestätigen'),
+                      child: const Text('Übernehmen'),
                     ),
                   ),
                 ],

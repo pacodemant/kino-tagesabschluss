@@ -131,9 +131,14 @@ Führe zu Beginn jeder neuen Session aus:
 Am Ende jedes Runs die Versionsnummer in `pubspec.yaml` unter `version:`
 aktualisieren. Die neue Nummer wird im Run-Prompt vorgegeben.
 
-Zusätzlich denselben Versionswert und die Run-Nummer in
-`lib/pages/startmenue_seite.dart` in den Versionsstring eintragen,
-sodass er lautet:
+Zusätzlich denselben Versionswert und die Run-Nummer in BEIDEN folgenden
+Dateien in den Versionsstring eintragen, sodass er lautet:
 'Web App X.X.X · rNNN @ GitHub:'
+
+- `lib/pages/startmenue_seite.dart`
+- `lib/pages/kinoauswahl_seite.dart`
+
 Versionsnummer und Run-Nummer immer durch die im Run-Prompt
-vorgegebenen Werte ersetzen.
+vorgegebenen Werte ersetzen. Bei jedem Commit (auch Sub-Runs und
+Korrekturen) beide Dateien aktualisieren, damit der angezeigte
+Versionsstring immer dem letzten Push entspricht.
