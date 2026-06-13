@@ -843,7 +843,8 @@ class _TagesabschlussSchritt2SeiteState
               title: const Text('Kein Terminal-Beleg'),
               content: const Text(
                 'Das Foto zeigt keinen EC-Terminal-Beleg,\n'
-                'oder die Aufnahme ist unscharf / unvollständig.',
+                'oder die Aufnahme ist unscharf, zu dunkel\n'
+                'oder unvollständig.',
               ),
               actions: <Widget>[
                 TextButton(
@@ -916,13 +917,27 @@ class _TagesabschlussSchritt2SeiteState
         );
       } on BelegScanException catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(e.message)));
-      } catch (e) {
+        final bool istNetzwerkFehler = e.message.startsWith('Keine Internet') ||
+            e.message.startsWith('HTTP ');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              istNetzwerkFehler
+                  ? e.message
+                  : 'Scan nicht lesbar – bitte erneut versuchen\n'
+                      '(z.B. unscharf, zu dunkel oder kein Beleg).',
+            ),
+          ),
+        );
+      } catch (_) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Scan fehlgeschlagen. Bitte erneut versuchen.')),
+            content: Text(
+              'Scan nicht lesbar – bitte erneut versuchen\n'
+              '(z.B. unscharf, zu dunkel oder kein Beleg).',
+            ),
+          ),
         );
       } finally {
         if (mounted) setState(() => _scanLaeuft = false);

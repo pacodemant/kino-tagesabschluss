@@ -165,12 +165,17 @@ class _BelegScanGegenpruefDialogState
     } else if (_manuellEintragenAufgeklappt && controller != null) {
       wertWidget = TextField(
         controller: controller,
-        style: const TextStyle(fontSize: 13),
-        decoration: const InputDecoration(
-          hintText: 'Bitte manuell eintragen',
+        style: const TextStyle(fontSize: 14),
+        scrollPadding: const EdgeInsets.only(bottom: 200),
+        decoration: InputDecoration(
+          hintText: 'Bitte eintragen',
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           isDense: true,
-          border: OutlineInputBorder(),
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          border: InputBorder.none,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade500),
+          ),
+          contentPadding: EdgeInsets.zero,
         ),
       );
     } else {
@@ -210,58 +215,60 @@ class _BelegScanGegenpruefDialogState
             : null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  z.art.isEmpty ? '—' : z.art,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-              SizedBox(
-                width: 44,
-                child: Text(
-                  '${z.anzahl}',
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-              SizedBox(
-                width: 104,
-                child: betragNull
-                    ? const Text(
+          Expanded(
+            child: Text(
+              z.art.isEmpty ? '—' : z.art,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+          SizedBox(
+            width: 44,
+            child: Text(
+              '${z.anzahl}',
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+          SizedBox(
+            width: 104,
+            child: betragNull
+                ? (_manuellEintragenAufgeklappt && c != null
+                    ? TextField(
+                        controller: c,
+                        textAlign: TextAlign.right,
+                        keyboardType:
+                            const TextInputType.numberWithOptions(decimal: true),
+                        style: const TextStyle(fontSize: 14),
+                        scrollPadding: const EdgeInsets.only(bottom: 200),
+                        decoration: InputDecoration(
+                          hintText: '0,00 €',
+                          hintStyle: TextStyle(
+                            color: Colors.grey.shade400,
+                            fontSize: 14,
+                          ),
+                          isDense: true,
+                          border: InputBorder.none,
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.grey.shade500),
+                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 2),
+                        ),
+                      )
+                    : const Text(
                         '—',
                         textAlign: TextAlign.right,
                         style: TextStyle(fontSize: 14, color: Colors.black38),
-                      )
-                    : Text(
-                        _formatCent(z.betragCent!),
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-              ),
-            ],
+                      ))
+                : Text(
+                    _formatCent(z.betragCent!),
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(fontSize: 14),
+                  ),
           ),
-          if (betragNull && c != null && _manuellEintragenAufgeklappt)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: TextField(
-                controller: c,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(fontSize: 13),
-                decoration: const InputDecoration(
-                  hintText: 'Bitte manuell eintragen',
-                  isDense: true,
-                  border: OutlineInputBorder(),
-                  contentPadding:
-                      EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -296,48 +303,58 @@ class _BelegScanGegenpruefDialogState
               SizedBox(
                 width: 104,
                 child: gesamtNull
-                    ? const Text(
-                        '—',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black38,
-                        ),
-                      )
+                    ? (_manuellEintragenAufgeklappt &&
+                            _gesamtBetragController != null
+                        ? TextField(
+                            controller: _gesamtBetragController,
+                            textAlign: TextAlign.right,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                            ),
+                            scrollPadding:
+                                const EdgeInsets.only(bottom: 200),
+                            decoration: InputDecoration(
+                              hintText: '0,00 €',
+                              hintStyle: TextStyle(
+                                color: Colors.grey.shade400,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              isDense: true,
+                              border: InputBorder.none,
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade500),
+                              ),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 2),
+                            ),
+                          )
+                        : const Text(
+                            '—',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black38,
+                            ),
+                          ))
                     : Text(
                         _formatCent(e.gesamtBetragCent!),
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
-                          color:
-                              !istPlausibel ? Colors.red.shade700 : null,
+                          color: !istPlausibel ? Colors.red.shade700 : null,
                         ),
                       ),
               ),
             ],
           ),
         ),
-        if (gesamtNull &&
-            _gesamtBetragController != null &&
-            _manuellEintragenAufgeklappt)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: TextField(
-              controller: _gesamtBetragController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-              style: const TextStyle(fontSize: 13),
-              decoration: const InputDecoration(
-                hintText: 'Bitte manuell eintragen',
-                isDense: true,
-                border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              ),
-            ),
-          ),
       ],
     );
   }

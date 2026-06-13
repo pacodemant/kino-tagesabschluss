@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274e2: Snackbar-Filter in _starteEcBelegScan: technischer Text wird nie angezeigt; Netz-Fehler bleibt spezifisch, alle anderen Scan-Fehler → "Scan nicht lesbar – bitte erneut versuchen (z.B. unscharf, zu dunkel oder kein Beleg)"; Kein-Terminal-Beleg-Dialog: "zu dunkel" ergänzt; Dialog-TextFields: inline statt ganzzeilig (UnderlineInputBorder, InputBorder.none, scrollPadding 200), Betrag-Felder in Zahlungsart- und Gesamt-Zeile jetzt direkt in der Spalte statt darunter; r274e2.
+
 - Run 274e: BelegScanService: Prompt-Einstieg mit explizitem JSON-only-Gebot; hinweis nur noch bei rechnerischer Summen-Abweichung (keine visuellen Einschätzungen); parse-Fehler: Nicht-JSON-Antwort (kein '{'-Start) → sprechende BelegScanException statt technischer FormatException; alle anderen Catch-Zweige auf nutzerfreundlichen Text vereinheitlicht; r274e.
 
 - Run 274d: Kein-Terminal-Beleg-Dialog zeigt fixen Text statt AI-hinweis; AI-Prompt: hinweis nur bei echter Summen-Abweichung oder abgeschnittenem Beleg (max. 8 Wörter, keine Zahlen, kein Loben was stimmt); Terminal-ID immer im Prüf-Popup sichtbar (erforderlich:true), bei leer → "nicht vorhanden/unleserlich" als Fallback-String (auch im JSON); r274d.
