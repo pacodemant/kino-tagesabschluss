@@ -908,6 +908,7 @@ class _TagesabschlussSchritt2SeiteState
           _scanBelegNrBis = _feldWertOderNull(geprueftes.belegNrBis);
           _scanHatStattgefunden = true;
           if (dialogErgebnis.kachelOeffnen) _ecKachelAufgeklappt = true;
+          _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
           _letzteAenderung = DateTime.now();
         });
@@ -954,6 +955,39 @@ class _TagesabschlussSchritt2SeiteState
   String? _feldWertOderNull(String? value) {
     if (value == null || value.trim().isEmpty) return null;
     return value.trim();
+  }
+
+  void _sortiereZahlungsartenNachBeleg(List<ZahlungsartErgebnis> belegArten) {
+    final List<int> reihenfolge = <int>[];
+    for (final ZahlungsartErgebnis z in belegArten) {
+      for (int i = 0; i < _zahlungsartenListe.length; i++) {
+        if (!reihenfolge.contains(i) &&
+            _zahlungsartenListe[i].trim().toLowerCase() ==
+                z.art.trim().toLowerCase()) {
+          reihenfolge.add(i);
+          break;
+        }
+      }
+    }
+    for (int i = 0; i < _zahlungsartenListe.length; i++) {
+      if (!reihenfolge.contains(i)) reihenfolge.add(i);
+    }
+    _zahlungsartenListe =
+        <String>[for (final int i in reihenfolge) _zahlungsartenListe[i]];
+    _zahlungsartAnzahlController = <TextEditingController>[
+      for (final int i in reihenfolge) _zahlungsartAnzahlController[i]
+    ];
+    _zahlungsartBetragController = <TextEditingController>[
+      for (final int i in reihenfolge) _zahlungsartBetragController[i]
+    ];
+    _zahlungsartAnzahlWerte =
+        <int?>[for (final int i in reihenfolge) _zahlungsartAnzahlWerte[i]];
+    _zahlungsartBetragCentWerte = <int?>[
+      for (final int i in reihenfolge) _zahlungsartBetragCentWerte[i]
+    ];
+    _zahlungsartNichtPlausibel = <bool>[
+      for (final int i in reihenfolge) _zahlungsartNichtPlausibel[i]
+    ];
   }
 
   void _preFillZahlungsartenFromScan(
