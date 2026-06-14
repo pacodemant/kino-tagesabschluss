@@ -2017,35 +2017,66 @@ class _TagesabschlussSchritt2SeiteState
                           padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
                           child: Row(
                             children: <Widget>[
-                              const Expanded(
-                                child: Text(
-                                  'EC-Belege',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                              Expanded(
+                                child: Row(
+                                  children: <Widget>[
+                                    const Text(
+                                      'EC-Belege',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    if (!_ecKachelAufgeklappt) ...<Widget>[
+                                      const SizedBox(width: 8),
+                                      Builder(
+                                        builder: (BuildContext ctx) {
+                                          final int summe = _ecBelegeCent.fold(
+                                              0, (int a, int b) => a + b);
+                                          if (summe <= 0) {
+                                            return const SizedBox.shrink();
+                                          }
+                                          return Text(
+                                            TagesabschlussFormatierung
+                                                .formatiereEuro(summe),
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppFarben.appBarRot,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ),
-                              SizedBox(
-                                width: 36,
-                                height: 36,
-                                child: IconButton(
-                                  tooltip: 'EC-Beleg scannen',
-                                  padding: EdgeInsets.zero,
-                                  onPressed: _scanLaeuft
-                                      ? null
-                                      : _starteEcBelegScan,
-                                  icon: _scanLaeuft
-                                      ? const SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                              strokeWidth: 2),
-                                        )
-                                      : const Icon(Icons.camera_alt_outlined),
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppFarben.appBarRot,
+                                  foregroundColor: Colors.white,
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(8),
+                                  minimumSize: const Size(36, 36),
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
                                 ),
+                                onPressed:
+                                    _scanLaeuft ? null : _starteEcBelegScan,
+                                child: _scanLaeuft
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : const Icon(Icons.camera_alt_outlined,
+                                        size: 20),
                               ),
-                              if (_scanHatStattgefunden) ...<Widget>[
+                              if (_scanHatStattgefunden &&
+                                  _ecKachelAufgeklappt) ...<Widget>[
                                 const SizedBox(width: 2),
                                 SizedBox(
                                   width: 36,
@@ -2057,6 +2088,7 @@ class _TagesabschlussSchritt2SeiteState
                                     icon: const Icon(
                                       Icons.delete_sweep_outlined,
                                       size: 20,
+                                      color: AppFarben.appBarRot,
                                     ),
                                   ),
                                 ),

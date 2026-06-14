@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274h: EC-Kachel-Header: Kamera-Button rund + rot (AppFarben.appBarRot, weißes Icon); Papierkorb-Icon rot; Papierkorb nur sichtbar wenn Kachel aufgeklappt; zugeklappter Titel zeigt Gesamtsumme aller EC-Belege in Rot; r274h.
+
 - Run 274e4: Eingabefelder mit sichtbarem OutlineInputBorder (statt InputBorder.none); Felder Uhrzeit, Beleg-Nr. von/bis erscheinen nicht mehr im Manuell-Modus (kein zeigeInManuell); _hatUnleserlicheFelder nur noch terminalId, gesamtBetragCent, zahlungsarten.betragCent; nochmal-Button: Kamera-Icon jetzt hinter dem Text; r274e4.
 
 - Run 274e3: CLAUDE.md: kinoauswahl_seite.dart in Versionierung ergänzt; beide Versionsstrings r274e3; Zeilenumbruch nach "dunkel" im Kein-Beleg-Dialog entfernt; Dialog: "Bestätigen" → "Übernehmen"; gelbe Box zeigt immer wenn Felder fehlen (auch ohne AI-hinweis); Null-Felder orange statt grau (Terminal-ID, Zahlungsart-Beträge, Gesamt); Betrag-Eingabe in Cent (int, kein Euro-Format); Hint-Text "z. B. 1490"; keyboard-aware maxHeight in ConstrainedBox (scrollt zu fokussiertem Feld); _parseCentEingabe statt _parseEuroToCent; r274e3.
