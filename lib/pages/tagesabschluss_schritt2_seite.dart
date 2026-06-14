@@ -2055,6 +2055,8 @@ class _TagesabschlussSchritt2SeiteState
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppFarben.appBarRot,
                                   foregroundColor: Colors.white,
+                                  disabledBackgroundColor: AppFarben.appBarRot,
+                                  disabledForegroundColor: Colors.white,
                                   shape: const CircleBorder(),
                                   padding: const EdgeInsets.all(8),
                                   minimumSize: const Size(36, 36),
@@ -2086,7 +2088,7 @@ class _TagesabschlussSchritt2SeiteState
                                     padding: EdgeInsets.zero,
                                     onPressed: _loescheKartenDaten,
                                     icon: const Icon(
-                                      Icons.delete_sweep_outlined,
+                                      Icons.delete_outline,
                                       size: 20,
                                       color: AppFarben.appBarRot,
                                     ),
