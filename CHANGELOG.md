@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274fb: Substring-Matching für Kartenanbieter-Erkennung: neue Hilfsmethode _matchKartenart prüft in beide Richtungen (belegArt.contains(configName) || configName.contains(belegArt), case-insensitiv); ersetzt exakten Stringvergleich in _sortiereZahlungsartenNachBeleg und _preFillZahlungsartenFromScan (inkl. Original-Scan-Prüfung); r274fb.
+
 - Run 274f: Nach Scan-Bestätigung ("Übernehmen"): Kartenarten-Liste wird nach Beleg-Reihenfolge umsortiert – vom AI erkannte Zahlungsarten stehen oben (in Reihenfolge wie auf dem Beleg), alle anderen dahinter; neue Methode _sortiereZahlungsartenNachBeleg; alle 6 Parallel-Arrays werden synchron umsortiert; r274f.
 
 - Run 274h: EC-Kachel-Header: Kamera-Button rund + rot (AppFarben.appBarRot, weißes Icon); Papierkorb-Icon rot; Papierkorb nur sichtbar wenn Kachel aufgeklappt; zugeklappter Titel zeigt Gesamtsumme aller EC-Belege in Rot; r274h.

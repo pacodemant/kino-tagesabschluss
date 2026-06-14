@@ -957,13 +957,18 @@ class _TagesabschlussSchritt2SeiteState
     return value.trim();
   }
 
+  bool _matchKartenart(String configName, String belegArt) {
+    final String c = configName.trim().toLowerCase();
+    final String b = belegArt.trim().toLowerCase();
+    return b.contains(c) || c.contains(b);
+  }
+
   void _sortiereZahlungsartenNachBeleg(List<ZahlungsartErgebnis> belegArten) {
     final List<int> reihenfolge = <int>[];
     for (final ZahlungsartErgebnis z in belegArten) {
       for (int i = 0; i < _zahlungsartenListe.length; i++) {
         if (!reihenfolge.contains(i) &&
-            _zahlungsartenListe[i].trim().toLowerCase() ==
-                z.art.trim().toLowerCase()) {
+            _matchKartenart(_zahlungsartenListe[i], z.art)) {
           reihenfolge.add(i);
           break;
         }
@@ -995,10 +1000,9 @@ class _TagesabschlussSchritt2SeiteState
     BelegScanErgebnis? original,
   ) {
     for (int i = 0; i < _zahlungsartenListe.length; i++) {
-      final String art = _zahlungsartenListe[i].trim().toLowerCase();
       ZahlungsartErgebnis? matching;
       for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
-        if (z.art.trim().toLowerCase() == art) {
+        if (_matchKartenart(_zahlungsartenListe[i], z.art)) {
           matching = z;
           break;
         }
@@ -1024,7 +1028,7 @@ class _TagesabschlussSchritt2SeiteState
       bool origNichtPlausibel = false;
       if (original != null) {
         for (final ZahlungsartErgebnis z in original.zahlungsarten) {
-          if (z.art.trim().toLowerCase() == art) {
+          if (_matchKartenart(_zahlungsartenListe[i], z.art)) {
             origNichtPlausibel = z.betragCent == null;
             break;
           }
