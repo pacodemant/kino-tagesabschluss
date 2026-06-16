@@ -75,6 +75,13 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 - [ ] **Datenschutz-Hinweis** MA informieren dass alle Daten inkl. Name intern bleiben.
 
+- [ ] **Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag** Seit Run 274f4
+      gibt es in der Kartenarten-Tabelle einen "+ Kartenart"-Button zum
+      nachträglichen Einblenden nicht erkannter Kartenarten. Klären: wenn der
+      Nachtrag die Kartensumme wieder zum EC-Gesamtbetrag (Hauptfeld) passend
+      macht, soll dort etwas automatisch nachgezogen werden? Zurückgestellt,
+      da bei sauberen Scans kaum relevant.
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
