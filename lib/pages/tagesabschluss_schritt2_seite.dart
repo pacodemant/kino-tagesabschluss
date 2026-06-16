@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -155,7 +156,8 @@ class _TagesabschlussSchritt2SeiteState
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
   bool _ecBelegLabel1Beruehrt = false;
-  bool _scanDatenNurAnzeige = false;
+  bool _metadatenNurAnzeige = false;
+  bool _kartenartenNurAnzeige = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
 
@@ -173,6 +175,10 @@ class _TagesabschlussSchritt2SeiteState
       TextEditingController();
   final TextEditingController _scanBelegNrBisController =
       TextEditingController();
+  final FocusNode _scanDatumFocusNode = FocusNode();
+  final FocusNode _scanUhrzeitFocusNode = FocusNode();
+  final FocusNode _scanBelegNrVonFocusNode = FocusNode();
+  final FocusNode _scanBelegNrBisFocusNode = FocusNode();
 
   // EC-Kachel
   bool _ecKachelAufgeklappt = true;
@@ -199,6 +205,16 @@ class _TagesabschlussSchritt2SeiteState
       }
     });
     _scrollController.addListener(_aktualisiereScrollPfeil);
+    for (final FocusNode fn in <FocusNode>[
+      _scanDatumFocusNode,
+      _scanUhrzeitFocusNode,
+      _scanBelegNrVonFocusNode,
+      _scanBelegNrBisFocusNode,
+    ]) {
+      fn.addListener(() {
+        if (mounted) setState(() {});
+      });
+    }
     ZahlungsartenConfigService.laden().then((List<String> liste) async {
       if (!mounted) return;
       setState(() {
@@ -229,6 +245,10 @@ class _TagesabschlussSchritt2SeiteState
     _scanUhrzeitController.dispose();
     _scanBelegNrVonController.dispose();
     _scanBelegNrBisController.dispose();
+    _scanDatumFocusNode.dispose();
+    _scanUhrzeitFocusNode.dispose();
+    _scanBelegNrVonFocusNode.dispose();
+    _scanBelegNrBisFocusNode.dispose();
     disposeControllers(_ecBelegController);
     disposeControllers(_ecBelegLabelController);
     disposeFocusNodes(_ecBelegFocusNode);
@@ -814,7 +834,8 @@ class _TagesabschlussSchritt2SeiteState
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
-      _scanDatenNurAnzeige = false;
+      _metadatenNurAnzeige = false;
+      _kartenartenNurAnzeige = false;
     });
   }
 
@@ -858,7 +879,8 @@ class _TagesabschlussSchritt2SeiteState
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
-      _scanDatenNurAnzeige = false;
+      _metadatenNurAnzeige = false;
+      _kartenartenNurAnzeige = false;
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
   }
@@ -973,10 +995,13 @@ class _TagesabschlussSchritt2SeiteState
           if (dialogErgebnis.kachelOeffnen) _ecKachelAufgeklappt = true;
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
-          _scanDatenNurAnzeige = _zahlungsartZeilen
+          _metadatenNurAnzeige = true;
+          _kartenartenNurAnzeige = _zahlungsartZeilen
               .where((_ZahlungsartZeile z) => !z.nichtImScan)
               .every((_ZahlungsartZeile z) =>
-                  !z.nichtPlausibel && z.betragCentWert != null);
+                  !z.nichtPlausibel &&
+                  z.betragCentWert != null &&
+                  z.anzahlWert != null);
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
@@ -1064,8 +1089,13 @@ class _TagesabschlussSchritt2SeiteState
       }
       zeile.nichtImScan = false;
 
-      zeile.anzahlWert = matching.anzahl;
-      _setzeControllerText(zeile.anzahlController, '${matching.anzahl}');
+      if (matching.anzahl != null) {
+        zeile.anzahlWert = matching.anzahl;
+        _setzeControllerText(zeile.anzahlController, '${matching.anzahl}');
+      } else {
+        zeile.anzahlWert = null;
+        _setzeControllerText(zeile.anzahlController, '');
+      }
 
       if (matching.betragCent != null) {
         zeile.betragCentWert = matching.betragCent;
@@ -1083,25 +1113,13 @@ class _TagesabschlussSchritt2SeiteState
       if (original != null) {
         for (final ZahlungsartErgebnis z in original.zahlungsarten) {
           if (_matchKartenart(zeile.name, z.art)) {
-            origNichtPlausibel = z.betragCent == null;
+            origNichtPlausibel = z.betragCent == null || z.anzahl == null;
             break;
           }
         }
       }
       zeile.nichtPlausibel = origNichtPlausibel;
     }
-  }
-
-  int? _parseEuroKommaCent(String text) {
-    final String cleaned = text
-        .trim()
-        .replaceAll(' ', '')
-        .replaceAll('.', '')
-        .replaceAll(',', '.')
-        .replaceAll('€', '');
-    final double? value = double.tryParse(cleaned);
-    if (value == null) return null;
-    return (value * 100).round();
   }
 
   List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
@@ -1322,7 +1340,8 @@ class _TagesabschlussSchritt2SeiteState
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
-      _scanDatenNurAnzeige = false;
+      _metadatenNurAnzeige = false;
+      _kartenartenNurAnzeige = false;
       _letzteAenderung = DateTime.now();
     });
     _speichereEntwurf();
@@ -1464,6 +1483,7 @@ class _TagesabschlussSchritt2SeiteState
   Widget _baueMetadatenEditZeile(
     String label,
     TextEditingController controller,
+    FocusNode focusNode,
     ValueChanged<String> onChanged,
   ) {
     return Padding(
@@ -1480,11 +1500,17 @@ class _TagesabschlussSchritt2SeiteState
           Expanded(
             child: TextField(
               controller: controller,
+              focusNode: focusNode,
               style: const TextStyle(fontSize: 13),
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+                filled: focusNode.hasFocus,
+                fillColor: const Color(0xFFFFF8E1),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 4,
+                  vertical: 2,
+                ),
               ),
               onChanged: onChanged,
             ),
@@ -1517,7 +1543,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
             ),
           ),
-          if (_scanDatenNurAnzeige) ...<Widget>[
+          if (_metadatenNurAnzeige) ...<Widget>[
             _baueMetadatenInfoZeile('Datum', _scanDatum),
             _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
             _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
@@ -1526,28 +1552,33 @@ class _TagesabschlussSchritt2SeiteState
             _baueMetadatenEditZeile(
               'Datum',
               _scanDatumController,
+              _scanDatumFocusNode,
               (String wert) => _scanMetadatenfeldGeaendert(
                   wert, (String? w) => _scanDatum = w),
             ),
             _baueMetadatenEditZeile(
               'Uhrzeit',
               _scanUhrzeitController,
+              _scanUhrzeitFocusNode,
               (String wert) => _scanMetadatenfeldGeaendert(
                   wert, (String? w) => _scanUhrzeit = w),
             ),
             _baueMetadatenEditZeile(
               'Beleg-Nr. von',
               _scanBelegNrVonController,
+              _scanBelegNrVonFocusNode,
               (String wert) => _scanMetadatenfeldGeaendert(
                   wert, (String? w) => _scanBelegNrVon = w),
             ),
             _baueMetadatenEditZeile(
               'Beleg-Nr. bis',
               _scanBelegNrBisController,
+              _scanBelegNrBisFocusNode,
               (String wert) => _scanMetadatenfeldGeaendert(
                   wert, (String? w) => _scanBelegNrBis = w),
             ),
           ],
+          _baueMetadatenEditButton(),
         ],
       ),
     );
@@ -1608,8 +1639,15 @@ class _TagesabschlussSchritt2SeiteState
             width: 104,
             child: TextField(
               controller: zeile.betragController,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: _eingabeMitKomma
+                  ? const TextInputType.numberWithOptions(decimal: true)
+                  : TextInputType.number,
+              inputFormatters: _eingabeMitKomma
+                  ? <TextInputFormatter>[]
+                  : <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                      CentWaehrungsEingabeFormatter(),
+                    ],
               textAlign: TextAlign.right,
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
@@ -1622,7 +1660,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
               onChanged: (String wert) {
                 setState(() {
-                  zeile.betragCentWert = _parseEuroKommaCent(wert);
+                  zeile.betragCentWert = _parsiereBetragCent(wert);
                 });
               },
             ),
@@ -1669,20 +1707,22 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueScanDatenEditButton() {
+  Widget _baueKartenartenEditButton() {
     final bool kannSchliessen = _zahlungsartZeilen
         .where((_ZahlungsartZeile z) => !z.nichtImScan)
         .every((_ZahlungsartZeile z) =>
-            !z.nichtPlausibel && z.betragCentWert != null);
+            !z.nichtPlausibel &&
+            z.betragCentWert != null &&
+            z.anzahlWert != null);
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Align(
         alignment: Alignment.centerLeft,
         child: TextButton(
-          onPressed: _scanDatenNurAnzeige
-              ? () => setState(() => _scanDatenNurAnzeige = false)
+          onPressed: _kartenartenNurAnzeige
+              ? () => setState(() => _kartenartenNurAnzeige = false)
               : (kannSchliessen
-                  ? () => setState(() => _scanDatenNurAnzeige = true)
+                  ? () => setState(() => _kartenartenNurAnzeige = true)
                   : null),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -1690,7 +1730,35 @@ class _TagesabschlussSchritt2SeiteState
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            _scanDatenNurAnzeige ? 'manuell editieren' : 'Fertig.',
+            _kartenartenNurAnzeige ? 'manuell editieren' : 'Fertig.',
+            style: const TextStyle(fontSize: 11),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _baueMetadatenEditButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: TextButton(
+          onPressed: () {
+            setState(() => _metadatenNurAnzeige = !_metadatenNurAnzeige);
+            if (!_metadatenNurAnzeige) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) _scanDatumFocusNode.requestFocus();
+              });
+            }
+          },
+          style: TextButton.styleFrom(
+            padding: EdgeInsets.zero,
+            minimumSize: const Size(0, 28),
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          child: Text(
+            _metadatenNurAnzeige ? 'manuell editieren' : 'Fertig.',
             style: const TextStyle(fontSize: 11),
           ),
         ),
@@ -1761,7 +1829,7 @@ class _TagesabschlussSchritt2SeiteState
           ),
           for (int i = 0; i < _zahlungsartZeilen.length; i++)
             if (!_zahlungsartZeilen[i].nichtImScan)
-              _scanDatenNurAnzeige
+              _kartenartenNurAnzeige
                   ? _baueKartenartenZeileAnzeige(i)
                   : _baueKartenartenZeile(i),
           if (_zahlungsartZeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
@@ -1777,7 +1845,7 @@ class _TagesabschlussSchritt2SeiteState
                         onPressed: () {
                           setState(() {
                             zeile.nichtImScan = false;
-                            _scanDatenNurAnzeige = false;
+                            _kartenartenNurAnzeige = false;
                           });
                         },
                         style: TextButton.styleFrom(
@@ -1838,6 +1906,7 @@ class _TagesabschlussSchritt2SeiteState
                 style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
               ),
             ),
+          _baueKartenartenEditButton(),
         ],
       ),
     );
@@ -2565,8 +2634,6 @@ class _TagesabschlussSchritt2SeiteState
                               // 3b: Kartenarten-Tabelle (immer)
                               if (_zahlungsartZeilen.isNotEmpty)
                                 _baueZahlungsartenTabelle(),
-                              if (_scanHatStattgefunden)
-                                _baueScanDatenEditButton(),
                             ],
                           ),
                         ),

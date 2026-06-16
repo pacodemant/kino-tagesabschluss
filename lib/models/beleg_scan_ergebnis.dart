@@ -8,13 +8,13 @@ class ZahlungsartErgebnis {
   factory ZahlungsartErgebnis.fromJson(Map<String, dynamic> json) {
     return ZahlungsartErgebnis(
       art: json['art'] as String? ?? '',
-      anzahl: (json['anzahl'] as num?)?.toInt() ?? 0,
+      anzahl: (json['anzahl'] as num?)?.toInt(),
       betragCent: (json['betrag_cent'] as num?)?.toInt(),
     );
   }
 
   final String art;
-  final int anzahl;
+  final int? anzahl;
   final int? betragCent;
 }
 
@@ -76,8 +76,11 @@ class BelegScanErgebnis {
 
   bool get anzahlPlausibel {
     if (gesamtAnzahl == null) return false;
-    final int summe =
-        zahlungsarten.fold(0, (int s, ZahlungsartErgebnis z) => s + z.anzahl);
+    if (zahlungsarten.any((ZahlungsartErgebnis z) => z.anzahl == null)) {
+      return false;
+    }
+    final int summe = zahlungsarten.fold(
+        0, (int s, ZahlungsartErgebnis z) => s + (z.anzahl ?? 0));
     return summe == gesamtAnzahl;
   }
 

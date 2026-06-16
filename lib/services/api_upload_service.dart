@@ -52,7 +52,7 @@ class ApiUploadService {
         if (z.betragCent != null) {
           formBody['ec_${key}_betrag_cent'] = z.betragCent!.toString();
         }
-        formBody['ec_${key}_anzahl'] = z.anzahl.toString();
+        formBody['ec_${key}_anzahl'] = (z.anzahl ?? 0).toString();
       }
     }
 

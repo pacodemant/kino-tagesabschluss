@@ -125,7 +125,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.12 · r275a2 @ GitHub:',
+                    'Web App 0.9.12 · r275a3 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
