@@ -154,6 +154,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
+  bool _ecBelegLabel1Beruehrt = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
 
@@ -495,6 +496,10 @@ class _TagesabschlussSchritt2SeiteState
       (controller: _kinoSollController, fokus: _kinoSollFocusNode),
       if (widget.kinoId != 'kino_04')
         (controller: _bistroSollController, fokus: _bistroSollFocusNode),
+      (
+        controller: _ecBelegLabelController.first,
+        fokus: _ecBelegLabelFocusNode.first
+      ),
       (controller: _ecBelegController.first, fokus: _ecBelegFocusNode.first),
     ];
 
@@ -515,12 +520,13 @@ class _TagesabschlussSchritt2SeiteState
   String? _pflichtfeldFehlertext({
     required bool feldBeruehrt,
     required TextEditingController controller,
+    String fehlertext = 'Pflichtfeld',
   }) {
     final bool fehlerSichtbar = _validierungAusgeloest || feldBeruehrt;
     if (!fehlerSichtbar || !_istPflichtfeldLeer(controller)) {
       return null;
     }
-    return 'Pflichtfeld';
+    return fehlertext;
   }
 
   /// Zeigt eine knappe Rueckmeldung und macht das erste fehlerhafte Feld sichtbar.
@@ -792,6 +798,7 @@ class _TagesabschlussSchritt2SeiteState
       _kinoSollBeruehrt = false;
       _bistroSollBeruehrt = false;
       _ecBeleg1Beruehrt = false;
+      _ecBelegLabel1Beruehrt = false;
       _validierungAusgeloest = false;
 
       _setzeEcBelegAnzahl(1);
@@ -912,6 +919,12 @@ class _TagesabschlussSchritt2SeiteState
             _ecBeleg1Beruehrt = true;
           }
           _scanTerminalId = _feldWertOderNull(geprueftes.terminalId);
+          if (_scanTerminalId != null) {
+            _ecBelegLabels[0] = _scanTerminalId!;
+            _setzeControllerText(
+                _ecBelegLabelController[0], _scanTerminalId!);
+            _ecBelegLabel1Beruehrt = true;
+          }
           _scanDatum = _feldWertOderNull(geprueftes.datum);
           _scanUhrzeit = _feldWertOderNull(geprueftes.uhrzeit);
           _scanBelegNrVon = _feldWertOderNull(geprueftes.belegNrVon);
@@ -1254,6 +1267,9 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegeCent[0] = 0;
         _setzeControllerText(_ecBelegController[0], '');
         _ecBeleg1Beruehrt = false;
+        _ecBelegLabels[0] = '';
+        _setzeControllerText(_ecBelegLabelController[0], '');
+        _ecBelegLabel1Beruehrt = false;
       }
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
@@ -1377,7 +1393,7 @@ class _TagesabschlussSchritt2SeiteState
   Widget _baueMetadatenInfoZeile(String label, String? wert) {
     if (wert == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -1398,8 +1414,8 @@ class _TagesabschlussSchritt2SeiteState
 
   Widget _baueMetadatenBlock() {
     return Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.all(10),
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
         border: Border.all(color: Colors.grey.shade300),
@@ -1409,7 +1425,7 @@ class _TagesabschlussSchritt2SeiteState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Padding(
-            padding: EdgeInsets.only(bottom: 6),
+            padding: EdgeInsets.only(bottom: 4),
             child: Text(
               'Scan-Metadaten',
               style: TextStyle(
@@ -1419,7 +1435,6 @@ class _TagesabschlussSchritt2SeiteState
               ),
             ),
           ),
-          _baueMetadatenInfoZeile('Terminal-ID', _scanTerminalId),
           _baueMetadatenInfoZeile('Datum', _scanDatum),
           _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
           _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
@@ -1437,7 +1452,7 @@ class _TagesabschlussSchritt2SeiteState
           )
         : null;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.only(bottom: 14),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -1459,7 +1474,7 @@ class _TagesabschlussSchritt2SeiteState
                 border: const OutlineInputBorder(),
                 enabledBorder: roteBorder,
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
               ),
               onChanged: (String wert) {
                 setState(() {
@@ -1483,7 +1498,7 @@ class _TagesabschlussSchritt2SeiteState
                 border: const OutlineInputBorder(),
                 enabledBorder: roteBorder,
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
               ),
               onChanged: (String wert) {
                 setState(() {
@@ -1585,7 +1600,7 @@ class _TagesabschlussSchritt2SeiteState
                 ],
               ),
             ),
-          const Divider(height: 10),
+          const Divider(height: 18),
           Row(
             children: <Widget>[
               const Expanded(
@@ -2189,10 +2204,31 @@ class _TagesabschlussSchritt2SeiteState
                                               _ecBelegLabelFocusNode[i],
                                             ),
                                             decoration: InputDecoration(
-                                              hintText:
-                                                  'Bezeichnung (optional)',
+                                              hintText: 'Terminal-ID',
                                               hintStyle: const TextStyle(
                                                   fontSize: 15),
+                                              errorText: i == 0
+                                                  ? _pflichtfeldFehlertext(
+                                                      feldBeruehrt:
+                                                          _ecBelegLabel1Beruehrt,
+                                                      controller:
+                                                          _ecBelegLabelController[
+                                                              0],
+                                                      fehlertext:
+                                                          'Terminal-ID eingeben',
+                                                    )
+                                                  : null,
+                                              errorBorder:
+                                                  const OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.red),
+                                              ),
+                                              focusedErrorBorder:
+                                                  const OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                    color: Colors.red,
+                                                    width: 2),
+                                              ),
                                               border:
                                                   const OutlineInputBorder(),
                                               isDense: true,
@@ -2257,6 +2293,10 @@ class _TagesabschlussSchritt2SeiteState
                                                 _letzteAenderung =
                                                     DateTime.now();
                                                 _ecBelegLabels[i] = wert;
+                                                if (i == 0) {
+                                                  _ecBelegLabel1Beruehrt =
+                                                      true;
+                                                }
                                               });
                                               _speichereEntwurf();
                                             },

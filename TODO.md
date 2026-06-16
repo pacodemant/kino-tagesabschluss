@@ -88,7 +88,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–280)*
 
-- [ ] **EC-Kachel: Layout & Terminal-ID** *(Run 275)* Metadaten kompakter,
+- [x] **EC-Kachel: Layout & Terminal-ID** *(Run 275)* Metadaten kompakter,
       Betragszeilen luftiger. "Bezeichnung (optional)" → "Terminal-ID" als Pflichtfeld.
       Bei Scan automatisch befüllt.
 
