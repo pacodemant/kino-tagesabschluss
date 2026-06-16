@@ -99,8 +99,12 @@ Inhalt:
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
 - Letzter Commit-Hash — daneben: Run-Nummer und ob sie vom User vorgegeben oder von Claude selbst abgeleitet wurde (z. B. „Run 203 – vom User vorgegeben" oder „Run 203 – aus run_counter.txt abgeleitet")
-- Bestätigung: `.dev/run_counter.txt` und `CHANGELOG.md` aktualisiert
+- Bestätigung: `.dev/run_counter.txt`, `CHANGELOG.md` und `TODO.md` aktualisiert
   - CHANGELOG.md vor dem Schreiben per Read prüfen — nie behaupten, sie existiere nicht, ohne vorher nachgesehen zu haben
+  - TODO.md nach jedem Run abgleichen: per Read prüfen, ob der Run einen dort
+    gelisteten Punkt erledigt hat (insbesondere Punkte mit passender
+    *(Run NNN)*-Markierung) — erledigten Punkt abhaken oder entfernen.
+    Keine anderen TODO.md-Inhalte umformulieren oder verschieben.
 
 ## Direkte Anweisungen ohne Run-Nummer
 
