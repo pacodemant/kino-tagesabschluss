@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274f4: Kartenarten-Tabelle zeigt nach einem Scan nur noch die auf dem Beleg gefundenen Kartenarten; nicht gefundene werden ausgeblendet statt leer angezeigt; neues Feld _ZahlungsartZeile.nichtImScan; "+ Kartenart"-Buttonreihe unterhalb der Tabelle erlaubt das Wieder-Einblenden einzelner ausgeblendeter Kartenarten zum manuellen Nachtragen; vor einem Scan weiterhin alle Kartenarten sichtbar; r274f4.
+
 - Run 274l: TODO.md grundlegend überarbeitet (Roadmap mit Run-Nummern 275–292, neue Blöcke „Blockiert – wartet auf IT" und „Flurbocash API-Integration"); neue Doku .dev/KI stuff/ (EXTERNAL_API_Schauburg.md/_de.md, kassenabrechnung-flurbocash-integration.html); .dev/kassenabrechnung-konzept-belegscan.html nach .dev/verkauf/ verschoben; config/kartenzahlungsanbieter.txt befüllt (girocard, lastschrift, mastercard, visa, maestro, vpay); config/terminal_ids.json um Hinweis-Kommentar ergänzt; generierte Plugin-Dateien (ios/macos/windows) durch flutter pub get aktualisiert; r274l.
 
 - Run 274k: config/terminal_ids.json befüllt – Terminal-IDs je Standort (AT, SB, CO, GO je 1, BT 2), Werte als Platzhalter "XXXX" bis Yannik die echten TIDs liefert (TODO: „Registrierte TIDs pro Standort"); r274k.

@@ -95,6 +95,7 @@ class _ZahlungsartZeile {
   int? anzahlWert;
   int? betragCentWert;
   bool nichtPlausibel = false;
+  bool nichtImScan = false;
 
   void dispose() {
     anzahlController.dispose();
@@ -107,6 +108,7 @@ class _ZahlungsartZeile {
     anzahlWert = null;
     betragCentWert = null;
     nichtPlausibel = false;
+    nichtImScan = false;
   }
 }
 
@@ -999,7 +1001,11 @@ class _TagesabschlussSchritt2SeiteState
           break;
         }
       }
-      if (matching == null) continue;
+      if (matching == null) {
+        zeile.nichtImScan = true;
+        continue;
+      }
+      zeile.nichtImScan = false;
 
       zeile.anzahlWert = matching.anzahl;
       _setzeControllerText(zeile.anzahlController, '${matching.anzahl}');
@@ -1553,7 +1559,32 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           for (int i = 0; i < _zahlungsartZeilen.length; i++)
-            _baueKartenartenZeile(i),
+            if (!_zahlungsartZeilen[i].nichtImScan) _baueKartenartenZeile(i),
+          if (_zahlungsartZeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
+            Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: <Widget>[
+                  for (final _ZahlungsartZeile zeile in _zahlungsartZeilen)
+                    if (zeile.nichtImScan)
+                      TextButton.icon(
+                        onPressed: () {
+                          setState(() => zeile.nichtImScan = false);
+                        },
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 0),
+                          minimumSize: const Size(0, 32),
+                        ),
+                        icon: const Icon(Icons.add, size: 16),
+                        label: Text(zeile.name,
+                            style: const TextStyle(fontSize: 12)),
+                      ),
+                ],
+              ),
+            ),
           const Divider(height: 10),
           Row(
             children: <Widget>[
