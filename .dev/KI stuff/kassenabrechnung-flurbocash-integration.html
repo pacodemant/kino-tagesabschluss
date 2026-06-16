@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="only light">
+<title>Kassenabrechnung – Flurbocash Integration</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f2eb;
+    --accent: #c8501a;
+    --rule: #d4cfc3;
+    --muted: #7a7568;
+    --code-bg: #f0ede6;
+    --code-ink: #2a2a28;
+    --tag-offen: #fef3e2;
+    --tag-offen-ink: #9a5a10;
+    --tag-ok: #e8f0e4;
+    --tag-ok-ink: #3a6b2a;
+    --tag-risk: #fdecea;
+    --tag-risk-ink: #8a2a2a;
+    --tag-neu: #eef2f8;
+    --tag-neu-ink: #2a4a7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root { color-scheme: only light; }
+  html { background: #f5f2eb !important; }
+
+  body {
+    background: #f5f2eb !important;
+    color: #1a1a18 !important;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .header h1 em { color: var(--accent); font-style: italic; }
+
+  .header-h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 520px;
+  }
+
+  .section { margin-bottom: 44px; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .prose {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .prose strong { color: var(--ink); font-weight: 500; }
+
+  code {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: var(--code-ink);
+  }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 14px 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--code-ink);
+    line-height: 1.7;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Flow */
+  .flow { display: grid; gap: 0; margin-bottom: 16px; }
+
+  .flow-item {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flow-num {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .flow-line {
+    width: 1px;
+    flex: 1;
+    background: var(--rule);
+    margin: 4px auto 0;
+    min-height: 20px;
+  }
+
+  .flow-item:last-child .flow-line { display: none; }
+
+  .flow-content {
+    padding: 4px 0 20px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .flow-content strong {
+    display: block;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+
+  .flow-content span { color: var(--muted); }
+
+  /* Def list */
+  .def-list { display: grid; gap: 10px; margin-bottom: 16px; }
+
+  .def-item {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    align-items: start;
+    font-size: 13px;
+  }
+
+  .def-term {
+    font-weight: 500;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    word-break: break-all;
+    line-height: 1.5;
+  }
+
+  .def-desc { color: var(--muted); line-height: 1.5; }
+  .def-desc strong { color: var(--ink); font-weight: 500; }
+
+  /* Feature list */
+  .feature-list {
+    list-style: none;
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .feature-item {
+    display: grid;
+    grid-template-columns: 20px 1fr auto;
+    gap: 12px;
+    align-items: start;
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+  }
+
+  .feature-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .feature-text { font-size: 14px; line-height: 1.5; }
+  .feature-text strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+  .feature-text span { color: var(--muted); font-size: 13px; }
+
+  .tag {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: start;
+    margin-top: 2px;
+  }
+
+  .tag-offen { background: var(--tag-offen); color: var(--tag-offen-ink); }
+  .tag-ok    { background: var(--tag-ok);    color: var(--tag-ok-ink); }
+  .tag-risk  { background: var(--tag-risk);  color: var(--tag-risk-ink); }
+  .tag-neu   { background: var(--tag-neu);   color: var(--tag-neu-ink); }
+
+  /* Note */
+  .note {
+    padding: 12px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .note strong { color: var(--ink); font-weight: 500; }
+
+  /* Question list */
+  .question-list { display: grid; gap: 10px; margin-bottom: 16px; }
+
+  .question-item {
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-size: 13px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: start;
+  }
+
+  .question-body { line-height: 1.5; }
+  .question-body strong {
+    display: block;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 3px;
+  }
+  .question-body span { color: var(--muted); }
+
+  /* Field table */
+  .field-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+
+  .field-table th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 0 12px 8px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .field-table td {
+    padding: 9px 12px 9px 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  .field-table td:first-child {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .field-table tr:last-child td { border-bottom: none; }
+
+  /* Error table */
+  .error-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-bottom: 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .error-table th {
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 10px 14px;
+    background: var(--code-bg);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .error-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .error-table tr:last-child td { border-bottom: none; }
+
+  .error-table td:first-child {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    white-space: nowrap;
+    width: 60px;
+  }
+
+  .error-table td:nth-child(2) {
+    color: var(--muted);
+    width: 200px;
+  }
+
+  .error-table td:last-child {
+    color: var(--ink);
+  }
+
+  /* Info grid */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .info-block {
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  .info-block.full { grid-column: 1 / -1; }
+
+  .info-block strong {
+    display: block;
+    font-weight: 500;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .info-block p { font-size: 13px; line-height: 1.55; color: var(--ink); }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 56px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  .footer-left strong { display: block; font-size: 13px; color: var(--ink); font-weight: 500; margin-bottom: 2px; }
+  .footer-right { font-size: 11px; color: var(--rule); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* Source box */
+  .source-box {
+    background: var(--code-bg);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .source-box-label {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+    opacity: 0.7;
+  }
+
+  .source-box pre {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 32px 40px 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-meta">Arbeitskonzept · Stand Juni 2026 · Intern</div>
+    <h1>Kassen<em>abrechnung</em></h1>
+    <div class="header-h2">Flurbocash Integration</div>
+    <p class="header-sub">Konzept und offene Punkte für die Anbindung der App an das Buchhaltungssystem des Kinos. Grundlage: API-Spezifikation der Kino-IT, Stand Juni 2026.</p>
+  </header>
+
+  <!-- Überblick -->
+  <section class="section">
+    <div class="section-label">Überblick</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md</div>
+      <pre>## Conventions
+
+- **Base URL:** `https://&lt;your-host&gt;` (default port `8080`).
+- **Content type:** `application/json` for all request and response bodies.
+- **Money is always integer cents.** Every monetary amount in requests and
+  responses is an integer number of cents, e.g. `123456` means `1234.56 EUR`.
+  Never send floats/decimals.
+- **Dates** are `YYYY-MM-DD` (e.g. `2026-06-10`).
+
+## Typical flow
+
+1. **Ensure a daily report exists** for the location and date, and obtain its
+   `report_id` → `POST /api/daily-reports/ensure`.
+2. **Submit the settlements** (cash totals + terminal closings) for that
+   `report_id` → `PUT /api/daily-reports/{id}/settlements`.</pre>
+    </div>
+    <p class="prose">Das Buchhaltungssystem des Kinos heißt <strong>Flurbocash</strong> und hat eine REST-API — eine strukturierte Schnittstelle, über die die App Daten in einem genau vorgegebenen Format übermittelt. Statt eines einfachen Webhooks wie bisher sind künftig <strong>zwei Aufrufe pro Abrechnung</strong> nötig.</p>
+    <div class="note"><strong>Was sich gegenüber heute ändert:</strong> Bisher ein einfacher POST mit Formulardaten. Künftig zwei aufeinanderfolgende Aufrufe mit JSON — und eine genau definierte Datenstruktur für EC-Kartendaten.</div>
+  </section>
+
+  <!-- Ablauf -->
+  <section class="section">
+    <div class="section-label">Ablauf pro Abrechnung — zwei Schritte</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md</div>
+      <pre>## `POST /api/daily-reports/ensure`
+
+Returns the daily report ID for a location and date, **creating the report if it
+does not exist yet**. Idempotent: calling it again for the same location+date
+returns the same `report_id`.
+
+## `PUT /api/daily-reports/{id}/settlements`
+
+Submits the cash totals and per-terminal card closings for a daily report.
+`{id}` is the `report_id` from the ensure call.</pre>
+    </div>
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">1</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Formular anlegen oder abrufen — <code>POST /api/daily-reports/ensure</code></strong>
+          <span>App schickt Standort-ID (<code>location_id</code>) und Datum. Flurbocash antwortet mit einer <code>report_id</code>. Existiert für diesen Tag bereits ein Bericht, wird einfach die vorhandene ID zurückgegeben — kein Fehler, kein Überschreiben. <strong>Idempotent:</strong> beliebig oft aufrufbar, immer dasselbe Ergebnis.</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-left"><div class="flow-num">2</div><div class="flow-line"></div></div>
+        <div class="flow-content">
+          <strong>Daten übermitteln — <code>PUT /api/daily-reports/{id}/settlements</code></strong>
+          <span>App schickt die gezählten Barbeträge und die EC-Aufschlüsselung pro Terminal an die <code>report_id</code> aus Schritt 1. Flurbocash antwortet mit dem berechneten Differenzbetrag.</span>
+        </div>
+      </div>
+    </div>
+    <div class="note"><strong>Was Flurbocash selbst kennt:</strong> Den Soll-Wert aus dem Kassensystem. Die App liefert nur den Ist-Wert (gezähltes Bargeld + EC). Den Vergleich zieht Flurbocash intern.</div>
+  </section>
+
+  <!-- Datenstruktur -->
+  <section class="section">
+    <div class="section-label">Datenstruktur — was die App sendet</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md</div>
+      <pre>**Request** `POST /api/daily-reports/ensure`
+{ "location_id": 9, "date": "2026-06-10" }
+
+**Request** `PUT /api/daily-reports/{id}/settlements`
+{
+  "settlements": [{
+    "cash_total": 123456,
+    "terminals": [{
+      "tid": "TID-ALPHA",
+      "girocard": 10000, "lastschrift": 0,
+      "mastercard": 5000, "visa": 0, "maestro": 0, "vpay": 0
+    }]
+  }]
+}
+
+Field reference (all amounts in cents):
+cash_total        | int | Counted cash for this settlement
+terminals[].tid   | string | Terminal ID, must exist for the location
+terminals[].girocard / lastschrift / mastercard / visa / maestro / vpay | int
+Omitted card fields default to 0.</pre>
+    </div>
+    <p class="prose">Beide Aufrufe verwenden <strong>JSON</strong> (<code>Content-Type: application/json</code>). Alle Geldbeträge in <strong>Cent als Ganzzahl</strong> — das passt zur internen Cent-Arithmetik der App, kein Umrechnungsschritt nötig.</p>
+
+    <p class="prose" style="margin-bottom: 8px;"><strong>Schritt 1 — Request</strong></p>
+    <div class="code-block">{
+  "location_id": 9,
+  "date": "2026-06-10"
+}</div>
+
+    <p class="prose" style="margin-bottom: 8px;"><strong>Schritt 2 — Request</strong></p>
+    <div class="code-block">{
+  "settlements": [
+    {
+      "cash_total": 123456,
+      "terminals": [
+        {
+          "tid": "54017664",
+          "girocard":   10000,
+          "lastschrift": 0,
+          "mastercard":  5000,
+          "visa":        0,
+          "maestro":     0,
+          "vpay":        0
+        }
+      ]
+    }
+  ]
+}</div>
+
+    <table class="field-table">
+      <tr><th>Feld</th><th>Typ</th><th>Herkunft in der App</th></tr>
+      <tr><td>location_id</td><td>int</td><td>Fest pro Standort — von IT zu erfragen</td></tr>
+      <tr><td>date</td><td>YYYY-MM-DD</td><td>Logischer Abrechnungstag (6-Uhr-Knick)</td></tr>
+      <tr><td>cash_total</td><td>int (Cent)</td><td>Bargeldbestand abzgl. Wechselgeld</td></tr>
+      <tr><td>tid</td><td>string</td><td>Terminal-ID — aus BelegScan oder Whitelist</td></tr>
+      <tr><td>girocard</td><td>int (Cent)</td><td>BelegScan → Feld "girocard"</td></tr>
+      <tr><td>lastschrift</td><td>int (Cent)</td><td>BelegScan → Feld "SEPA Lastschrift"</td></tr>
+      <tr><td>mastercard</td><td>int (Cent)</td><td>BelegScan → Feld "MasterCard"</td></tr>
+      <tr><td>visa</td><td>int (Cent)</td><td>BelegScan → Feld "VISA"</td></tr>
+      <tr><td>maestro</td><td>int (Cent)</td><td>BelegScan → ggf. vorhanden</td></tr>
+      <tr><td>vpay</td><td>int (Cent)</td><td>BelegScan → ggf. vorhanden</td></tr>
+    </table>
+    <div class="note"><strong>Fehlende Felder:</strong> Kartentypen die auf dem Bon nicht erscheinen müssen nicht mitgesendet werden — Flurbocash setzt sie intern auf <code>0</code>. <code>cash_total</code> ist inhaltlich Pflicht.</div>
+  </section>
+
+  <!-- TID-Whitelist -->
+  <section class="section">
+    <div class="section-label">TID-Absicherung — Whitelist-Konzept</div>
+    <p class="prose">Die Terminal-ID (TID) wird vom BelegScan aus dem Foto gelesen. Eine falsch erkannte TID (z. B. 0 statt 8) führt zu einem <code>400</code>-Fehler von Flurbocash — <strong>die Daten landen nirgends</strong>. Zusätzliches Risiko: Flurbocash prüft ob die TID für den Standort registriert ist.</p>
+
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Whitelist pro Standort in der Konfiguration</strong>
+          <span>Jedes Standort-Gerät kennt die für diesen Standort gültigen TIDs. Nach dem Scan prüft die App: ist die gelesene TID in der Liste? Falls nicht → Warnung vor dem Prüf-Popup, MA muss explizit bestätigen oder korrigieren.</span>
+        </div>
+        <span class="tag tag-neu">Geplant</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>TID im Prüf-Popup immer sichtbar und editierbar</strong>
+          <span>Die erkannte TID wird im Popup fett und prominent angezeigt. MA kann sie direkt korrigieren bevor er bestätigt — auch ohne Whitelist-Treffer.</span>
+        </div>
+        <span class="tag tag-neu">Geplant</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>TIDs liefert die IT einmalig beim Setup</strong>
+          <span>Die Kino-IT kennt alle registrierten TIDs in Flurbocash. Sie trägt sie einmalig in die Gerätekonfiguration ein — danach läuft die Prüfung automatisch.</span>
+        </div>
+        <span class="tag tag-offen">Offen — IT</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Korrekturen -->
+  <section class="section">
+    <div class="section-label">Korrekturen — zu früh gesendet?</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md → Corrections</div>
+      <pre>## Corrections
+
+To correct a settlement you already submitted, send it again **with its
+`settlement_number`** (1–4). This overwrites that settlement in place.
+
+{ "settlements": [{ "settlement_number": 2, "cash_total": 98765,
+                    "terminals": [{ "tid": "TID-ALPHA", "girocard": 9000 }] }] }
+
+Rules:
+- The targeted `settlement_number` must already exist. Targeting a non-existent
+  number returns `400`.
+- Corrections are only possible while the report is **not finalized**.
+- A day allows at most **4** settlements.</pre>
+    </div>
+    <p class="prose">Solange ein Bericht in Flurbocash nicht <strong>finalisiert</strong> ist (das macht die Buchhaltung, nicht der MA), kann er überschrieben werden. Dafür wird Schritt 2 erneut gesendet — diesmal mit <code>"settlement_number": 1</code>.</p>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Erster Versand (normal)</strong>
+          <span>Kein <code>settlement_number</code> — Flurbocash legt den Eintrag neu an und vergibt die Nummer automatisch (1, 2, …).</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Korrektur</strong>
+          <span><code>"settlement_number": 1</code> mitschicken — Flurbocash überschreibt den Eintrag. Die Ziel-Nummer muss bereits existieren, sonst Fehler.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Konsequenz für die App</strong>
+          <span>Der "Erneut senden"-Button im Verlauf sendet künftig einen Korrektur-Call mit <code>settlement_number: 1</code> — nicht einen neuen Eintrag. Voraussetzung: die ursprüngliche <code>report_id</code> muss lokal gespeichert bleiben.</span>
+        </div>
+      </li>
+    </ul>
+    <div class="note"><strong>Maximale Abrechnungen pro Tag:</strong> 4. Mehr Aufrufe werden von Flurbocash mit <code>400</code> abgelehnt. Für alle Standorte außer Bar Tabak (2 Abrechnungen/Tag) kein Problem.</div>
+  </section>
+
+  <!-- Fehlercodes -->
+  <section class="section">
+    <div class="section-label">Fehlermeldungen — was die App daraus macht</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md → Errors</div>
+      <pre>| Status | Meaning                                                            |
+|--------|-------------------------------------------------------------------|
+| `400`  | Malformed body, missing/unknown `tid`, bad date, `settlement_number` outside 1–4 |
+| `400`  | More than 4 settlements (`maximum of 4 settlements per day reached`) |
+| `400`  | `settlement_number` targets a settlement that does not exist       |
+| `400`  | Report is finalized and can no longer be modified                 |
+| `401`  | Missing or invalid/revoked API key (`X-API-Key`)                  |
+| `403`  | API key is not authorized for the requested location              |
+| `404`  | Daily report `{id}` not found                                     |
+| `500`  | Server error                                                      |
+
+On a `400`, no data is written — the request is validated before any changes are
+persisted, so a rejected call leaves the report unchanged.</pre>
+    </div>
+    <p class="prose">Flurbocash antwortet bei Fehlern mit HTTP-Statuscodes. Die App muss diese abfangen und dem MA eine verständliche Meldung zeigen — keine technischen Codes, keine englischen Fehlertexte.</p>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>400 — Falsches Format, unbekannte TID, Bericht finalisiert</strong>
+          <span>„Übertragung fehlgeschlagen. Prüfe TID und Werte, dann erneut senden." — bei finalisierten Berichten: „Diese Abrechnung wurde bereits abgeschlossen."</span>
+        </div>
+        <span class="tag tag-risk">400</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>401 — API-Key fehlt oder ungültig</strong>
+          <span>„Zugang nicht autorisiert — bitte Einstellungen prüfen oder IT kontaktieren."</span>
+        </div>
+        <span class="tag tag-risk">401</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>403 — API-Key für diesen Standort nicht berechtigt</strong>
+          <span>„Dieser API-Key ist für den gewählten Standort nicht gültig — bitte IT kontaktieren."</span>
+        </div>
+        <span class="tag tag-risk">403</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>404 — Bericht-ID nicht gefunden</strong>
+          <span>Intern abfangen — sollte nach erfolgreichem Schritt 1 nicht auftreten. Falls doch: erneut ab Schritt 1 starten.</span>
+        </div>
+        <span class="tag tag-offen">404</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>500 — Server-Fehler</strong>
+          <span>„Server nicht erreichbar — bitte später erneut versuchen."</span>
+        </div>
+        <span class="tag tag-risk">500</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Was noch fehlt -->
+  <section class="section">
+    <div class="section-label">Was an die App-Architektur noch angepasst wird</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md → Authentication</div>
+      <pre>## Authentication
+
+All external endpoints are authenticated with an **API key**, sent in the
+`X-API-Key` header:
+
+    X-API-Key: fck_2a843e19...
+
+Each API key is **scoped to one or more locations**. A key may only read/write
+data for the locations it is assigned to. Requests for any other location are
+rejected with `403 Forbidden`.</pre>
+    </div>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>ApiUploadService: 1 Call → 2 Calls</strong>
+          <span>Aus dem bisherigen einzelnen POST werden zwei aufeinanderfolgende Aufrufe. Die <code>report_id</code> aus Schritt 1 fließt in Schritt 2 — sie muss auch lokal für spätere Korrekturen gespeichert werden.</span>
+        </div>
+        <span class="tag tag-neu">Run</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Format: form-encoded → JSON</strong>
+          <span>Content-Type wechselt von <code>application/x-www-form-urlencoded</code> auf <code>application/json</code>. Felder werden als JSON-Objekt strukturiert statt als Schlüssel-Wert-Paare gesendet.</span>
+        </div>
+        <span class="tag tag-neu">Run</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>location_id ins Kino-Modell</strong>
+          <span>Jedes Kino-Objekt in <code>kino.dart</code> bekommt ein neues Feld <code>locationId</code> (int). Wird mit den Werten der IT befüllt.</span>
+        </div>
+        <span class="tag tag-offen">Wartet auf IT</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>report_id lokal speichern</strong>
+          <span>Nach Schritt 1 muss die <code>report_id</code> im lokalen Speicher abgelegt werden — damit ein Korrektur-Call aus dem Verlauf heraus möglich ist ohne erneuten Schritt-1-Aufruf.</span>
+        </div>
+        <span class="tag tag-neu">Run</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Konfigurationsbereich: PIN-Schutz</strong>
+          <span>Der Dev-/Verwaltungsbereich in den Einstellungen wird mit einem vierstelligen PIN geschützt. location_id, API-Key, Basis-URL und TID-Whitelist werden dort einmalig beim Geräte-Setup eingetragen.</span>
+        </div>
+        <span class="tag tag-neu">Run</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>"Erneut senden"-Logik anpassen</strong>
+          <span>Statt eines neuen Eintrags sendet der Button einen Korrektur-Call mit <code>settlement_number: 1</code>. Voraussetzung: lokal gespeicherte <code>report_id</code>.</span>
+        </div>
+        <span class="tag tag-neu">Run</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Fehlerbehandlung im Upload-Service</strong>
+          <span>Alle definierten HTTP-Statuscodes (400, 401, 403, 404, 500) werden abgefangen und in verständliche deutsche Meldungen für den MA übersetzt.</span>
+        </div>
+        <span class="tag tag-neu">Run</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- BelegScan → Flurbocash Mapping -->
+  <section class="section">
+    <div class="section-label">BelegScan → Flurbocash Mapping</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md → settlements field reference</div>
+      <pre>terminals[].girocard    | int | EC-Karte: Girocard
+terminals[].lastschrift | int | EC-Karte: Lastschrift
+terminals[].mastercard  | int | Kreditkarte: Mastercard
+terminals[].visa        | int | Kreditkarte: Visa
+terminals[].maestro     | int | Kreditkarte: Maestro
+terminals[].vpay        | int | Kreditkarte: V-Pay
+
+Omitted card fields default to `0`.</pre>
+    </div>
+    <p class="prose">Die vom BelegScan gelesenen Kartentypen entsprechen fast 1:1 den Flurbocash-Feldern. Das Mapping ist eindeutig:</p>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text"><strong>BelegScan: "girocard"</strong><span>→ Flurbocash: <code>girocard</code></span></div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text"><strong>BelegScan: "SEPA Lastschrift"</strong><span>→ Flurbocash: <code>lastschrift</code></span></div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text"><strong>BelegScan: "MasterCard"</strong><span>→ Flurbocash: <code>mastercard</code></span></div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text"><strong>BelegScan: "VISA"</strong><span>→ Flurbocash: <code>visa</code></span></div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text"><strong>BelegScan: ggf. "Maestro"</strong><span>→ Flurbocash: <code>maestro</code></span></div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text"><strong>BelegScan: ggf. "V Pay"</strong><span>→ Flurbocash: <code>vpay</code></span></div>
+      </li>
+    </ul>
+    <div class="note"><strong>Hinweis:</strong> Der BelegScan-Prompt fasst Untervarianten bereits zusammen ("girocard Online" + "girocard PIN" → "girocard"). Das Mapping-Ergebnis ist daher direkt verwendbar — kein zusätzlicher Normalisierungsschritt nötig.</div>
+  </section>
+
+  <!-- Offene Fragen an die IT -->
+  <section class="section">
+    <div class="section-label">Offene Fragen an Yannik (IT)</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md — was im Dokument fehlt</div>
+      <pre>## Authentication
+"Each API key is scoped to one or more locations."
+→ Key und Basis-URL (`https://&lt;your-host&gt;`) nicht im Dokument angegeben.
+
+## `POST /api/daily-reports/ensure`
+{ "location_id": 9, ... }
+→ Konkrete location_id-Werte pro Standort nicht im Dokument.
+
+## `PUT /api/daily-reports/{id}/settlements`
+terminals[].tid — "must already be registered for the report's location"
+→ Welche TIDs pro Standort registriert sind, nicht dokumentiert.</pre>
+    </div>
+    <div class="question-list">
+      <div class="question-item">
+        <div class="question-body">
+          <strong>location_id der Standorte</strong>
+          <span>Welche interne ID hat Flurbocash für Schauburg, Gondel, Atlantis, Cinema Ostertor und Bar Tabak?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>Basis-URL des Servers</strong>
+          <span>Unter welcher HTTPS-Adresse ist die Flurbocash-API erreichbar? (z. B. <code>https://kasse.schauburg.de</code>)</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>API-Key</strong>
+          <span>Den tatsächlichen <code>X-API-Key</code> für die App — idealerweise einen separaten Key pro Standort.</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>Registrierte TIDs pro Standort</strong>
+          <span>Welche Terminal-IDs sind in Flurbocash für welchen Standort hinterlegt? Werden vom BelegScan automatisch gelesen, müssen aber zur Validierung in der App bekannt sein.</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>CORS-Header</strong>
+          <span>Der Flurbocash-Server muss <code>Access-Control-Allow-Origin: *</code> (oder die spezifische App-Domain) in allen Antworten senden — sonst blockiert der Browser die Antwort. Ist das bereits konfiguriert?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>Weitere Abrechnungsfelder</strong>
+          <span>Kino-Soll, Bistro-Soll, Ausgaben, Mitarbeitername, Differenz — sollen diese Felder an Flurbocash übermittelt werden, oder holt das System sie selbst aus dem Kassensystem?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>Testumgebung</strong>
+          <span>Gibt es eine Testinstanz von Flurbocash, gegen die wir die Integration entwickeln können? Oder müssen wir direkt gegen das Produktivsystem testen?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>6-Uhr-Knick — Datumsgrenze abstimmen</strong>
+          <span>Die App verwendet 6:00 Uhr als logische Tagesgrenze: eine Abrechnung um 1 Uhr nachts gehört noch zum Vortag. Welches Datum erwartet Flurbocash für Nachtabrechnungen — den Kalendertag der Abrechnung oder den logischen Abrechnungstag?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>Konfiguration der Geräte — wer, wie, wo?</strong>
+          <span>Werte wie API-Key, location_id, TID-Whitelist und Buchhaltungs-E-Mail müssen einmalig pro Gerät eingetragen werden. Wie stellst du dir das vor — richtest du die Geräte selbst ein, oder sollen MAs das können? Und wer ändert Werte wenn sich etwas ändert?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+      <div class="question-item">
+        <div class="question-body">
+          <strong>Mailversand für Buchhaltungsbenachrichtigung</strong>
+          <span>Die App soll bei Überschreitung der maximalen Abrechnungsanzahl automatisch eine Info-Mail an die Buchhaltung senden. Gibt es einen Mailserver oder -dienst den wir nutzen können — oder soll die Mail-App des Geräts geöffnet werden?</span>
+        </div>
+        <span class="tag tag-offen">Offen</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Was Yannik auf seiner Seite tun muss -->
+  <section class="section">
+    <div class="section-label">Was Yannik auf seiner Seite einrichten muss</div>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>TIDs registrieren</strong>
+          <span>Alle Terminal-IDs der Standorte müssen in Flurbocash für den jeweiligen Standort eingetragen sein. Sonst kommt bei jedem EC-Scan ein <code>400</code>-Fehler.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>CORS-Header konfigurieren</strong>
+          <span>Der Server muss <code>Access-Control-Allow-Origin: *</code> in seinen API-Antworten senden. Ohne das blockiert der Browser der App die Antwort — die Daten kommen an, aber die App weiß es nicht.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>API-Key ausstellen</strong>
+          <span>Einen oder mehrere API-Keys erstellen und der App mitteilen. Ob ein Key für alle Standorte oder je einer pro Standort — das entscheidet Yannik nach eigenem Ermessen.</span>
+        </div>
+      </li>
+    </ul>
+    <div class="note"><strong>Ton gegenüber Yannik:</strong> Das sind keine Kritikpunkte an seiner Software — das ist normales Setup für jede API-Integration. Die Anfragen als "Was ich von dir brauche damit ich liefern kann" formulieren, nicht als "was du noch anpassen musst".</div>
+  </section>
+
+  <!-- Noch nicht in der Spec -->
+  <section class="section">
+    <div class="section-label">Was die Spec nicht beantwortet</div>
+    <div class="source-box">
+      <div class="source-box-label">Original · EXTERNAL_API_Schauburg.md — Lücken</div>
+      <pre>Felder in der Spec: location_id, date, cash_total, tid,
+girocard, lastschrift, mastercard, visa, maestro, vpay.
+
+Nicht erwähnt: Kino-Soll, Bistro-Soll, Ausgaben, Mitarbeitername,
+Differenz, unlesbare Belege, CORS-Konfiguration.
+
+"A day allows at most 4 settlements" — relevant für Bar Tabak
+(2 Abrechnungen/Tag, teilen eine report_id).</pre>
+    </div>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Kein Feld für unlesbare Belege</strong>
+          <span>Die API erwartet Ganzzahlen. Ein "nicht lesbar"-Marker als Text würde mit <code>400</code> abgelehnt. Lösung: Feld weglassen (default 0) + lokale Notiz im Verlauf der App. Die Buchhaltung trägt den Wert in Flurbocash nach.</span>
+        </div>
+        <span class="tag tag-risk">Risiko</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Keine anderen Abrechnungsfelder dokumentiert</strong>
+          <span>Kino-Soll, Bistro-Soll, Ausgaben, Mitarbeitername — stehen nicht in der Spec. Entweder holt Flurbocash sie selbst aus dem Kassensystem, oder die Spec ist unvollständig. Klären mit Yannik.</span>
+        </div>
+        <span class="tag tag-offen">Klären</span>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Bar Tabak: 2 Abrechnungen / Tag</strong>
+          <span>Die API erlaubt bis zu 4 Settlements pro Tag — BT mit 2 Abrechnungen ist also abgedeckt. Aber: beide Abrechnungen teilen sich dieselbe <code>report_id</code>. Das muss in der App-Logik für BT berücksichtigt werden.</span>
+        </div>
+        <span class="tag tag-risk">Risiko</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- TODO-Ergänzungen -->
+  <section class="section">
+    <div class="section-label">TODO-Ergänzungen für V1 / MVP</div>
+    <div class="info-grid">
+      <div class="info-block">
+        <strong>ApiUploadService Umbau</strong>
+        <p>2-Call-Flow, JSON statt form-encoded, report_id speichern, Fehlerbehandlung nach Spec.</p>
+      </div>
+      <div class="info-block">
+        <strong>location_id ins Kino-Modell</strong>
+        <p>Neues Feld in kino.dart. Wartet auf IT-Angaben.</p>
+      </div>
+      <div class="info-block">
+        <strong>TID-Whitelist konfigurierbar</strong>
+        <p>Pro Standort in den Einstellungen editierbar — kein Hardcoding. Prüfung nach BelegScan, Warnung bei Abweichung. IT trägt Werte einmalig beim Setup ein.</p>
+      </div>
+      <div class="info-block">
+        <strong>PIN-Schutz Einstellungen</strong>
+        <p>Vierstelliger PIN für Verwaltungsbereich. Dort werden location_id, API-Key, Basis-URL, TID-Whitelist und Buchhaltungs-E-Mail einmalig eingetragen.</p>
+      </div>
+      <div class="info-block">
+        <strong>"Erneut senden" → Korrektur-Call</strong>
+        <p>settlement_number: 1 statt neuem Eintrag. Nutzt lokal gespeicherte report_id.</p>
+      </div>
+      <div class="info-block">
+        <strong>Hilfetext: Belegkopie ziehen</strong>
+        <p>Infotext im Scan-Bereich: was tun wenn Beleg fehlt oder unlesbar ist.</p>
+      </div>
+      <div class="info-block">
+        <strong>Max. 4 Abrechnungen — Fehlerbehandlung</strong>
+        <p>Bei 400 "maximum reached": verständliche Meldung + Textbutton "Info an Buchhaltung senden". Nach Bestätigung: "Buchhaltung ist informiert — Abrechnung beendet." Mail-Adresse aus Einstellungen.</p>
+      </div>
+      <div class="info-block">
+        <strong>Buchhaltungs-E-Mail konfigurierbar</strong>
+        <p>Empfängeradresse für Buchhaltungsbenachrichtigungen in den Einstellungen hinterlegt. Mailversand-Methode abhängig von Yannik-Antwort (Mailserver vs. mailto:-Link).</p>
+      </div>
+      <div class="info-block full">
+        <strong>Bar Tabak: 2-Settlement-Logik</strong>
+        <p>Beide Tagesabrechnungen teilen eine report_id. Zweiter Call muss settlement_number: 2 setzen (nicht neu anlegen). Erst wenn BT implementiert wird relevant.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bewusste Entscheidungen -->
+  <section class="section">
+    <div class="section-label">Bewusste Entscheidungen — was wir nicht tun</div>
+    <div class="def-list">
+      <div class="def-item">
+        <div class="def-term">Kein Variablen-Refactoring</div>
+        <div class="def-desc">Interne App-Variablen (z. B. <code>bargeldGesamt</code>) werden nicht auf API-Feldnamen umbenannt. Das Mapping von intern → API-Format geschieht ausschließlich im <code>ApiUploadService</code>. Refactoring vor abgeschlossener Integration wäre riskant und unnötig.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Lokale Datenspeicherung bleibt erhalten</div>
+        <div class="def-desc">Die API ersetzt nicht die lokale Datenhaltung. Verlauf, Entwürfe und die gespeicherte <code>report_id</code> für Korrektur-Calls bleiben in SharedPreferences / Hive. Die API ist der Übertragungskanal am Ende des Workflows — nicht dessen Ersatz.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Konfiguration in SharedPreferences, nicht in Dateien</div>
+        <div class="def-desc">Der Web Build ist ein statisches Paket — es gibt keine beschreibbaren Konfigurationsdateien auf dem Server. Alle editierbaren Werte (API-Key, location_id, TIDs, E-Mail) liegen im Browser-Speicher des jeweiligen Geräts und werden über den PIN-geschützten Einstellungsbereich gepflegt.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Kein Remote-Konfigurationsdashboard in V1</div>
+        <div class="def-desc">Ein zentrales Dashboard zum Verwalten aller Geräte aus der Ferne wäre ein eigenständiges zweites System (eigener Server, Datenbank, Auth). Bei fünf Standorten und selten wechselnden Werten steht der Aufwand nicht im Verhältnis. Einmalig manuelles Setup pro Gerät reicht. → Nice-to-have, Roadmap nach V1.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stapel-Scanner -->
+  <section class="section">
+    <div class="section-label">Neues Feature — Stapel-Scanner für EC-Belege</div>
+    <p class="prose">Hintergrund: Die zuständige Buchhaltungsperson ist mehrere Wochen krankgeschrieben. Aufgestaute EC-Belege müssen nacherfasst werden. Das Feature stärkt außerdem die Verhandlungsposition — es adressiert einen konkreten, akuten Bedarf.</p>
+
+    <div class="def-list">
+      <div class="def-item">
+        <div class="def-term">Zugang</div>
+        <div class="def-desc">Eigene Kachel im PIN-geschützten Verwaltungsbereich (Einstellungen). Führt zu einer eigenständigen Seite ausschließlich für den Stapel-Scan. Nicht Teil des normalen Abrechnungsworkflows.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Dieselbe EC-Kachel, neuer Kontext</div>
+        <div class="def-desc">Die verbesserte EC-Kachel (mit Unterkacheln pro Beleg, eigenem Scan-Button, eigenem Papierkorb) wird als gemeinsame Komponente verwendet — sowohl im Abrechnungsworkflow als auch auf der Stapel-Scan-Seite.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Mehrere Belege pro Sitzung</div>
+        <div class="def-desc">Belege werden nacheinander gescannt und als Liste gespeichert — ähnlich dem Verlauf. Jeder Beleg ist eine eigene Unterkachel, zugklappbar, mit eigenem Papierkorb und eigenem Foto-Button (mit Rückfrage vor erneutem Scan).</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">Übertragung</div>
+        <div class="def-desc">Gesamten Stapel oder einzelne Einträge übertragen. Ziel: Flurbocash — genaues Format noch offen, mit Yannik zu klären. Vorerst Dummy-Button mit Snackbar-Bestätigung.</div>
+      </div>
+      <div class="def-item">
+        <div class="def-term">"see JSON"-Button im Dev-Modus</div>
+        <div class="def-desc">Nur sichtbar wenn Dev-Modus aktiv. Erscheint im Prüf-Popup und zeigt das JSON des aktuell geprüften Belegs — exakt das was an die API gesendet werden würde. Dient der Entwicklungskontrolle. Enthält einen "Senden"-Dummy-Button (Snackbar).</div>
+      </div>
+    </div>
+
+    <p class="prose" style="margin-top: 4px;"><strong>Verbesserungen an der EC-Kachel (gilt für beide Kontexte)</strong></p>
+    <ul class="feature-list">
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Prüf-Popup: Inline-Korrektur für unlesbare Felder</strong>
+          <span>Unlesbare oder unsichere Werte werden rot hervorgehoben. Tippt der MA auf eine rote Stelle, ersetzt ein kompaktes Eingabefeld (gleiche Zeilenhöhe, roter Rahmen) genau diese Zeile — kein Modal, kein Platzverlust. Hinweistext im Popup: "Rote Felder bitte korrigieren."</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Kompakteres Layout: Metadaten vs. Beträge</strong>
+          <span>Metadaten (Terminal-ID, Datum, Uhrzeit, Beleg-Nr.) erhalten geringeren Zeilenabstand. Zeilen mit Beträgen bekommen mehr Platz — bessere Tippbarkeit auf dem Smartphone.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Terminal-ID: kein optionales Feld mehr</strong>
+          <span>Das Feld "Bezeichnung (optional)" wird zu "Terminal-ID" — Pflichtfeld. Bei Scan wird die TID automatisch eingetragen. Bei manueller Eingabe bleibt das Feld leer bis der MA es ausfüllt.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>Zugeklappte Kachel: Summe statt Kamera-Icon</strong>
+          <span>Ist die EC-Kachel zugeklappt und mindestens ein Beleg vorhanden, wird rechts (vor dem Aufklapp-Pfeil) die Gesamtsumme angezeigt — nicht das Kamera-Symbol.</span>
+        </div>
+      </li>
+      <li class="feature-item">
+        <div class="feature-dot"></div>
+        <div class="feature-text">
+          <strong>"Weiteren Beleg hinzufügen"-Button</strong>
+          <span>Erscheint erst nach dem ersten erfassten Beleg (per Scan oder manuell). Textbutton, kein Icon-Button.</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="note"><strong>Offene Frage:</strong> Wie sollen die gesammelten Belege an Flurbocash übertragen werden — einzeln (je ein 2-Call-Flow pro Beleg) oder als Batch? Und braucht die Buchhaltung einen separaten Endpunkt oder den gleichen wie die Tagesabrechnung? Mit Yannik klären.</div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <strong>Paco Demant</strong>
+      Arbeitskonzept · wird fortlaufend ergänzt
+    </div>
+    <div class="footer-right">Juni 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>

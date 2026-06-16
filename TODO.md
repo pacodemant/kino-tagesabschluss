@@ -1,134 +1,194 @@
 # TODO — kino_bar_app
+Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ---
 
-## 🟢 Kleine Fixes (direkt umsetzbar, je < 1h)
+## 🔴 Blockiert — wartet auf IT (Yannik)
 
-- [ ] **Kupfer-Bereich aufklappen:** Bargeld/Wechselgeld zählen — wenn Kupferfelder
-      einen Inhalt haben, soll der Kupfer-Bereich automatisch aufgeklappt sein.
+- [ ] **location_id pro Standort** Welche interne Flurbocash-ID hat jeder Standort?
+      (Schauburg, Gondel, Atlantis, Cinema Ostertor, Bar Tabak)
 
-- [ ] **Mitarbeitername im Verlauf:** Name auch in lokalen Verlaufs-Datensätzen
-      speichern und in Verlaufsansicht anzeigen. Präfix "MitarbeiterIn: " vor dem Namen.
+- [ ] **Basis-URL Flurbocash-Server** HTTPS-Adresse der API.
 
-- [ ] **DEV-Button im Web:** Der Button zum Befüllen mit Testwerten soll auch
-      in der Web-App funktionieren.
+- [ ] **X-API-Key** Tatsächlicher Schlüssel — ein Key für alle oder je einer
+      pro Standort, nach Yanniks Ermessen.
 
-- [ ] **Beleg-Eingabe:** Buttons zum Hinzufügen als Textbuttons gestalten.
+- [ ] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in Flurbocash
+      für welchen Standort hinterlegt?
 
-- [ ] **Datenschutz-Hinweis:** Mitarbeiter darüber informieren, dass alle Daten
-      (inkl. Name) intern bleiben.
+- [ ] **CORS-Header** Server muss `Access-Control-Allow-Origin: *` senden.
+      Bereits konfiguriert?
 
-- [ ] **Stückelung — Legende:** Unter der Stückelungsübersicht in kleiner Schrift
-      erklären, was eine grüne Zeile bedeutet.
+- [ ] **6-Uhr-Knick abstimmen** Welches Datum erwartet Flurbocash für
+      Nachtabrechnungen (z. B. 1 Uhr nachts) — Kalendertag oder logischer
+      Abrechnungstag (= Vortag)?
 
-- [ ] **Desktop-Ansicht:** Inhalte auf Desktop-Browsern auf eine Breite begrenzen,
-      die einer üblichen Smartphone-Displaybreite entspricht.
+- [ ] **Weitere Abrechnungsfelder** Sollen Kino-Soll, Bistro-Soll, Ausgaben,
+      Mitarbeitername, Differenz an Flurbocash übermittelt werden — oder holt das
+      System sie selbst aus dem Kassensystem?
 
-- [ ] **Anmerkungsfeld:** Tagesabschluss soll um ein optionales Anmerkungsfeld
-      ergänzt werden können.
+- [ ] **Testumgebung** Gibt es eine Staging-Instanz von Flurbocash?
 
-- [ ] **PWA-Install-Button:** In den Einstellungen einen Button anbieten, der den
-      Nutzer durch die Installation der Web-App auf dem Smartphone führt.
+- [ ] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT oder MA?
+      Wer pflegt Änderungen (neuer API-Key, neue TID)?
 
-- [ ] **Getränke-Nachfüllliste persistieren:** Liste lokal speichern (wie andere
-      Entwurfsdaten), mit gleichem Reset-Verhalten. Verhindert Datenverlust bei Absturz.
+- [ ] **Mailversand** Gibt es einen Mailserver/-dienst für die App, oder soll
+      die Mail-App des Geräts geöffnet werden (mailto:)?
 
-- [ ] **Immer aktuelle Version laden:** Beim App-Start sicherstellen, dass Browser/PWA
-      immer die aktuelle Version lädt (Getränkeliste, Wechselgeldbestand etc. aktuell).
+- [ ] **Stapel-Scanner: Übertragungsformat** Wie sollen gesammelte EC-Belege
+      an Flurbocash gehen — einzeln (je ein 2-Call-Flow) oder als Batch?
+      Separater Endpunkt oder derselbe wie die Tagesabrechnung?
 
-- [ ] **Dev-Zeitstempel auf Startseite:** Während der Entwicklung auf der Startseite
-      bodenbündig Datum und Uhrzeit anzeigen (Format: "dev: 17:45 (04.06.25)").
+---
 
-- [ ] **Mitarbeitername dauerhaft speichern:** Name soll auf dem jeweiligen Gerät
-      gespeichert bleiben — nicht bei jedem Start neu eingeben.
+## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
-- [ ] **Einstellungen gerätespezifisch speichern:** Alle Einstellungen pro Gerät
-      persistent halten.
-      
-- [ ] **Safari-iOS — Lokale Speicherung unzuverlässig:** Safari löscht localStorage
-      und IndexedDB nach 7 Tagen ohne Nutzerinteraktion (ITP). Als PWA installiert
-      sind SharedPreferences/localStorage davon betroffen — gespeicherte Daten
-      (Entwürfe, Einstellungen, Verlauf) können unbemerkt verschwinden. Lösung:
-      robustere Speicherstrategie prüfen (z. B. Warnung bei drohendem Datenverlust,
-      Export-Hinweis, oder regelmäßiges Backup in iCloud/Files).
+- [ ] **Persongetränke zuerst** *(Run 281)* Persogetränke zu Beginn der Abrechnung
+      abfragen (nicht am Ende) — verhindert Vergessen, entfernt das Banner auf der
+      Kino-Seite.
 
-- [ ] **Fallback-Export bei fehlgeschlagenem Upload:** Schlägt der Daten-Upload
-      fehl, bietet die App automatisch an, die Abrechnung als Datei zu speichern.
-      Die Datei landet in einem standortspezifischen Ordner (z. B. "Kassenabrechnung
-      Schauburg") in iOS Dateien / Android Downloads. Mitarbeiter kann sie von dort
-      per Mail weiterleiten.
+- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 282)* Haben Kupferfelder einen Inhalt,
+      soll der Bereich automatisch aufgeklappt sein.
 
-- [ ] **Config-Dateien** für: Getränkelisten, individuelle Wechselgeldbestände, 
-      Zugangsberechtigungen, API-Keys (Kino-IT, KI-API)
+- [ ] **Mitarbeitername im Verlauf** *(Run 283)* Name in lokalen Verlaufs-Datensätzen
+      speichern und anzeigen. Präfix "MitarbeiterIn: ".
+
+- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 284)* Unter Stückelungsübersicht
+      erklären was eine grüne Zeile bedeutet. Optionales Freitextfeld am Ende der
+      Abrechnung.
+
+- [ ] **Desktop-Ansicht begrenzen** *(Run 285)* Inhalte auf Desktop-Browsern auf
+      Smartphone-Breite begrenzen.
+
+- [ ] **DEV-Testwerte-Button im Web** *(Run 286)* Funktioniert bisher nur im Simulator.
+
+- [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
+
+- [ ] **PWA-Install-Button** In Einstellungen: Button führt durch
+      Homescreen-Installation.
+
+- [ ] **Getränke-Nachfüllliste persistieren** Lokal speichern wie andere
+      Entwurfsdaten. Verhindert Datenverlust bei Absturz.
+
+- [ ] **Immer aktuelle Version laden** Beim Start sicherstellen dass Browser/PWA
+      stets die aktuelle Version lädt.
+
+- [ ] **Datenschutz-Hinweis** MA informieren dass alle Daten inkl. Name intern bleiben.
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
 
-- [ ] **Gondel-Abrechnung (kino_02):** Seiten noch nicht implementiert.
-      Gleicher Workflow wie Schauburg, gleiche Ausgangswerte (1.400 € Wechselgeld).
+### BelegScan & EC-Kachel *(Phase A, Runs 275–280)*
 
-- [ ] **Nachrichten-Button auf Startseite:** Neuer Button pro Kino-Startseite.
-      Inaktiv/blass wenn keine Nachrichten vorliegen, vollfarbig wenn welche vorliegen.
-      Kinoleitung kann Nachrichten versenden (z. B. Änderung Wechselgeldbestand).
-      *(Erfordert Backend-Komponente — Konzept noch offen)*
+- [ ] **EC-Kachel: Layout & Terminal-ID** *(Run 275)* Metadaten kompakter,
+      Betragszeilen luftiger. "Bezeichnung (optional)" → "Terminal-ID" als Pflichtfeld.
+      Bei Scan automatisch befüllt.
 
-- [ ] **EC-Belege nach Kartenanbieter aufschlüsseln:**
-      Mitarbeiter wählt Kartentyp aus Pulldown (Visa, MasterCard, SEPA-EC, …),
-      gibt Teilbeträge ein. App prüft ob Summe mit EC-Gesamtbetrag übereinstimmt.
-      Eskalationsstufe: manuell → Foto-OCR (s. Umfangreiche Änderungen).
+- [ ] **EC-Kachel: Summe statt Kamera-Icon + "Weiteren Beleg"-Button** *(Run 276)*
+      Zugeklappte Kachel zeigt Gesamtsumme rechts. "Weiteren Beleg hinzufügen"
+      erscheint als Textbutton erst nach dem ersten Beleg.
 
-- [ ] **Abschluss-Export (PDF / Teilen):** Tagesabrechnung als PDF oder Text
-      exportieren und z. B. per WhatsApp an die Kinoleitung schicken.
+- [ ] **EC-Kachel: Unterkacheln pro Beleg** *(Run 277)* Mehrere Belege pro Kachel
+      möglich. Jeder Beleg = eigene Unterkachel (zugklappbar, eigener Papierkorb,
+      eigener Foto-Button mit Rückfrage vor erneutem Scan).
 
-- [ ] **Automatisches Geräte-Backup beim Absenden:** Sobald der MA auf SENDEN
-      tippt, wird die Abrechnung sofort als Datei auf dem Gerät gespeichert
-      (iOS Dateien / Android Downloads, standortspezifischer Ordner) — unabhängig
-      vom Upload-Ergebnis. Schlägt der Upload fehl, versucht die App ihn im
-      Hintergrund erneut, sobald wieder eine Verbindung besteht. Das Geräte-Backup
-      ist in jedem Fall vorhanden.
+- [ ] **Prüf-Popup: Inline-Korrektur** *(Run 278)* Unlesbare/unsichere Werte rot
+      hervorgehoben. Tap → kompaktes Eingabefeld ersetzt genau diese Zeile (gleiche
+      Höhe, roter Rahmen). Hinweistext: "Rote Felder bitte korrigieren."
 
-- [ ] **Verlauf — 30-Tage-Bereinigung:** Abgeschlossene Abrechnungen im Verlauf
-      automatisch nach 30 Tagen löschen (Datenschutz: Daten auf Gerät ausgeschiedener
-      Mitarbeiter).
+- [ ] **"see JSON"-Button im Dev-Modus** *(Run 279)* Im Prüf-Popup sichtbar wenn
+      Dev-Modus aktiv. Zeigt JSON des aktuell geprüften Belegs. Dummy-"Senden"-Button
+      (Snackbar).
 
-- [ ] **BelegScan — Implementierung:** EC-Beleg fotografieren, Anthropic Vision API
-      ermittelt Kartenanbieter und Beträge automatisch. Konzept steht (Pilot: Schauburg).
+- [ ] **Hilfetext: Belegkopie ziehen** *(Run 280)* Info im Scan-Bereich was zu tun
+      ist wenn Beleg fehlt oder unlesbar ist.
 
-- [ ] **optionaler Abrechnungshinweis**Möglichkeit einbauen, dass MA der Abrechnung 
-      ggf. noch Hinweise geben können (optional).
+### Einstellungen & Konfiguration *(Phase C, Runs 287–288)*
+
+- [ ] **PIN-Schutz Verwaltungsbereich** *(Run 287)* Vierstelliger PIN schützt
+      Einstellungen. Felder für location_id, API-Key, Basis-URL, TID-Whitelist
+      und Buchhaltungs-E-Mail — vorerst mit Platzhaltern.
+
+- [ ] **TID-Whitelist konfigurierbar** *(Run 288)* Pro Standort in Einstellungen
+      editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
+      Setzt Run 287 voraus.
+
+- [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
+      nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
+      regelmäßiger Export-Hinweis.
+
+- [ ] **Fallback-Export bei fehlgeschlagenem Upload** App bietet automatisch
+      an, Abrechnung als Datei zu speichern (iOS Dateien / Android Downloads,
+      standortspezifischer Ordner).
+
+### Flurbocash API-Integration *(Phase E, Runs 290–292 — wartet auf IT)*
+
+- [ ] **ApiUploadService Umbau** *(Run 290)* 1 Call → 2 Calls (ensure + settlements),
+      JSON statt form-encoded, report_id lokal speichern,
+      Fehlerbehandlung für alle HTTP-Statuscodes (400/401/403/404/500).
+      Wartet auf: Basis-URL, API-Key, location_ids, 6-Uhr-Knick-Absprache.
+
+- [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
+
+- [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung** *(Run 291)*
+      `settlement_number: 1` statt neuem Eintrag. Bei `400 "maximum reached"`:
+      verständliche Meldung + Textbutton "Info an Buchhaltung senden".
+      Nach Tap: Mail an konfigurierte Adresse, Bestätigung "Buchhaltung ist
+      informiert — Abrechnung beendet." Setzt Run 290 voraus.
+
+- [ ] **Buchhaltungs-E-Mail konfigurierbar** Empfängeradresse in Einstellungen.
+      Mailmethode abhängig von Yannik-Antwort.
+
+- [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
+      `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
+      Erst relevant wenn BT implementiert wird.
+
+### Stapel-Scanner *(Phase D/E, Runs 289 + 292)*
+
+- [ ] **Stapel-Scanner: Seite & Grundstruktur** *(Run 289)* Eigene Seite im
+      Verwaltungsbereich (hinter PIN). MA scannt reihenweise Belege, gespeichert
+      wie Verlauf. Nutzt EC-Kachel-Komponente aus Phase A. Senden-Button als Dummy.
+      Setzt Runs 277 und 287 voraus.
+
+- [ ] **Stapel-Scanner: echter Versand** *(Run 292)* Dummy-Button durch echten
+      Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
+      Setzt Runs 290 und 289 voraus.
+
+### Weitere Features
+
+- [ ] **Gondel-Abrechnung (kino_02)** Workflow wie Schauburg,
+      Wechselgeld 1.400 €.
+
+- [ ] **Abschluss-Export (PDF / Teilen)** Tagesabrechnung als PDF oder Text
+      per WhatsApp / Mail an Kinoleitung.
+
+- [ ] **Automatisches Geräte-Backup beim Senden** Abrechnung wird beim Antippen
+      von SENDEN sofort lokal gespeichert — unabhängig vom Upload-Ergebnis.
+
+- [ ] **Verlauf — 30-Tage-Bereinigung** Abgeschlossene Abrechnungen automatisch
+      nach 30 Tagen löschen (Datenschutz).
 
 ---
 
-## 🔴 Größere Umbauten & Anpassungen
+## 🔴 Größere Umbauten
 
-- [ ] **Bar Tabak (kino_05):** Komplexe Kassenstruktur (Kino-, Bar-, Lotterie-,
-      Handy-Kasse; zwei Abschlüsse/Tag). Noch nicht implementiert.
+- [ ] **Bar Tabak (kino_05)** Komplexe Kassenstruktur (Kino-, Bar-, Lotterie-,
+      Handy-Kasse; 2 Abschlüsse/Tag). Noch nicht implementiert.
 
-- [ ] **Frühjahrsputz / Refactoring:** Wiederkehrende UI-Elemente als Widgets
-      extrahieren, Inline-Styling durch Theme-Konstanten ersetzen,
-      Logik aus Widgets in Services auslagern. Inkl. Provider/State-Management
-      einführen (Händigkeit, ggf. Login-Status, seitenübergreifende Daten).
+- [ ] **Refactoring** Wiederkehrende UI-Elemente als Widgets extrahieren,
+      Inline-Styling durch Theme-Konstanten ersetzen, Logik in Services auslagern.
+      Provider/State-Management einführen.
 
-- [ ] **Kinoleitungs-Login + Config-Editor:** Kinoleitung kann Getränkeliste
-      und Wechselgeldbestand, Zugänge,  direkt in der App bearbeiten — kein Git-Commit nötig.
+- [ ] **Getränke-Audioeingabe** Audio + Getränkeliste → KI → Felder automatisch
+      befüllen (Fuzzy Matching). Unsichere Zuordnungen gekennzeichnet.
 
-- [ ] **Getränke-Audioeingabe:** Aufnahme direkt in der App → Audio + Getränkeliste
-      an KI → KI füllt Felder aus (Fuzzy Matching), unsichere Zuordnungen
-      werden gekennzeichnet.
-
-- [ ] **Hilfe-System:** Kontextsensitive Hilfe pro Schritt, langfristig mit
+- [ ] **Hilfe-System** Kontextsensitive Hilfe pro Schritt, langfristig
       Video-Clips für neue Mitarbeiter.
-- [ ] **Konfig-Zugang** (Passwort) von jeder App aus (entwicklermodus), damit können 
-      Getränkelisten, individuelle Wechselgeldbestände, Zugangsberechtigungen, API-Keys 
-      (Kino-IT, KI-API), ggf. KI-Prompts (zb. für die EC-Belege), Liste akzeptierter 
-      Zahlungssysteme u.a. eingerichtet werden.
-- [ ] Admin-Dashboard für Kino-IT: API-Key-Verwaltung, Konfiguration, ggf. weitere Einstellungen
 
 ---
 
 ## ✅ Validierungen & Plausibilitätsprüfungen
-
-*(Bereit zur Implementierung — priorisierbar nach Bedarf)*
 
 ### Stückelung — Harte Fehler
 - [ ] Scheinfeld nicht durch Nennwert teilbar (z. B. 75 € im 50-€-Feld)
@@ -136,21 +196,21 @@
 - *(Münzfeld-Teilbarkeit: bereits implementiert)*
 
 ### Stückelung — Weiche Warnungen
-- [ ] 500 € / 200 €-Scheine vorhanden — in Kinokasse sehr ungewöhnlich
-- [ ] Gesamtbarbestand nach Wechselgeld überschreitet konfigurierbaren Schwellwert (z. B. 3.000 €)
-- [ ] Einzelne Denomination > 80 % des Gesamtbestands — Hinweis auf möglichen Zählfehler
+- [ ] 500 € / 200 €-Scheine vorhanden
+- [ ] Gesamtbarbestand nach Wechselgeld überschreitet Schwellwert (z. B. 3.000 €)
+- [ ] Einzelne Denomination > 80 % des Gesamtbestands
 
 ### Soll-Felder
 - [ ] Kino-Soll = 0 — Bestätigung erforderlich
 - [ ] Bistro-Soll > Kino-Soll — weicher Hinweis
-- [ ] Soll-Felder leer beim Abschluss-Start — Pflichtfeld-Prüfung
+- [ ] Soll-Felder leer beim Abschluss-Start — Pflichtfeld
 
 ### EC-Umsatz
 - [ ] EC-Betrag > Gesamt-Soll — harter Fehler
 - [ ] EC = 0 an normalem Betriebstag — weicher Hinweis
 
 ### Differenz / Kassenstand
-- [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung erforderlich
+- [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung
 - [ ] Ist > Soll — Warnung mit Erklärungstext
 - [ ] Differenz Anfangsbestand > 20 € — weicher Hinweis
 
@@ -158,11 +218,11 @@
 - [ ] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld
 - [ ] Ausgaben > Barbestand — harter Fehler
 
-### Zeitliche / kontextuelle Plausibilität
+### Zeitliche Plausibilität
 - [ ] Zweite Abrechnung: Soll niedriger als erste — weicher Hinweis
-- [ ] Abschluss-Uhrzeit außerhalb Betriebszeiten (3–5 Uhr, vor 6-Uhr-Knick) — weicher Hinweis
+- [ ] Abschluss-Uhrzeit außerhalb Betriebszeiten (3–5 Uhr) — weicher Hinweis
 
-### Stufen
+### Fehlerstufen
 
 | Stufe | Verhalten |
 |---|---|
@@ -172,9 +232,15 @@
 
 ---
 
-## 💡 Ideen / Post-MVP
+## 💡 Roadmap / Post-MVP
 
-- [ ] Offline-Hinweis: Banner wenn keine Netzwerkverbindung
-- [ ] Videoclips einer realen Abrechnung mit der App (Onboarding neuer Mitarbeiter)
-- [ ] Management-Dashboard: Übersicht alle Standorte, Tagesverläufe, Abweichungen
-      *(separates Tool, nicht Teil der Haupt-App)*
+- [ ] **Offline-Hinweis** Banner wenn keine Netzwerkverbindung
+- [ ] **Onboarding-Videos** Reale Abrechnung mit der App für neue Mitarbeiter
+- [ ] **Nachrichten der Kinoleitung** Mitteilungen direkt in die App
+      (erfordert Backend-Komponente)
+- [ ] **Management-Dashboard** Übersicht alle Standorte, Tagesverläufe,
+      Abweichungen — separates Tool
+- [ ] **Remote-Konfigurationsdashboard** Zentrales Dashboard für Yannik
+      zum Verwalten aller Geräte ohne Vor-Ort-Einrichtung — eigenständiges
+      zweites System, nicht V1
+- [ ] **Admin-Dashboard für Kino-IT** API-Key-Verwaltung, Konfiguration

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 274l: TODO.md grundlegend überarbeitet (Roadmap mit Run-Nummern 275–292, neue Blöcke „Blockiert – wartet auf IT" und „Flurbocash API-Integration"); neue Doku .dev/KI stuff/ (EXTERNAL_API_Schauburg.md/_de.md, kassenabrechnung-flurbocash-integration.html); .dev/kassenabrechnung-konzept-belegscan.html nach .dev/verkauf/ verschoben; config/kartenzahlungsanbieter.txt befüllt (girocard, lastschrift, mastercard, visa, maestro, vpay); config/terminal_ids.json um Hinweis-Kommentar ergänzt; generierte Plugin-Dateien (ios/macos/windows) durch flutter pub get aktualisiert; r274l.
+
 - Run 274k: config/terminal_ids.json befüllt – Terminal-IDs je Standort (AT, SB, CO, GO je 1, BT 2), Werte als Platzhalter "XXXX" bis Yannik die echten TIDs liefert (TODO: „Registrierte TIDs pro Standort"); r274k.
 
 - Run 274fc: Architektur-Refactor Zahlungsarten-Tabelle: 6 Parallel-Arrays (_zahlungsartenListe, _zahlungsartAnzahlController, _zahlungsartBetragController, _zahlungsartAnzahlWerte, _zahlungsartBetragCentWerte, _zahlungsartNichtPlausibel) ersetzt durch eine Liste von _ZahlungsartZeile-Objekten (name, anzahlController, betragController, anzahlWert, betragCentWert, nichtPlausibel, jeweils mit dispose()/reset()); betrifft initState, dispose, _ladeEntwurf, _speichereEntwurf, alle Reset-Stellen, _sortiereZahlungsartenNachBeleg, _preFillZahlungsartenFromScan, _baueZahlungsartenListe, _baueKartenartenZeile, _baueZahlungsartenTabelle; keine Verhaltens- oder UI-Änderung; r274fc.

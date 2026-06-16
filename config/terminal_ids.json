@@ -1,4 +1,5 @@
 {
+  "_comment": "Terminal-IDs pro Standort. Platzhalter XXXX durch echte TIDs von Yannik ersetzen.",
   "AT": {
     "name": "Atlantis",
     "terminal_ids": ["XXXX"]

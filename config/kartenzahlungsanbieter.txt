@@ -1,0 +1,10 @@
+# Akzeptierte Kartenzahlungsarten für die Flurbocash-API
+# Schreibweise entspricht den API-Feldnamen (lowercase).
+# Fehlende Arten müssen nicht gesendet werden — Flurbocash setzt sie intern auf 0.
+
+girocard
+lastschrift
+mastercard
+visa
+maestro
+vpay
