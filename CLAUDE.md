@@ -111,6 +111,10 @@ Inhalt:
 Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 
 - Änderung als `[letzte Run-Nr]a`, `[letzte Run-Nr]b` usw. bezeichnen
+- Weitere Sub-Runs auf einem bereits durch Buchstaben benannten Run
+  (z. B. `274f`) werden NICHT mit einem weiteren Buchstaben (`274fb`, `274fc`),
+  sondern mit einer Zahl fortgesetzt: `274f2`, `274f3`, `274f4` usw.
+  Buchstaben nur für die erste Ebene direkt auf der Run-Nummer.
 - Commit mit passender Message erstellen
 - Direkt `git push origin master` ausführen
 - `run_counter` NICHT erhöhen
