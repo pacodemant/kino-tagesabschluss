@@ -166,12 +166,49 @@ class _BelegScanGegenpruefDialogState
         );
   }
 
+  /// Live berechneter Status der Kartenliste (reagiert auch auf manuelle
+  /// Eingaben, nicht nur auf das ursprüngliche Scan-Ergebnis): ob eine
+  /// Zeile in sich inkonsistent ist (nur Anzahl ODER nur Betrag ausgefüllt,
+  /// oder Anzahl 0) sowie ob die Summe von der erfassten Gesamtanzahl/
+  /// -summe abweicht. Leere Zeilen sind erlaubt (kein Vorgang an dem Tag).
+  ({bool zeileInkonsistent, bool anzahlMismatch, bool betragMismatch})
+      _kartenlisteStatus() {
+    int summeAnzahl = 0;
+    int summeBetrag = 0;
+    bool zeileInkonsistent = false;
+    for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
+      final int? anzahl =
+          int.tryParse(_zahlungsartAnzahlController[i].text.trim());
+      final int? betrag =
+          _parseBetragEingabe(_zahlungsartBetragController[i].text);
+      if ((anzahl == null) != (betrag == null) || anzahl == 0) {
+        zeileInkonsistent = true;
+      }
+      if (anzahl != null) summeAnzahl += anzahl;
+      if (betrag != null) summeBetrag += betrag;
+    }
+    final int? gesamtAnzahl = int.tryParse(_gesamtAnzahlController.text.trim());
+    final int? gesamtBetrag = _parseBetragEingabe(_gesamtBetragController.text);
+    return (
+      zeileInkonsistent: zeileInkonsistent,
+      anzahlMismatch: gesamtAnzahl != null && summeAnzahl != gesamtAnzahl,
+      betragMismatch: gesamtBetrag != null && summeBetrag != gesamtBetrag,
+    );
+  }
+
+  bool get _kartenlisteImplausibel {
+    final status = _kartenlisteStatus();
+    return status.zeileInkonsistent ||
+        status.anzahlMismatch ||
+        status.betragMismatch;
+  }
+
   String? get _plausibilitaetsFehlertext {
-    final BelegScanErgebnis e = widget.ergebnis;
-    if (!e.betraegePlausibel) {
+    final status = _kartenlisteStatus();
+    if (status.betragMismatch) {
       return 'Summe der Zahlungsarten stimmt nicht mit dem Gesamtbetrag überein.';
     }
-    if (!e.anzahlPlausibel) {
+    if (status.anzahlMismatch) {
       return 'Summe der Anzahl stimmt nicht mit der Gesamtanzahl überein.';
     }
     return null;
@@ -182,15 +219,7 @@ class _BelegScanGegenpruefDialogState
     if (_parseBetragEingabe(_gesamtBetragController.text) == null) {
       return false;
     }
-    for (int i = 0; i < _zahlungsartBetragController.length; i++) {
-      if (_parseBetragEingabe(_zahlungsartBetragController[i].text) == null) {
-        return false;
-      }
-      if (int.tryParse(_zahlungsartAnzahlController[i].text.trim()) == null) {
-        return false;
-      }
-    }
-    return true;
+    return !_kartenlisteImplausibel;
   }
 
   int? _parseBetragEingabe(String text) {
@@ -281,13 +310,36 @@ class _BelegScanGegenpruefDialogState
         fillColor: const Color(0xFFFFF8E1),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+        suffixIconConstraints: const BoxConstraints(
+          minWidth: 0,
+          minHeight: 0,
+          maxWidth: 28,
+          maxHeight: 28,
+        ),
+        suffixIcon: controller.text.isEmpty
+            ? null
+            : IconButton(
+                constraints: const BoxConstraints(),
+                padding: EdgeInsets.zero,
+                icon: Icon(
+                  Icons.clear,
+                  size: 16,
+                  color: focusNode.hasFocus
+                      ? Colors.black87
+                      : Colors.grey.shade600,
+                ),
+                onPressed: () {
+                  controller.clear();
+                  focusNode.requestFocus();
+                },
+              ),
       ),
     );
   }
 
   Widget _baueBearbeitenButton({
     required bool bearbeiten,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -300,7 +352,8 @@ class _BelegScanGegenpruefDialogState
         ),
         child: Text(
           bearbeiten ? 'Fertig.' : 'manuell editieren',
-          style: const TextStyle(fontSize: 11),
+          style: const TextStyle(
+              fontSize: 11, decoration: TextDecoration.underline),
         ),
       ),
     );
@@ -323,7 +376,7 @@ class _BelegScanGegenpruefDialogState
       wertWidget = Text(originalWert, style: const TextStyle(fontSize: 14));
     } else {
       wertWidget = Text(
-        '—',
+        'nicht verfügbar',
         style: TextStyle(
           fontSize: 13,
           color: Colors.orange.shade700,
@@ -671,7 +724,10 @@ class _BelegScanGegenpruefDialogState
                       ),
                     _baueBearbeitenButton(
                       bearbeiten: _kartenlisteBearbeiten,
-                      onPressed: _kartenlisteButtonGedrueckt,
+                      onPressed: (_kartenlisteBearbeiten &&
+                              _kartenlisteImplausibel)
+                          ? null
+                          : _kartenlisteButtonGedrueckt,
                     ),
                   ],
                 ),

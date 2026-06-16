@@ -18,6 +18,7 @@ import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -180,6 +181,16 @@ class _TagesabschlussSchritt2SeiteState
   final FocusNode _scanBelegNrVonFocusNode = FocusNode();
   final FocusNode _scanBelegNrBisFocusNode = FocusNode();
 
+  // Gelesene (fixe) Gesamtsumme laut Beleg – wird NICHT aus den
+  // Kartenarten-Zeilen berechnet, sondern unabhängig davon gehalten,
+  // damit Tippfehler in einzelner Anzahl/Betrag erkennbar bleiben.
+  int? _kartenartenGesamtAnzahl;
+  int? _kartenartenGesamtBetragCent;
+  final TextEditingController _kartenartenGesamtAnzahlController =
+      TextEditingController();
+  final TextEditingController _kartenartenGesamtBetragController =
+      TextEditingController();
+
   // EC-Kachel
   bool _ecKachelAufgeklappt = true;
   final GlobalKey _ecKachelKey = GlobalKey();
@@ -249,6 +260,8 @@ class _TagesabschlussSchritt2SeiteState
     _scanUhrzeitFocusNode.dispose();
     _scanBelegNrVonFocusNode.dispose();
     _scanBelegNrBisFocusNode.dispose();
+    _kartenartenGesamtAnzahlController.dispose();
+    _kartenartenGesamtBetragController.dispose();
     disposeControllers(_ecBelegController);
     disposeControllers(_ecBelegLabelController);
     disposeFocusNodes(_ecBelegFocusNode);
@@ -349,6 +362,10 @@ class _TagesabschlussSchritt2SeiteState
       _scanUhrzeit = daten['scanUhrzeit'] as String?;
       _scanBelegNrVon = daten['scanBelegNrVon'] as String?;
       _scanBelegNrBis = daten['scanBelegNrBis'] as String?;
+      _kartenartenGesamtAnzahl =
+          (daten['kartenartenGesamtAnzahl'] as num?)?.toInt();
+      _kartenartenGesamtBetragCent =
+          (daten['kartenartenGesamtBetragCent'] as num?)?.toInt();
     });
 
     if (kinoSollCent != 0) {
@@ -380,6 +397,17 @@ class _TagesabschlussSchritt2SeiteState
     }
     if (_scanBelegNrBis != null) {
       _setzeControllerText(_scanBelegNrBisController, _scanBelegNrBis!);
+    }
+    if (_kartenartenGesamtAnzahl != null) {
+      _setzeControllerText(
+          _kartenartenGesamtAnzahlController, '$_kartenartenGesamtAnzahl');
+    }
+    if (_kartenartenGesamtBetragCent != null) {
+      _setzeControllerText(
+        _kartenartenGesamtBetragController,
+        TagesabschlussFormatierung
+            .formatiereEuroEingabe(_kartenartenGesamtBetragCent!),
+      );
     }
     for (int i = 0; i < ecBelege.length; i++) {
       _setzeControllerText(
@@ -458,6 +486,8 @@ class _TagesabschlussSchritt2SeiteState
         'scanUhrzeit': _scanUhrzeit,
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
+        'kartenartenGesamtAnzahl': _kartenartenGesamtAnzahl,
+        'kartenartenGesamtBetragCent': _kartenartenGesamtBetragCent,
         'zahlungsartAnzahlWerte': _zahlungsartZeilen
             .map((_ZahlungsartZeile z) => z.anzahlWert)
             .toList(),
@@ -836,6 +866,10 @@ class _TagesabschlussSchritt2SeiteState
       }
       _metadatenNurAnzeige = false;
       _kartenartenNurAnzeige = false;
+      _kartenartenGesamtAnzahl = null;
+      _kartenartenGesamtBetragCent = null;
+      _setzeControllerText(_kartenartenGesamtAnzahlController, '');
+      _setzeControllerText(_kartenartenGesamtBetragController, '');
     });
   }
 
@@ -881,6 +915,10 @@ class _TagesabschlussSchritt2SeiteState
       }
       _metadatenNurAnzeige = false;
       _kartenartenNurAnzeige = false;
+      _kartenartenGesamtAnzahl = null;
+      _kartenartenGesamtBetragCent = null;
+      _setzeControllerText(_kartenartenGesamtAnzahlController, '');
+      _setzeControllerText(_kartenartenGesamtBetragController, '');
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
   }
@@ -896,11 +934,16 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     bool wiederholen;
+    bool felderGeloescht = false;
     do {
       wiederholen = false;
       final XFile? bild =
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (bild == null) return;
+      if (!felderGeloescht) {
+        _loescheKartenDaten();
+        felderGeloescht = true;
+      }
       setState(() => _scanLaeuft = true);
       BelegScanErgebnis? originalErgebnis;
       try {
@@ -995,13 +1038,23 @@ class _TagesabschlussSchritt2SeiteState
           if (dialogErgebnis.kachelOeffnen) _ecKachelAufgeklappt = true;
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
+          _kartenartenGesamtAnzahl = geprueftes.gesamtAnzahl;
+          _kartenartenGesamtBetragCent = geprueftes.gesamtBetragCent;
+          _setzeControllerText(
+            _kartenartenGesamtAnzahlController,
+            _kartenartenGesamtAnzahl != null
+                ? '$_kartenartenGesamtAnzahl'
+                : '',
+          );
+          _setzeControllerText(
+            _kartenartenGesamtBetragController,
+            _kartenartenGesamtBetragCent != null
+                ? TagesabschlussFormatierung
+                    .formatiereEuroEingabe(_kartenartenGesamtBetragCent!)
+                : '',
+          );
           _metadatenNurAnzeige = true;
-          _kartenartenNurAnzeige = _zahlungsartZeilen
-              .where((_ZahlungsartZeile z) => !z.nichtImScan)
-              .every((_ZahlungsartZeile z) =>
-                  !z.nichtPlausibel &&
-                  z.betragCentWert != null &&
-                  z.anzahlWert != null);
+          _kartenartenNurAnzeige = !_kartenartenImplausibel;
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
@@ -1120,6 +1173,40 @@ class _TagesabschlussSchritt2SeiteState
       }
       zeile.nichtPlausibel = origNichtPlausibel;
     }
+  }
+
+  /// Eine Zeile ist unplausibel, wenn der Scan sie als unsicher markiert hat,
+  /// nur eines von Anzahl/Betrag ausgefüllt ist, oder die Anzahl 0 beträgt.
+  bool _istZeileImplausibel(_ZahlungsartZeile zeile) {
+    if (zeile.nichtPlausibel) return true;
+    final bool anzahlLeer = zeile.anzahlWert == null;
+    final bool betragLeer = zeile.betragCentWert == null;
+    if (anzahlLeer != betragLeer) return true;
+    if (zeile.anzahlWert == 0) return true;
+    return false;
+  }
+
+  /// Prüft alle sichtbaren Kartenarten-Zeilen sowie die gelesene
+  /// Gesamtsumme auf Implausibilität (einzelne Zeile fehlerhaft oder
+  /// Summe der Zeilen weicht von der gelesenen Gesamtsumme ab).
+  bool get _kartenartenImplausibel {
+    int summeAnzahl = 0;
+    int summeBetrag = 0;
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+      if (zeile.nichtImScan) continue;
+      if (_istZeileImplausibel(zeile)) return true;
+      if (zeile.anzahlWert != null) summeAnzahl += zeile.anzahlWert!;
+      if (zeile.betragCentWert != null) summeBetrag += zeile.betragCentWert!;
+    }
+    if (_kartenartenGesamtAnzahl != null &&
+        summeAnzahl != _kartenartenGesamtAnzahl) {
+      return true;
+    }
+    if (_kartenartenGesamtBetragCent != null &&
+        summeBetrag != _kartenartenGesamtBetragCent) {
+      return true;
+    }
+    return false;
   }
 
   List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
@@ -1329,19 +1416,22 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_scanBelegNrVonController, '');
       _setzeControllerText(_scanBelegNrBisController, '');
       _scanHatStattgefunden = false;
-      if (_ecBelegeCent.isNotEmpty) {
-        _ecBelegeCent[0] = 0;
-        _setzeControllerText(_ecBelegController[0], '');
-        _ecBeleg1Beruehrt = false;
-        _ecBelegLabels[0] = '';
-        _setzeControllerText(_ecBelegLabelController[0], '');
-        _ecBelegLabel1Beruehrt = false;
-      }
+      _setzeEcBelegAnzahl(1);
+      _ecBelegeCent[0] = 0;
+      _setzeControllerText(_ecBelegController[0], '');
+      _ecBeleg1Beruehrt = false;
+      _ecBelegLabels[0] = '';
+      _setzeControllerText(_ecBelegLabelController[0], '');
+      _ecBelegLabel1Beruehrt = false;
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
       _metadatenNurAnzeige = false;
       _kartenartenNurAnzeige = false;
+      _kartenartenGesamtAnzahl = null;
+      _kartenartenGesamtBetragCent = null;
+      _setzeControllerText(_kartenartenGesamtAnzahlController, '');
+      _setzeControllerText(_kartenartenGesamtBetragController, '');
       _letzteAenderung = DateTime.now();
     });
     _speichereEntwurf();
@@ -1459,7 +1549,6 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Widget _baueMetadatenInfoZeile(String label, String? wert) {
-    if (wert == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Row(
@@ -1473,7 +1562,16 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           Expanded(
-            child: Text(wert, style: const TextStyle(fontSize: 13)),
+            child: wert != null
+                ? Text(wert, style: const TextStyle(fontSize: 13))
+                : Text(
+                    'nicht verfügbar',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.orange.shade700,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
           ),
         ],
       ),
@@ -1511,6 +1609,25 @@ class _TagesabschlussSchritt2SeiteState
                   horizontal: 4,
                   vertical: 2,
                 ),
+                suffixIconConstraints: const BoxConstraints(
+                  minWidth: 0,
+                  minHeight: 0,
+                  maxWidth: 28,
+                  maxHeight: 28,
+                ),
+                suffixIcon: controller.text.isEmpty
+                    ? null
+                    : IconButton(
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.clear,
+                            size: 16, color: clearIconFarbe(focusNode.hasFocus)),
+                        onPressed: baueClearAktion(
+                          controller: controller,
+                          onChanged: onChanged,
+                          focusNode: focusNode,
+                        ),
+                      ),
               ),
               onChanged: onChanged,
             ),
@@ -1597,7 +1714,7 @@ class _TagesabschlussSchritt2SeiteState
 
   Widget _baueKartenartenZeile(int index) {
     final _ZahlungsartZeile zeile = _zahlungsartZeilen[index];
-    final OutlineInputBorder? roteBorder = zeile.nichtPlausibel
+    final OutlineInputBorder? roteBorder = _istZeileImplausibel(zeile)
         ? OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red.shade300),
           )
@@ -1708,12 +1825,7 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Widget _baueKartenartenEditButton() {
-    final bool kannSchliessen = _zahlungsartZeilen
-        .where((_ZahlungsartZeile z) => !z.nichtImScan)
-        .every((_ZahlungsartZeile z) =>
-            !z.nichtPlausibel &&
-            z.betragCentWert != null &&
-            z.anzahlWert != null);
+    final bool kannSchliessen = !_kartenartenImplausibel;
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Align(
@@ -1731,7 +1843,8 @@ class _TagesabschlussSchritt2SeiteState
           ),
           child: Text(
             _kartenartenNurAnzeige ? 'manuell editieren' : 'Fertig.',
-            style: const TextStyle(fontSize: 11),
+            style: const TextStyle(
+                fontSize: 11, decoration: TextDecoration.underline),
           ),
         ),
       ),
@@ -1759,7 +1872,8 @@ class _TagesabschlussSchritt2SeiteState
           ),
           child: Text(
             _metadatenNurAnzeige ? 'manuell editieren' : 'Fertig.',
-            style: const TextStyle(fontSize: 11),
+            style: const TextStyle(
+                fontSize: 11, decoration: TextDecoration.underline),
           ),
         ),
       ),
@@ -1779,6 +1893,10 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegeCent.fold(0, (int a, int b) => a + b);
     final bool summePasstNicht =
         tabellenSummeCent > 0 && tabellenSummeCent != ecGesamtCent;
+    final bool anzahlMismatch = _kartenartenGesamtAnzahl != null &&
+        tabellenSummeAnzahl != _kartenartenGesamtAnzahl;
+    final bool betragMismatch = _kartenartenGesamtBetragCent != null &&
+        tabellenSummeCent != _kartenartenGesamtBetragCent;
 
     return Container(
       margin: const EdgeInsets.only(top: 10),
@@ -1854,8 +1972,12 @@ class _TagesabschlussSchritt2SeiteState
                           minimumSize: const Size(0, 32),
                         ),
                         icon: const Icon(Icons.add, size: 16),
-                        label: Text(zeile.name,
-                            style: const TextStyle(fontSize: 12)),
+                        label: Text(
+                          zeile.name,
+                          style: const TextStyle(
+                              fontSize: 12,
+                              decoration: TextDecoration.underline),
+                        ),
                       ),
                 ],
               ),
@@ -1865,7 +1987,7 @@ class _TagesabschlussSchritt2SeiteState
             children: <Widget>[
               const Expanded(
                 child: Text(
-                  'Gesamt Karten',
+                  'Gesamt (laut Beleg)',
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
@@ -1874,30 +1996,114 @@ class _TagesabschlussSchritt2SeiteState
               ),
               SizedBox(
                 width: 52,
-                child: Text(
-                  tabellenSummeAnzahl > 0 ? '$tabellenSummeAnzahl' : '',
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
-                ),
+                child: _kartenartenNurAnzeige
+                    ? Text(
+                        _kartenartenGesamtAnzahl != null
+                            ? '$_kartenartenGesamtAnzahl'
+                            : '—',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color:
+                              anzahlMismatch ? Colors.red.shade700 : null,
+                        ),
+                      )
+                    : TextField(
+                        controller: _kartenartenGesamtAnzahlController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '—',
+                          isDense: true,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 5),
+                        ),
+                        onChanged: (String wert) {
+                          setState(() {
+                            _kartenartenGesamtAnzahl =
+                                int.tryParse(wert.trim());
+                          });
+                          _speichereEntwurf();
+                        },
+                      ),
               ),
               const SizedBox(width: 6),
               SizedBox(
                 width: 104,
-                child: Text(
-                  TagesabschlussFormatierung.formatiereEuro(tabellenSummeCent),
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: summePasstNicht ? Colors.orange.shade700 : null,
-                  ),
-                ),
+                child: _kartenartenNurAnzeige
+                    ? Text(
+                        _kartenartenGesamtBetragCent != null
+                            ? TagesabschlussFormatierung.formatiereEuro(
+                                _kartenartenGesamtBetragCent!)
+                            : '—',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color:
+                              betragMismatch ? Colors.red.shade700 : null,
+                        ),
+                      )
+                    : TextField(
+                        controller: _kartenartenGesamtBetragController,
+                        keyboardType: _eingabeMitKomma
+                            ? const TextInputType.numberWithOptions(
+                                decimal: true)
+                            : TextInputType.number,
+                        inputFormatters: _eingabeMitKomma
+                            ? <TextInputFormatter>[]
+                            : <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                                CentWaehrungsEingabeFormatter(),
+                              ],
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: '0,00',
+                          isDense: true,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 5),
+                        ),
+                        onChanged: (String wert) {
+                          setState(() {
+                            _kartenartenGesamtBetragCent = wert.trim().isEmpty
+                                ? null
+                                : _parsiereBetragCent(wert);
+                          });
+                          _speichereEntwurf();
+                        },
+                      ),
               ),
             ],
           ),
+          if (anzahlMismatch)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Hinweis: Anzahl der Kartenvorgänge stimmt nicht mit der '
+                'erfassten Gesamtanzahl überein.',
+                style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+              ),
+            ),
+          if (betragMismatch)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                'Hinweis: Summe der Beträge stimmt nicht mit der erfassten '
+                'Gesamtsumme überein.',
+                style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+              ),
+            ),
           if (summePasstNicht)
             Padding(
               padding: const EdgeInsets.only(top: 4),
@@ -2352,16 +2558,54 @@ class _TagesabschlussSchritt2SeiteState
                                         builder: (BuildContext ctx) {
                                           final int summe = _ecBelegeCent.fold(
                                               0, (int a, int b) => a + b);
-                                          if (summe <= 0) {
+                                          if (summe > 0) {
+                                            return Text(
+                                              TagesabschlussFormatierung
+                                                  .formatiereEuro(summe),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                                color: AppFarben.appBarRot,
+                                              ),
+                                            );
+                                          }
+                                          if (_scanHatStattgefunden) {
                                             return const SizedBox.shrink();
                                           }
-                                          return Text(
-                                            TagesabschlussFormatierung
-                                                .formatiereEuro(summe),
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: AppFarben.appBarRot,
+                                          return GestureDetector(
+                                            onTap: () {
+                                              setState(() =>
+                                                  _ecKachelAufgeklappt = true);
+                                              WidgetsBinding.instance
+                                                  .addPostFrameCallback((_) {
+                                                if (mounted) {
+                                                  _aktualisiereScrollPfeil();
+                                                  FocusScope.of(context)
+                                                      .requestFocus(
+                                                    _ecBelegLabelFocusNode
+                                                        .first,
+                                                  );
+                                                }
+                                              });
+                                            },
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Text(
+                                                  'manuell eingeben',
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: AppFarben.appBarRot,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                                ),
+                                                const Text(
+                                                  ' oder: ',
+                                                  style:
+                                                      TextStyle(fontSize: 13),
+                                                ),
+                                              ],
                                             ),
                                           );
                                         },
