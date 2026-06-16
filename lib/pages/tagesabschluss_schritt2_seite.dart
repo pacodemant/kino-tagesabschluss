@@ -155,6 +155,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
   bool _ecBelegLabel1Beruehrt = false;
+  bool _kartenartenNurAnzeige = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
 
@@ -786,6 +787,7 @@ class _TagesabschlussSchritt2SeiteState
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
+      _kartenartenNurAnzeige = false;
     });
   }
 
@@ -825,6 +827,7 @@ class _TagesabschlussSchritt2SeiteState
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
+      _kartenartenNurAnzeige = false;
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
   }
@@ -933,6 +936,10 @@ class _TagesabschlussSchritt2SeiteState
           if (dialogErgebnis.kachelOeffnen) _ecKachelAufgeklappt = true;
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
+          _kartenartenNurAnzeige = _zahlungsartZeilen
+              .where((_ZahlungsartZeile z) => !z.nichtImScan)
+              .every((_ZahlungsartZeile z) =>
+                  !z.nichtPlausibel && z.betragCentWert != null);
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
@@ -1274,6 +1281,7 @@ class _TagesabschlussSchritt2SeiteState
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
+      _kartenartenNurAnzeige = false;
       _letzteAenderung = DateTime.now();
     });
     _speichereEntwurf();
@@ -1452,7 +1460,7 @@ class _TagesabschlussSchritt2SeiteState
           )
         : null;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -1474,7 +1482,7 @@ class _TagesabschlussSchritt2SeiteState
                 border: const OutlineInputBorder(),
                 enabledBorder: roteBorder,
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
               ),
               onChanged: (String wert) {
                 setState(() {
@@ -1498,13 +1506,50 @@ class _TagesabschlussSchritt2SeiteState
                 border: const OutlineInputBorder(),
                 enabledBorder: roteBorder,
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 10),
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
               ),
               onChanged: (String wert) {
                 setState(() {
                   zeile.betragCentWert = _parseEuroKommaCent(wert);
                 });
               },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _baueKartenartenZeileAnzeige(int index) {
+    final _ZahlungsartZeile zeile = _zahlungsartZeilen[index];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              zeile.name,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+          SizedBox(
+            width: 52,
+            child: Text(
+              zeile.anzahlWert != null ? '${zeile.anzahlWert}' : '—',
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+          const SizedBox(width: 6),
+          SizedBox(
+            width: 104,
+            child: Text(
+              zeile.betragCentWert != null
+                  ? TagesabschlussFormatierung.formatiereEuro(
+                      zeile.betragCentWert!)
+                  : '—',
+              textAlign: TextAlign.right,
+              style: const TextStyle(fontSize: 13),
             ),
           ),
         ],
@@ -1574,7 +1619,28 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           for (int i = 0; i < _zahlungsartZeilen.length; i++)
-            if (!_zahlungsartZeilen[i].nichtImScan) _baueKartenartenZeile(i),
+            if (!_zahlungsartZeilen[i].nichtImScan)
+              _kartenartenNurAnzeige
+                  ? _baueKartenartenZeileAnzeige(i)
+                  : _baueKartenartenZeile(i),
+          if (_kartenartenNurAnzeige)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton(
+                onPressed: () {
+                  setState(() => _kartenartenNurAnzeige = false);
+                },
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(0, 28),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text(
+                  'manuell editieren',
+                  style: TextStyle(fontSize: 11),
+                ),
+              ),
+            ),
           if (_zahlungsartZeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
@@ -1586,7 +1652,10 @@ class _TagesabschlussSchritt2SeiteState
                     if (zeile.nichtImScan)
                       TextButton.icon(
                         onPressed: () {
-                          setState(() => zeile.nichtImScan = false);
+                          setState(() {
+                            zeile.nichtImScan = false;
+                            _kartenartenNurAnzeige = false;
+                          });
                         },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
@@ -1600,7 +1669,7 @@ class _TagesabschlussSchritt2SeiteState
                 ],
               ),
             ),
-          const Divider(height: 18),
+          const Divider(height: 10),
           Row(
             children: <Widget>[
               const Expanded(
