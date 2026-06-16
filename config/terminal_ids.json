@@ -1,0 +1,22 @@
+{
+  "AT": {
+    "name": "Atlantis",
+    "terminal_ids": ["XXXX"]
+  },
+  "SB": {
+    "name": "Schauburg",
+    "terminal_ids": ["XXXX"]
+  },
+  "CO": {
+    "name": "Cinema Ostertor",
+    "terminal_ids": ["XXXX"]
+  },
+  "GO": {
+    "name": "Gondel",
+    "terminal_ids": ["XXXX"]
+  },
+  "BT": {
+    "name": "Bar Tabak",
+    "terminal_ids": ["XXXX", "XXXX"]
+  }
+}
