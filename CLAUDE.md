@@ -88,7 +88,12 @@ Commit-Format:
 
 ## Bericht nach jedem Run
 
-Format: ein einziger Codeblock, Überschrift „Claude Code-Bericht Run <NUMMER>"
+Ausnahme: Betrifft der Run ausschließlich Dateien unter `config/` und/oder
+`.dev/` (keine App-Code-Änderung), reicht eine kurze Bestätigung
+(geänderte Dateien + Commit-Hash) statt des vollständigen Berichtsformats.
+Spart Tokens, da hier kein Testbedarf am App-Verhalten besteht.
+
+Format (sonst): ein einziger Codeblock, Überschrift „Claude Code-Bericht Run <NUMMER>"
 
 Inhalt:
 - Geänderte Dateien (kurze Beschreibung der Änderung)
