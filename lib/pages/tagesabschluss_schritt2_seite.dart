@@ -84,6 +84,32 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
       _TagesabschlussSchritt2SeiteState();
 }
 
+class _ZahlungsartZeile {
+  _ZahlungsartZeile(this.name)
+      : anzahlController = TextEditingController(),
+        betragController = TextEditingController();
+
+  final String name;
+  final TextEditingController anzahlController;
+  final TextEditingController betragController;
+  int? anzahlWert;
+  int? betragCentWert;
+  bool nichtPlausibel = false;
+
+  void dispose() {
+    anzahlController.dispose();
+    betragController.dispose();
+  }
+
+  void reset() {
+    anzahlController.clear();
+    betragController.clear();
+    anzahlWert = null;
+    betragCentWert = null;
+    nichtPlausibel = false;
+  }
+}
+
 class _TagesabschlussSchritt2SeiteState
     extends State<TagesabschlussSchritt2Seite>
     with ControllerDisposeMixin {
@@ -143,14 +169,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _ecKachelZeigeScrollPfeil = false;
 
   // Zahlungsarten-Tabelle
-  List<String> _zahlungsartenListe = const <String>[];
-  List<TextEditingController> _zahlungsartAnzahlController =
-      <TextEditingController>[];
-  List<TextEditingController> _zahlungsartBetragController =
-      <TextEditingController>[];
-  List<int?> _zahlungsartAnzahlWerte = <int?>[];
-  List<int?> _zahlungsartBetragCentWerte = <int?>[];
-  List<bool> _zahlungsartNichtPlausibel = <bool>[];
+  List<_ZahlungsartZeile> _zahlungsartZeilen = <_ZahlungsartZeile>[];
   @override
   void initState() {
     super.initState();
@@ -172,18 +191,10 @@ class _TagesabschlussSchritt2SeiteState
     ZahlungsartenConfigService.laden().then((List<String> liste) async {
       if (!mounted) return;
       setState(() {
-        _zahlungsartenListe = liste;
-        _zahlungsartAnzahlController = List<TextEditingController>.generate(
+        _zahlungsartZeilen = List<_ZahlungsartZeile>.generate(
           liste.length,
-          (_) => TextEditingController(),
+          (int i) => _ZahlungsartZeile(liste[i]),
         );
-        _zahlungsartBetragController = List<TextEditingController>.generate(
-          liste.length,
-          (_) => TextEditingController(),
-        );
-        _zahlungsartAnzahlWerte = List<int?>.filled(liste.length, null);
-        _zahlungsartBetragCentWerte = List<int?>.filled(liste.length, null);
-        _zahlungsartNichtPlausibel = List<bool>.filled(liste.length, false);
       });
       await _ladeEntwurf();
       if (!mounted) return;
@@ -211,8 +222,9 @@ class _TagesabschlussSchritt2SeiteState
     disposeControllers(_ausgabenLabelController);
     disposeFocusNodes(_ausgabenBetragFocusNode);
     disposeFocusNodes(_ausgabenLabelFocusNode);
-    disposeControllers(_zahlungsartAnzahlController);
-    disposeControllers(_zahlungsartBetragController);
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+      zeile.dispose();
+    }
     super.dispose();
   }
 
@@ -349,27 +361,29 @@ class _TagesabschlussSchritt2SeiteState
     if (mounted && anzahlRoh is List<dynamic> && betragRoh is List<dynamic>) {
       setState(() {
         for (int i = 0;
-            i < _zahlungsartenListe.length &&
+            i < _zahlungsartZeilen.length &&
                 i < anzahlRoh.length &&
                 i < betragRoh.length;
             i++) {
-          _zahlungsartAnzahlWerte[i] = (anzahlRoh[i] as num?)?.toInt();
-          _zahlungsartBetragCentWerte[i] = (betragRoh[i] as num?)?.toInt();
+          _zahlungsartZeilen[i].anzahlWert = (anzahlRoh[i] as num?)?.toInt();
+          _zahlungsartZeilen[i].betragCentWert =
+              (betragRoh[i] as num?)?.toInt();
         }
       });
       for (int i = 0;
-          i < _zahlungsartenListe.length &&
+          i < _zahlungsartZeilen.length &&
               i < anzahlRoh.length &&
               i < betragRoh.length;
           i++) {
-        final int? anzahl = _zahlungsartAnzahlWerte[i];
-        final int? betrag = _zahlungsartBetragCentWerte[i];
+        final int? anzahl = _zahlungsartZeilen[i].anzahlWert;
+        final int? betrag = _zahlungsartZeilen[i].betragCentWert;
         if (anzahl != null) {
-          _setzeControllerText(_zahlungsartAnzahlController[i], '$anzahl');
+          _setzeControllerText(
+              _zahlungsartZeilen[i].anzahlController, '$anzahl');
         }
         if (betrag != null) {
           _setzeControllerText(
-            _zahlungsartBetragController[i],
+            _zahlungsartZeilen[i].betragController,
             TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
           );
         }
@@ -397,10 +411,12 @@ class _TagesabschlussSchritt2SeiteState
         'scanUhrzeit': _scanUhrzeit,
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
-        'zahlungsartAnzahlWerte':
-            List<dynamic>.from(_zahlungsartAnzahlWerte),
-        'zahlungsartBetragCentWerte':
-            List<dynamic>.from(_zahlungsartBetragCentWerte),
+        'zahlungsartAnzahlWerte': _zahlungsartZeilen
+            .map((_ZahlungsartZeile z) => z.anzahlWert)
+            .toList(),
+        'zahlungsartBetragCentWerte': _zahlungsartZeilen
+            .map((_ZahlungsartZeile z) => z.betragCentWert)
+            .toList(),
       },
     );
   }
@@ -759,12 +775,8 @@ class _TagesabschlussSchritt2SeiteState
       _scanBelegNrVon = null;
       _scanBelegNrBis = null;
       _scanHatStattgefunden = false;
-      for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
-        _zahlungsartAnzahlController[i].clear();
-        _zahlungsartBetragController[i].clear();
-        _zahlungsartAnzahlWerte[i] = null;
-        _zahlungsartBetragCentWerte[i] = null;
-        _zahlungsartNichtPlausibel[i] = false;
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+        zeile.reset();
       }
     });
   }
@@ -801,12 +813,8 @@ class _TagesabschlussSchritt2SeiteState
       _scanBelegNrVon = null;
       _scanBelegNrBis = null;
       _scanHatStattgefunden = false;
-      for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
-        _zahlungsartAnzahlController[i].clear();
-        _zahlungsartBetragController[i].clear();
-        _zahlungsartAnzahlWerte[i] = null;
-        _zahlungsartBetragCentWerte[i] = null;
-        _zahlungsartNichtPlausibel[i] = false;
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+        zeile.reset();
       }
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
@@ -964,77 +972,60 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   void _sortiereZahlungsartenNachBeleg(List<ZahlungsartErgebnis> belegArten) {
-    final List<int> reihenfolge = <int>[];
+    final List<_ZahlungsartZeile> sortiert = <_ZahlungsartZeile>[];
     for (final ZahlungsartErgebnis z in belegArten) {
-      for (int i = 0; i < _zahlungsartenListe.length; i++) {
-        if (!reihenfolge.contains(i) &&
-            _matchKartenart(_zahlungsartenListe[i], z.art)) {
-          reihenfolge.add(i);
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+        if (!sortiert.contains(zeile) && _matchKartenart(zeile.name, z.art)) {
+          sortiert.add(zeile);
           break;
         }
       }
     }
-    for (int i = 0; i < _zahlungsartenListe.length; i++) {
-      if (!reihenfolge.contains(i)) reihenfolge.add(i);
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+      if (!sortiert.contains(zeile)) sortiert.add(zeile);
     }
-    _zahlungsartenListe =
-        <String>[for (final int i in reihenfolge) _zahlungsartenListe[i]];
-    _zahlungsartAnzahlController = <TextEditingController>[
-      for (final int i in reihenfolge) _zahlungsartAnzahlController[i]
-    ];
-    _zahlungsartBetragController = <TextEditingController>[
-      for (final int i in reihenfolge) _zahlungsartBetragController[i]
-    ];
-    _zahlungsartAnzahlWerte =
-        <int?>[for (final int i in reihenfolge) _zahlungsartAnzahlWerte[i]];
-    _zahlungsartBetragCentWerte = <int?>[
-      for (final int i in reihenfolge) _zahlungsartBetragCentWerte[i]
-    ];
-    _zahlungsartNichtPlausibel = <bool>[
-      for (final int i in reihenfolge) _zahlungsartNichtPlausibel[i]
-    ];
+    _zahlungsartZeilen = sortiert;
   }
 
   void _preFillZahlungsartenFromScan(
     BelegScanErgebnis geprueftes,
     BelegScanErgebnis? original,
   ) {
-    for (int i = 0; i < _zahlungsartenListe.length; i++) {
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
       ZahlungsartErgebnis? matching;
       for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
-        if (_matchKartenart(_zahlungsartenListe[i], z.art)) {
+        if (_matchKartenart(zeile.name, z.art)) {
           matching = z;
           break;
         }
       }
       if (matching == null) continue;
 
-      _zahlungsartAnzahlWerte[i] = matching.anzahl;
-      _setzeControllerText(
-          _zahlungsartAnzahlController[i], '${matching.anzahl}');
+      zeile.anzahlWert = matching.anzahl;
+      _setzeControllerText(zeile.anzahlController, '${matching.anzahl}');
 
       if (matching.betragCent != null) {
-        _zahlungsartBetragCentWerte[i] = matching.betragCent;
+        zeile.betragCentWert = matching.betragCent;
         _setzeControllerText(
-          _zahlungsartBetragController[i],
+          zeile.betragController,
           TagesabschlussFormatierung.formatiereEuroEingabe(matching.betragCent!),
         );
       } else {
-        _zahlungsartBetragCentWerte[i] = null;
-        _setzeControllerText(_zahlungsartBetragController[i], '');
+        zeile.betragCentWert = null;
+        _setzeControllerText(zeile.betragController, '');
       }
 
       // Rot markieren wenn Original-Scan betragCent null hatte
       bool origNichtPlausibel = false;
       if (original != null) {
         for (final ZahlungsartErgebnis z in original.zahlungsarten) {
-          if (_matchKartenart(_zahlungsartenListe[i], z.art)) {
+          if (_matchKartenart(zeile.name, z.art)) {
             origNichtPlausibel = z.betragCent == null;
             break;
           }
         }
       }
-      _zahlungsartNichtPlausibel[i] = origNichtPlausibel;
+      zeile.nichtPlausibel = origNichtPlausibel;
     }
   }
 
@@ -1052,18 +1043,12 @@ class _TagesabschlussSchritt2SeiteState
 
   List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
     final List<ZahlungsartErgebnis> liste = <ZahlungsartErgebnis>[];
-    for (int i = 0; i < _zahlungsartenListe.length; i++) {
-      final int? anzahl = i < _zahlungsartAnzahlWerte.length
-          ? _zahlungsartAnzahlWerte[i]
-          : null;
-      final int? betrag = i < _zahlungsartBetragCentWerte.length
-          ? _zahlungsartBetragCentWerte[i]
-          : null;
-      if (anzahl == null && betrag == null) continue;
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+      if (zeile.anzahlWert == null && zeile.betragCentWert == null) continue;
       liste.add(ZahlungsartErgebnis(
-        art: _zahlungsartenListe[i],
-        anzahl: anzahl ?? 0,
-        betragCent: betrag,
+        art: zeile.name,
+        anzahl: zeile.anzahlWert ?? 0,
+        betragCent: zeile.betragCentWert,
       ));
     }
     return liste.isEmpty ? null : liste;
@@ -1264,12 +1249,8 @@ class _TagesabschlussSchritt2SeiteState
         _setzeControllerText(_ecBelegController[0], '');
         _ecBeleg1Beruehrt = false;
       }
-      for (int i = 0; i < _zahlungsartAnzahlController.length; i++) {
-        _zahlungsartAnzahlController[i].clear();
-        _zahlungsartBetragController[i].clear();
-        _zahlungsartAnzahlWerte[i] = null;
-        _zahlungsartBetragCentWerte[i] = null;
-        _zahlungsartNichtPlausibel[i] = false;
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+        zeile.reset();
       }
       _letzteAenderung = DateTime.now();
     });
@@ -1443,9 +1424,8 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Widget _baueKartenartenZeile(int index) {
-    final bool nichtPlausibel = index < _zahlungsartNichtPlausibel.length &&
-        _zahlungsartNichtPlausibel[index];
-    final OutlineInputBorder? roteBorder = nichtPlausibel
+    final _ZahlungsartZeile zeile = _zahlungsartZeilen[index];
+    final OutlineInputBorder? roteBorder = zeile.nichtPlausibel
         ? OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red.shade300),
           )
@@ -1456,14 +1436,14 @@ class _TagesabschlussSchritt2SeiteState
         children: <Widget>[
           Expanded(
             child: Text(
-              _zahlungsartenListe[index],
+              zeile.name,
               style: const TextStyle(fontSize: 13),
             ),
           ),
           SizedBox(
             width: 52,
             child: TextField(
-              controller: _zahlungsartAnzahlController[index],
+              controller: zeile.anzahlController,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.right,
               style: const TextStyle(fontSize: 13),
@@ -1477,8 +1457,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
               onChanged: (String wert) {
                 setState(() {
-                  _zahlungsartAnzahlWerte[index] =
-                      int.tryParse(wert.trim());
+                  zeile.anzahlWert = int.tryParse(wert.trim());
                 });
               },
             ),
@@ -1487,7 +1466,7 @@ class _TagesabschlussSchritt2SeiteState
           SizedBox(
             width: 104,
             child: TextField(
-              controller: _zahlungsartBetragController[index],
+              controller: zeile.betragController,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               textAlign: TextAlign.right,
@@ -1502,8 +1481,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
               onChanged: (String wert) {
                 setState(() {
-                  _zahlungsartBetragCentWerte[index] =
-                      _parseEuroKommaCent(wert);
+                  zeile.betragCentWert = _parseEuroKommaCent(wert);
                 });
               },
             ),
@@ -1516,15 +1494,11 @@ class _TagesabschlussSchritt2SeiteState
   Widget _baueZahlungsartenTabelle() {
     int tabellenSummeCent = 0;
     int tabellenSummeAnzahl = 0;
-    for (int i = 0; i < _zahlungsartenListe.length; i++) {
-      final int? betrag = i < _zahlungsartBetragCentWerte.length
-          ? _zahlungsartBetragCentWerte[i]
-          : null;
-      if (betrag != null) tabellenSummeCent += betrag;
-      final int? anzahl = i < _zahlungsartAnzahlWerte.length
-          ? _zahlungsartAnzahlWerte[i]
-          : null;
-      if (anzahl != null) tabellenSummeAnzahl += anzahl;
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+      if (zeile.betragCentWert != null) {
+        tabellenSummeCent += zeile.betragCentWert!;
+      }
+      if (zeile.anzahlWert != null) tabellenSummeAnzahl += zeile.anzahlWert!;
     }
     final int ecGesamtCent =
         _ecBelegeCent.fold(0, (int a, int b) => a + b);
@@ -1578,7 +1552,7 @@ class _TagesabschlussSchritt2SeiteState
               ],
             ),
           ),
-          for (int i = 0; i < _zahlungsartenListe.length; i++)
+          for (int i = 0; i < _zahlungsartZeilen.length; i++)
             _baueKartenartenZeile(i),
           const Divider(height: 10),
           Row(
@@ -2326,7 +2300,7 @@ class _TagesabschlussSchritt2SeiteState
                               if (_scanHatStattgefunden)
                                 _baueMetadatenBlock(),
                               // 3b: Kartenarten-Tabelle (immer)
-                              if (_zahlungsartenListe.isNotEmpty)
+                              if (_zahlungsartZeilen.isNotEmpty)
                                 _baueZahlungsartenTabelle(),
                             ],
                           ),
