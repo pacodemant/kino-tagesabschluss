@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 
-class BelegScanGegenpruefDialog extends StatelessWidget {
+class BelegScanGegenpruefDialog extends StatefulWidget {
   const BelegScanGegenpruefDialog({
     super.key,
     required this.ergebnis,
@@ -10,16 +10,50 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
 
   final BelegScanErgebnis ergebnis;
 
+  @override
+  State<BelegScanGegenpruefDialog> createState() =>
+      _BelegScanGegenpruefDialogState();
+}
+
+class _BelegScanGegenpruefDialogState
+    extends State<BelegScanGegenpruefDialog> {
+  final ScrollController _scrollController = ScrollController();
+  bool _zeigeScrollPfeil = false;
+
   static final NumberFormat _euroFormat = NumberFormat.currency(
     locale: 'de_DE',
     symbol: '€',
     decimalDigits: 2,
   );
 
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_aktualisiereScrollPfeil);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _aktualisiereScrollPfeil();
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _aktualisiereScrollPfeil() {
+    if (!mounted || !_scrollController.hasClients) return;
+    final bool zeige =
+        _scrollController.position.maxScrollExtent > _scrollController.offset + 1.0;
+    if (zeige != _zeigeScrollPfeil) {
+      setState(() => _zeigeScrollPfeil = zeige);
+    }
+  }
+
   bool get _hatUnleserlicheFelder {
-    return ergebnis.terminalId == null ||
-        ergebnis.gesamtBetragCent == null ||
-        ergebnis.zahlungsarten.any(
+    return widget.ergebnis.terminalId == null ||
+        widget.ergebnis.gesamtBetragCent == null ||
+        widget.ergebnis.zahlungsarten.any(
           (ZahlungsartErgebnis z) => z.betragCent == null || z.anzahl == null,
         );
   }
@@ -95,6 +129,7 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
   }
 
   Widget _baueGesamtZeile() {
+    final BelegScanErgebnis e = widget.ergebnis;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -108,27 +143,26 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
           SizedBox(
             width: 44,
             child: Text(
-              ergebnis.gesamtAnzahl?.toString() ?? '—',
+              e.gesamtAnzahl?.toString() ?? '—',
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                color: !ergebnis.anzahlPlausibel ? Colors.red.shade700 : null,
+                color: !e.anzahlPlausibel ? Colors.red.shade700 : null,
               ),
             ),
           ),
           SizedBox(
             width: 104,
             child: Text(
-              ergebnis.gesamtBetragCent != null
-                  ? _formatCent(ergebnis.gesamtBetragCent!)
+              e.gesamtBetragCent != null
+                  ? _formatCent(e.gesamtBetragCent!)
                   : '—',
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
-                color:
-                    !ergebnis.betraegePlausibel ? Colors.red.shade700 : null,
+                color: !e.betraegePlausibel ? Colors.red.shade700 : null,
               ),
             ),
           ),
@@ -139,6 +173,8 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final BelegScanErgebnis e = widget.ergebnis;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ConstrainedBox(
@@ -176,117 +212,154 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
             ),
             const Divider(height: 1),
             Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    if (_hatUnleserlicheFelder ||
-                        (ergebnis.hinweis != null && !ergebnis.istPlausibel))
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8E1),
-                          border: Border.all(color: const Color(0xFFFFC107)),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            const Icon(
-                              Icons.warning_amber_rounded,
-                              size: 18,
-                              color: Color(0xFFF57F17),
+              child: Stack(
+                children: <Widget>[
+                  SingleChildScrollView(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        if (_hatUnleserlicheFelder ||
+                            (e.hinweis != null && !e.istPlausibel))
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text.rich(
-                                TextSpan(
-                                  style: const TextStyle(
-                                    fontSize: 13,
-                                    color: Color(0xFF5D4037),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF8E1),
+                              border:
+                                  Border.all(color: const Color(0xFFFFC107)),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const Icon(
+                                  Icons.warning_amber_rounded,
+                                  size: 18,
+                                  color: Color(0xFFF57F17),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text.rich(
+                                    TextSpan(
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFF5D4037),
+                                      ),
+                                      children: e.hinweis != null
+                                          ? <InlineSpan>[
+                                              TextSpan(text: e.hinweis),
+                                            ]
+                                          : const <InlineSpan>[
+                                              TextSpan(
+                                                text:
+                                                    'Bitte die markierten Felder nach ',
+                                              ),
+                                              TextSpan(
+                                                text: 'Übernehmen',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                  text: ' manuell prüfen.'),
+                                            ],
+                                    ),
                                   ),
-                                  children: ergebnis.hinweis != null
-                                      ? <InlineSpan>[
-                                          TextSpan(text: ergebnis.hinweis),
-                                        ]
-                                      : const <InlineSpan>[
-                                          TextSpan(
-                                            text:
-                                                'Bitte die markierten Felder nach ',
-                                          ),
-                                          TextSpan(
-                                            text: 'Übernehmen',
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          TextSpan(text: ' manuell prüfen.'),
-                                        ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        _baueMetadatenZeile('Terminal-ID', e.terminalId),
+                        _baueMetadatenZeile('Datum', e.datum),
+                        _baueMetadatenZeile('Uhrzeit', e.uhrzeit),
+                        _baueMetadatenZeile('Beleg-Nr. von', e.belegNrVon),
+                        _baueMetadatenZeile('Beleg-Nr. bis', e.belegNrBis),
+                        const SizedBox(height: 10),
+                        const Divider(),
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(bottom: 4, top: 2),
+                          child: Row(
+                            children: const <Widget>[
+                              Expanded(
+                                child: Text(
+                                  'Kartenart',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black54,
+                                  ),
                                 ),
                               ),
+                              SizedBox(
+                                width: 44,
+                                child: Text(
+                                  'Anz.',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 104,
+                                child: Text(
+                                  'Betrag',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        for (final ZahlungsartErgebnis z
+                            in e.zahlungsarten)
+                          _baueZahlungsartZeile(z),
+                        const Divider(),
+                        _baueGesamtZeile(),
+                      ],
+                    ),
+                  ),
+                  if (_zeigeScrollPfeil)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 40,
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: <Color>[
+                                Color(0x00FFFFFF),
+                                Color(0xD0FFFFFF),
+                              ],
                             ),
-                          ],
+                          ),
+                          alignment: Alignment.bottomCenter,
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: const Icon(
+                            Icons.keyboard_arrow_down,
+                            size: 24,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    _baueMetadatenZeile('Terminal-ID', ergebnis.terminalId),
-                    _baueMetadatenZeile('Datum', ergebnis.datum),
-                    _baueMetadatenZeile('Uhrzeit', ergebnis.uhrzeit),
-                    _baueMetadatenZeile('Beleg-Nr. von', ergebnis.belegNrVon),
-                    _baueMetadatenZeile('Beleg-Nr. bis', ergebnis.belegNrBis),
-                    const SizedBox(height: 10),
-                    const Divider(),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 4, top: 2),
-                      child: Row(
-                        children: const <Widget>[
-                          Expanded(
-                            child: Text(
-                              'Kartenart',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 44,
-                            child: Text(
-                              'Anz.',
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 104,
-                            child: Text(
-                              'Betrag',
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.black54,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ),
-                    for (final ZahlungsartErgebnis z in ergebnis.zahlungsarten)
-                      _baueZahlungsartZeile(z),
-                    const Divider(),
-                    _baueGesamtZeile(),
-                  ],
-                ),
+                ],
               ),
             ),
             const Divider(height: 1),
@@ -341,7 +414,7 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () => Navigator.of(context).pop(
                             BelegScanDialogErgebnis(
-                              ergebnis: ergebnis,
+                              ergebnis: widget.ergebnis,
                               kachelOeffnen: false,
                             ),
                           ),

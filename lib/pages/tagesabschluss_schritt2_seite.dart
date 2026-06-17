@@ -1046,6 +1046,9 @@ class _TagesabschlussSchritt2SeiteState
               _scanBelegNrBisController, _scanBelegNrBis ?? '');
           _scanHatStattgefunden = true;
           _ecKachelAufgeklappt = true;
+          for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+            zeile.reset();
+          }
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
           _kartenartenGesamtAnzahl = geprueftes.gesamtAnzahl;
@@ -1189,10 +1192,7 @@ class _TagesabschlussSchritt2SeiteState
   /// nur eines von Anzahl/Betrag ausgefüllt ist, oder die Anzahl 0 beträgt.
   bool _istZeileImplausibel(_ZahlungsartZeile zeile) {
     if (zeile.anzahlWert == null && zeile.betragCentWert == null) return false;
-    if (zeile.nichtPlausibel) return true;
-    final bool anzahlLeer = zeile.anzahlWert == null;
-    final bool betragLeer = zeile.betragCentWert == null;
-    if (anzahlLeer != betragLeer) return true;
+    if (zeile.anzahlWert == null || zeile.betragCentWert == null) return true;
     if (zeile.anzahlWert == 0) return true;
     return false;
   }
@@ -1914,6 +1914,9 @@ class _TagesabschlussSchritt2SeiteState
       (_ZahlungsartZeile z) =>
           z.anzahlFocusNode.hasFocus || z.betragFocusNode.hasFocus,
     );
+    final bool irgendEineZeileInkonsistent = _zahlungsartZeilen
+        .where((_ZahlungsartZeile z) => !z.nichtImScan)
+        .any((_ZahlungsartZeile z) => _istZeileImplausibel(z));
 
     return Container(
       margin: const EdgeInsets.only(top: 10),
@@ -2103,25 +2106,25 @@ class _TagesabschlussSchritt2SeiteState
               ),
             ],
           ),
-          if (anzahlMismatch && !kartenartenHatFokus)
+          if (anzahlMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 'Hinweis: Anzahl der Kartenvorgänge stimmt nicht mit der '
                 'erfassten Gesamtanzahl überein.',
-                style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
               ),
             ),
-          if (betragMismatch && !kartenartenHatFokus)
+          if (betragMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 'Hinweis: Summe der Beträge stimmt nicht mit der erfassten '
                 'Gesamtsumme überein.',
-                style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
               ),
             ),
-          if (summePasstNicht && !kartenartenHatFokus)
+          if (summePasstNicht && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(

@@ -157,6 +157,8 @@ Diagnosen, Analysen und Berichte immer in einem einzigen Codeblock ausgeben — 
 ## Sprache
 
 Antworte immer auf Deutsch.
+Auch alle Ausgaben, Kommentare und Thinking-Texte auf Deutsch.
+
 
 ## Session-Start
 Führe zu Beginn jeder neuen Session aus:
