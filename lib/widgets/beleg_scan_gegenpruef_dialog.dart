@@ -204,12 +204,29 @@ class BelegScanGegenpruefDialog extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Text(
-                                ergebnis.hinweis ??
-                                    'Bitte die markierten Felder manuell prüfen.',
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFF5D4037),
+                              child: Text.rich(
+                                TextSpan(
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFF5D4037),
+                                  ),
+                                  children: ergebnis.hinweis != null
+                                      ? <InlineSpan>[
+                                          TextSpan(text: ergebnis.hinweis),
+                                        ]
+                                      : const <InlineSpan>[
+                                          TextSpan(
+                                            text:
+                                                'Bitte die markierten Felder nach ',
+                                          ),
+                                          TextSpan(
+                                            text: 'Übernehmen',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          TextSpan(text: ' manuell prüfen.'),
+                                        ],
                                 ),
                               ),
                             ),
