@@ -1,5 +1,26 @@
 # CLAUDE.md
 
+## Run-Protokollierung
+
+Die Run-Nummer wird vom Nutzer im Prompt-Header vorgegeben ("Run 287:").
+
+Nach jedem erfolgreich abgeschlossenen Run (nach flutter analyze):
+
+1. **CHANGELOG.md** — neuen Eintrag hinzufügen:
+   - Run-Nummer, kurze Beschreibung, geänderte Dateien
+
+2. **TODO.md** — abgehakte Punkte markieren (`[x]`),
+   neue Punkte eintragen wenn im Run besprochen
+
+3. **PROJECT_CONTEXT.md** — folgende Felder aktualisieren:
+   - Versionsnummer und Run-Nummer in der Kopfzeile
+   - Laufender Entwicklungsstand (erledigter Run als ✅, nächste Runs anpassen)
+   - Bei strukturellen Änderungen (neue Seiten, Services, Routen, Modelle):
+     die betroffenen Abschnitte aktualisieren
+
+Alle drei Dateien werden nur aktualisiert wenn der Run vollständig
+abgeschlossen ist. Bei Abbruch: keine Änderungen an diesen Dateien.
+
 ## Projekt
 
 - Name: Kino-App (Tagesabschluss)
@@ -98,18 +119,21 @@ Format (sonst): ein einziger Codeblock, Überschrift „Claude Code-Bericht Run 
 Inhalt:
 - Geänderte Dateien (kurze Beschreibung der Änderung)
 - Manuelle Testschritte mit erwartetem Verhalten (kein flutter analyze als Testschritt)
-  - Nur Tests vorschlagen, die tatsächlich etwas verifizieren, das durch die Änderung hätte brechen können
-  - Keine Tests erfinden, nur um eine Mindestzahl zu erreichen
-  - Wenn die Änderung mehr als 3 relevante Risiken hat, auch mehr als 3 Tests
+  - Genau so viele Tests wie es relevante Risiken gibt — einen pro Risiko, nicht mehr, nicht weniger
+  - Keine Tests erfinden, die nichts verifizieren, das durch die Änderung hätte brechen können
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
 - Letzter Commit-Hash — daneben: Run-Nummer und ob sie vom User vorgegeben oder von Claude selbst abgeleitet wurde (z. B. „Run 203 – vom User vorgegeben" oder „Run 203 – aus run_counter.txt abgeleitet")
-- Bestätigung: `.dev/run_counter.txt`, `CHANGELOG.md` und `TODO.md` aktualisiert
+- Bestätigung: `.dev/run_counter.txt`, `CHANGELOG.md`, `TODO.md` und `PROJECT_CONTEXT.md` aktualisiert
   - CHANGELOG.md vor dem Schreiben per Read prüfen — nie behaupten, sie existiere nicht, ohne vorher nachgesehen zu haben
   - TODO.md nach jedem Run abgleichen: per Read prüfen, ob der Run einen dort
     gelisteten Punkt erledigt hat (insbesondere Punkte mit passender
     *(Run NNN)*-Markierung) — erledigten Punkt abhaken oder entfernen.
     Keine anderen TODO.md-Inhalte umformulieren oder verschieben.
+  - PROJECT_CONTEXT.md: Kopfzeile (Version + Run), Entwicklungsstand und bei
+    Bedarf betroffene Architekturabschnitte aktualisieren.
+  - AGENTS.md: synchron mit CLAUDE.md halten wenn sich Workflow-Regeln ändern
+    (nicht nach jedem Run — nur bei Regeländerungen).
 
 ## Direkte Anweisungen ohne Run-Nummer
 
