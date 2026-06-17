@@ -89,11 +89,15 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 class _ZahlungsartZeile {
   _ZahlungsartZeile(this.name)
       : anzahlController = TextEditingController(),
-        betragController = TextEditingController();
+        betragController = TextEditingController(),
+        anzahlFocusNode = FocusNode(),
+        betragFocusNode = FocusNode();
 
   final String name;
   final TextEditingController anzahlController;
   final TextEditingController betragController;
+  final FocusNode anzahlFocusNode;
+  final FocusNode betragFocusNode;
   int? anzahlWert;
   int? betragCentWert;
   bool nichtPlausibel = false;
@@ -102,6 +106,8 @@ class _ZahlungsartZeile {
   void dispose() {
     anzahlController.dispose();
     betragController.dispose();
+    anzahlFocusNode.dispose();
+    betragFocusNode.dispose();
   }
 
   void reset() {
@@ -192,7 +198,7 @@ class _TagesabschlussSchritt2SeiteState
       TextEditingController();
 
   // EC-Kachel
-  bool _ecKachelAufgeklappt = true;
+  bool _ecKachelAufgeklappt = false;
   final GlobalKey _ecKachelKey = GlobalKey();
   bool _ecKachelZeigeScrollPfeil = false;
 
@@ -234,6 +240,10 @@ class _TagesabschlussSchritt2SeiteState
           (int i) => _ZahlungsartZeile(liste[i]),
         );
       });
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+        zeile.anzahlFocusNode.addListener(() { if (mounted) setState(() {}); });
+        zeile.betragFocusNode.addListener(() { if (mounted) setState(() {}); });
+      }
       await _ladeEntwurf();
       if (!mounted) return;
       _autoFokussiereNachLaden();
@@ -366,6 +376,11 @@ class _TagesabschlussSchritt2SeiteState
           (daten['kartenartenGesamtAnzahl'] as num?)?.toInt();
       _kartenartenGesamtBetragCent =
           (daten['kartenartenGesamtBetragCent'] as num?)?.toInt();
+      if (_scanHatStattgefunden ||
+          ecBelege[0] != 0 ||
+          ecBelegeLabelsListe[0].isNotEmpty) {
+        _ecKachelAufgeklappt = true;
+      }
     });
 
     if (kinoSollCent != 0) {
@@ -934,16 +949,11 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     bool wiederholen;
-    bool felderGeloescht = false;
     do {
       wiederholen = false;
       final XFile? bild =
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (bild == null) return;
-      if (!felderGeloescht) {
-        _loescheKartenDaten();
-        felderGeloescht = true;
-      }
       setState(() => _scanLaeuft = true);
       BelegScanErgebnis? originalErgebnis;
       try {
@@ -1035,7 +1045,7 @@ class _TagesabschlussSchritt2SeiteState
           _setzeControllerText(
               _scanBelegNrBisController, _scanBelegNrBis ?? '');
           _scanHatStattgefunden = true;
-          if (dialogErgebnis.kachelOeffnen) _ecKachelAufgeklappt = true;
+          _ecKachelAufgeklappt = true;
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
           _kartenartenGesamtAnzahl = geprueftes.gesamtAnzahl;
@@ -1178,6 +1188,7 @@ class _TagesabschlussSchritt2SeiteState
   /// Eine Zeile ist unplausibel, wenn der Scan sie als unsicher markiert hat,
   /// nur eines von Anzahl/Betrag ausgefüllt ist, oder die Anzahl 0 beträgt.
   bool _istZeileImplausibel(_ZahlungsartZeile zeile) {
+    if (zeile.anzahlWert == null && zeile.betragCentWert == null) return false;
     if (zeile.nichtPlausibel) return true;
     final bool anzahlLeer = zeile.anzahlWert == null;
     final bool betragLeer = zeile.betragCentWert == null;
@@ -1733,6 +1744,7 @@ class _TagesabschlussSchritt2SeiteState
             width: 52,
             child: TextField(
               controller: zeile.anzahlController,
+              focusNode: zeile.anzahlFocusNode,
               keyboardType: TextInputType.number,
               textAlign: TextAlign.right,
               style: const TextStyle(fontSize: 13),
@@ -1756,6 +1768,7 @@ class _TagesabschlussSchritt2SeiteState
             width: 104,
             child: TextField(
               controller: zeile.betragController,
+              focusNode: zeile.betragFocusNode,
               keyboardType: _eingabeMitKomma
                   ? const TextInputType.numberWithOptions(decimal: true)
                   : TextInputType.number,
@@ -1897,6 +1910,10 @@ class _TagesabschlussSchritt2SeiteState
         tabellenSummeAnzahl != _kartenartenGesamtAnzahl;
     final bool betragMismatch = _kartenartenGesamtBetragCent != null &&
         tabellenSummeCent != _kartenartenGesamtBetragCent;
+    final bool kartenartenHatFokus = _zahlungsartZeilen.any(
+      (_ZahlungsartZeile z) =>
+          z.anzahlFocusNode.hasFocus || z.betragFocusNode.hasFocus,
+    );
 
     return Container(
       margin: const EdgeInsets.only(top: 10),
@@ -2086,7 +2103,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
             ],
           ),
-          if (anzahlMismatch)
+          if (anzahlMismatch && !kartenartenHatFokus)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
@@ -2095,7 +2112,7 @@ class _TagesabschlussSchritt2SeiteState
                 style: TextStyle(fontSize: 12, color: Colors.red.shade700),
               ),
             ),
-          if (betragMismatch)
+          if (betragMismatch && !kartenartenHatFokus)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
@@ -2104,11 +2121,12 @@ class _TagesabschlussSchritt2SeiteState
                 style: TextStyle(fontSize: 12, color: Colors.red.shade700),
               ),
             ),
-          if (summePasstNicht)
+          if (summePasstNicht && !kartenartenHatFokus)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Hinweis: Kartensumme weicht vom EC-Gesamtbetrag ab.',
+                'Hinweis: Kartensumme stimmt nicht mit dem eingetragenen '
+                'EC-Gesamtbetrag überein.',
                 style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
               ),
             ),
@@ -2542,78 +2560,73 @@ class _TagesabschlussSchritt2SeiteState
                           padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
                           child: Row(
                             children: <Widget>[
-                              Expanded(
-                                child: Row(
-                                  children: <Widget>[
-                                    const Text(
-                                      'EC-Belege',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    if (!_ecKachelAufgeklappt) ...<Widget>[
-                                      const SizedBox(width: 8),
-                                      Builder(
-                                        builder: (BuildContext ctx) {
-                                          final int summe = _ecBelegeCent.fold(
-                                              0, (int a, int b) => a + b);
-                                          if (summe > 0) {
-                                            return Text(
-                                              TagesabschlussFormatierung
-                                                  .formatiereEuro(summe),
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w600,
-                                                color: AppFarben.appBarRot,
-                                              ),
-                                            );
-                                          }
-                                          if (_scanHatStattgefunden) {
-                                            return const SizedBox.shrink();
-                                          }
-                                          return GestureDetector(
-                                            onTap: () {
-                                              setState(() =>
-                                                  _ecKachelAufgeklappt = true);
-                                              WidgetsBinding.instance
-                                                  .addPostFrameCallback((_) {
-                                                if (mounted) {
-                                                  _aktualisiereScrollPfeil();
-                                                  FocusScope.of(context)
-                                                      .requestFocus(
-                                                    _ecBelegLabelFocusNode
-                                                        .first,
-                                                  );
-                                                }
-                                              });
-                                            },
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                Text(
-                                                  'manuell eingeben',
-                                                  style: TextStyle(
-                                                    fontSize: 13,
-                                                    color: AppFarben.appBarRot,
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                  ),
-                                                ),
-                                                const Text(
-                                                  ' oder: ',
-                                                  style:
-                                                      TextStyle(fontSize: 13),
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ],
+                              const Text(
+                                'EC-Belege',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
+                              if (!_ecKachelAufgeklappt) ...<Widget>[
+                                const SizedBox(width: 8),
+                                Builder(
+                                  builder: (BuildContext ctx) {
+                                    final int summe = _ecBelegeCent.fold(
+                                        0, (int a, int b) => a + b);
+                                    if (summe > 0) {
+                                      return Text(
+                                        TagesabschlussFormatierung
+                                            .formatiereEuro(summe),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppFarben.appBarRot,
+                                        ),
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
+                              ],
+                              const Spacer(),
+                              if (!_ecKachelAufgeklappt &&
+                                  !_scanHatStattgefunden &&
+                                  _ecBelegeCent.fold(
+                                          0, (int a, int b) => a + b) ==
+                                      0)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(
+                                        () => _ecKachelAufgeklappt = true);
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback((_) {
+                                      if (mounted) {
+                                        _aktualisiereScrollPfeil();
+                                        FocusScope.of(context).requestFocus(
+                                          _ecBelegLabelFocusNode.first,
+                                        );
+                                      }
+                                    });
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(
+                                        'manuell eingeben',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: AppFarben.appBarRot,
+                                          decoration:
+                                              TextDecoration.underline,
+                                        ),
+                                      ),
+                                      const Text(
+                                        ' oder: ',
+                                        style: TextStyle(fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppFarben.appBarRot,
