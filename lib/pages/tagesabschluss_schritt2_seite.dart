@@ -87,13 +87,14 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
 }
 
 class _ZahlungsartZeile {
-  _ZahlungsartZeile(this.name)
+  _ZahlungsartZeile(this.name, {this.istUnbekannt = false})
       : anzahlController = TextEditingController(),
         betragController = TextEditingController(),
         anzahlFocusNode = FocusNode(),
         betragFocusNode = FocusNode();
 
-  final String name;
+  String name;
+  final bool istUnbekannt;
   final TextEditingController anzahlController;
   final TextEditingController betragController;
   final FocusNode anzahlFocusNode;
@@ -504,9 +505,11 @@ class _TagesabschlussSchritt2SeiteState
         'kartenartenGesamtAnzahl': _kartenartenGesamtAnzahl,
         'kartenartenGesamtBetragCent': _kartenartenGesamtBetragCent,
         'zahlungsartAnzahlWerte': _zahlungsartZeilen
+            .where((_ZahlungsartZeile z) => !z.istUnbekannt)
             .map((_ZahlungsartZeile z) => z.anzahlWert)
             .toList(),
         'zahlungsartBetragCentWerte': _zahlungsartZeilen
+            .where((_ZahlungsartZeile z) => !z.istUnbekannt)
             .map((_ZahlungsartZeile z) => z.betragCentWert)
             .toList(),
       },
@@ -876,6 +879,7 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_scanBelegNrVonController, '');
       _setzeControllerText(_scanBelegNrBisController, '');
       _scanHatStattgefunden = false;
+      _bereinigUnbekannteZeilen();
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
@@ -925,6 +929,7 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_scanBelegNrVonController, '');
       _setzeControllerText(_scanBelegNrBisController, '');
       _scanHatStattgefunden = false;
+      _bereinigUnbekannteZeilen();
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
@@ -1046,6 +1051,7 @@ class _TagesabschlussSchritt2SeiteState
               _scanBelegNrBisController, _scanBelegNrBis ?? '');
           _scanHatStattgefunden = true;
           _ecKachelAufgeklappt = true;
+          _bereinigUnbekannteZeilen();
           for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
             zeile.reset();
           }
@@ -1116,9 +1122,38 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   bool _matchKartenart(String configName, String belegArt) {
+    if (belegArt.trim().isEmpty) return false;
     final String c = configName.trim().toLowerCase();
     final String b = belegArt.trim().toLowerCase();
     return b.contains(c) || c.contains(b);
+  }
+
+  void _bereinigUnbekannteZeilen() {
+    final List<_ZahlungsartZeile> zuEntfernen = _zahlungsartZeilen
+        .where((_ZahlungsartZeile z) => z.istUnbekannt)
+        .toList();
+    for (final _ZahlungsartZeile z in zuEntfernen) {
+      z.dispose();
+    }
+    _zahlungsartZeilen.removeWhere((_ZahlungsartZeile z) => z.istUnbekannt);
+  }
+
+  List<String> _dropdownOptionenFuerUnbekannte(int index) {
+    final Set<String> bereitsGewaehlt = <String>{};
+    for (int i = 0; i < _zahlungsartZeilen.length; i++) {
+      if (i == index) continue;
+      final _ZahlungsartZeile z = _zahlungsartZeilen[i];
+      if (z.istUnbekannt && z.name.isNotEmpty) {
+        bereitsGewaehlt.add(z.name);
+      }
+    }
+    return _zahlungsartZeilen
+        .where((_ZahlungsartZeile z) =>
+            !z.istUnbekannt &&
+            z.nichtImScan &&
+            !bereitsGewaehlt.contains(z.name))
+        .map((_ZahlungsartZeile z) => z.name)
+        .toList();
   }
 
   void _sortiereZahlungsartenNachBeleg(List<ZahlungsartErgebnis> belegArten) {
@@ -1185,6 +1220,29 @@ class _TagesabschlussSchritt2SeiteState
         }
       }
       zeile.nichtPlausibel = origNichtPlausibel;
+    }
+
+    for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
+      if (z.art.trim().isEmpty && (z.betragCent != null || z.anzahl != null)) {
+        final _ZahlungsartZeile unbekannte =
+            _ZahlungsartZeile('', istUnbekannt: true);
+        unbekannte.anzahlFocusNode
+            .addListener(() { if (mounted) setState(() {}); });
+        unbekannte.betragFocusNode
+            .addListener(() { if (mounted) setState(() {}); });
+        if (z.anzahl != null) {
+          unbekannte.anzahlWert = z.anzahl;
+          _setzeControllerText(unbekannte.anzahlController, '${z.anzahl}');
+        }
+        if (z.betragCent != null) {
+          unbekannte.betragCentWert = z.betragCent;
+          _setzeControllerText(
+            unbekannte.betragController,
+            TagesabschlussFormatierung.formatiereEuroEingabe(z.betragCent!),
+          );
+        }
+        _zahlungsartZeilen.insert(0, unbekannte);
+      }
     }
   }
 
@@ -1434,6 +1492,7 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabels[0] = '';
       _setzeControllerText(_ecBelegLabelController[0], '');
       _ecBelegLabel1Beruehrt = false;
+      _bereinigUnbekannteZeilen();
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
         zeile.reset();
       }
@@ -1735,10 +1794,37 @@ class _TagesabschlussSchritt2SeiteState
       child: Row(
         children: <Widget>[
           Expanded(
-            child: Text(
-              zeile.name,
-              style: const TextStyle(fontSize: 13),
-            ),
+            child: zeile.istUnbekannt
+                ? DropdownButton<String?>(
+                    value: zeile.name.isEmpty ? null : zeile.name,
+                    hint: const Text(
+                      'Kartenart?',
+                      style: TextStyle(
+                          fontSize: 12, color: Color(0xFFF57F17)),
+                    ),
+                    isExpanded: true,
+                    isDense: true,
+                    underline: const SizedBox.shrink(),
+                    style: const TextStyle(
+                        fontSize: 13, color: Colors.black87),
+                    items: _dropdownOptionenFuerUnbekannte(index)
+                        .map((String n) => DropdownMenuItem<String?>(
+                              value: n,
+                              child: Text(n),
+                            ))
+                        .toList(),
+                    onChanged: (String? wert) {
+                      setState(() {
+                        zeile.name = wert ?? '';
+                        _letzteAenderung = DateTime.now();
+                      });
+                      _speichereEntwurf();
+                    },
+                  )
+                : Text(
+                    zeile.name,
+                    style: const TextStyle(fontSize: 13),
+                  ),
           ),
           SizedBox(
             width: 52,
@@ -1807,10 +1893,16 @@ class _TagesabschlussSchritt2SeiteState
       child: Row(
         children: <Widget>[
           Expanded(
-            child: Text(
-              zeile.name,
-              style: const TextStyle(fontSize: 13),
-            ),
+            child: zeile.istUnbekannt && zeile.name.isEmpty
+                ? Text(
+                    '?',
+                    style: TextStyle(
+                        fontSize: 13, color: Colors.orange.shade700),
+                  )
+                : Text(
+                    zeile.name,
+                    style: const TextStyle(fontSize: 13),
+                  ),
           ),
           SizedBox(
             width: 52,
