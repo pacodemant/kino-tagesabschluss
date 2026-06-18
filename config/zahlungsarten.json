@@ -1,0 +1,8 @@
+{
+  "girocard":    "Girocard",
+  "lastschrift": "SEPA Lastschrift",
+  "mastercard":  "MasterCard",
+  "visa":        "Visa",
+  "maestro":     "Maestro",
+  "vpay":        "V Pay"
+}

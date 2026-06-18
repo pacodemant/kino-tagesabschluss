@@ -71,7 +71,7 @@ flutter:
     - config/getraenke_schauburg.txt
     - config/getraenke_atlantis.txt
     - config/getraenke_cinema_ostertor.txt
-    - config/zahlungsarten.txt
+    - config/zahlungsarten.json
     - assets/images/qr_webapp_github.png
     - assets/images/demo_people.png
     - assets/images/logo_apprev.png

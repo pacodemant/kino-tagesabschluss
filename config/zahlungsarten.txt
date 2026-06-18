@@ -1,4 +1,0 @@
-girocard
-SEPA Lastschrift
-Mastercard
-Visa
