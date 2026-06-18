@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 
 class BelegScanGegenpruefDialog extends StatefulWidget {
   const BelegScanGegenpruefDialog({
@@ -19,6 +20,8 @@ class _BelegScanGegenpruefDialogState
     extends State<BelegScanGegenpruefDialog> {
   final ScrollController _scrollController = ScrollController();
   bool _zeigeScrollPfeil = false;
+  List<String> _verfuegbareArten = <String>[];
+  List<String?> _gewaehlteArten = <String?>[];
 
   static final NumberFormat _euroFormat = NumberFormat.currency(
     locale: 'de_DE',
@@ -32,6 +35,19 @@ class _BelegScanGegenpruefDialogState
     _scrollController.addListener(_aktualisiereScrollPfeil);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _aktualisiereScrollPfeil();
+    });
+    _ladeZahlungsarten();
+  }
+
+  Future<void> _ladeZahlungsarten() async {
+    final List<String> arten = await ZahlungsartenConfigService.laden();
+    if (!mounted) return;
+    setState(() {
+      _verfuegbareArten = arten;
+      _gewaehlteArten = widget.ergebnis.zahlungsarten
+          .map((ZahlungsartErgebnis z) =>
+              arten.contains(z.art) ? z.art : null)
+          .toList();
     });
   }
 
@@ -59,6 +75,18 @@ class _BelegScanGegenpruefDialogState
   }
 
   String _formatCent(int cent) => _euroFormat.format(cent / 100.0);
+
+  List<String> _optionenFuerZeile(int index) {
+    final Set<String> bereits = _gewaehlteArten
+        .asMap()
+        .entries
+        .where((MapEntry<int, String?> e) => e.key != index && e.value != null)
+        .map((MapEntry<int, String?> e) => e.value!)
+        .toSet();
+    return _verfuegbareArten
+        .where((String a) => !bereits.contains(a))
+        .toList();
+  }
 
   Widget _baueMetadatenZeile(String label, String? wert) {
     final Widget wertWidget = wert != null
@@ -90,16 +118,39 @@ class _BelegScanGegenpruefDialogState
     );
   }
 
-  Widget _baueZahlungsartZeile(ZahlungsartErgebnis z) {
+  Widget _baueZahlungsartZeile(ZahlungsartErgebnis z, int index) {
+    final bool zeigeDropdown =
+        z.art.isEmpty && _verfuegbareArten.isNotEmpty;
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: <Widget>[
           Expanded(
-            child: Text(
-              z.art.isEmpty ? '—' : z.art,
-              style: const TextStyle(fontSize: 14),
-            ),
+            child: zeigeDropdown
+                ? DropdownButton<String?>(
+                    value: _gewaehlteArten.length > index
+                        ? _gewaehlteArten[index]
+                        : null,
+                    hint: const Text('—', style: TextStyle(fontSize: 14)),
+                    isExpanded: true,
+                    isDense: true,
+                    underline: const SizedBox.shrink(),
+                    style: const TextStyle(
+                        fontSize: 14, color: Colors.black87),
+                    items: _optionenFuerZeile(index)
+                        .map((String art) => DropdownMenuItem<String?>(
+                              value: art,
+                              child: Text(art),
+                            ))
+                        .toList(),
+                    onChanged: (String? wert) {
+                      setState(() => _gewaehlteArten[index] = wert);
+                    },
+                  )
+                : Text(
+                    z.art.isEmpty ? '—' : z.art,
+                    style: const TextStyle(fontSize: 14),
+                  ),
           ),
           SizedBox(
             width: 44,
@@ -266,7 +317,7 @@ class _BelegScanGegenpruefDialogState
                                                 ),
                                               ),
                                               TextSpan(
-                                                  text: ' manuell prüfen.'),
+                                                  text: ' ggf. manuell prüfen.'),
                                             ],
                                     ),
                                   ),
@@ -323,9 +374,8 @@ class _BelegScanGegenpruefDialogState
                             ],
                           ),
                         ),
-                        for (final ZahlungsartErgebnis z
-                            in e.zahlungsarten)
-                          _baueZahlungsartZeile(z),
+                        for (int i = 0; i < e.zahlungsarten.length; i++)
+                          _baueZahlungsartZeile(e.zahlungsarten[i], i),
                         const Divider(),
                         _baueGesamtZeile(),
                       ],
@@ -412,12 +462,42 @@ class _BelegScanGegenpruefDialogState
                       const SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(
-                            BelegScanDialogErgebnis(
-                              ergebnis: widget.ergebnis,
-                              kachelOeffnen: false,
-                            ),
-                          ),
+                          onPressed: () {
+                            final BelegScanErgebnis e = widget.ergebnis;
+                            final List<ZahlungsartErgebnis> korrigiert =
+                                List<ZahlungsartErgebnis>.generate(
+                              e.zahlungsarten.length,
+                              (int i) {
+                                final ZahlungsartErgebnis z =
+                                    e.zahlungsarten[i];
+                                return ZahlungsartErgebnis(
+                                  art: z.art.isEmpty &&
+                                          _gewaehlteArten.length > i
+                                      ? (_gewaehlteArten[i] ?? '')
+                                      : z.art,
+                                  anzahl: z.anzahl,
+                                  betragCent: z.betragCent,
+                                );
+                              },
+                            );
+                            Navigator.of(context).pop(
+                              BelegScanDialogErgebnis(
+                                ergebnis: BelegScanErgebnis(
+                                  keinTerminalBeleg: e.keinTerminalBeleg,
+                                  terminalId: e.terminalId,
+                                  datum: e.datum,
+                                  uhrzeit: e.uhrzeit,
+                                  belegNrVon: e.belegNrVon,
+                                  belegNrBis: e.belegNrBis,
+                                  zahlungsarten: korrigiert,
+                                  gesamtAnzahl: e.gesamtAnzahl,
+                                  gesamtBetragCent: e.gesamtBetragCent,
+                                  hinweis: e.hinweis,
+                                ),
+                                kachelOeffnen: false,
+                              ),
+                            );
+                          },
                           child: const Text('Übernehmen'),
                         ),
                       ),
