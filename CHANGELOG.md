@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 275a10: „in Arbeit …"-Text im EC-Kachel-Header während Scan (_scanLaeuft); „unbekannt" im Prüf-Popup orange + kursiv; fester Hinweistext statt KI-Freitext wenn hinweis != null: „Die Kartenbeträge summieren sich nicht zum Gesamtbetrag – bitte nach Übernehmen prüfen."; _istZeileImplausibel: nach Scan sollen sichtbare leere Zeilen als implausibel gelten (_scanHatStattgefunden && !nichtImScan && beide null → true). Dateien: beleg_scan_gegenpruef_dialog.dart, tagesabschluss_schritt2_seite.dart.
+
 - Run 275a6: Prüf-Popup als StatefulWidget mit Scroll-Indikator (↓-Pfeil wenn Inhalt scrollbar); zeile.reset() vor _preFillZahlungsartenFromScan (Bug: alte Werte blieben nach neuem Scan); _istZeileImplausibel vereinfacht (nichtPlausibel-Flag entfernt, nur noch strukturelle Prüfung: ein Feld leer, Anzahl = 0); Warnungen in Kartenarten-Tabelle werden unterdrückt wenn eine Zeile inkonsistent ist (irgendEineZeileInkonsistent); alle Warnfarben auf orange vereinheitlicht. Dateien: beleg_scan_gegenpruef_dialog.dart, tagesabschluss_schritt2_seite.dart.
 
 - Run 275a5: Prüf-Popup vereinfacht (Edit-Modus entfernt, rein Anzeige, „Übernehmen" immer aktiv) + Tipp-Text mit fettem „Übernehmen"; EC-Kachel startet zugeklappt, öffnet nach Scan automatisch; Bug-Fix _istZeileImplausibel (leere Zeile = erlaubt); kein Datenlöschen beim Foto-Tippen mehr; „manuell eingeben"-Link aus Expanded herausgelöst, rechtsbündig vor Foto-Icon; Warnungen in Kartenarten-Tabelle erst nach Fokus-Verlust (FocusNodes in _ZahlungsartZeile). Version 0.9.12 · r275a5. Dateien: beleg_scan_gegenpruef_dialog.dart, tagesabschluss_schritt2_seite.dart.

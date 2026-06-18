@@ -1249,7 +1249,10 @@ class _TagesabschlussSchritt2SeiteState
   /// Eine Zeile ist unplausibel, wenn der Scan sie als unsicher markiert hat,
   /// nur eines von Anzahl/Betrag ausgefüllt ist, oder die Anzahl 0 beträgt.
   bool _istZeileImplausibel(_ZahlungsartZeile zeile) {
-    if (zeile.anzahlWert == null && zeile.betragCentWert == null) return false;
+    if (zeile.anzahlWert == null && zeile.betragCentWert == null) {
+      // Nach einem Scan: sichtbare leere Zeilen müssen befüllt werden
+      return _scanHatStattgefunden && !zeile.nichtImScan;
+    }
     if (zeile.anzahlWert == null || zeile.betragCentWert == null) return true;
     if (zeile.anzahlWert == 0) return true;
     return false;
@@ -2720,6 +2723,17 @@ class _TagesabschlussSchritt2SeiteState
                                         style: TextStyle(fontSize: 13),
                                       ),
                                     ],
+                                  ),
+                                ),
+                              if (_scanLaeuft)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 6),
+                                  child: Text(
+                                    'in Arbeit …',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                    ),
                                   ),
                                 ),
                               ElevatedButton(

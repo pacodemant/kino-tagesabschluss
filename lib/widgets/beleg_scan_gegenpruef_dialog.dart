@@ -91,14 +91,21 @@ class _BelegScanGegenpruefDialogState
   }
 
   Widget _baueZahlungsartZeile(ZahlungsartErgebnis z) {
+    final bool artUnbekannt =
+        z.art.isEmpty || z.art.toLowerCase() == 'unbekannt';
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: <Widget>[
           Expanded(
             child: Text(
-              z.art.isEmpty ? '—' : z.art,
-              style: const TextStyle(fontSize: 14),
+              artUnbekannt ? 'unbekannt' : z.art,
+              style: TextStyle(
+                fontSize: 14,
+                color: artUnbekannt ? Colors.orange.shade700 : null,
+                fontStyle:
+                    artUnbekannt ? FontStyle.italic : FontStyle.normal,
+              ),
             ),
           ),
           SizedBox(
@@ -251,8 +258,18 @@ class _BelegScanGegenpruefDialogState
                                         color: Color(0xFF5D4037),
                                       ),
                                       children: e.hinweis != null
-                                          ? <InlineSpan>[
-                                              TextSpan(text: e.hinweis),
+                                          ? const <InlineSpan>[
+                                              TextSpan(
+                                                text:
+                                                    'Die Kartenbeträge summieren sich nicht zum Gesamtbetrag – bitte nach ',
+                                              ),
+                                              TextSpan(
+                                                text: 'Übernehmen',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                              TextSpan(text: ' prüfen.'),
                                             ]
                                           : const <InlineSpan>[
                                               TextSpan(
