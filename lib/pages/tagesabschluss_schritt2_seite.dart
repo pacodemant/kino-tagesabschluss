@@ -2240,6 +2240,8 @@ class _TagesabschlussSchritt2SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+    final int ecGesamtCent = _ecBelegeCent.fold(0, (int a, int b) => a + b);
+    final bool hatEcBelege = _scanHatStattgefunden || ecGesamtCent > 0;
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
@@ -2665,27 +2667,6 @@ class _TagesabschlussSchritt2SeiteState
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              if (!_ecKachelAufgeklappt) ...<Widget>[
-                                const SizedBox(width: 8),
-                                Builder(
-                                  builder: (BuildContext ctx) {
-                                    final int summe = _ecBelegeCent.fold(
-                                        0, (int a, int b) => a + b);
-                                    if (summe > 0) {
-                                      return Text(
-                                        TagesabschlussFormatierung
-                                            .formatiereEuro(summe),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppFarben.appBarRot,
-                                        ),
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                              ],
                               const Spacer(),
                               if (!_ecKachelAufgeklappt &&
                                   !_scanHatStattgefunden &&
@@ -2736,32 +2717,47 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                   ),
                                 ),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppFarben.appBarRot,
-                                  foregroundColor: Colors.white,
-                                  disabledBackgroundColor: AppFarben.appBarRot,
-                                  disabledForegroundColor: Colors.white,
-                                  shape: const CircleBorder(),
-                                  padding: const EdgeInsets.all(8),
-                                  minimumSize: const Size(36, 36),
-                                  tapTargetSize:
-                                      MaterialTapTargetSize.shrinkWrap,
+                              if (!_ecKachelAufgeklappt && hatEcBelege)
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: Text(
+                                    TagesabschlussFormatierung
+                                        .formatiereEuro(ecGesamtCent),
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppFarben.appBarRot,
+                                    ),
+                                  ),
                                 ),
-                                onPressed:
-                                    _scanLaeuft ? null : _starteEcBelegScan,
-                                child: _scanLaeuft
-                                    ? const SizedBox(
-                                        width: 18,
-                                        height: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Icon(Icons.camera_alt_outlined,
-                                        size: 20),
-                              ),
+                              if (_ecKachelAufgeklappt || !hatEcBelege)
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppFarben.appBarRot,
+                                    foregroundColor: Colors.white,
+                                    disabledBackgroundColor:
+                                        AppFarben.appBarRot,
+                                    disabledForegroundColor: Colors.white,
+                                    shape: const CircleBorder(),
+                                    padding: const EdgeInsets.all(8),
+                                    minimumSize: const Size(36, 36),
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  onPressed:
+                                      _scanLaeuft ? null : _starteEcBelegScan,
+                                  child: _scanLaeuft
+                                      ? const SizedBox(
+                                          width: 18,
+                                          height: 18,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Icon(Icons.camera_alt_outlined,
+                                          size: 20),
+                                ),
                               if (_scanHatStattgefunden &&
                                   _ecKachelAufgeklappt) ...<Widget>[
                                 const SizedBox(width: 2),
@@ -2985,15 +2981,21 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                   ),
                                 ),
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: OutlinedButton.icon(
-                                  onPressed: _ecBelegHinzufuegen,
-                                  icon: const Icon(Icons.add),
-                                  label:
-                                      const Text('+ EC-Beleg hinzufügen'),
+                              if (hatEcBelege)
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: TextButton(
+                                    onPressed: _ecBelegHinzufuegen,
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(0, 32),
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: const Text(
+                                        'Weiteren Beleg hinzufügen'),
+                                  ),
                                 ),
-                              ),
                               // 3a: Scan-Metadaten (nur nach Scan)
                               if (_scanHatStattgefunden)
                                 _baueMetadatenBlock(),

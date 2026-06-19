@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 276: EC-Kachel: Gesamtsumme rechts statt Kamera-Icon wenn zugeklappt + Belege vorhanden; Kamera-Button bleibt bei aufgeklappter Kachel oder ohne Belege sichtbar; „Weiteren Beleg hinzufügen"-TextButton erscheint erst nach dem ersten erfassten Beleg. Version 0.9.13+276. Dateien: tagesabschluss_schritt2_seite.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 275a10: „in Arbeit …"-Text im EC-Kachel-Header während Scan (_scanLaeuft); „unbekannt" im Prüf-Popup orange + kursiv; fester Hinweistext statt KI-Freitext wenn hinweis != null: „Die Kartenbeträge summieren sich nicht zum Gesamtbetrag – bitte nach Übernehmen prüfen."; _istZeileImplausibel: nach Scan sollen sichtbare leere Zeilen als implausibel gelten (_scanHatStattgefunden && !nichtImScan && beide null → true). Dateien: beleg_scan_gegenpruef_dialog.dart, tagesabschluss_schritt2_seite.dart.
 
 - Run 275a6: Prüf-Popup als StatefulWidget mit Scroll-Indikator (↓-Pfeil wenn Inhalt scrollbar); zeile.reset() vor _preFillZahlungsartenFromScan (Bug: alte Werte blieben nach neuem Scan); _istZeileImplausibel vereinfacht (nichtPlausibel-Flag entfernt, nur noch strukturelle Prüfung: ein Feld leer, Anzahl = 0); Warnungen in Kartenarten-Tabelle werden unterdrückt wenn eine Zeile inkonsistent ist (irgendEineZeileInkonsistent); alle Warnfarben auf orange vereinheitlicht. Dateien: beleg_scan_gegenpruef_dialog.dart, tagesabschluss_schritt2_seite.dart.

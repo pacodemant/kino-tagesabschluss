@@ -92,7 +92,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       Betragszeilen luftiger. "Bezeichnung (optional)" → "Terminal-ID" als Pflichtfeld.
       Bei Scan automatisch befüllt.
 
-- [ ] **EC-Kachel: Summe statt Kamera-Icon + "Weiteren Beleg"-Button** *(Run 276)*
+- [x] **EC-Kachel: Summe statt Kamera-Icon + "Weiteren Beleg"-Button** *(Run 276)*
       Zugeklappte Kachel zeigt Gesamtsumme rechts. "Weiteren Beleg hinzufügen"
       erscheint als Textbutton erst nach dem ersten Beleg.
 
@@ -110,6 +110,19 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 - [ ] **Hilfetext: Belegkopie ziehen** *(Run 280)* Info im Scan-Bereich was zu tun
       ist wenn Beleg fehlt oder unlesbar ist.
+
+- [ ] **Hilfetext & Duplikat-Button** *(Run 280)* Info im Scan-Bereich was zu tun
+      ist wenn Beleg fehlt oder unlesbar ist. Zusätzlich im Prüf-Popup: Dummy-Button
+      öffnet Popup mit Platzhaltertext ("Hier folgt Anleitung / Tutorial") —
+      Vorbereitung für spätere Tutorial-Videos oder Texte.
+      
+- [ ] **Plausibilitätsprüfung deaktivierbar** Standardmäßig deaktiviert.
+      Im Dev-Modus per Toggle einschaltbar.
+
+- [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
+      wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
+
+
 
 ### Einstellungen & Konfiguration *(Phase C, Runs 287–288)*
 
