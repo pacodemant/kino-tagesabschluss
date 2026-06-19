@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 277: EC-Kachel Unterkacheln pro Beleg. Jeder EC-Beleg wird als klappbare Sub-Card (Unterkachel) dargestellt mit eigenem Header (TID-Label + Betrag + Scan-Button + Löschen-Button + Auf-/Zuklapp-Pfeil); Sub-Card-Body enthält Terminal-ID- und Betrag-Felder. „Weiteren Beleg hinzufügen" klappt letzte Sub-Card zu und fügt neue aufgeklappt an. Äußerer Kamera-Button nur noch sichtbar wenn noch kein Beleg existiert. Scan schreibt in korrekten Beleg-Index statt immer in Index 0. `_scanLaeuft` durch `_scanBelegIndex: int?` + Getter ersetzt; Spinner pro Sub-Card-Button nur beim aktiven Scan. Validierung klappt Sub-Card 0 vor Pflichtfeldprüfung auf. Version 0.10.0+277. Dateien: tagesabschluss_schritt2_seite.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 276: EC-Kachel: Gesamtsumme rechts statt Kamera-Icon wenn zugeklappt + Belege vorhanden; Kamera-Button bleibt bei aufgeklappter Kachel oder ohne Belege sichtbar; „Weiteren Beleg hinzufügen"-TextButton erscheint erst nach dem ersten erfassten Beleg. Version 0.9.13+276. Dateien: tagesabschluss_schritt2_seite.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 275a10: „in Arbeit …"-Text im EC-Kachel-Header während Scan (_scanLaeuft); „unbekannt" im Prüf-Popup orange + kursiv; fester Hinweistext statt KI-Freitext wenn hinweis != null: „Die Kartenbeträge summieren sich nicht zum Gesamtbetrag – bitte nach Übernehmen prüfen."; _istZeileImplausibel: nach Scan sollen sichtbare leere Zeilen als implausibel gelten (_scanHatStattgefunden && !nichtImScan && beide null → true). Dateien: beleg_scan_gegenpruef_dialog.dart, tagesabschluss_schritt2_seite.dart.

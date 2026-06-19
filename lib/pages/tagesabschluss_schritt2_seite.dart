@@ -141,6 +141,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<int> _ecBelegIds = <int>[];
   int _naechsteEcBelegId = 1;
   final List<String> _ecBelegLabels = <String>[];
+  final List<bool> _ecUnterkachelAufgeklappt = <bool>[];
 
   final List<TextEditingController> _ausgabenBetragController = <TextEditingController>[];
   final List<TextEditingController> _ausgabenLabelController = <TextEditingController>[];
@@ -157,7 +158,8 @@ class _TagesabschlussSchritt2SeiteState
   final List<int> _ecBelegeCent = <int>[];
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
-  bool _scanLaeuft = false;
+  int? _scanBelegIndex;
+  bool get _scanLaeuft => _scanBelegIndex != null;
   bool _eingabeMitKomma = false;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
@@ -581,6 +583,11 @@ class _TagesabschlussSchritt2SeiteState
   bool _pruefePflichtfelderVorSchritt3() {
     setState(() {
       _validierungAusgeloest = true;
+      if (!_ecKachelAufgeklappt) _ecKachelAufgeklappt = true;
+      if (_ecUnterkachelAufgeklappt.isNotEmpty &&
+          !_ecUnterkachelAufgeklappt[0]) {
+        _ecUnterkachelAufgeklappt[0] = true;
+      }
     });
 
     final List<({TextEditingController controller, FocusNode fokus})>
@@ -648,6 +655,10 @@ class _TagesabschlussSchritt2SeiteState
   void _ecBelegHinzufuegen() {
     setState(() {
       _letzteAenderung = DateTime.now();
+      if (_ecUnterkachelAufgeklappt.isNotEmpty) {
+        _ecUnterkachelAufgeklappt[_ecUnterkachelAufgeklappt.length - 1] =
+            false;
+      }
       _ecBelegController.add(TextEditingController());
       _ecBelegLabelController.add(TextEditingController());
       _ecBelegFocusNode.add(FocusNode());
@@ -655,6 +666,7 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
+      _ecUnterkachelAufgeklappt.add(true);
     });
     _speichereEntwurf();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -679,6 +691,9 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.removeAt(index);
       _ecBelegLabels.removeAt(index);
       _ecBelegIds.removeAt(index);
+      if (index < _ecUnterkachelAufgeklappt.length) {
+        _ecUnterkachelAufgeklappt.removeAt(index);
+      }
     });
     _speichereEntwurf();
   }
@@ -703,6 +718,9 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.removeLast();
       _ecBelegLabels.removeLast();
       _ecBelegIds.removeLast();
+      if (_ecUnterkachelAufgeklappt.isNotEmpty) {
+        _ecUnterkachelAufgeklappt.removeLast();
+      }
     }
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
@@ -716,6 +734,7 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
+      _ecUnterkachelAufgeklappt.add(true);
     }
   }
 
@@ -943,7 +962,7 @@ class _TagesabschlussSchritt2SeiteState
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
   }
 
-  Future<void> _starteEcBelegScan() async {
+  Future<void> _starteEcBelegScan({int belegIndex = 0}) async {
     final List<ConnectivityResult> verbindung =
         await Connectivity().checkConnectivity();
     if (verbindung.contains(ConnectivityResult.none)) {
@@ -959,13 +978,13 @@ class _TagesabschlussSchritt2SeiteState
       final XFile? bild =
           await ImagePicker().pickImage(source: ImageSource.camera);
       if (bild == null) return;
-      setState(() => _scanLaeuft = true);
+      setState(() => _scanBelegIndex = belegIndex);
       BelegScanErgebnis? originalErgebnis;
       try {
         final BelegScanErgebnis ergebnis = await BelegScanService.scan(bild);
         originalErgebnis = ergebnis;
         if (!mounted) return;
-        setState(() => _scanLaeuft = false);
+        setState(() => _scanBelegIndex = null);
         if (ergebnis.keinTerminalBeleg) {
           final bool? nochmal = await showDialog<bool>(
             context: context,
@@ -1024,20 +1043,23 @@ class _TagesabschlussSchritt2SeiteState
         final BelegScanErgebnis geprueftes = dialogErgebnis.ergebnis!;
         setState(() {
           if (geprueftes.gesamtBetragCent != null) {
-            _ecBelegeCent[0] = geprueftes.gesamtBetragCent!;
+            _ecBelegeCent[belegIndex] = geprueftes.gesamtBetragCent!;
             _setzeControllerText(
-              _ecBelegController[0],
+              _ecBelegController[belegIndex],
               TagesabschlussFormatierung.formatiereEuroEingabe(
                   geprueftes.gesamtBetragCent!),
             );
-            _ecBeleg1Beruehrt = true;
+            if (belegIndex == 0) _ecBeleg1Beruehrt = true;
           }
           _scanTerminalId = _feldWertOderNull(geprueftes.terminalId);
           if (_scanTerminalId != null) {
-            _ecBelegLabels[0] = _scanTerminalId!;
+            _ecBelegLabels[belegIndex] = _scanTerminalId!;
             _setzeControllerText(
-                _ecBelegLabelController[0], _scanTerminalId!);
-            _ecBelegLabel1Beruehrt = true;
+                _ecBelegLabelController[belegIndex], _scanTerminalId!);
+            if (belegIndex == 0) _ecBelegLabel1Beruehrt = true;
+          }
+          if (belegIndex < _ecUnterkachelAufgeklappt.length) {
+            _ecUnterkachelAufgeklappt[belegIndex] = true;
           }
           _scanDatum = _feldWertOderNull(geprueftes.datum);
           _scanUhrzeit = _feldWertOderNull(geprueftes.uhrzeit);
@@ -1111,7 +1133,7 @@ class _TagesabschlussSchritt2SeiteState
           ),
         );
       } finally {
-        if (mounted) setState(() => _scanLaeuft = false);
+        if (mounted) setState(() => _scanBelegIndex = null);
       }
     } while (wiederholen);
   }
@@ -2730,7 +2752,7 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                   ),
                                 ),
-                              if (_ecKachelAufgeklappt || !hatEcBelege)
+                              if (!hatEcBelege)
                                 ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppFarben.appBarRot,
@@ -2744,8 +2766,9 @@ class _TagesabschlussSchritt2SeiteState
                                     tapTargetSize:
                                         MaterialTapTargetSize.shrinkWrap,
                                   ),
-                                  onPressed:
-                                      _scanLaeuft ? null : _starteEcBelegScan,
+                                  onPressed: _scanLaeuft
+                                      ? null
+                                      : () => _starteEcBelegScan(),
                                   child: _scanLaeuft
                                       ? const SizedBox(
                                           width: 18,
@@ -2801,183 +2824,347 @@ class _TagesabschlussSchritt2SeiteState
                                   key: ValueKey<int>(_ecBelegIds[i]),
                                   child: Padding(
                                     padding:
-                                        const EdgeInsets.only(bottom: 10),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: TextField(
-                                            controller:
-                                                _ecBelegLabelController[i],
-                                            focusNode:
-                                                _ecBelegLabelFocusNode[i],
-                                            style: TextStyle(
-                                              fontSize: 15,
-                                              color: _ecBelegLabelFocusNode[i]
-                                                      .hasFocus
-                                                  ? Colors.white
-                                                  : null,
+                                        const EdgeInsets.only(bottom: 6),
+                                    child: Card(
+                                      elevation: 0,
+                                      color: Colors.grey.shade50,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                        side: BorderSide(
+                                            color: Colors.grey.shade300),
+                                      ),
+                                      margin: EdgeInsets.zero,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: <Widget>[
+                                          // Unterkachel-Header
+                                          InkWell(
+                                            onTap: () => setState(() =>
+                                                _ecUnterkachelAufgeklappt[
+                                                    i] =
+                                                    !_ecUnterkachelAufgeklappt[
+                                                        i]),
+                                            borderRadius: _ecUnterkachelAufgeklappt[
+                                                    i]
+                                                ? const BorderRadius.vertical(
+                                                    top: Radius.circular(8))
+                                                : BorderRadius.circular(8),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      12, 8, 4, 8),
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    child: Text(
+                                                      _ecBelegLabels[i]
+                                                              .isNotEmpty
+                                                          ? _ecBelegLabels[i]
+                                                          : 'Beleg ${i + 1}',
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: _ecBelegLabels[
+                                                                    i]
+                                                                .isNotEmpty
+                                                            ? Colors.black87
+                                                            : Colors
+                                                                .grey.shade500,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                  if (_ecBelegeCent[i] > 0)
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              right: 4),
+                                                      child: Text(
+                                                        TagesabschlussFormatierung
+                                                            .formatiereEuro(
+                                                                _ecBelegeCent[
+                                                                    i]),
+                                                        style: const TextStyle(
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  SizedBox(
+                                                    width: 32,
+                                                    height: 32,
+                                                    child: IconButton(
+                                                      tooltip: 'Beleg scannen',
+                                                      padding: EdgeInsets.zero,
+                                                      constraints:
+                                                          const BoxConstraints(),
+                                                      icon: _scanBelegIndex ==
+                                                              i
+                                                          ? const SizedBox(
+                                                              width: 16,
+                                                              height: 16,
+                                                              child:
+                                                                  CircularProgressIndicator(
+                                                                strokeWidth: 2,
+                                                              ),
+                                                            )
+                                                          : const Icon(
+                                                              Icons
+                                                                  .camera_alt_outlined,
+                                                              size: 18,
+                                                            ),
+                                                      onPressed: _scanLaeuft
+                                                          ? null
+                                                          : () =>
+                                                              _starteEcBelegScan(
+                                                                  belegIndex:
+                                                                      i),
+                                                    ),
+                                                  ),
+                                                  if (_ecBelegController
+                                                          .length >
+                                                      1)
+                                                    SizedBox(
+                                                      width: 32,
+                                                      height: 32,
+                                                      child: IconButton(
+                                                        tooltip:
+                                                            'Beleg entfernen',
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        constraints:
+                                                            const BoxConstraints(),
+                                                        icon: const Icon(
+                                                          Icons.delete_outline,
+                                                          size: 18,
+                                                        ),
+                                                        onPressed: () =>
+                                                            _ecBelegEntfernen(
+                                                                i),
+                                                      ),
+                                                    ),
+                                                  Icon(
+                                                    _ecUnterkachelAufgeklappt[
+                                                            i]
+                                                        ? Icons.expand_less
+                                                        : Icons.expand_more,
+                                                    size: 18,
+                                                  ),
+                                                  const SizedBox(width: 4),
+                                                ],
+                                              ),
                                             ),
-                                            cursorColor:
-                                                _ecBelegLabelFocusNode[i]
-                                                        .hasFocus
-                                                    ? Colors.white
-                                                    : null,
-                                            textInputAction:
-                                                _textInputActionFuerSchritt2(
-                                              _ecBelegLabelFocusNode[i],
-                                            ),
-                                            decoration: InputDecoration(
-                                              hintText: 'Terminal-ID',
-                                              hintStyle: const TextStyle(
-                                                  fontSize: 15),
-                                              errorText: i == 0
-                                                  ? _pflichtfeldFehlertext(
-                                                      feldBeruehrt:
-                                                          _ecBelegLabel1Beruehrt,
+                                          ),
+                                          // Unterkachel-Body
+                                          if (_ecUnterkachelAufgeklappt[
+                                              i]) ...<Widget>[
+                                            const Divider(height: 1),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.all(10),
+                                              child: Row(
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    child: TextField(
                                                       controller:
                                                           _ecBelegLabelController[
-                                                              0],
-                                                      fehlertext:
-                                                          'Terminal-ID eingeben',
-                                                    )
-                                                  : null,
-                                              errorBorder:
-                                                  const OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.red),
-                                              ),
-                                              focusedErrorBorder:
-                                                  const OutlineInputBorder(
-                                                borderSide: BorderSide(
-                                                    color: Colors.red,
-                                                    width: 2),
-                                              ),
-                                              border:
-                                                  const OutlineInputBorder(),
-                                              isDense: true,
-                                              filled: _ecBelegLabelFocusNode[i]
-                                                  .hasFocus,
-                                              fillColor:
-                                                  _ecBelegLabelFocusNode[i]
-                                                          .hasFocus
-                                                      ? Colors.black87
-                                                      : null,
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 6,
-                                              ),
-                                              suffixIconConstraints:
-                                                  const BoxConstraints(
-                                                minWidth: 0,
-                                                minHeight: 0,
-                                                maxWidth: 32,
-                                                maxHeight: 32,
-                                              ),
-                                              suffixIcon:
-                                                  _ecBelegLabelController[i]
-                                                          .text.isEmpty
-                                                      ? null
-                                                      : IconButton(
-                                                          constraints:
-                                                              const BoxConstraints(),
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          icon: Icon(
-                                                            Icons.close,
-                                                            size: 18,
-                                                            color: _ecBelegLabelFocusNode[
-                                                                        i]
-                                                                    .hasFocus
-                                                                ? Colors.white
-                                                                : null,
-                                                          ),
-                                                          onPressed: () {
-                                                            _ecBelegLabelController[
+                                                              i],
+                                                      focusNode:
+                                                          _ecBelegLabelFocusNode[
+                                                              i],
+                                                      style: TextStyle(
+                                                        fontSize: 15,
+                                                        color: _ecBelegLabelFocusNode[
                                                                     i]
-                                                                .clear();
-                                                            setState(() {
-                                                              _ecBelegLabels[
-                                                                  i] = '';
-                                                            });
-                                                            _speichereEntwurf();
+                                                                .hasFocus
+                                                            ? Colors.white
+                                                            : null,
+                                                      ),
+                                                      cursorColor:
+                                                          _ecBelegLabelFocusNode[
+                                                                      i]
+                                                                  .hasFocus
+                                                              ? Colors.white
+                                                              : null,
+                                                      textInputAction:
+                                                          _textInputActionFuerSchritt2(
+                                                        _ecBelegLabelFocusNode[
+                                                            i],
+                                                      ),
+                                                      decoration:
+                                                          InputDecoration(
+                                                        hintText: 'Terminal-ID',
+                                                        hintStyle:
+                                                            const TextStyle(
+                                                                fontSize: 15),
+                                                        errorText: i == 0
+                                                            ? _pflichtfeldFehlertext(
+                                                                feldBeruehrt:
+                                                                    _ecBelegLabel1Beruehrt,
+                                                                controller:
+                                                                    _ecBelegLabelController[
+                                                                        0],
+                                                                fehlertext:
+                                                                    'Terminal-ID eingeben',
+                                                              )
+                                                            : null,
+                                                        errorBorder:
+                                                            const OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red),
+                                                        ),
+                                                        focusedErrorBorder:
+                                                            const OutlineInputBorder(
+                                                          borderSide:
+                                                              BorderSide(
+                                                                  color: Colors
+                                                                      .red,
+                                                                  width: 2),
+                                                        ),
+                                                        border:
+                                                            const OutlineInputBorder(),
+                                                        isDense: true,
+                                                        filled:
                                                             _ecBelegLabelFocusNode[
                                                                     i]
-                                                                .requestFocus();
-                                                          },
+                                                                .hasFocus,
+                                                        fillColor:
+                                                            _ecBelegLabelFocusNode[
+                                                                        i]
+                                                                    .hasFocus
+                                                                ? Colors
+                                                                    .black87
+                                                                : null,
+                                                        contentPadding:
+                                                            const EdgeInsets
+                                                                .symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 6,
                                                         ),
+                                                        suffixIconConstraints:
+                                                            const BoxConstraints(
+                                                          minWidth: 0,
+                                                          minHeight: 0,
+                                                          maxWidth: 32,
+                                                          maxHeight: 32,
+                                                        ),
+                                                        suffixIcon:
+                                                            _ecBelegLabelController[
+                                                                        i]
+                                                                    .text
+                                                                    .isEmpty
+                                                                ? null
+                                                                : IconButton(
+                                                                    constraints:
+                                                                        const BoxConstraints(),
+                                                                    padding:
+                                                                        EdgeInsets
+                                                                            .zero,
+                                                                    icon: Icon(
+                                                                      Icons
+                                                                          .close,
+                                                                      size: 18,
+                                                                      color: _ecBelegLabelFocusNode[i]
+                                                                              .hasFocus
+                                                                          ? Colors
+                                                                              .white
+                                                                          : null,
+                                                                    ),
+                                                                    onPressed:
+                                                                        () {
+                                                                      _ecBelegLabelController[
+                                                                              i]
+                                                                          .clear();
+                                                                      setState(
+                                                                          () {
+                                                                        _ecBelegLabels[
+                                                                            i] = '';
+                                                                      });
+                                                                      _speichereEntwurf();
+                                                                      _ecBelegLabelFocusNode[
+                                                                              i]
+                                                                          .requestFocus();
+                                                                    },
+                                                                  ),
+                                                      ),
+                                                      onSubmitted: (_) =>
+                                                          _beiEingabeAbgeschlossenSchritt2(
+                                                        _ecBelegLabelFocusNode[
+                                                            i],
+                                                      ),
+                                                      onChanged: (String wert) {
+                                                        setState(() {
+                                                          _letzteAenderung =
+                                                              DateTime.now();
+                                                          _ecBelegLabels[i] =
+                                                              wert;
+                                                          if (i == 0) {
+                                                            _ecBelegLabel1Beruehrt =
+                                                                true;
+                                                          }
+                                                        });
+                                                        _speichereEntwurf();
+                                                      },
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  SizedBox(
+                                                    width: 120,
+                                                    child: BetragCentEingabefeld(
+                                                      textController:
+                                                          _ecBelegController[i],
+                                                      focusNode:
+                                                          _ecBelegFocusNode[i],
+                                                      textInputAction:
+                                                          _textInputActionFuerSchritt2(
+                                                        _ecBelegFocusNode[i],
+                                                      ),
+                                                      onSubmitted: (_) =>
+                                                          _beiEingabeAbgeschlossenSchritt2(
+                                                        _ecBelegFocusNode[i],
+                                                      ),
+                                                      onChanged: (String wert) {
+                                                        setState(() {
+                                                          _letzteAenderung =
+                                                              DateTime.now();
+                                                          if (i == 0) {
+                                                            _ecBeleg1Beruehrt =
+                                                                true;
+                                                          }
+                                                          _ecBelegeCent[i] =
+                                                              _parsiereBetragCent(
+                                                                  wert);
+                                                        });
+                                                        _speichereEntwurf();
+                                                      },
+                                                      schriftgroesse: 15,
+                                                      hinweisText: '0,00 €',
+                                                      fehlermeldungText: i == 0
+                                                          ? _pflichtfeldFehlertext(
+                                                              feldBeruehrt:
+                                                                  _ecBeleg1Beruehrt,
+                                                              controller:
+                                                                  _ecBelegController
+                                                                      .first,
+                                                            )
+                                                          : null,
+                                                      mitKomma:
+                                                          _eingabeMitKomma,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
-                                            onSubmitted: (_) =>
-                                                _beiEingabeAbgeschlossenSchritt2(
-                                              _ecBelegLabelFocusNode[i],
-                                            ),
-                                            onChanged: (String wert) {
-                                              setState(() {
-                                                _letzteAenderung =
-                                                    DateTime.now();
-                                                _ecBelegLabels[i] = wert;
-                                                if (i == 0) {
-                                                  _ecBelegLabel1Beruehrt =
-                                                      true;
-                                                }
-                                              });
-                                              _speichereEntwurf();
-                                            },
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        SizedBox(
-                                          width: 120,
-                                          child: BetragCentEingabefeld(
-                                            textController:
-                                                _ecBelegController[i],
-                                            focusNode: _ecBelegFocusNode[i],
-                                            textInputAction:
-                                                _textInputActionFuerSchritt2(
-                                              _ecBelegFocusNode[i],
-                                            ),
-                                            onSubmitted: (_) =>
-                                                _beiEingabeAbgeschlossenSchritt2(
-                                              _ecBelegFocusNode[i],
-                                            ),
-                                            onChanged: (String wert) {
-                                              setState(() {
-                                                _letzteAenderung =
-                                                    DateTime.now();
-                                                if (i == 0) {
-                                                  _ecBeleg1Beruehrt = true;
-                                                }
-                                                _ecBelegeCent[i] =
-                                                    _parsiereBetragCent(wert);
-                                              });
-                                              _speichereEntwurf();
-                                            },
-                                            schriftgroesse: 15,
-                                            hinweisText: '0,00 €',
-                                            fehlermeldungText: i == 0
-                                                ? _pflichtfeldFehlertext(
-                                                    feldBeruehrt:
-                                                        _ecBeleg1Beruehrt,
-                                                    controller:
-                                                        _ecBelegController
-                                                            .first,
-                                                  )
-                                                : null,
-                                            mitKomma: _eingabeMitKomma,
-                                          ),
-                                        ),
-                                        if (_ecBelegController.length >
-                                            1) ...<Widget>[
-                                          const SizedBox(width: 6),
-                                          IconButton(
-                                            onPressed: () =>
-                                                _ecBelegEntfernen(i),
-                                            icon: const Icon(
-                                                Icons.delete_outline),
-                                            tooltip: 'EC-Beleg entfernen',
-                                          ),
+                                          ],
                                         ],
-                                      ],
+                                      ),
                                     ),
                                   ),
                                 ),

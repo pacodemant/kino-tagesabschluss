@@ -96,7 +96,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       Zugeklappte Kachel zeigt Gesamtsumme rechts. "Weiteren Beleg hinzufügen"
       erscheint als Textbutton erst nach dem ersten Beleg.
 
-- [ ] **EC-Kachel: Unterkacheln pro Beleg** *(Run 277)* Mehrere Belege pro Kachel
+- [x] **EC-Kachel: Unterkacheln pro Beleg** *(Run 277)* Mehrere Belege pro Kachel
       möglich. Jeder Beleg = eigene Unterkachel (zugklappbar, eigener Papierkorb,
       eigener Foto-Button mit Rückfrage vor erneutem Scan).
 
@@ -117,7 +117,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       Vorbereitung für spätere Tutorial-Videos oder Texte.
       
 - [ ] **Plausibilitätsprüfung deaktivierbar** Standardmäßig deaktiviert.
-      Im Dev-Modus per Toggle einschaltbar.
+      Im Dev-Modus per Toggle einschaltbar. Das wird später noch weiterentwickelt.
 
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
       wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
@@ -252,7 +252,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ---
 
-## 💡 Roadmap / Post-MVP
+## ↔️ Roadmap / Post-MVP
 
 - [ ] **Offline-Hinweis** Banner wenn keine Netzwerkverbindung
 - [ ] **Onboarding-Videos** Reale Abrechnung mit der App für neue Mitarbeiter
@@ -260,7 +260,17 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       (erfordert Backend-Komponente)
 - [ ] **Management-Dashboard** Übersicht alle Standorte, Tagesverläufe,
       Abweichungen — separates Tool
-- [ ] **Remote-Konfigurationsdashboard** Zentrales Dashboard für Yannik
+- [ ] **Remote-Konfigurationsdashboard** Zentrales Dashboard für Yannik 
       zum Verwalten aller Geräte ohne Vor-Ort-Einrichtung — eigenständiges
       zweites System, nicht V1
 - [ ] **Admin-Dashboard für Kino-IT** API-Key-Verwaltung, Konfiguration
+
+---
+
+## 💡 lose, schnell hinzugefügte Spontan-Ideen (hin und wieder mal in die Todos einsortieren)
+
+- [ ] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen" 
+      (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben
+
+- [ ] **Storno auf Belegen** Ich hatte zwar noch nie einen solchen Fall, aber 
+      die App muss auch Stornos erkennen können.
