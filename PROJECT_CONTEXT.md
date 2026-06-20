@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.10.0+277 · Run 277
+Version: 0.10.1+277a2 · Run 277a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -125,14 +125,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 276)
+## Laufender Entwicklungsstand (Run 277a2)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
 
 - Run 275 ✅ EC-Kachel Layout & Terminal-ID — abgeschlossen
 - Run 275a…a10 ✅ Prüf-Popup vereinfacht, EC-Kachel-Korrekturen, Bugfixes, Dropdown für unbekannte Kartenart, UX-Verbesserungen — abgeschlossen
 - Run 276 ✅ EC-Kachel: Gesamtsumme rechts statt Kamera-Icon (zugeklappt + Belege vorhanden); „Weiteren Beleg hinzufügen"-TextButton erst nach erstem Beleg — abgeschlossen
-- Run 277 ✅ EC-Kachel: Unterkacheln pro Beleg — jeder Beleg als klappbare Sub-Card mit eigenem Scan- und Löschen-Button — abgeschlossen
+- Run 277 ✅ EC-Kachel: Unterkacheln pro Beleg — abgeschlossen
+- Run 277a ✅ EC-Kachel Redesign: 1-Beleg flach / 2+-Belege Sub-Kacheln mit Edit/Read-Modus — abgeschlossen
+- Run 277a2 ✅ EC-Kachel Sub-Kacheln — Fixes + Zahlungsarten + UX — abgeschlossen
 - Run 278 ⬜ Prüf-Popup: Inline-Korrektur
 - Run 279 ⬜ Dev-Modus: "see JSON"-Button im Prüf-Popup
 - Run 280 ⬜ Hilfetext: Belegkopie ziehen
