@@ -64,16 +64,17 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 - [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
 
-- [ ] **PWA-Install-Button** In Einstellungen: Button führt durch
-      Homescreen-Installation.
+- [ ] **PWA-Install-Button (iOS)** Chrome/Edge: Button in Einstellungen vorhanden
+      (beforeinstallprompt). iOS-Safari: kein beforeinstallprompt — stattdessen
+      Hinweistext in Einstellungen „Teilen → Zum Home-Bildschirm" einblenden.
 
 - [ ] **Getränke-Nachfüllliste persistieren** Lokal speichern wie andere
       Entwurfsdaten. Verhindert Datenverlust bei Absturz.
 
-- [ ] **Immer aktuelle Version laden** Beim Start sicherstellen dass Browser/PWA
+- [x] **Immer aktuelle Version laden** Beim Start sicherstellen dass Browser/PWA
       stets die aktuelle Version lädt.
 
-- [ ] **Datenschutz-Hinweis** MA informieren dass alle Daten inkl. Name intern bleiben.
+- [x] **Datenschutz-Hinweis** MA informieren dass alle Daten inkl. Name intern bleiben.
 
 - [ ] **Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag** Seit Run 274f4
       gibt es in der Kartenarten-Tabelle einen "+ Kartenart"-Button zum
@@ -81,6 +82,11 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       Nachtrag die Kartensumme wieder zum EC-Gesamtbetrag (Hauptfeld) passend
       macht, soll dort etwas automatisch nachgezogen werden? Zurückgestellt,
       da bei sauberen Scans kaum relevant.
+
+- [ ] **Schwarze Hervorhebungen** Sämtliche schwarze Feld-Hervorhebungen entfernen.
+
+- [ ] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"
+      (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben
 
 ---
 
@@ -100,7 +106,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       möglich. Jeder Beleg = eigene Unterkachel (zugklappbar, eigener Papierkorb,
       eigener Foto-Button mit Rückfrage vor erneutem Scan).
 
-- [ ] **Prüf-Popup: Inline-Korrektur** *(Run 278)* Unlesbare/unsichere Werte rot
+- [x] **Prüf-Popup: Inline-Korrektur** *(Run 278)* Unlesbare/unsichere Werte rot
       hervorgehoben. Tap → kompaktes Eingabefeld ersetzt genau diese Zeile (gleiche
       Höhe, roter Rahmen). Hinweistext: "Rote Felder bitte korrigieren."
 
@@ -115,14 +121,17 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       ist wenn Beleg fehlt oder unlesbar ist. Zusätzlich im Prüf-Popup: Dummy-Button
       öffnet Popup mit Platzhaltertext ("Hier folgt Anleitung / Tutorial") —
       Vorbereitung für spätere Tutorial-Videos oder Texte.
-      
+
 - [ ] **Plausibilitätsprüfung deaktivierbar** Standardmäßig deaktiviert.
       Im Dev-Modus per Toggle einschaltbar. Das wird später noch weiterentwickelt.
 
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
       wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
 
+- [ ] **Storno auf Belegen** Ich hatte zwar noch nie einen solchen Fall, aber
+      die App muss auch Stornos erkennen können.
 
+- [ ] **Belegscan Metadaten** zuklappbar machen
 
 ### Einstellungen & Konfiguration *(Phase C, Runs 287–288)*
 
@@ -255,22 +264,21 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 ## ↔️ Roadmap / Post-MVP
 
 - [ ] **Offline-Hinweis** Banner wenn keine Netzwerkverbindung
+
 - [ ] **Onboarding-Videos** Reale Abrechnung mit der App für neue Mitarbeiter
+
 - [ ] **Nachrichten der Kinoleitung** Mitteilungen direkt in die App
       (erfordert Backend-Komponente)
+
 - [ ] **Management-Dashboard** Übersicht alle Standorte, Tagesverläufe,
       Abweichungen — separates Tool
-- [ ] **Remote-Konfigurationsdashboard** Zentrales Dashboard für Yannik 
+
+- [ ] **Remote-Konfigurationsdashboard** Zentrales Dashboard für Yannik
       zum Verwalten aller Geräte ohne Vor-Ort-Einrichtung — eigenständiges
       zweites System, nicht V1
+
 - [ ] **Admin-Dashboard für Kino-IT** API-Key-Verwaltung, Konfiguration
 
 ---
 
 ## 💡 lose, schnell hinzugefügte Spontan-Ideen (hin und wieder mal in die Todos einsortieren)
-
-- [ ] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen" 
-      (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben
-
-- [ ] **Storno auf Belegen** Ich hatte zwar noch nie einen solchen Fall, aber 
-      die App muss auch Stornos erkennen können.

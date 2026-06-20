@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 278: Prüf-Popup Inline-Korrektur. Unleserliche Felder (null / "unleserlich") werden rot hervorgehoben. Hinweistext "Rote Felder bitte korrigieren." erscheint oben und verschwindet nach vollständiger Korrektur. Tap auf rotes Feld → kompaktes Inline-Eingabefeld (roter Rahmen, gleiche Zeilenhöhe); Enter oder Fokus-Verlust übernimmt den Wert, Zeile kehrt zur normalen Darstellung zurück. Editierbare Felder: Terminal-ID, Gesamt-Betrag, Anzahl und Betrag je Zahlungsart. "Übernehmen" gibt korrigiertes BelegScanErgebnis zurück. Version 0.11.0+278. Dateien: beleg_scan_gegenpruef_dialog.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 277a5: Sub-Kachel-Header-Titel zeigt „In Arbeit …" während KI-Scan läuft (_scanBelegIndex == i). Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 277a4: EC-Kachel Betrag-Vergleich + Button-Rename. Bugfix: _baueZahlungsartenTabelle verglich Kartensumme bisher mit der Summe ALLER Belege (.fold); neues State-Feld _ecZahlungsartenBelegIndex merkt, welcher Beleg die Zahlungsarten gehören (wird in _starteEcBelegScan gesetzt, in _loescheKartenDaten auf 0 zurückgesetzt, in _speichereEntwurf/_ladeEntwurf persistiert). Vergleich jetzt: _ecBelegeCent[_ecZahlungsartenBelegIndex] statt fold-Summe; Warnung erscheint nur noch wenn ecGesamtCent > 0 (kein Falsch-Alarm bei leerem Beleg). Rename: Zahlungsarten-Button „Belegdaten manuell bearbeiten" → „Umsätze manuell bearbeiten"; Metadaten-Button → „Metadaten manuell bearbeiten". Version 0.10.1+277a4. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
