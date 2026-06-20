@@ -2986,15 +2986,19 @@ class _TagesabschlussSchritt2SeiteState
                                                   children: <Widget>[
                                                     Expanded(
                                                       child: Text(
-                                                        _ecBelegLabels[i].isNotEmpty
-                                                            ? _ecBelegLabels[i]
-                                                            : 'Beleg ${i + 1}',
+                                                        _scanBelegIndex == i
+                                                            ? 'In Arbeit …'
+                                                            : (_ecBelegLabels[i].isNotEmpty
+                                                                ? _ecBelegLabels[i]
+                                                                : 'Beleg ${i + 1}'),
                                                         style: TextStyle(
                                                           fontSize: 13,
                                                           fontWeight: FontWeight.w600,
-                                                          color: _ecBelegLabels[i].isNotEmpty
-                                                              ? Colors.black87
-                                                              : Colors.grey.shade500,
+                                                          color: _scanBelegIndex == i
+                                                              ? Colors.grey.shade500
+                                                              : (_ecBelegLabels[i].isNotEmpty
+                                                                  ? Colors.black87
+                                                                  : Colors.grey.shade500),
                                                         ),
                                                         overflow: TextOverflow.ellipsis,
                                                       ),
