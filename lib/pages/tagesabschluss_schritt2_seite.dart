@@ -656,9 +656,8 @@ class _TagesabschlussSchritt2SeiteState
   void _ecBelegHinzufuegen() {
     setState(() {
       _letzteAenderung = DateTime.now();
-      if (_ecUnterkachelAufgeklappt.isNotEmpty) {
-        _ecUnterkachelAufgeklappt[_ecUnterkachelAufgeklappt.length - 1] =
-            false;
+      for (int j = 0; j < _ecUnterkachelAufgeklappt.length; j++) {
+        _ecUnterkachelAufgeklappt[j] = false;
       }
       final int prevIdx = _ecUnterkachelEditModus.length - 1;
       if (prevIdx >= 0 &&
@@ -1764,15 +1763,41 @@ class _TagesabschlussSchritt2SeiteState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.only(bottom: 4),
-            child: Text(
-              'Scan-Metadaten',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.black54,
-              ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              children: <Widget>[
+                const Expanded(
+                  child: Text(
+                    'Scan-Metadaten',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() => _metadatenNurAnzeige = !_metadatenNurAnzeige);
+                    if (!_metadatenNurAnzeige) {
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        if (mounted) _scanDatumFocusNode.requestFocus();
+                      });
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(0, 24),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    _metadatenNurAnzeige ? 'Belegdaten manuell bearbeiten' : 'Fertig.',
+                    style: const TextStyle(
+                        fontSize: 11, decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
             ),
           ),
           if (_metadatenNurAnzeige) ...<Widget>[
@@ -1810,7 +1835,6 @@ class _TagesabschlussSchritt2SeiteState
                   wert, (String? w) => _scanBelegNrBis = w),
             ),
           ],
-          _baueMetadatenEditButton(),
         ],
       ),
     );
@@ -1992,36 +2016,7 @@ class _TagesabschlussSchritt2SeiteState
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            _kartenartenNurAnzeige ? 'manuell editieren' : 'Fertig.',
-            style: const TextStyle(
-                fontSize: 11, decoration: TextDecoration.underline),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _baueMetadatenEditButton() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton(
-          onPressed: () {
-            setState(() => _metadatenNurAnzeige = !_metadatenNurAnzeige);
-            if (!_metadatenNurAnzeige) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (mounted) _scanDatumFocusNode.requestFocus();
-              });
-            }
-          },
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: const Size(0, 28),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            _metadatenNurAnzeige ? 'manuell editieren' : 'Fertig.',
+            _kartenartenNurAnzeige ? 'Belegdaten manuell bearbeiten' : 'Fertig.',
             style: const TextStyle(
                 fontSize: 11, decoration: TextDecoration.underline),
           ),
@@ -2712,6 +2707,7 @@ class _TagesabschlussSchritt2SeiteState
                               const Spacer(),
                               if (!_ecKachelAufgeklappt &&
                                   !_scanHatStattgefunden &&
+                                  !_scanLaeuft &&
                                   _ecBelegeCent.fold(
                                           0, (int a, int b) => a + b) ==
                                       0)
@@ -2952,7 +2948,7 @@ class _TagesabschlussSchritt2SeiteState
                                 if (_zahlungsartZeilen.isNotEmpty) _baueZahlungsartenTabelle(),
                               ] else ...<Widget>[
                                 // 2+-Beleg-Modus: Sub-Kacheln
-                                for (int i = 0; i < _ecBelegController.length; i++)
+                                for (int i = _ecBelegController.length - 1; i >= 0; i--)
                                   KeyedSubtree(
                                     key: ValueKey<int>(_ecBelegIds[i]),
                                     child: Padding(
@@ -3023,10 +3019,12 @@ class _TagesabschlussSchritt2SeiteState
                                                                 child: CircularProgressIndicator(
                                                                     strokeWidth: 2),
                                                               )
-                                                            : const Icon(
+                                                            : Icon(
                                                                 Icons.camera_alt,
                                                                 size: 18,
-                                                                color: AppFarben.appBarRot),
+                                                                color: (_ecBelegLabels[i].isNotEmpty || _ecBelegeCent[i] > 0)
+                                                                    ? Colors.grey.shade400
+                                                                    : AppFarben.appBarRot),
                                                         onPressed: _scanLaeuft
                                                             ? null
                                                             : () => _starteEcBelegScan(belegIndex: i),
@@ -3063,172 +3061,16 @@ class _TagesabschlussSchritt2SeiteState
                                               const Divider(height: 1),
                                               Padding(
                                                 padding: const EdgeInsets.all(10),
-                                                child: _ecUnterkachelEditModus[i]
-                                                    // Edit-Body
-                                                    ? Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.stretch,
-                                                        children: <Widget>[
-                                                          Row(
-                                                            children: <Widget>[
-                                                              Expanded(
-                                                                child: TextField(
-                                                                  controller:
-                                                                      _ecBelegLabelController[i],
-                                                                  focusNode:
-                                                                      _ecBelegLabelFocusNode[i],
-                                                                  style: TextStyle(
-                                                                    fontSize: 15,
-                                                                    color: _ecBelegLabelFocusNode[i]
-                                                                            .hasFocus
-                                                                        ? Colors.white
-                                                                        : null,
-                                                                  ),
-                                                                  cursorColor:
-                                                                      _ecBelegLabelFocusNode[i]
-                                                                              .hasFocus
-                                                                          ? Colors.white
-                                                                          : null,
-                                                                  textInputAction:
-                                                                      _textInputActionFuerSchritt2(
-                                                                          _ecBelegLabelFocusNode[i]),
-                                                                  decoration: InputDecoration(
-                                                                    hintText: 'Terminal-ID',
-                                                                    hintStyle: const TextStyle(
-                                                                        fontSize: 15),
-                                                                    border:
-                                                                        const OutlineInputBorder(),
-                                                                    isDense: true,
-                                                                    filled: _ecBelegLabelFocusNode[i]
-                                                                        .hasFocus,
-                                                                    fillColor:
-                                                                        _ecBelegLabelFocusNode[i]
-                                                                                .hasFocus
-                                                                            ? Colors.black87
-                                                                            : null,
-                                                                    contentPadding:
-                                                                        const EdgeInsets.symmetric(
-                                                                            horizontal: 8,
-                                                                            vertical: 6),
-                                                                    suffixIconConstraints:
-                                                                        const BoxConstraints(
-                                                                            minWidth: 0,
-                                                                            minHeight: 0,
-                                                                            maxWidth: 32,
-                                                                            maxHeight: 32),
-                                                                    suffixIcon:
-                                                                        _ecBelegLabelController[i]
-                                                                                .text
-                                                                                .isEmpty
-                                                                            ? null
-                                                                            : IconButton(
-                                                                                constraints:
-                                                                                    const BoxConstraints(),
-                                                                                padding:
-                                                                                    EdgeInsets.zero,
-                                                                                icon: Icon(
-                                                                                    Icons.close,
-                                                                                    size: 18,
-                                                                                    color: _ecBelegLabelFocusNode[
-                                                                                                i]
-                                                                                            .hasFocus
-                                                                                        ? Colors
-                                                                                            .white
-                                                                                        : null),
-                                                                                onPressed: () {
-                                                                                  _ecBelegLabelController[
-                                                                                          i]
-                                                                                      .clear();
-                                                                                  setState(() {
-                                                                                    _ecBelegLabels[
-                                                                                        i] = '';
-                                                                                  });
-                                                                                  _speichereEntwurf();
-                                                                                  _ecBelegLabelFocusNode[
-                                                                                          i]
-                                                                                      .requestFocus();
-                                                                                },
-                                                                              ),
-                                                                  ),
-                                                                  onSubmitted: (_) =>
-                                                                      _beiEingabeAbgeschlossenSchritt2(
-                                                                          _ecBelegLabelFocusNode[i]),
-                                                                  onChanged: (String wert) {
-                                                                    setState(() {
-                                                                      _letzteAenderung =
-                                                                          DateTime.now();
-                                                                      _ecBelegLabels[i] = wert;
-                                                                      if (i == 0) {
-                                                                        _ecBelegLabel1Beruehrt =
-                                                                            true;
-                                                                      }
-                                                                    });
-                                                                    _speichereEntwurf();
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              const SizedBox(width: 8),
-                                                              SizedBox(
-                                                                width: 120,
-                                                                child: BetragCentEingabefeld(
-                                                                  textController:
-                                                                      _ecBelegController[i],
-                                                                  focusNode: _ecBelegFocusNode[i],
-                                                                  textInputAction:
-                                                                      _textInputActionFuerSchritt2(
-                                                                          _ecBelegFocusNode[i]),
-                                                                  onSubmitted: (_) =>
-                                                                      _beiEingabeAbgeschlossenSchritt2(
-                                                                          _ecBelegFocusNode[i]),
-                                                                  onChanged: (String wert) {
-                                                                    setState(() {
-                                                                      _letzteAenderung =
-                                                                          DateTime.now();
-                                                                      if (i == 0) {
-                                                                        _ecBeleg1Beruehrt = true;
-                                                                      }
-                                                                      _ecBelegeCent[i] =
-                                                                          _parsiereBetragCent(wert);
-                                                                    });
-                                                                    _speichereEntwurf();
-                                                                  },
-                                                                  schriftgroesse: 15,
-                                                                  hinweisText: '0,00 €',
-                                                                  mitKomma: _eingabeMitKomma,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          if (_zahlungsartZeilen.isNotEmpty)
-                                                            _baueZahlungsartenTabelle(),
-                                                          if (_scanHatStattgefunden)
-                                                            _baueMetadatenBlock(),
-                                                          if (_ecBelegeCent[i] > 0 ||
-                                                              _ecBelegLabels[i].isNotEmpty)
-                                                            Align(
-                                                              alignment: Alignment.centerLeft,
-                                                              child: TextButton(
-                                                                onPressed: () => setState(() =>
-                                                                    _ecUnterkachelEditModus[i] =
-                                                                        false),
-                                                                style: TextButton.styleFrom(
-                                                                  padding: EdgeInsets.zero,
-                                                                  minimumSize: const Size(0, 28),
-                                                                  tapTargetSize: MaterialTapTargetSize
-                                                                      .shrinkWrap,
-                                                                ),
-                                                                child: const Text(
-                                                                  'Fertig.',
-                                                                  style: TextStyle(
-                                                                      fontSize: 11,
-                                                                      decoration: TextDecoration
-                                                                          .underline),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                        ],
+                                                child: (_ecBelegLabels[i].isEmpty &&
+                                                        _ecBelegeCent[i] == 0)
+                                                    // Leer: Hinweistext
+                                                    ? Text(
+                                                        'Noch kein Beleg — Kamera nutzen oder Daten manuell eingeben.',
+                                                        style: TextStyle(
+                                                            fontSize: 13,
+                                                            color: Colors.grey.shade500),
                                                       )
-                                                    // Read-Body
+                                                    // Hat Daten: Read-Darstellung
                                                     : Column(
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment.stretch,
@@ -3250,7 +3092,8 @@ class _TagesabschlussSchritt2SeiteState
                                                                         .formatiereEuro(
                                                                             _ecBelegeCent[i])
                                                                     : '—',
-                                                                style: const TextStyle(fontSize: 14),
+                                                                style: const TextStyle(
+                                                                    fontSize: 14),
                                                               ),
                                                             ],
                                                           ),
@@ -3258,26 +3101,6 @@ class _TagesabschlussSchritt2SeiteState
                                                             _baueZahlungsartenTabelle(),
                                                           if (_scanHatStattgefunden)
                                                             _baueMetadatenBlock(),
-                                                          Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: TextButton(
-                                                              onPressed: () => setState(() =>
-                                                                  _ecUnterkachelEditModus[i] = true),
-                                                              style: TextButton.styleFrom(
-                                                                padding: EdgeInsets.zero,
-                                                                minimumSize: const Size(0, 28),
-                                                                tapTargetSize:
-                                                                    MaterialTapTargetSize.shrinkWrap,
-                                                              ),
-                                                              child: const Text(
-                                                                'Beleg-Daten manuell bearbeiten',
-                                                                style: TextStyle(
-                                                                    fontSize: 11,
-                                                                    decoration:
-                                                                        TextDecoration.underline),
-                                                              ),
-                                                            ),
-                                                          ),
                                                         ],
                                                       ),
                                               ),
