@@ -143,6 +143,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<String> _ecBelegLabels = <String>[];
   final List<bool> _ecUnterkachelAufgeklappt = <bool>[];
   final List<bool> _ecUnterkachelEditModus = <bool>[];
+  int _ecZahlungsartenBelegIndex = 0;
 
   final List<TextEditingController> _ausgabenBetragController = <TextEditingController>[];
   final List<TextEditingController> _ausgabenLabelController = <TextEditingController>[];
@@ -380,6 +381,8 @@ class _TagesabschlussSchritt2SeiteState
           (daten['kartenartenGesamtAnzahl'] as num?)?.toInt();
       _kartenartenGesamtBetragCent =
           (daten['kartenartenGesamtBetragCent'] as num?)?.toInt();
+      _ecZahlungsartenBelegIndex =
+          (daten['ecZahlungsartenBelegIndex'] as num?)?.toInt() ?? 0;
       if (_scanHatStattgefunden ||
           ecBelege[0] != 0 ||
           ecBelegeLabelsListe[0].isNotEmpty) {
@@ -507,6 +510,7 @@ class _TagesabschlussSchritt2SeiteState
         'scanBelegNrBis': _scanBelegNrBis,
         'kartenartenGesamtAnzahl': _kartenartenGesamtAnzahl,
         'kartenartenGesamtBetragCent': _kartenartenGesamtBetragCent,
+        'ecZahlungsartenBelegIndex': _ecZahlungsartenBelegIndex,
         'zahlungsartAnzahlWerte': _zahlungsartZeilen
             .where((_ZahlungsartZeile z) => !z.istUnbekannt)
             .map((_ZahlungsartZeile z) => z.anzahlWert)
@@ -1095,6 +1099,7 @@ class _TagesabschlussSchritt2SeiteState
           }
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
+          _ecZahlungsartenBelegIndex = belegIndex;
           _kartenartenGesamtAnzahl = geprueftes.gesamtAnzahl;
           _kartenartenGesamtBetragCent = geprueftes.gesamtBetragCent;
           _setzeControllerText(
@@ -1542,6 +1547,7 @@ class _TagesabschlussSchritt2SeiteState
       }
       _metadatenNurAnzeige = false;
       _kartenartenNurAnzeige = false;
+      _ecZahlungsartenBelegIndex = 0;
       _kartenartenGesamtAnzahl = null;
       _kartenartenGesamtBetragCent = null;
       _setzeControllerText(_kartenartenGesamtAnzahlController, '');
@@ -1792,7 +1798,7 @@ class _TagesabschlussSchritt2SeiteState
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: Text(
-                    _metadatenNurAnzeige ? 'Belegdaten manuell bearbeiten' : 'Fertig.',
+                    _metadatenNurAnzeige ? 'Metadaten manuell bearbeiten' : 'Fertig.',
                     style: const TextStyle(
                         fontSize: 11, decoration: TextDecoration.underline),
                   ),
@@ -2016,7 +2022,7 @@ class _TagesabschlussSchritt2SeiteState
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            _kartenartenNurAnzeige ? 'Belegdaten manuell bearbeiten' : 'Fertig.',
+            _kartenartenNurAnzeige ? 'Umsätze manuell bearbeiten' : 'Fertig.',
             style: const TextStyle(
                 fontSize: 11, decoration: TextDecoration.underline),
           ),
@@ -2034,10 +2040,11 @@ class _TagesabschlussSchritt2SeiteState
       }
       if (zeile.anzahlWert != null) tabellenSummeAnzahl += zeile.anzahlWert!;
     }
-    final int ecGesamtCent =
-        _ecBelegeCent.fold(0, (int a, int b) => a + b);
+    final int ecGesamtCent = _ecZahlungsartenBelegIndex < _ecBelegeCent.length
+        ? _ecBelegeCent[_ecZahlungsartenBelegIndex]
+        : 0;
     final bool summePasstNicht =
-        tabellenSummeCent > 0 && tabellenSummeCent != ecGesamtCent;
+        tabellenSummeCent > 0 && ecGesamtCent > 0 && tabellenSummeCent != ecGesamtCent;
     final bool anzahlMismatch = _kartenartenGesamtAnzahl != null &&
         tabellenSummeAnzahl != _kartenartenGesamtAnzahl;
     final bool betragMismatch = _kartenartenGesamtBetragCent != null &&
