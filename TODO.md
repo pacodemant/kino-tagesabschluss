@@ -106,9 +106,9 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       möglich. Jeder Beleg = eigene Unterkachel (zugklappbar, eigener Papierkorb,
       eigener Foto-Button mit Rückfrage vor erneutem Scan).
 
-- [x] **Prüf-Popup: Inline-Korrektur** *(Run 278)* Unlesbare/unsichere Werte rot
-      hervorgehoben. Tap → kompaktes Eingabefeld ersetzt genau diese Zeile (gleiche
-      Höhe, roter Rahmen). Hinweistext: "Rote Felder bitte korrigieren."
+- [x] **Prüf-Popup: rote Felder + Hinweis** *(Run 278 + 278a)* Unleserliche Felder
+      rot hervorgehoben (nur das konkret null-Feld). Hinweistext: "Rote Felder nach dem
+      Übernehmen bitte korrigieren." Korrektur erfolgt in der EC-Kachel nach Übernehmen.
 
 - [ ] **"see JSON"-Button im Dev-Modus** *(Run 279)* Im Prüf-Popup sichtbar wenn
       Dev-Modus aktiv. Zeigt JSON des aktuell geprüften Belegs. Dummy-"Senden"-Button
@@ -282,3 +282,17 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 ---
 
 ## 💡 lose, schnell hinzugefügte Spontan-Ideen (hin und wieder mal in die Todos einsortieren)
+
+- [ ] **Einstellungen Admin - Standort einstellen** In den Einstellungen soll der Admin den Standort einstellen können, damit die Mitarbeiter nicht erst noch den Standort auswählen müssen.
+
+- [ ] **Einstellungen Admin - neuer Name** In den Einstellungen soll Entwickler,modus oder developments Mode oder wie d.h. neu umbenannt werden in Admin.
+
+- [ ] **Einstellungen Admin - Passwort** Der Admin Modus ist Passwort geschützt mit dem Code „flrbcsh“.
+
+- [ ] **BT mit 2 Abrechnungen/Tag** Auf der Startseite für die BT sollen zwei Buttons für die Kassenabrechnung stehen: 1. Abrechnung und 2. Abrechnung
+
+* In den Einstellungen soll der Admin den Standort einstellen können, damit die Mitarbeiter nicht erst noch den Standort auswählen müssen.
+* In den Einstellungen soll Entwickler,modus oder developments Mode oder wie d.h. neu umbenannt werden in Admin.
+* Der Admin Modus ist Passwort geschützt mit dem Code „flrbcsh“.
+* Auf der Startseite für die BT sollen zwei Buttons für die Kassenabrechnung stehen: 1. Abrechnung und 2. Abrechnung
+* ich glaube, das Prüf-Popup bei den Kartenzahlungen kann weg und fragliche Daten können in der Kachel bzw. Sub-Kachel direkt hervorgehoben und korrigiert werden. Wenn dann immer noch ungereimtheiten existieren
