@@ -169,6 +169,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _ecBeleg1Beruehrt = false;
   bool _ecBelegLabel1Beruehrt = false;
   bool _metadatenNurAnzeige = false;
+  bool _metadatenAufgeklappt = false;
   bool _kartenartenNurAnzeige = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
@@ -920,6 +921,7 @@ class _TagesabschlussSchritt2SeiteState
         zeile.reset();
       }
       _metadatenNurAnzeige = false;
+      _metadatenAufgeklappt = false;
       _kartenartenNurAnzeige = false;
       _kartenartenGesamtAnzahl = null;
       _kartenartenGesamtBetragCent = null;
@@ -970,6 +972,7 @@ class _TagesabschlussSchritt2SeiteState
         zeile.reset();
       }
       _metadatenNurAnzeige = false;
+      _metadatenAufgeklappt = false;
       _kartenartenNurAnzeige = false;
       _kartenartenGesamtAnzahl = null;
       _kartenartenGesamtBetragCent = null;
@@ -1116,6 +1119,7 @@ class _TagesabschlussSchritt2SeiteState
                 : '',
           );
           _metadatenNurAnzeige = true;
+          _metadatenAufgeklappt = false;
           _kartenartenNurAnzeige = !_kartenartenImplausibel;
           _letzteAenderung = DateTime.now();
         });
@@ -1546,6 +1550,7 @@ class _TagesabschlussSchritt2SeiteState
         zeile.reset();
       }
       _metadatenNurAnzeige = false;
+      _metadatenAufgeklappt = false;
       _kartenartenNurAnzeige = false;
       _ecZahlungsartenBelegIndex = 0;
       _kartenartenGesamtAnzahl = null;
@@ -1760,7 +1765,7 @@ class _TagesabschlussSchritt2SeiteState
   Widget _baueMetadatenBlock() {
     return Container(
       margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
         border: Border.all(color: Colors.grey.shade300),
@@ -1769,8 +1774,10 @@ class _TagesabschlussSchritt2SeiteState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () =>
+                setState(() => _metadatenAufgeklappt = !_metadatenAufgeklappt),
             child: Row(
               children: <Widget>[
                 const Expanded(
@@ -1783,63 +1790,78 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 ),
-                TextButton(
-                  onPressed: () {
-                    setState(() => _metadatenNurAnzeige = !_metadatenNurAnzeige);
-                    if (!_metadatenNurAnzeige) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        if (mounted) _scanDatumFocusNode.requestFocus();
-                      });
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(0, 24),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                if (_metadatenAufgeklappt)
+                  TextButton(
+                    onPressed: () {
+                      setState(
+                          () => _metadatenNurAnzeige = !_metadatenNurAnzeige);
+                      if (!_metadatenNurAnzeige) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (mounted) _scanDatumFocusNode.requestFocus();
+                        });
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 24),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      _metadatenNurAnzeige
+                          ? 'Metadaten bearbeiten'
+                          : 'Fertig.',
+                      style: const TextStyle(
+                          fontSize: 11,
+                          decoration: TextDecoration.underline),
+                    ),
                   ),
-                  child: Text(
-                    _metadatenNurAnzeige ? 'Metadaten manuell bearbeiten' : 'Fertig.',
-                    style: const TextStyle(
-                        fontSize: 11, decoration: TextDecoration.underline),
-                  ),
+                Icon(
+                  _metadatenAufgeklappt
+                      ? Icons.expand_less
+                      : Icons.expand_more,
+                  size: 16,
+                  color: Colors.black54,
                 ),
               ],
             ),
           ),
-          if (_metadatenNurAnzeige) ...<Widget>[
-            _baueMetadatenInfoZeile('Datum', _scanDatum),
-            _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
-            _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
-            _baueMetadatenInfoZeile('Beleg-Nr. bis', _scanBelegNrBis),
-          ] else ...<Widget>[
-            _baueMetadatenEditZeile(
-              'Datum',
-              _scanDatumController,
-              _scanDatumFocusNode,
-              (String wert) => _scanMetadatenfeldGeaendert(
-                  wert, (String? w) => _scanDatum = w),
-            ),
-            _baueMetadatenEditZeile(
-              'Uhrzeit',
-              _scanUhrzeitController,
-              _scanUhrzeitFocusNode,
-              (String wert) => _scanMetadatenfeldGeaendert(
-                  wert, (String? w) => _scanUhrzeit = w),
-            ),
-            _baueMetadatenEditZeile(
-              'Beleg-Nr. von',
-              _scanBelegNrVonController,
-              _scanBelegNrVonFocusNode,
-              (String wert) => _scanMetadatenfeldGeaendert(
-                  wert, (String? w) => _scanBelegNrVon = w),
-            ),
-            _baueMetadatenEditZeile(
-              'Beleg-Nr. bis',
-              _scanBelegNrBisController,
-              _scanBelegNrBisFocusNode,
-              (String wert) => _scanMetadatenfeldGeaendert(
-                  wert, (String? w) => _scanBelegNrBis = w),
-            ),
+          if (_metadatenAufgeklappt) ...<Widget>[
+            const SizedBox(height: 4),
+            if (_metadatenNurAnzeige) ...<Widget>[
+              _baueMetadatenInfoZeile('Datum', _scanDatum),
+              _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
+              _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
+              _baueMetadatenInfoZeile('Beleg-Nr. bis', _scanBelegNrBis),
+            ] else ...<Widget>[
+              _baueMetadatenEditZeile(
+                'Datum',
+                _scanDatumController,
+                _scanDatumFocusNode,
+                (String wert) => _scanMetadatenfeldGeaendert(
+                    wert, (String? w) => _scanDatum = w),
+              ),
+              _baueMetadatenEditZeile(
+                'Uhrzeit',
+                _scanUhrzeitController,
+                _scanUhrzeitFocusNode,
+                (String wert) => _scanMetadatenfeldGeaendert(
+                    wert, (String? w) => _scanUhrzeit = w),
+              ),
+              _baueMetadatenEditZeile(
+                'Beleg-Nr. von',
+                _scanBelegNrVonController,
+                _scanBelegNrVonFocusNode,
+                (String wert) => _scanMetadatenfeldGeaendert(
+                    wert, (String? w) => _scanBelegNrVon = w),
+              ),
+              _baueMetadatenEditZeile(
+                'Beleg-Nr. bis',
+                _scanBelegNrBisController,
+                _scanBelegNrBisFocusNode,
+                (String wert) => _scanMetadatenfeldGeaendert(
+                    wert, (String? w) => _scanBelegNrBis = w),
+              ),
+            ],
           ],
         ],
       ),
@@ -2127,10 +2149,11 @@ class _TagesabschlussSchritt2SeiteState
                         },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 0),
-                          minimumSize: const Size(0, 32),
+                              horizontal: 6, vertical: 0),
+                          minimumSize: const Size(0, 24),
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        icon: const Icon(Icons.add, size: 16),
+                        icon: const Icon(Icons.add, size: 14),
                         label: Text(
                           zeile.name,
                           style: const TextStyle(
@@ -2238,6 +2261,13 @@ class _TagesabschlussSchritt2SeiteState
                             _kartenartenGesamtBetragCent = wert.trim().isEmpty
                                 ? null
                                 : _parsiereBetragCent(wert);
+                            // Betrag im Sub-Kachel-Titel synchron halten
+                            if (_ecBelegController.length > 1 &&
+                                _ecZahlungsartenBelegIndex <
+                                    _ecBelegeCent.length) {
+                              _ecBelegeCent[_ecZahlungsartenBelegIndex] =
+                                  _kartenartenGesamtBetragCent ?? 0;
+                            }
                           });
                           _speichereEntwurf();
                         },
@@ -2263,7 +2293,7 @@ class _TagesabschlussSchritt2SeiteState
                 style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
               ),
             ),
-          if (summePasstNicht && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
+          if (summePasstNicht && !betragMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
@@ -2955,6 +2985,26 @@ class _TagesabschlussSchritt2SeiteState
                                 if (_zahlungsartZeilen.isNotEmpty) _baueZahlungsartenTabelle(),
                               ] else ...<Widget>[
                                 // 2+-Beleg-Modus: Sub-Kacheln
+                                if (hatEcBelege)
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 4),
+                                      child: TextButton(
+                                        onPressed: _ecBelegHinzufuegen,
+                                        style: TextButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: const Size(0, 28),
+                                          tapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                        child: const Text(
+                                          'Weiteren Beleg hinzufügen',
+                                          style: TextStyle(fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 for (int i = _ecBelegController.length - 1; i >= 0; i--)
                                   KeyedSubtree(
                                     key: ValueKey<int>(_ecBelegIds[i]),
@@ -3086,28 +3136,6 @@ class _TagesabschlussSchritt2SeiteState
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment.stretch,
                                                         children: <Widget>[
-                                                          Row(
-                                                            children: <Widget>[
-                                                              Expanded(
-                                                                child: Text(
-                                                                  _ecBelegLabels[i].isNotEmpty
-                                                                      ? _ecBelegLabels[i]
-                                                                      : '—',
-                                                                  style: const TextStyle(
-                                                                      fontSize: 14),
-                                                                ),
-                                                              ),
-                                                              Text(
-                                                                _ecBelegeCent[i] > 0
-                                                                    ? TagesabschlussFormatierung
-                                                                        .formatiereEuro(
-                                                                            _ecBelegeCent[i])
-                                                                    : '—',
-                                                                style: const TextStyle(
-                                                                    fontSize: 14),
-                                                              ),
-                                                            ],
-                                                          ),
                                                           if (_zahlungsartZeilen.isNotEmpty)
                                                             _baueZahlungsartenTabelle(),
                                                           if (_scanHatStattgefunden)
@@ -3122,19 +3150,6 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                   ),
                               ],
-                              if (hatEcBelege)
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: TextButton(
-                                    onPressed: _ecBelegHinzufuegen,
-                                    style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: const Size(0, 32),
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    ),
-                                    child: const Text('Weiteren Beleg hinzufügen'),
-                                  ),
-                                ),
                             ],
                           ),
                         ),
