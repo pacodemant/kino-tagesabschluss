@@ -2,13 +2,15 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>EC-Tagesabschluss-Beleg</title>
+<title>EC-Tagesabschluss-Belege</title>
 <style>
   body {
     background: #888;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 40px 20px;
+    gap: 40px;
     font-family: 'Courier New', Courier, monospace;
   }
   .beleg {
@@ -18,6 +20,14 @@
     font-size: 13px;
     line-height: 1.5;
     box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .label {
+    width: 280px;
+    color: #eee;
+    font-family: sans-serif;
+    font-size: 12px;
+    margin-bottom: -32px;
+    padding-left: 2px;
   }
   .center  { text-align: center; }
   .right   { text-align: right; }
@@ -36,10 +46,13 @@
   td.num  { text-align: right; white-space: nowrap; }
   td.anz  { text-align: right; width: 28px; }
   .total td { font-weight: bold; }
-  .unleserlich { color: #bbb; font-style: italic; letter-spacing: 1px; }
+  .unleserlich { color: #ccc; letter-spacing: 2px; }
 </style>
 </head>
 <body>
+
+<!-- ====== Beleg 1: alles lesbar ====== -->
+<p class="label">Beleg 1 — alles lesbar</p>
 <div class="beleg">
 
   <p class="center bold">Ingenico iCT250</p>
@@ -111,8 +124,9 @@
 
 </div>
 
-<!-- ====== zweiter Beleg: mit unleserlichen Stellen ====== -->
-<div class="beleg" style="margin-top: 40px;">
+<!-- ====== Beleg 2: Terminal-ID + Maestro-Betrag unleserlich ====== -->
+<p class="label">Beleg 2 — Terminal-ID und Maestro-Betrag unleserlich</p>
+<div class="beleg">
 
   <p class="center bold">Ingenico iCT250</p>
   <p class="center">Schauburg Filmkunst GmbH</p>
@@ -184,10 +198,80 @@
   <p class="center">Autorisierung: Online</p>
   <p class="center">Bitte Quittung aufbewahren</p>
 
-  <p class="center" style="margin-top:8px; font-size:11px; color:#666;">
-    (Beleg mit unleserlicher Terminal-ID<br>und unleserlichem Maestro-Betrag)
-  </p>
+</div>
+
+<!-- ====== Beleg 3: Girocard-Anzahl + Gesamtbetrag unleserlich ====== -->
+<p class="label">Beleg 3 — Girocard-Anzahl und Gesamtbetrag unleserlich</p>
+<div class="beleg">
+
+  <p class="center bold">Ingenico iCT250</p>
+  <p class="center">Schauburg Filmkunst GmbH</p>
+  <p class="center">Birkenstraße 2<br>28195 Bremen</p>
+
+  <hr>
+
+  <table>
+    <tr><td>Datum</td>      <td class="num">24.06.2025</td></tr>
+    <tr><td>Uhrzeit</td>    <td class="num">23:55 Uhr</td></tr>
+    <tr><td>Terminal-ID</td><td class="num">29441827</td></tr>
+    <tr><td>Händler-ID</td> <td class="num">800042371</td></tr>
+  </table>
+
+  <hr>
+
+  <p class="center bold">TAGESABSCHLUSS</p>
+
+  <hr>
+
+  <p class="center">Beleg-Nr.&nbsp;&nbsp;0001&nbsp;–&nbsp;0039</p>
+
+  <hr>
+
+  <table>
+    <tr>
+      <td></td>
+      <td class="anz bold">Anz</td>
+      <td class="num bold">Betrag</td>
+    </tr>
+  </table>
+  <hr>
+  <table>
+    <tr>
+      <td>Girocard</td>
+      <td class="anz unleserlich">&#x2588;&#x2588;</td>
+      <td class="num">892,00 EUR</td>
+    </tr>
+    <tr>
+      <td>Maestro</td>
+      <td class="anz">5</td>
+      <td class="num">178,50 EUR</td>
+    </tr>
+    <tr>
+      <td>Visa</td>
+      <td class="anz">6</td>
+      <td class="num">312,00 EUR</td>
+    </tr>
+    <tr>
+      <td>Mastercard</td>
+      <td class="anz">3</td>
+      <td class="num">98,75 EUR</td>
+    </tr>
+    <tr class="total">
+      <td colspan="3"><hr></td>
+    </tr>
+    <tr class="total">
+      <td>Gesamt</td>
+      <td class="anz unleserlich">&#x2588;&#x2588;</td>
+      <td class="num unleserlich">&#x2588;.&#x2588;&#x2588;&#x2588;,&#x2588;&#x2588; EUR</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <p class="center">Autorisierung: Online</p>
+  <p class="center">Bitte Quittung aufbewahren</p>
 
 </div>
+
 </body>
 </html>
