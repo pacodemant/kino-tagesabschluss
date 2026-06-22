@@ -1811,7 +1811,8 @@ class _TagesabschlussSchritt2SeiteState
                           ? 'Metadaten bearbeiten'
                           : 'Fertig.',
                       style: const TextStyle(
-                          fontSize: 11,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
                           decoration: TextDecoration.underline),
                     ),
                   ),
@@ -2316,6 +2317,9 @@ class _TagesabschlussSchritt2SeiteState
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
     final int ecGesamtCent = _ecBelegeCent.fold(0, (int a, int b) => a + b);
     final bool hatEcBelege = _scanHatStattgefunden || ecGesamtCent > 0;
+    final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
+        .where((int j) => _ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty)
+        .length;
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
@@ -2796,7 +2800,7 @@ class _TagesabschlussSchritt2SeiteState
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8),
                                   child: Text(
-                                    '${_ecBelegController.length} Beleg${_ecBelegController.length == 1 ? '' : 'e'} / ${TagesabschlussFormatierung.formatiereEuro(ecGesamtCent)}',
+                                    '${belegeWithData == 1 ? '1 Beleg' : '$belegeWithData Belege'} / ${TagesabschlussFormatierung.formatiereEuro(ecGesamtCent)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -2868,6 +2872,26 @@ class _TagesabschlussSchritt2SeiteState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
+                              if (hatEcBelege)
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: TextButton(
+                                      onPressed: _ecBelegHinzufuegen,
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: const Size(0, 28),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: const Text(
+                                        'Weiteren Beleg hinzufügen',
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               if (_ecBelegController.length == 1) ...<Widget>[
                                 // 1-Beleg-Modus: flaches Layout
                                 Padding(
@@ -2985,26 +3009,6 @@ class _TagesabschlussSchritt2SeiteState
                                 if (_zahlungsartZeilen.isNotEmpty) _baueZahlungsartenTabelle(),
                               ] else ...<Widget>[
                                 // 2+-Beleg-Modus: Sub-Kacheln
-                                if (hatEcBelege)
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 4),
-                                      child: TextButton(
-                                        onPressed: _ecBelegHinzufuegen,
-                                        style: TextButton.styleFrom(
-                                          padding: EdgeInsets.zero,
-                                          minimumSize: const Size(0, 28),
-                                          tapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                        ),
-                                        child: const Text(
-                                          'Weiteren Beleg hinzufügen',
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
                                 for (int i = _ecBelegController.length - 1; i >= 0; i--)
                                   KeyedSubtree(
                                     key: ValueKey<int>(_ecBelegIds[i]),
@@ -3091,21 +3095,57 @@ class _TagesabschlussSchritt2SeiteState
                                                             : () => _starteEcBelegScan(belegIndex: i),
                                                       ),
                                                     ),
-                                                    // Papierkorb nur wenn Beleg Daten hat
-                                                    if (_ecBelegeCent[i] > 0 ||
-                                                        _ecBelegLabels[i].isNotEmpty)
-                                                      SizedBox(
-                                                        width: 32,
-                                                        height: 32,
-                                                        child: IconButton(
-                                                          tooltip: 'Beleg entfernen',
-                                                          padding: EdgeInsets.zero,
-                                                          constraints: const BoxConstraints(),
-                                                          icon: const Icon(
-                                                              Icons.delete_outline, size: 18),
-                                                          onPressed: () => _ecBelegEntfernen(i),
-                                                        ),
+                                                    SizedBox(
+                                                      width: 32,
+                                                      height: 32,
+                                                      child: IconButton(
+                                                        tooltip: 'Beleg entfernen',
+                                                        padding: EdgeInsets.zero,
+                                                        constraints:
+                                                            const BoxConstraints(),
+                                                        icon: const Icon(
+                                                            Icons.delete_outline,
+                                                            size: 18),
+                                                        onPressed: _scanLaeuft
+                                                            ? null
+                                                            : () async {
+                                                                final bool? ok =
+                                                                    await showDialog<
+                                                                        bool>(
+                                                                  context:
+                                                                      context,
+                                                                  builder: (BuildContext
+                                                                          ctx) =>
+                                                                      AlertDialog(
+                                                                    title: const Text(
+                                                                        'Beleg löschen?'),
+                                                                    content: Text(
+                                                                        'Beleg ${i + 1} wirklich löschen?'),
+                                                                    actions: <Widget>[
+                                                                      TextButton(
+                                                                        onPressed: () =>
+                                                                            Navigator.of(ctx).pop(false),
+                                                                        child: const Text(
+                                                                            'Abbrechen'),
+                                                                      ),
+                                                                      TextButton(
+                                                                        onPressed: () =>
+                                                                            Navigator.of(ctx).pop(true),
+                                                                        child: const Text(
+                                                                            'Löschen'),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                );
+                                                                if (!mounted) {
+                                                                  return;
+                                                                }
+                                                                if (ok == true) {
+                                                                  _ecBelegEntfernen(i);
+                                                                }
+                                                              },
                                                       ),
+                                                    ),
                                                     Icon(
                                                       _ecUnterkachelAufgeklappt[i]
                                                           ? Icons.expand_less
@@ -3122,26 +3162,73 @@ class _TagesabschlussSchritt2SeiteState
                                               const Divider(height: 1),
                                               Padding(
                                                 padding: const EdgeInsets.all(10),
-                                                child: (_ecBelegLabels[i].isEmpty &&
-                                                        _ecBelegeCent[i] == 0)
-                                                    // Leer: Hinweistext
-                                                    ? Text(
-                                                        'Noch kein Beleg — Kamera nutzen oder Daten manuell eingeben.',
-                                                        style: TextStyle(
-                                                            fontSize: 13,
-                                                            color: Colors.grey.shade500),
-                                                      )
-                                                    // Hat Daten: Read-Darstellung
-                                                    : Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.stretch,
-                                                        children: <Widget>[
-                                                          if (_zahlungsartZeilen.isNotEmpty)
-                                                            _baueZahlungsartenTabelle(),
-                                                          if (_scanHatStattgefunden)
-                                                            _baueMetadatenBlock(),
-                                                        ],
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.stretch,
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding: const EdgeInsets.only(
+                                                          bottom: 8),
+                                                      child: TextField(
+                                                        controller:
+                                                            _ecBelegLabelController[i],
+                                                        focusNode:
+                                                            _ecBelegLabelFocusNode[i],
+                                                        style: const TextStyle(
+                                                            fontSize: 14),
+                                                        decoration: InputDecoration(
+                                                          hintText: 'Terminal-ID',
+                                                          isDense: true,
+                                                          border:
+                                                              const OutlineInputBorder(),
+                                                          contentPadding:
+                                                              const EdgeInsets.symmetric(
+                                                                  horizontal: 8,
+                                                                  vertical: 6),
+                                                          suffixIconConstraints:
+                                                              const BoxConstraints(
+                                                                  minWidth: 0,
+                                                                  minHeight: 0,
+                                                                  maxWidth: 28,
+                                                                  maxHeight: 28),
+                                                          suffixIcon:
+                                                              _ecBelegLabelController[i]
+                                                                      .text.isEmpty
+                                                                  ? null
+                                                                  : IconButton(
+                                                                      constraints:
+                                                                          const BoxConstraints(),
+                                                                      padding:
+                                                                          EdgeInsets.zero,
+                                                                      icon: const Icon(
+                                                                          Icons.close,
+                                                                          size: 16),
+                                                                      onPressed: () {
+                                                                        _ecBelegLabelController[i]
+                                                                            .clear();
+                                                                        setState(() =>
+                                                                            _ecBelegLabels[i] =
+                                                                                '');
+                                                                        _speichereEntwurf();
+                                                                      },
+                                                                    ),
+                                                        ),
+                                                        onChanged: (String wert) {
+                                                          setState(() {
+                                                            _letzteAenderung =
+                                                                DateTime.now();
+                                                            _ecBelegLabels[i] = wert;
+                                                          });
+                                                          _speichereEntwurf();
+                                                        },
                                                       ),
+                                                    ),
+                                                    if (_zahlungsartZeilen.isNotEmpty)
+                                                      _baueZahlungsartenTabelle(),
+                                                    if (_scanHatStattgefunden)
+                                                      _baueMetadatenBlock(),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ],

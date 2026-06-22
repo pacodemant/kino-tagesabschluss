@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>EC-Tagesabschluss-Beleg</title>
+<style>
+  body {
+    background: #888;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  .beleg {
+    background: #fff;
+    width: 280px;
+    padding: 16px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .center  { text-align: center; }
+  .right   { text-align: right; }
+  .bold    { font-weight: bold; }
+  hr {
+    border: none;
+    border-top: 1px dashed #333;
+    margin: 6px 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  td { padding: 1px 0; vertical-align: top; }
+  td.num  { text-align: right; white-space: nowrap; }
+  td.anz  { text-align: right; width: 28px; }
+  .total td { font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="beleg">
+
+  <p class="center bold">Ingenico iCT250</p>
+  <p class="center">Schauburg Filmkunst GmbH</p>
+  <p class="center">Birkenstraße 2<br>28195 Bremen</p>
+
+  <hr>
+
+  <table>
+    <tr><td>Datum</td>      <td class="num">26.06.2025</td></tr>
+    <tr><td>Uhrzeit</td>    <td class="num">23:47 Uhr</td></tr>
+    <tr><td>Terminal-ID</td><td class="num">29441827</td></tr>
+    <tr><td>Händler-ID</td> <td class="num">800042371</td></tr>
+  </table>
+
+  <hr>
+
+  <p class="center bold">TAGESABSCHLUSS</p>
+
+  <hr>
+
+  <p class="center">Beleg-Nr.&nbsp;&nbsp;0001&nbsp;–&nbsp;0048</p>
+
+  <hr>
+
+  <table>
+    <tr>
+      <td></td>
+      <td class="anz bold">Anz</td>
+      <td class="num bold">Betrag</td>
+    </tr>
+  </table>
+  <hr>
+  <table>
+    <tr>
+      <td>Girocard</td>
+      <td class="anz">29</td>
+      <td class="num">1.243,50 EUR</td>
+    </tr>
+    <tr>
+      <td>Maestro</td>
+      <td class="anz">6</td>
+      <td class="num">214,00 EUR</td>
+    </tr>
+    <tr>
+      <td>Visa</td>
+      <td class="anz">9</td>
+      <td class="num">387,25 EUR</td>
+    </tr>
+    <tr>
+      <td>Mastercard</td>
+      <td class="anz">4</td>
+      <td class="num">156,00 EUR</td>
+    </tr>
+    <tr class="total">
+      <td colspan="3"><hr></td>
+    </tr>
+    <tr class="total">
+      <td>Gesamt</td>
+      <td class="anz">48</td>
+      <td class="num">2.000,75 EUR</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <p class="center">Autorisierung: Online</p>
+  <p class="center">Bitte Quittung aufbewahren</p>
+
+</div>
+</body>
+</html>

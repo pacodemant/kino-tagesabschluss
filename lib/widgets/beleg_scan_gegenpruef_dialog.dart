@@ -50,9 +50,12 @@ class _BelegScanGegenpruefDialogState
     }
   }
 
+  bool _istUnleserlich(String? wert) =>
+      wert == null || wert.trim().toLowerCase() == 'unleserlich';
+
   bool get _hatUnleserlicheFelder {
     final BelegScanErgebnis e = widget.ergebnis;
-    if (e.terminalId == null) return true;
+    if (_istUnleserlich(e.terminalId)) return true;
     if (e.gesamtBetragCent == null) return true;
     for (final ZahlungsartErgebnis z in e.zahlungsarten) {
       if (z.betragCent == null || z.anzahl == null) return true;
@@ -64,6 +67,7 @@ class _BelegScanGegenpruefDialogState
 
   Widget _baueTerminalIdZeile() {
     final String? tid = widget.ergebnis.terminalId;
+    final bool istRot = _istUnleserlich(tid);
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -77,12 +81,12 @@ class _BelegScanGegenpruefDialogState
             ),
           ),
           Expanded(
-            child: tid == null
+            child: istRot
                 ? Text(
                     '—',
                     style: TextStyle(fontSize: 14, color: Colors.red.shade700),
                   )
-                : Text(tid, style: const TextStyle(fontSize: 14)),
+                : Text(tid!, style: const TextStyle(fontSize: 14)),
           ),
         ],
       ),
