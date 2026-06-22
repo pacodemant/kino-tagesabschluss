@@ -143,6 +143,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<String> _ecBelegLabels = <String>[];
   final List<bool> _ecUnterkachelAufgeklappt = <bool>[];
   final List<bool> _ecUnterkachelEditModus = <bool>[];
+  final List<bool> _ecBelegScanGescannt = <bool>[];
   int _ecZahlungsartenBelegIndex = 0;
 
   final List<TextEditingController> _ausgabenBetragController = <TextEditingController>[];
@@ -677,14 +678,10 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
       _ecUnterkachelAufgeklappt.add(true);
-      _ecUnterkachelEditModus.add(true);
+      _ecUnterkachelEditModus.add(false);
+      _ecBelegScanGescannt.add(false);
     });
     _speichereEntwurf();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _ecBelegLabelFocusNode.isNotEmpty) {
-        FocusScope.of(context).requestFocus(_ecBelegLabelFocusNode.last);
-      }
-    });
   }
 
   void _ecBelegEntfernen(int index) {
@@ -707,6 +704,9 @@ class _TagesabschlussSchritt2SeiteState
       }
       if (index < _ecUnterkachelEditModus.length) {
         _ecUnterkachelEditModus.removeAt(index);
+      }
+      if (index < _ecBelegScanGescannt.length) {
+        _ecBelegScanGescannt.removeAt(index);
       }
     });
     _speichereEntwurf();
@@ -738,6 +738,9 @@ class _TagesabschlussSchritt2SeiteState
       if (_ecUnterkachelEditModus.isNotEmpty) {
         _ecUnterkachelEditModus.removeLast();
       }
+      if (_ecBelegScanGescannt.isNotEmpty) {
+        _ecBelegScanGescannt.removeLast();
+      }
     }
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
@@ -752,7 +755,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
       _ecUnterkachelAufgeklappt.add(true);
-      _ecUnterkachelEditModus.add(true);
+      _ecUnterkachelEditModus.add(false);
+      _ecBelegScanGescannt.add(false);
     }
   }
 
@@ -1084,6 +1088,9 @@ class _TagesabschlussSchritt2SeiteState
           if (belegIndex < _ecUnterkachelEditModus.length) {
             _ecUnterkachelEditModus[belegIndex] = false;
           }
+          if (belegIndex < _ecBelegScanGescannt.length) {
+            _ecBelegScanGescannt[belegIndex] = true;
+          }
           _scanDatum = _feldWertOderNull(geprueftes.datum);
           _scanUhrzeit = _feldWertOderNull(geprueftes.uhrzeit);
           _scanBelegNrVon = _feldWertOderNull(geprueftes.belegNrVon);
@@ -1166,6 +1173,37 @@ class _TagesabschlussSchritt2SeiteState
   String? _feldWertOderNull(String? value) {
     if (value == null || value.trim().isEmpty) return null;
     return value.trim();
+  }
+
+  bool _subKachelTidUnleserlich(int i) {
+    if (i >= _ecBelegScanGescannt.length || !_ecBelegScanGescannt[i]) {
+      return false;
+    }
+    final String label = _ecBelegLabels[i];
+    return label.isEmpty || label.trim().toLowerCase() == 'unleserlich';
+  }
+
+  void _manuellBearbeitenAktivieren(int i) {
+    setState(() {
+      if (_ecZahlungsartenBelegIndex != i) {
+        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+          zeile.reset();
+        }
+        _ecZahlungsartenBelegIndex = i;
+        _kartenartenGesamtAnzahl = null;
+        _kartenartenGesamtBetragCent = null;
+        _setzeControllerText(_kartenartenGesamtAnzahlController, '');
+        _setzeControllerText(_kartenartenGesamtBetragController, '');
+      }
+      if (i < _ecUnterkachelEditModus.length) {
+        _ecUnterkachelEditModus[i] = true;
+      }
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && i < _ecBelegLabelFocusNode.length) {
+        FocusScope.of(context).requestFocus(_ecBelegLabelFocusNode[i]);
+      }
+    });
   }
 
   bool _matchKartenart(String configName, String belegArt) {
@@ -3039,23 +3077,83 @@ class _TagesabschlussSchritt2SeiteState
                                                 child: Row(
                                                   children: <Widget>[
                                                     Expanded(
-                                                      child: Text(
-                                                        _scanBelegIndex == i
-                                                            ? 'In Arbeit …'
-                                                            : (_ecBelegLabels[i].isNotEmpty
-                                                                ? _ecBelegLabels[i]
-                                                                : 'Beleg ${i + 1}'),
-                                                        style: TextStyle(
-                                                          fontSize: 13,
-                                                          fontWeight: FontWeight.w600,
-                                                          color: _scanBelegIndex == i
-                                                              ? Colors.grey.shade500
-                                                              : (_ecBelegLabels[i].isNotEmpty
-                                                                  ? Colors.black87
-                                                                  : Colors.grey.shade500),
-                                                        ),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
+                                                      child: _scanBelegIndex == i
+                                                          ? Text(
+                                                              'In Arbeit …',
+                                                              style: TextStyle(
+                                                                fontSize: 13,
+                                                                fontWeight: FontWeight.w600,
+                                                                color: Colors.grey.shade500,
+                                                              ),
+                                                            )
+                                                          : (_ecUnterkachelEditModus[i]
+                                                              ? SizedBox(
+                                                                  height: 28,
+                                                                  child: TextField(
+                                                                    controller: _ecBelegLabelController[i],
+                                                                    focusNode: _ecBelegLabelFocusNode[i],
+                                                                    style: const TextStyle(
+                                                                      fontSize: 13,
+                                                                      fontWeight: FontWeight.w600,
+                                                                    ),
+                                                                    decoration: InputDecoration(
+                                                                      hintText: 'Terminal-ID',
+                                                                      isDense: true,
+                                                                      contentPadding: const EdgeInsets.symmetric(
+                                                                          horizontal: 6, vertical: 4),
+                                                                      border: OutlineInputBorder(
+                                                                        borderSide: BorderSide(
+                                                                          color: _subKachelTidUnleserlich(i)
+                                                                              ? Colors.red.shade700
+                                                                              : Colors.grey.shade400,
+                                                                        ),
+                                                                      ),
+                                                                      enabledBorder: OutlineInputBorder(
+                                                                        borderSide: BorderSide(
+                                                                          color: _subKachelTidUnleserlich(i)
+                                                                              ? Colors.red.shade700
+                                                                              : Colors.grey.shade400,
+                                                                        ),
+                                                                      ),
+                                                                      focusedBorder: OutlineInputBorder(
+                                                                        borderSide: BorderSide(
+                                                                          color: _subKachelTidUnleserlich(i)
+                                                                              ? Colors.red.shade700
+                                                                              : Colors.blue,
+                                                                          width: 2,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                    onChanged: (String wert) {
+                                                                      setState(() {
+                                                                        _letzteAenderung = DateTime.now();
+                                                                        _ecBelegLabels[i] = wert;
+                                                                      });
+                                                                      _speichereEntwurf();
+                                                                    },
+                                                                  ),
+                                                                )
+                                                              : Text(
+                                                                  _ecBelegLabels[i].isNotEmpty &&
+                                                                          _ecBelegLabels[i].trim().toLowerCase() !=
+                                                                              'unleserlich'
+                                                                      ? _ecBelegLabels[i]
+                                                                      : 'Beleg ${i + 1}',
+                                                                  style: TextStyle(
+                                                                    fontSize: 13,
+                                                                    fontWeight: FontWeight.w600,
+                                                                    color: _subKachelTidUnleserlich(i)
+                                                                        ? Colors.red.shade700
+                                                                        : (_ecBelegLabels[i].isNotEmpty &&
+                                                                                _ecBelegLabels[i]
+                                                                                        .trim()
+                                                                                        .toLowerCase() !=
+                                                                                    'unleserlich'
+                                                                            ? Colors.black87
+                                                                            : Colors.grey.shade500),
+                                                                  ),
+                                                                  overflow: TextOverflow.ellipsis,
+                                                                )),
                                                     ),
                                                     if (_ecBelegeCent[i] > 0)
                                                       Padding(
@@ -3162,73 +3260,71 @@ class _TagesabschlussSchritt2SeiteState
                                               const Divider(height: 1),
                                               Padding(
                                                 padding: const EdgeInsets.all(10),
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.stretch,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding: const EdgeInsets.only(
-                                                          bottom: 8),
-                                                      child: TextField(
-                                                        controller:
-                                                            _ecBelegLabelController[i],
-                                                        focusNode:
-                                                            _ecBelegLabelFocusNode[i],
-                                                        style: const TextStyle(
-                                                            fontSize: 14),
-                                                        decoration: InputDecoration(
-                                                          hintText: 'Terminal-ID',
-                                                          isDense: true,
-                                                          border:
-                                                              const OutlineInputBorder(),
-                                                          contentPadding:
-                                                              const EdgeInsets.symmetric(
-                                                                  horizontal: 8,
-                                                                  vertical: 6),
-                                                          suffixIconConstraints:
-                                                              const BoxConstraints(
-                                                                  minWidth: 0,
-                                                                  minHeight: 0,
-                                                                  maxWidth: 28,
-                                                                  maxHeight: 28),
-                                                          suffixIcon:
-                                                              _ecBelegLabelController[i]
-                                                                      .text.isEmpty
-                                                                  ? null
-                                                                  : IconButton(
-                                                                      constraints:
-                                                                          const BoxConstraints(),
-                                                                      padding:
-                                                                          EdgeInsets.zero,
-                                                                      icon: const Icon(
-                                                                          Icons.close,
-                                                                          size: 16),
-                                                                      onPressed: () {
-                                                                        _ecBelegLabelController[i]
-                                                                            .clear();
-                                                                        setState(() =>
-                                                                            _ecBelegLabels[i] =
-                                                                                '');
-                                                                        _speichereEntwurf();
-                                                                      },
-                                                                    ),
-                                                        ),
-                                                        onChanged: (String wert) {
-                                                          setState(() {
-                                                            _letzteAenderung =
-                                                                DateTime.now();
-                                                            _ecBelegLabels[i] = wert;
-                                                          });
-                                                          _speichereEntwurf();
-                                                        },
+                                                child: (_ecZahlungsartenBelegIndex == i &&
+                                                        _zahlungsartZeilen.isNotEmpty)
+                                                    ? Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.stretch,
+                                                        children: <Widget>[
+                                                          _baueZahlungsartenTabelle(),
+                                                          if (_scanHatStattgefunden)
+                                                            _baueMetadatenBlock(),
+                                                          if (!_ecUnterkachelEditModus[i])
+                                                            Align(
+                                                              alignment: Alignment.centerLeft,
+                                                              child: Padding(
+                                                                padding: const EdgeInsets.only(top: 6),
+                                                                child: TextButton(
+                                                                  onPressed: () =>
+                                                                      _manuellBearbeitenAktivieren(i),
+                                                                  style: TextButton.styleFrom(
+                                                                    padding: EdgeInsets.zero,
+                                                                    minimumSize: const Size(0, 28),
+                                                                    tapTargetSize:
+                                                                        MaterialTapTargetSize.shrinkWrap,
+                                                                  ),
+                                                                  child: const Text(
+                                                                    'Manuell bearbeiten',
+                                                                    style: TextStyle(fontSize: 12),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      )
+                                                    : Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.stretch,
+                                                        children: <Widget>[
+                                                          if (_subKachelTidUnleserlich(i))
+                                                            Padding(
+                                                              padding: const EdgeInsets.only(bottom: 6),
+                                                              child: Text(
+                                                                'Terminal-ID konnte nicht gelesen werden — oben korrigieren.',
+                                                                style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    color: Colors.red.shade700),
+                                                              ),
+                                                            ),
+                                                          Align(
+                                                            alignment: Alignment.centerLeft,
+                                                            child: TextButton(
+                                                              onPressed: () =>
+                                                                  _manuellBearbeitenAktivieren(i),
+                                                              style: TextButton.styleFrom(
+                                                                padding: EdgeInsets.zero,
+                                                                minimumSize: const Size(0, 28),
+                                                                tapTargetSize:
+                                                                    MaterialTapTargetSize.shrinkWrap,
+                                                              ),
+                                                              child: const Text(
+                                                                'Manuell bearbeiten',
+                                                                style: TextStyle(fontSize: 12),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
-                                                    ),
-                                                    if (_zahlungsartZeilen.isNotEmpty)
-                                                      _baueZahlungsartenTabelle(),
-                                                    if (_scanHatStattgefunden)
-                                                      _baueMetadatenBlock(),
-                                                  ],
-                                                ),
                                               ),
                                             ],
                                           ],
