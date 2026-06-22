@@ -36,6 +36,7 @@
   td.num  { text-align: right; white-space: nowrap; }
   td.anz  { text-align: right; width: 28px; }
   .total td { font-weight: bold; }
+  .unleserlich { color: #bbb; font-style: italic; letter-spacing: 1px; }
 </style>
 </head>
 <body>
@@ -107,6 +108,85 @@
 
   <p class="center">Autorisierung: Online</p>
   <p class="center">Bitte Quittung aufbewahren</p>
+
+</div>
+
+<!-- ====== zweiter Beleg: mit unleserlichen Stellen ====== -->
+<div class="beleg" style="margin-top: 40px;">
+
+  <p class="center bold">Ingenico iCT250</p>
+  <p class="center">Schauburg Filmkunst GmbH</p>
+  <p class="center">Birkenstraße 2<br>28195 Bremen</p>
+
+  <hr>
+
+  <table>
+    <tr><td>Datum</td>      <td class="num">25.06.2025</td></tr>
+    <tr><td>Uhrzeit</td>    <td class="num">23:51 Uhr</td></tr>
+    <tr>
+      <td>Terminal-ID</td>
+      <td class="num unleserlich">&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;</td>
+    </tr>
+    <tr><td>Händler-ID</td> <td class="num">800042371</td></tr>
+  </table>
+
+  <hr>
+
+  <p class="center bold">TAGESABSCHLUSS</p>
+
+  <hr>
+
+  <p class="center">Beleg-Nr.&nbsp;&nbsp;0001&nbsp;–&nbsp;0031</p>
+
+  <hr>
+
+  <table>
+    <tr>
+      <td></td>
+      <td class="anz bold">Anz</td>
+      <td class="num bold">Betrag</td>
+    </tr>
+  </table>
+  <hr>
+  <table>
+    <tr>
+      <td>Girocard</td>
+      <td class="anz">18</td>
+      <td class="num">744,00 EUR</td>
+    </tr>
+    <tr>
+      <td>Maestro</td>
+      <td class="anz">4</td>
+      <td class="num unleserlich">&#x2588;&#x2588;&#x2588;,&#x2588;&#x2588; EUR</td>
+    </tr>
+    <tr>
+      <td>Visa</td>
+      <td class="anz">7</td>
+      <td class="num">298,50 EUR</td>
+    </tr>
+    <tr>
+      <td>Mastercard</td>
+      <td class="anz">2</td>
+      <td class="num">67,00 EUR</td>
+    </tr>
+    <tr class="total">
+      <td colspan="3"><hr></td>
+    </tr>
+    <tr class="total">
+      <td>Gesamt</td>
+      <td class="anz">31</td>
+      <td class="num">1.246,50 EUR</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <p class="center">Autorisierung: Online</p>
+  <p class="center">Bitte Quittung aufbewahren</p>
+
+  <p class="center" style="margin-top:8px; font-size:11px; color:#666;">
+    (Beleg mit unleserlicher Terminal-ID<br>und unleserlichem Maestro-Betrag)
+  </p>
 
 </div>
 </body>
