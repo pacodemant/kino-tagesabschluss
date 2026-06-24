@@ -102,7 +102,7 @@ class _ZahlungsartZeile {
   int? anzahlWert;
   int? betragCentWert;
   bool nichtPlausibel = false;
-  bool nichtImScan = false;
+  bool nichtImScan = true;
 
   void dispose() {
     anzahlController.dispose();
@@ -789,7 +789,7 @@ class _TagesabschlussSchritt2SeiteState
       _kartenartenGesamtBetragController.add(TextEditingController());
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
-      _kartenartenNurAnzeige.add(false);
+      _kartenartenNurAnzeige.add(true);
     });
     _speichereEntwurf();
   }
@@ -901,7 +901,7 @@ class _TagesabschlussSchritt2SeiteState
       _kartenartenGesamtBetragController.add(TextEditingController());
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
-      _kartenartenNurAnzeige.add(false);
+      _kartenartenNurAnzeige.add(true);
     }
   }
 
@@ -1488,27 +1488,6 @@ class _TagesabschlussSchritt2SeiteState
     }
     if (zeile.anzahlWert == null || zeile.betragCentWert == null) return true;
     if (zeile.anzahlWert == 0) return true;
-    return false;
-  }
-
-  bool _kartenartenImplausibel(int belegIndex) {
-    if (belegIndex >= _zahlungsartZeilen.length) return false;
-    int summeAnzahl = 0;
-    int summeBetrag = 0;
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
-      if (zeile.nichtImScan) continue;
-      if (_istZeileImplausibel(zeile, belegIndex)) return true;
-      if (zeile.anzahlWert != null) summeAnzahl += zeile.anzahlWert!;
-      if (zeile.betragCentWert != null) summeBetrag += zeile.betragCentWert!;
-    }
-    final int? gesAnzahl = belegIndex < _kartenartenGesamtAnzahl.length
-        ? _kartenartenGesamtAnzahl[belegIndex]
-        : null;
-    final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
-        ? _kartenartenGesamtBetragCent[belegIndex]
-        : null;
-    if (gesAnzahl != null && summeAnzahl != gesAnzahl) return true;
-    if (gesBetrag != null && summeBetrag != gesBetrag) return true;
     return false;
   }
 
@@ -2233,7 +2212,6 @@ class _TagesabschlussSchritt2SeiteState
     final bool nurAnzeige = belegIndex < _kartenartenNurAnzeige.length
         ? _kartenartenNurAnzeige[belegIndex]
         : false;
-    final bool kannSchliessen = !_kartenartenImplausibel(belegIndex);
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Align(
@@ -2245,13 +2223,11 @@ class _TagesabschlussSchritt2SeiteState
                       _kartenartenNurAnzeige[belegIndex] = false;
                     }
                   })
-              : (kannSchliessen
-                  ? () => setState(() {
-                        if (belegIndex < _kartenartenNurAnzeige.length) {
-                          _kartenartenNurAnzeige[belegIndex] = true;
-                        }
-                      })
-                  : null),
+              : () => setState(() {
+                    if (belegIndex < _kartenartenNurAnzeige.length) {
+                      _kartenartenNurAnzeige[belegIndex] = true;
+                    }
+                  }),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
             minimumSize: const Size(0, 28),
@@ -3336,26 +3312,7 @@ class _TagesabschlussSchritt2SeiteState
                                                                   overflow: TextOverflow.ellipsis,
                                                                 )),
                                                     ),
-                                                    if (_ecUnterkachelEditModus[i])
-                                                      SizedBox(
-                                                        width: 96,
-                                                        height: 28,
-                                                        child: BetragCentEingabefeld(
-                                                          textController: _ecBelegController[i],
-                                                          focusNode: _ecBelegFocusNode[i],
-                                                          onChanged: (String wert) {
-                                                            setState(() {
-                                                              _letzteAenderung = DateTime.now();
-                                                              _ecBelegeCent[i] = _parsiereBetragCent(wert);
-                                                            });
-                                                            _speichereEntwurf();
-                                                          },
-                                                          schriftgroesse: 13,
-                                                          hinweisText: '0,00 €',
-                                                          mitKomma: _eingabeMitKomma,
-                                                        ),
-                                                      )
-                                                    else if (_ecBelegeCent[i] > 0)
+                                                    if (_ecBelegeCent[i] > 0)
                                                       Padding(
                                                         padding: const EdgeInsets.only(right: 4),
                                                         child: Text(
@@ -3513,8 +3470,7 @@ class _TagesabschlussSchritt2SeiteState
                                                             ? TextButton(
                                                                 onPressed: () => setState(() {
                                                                     _ecUnterkachelEditModus[i] = false;
-                                                                    if (i < _kartenartenNurAnzeige.length &&
-                                                                        !_kartenartenImplausibel(i)) {
+                                                                    if (i < _kartenartenNurAnzeige.length) {
                                                                       _kartenartenNurAnzeige[i] = true;
                                                                     }
                                                                   }),

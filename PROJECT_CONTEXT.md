@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.11.1+279 · Run 279
+Version: 0.11.1+279 · Run 279d
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -139,6 +139,8 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
 - Run 279 ✅ Architektur-Refactor: alle Zahlungsarten-Felder auf per-Beleg-Lists umgestellt.
   Jede Sub-Kachel zeigt jetzt die Kartendaten-Aufschlüsselung ihres eigenen Belegs.
   Persistenz rückwärtskompatibel (altes Format → Beleg 0). — abgeschlossen
+- Run 279d ✅ Bugfixes: nichtImScan-Default→true, _kartenartenNurAnzeige-Default→true,
+  _kartenartenImplausibel-Gate entfernt, BetragCentEingabefeld aus Header revertiert.
 - Run 280 ⬜ Dev-Modus: "see JSON"-Button im Prüf-Popup
 - Run 281 ⬜ Hilfetext: Belegkopie ziehen
 
