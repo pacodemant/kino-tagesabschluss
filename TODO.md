@@ -94,6 +94,18 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–280)*
 
+- [ ] **Architektur-Refactor: Zahlungsartzeilen pro Beleg** *(Run 279 — jetzt höchste Priorität)*
+      Aktuell ist `_zahlungsartZeilen` ein geteilter State für alle Belege.
+      Wenn Beleg 2 gescannt wird, gehen Beleg 1's Kartendaten verloren.
+      Nötig: `_zahlungsartZeilen` → `List<List<_ZahlungsartZeile>>` (pro Beleg).
+      Dazu müssen auch pro Beleg werden: `_kartenartenGesamtAnzahl`,
+      `_kartenartenGesamtBetragCent`, `_kartenartenGesamtBetragController`,
+      `_kartenartenGesamtAnzahlController`, `_scanHatStattgefunden`,
+      `_metadatenAufgeklappt`, `_metadatenNurAnzeige`, `_kartenartenNurAnzeige`.
+      `_baueZahlungsartenTabelle()` und `_baueMetadatenBlock()` bekommen
+      einen Index-Parameter. Persistenz: zahlungsartZeilen je Beleg separat
+      in SharedPreferences speichern.
+
 - [x] **EC-Kachel: Layout & Terminal-ID** *(Run 275)* Metadaten kompakter,
       Betragszeilen luftiger. "Bezeichnung (optional)" → "Terminal-ID" als Pflichtfeld.
       Bei Scan automatisch befüllt.
@@ -281,7 +293,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ---
 
-## 💡 lose, schnell hinzugefügte Spontan-Ideen (hin und wieder mal in die Todos einsortieren)
+## 💡 lose, schnell hinzugefügte Spontan-Ideen (hin und wieder mal in die Todos für .md korrekt formatiert einsortieren)
 
 - [ ] **Einstellungen Admin - Standort einstellen** In den Einstellungen soll der Admin den Standort einstellen können, damit die Mitarbeiter nicht erst noch den Standort auswählen müssen.
 
@@ -296,3 +308,5 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 * Der Admin Modus ist Passwort geschützt mit dem Code „flrbcsh“.
 * Auf der Startseite für die BT sollen zwei Buttons für die Kassenabrechnung stehen: 1. Abrechnung und 2. Abrechnung
 * ich glaube, das Prüf-Popup bei den Kartenzahlungen kann weg und fragliche Daten können in der Kachel bzw. Sub-Kachel direkt hervorgehoben und korrigiert werden. Wenn dann immer noch ungereimtheiten existieren
+* Den Prompt, der mit dem Beleg-Scan mitgeschickt wird, dahingehend anpassen, dass die KI nur die relevanten Daten lesen, nichts hineinininterpretieren und keine unnötigen Bemerkgungen (zb. von "Schreibgerät verdeckt" oder "Beleg ist eingerissen" und was die KI sonst noch für Besonderheiten feststellen könnte). Vielleicht sollte man im Prompt auch noch auf einiges Hinweisen, zb. dass die KI auf Zeilen achten sollen, denn manchmal rutscht ein Karten-Betrag zu einer anderen Kartenart, als sie auf dem Beleg notiert ist.
++ ich kann die Belegerfassung erst abschließen, wenn alle Daten korrekt/plausibel sind. Dh, wenn auch nur ein Datenfeld leer oder nicht korrekt ist, bleibt der Fertig-Button ausgegraut. Wenn man auf den ausgegrauten Fertig-Button tippt, soll man darauf hingewiesen werden, dass die daten noch nicht korrigiert wurden und deshalb nicht abgeschickt werden können. 
