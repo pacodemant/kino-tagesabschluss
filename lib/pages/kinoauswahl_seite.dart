@@ -65,7 +65,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   const Text(
-                    'Web App 0.11.0 · r278d @ GitHub:',
+                    'Web App 0.11.1 · r279 @ GitHub:',
                     style: TextStyle(
                       fontSize: 13,
                       color: AppFarben.subtilerText,

@@ -94,17 +94,9 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–280)*
 
-- [ ] **Architektur-Refactor: Zahlungsartzeilen pro Beleg** *(Run 279 — jetzt höchste Priorität)*
-      Aktuell ist `_zahlungsartZeilen` ein geteilter State für alle Belege.
-      Wenn Beleg 2 gescannt wird, gehen Beleg 1's Kartendaten verloren.
-      Nötig: `_zahlungsartZeilen` → `List<List<_ZahlungsartZeile>>` (pro Beleg).
-      Dazu müssen auch pro Beleg werden: `_kartenartenGesamtAnzahl`,
-      `_kartenartenGesamtBetragCent`, `_kartenartenGesamtBetragController`,
-      `_kartenartenGesamtAnzahlController`, `_scanHatStattgefunden`,
-      `_metadatenAufgeklappt`, `_metadatenNurAnzeige`, `_kartenartenNurAnzeige`.
-      `_baueZahlungsartenTabelle()` und `_baueMetadatenBlock()` bekommen
-      einen Index-Parameter. Persistenz: zahlungsartZeilen je Beleg separat
-      in SharedPreferences speichern.
+- [x] **Architektur-Refactor: Zahlungsartzeilen pro Beleg** *(Run 279)*
+      Alle Zahlungsarten-Felder auf per-Beleg-Listen umgestellt.
+      Jede Sub-Kachel zeigt die Kartendaten-Aufschlüsselung ihres eigenen Belegs.
 
 - [x] **EC-Kachel: Layout & Terminal-ID** *(Run 275)* Metadaten kompakter,
       Betragszeilen luftiger. "Bezeichnung (optional)" → "Terminal-ID" als Pflichtfeld.

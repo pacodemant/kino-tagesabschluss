@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.11.0+278d · Run 278d
+Version: 0.11.1+279 · Run 279
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -125,7 +125,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 278d)
+## Laufender Entwicklungsstand (Run 279)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
 
@@ -135,21 +135,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
 - Run 277 ✅ EC-Kachel: Unterkacheln pro Beleg — abgeschlossen
 - Run 277a…a5 ✅ EC-Kachel Redesign + Fixes: 1-Beleg flach / 2+-Belege Sub-Kacheln — abgeschlossen
 - Run 278 ✅ Prüf-Popup: rote Felder, Hinweistext, keine Inline-Korrektur — abgeschlossen
-- Run 278a ✅ Prüf-Popup + EC-Kachel UX-Fixes — abgeschlossen
-- Run 278b–278d ⚠️ Sub-Kachel UX-Versuche (TID-Editing, Manuell-Bearbeiten, Body-Gate) —
-  TEILWEISE: 1-Beleg-Modus und Prüf-Popup funktionieren. Sub-Kacheln im 2+-Beleg-Modus
-  zeigen Kartendaten nur für den zuletzt gescannten Beleg (architektonische Einschränkung).
-- Run 279 🔴 ARCHITEKTUR-REFACTOR: Zahlungsartzeilen pro Beleg — HÖCHSTE PRIORITÄT.
-  Bis dahin ist 2+-Beleg-Modus eingeschränkt nutzbar (Betrag + TID je Beleg, aber
-  Kartendaten-Aufschlüsselung nur für letzten Beleg sichtbar).
+- Run 278a–278d ✅ Prüf-Popup + EC-Kachel UX-Fixes, TID-Editing, Manuell-Bearbeiten — abgeschlossen
+- Run 279 ✅ Architektur-Refactor: alle Zahlungsarten-Felder auf per-Beleg-Lists umgestellt.
+  Jede Sub-Kachel zeigt jetzt die Kartendaten-Aufschlüsselung ihres eigenen Belegs.
+  Persistenz rückwärtskompatibel (altes Format → Beleg 0). — abgeschlossen
 - Run 280 ⬜ Dev-Modus: "see JSON"-Button im Prüf-Popup
 - Run 281 ⬜ Hilfetext: Belegkopie ziehen
-
-**⚠️ Bekannte Einschränkung (Stand 278d):**
-`_zahlungsartZeilen` ist globaler geteilter State. Im 2+-Beleg-Modus werden
-nach dem Scan eines zweiten Belegs die Kartendaten des ersten nicht mehr
-angezeigt (nur Betrag + TID bleiben im Header sichtbar). Der Refactor auf
-per-Beleg-zahlungsartZeilen ist der nächste Schritt.
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

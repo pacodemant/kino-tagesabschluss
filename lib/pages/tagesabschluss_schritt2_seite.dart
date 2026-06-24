@@ -144,7 +144,18 @@ class _TagesabschlussSchritt2SeiteState
   final List<bool> _ecUnterkachelAufgeklappt = <bool>[];
   final List<bool> _ecUnterkachelEditModus = <bool>[];
   final List<bool> _ecBelegScanGescannt = <bool>[];
-  int _ecZahlungsartenBelegIndex = 0;
+
+  // Per-Beleg: Zahlungsarten und Scan-Status
+  List<String> _zahlungsartKonfigNamen = <String>[];
+  final List<List<_ZahlungsartZeile>> _zahlungsartZeilen = <List<_ZahlungsartZeile>>[];
+  final List<bool> _scanHatStattgefunden = <bool>[];
+  final List<int?> _kartenartenGesamtAnzahl = <int?>[];
+  final List<int?> _kartenartenGesamtBetragCent = <int?>[];
+  final List<TextEditingController> _kartenartenGesamtAnzahlController = <TextEditingController>[];
+  final List<TextEditingController> _kartenartenGesamtBetragController = <TextEditingController>[];
+  final List<bool> _metadatenAufgeklappt = <bool>[];
+  final List<bool> _metadatenNurAnzeige = <bool>[];
+  final List<bool> _kartenartenNurAnzeige = <bool>[];
 
   final List<TextEditingController> _ausgabenBetragController = <TextEditingController>[];
   final List<TextEditingController> _ausgabenLabelController = <TextEditingController>[];
@@ -169,9 +180,6 @@ class _TagesabschlussSchritt2SeiteState
   bool _bistroSollBeruehrt = false;
   bool _ecBeleg1Beruehrt = false;
   bool _ecBelegLabel1Beruehrt = false;
-  bool _metadatenNurAnzeige = false;
-  bool _metadatenAufgeklappt = false;
-  bool _kartenartenNurAnzeige = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
 
@@ -181,7 +189,6 @@ class _TagesabschlussSchritt2SeiteState
   String? _scanUhrzeit;
   String? _scanBelegNrVon;
   String? _scanBelegNrBis;
-  bool _scanHatStattgefunden = false;
   final TextEditingController _scanDatumController = TextEditingController();
   final TextEditingController _scanUhrzeitController =
       TextEditingController();
@@ -194,23 +201,11 @@ class _TagesabschlussSchritt2SeiteState
   final FocusNode _scanBelegNrVonFocusNode = FocusNode();
   final FocusNode _scanBelegNrBisFocusNode = FocusNode();
 
-  // Gelesene (fixe) Gesamtsumme laut Beleg – wird NICHT aus den
-  // Kartenarten-Zeilen berechnet, sondern unabhängig davon gehalten,
-  // damit Tippfehler in einzelner Anzahl/Betrag erkennbar bleiben.
-  int? _kartenartenGesamtAnzahl;
-  int? _kartenartenGesamtBetragCent;
-  final TextEditingController _kartenartenGesamtAnzahlController =
-      TextEditingController();
-  final TextEditingController _kartenartenGesamtBetragController =
-      TextEditingController();
-
   // EC-Kachel
   bool _ecKachelAufgeklappt = false;
   final GlobalKey _ecKachelKey = GlobalKey();
   bool _ecKachelZeigeScrollPfeil = false;
 
-  // Zahlungsarten-Tabelle
-  List<_ZahlungsartZeile> _zahlungsartZeilen = <_ZahlungsartZeile>[];
   @override
   void initState() {
     super.initState();
@@ -241,15 +236,24 @@ class _TagesabschlussSchritt2SeiteState
     }
     ZahlungsartenConfigService.laden().then((List<String> liste) async {
       if (!mounted) return;
+      _zahlungsartKonfigNamen = liste;
       setState(() {
-        _zahlungsartZeilen = List<_ZahlungsartZeile>.generate(
-          liste.length,
-          (int i) => _ZahlungsartZeile(liste[i]),
-        );
+        // Alle bestehenden Belege (mindestens Beleg 0) mit Konfigzeilen befüllen
+        for (int b = 0; b < _zahlungsartZeilen.length; b++) {
+          for (final _ZahlungsartZeile z in _zahlungsartZeilen[b]) {
+            z.dispose();
+          }
+          _zahlungsartZeilen[b] = List<_ZahlungsartZeile>.generate(
+            liste.length,
+            (int i) => _ZahlungsartZeile(liste[i]),
+          );
+        }
       });
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-        zeile.anzahlFocusNode.addListener(() { if (mounted) setState(() {}); });
-        zeile.betragFocusNode.addListener(() { if (mounted) setState(() {}); });
+      for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
+        for (final _ZahlungsartZeile zeile in belegZeilen) {
+          zeile.anzahlFocusNode.addListener(() { if (mounted) setState(() {}); });
+          zeile.betragFocusNode.addListener(() { if (mounted) setState(() {}); });
+        }
       }
       await _ladeEntwurf();
       if (!mounted) return;
@@ -277,8 +281,8 @@ class _TagesabschlussSchritt2SeiteState
     _scanUhrzeitFocusNode.dispose();
     _scanBelegNrVonFocusNode.dispose();
     _scanBelegNrBisFocusNode.dispose();
-    _kartenartenGesamtAnzahlController.dispose();
-    _kartenartenGesamtBetragController.dispose();
+    disposeControllers(_kartenartenGesamtAnzahlController);
+    disposeControllers(_kartenartenGesamtBetragController);
     disposeControllers(_ecBelegController);
     disposeControllers(_ecBelegLabelController);
     disposeFocusNodes(_ecBelegFocusNode);
@@ -287,8 +291,10 @@ class _TagesabschlussSchritt2SeiteState
     disposeControllers(_ausgabenLabelController);
     disposeFocusNodes(_ausgabenBetragFocusNode);
     disposeFocusNodes(_ausgabenLabelFocusNode);
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-      zeile.dispose();
+    for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
+      for (final _ZahlungsartZeile zeile in belegZeilen) {
+        zeile.dispose();
+      }
     }
     super.dispose();
   }
@@ -372,20 +378,41 @@ class _TagesabschlussSchritt2SeiteState
         _ausgabenBetrageCent[i] = ausgabenBetraege[i];
         _ausgabenLabels[i] = ausgabenLabelListe[i];
       }
-      _scanHatStattgefunden =
-          (daten['scanHatStattgefunden'] as bool?) ?? false;
+      // scanHatStattgefunden: neu List<bool>, rückwärtskompatibel bool
+      final Object? scanRoh = daten['scanHatStattgefunden'];
+      if (scanRoh is List<dynamic>) {
+        for (int b = 0; b < _scanHatStattgefunden.length && b < scanRoh.length; b++) {
+          _scanHatStattgefunden[b] = (scanRoh[b] as bool?) ?? false;
+        }
+      } else {
+        if (_scanHatStattgefunden.isNotEmpty) {
+          _scanHatStattgefunden[0] = (scanRoh as bool?) ?? false;
+        }
+      }
       _scanTerminalId = daten['scanTerminalId'] as String?;
       _scanDatum = daten['scanDatum'] as String?;
       _scanUhrzeit = daten['scanUhrzeit'] as String?;
       _scanBelegNrVon = daten['scanBelegNrVon'] as String?;
       _scanBelegNrBis = daten['scanBelegNrBis'] as String?;
-      _kartenartenGesamtAnzahl =
-          (daten['kartenartenGesamtAnzahl'] as num?)?.toInt();
-      _kartenartenGesamtBetragCent =
-          (daten['kartenartenGesamtBetragCent'] as num?)?.toInt();
-      _ecZahlungsartenBelegIndex =
-          (daten['ecZahlungsartenBelegIndex'] as num?)?.toInt() ?? 0;
-      if (_scanHatStattgefunden ||
+      // kartenartenGesamtAnzahl: neu List<int?>, rückwärtskompatibel int?
+      final Object? gesAnzahlRoh = daten['kartenartenGesamtAnzahl'];
+      if (gesAnzahlRoh is List<dynamic>) {
+        for (int b = 0; b < _kartenartenGesamtAnzahl.length && b < gesAnzahlRoh.length; b++) {
+          _kartenartenGesamtAnzahl[b] = (gesAnzahlRoh[b] as num?)?.toInt();
+        }
+      } else if (_kartenartenGesamtAnzahl.isNotEmpty) {
+        _kartenartenGesamtAnzahl[0] = (gesAnzahlRoh as num?)?.toInt();
+      }
+      // kartenartenGesamtBetragCent: neu List<int?>, rückwärtskompatibel int?
+      final Object? gesBetragRoh = daten['kartenartenGesamtBetragCent'];
+      if (gesBetragRoh is List<dynamic>) {
+        for (int b = 0; b < _kartenartenGesamtBetragCent.length && b < gesBetragRoh.length; b++) {
+          _kartenartenGesamtBetragCent[b] = (gesBetragRoh[b] as num?)?.toInt();
+        }
+      } else if (_kartenartenGesamtBetragCent.isNotEmpty) {
+        _kartenartenGesamtBetragCent[0] = (gesBetragRoh as num?)?.toInt();
+      }
+      if ((_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0]) ||
           ecBelege[0] != 0 ||
           ecBelegeLabelsListe[0].isNotEmpty) {
         _ecKachelAufgeklappt = true;
@@ -422,16 +449,18 @@ class _TagesabschlussSchritt2SeiteState
     if (_scanBelegNrBis != null) {
       _setzeControllerText(_scanBelegNrBisController, _scanBelegNrBis!);
     }
-    if (_kartenartenGesamtAnzahl != null) {
-      _setzeControllerText(
-          _kartenartenGesamtAnzahlController, '$_kartenartenGesamtAnzahl');
-    }
-    if (_kartenartenGesamtBetragCent != null) {
-      _setzeControllerText(
-        _kartenartenGesamtBetragController,
-        TagesabschlussFormatierung
-            .formatiereEuroEingabe(_kartenartenGesamtBetragCent!),
-      );
+    for (int b = 0; b < _kartenartenGesamtAnzahlController.length; b++) {
+      final int? anz = _kartenartenGesamtAnzahl[b];
+      if (anz != null) {
+        _setzeControllerText(_kartenartenGesamtAnzahlController[b], '$anz');
+      }
+      final int? bet = _kartenartenGesamtBetragCent[b];
+      if (bet != null) {
+        _setzeControllerText(
+          _kartenartenGesamtBetragController[b],
+          TagesabschlussFormatierung.formatiereEuroEingabe(bet),
+        );
+      }
     }
     for (int i = 0; i < ecBelege.length; i++) {
       _setzeControllerText(
@@ -454,37 +483,83 @@ class _TagesabschlussSchritt2SeiteState
       }
     }
 
-    // Zahlungsarten-Tabelle wiederherstellen
+    // Zahlungsarten-Tabelle pro Beleg wiederherstellen
     final Object? anzahlRoh = daten['zahlungsartAnzahlWerte'];
     final Object? betragRoh = daten['zahlungsartBetragCentWerte'];
     if (mounted && anzahlRoh is List<dynamic> && betragRoh is List<dynamic>) {
-      setState(() {
-        for (int i = 0;
-            i < _zahlungsartZeilen.length &&
-                i < anzahlRoh.length &&
-                i < betragRoh.length;
-            i++) {
-          _zahlungsartZeilen[i].anzahlWert = (anzahlRoh[i] as num?)?.toInt();
-          _zahlungsartZeilen[i].betragCentWert =
-              (betragRoh[i] as num?)?.toInt();
+      // Neues Format: List<List<dynamic>>  –  altes Format: List<dynamic> (nur Beleg 0)
+      final bool isNeuesFormat =
+          anzahlRoh.isNotEmpty && anzahlRoh.first is List<dynamic>;
+      if (isNeuesFormat) {
+        setState(() {
+          for (int b = 0; b < _zahlungsartZeilen.length && b < anzahlRoh.length; b++) {
+            final List<dynamic> bAnzahl = anzahlRoh[b] as List<dynamic>;
+            final List<dynamic> bBetrag = b < betragRoh.length
+                ? (betragRoh[b] as List<dynamic>)
+                : <dynamic>[];
+            for (int i = 0;
+                i < _zahlungsartZeilen[b].length &&
+                    i < bAnzahl.length &&
+                    i < bBetrag.length;
+                i++) {
+              _zahlungsartZeilen[b][i].anzahlWert = (bAnzahl[i] as num?)?.toInt();
+              _zahlungsartZeilen[b][i].betragCentWert = (bBetrag[i] as num?)?.toInt();
+            }
+          }
+        });
+        for (int b = 0; b < _zahlungsartZeilen.length && b < anzahlRoh.length; b++) {
+          final List<dynamic> bAnzahl = anzahlRoh[b] as List<dynamic>;
+          final List<dynamic> bBetrag = b < betragRoh.length
+              ? (betragRoh[b] as List<dynamic>)
+              : <dynamic>[];
+          for (int i = 0;
+              i < _zahlungsartZeilen[b].length &&
+                  i < bAnzahl.length &&
+                  i < bBetrag.length;
+              i++) {
+            final int? anzahl = _zahlungsartZeilen[b][i].anzahlWert;
+            final int? betrag = _zahlungsartZeilen[b][i].betragCentWert;
+            if (anzahl != null) {
+              _setzeControllerText(_zahlungsartZeilen[b][i].anzahlController, '$anzahl');
+            }
+            if (betrag != null) {
+              _setzeControllerText(
+                _zahlungsartZeilen[b][i].betragController,
+                TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
+              );
+            }
+          }
         }
-      });
-      for (int i = 0;
-          i < _zahlungsartZeilen.length &&
-              i < anzahlRoh.length &&
-              i < betragRoh.length;
-          i++) {
-        final int? anzahl = _zahlungsartZeilen[i].anzahlWert;
-        final int? betrag = _zahlungsartZeilen[i].betragCentWert;
-        if (anzahl != null) {
-          _setzeControllerText(
-              _zahlungsartZeilen[i].anzahlController, '$anzahl');
-        }
-        if (betrag != null) {
-          _setzeControllerText(
-            _zahlungsartZeilen[i].betragController,
-            TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
-          );
+      } else {
+        // Altes Format: flache Liste → nur Beleg 0
+        if (_zahlungsartZeilen.isNotEmpty) {
+          setState(() {
+            for (int i = 0;
+                i < _zahlungsartZeilen[0].length &&
+                    i < anzahlRoh.length &&
+                    i < betragRoh.length;
+                i++) {
+              _zahlungsartZeilen[0][i].anzahlWert = (anzahlRoh[i] as num?)?.toInt();
+              _zahlungsartZeilen[0][i].betragCentWert = (betragRoh[i] as num?)?.toInt();
+            }
+          });
+          for (int i = 0;
+              i < _zahlungsartZeilen[0].length &&
+                  i < anzahlRoh.length &&
+                  i < betragRoh.length;
+              i++) {
+            final int? anzahl = _zahlungsartZeilen[0][i].anzahlWert;
+            final int? betrag = _zahlungsartZeilen[0][i].betragCentWert;
+            if (anzahl != null) {
+              _setzeControllerText(_zahlungsartZeilen[0][i].anzahlController, '$anzahl');
+            }
+            if (betrag != null) {
+              _setzeControllerText(
+                _zahlungsartZeilen[0][i].betragController,
+                TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
+              );
+            }
+          }
         }
       }
     }
@@ -504,23 +579,28 @@ class _TagesabschlussSchritt2SeiteState
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
         'ecBelegeCent': List<int>.from(_ecBelegeCent),
         'ecBelegeLabels': List<String>.from(_ecBelegLabels),
-        'scanHatStattgefunden': _scanHatStattgefunden,
+        'scanHatStattgefunden': List<bool>.from(_scanHatStattgefunden),
         'scanTerminalId': _scanTerminalId,
         'scanDatum': _scanDatum,
         'scanUhrzeit': _scanUhrzeit,
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
-        'kartenartenGesamtAnzahl': _kartenartenGesamtAnzahl,
-        'kartenartenGesamtBetragCent': _kartenartenGesamtBetragCent,
-        'ecZahlungsartenBelegIndex': _ecZahlungsartenBelegIndex,
-        'zahlungsartAnzahlWerte': _zahlungsartZeilen
-            .where((_ZahlungsartZeile z) => !z.istUnbekannt)
-            .map((_ZahlungsartZeile z) => z.anzahlWert)
-            .toList(),
-        'zahlungsartBetragCentWerte': _zahlungsartZeilen
-            .where((_ZahlungsartZeile z) => !z.istUnbekannt)
-            .map((_ZahlungsartZeile z) => z.betragCentWert)
-            .toList(),
+        'kartenartenGesamtAnzahl': List<int?>.from(_kartenartenGesamtAnzahl),
+        'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
+        'zahlungsartAnzahlWerte': <List<int?>>[
+          for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
+            belegZeilen
+                .where((_ZahlungsartZeile z) => !z.istUnbekannt)
+                .map((_ZahlungsartZeile z) => z.anzahlWert)
+                .toList(),
+        ],
+        'zahlungsartBetragCentWerte': <List<int?>>[
+          for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
+            belegZeilen
+                .where((_ZahlungsartZeile z) => !z.istUnbekannt)
+                .map((_ZahlungsartZeile z) => z.betragCentWert)
+                .toList(),
+        ],
       },
     );
   }
@@ -680,6 +760,23 @@ class _TagesabschlussSchritt2SeiteState
       _ecUnterkachelAufgeklappt.add(true);
       _ecUnterkachelEditModus.add(false);
       _ecBelegScanGescannt.add(false);
+      // per-Beleg
+      _zahlungsartZeilen.add(
+        _zahlungsartKonfigNamen.isEmpty
+            ? <_ZahlungsartZeile>[]
+            : List<_ZahlungsartZeile>.generate(
+                _zahlungsartKonfigNamen.length,
+                (int i) => _ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
+              ),
+      );
+      _scanHatStattgefunden.add(false);
+      _kartenartenGesamtAnzahl.add(null);
+      _kartenartenGesamtBetragCent.add(null);
+      _kartenartenGesamtAnzahlController.add(TextEditingController());
+      _kartenartenGesamtBetragController.add(TextEditingController());
+      _metadatenAufgeklappt.add(false);
+      _metadatenNurAnzeige.add(false);
+      _kartenartenNurAnzeige.add(false);
     });
     _speichereEntwurf();
   }
@@ -699,15 +796,24 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.removeAt(index);
       _ecBelegLabels.removeAt(index);
       _ecBelegIds.removeAt(index);
-      if (index < _ecUnterkachelAufgeklappt.length) {
-        _ecUnterkachelAufgeklappt.removeAt(index);
+      if (index < _ecUnterkachelAufgeklappt.length) _ecUnterkachelAufgeklappt.removeAt(index);
+      if (index < _ecUnterkachelEditModus.length) _ecUnterkachelEditModus.removeAt(index);
+      if (index < _ecBelegScanGescannt.length) _ecBelegScanGescannt.removeAt(index);
+      // per-Beleg
+      if (index < _zahlungsartZeilen.length) {
+        for (final _ZahlungsartZeile z in _zahlungsartZeilen[index]) {
+          z.dispose();
+        }
+        _zahlungsartZeilen.removeAt(index);
       }
-      if (index < _ecUnterkachelEditModus.length) {
-        _ecUnterkachelEditModus.removeAt(index);
-      }
-      if (index < _ecBelegScanGescannt.length) {
-        _ecBelegScanGescannt.removeAt(index);
-      }
+      if (index < _scanHatStattgefunden.length) _scanHatStattgefunden.removeAt(index);
+      if (index < _kartenartenGesamtAnzahl.length) _kartenartenGesamtAnzahl.removeAt(index);
+      if (index < _kartenartenGesamtBetragCent.length) _kartenartenGesamtBetragCent.removeAt(index);
+      if (index < _kartenartenGesamtAnzahlController.length) _kartenartenGesamtAnzahlController.removeAt(index).dispose();
+      if (index < _kartenartenGesamtBetragController.length) _kartenartenGesamtBetragController.removeAt(index).dispose();
+      if (index < _metadatenAufgeklappt.length) _metadatenAufgeklappt.removeAt(index);
+      if (index < _metadatenNurAnzeige.length) _metadatenNurAnzeige.removeAt(index);
+      if (index < _kartenartenNurAnzeige.length) _kartenartenNurAnzeige.removeAt(index);
     });
     _speichereEntwurf();
   }
@@ -732,15 +838,24 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegeCent.removeLast();
       _ecBelegLabels.removeLast();
       _ecBelegIds.removeLast();
-      if (_ecUnterkachelAufgeklappt.isNotEmpty) {
-        _ecUnterkachelAufgeklappt.removeLast();
+      if (_ecUnterkachelAufgeklappt.isNotEmpty) _ecUnterkachelAufgeklappt.removeLast();
+      if (_ecUnterkachelEditModus.isNotEmpty) _ecUnterkachelEditModus.removeLast();
+      if (_ecBelegScanGescannt.isNotEmpty) _ecBelegScanGescannt.removeLast();
+      // per-Beleg
+      if (_zahlungsartZeilen.isNotEmpty) {
+        for (final _ZahlungsartZeile z in _zahlungsartZeilen.last) {
+          z.dispose();
+        }
+        _zahlungsartZeilen.removeLast();
       }
-      if (_ecUnterkachelEditModus.isNotEmpty) {
-        _ecUnterkachelEditModus.removeLast();
-      }
-      if (_ecBelegScanGescannt.isNotEmpty) {
-        _ecBelegScanGescannt.removeLast();
-      }
+      if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden.removeLast();
+      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl.removeLast();
+      if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent.removeLast();
+      if (_kartenartenGesamtAnzahlController.isNotEmpty) _kartenartenGesamtAnzahlController.removeLast().dispose();
+      if (_kartenartenGesamtBetragController.isNotEmpty) _kartenartenGesamtBetragController.removeLast().dispose();
+      if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt.removeLast();
+      if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige.removeLast();
+      if (_kartenartenNurAnzeige.isNotEmpty) _kartenartenNurAnzeige.removeLast();
     }
     while (_ecBelegController.length < anzahl) {
       _ecBelegController.add(TextEditingController());
@@ -757,6 +872,23 @@ class _TagesabschlussSchritt2SeiteState
       _ecUnterkachelAufgeklappt.add(true);
       _ecUnterkachelEditModus.add(false);
       _ecBelegScanGescannt.add(false);
+      // per-Beleg
+      _zahlungsartZeilen.add(
+        _zahlungsartKonfigNamen.isEmpty
+            ? <_ZahlungsartZeile>[]
+            : List<_ZahlungsartZeile>.generate(
+                _zahlungsartKonfigNamen.length,
+                (int i) => _ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
+              ),
+      );
+      _scanHatStattgefunden.add(false);
+      _kartenartenGesamtAnzahl.add(null);
+      _kartenartenGesamtBetragCent.add(null);
+      _kartenartenGesamtAnzahlController.add(TextEditingController());
+      _kartenartenGesamtBetragController.add(TextEditingController());
+      _metadatenAufgeklappt.add(false);
+      _metadatenNurAnzeige.add(false);
+      _kartenartenNurAnzeige.add(false);
     }
   }
 
@@ -919,18 +1051,20 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_scanUhrzeitController, '');
       _setzeControllerText(_scanBelegNrVonController, '');
       _setzeControllerText(_scanBelegNrBisController, '');
-      _scanHatStattgefunden = false;
-      _bereinigUnbekannteZeilen();
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-        zeile.reset();
+      if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;
+      _bereinigUnbekannteZeilen(0);
+      if (_zahlungsartZeilen.isNotEmpty) {
+        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+          zeile.reset();
+        }
       }
-      _metadatenNurAnzeige = false;
-      _metadatenAufgeklappt = false;
-      _kartenartenNurAnzeige = false;
-      _kartenartenGesamtAnzahl = null;
-      _kartenartenGesamtBetragCent = null;
-      _setzeControllerText(_kartenartenGesamtAnzahlController, '');
-      _setzeControllerText(_kartenartenGesamtBetragController, '');
+      if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige[0] = false;
+      if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
+      if (_kartenartenNurAnzeige.isNotEmpty) _kartenartenNurAnzeige[0] = false;
+      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl[0] = null;
+      if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
+      if (_kartenartenGesamtAnzahlController.isNotEmpty) _setzeControllerText(_kartenartenGesamtAnzahlController[0], '');
+      if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
     });
   }
 
@@ -970,18 +1104,20 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_scanUhrzeitController, '');
       _setzeControllerText(_scanBelegNrVonController, '');
       _setzeControllerText(_scanBelegNrBisController, '');
-      _scanHatStattgefunden = false;
-      _bereinigUnbekannteZeilen();
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-        zeile.reset();
+      if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;
+      _bereinigUnbekannteZeilen(0);
+      if (_zahlungsartZeilen.isNotEmpty) {
+        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+          zeile.reset();
+        }
       }
-      _metadatenNurAnzeige = false;
-      _metadatenAufgeklappt = false;
-      _kartenartenNurAnzeige = false;
-      _kartenartenGesamtAnzahl = null;
-      _kartenartenGesamtBetragCent = null;
-      _setzeControllerText(_kartenartenGesamtAnzahlController, '');
-      _setzeControllerText(_kartenartenGesamtBetragController, '');
+      if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige[0] = false;
+      if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
+      if (_kartenartenNurAnzeige.isNotEmpty) _kartenartenNurAnzeige[0] = false;
+      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl[0] = null;
+      if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
+      if (_kartenartenGesamtAnzahlController.isNotEmpty) _setzeControllerText(_kartenartenGesamtAnzahlController[0], '');
+      if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
   }
@@ -1101,33 +1237,32 @@ class _TagesabschlussSchritt2SeiteState
               _scanBelegNrVonController, _scanBelegNrVon ?? '');
           _setzeControllerText(
               _scanBelegNrBisController, _scanBelegNrBis ?? '');
-          _scanHatStattgefunden = true;
+          _scanHatStattgefunden[belegIndex] = true;
           _ecKachelAufgeklappt = true;
-          _bereinigUnbekannteZeilen();
-          for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+          _bereinigUnbekannteZeilen(belegIndex);
+          for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
             zeile.reset();
           }
-          _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten);
-          _preFillZahlungsartenFromScan(geprueftes, originalErgebnis);
-          _ecZahlungsartenBelegIndex = belegIndex;
-          _kartenartenGesamtAnzahl = geprueftes.gesamtAnzahl;
-          _kartenartenGesamtBetragCent = geprueftes.gesamtBetragCent;
+          _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
+          _preFillZahlungsartenFromScan(geprueftes, originalErgebnis, belegIndex);
+          _kartenartenGesamtAnzahl[belegIndex] = geprueftes.gesamtAnzahl;
+          _kartenartenGesamtBetragCent[belegIndex] = geprueftes.gesamtBetragCent;
           _setzeControllerText(
-            _kartenartenGesamtAnzahlController,
-            _kartenartenGesamtAnzahl != null
-                ? '$_kartenartenGesamtAnzahl'
+            _kartenartenGesamtAnzahlController[belegIndex],
+            _kartenartenGesamtAnzahl[belegIndex] != null
+                ? '${_kartenartenGesamtAnzahl[belegIndex]}'
                 : '',
           );
           _setzeControllerText(
-            _kartenartenGesamtBetragController,
-            _kartenartenGesamtBetragCent != null
+            _kartenartenGesamtBetragController[belegIndex],
+            _kartenartenGesamtBetragCent[belegIndex] != null
                 ? TagesabschlussFormatierung
-                    .formatiereEuroEingabe(_kartenartenGesamtBetragCent!)
+                    .formatiereEuroEingabe(_kartenartenGesamtBetragCent[belegIndex]!)
                 : '',
           );
-          _metadatenNurAnzeige = true;
-          _metadatenAufgeklappt = false;
-          _kartenartenNurAnzeige = !_kartenartenImplausibel;
+          _metadatenNurAnzeige[belegIndex] = true;
+          _metadatenAufgeklappt[belegIndex] = false;
+          _kartenartenNurAnzeige[belegIndex] = !_kartenartenImplausibel(belegIndex);
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
@@ -1203,26 +1338,30 @@ class _TagesabschlussSchritt2SeiteState
     return b.contains(c) || c.contains(b);
   }
 
-  void _bereinigUnbekannteZeilen() {
-    final List<_ZahlungsartZeile> zuEntfernen = _zahlungsartZeilen
+  void _bereinigUnbekannteZeilen(int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return;
+    final List<_ZahlungsartZeile> zuEntfernen = _zahlungsartZeilen[belegIndex]
         .where((_ZahlungsartZeile z) => z.istUnbekannt)
         .toList();
     for (final _ZahlungsartZeile z in zuEntfernen) {
       z.dispose();
     }
-    _zahlungsartZeilen.removeWhere((_ZahlungsartZeile z) => z.istUnbekannt);
+    _zahlungsartZeilen[belegIndex]
+        .removeWhere((_ZahlungsartZeile z) => z.istUnbekannt);
   }
 
-  List<String> _dropdownOptionenFuerUnbekannte(int index) {
+  List<String> _dropdownOptionenFuerUnbekannte(int zeileIndex, int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return <String>[];
+    final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
     final Set<String> bereitsGewaehlt = <String>{};
-    for (int i = 0; i < _zahlungsartZeilen.length; i++) {
-      if (i == index) continue;
-      final _ZahlungsartZeile z = _zahlungsartZeilen[i];
+    for (int i = 0; i < zeilen.length; i++) {
+      if (i == zeileIndex) continue;
+      final _ZahlungsartZeile z = zeilen[i];
       if (z.istUnbekannt && z.name.isNotEmpty) {
         bereitsGewaehlt.add(z.name);
       }
     }
-    return _zahlungsartZeilen
+    return zeilen
         .where((_ZahlungsartZeile z) =>
             !z.istUnbekannt &&
             z.nichtImScan &&
@@ -1231,27 +1370,32 @@ class _TagesabschlussSchritt2SeiteState
         .toList();
   }
 
-  void _sortiereZahlungsartenNachBeleg(List<ZahlungsartErgebnis> belegArten) {
+  void _sortiereZahlungsartenNachBeleg(
+      List<ZahlungsartErgebnis> belegArten, int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return;
+    final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
     final List<_ZahlungsartZeile> sortiert = <_ZahlungsartZeile>[];
     for (final ZahlungsartErgebnis z in belegArten) {
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+      for (final _ZahlungsartZeile zeile in zeilen) {
         if (!sortiert.contains(zeile) && _matchKartenart(zeile.name, z.art)) {
           sortiert.add(zeile);
           break;
         }
       }
     }
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+    for (final _ZahlungsartZeile zeile in zeilen) {
       if (!sortiert.contains(zeile)) sortiert.add(zeile);
     }
-    _zahlungsartZeilen = sortiert;
+    _zahlungsartZeilen[belegIndex] = sortiert;
   }
 
   void _preFillZahlungsartenFromScan(
     BelegScanErgebnis geprueftes,
     BelegScanErgebnis? original,
+    int belegIndex,
   ) {
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+    if (belegIndex >= _zahlungsartZeilen.length) return;
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
       ZahlungsartErgebnis? matching;
       for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
         if (_matchKartenart(zeile.name, z.art)) {
@@ -1284,7 +1428,6 @@ class _TagesabschlussSchritt2SeiteState
         _setzeControllerText(zeile.betragController, '');
       }
 
-      // Rot markieren wenn Original-Scan betragCent null hatte
       bool origNichtPlausibel = false;
       if (original != null) {
         for (final ZahlungsartErgebnis z in original.zahlungsarten) {
@@ -1316,55 +1459,54 @@ class _TagesabschlussSchritt2SeiteState
             TagesabschlussFormatierung.formatiereEuroEingabe(z.betragCent!),
           );
         }
-        _zahlungsartZeilen.insert(0, unbekannte);
+        _zahlungsartZeilen[belegIndex].insert(0, unbekannte);
       }
     }
   }
 
-  /// Eine Zeile ist unplausibel, wenn der Scan sie als unsicher markiert hat,
-  /// nur eines von Anzahl/Betrag ausgefüllt ist, oder die Anzahl 0 beträgt.
-  bool _istZeileImplausibel(_ZahlungsartZeile zeile) {
+  bool _istZeileImplausibel(_ZahlungsartZeile zeile, int belegIndex) {
     if (zeile.anzahlWert == null && zeile.betragCentWert == null) {
-      // Nach einem Scan: sichtbare leere Zeilen müssen befüllt werden
-      return _scanHatStattgefunden && !zeile.nichtImScan;
+      return belegIndex < _scanHatStattgefunden.length &&
+          _scanHatStattgefunden[belegIndex] &&
+          !zeile.nichtImScan;
     }
     if (zeile.anzahlWert == null || zeile.betragCentWert == null) return true;
     if (zeile.anzahlWert == 0) return true;
     return false;
   }
 
-  /// Prüft alle sichtbaren Kartenarten-Zeilen sowie die gelesene
-  /// Gesamtsumme auf Implausibilität (einzelne Zeile fehlerhaft oder
-  /// Summe der Zeilen weicht von der gelesenen Gesamtsumme ab).
-  bool get _kartenartenImplausibel {
+  bool _kartenartenImplausibel(int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return false;
     int summeAnzahl = 0;
     int summeBetrag = 0;
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
+    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
       if (zeile.nichtImScan) continue;
-      if (_istZeileImplausibel(zeile)) return true;
+      if (_istZeileImplausibel(zeile, belegIndex)) return true;
       if (zeile.anzahlWert != null) summeAnzahl += zeile.anzahlWert!;
       if (zeile.betragCentWert != null) summeBetrag += zeile.betragCentWert!;
     }
-    if (_kartenartenGesamtAnzahl != null &&
-        summeAnzahl != _kartenartenGesamtAnzahl) {
-      return true;
-    }
-    if (_kartenartenGesamtBetragCent != null &&
-        summeBetrag != _kartenartenGesamtBetragCent) {
-      return true;
-    }
+    final int? gesAnzahl = belegIndex < _kartenartenGesamtAnzahl.length
+        ? _kartenartenGesamtAnzahl[belegIndex]
+        : null;
+    final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
+        ? _kartenartenGesamtBetragCent[belegIndex]
+        : null;
+    if (gesAnzahl != null && summeAnzahl != gesAnzahl) return true;
+    if (gesBetrag != null && summeBetrag != gesBetrag) return true;
     return false;
   }
 
   List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
     final List<ZahlungsartErgebnis> liste = <ZahlungsartErgebnis>[];
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-      if (zeile.anzahlWert == null && zeile.betragCentWert == null) continue;
-      liste.add(ZahlungsartErgebnis(
-        art: zeile.name,
-        anzahl: zeile.anzahlWert ?? 0,
-        betragCent: zeile.betragCentWert,
-      ));
+    for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
+      for (final _ZahlungsartZeile zeile in belegZeilen) {
+        if (zeile.anzahlWert == null && zeile.betragCentWert == null) continue;
+        liste.add(ZahlungsartErgebnis(
+          art: zeile.name,
+          anzahl: zeile.anzahlWert ?? 0,
+          betragCent: zeile.betragCentWert,
+        ));
+      }
     }
     return liste.isEmpty ? null : liste;
   }
@@ -1562,7 +1704,6 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_scanUhrzeitController, '');
       _setzeControllerText(_scanBelegNrVonController, '');
       _setzeControllerText(_scanBelegNrBisController, '');
-      _scanHatStattgefunden = false;
       _setzeEcBelegAnzahl(1);
       if (_ecUnterkachelEditModus.isNotEmpty) {
         _ecUnterkachelEditModus[0] = true;
@@ -1573,18 +1714,20 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabels[0] = '';
       _setzeControllerText(_ecBelegLabelController[0], '');
       _ecBelegLabel1Beruehrt = false;
-      _bereinigUnbekannteZeilen();
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-        zeile.reset();
+      if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;
+      _bereinigUnbekannteZeilen(0);
+      if (_zahlungsartZeilen.isNotEmpty) {
+        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+          zeile.reset();
+        }
       }
-      _metadatenNurAnzeige = false;
-      _metadatenAufgeklappt = false;
-      _kartenartenNurAnzeige = false;
-      _ecZahlungsartenBelegIndex = 0;
-      _kartenartenGesamtAnzahl = null;
-      _kartenartenGesamtBetragCent = null;
-      _setzeControllerText(_kartenartenGesamtAnzahlController, '');
-      _setzeControllerText(_kartenartenGesamtBetragController, '');
+      if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige[0] = false;
+      if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
+      if (_kartenartenNurAnzeige.isNotEmpty) _kartenartenNurAnzeige[0] = false;
+      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl[0] = null;
+      if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
+      if (_kartenartenGesamtAnzahlController.isNotEmpty) _setzeControllerText(_kartenartenGesamtAnzahlController[0], '');
+      if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
       _letzteAenderung = DateTime.now();
     });
     _speichereEntwurf();
@@ -1790,7 +1933,13 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueMetadatenBlock() {
+  Widget _baueMetadatenBlock(int belegIndex) {
+    final bool aufgeklappt = belegIndex < _metadatenAufgeklappt.length
+        ? _metadatenAufgeklappt[belegIndex]
+        : false;
+    final bool nurAnzeige = belegIndex < _metadatenNurAnzeige.length
+        ? _metadatenNurAnzeige[belegIndex]
+        : false;
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
@@ -1804,8 +1953,11 @@ class _TagesabschlussSchritt2SeiteState
         children: <Widget>[
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () =>
-                setState(() => _metadatenAufgeklappt = !_metadatenAufgeklappt),
+            onTap: () => setState(() {
+              if (belegIndex < _metadatenAufgeklappt.length) {
+                _metadatenAufgeklappt[belegIndex] = !_metadatenAufgeklappt[belegIndex];
+              }
+            }),
             child: Row(
               children: <Widget>[
                 const Expanded(
@@ -1818,12 +1970,16 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 ),
-                if (_metadatenAufgeklappt)
+                if (aufgeklappt)
                   TextButton(
                     onPressed: () {
-                      setState(
-                          () => _metadatenNurAnzeige = !_metadatenNurAnzeige);
-                      if (!_metadatenNurAnzeige) {
+                      setState(() {
+                        if (belegIndex < _metadatenNurAnzeige.length) {
+                          _metadatenNurAnzeige[belegIndex] = !_metadatenNurAnzeige[belegIndex];
+                        }
+                      });
+                      if (belegIndex < _metadatenNurAnzeige.length &&
+                          !_metadatenNurAnzeige[belegIndex]) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           if (mounted) _scanDatumFocusNode.requestFocus();
                         });
@@ -1835,7 +1991,7 @@ class _TagesabschlussSchritt2SeiteState
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      _metadatenNurAnzeige
+                      nurAnzeige
                           ? 'Metadaten bearbeiten'
                           : 'Fertig.',
                       style: const TextStyle(
@@ -1845,7 +2001,7 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 Icon(
-                  _metadatenAufgeklappt
+                  aufgeklappt
                       ? Icons.expand_less
                       : Icons.expand_more,
                   size: 16,
@@ -1854,9 +2010,9 @@ class _TagesabschlussSchritt2SeiteState
               ],
             ),
           ),
-          if (_metadatenAufgeklappt) ...<Widget>[
+          if (aufgeklappt) ...<Widget>[
             const SizedBox(height: 4),
-            if (_metadatenNurAnzeige) ...<Widget>[
+            if (nurAnzeige) ...<Widget>[
               _baueMetadatenInfoZeile('Datum', _scanDatum),
               _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
               _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
@@ -1908,9 +2064,9 @@ class _TagesabschlussSchritt2SeiteState
     _speichereEntwurf();
   }
 
-  Widget _baueKartenartenZeile(int index) {
-    final _ZahlungsartZeile zeile = _zahlungsartZeilen[index];
-    final OutlineInputBorder? roteBorder = _istZeileImplausibel(zeile)
+  Widget _baueKartenartenZeile(int index, int belegIndex) {
+    final _ZahlungsartZeile zeile = _zahlungsartZeilen[belegIndex][index];
+    final OutlineInputBorder? roteBorder = _istZeileImplausibel(zeile, belegIndex)
         ? OutlineInputBorder(
             borderSide: BorderSide(color: Colors.red.shade300),
           )
@@ -1933,7 +2089,7 @@ class _TagesabschlussSchritt2SeiteState
                     underline: const SizedBox.shrink(),
                     style: const TextStyle(
                         fontSize: 13, color: Colors.black87),
-                    items: _dropdownOptionenFuerUnbekannte(index)
+                    items: _dropdownOptionenFuerUnbekannte(index, belegIndex)
                         .map((String n) => DropdownMenuItem<String?>(
                               value: n,
                               child: Text(n),
@@ -2012,8 +2168,8 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueKartenartenZeileAnzeige(int index) {
-    final _ZahlungsartZeile zeile = _zahlungsartZeilen[index];
+  Widget _baueKartenartenZeileAnzeige(int index, int belegIndex) {
+    final _ZahlungsartZeile zeile = _zahlungsartZeilen[belegIndex][index];
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
@@ -2055,17 +2211,28 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueKartenartenEditButton() {
-    final bool kannSchliessen = !_kartenartenImplausibel;
+  Widget _baueKartenartenEditButton(int belegIndex) {
+    final bool nurAnzeige = belegIndex < _kartenartenNurAnzeige.length
+        ? _kartenartenNurAnzeige[belegIndex]
+        : false;
+    final bool kannSchliessen = !_kartenartenImplausibel(belegIndex);
     return Padding(
       padding: const EdgeInsets.only(top: 6),
       child: Align(
         alignment: Alignment.centerLeft,
         child: TextButton(
-          onPressed: _kartenartenNurAnzeige
-              ? () => setState(() => _kartenartenNurAnzeige = false)
+          onPressed: nurAnzeige
+              ? () => setState(() {
+                    if (belegIndex < _kartenartenNurAnzeige.length) {
+                      _kartenartenNurAnzeige[belegIndex] = false;
+                    }
+                  })
               : (kannSchliessen
-                  ? () => setState(() => _kartenartenNurAnzeige = true)
+                  ? () => setState(() {
+                        if (belegIndex < _kartenartenNurAnzeige.length) {
+                          _kartenartenNurAnzeige[belegIndex] = true;
+                        }
+                      })
                   : null),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -2073,7 +2240,7 @@ class _TagesabschlussSchritt2SeiteState
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            _kartenartenNurAnzeige ? 'Umsätze manuell bearbeiten' : 'Fertig.',
+            nurAnzeige ? 'Umsätze manuell bearbeiten' : 'Fertig.',
             style: const TextStyle(
                 fontSize: 11, decoration: TextDecoration.underline),
           ),
@@ -2082,31 +2249,38 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueZahlungsartenTabelle() {
+  Widget _baueZahlungsartenTabelle(int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return const SizedBox.shrink();
+    final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
+    final bool nurAnzeige = belegIndex < _kartenartenNurAnzeige.length
+        ? _kartenartenNurAnzeige[belegIndex]
+        : false;
+    final int? gesAnzahl = belegIndex < _kartenartenGesamtAnzahl.length
+        ? _kartenartenGesamtAnzahl[belegIndex]
+        : null;
+    final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
+        ? _kartenartenGesamtBetragCent[belegIndex]
+        : null;
     int tabellenSummeCent = 0;
     int tabellenSummeAnzahl = 0;
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-      if (zeile.betragCentWert != null) {
-        tabellenSummeCent += zeile.betragCentWert!;
-      }
+    for (final _ZahlungsartZeile zeile in zeilen) {
+      if (zeile.betragCentWert != null) tabellenSummeCent += zeile.betragCentWert!;
       if (zeile.anzahlWert != null) tabellenSummeAnzahl += zeile.anzahlWert!;
     }
-    final int ecGesamtCent = _ecZahlungsartenBelegIndex < _ecBelegeCent.length
-        ? _ecBelegeCent[_ecZahlungsartenBelegIndex]
+    final int ecGesamtCent = belegIndex < _ecBelegeCent.length
+        ? _ecBelegeCent[belegIndex]
         : 0;
     final bool summePasstNicht =
         tabellenSummeCent > 0 && ecGesamtCent > 0 && tabellenSummeCent != ecGesamtCent;
-    final bool anzahlMismatch = _kartenartenGesamtAnzahl != null &&
-        tabellenSummeAnzahl != _kartenartenGesamtAnzahl;
-    final bool betragMismatch = _kartenartenGesamtBetragCent != null &&
-        tabellenSummeCent != _kartenartenGesamtBetragCent;
-    final bool kartenartenHatFokus = _zahlungsartZeilen.any(
+    final bool anzahlMismatch = gesAnzahl != null && tabellenSummeAnzahl != gesAnzahl;
+    final bool betragMismatch = gesBetrag != null && tabellenSummeCent != gesBetrag;
+    final bool kartenartenHatFokus = zeilen.any(
       (_ZahlungsartZeile z) =>
           z.anzahlFocusNode.hasFocus || z.betragFocusNode.hasFocus,
     );
-    final bool irgendEineZeileInkonsistent = _zahlungsartZeilen
+    final bool irgendEineZeileInkonsistent = zeilen
         .where((_ZahlungsartZeile z) => !z.nichtImScan)
-        .any((_ZahlungsartZeile z) => _istZeileImplausibel(z));
+        .any((_ZahlungsartZeile z) => _istZeileImplausibel(z, belegIndex));
 
     return Container(
       margin: const EdgeInsets.only(top: 10),
@@ -2155,25 +2329,27 @@ class _TagesabschlussSchritt2SeiteState
               ],
             ),
           ),
-          for (int i = 0; i < _zahlungsartZeilen.length; i++)
-            if (!_zahlungsartZeilen[i].nichtImScan)
-              _kartenartenNurAnzeige
-                  ? _baueKartenartenZeileAnzeige(i)
-                  : _baueKartenartenZeile(i),
-          if (_zahlungsartZeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
+          for (int i = 0; i < zeilen.length; i++)
+            if (!zeilen[i].nichtImScan)
+              nurAnzeige
+                  ? _baueKartenartenZeileAnzeige(i, belegIndex)
+                  : _baueKartenartenZeile(i, belegIndex),
+          if (zeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Wrap(
                 spacing: 6,
                 runSpacing: 4,
                 children: <Widget>[
-                  for (final _ZahlungsartZeile zeile in _zahlungsartZeilen)
+                  for (final _ZahlungsartZeile zeile in zeilen)
                     if (zeile.nichtImScan)
                       TextButton.icon(
                         onPressed: () {
                           setState(() {
                             zeile.nichtImScan = false;
-                            _kartenartenNurAnzeige = false;
+                            if (belegIndex < _kartenartenNurAnzeige.length) {
+                              _kartenartenNurAnzeige[belegIndex] = false;
+                            }
                           });
                         },
                         style: TextButton.styleFrom(
@@ -2207,21 +2383,20 @@ class _TagesabschlussSchritt2SeiteState
               ),
               SizedBox(
                 width: 52,
-                child: _kartenartenNurAnzeige
+                child: nurAnzeige
                     ? Text(
-                        _kartenartenGesamtAnzahl != null
-                            ? '$_kartenartenGesamtAnzahl'
-                            : '—',
+                        gesAnzahl != null ? '$gesAnzahl' : '—',
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          color:
-                              anzahlMismatch ? Colors.red.shade700 : null,
+                          color: anzahlMismatch ? Colors.red.shade700 : null,
                         ),
                       )
                     : TextField(
-                        controller: _kartenartenGesamtAnzahlController,
+                        controller: belegIndex < _kartenartenGesamtAnzahlController.length
+                            ? _kartenartenGesamtAnzahlController[belegIndex]
+                            : TextEditingController(),
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
                         style: const TextStyle(
@@ -2237,8 +2412,10 @@ class _TagesabschlussSchritt2SeiteState
                         ),
                         onChanged: (String wert) {
                           setState(() {
-                            _kartenartenGesamtAnzahl =
-                                int.tryParse(wert.trim());
+                            if (belegIndex < _kartenartenGesamtAnzahl.length) {
+                              _kartenartenGesamtAnzahl[belegIndex] =
+                                  int.tryParse(wert.trim());
+                            }
                           });
                           _speichereEntwurf();
                         },
@@ -2247,22 +2424,23 @@ class _TagesabschlussSchritt2SeiteState
               const SizedBox(width: 6),
               SizedBox(
                 width: 104,
-                child: _kartenartenNurAnzeige
+                child: nurAnzeige
                     ? Text(
-                        _kartenartenGesamtBetragCent != null
+                        gesBetrag != null
                             ? TagesabschlussFormatierung.formatiereEuro(
-                                _kartenartenGesamtBetragCent!)
+                                gesBetrag)
                             : '—',
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          color:
-                              betragMismatch ? Colors.red.shade700 : null,
+                          color: betragMismatch ? Colors.red.shade700 : null,
                         ),
                       )
                     : TextField(
-                        controller: _kartenartenGesamtBetragController,
+                        controller: belegIndex < _kartenartenGesamtBetragController.length
+                            ? _kartenartenGesamtBetragController[belegIndex]
+                            : TextEditingController(),
                         keyboardType: _eingabeMitKomma
                             ? const TextInputType.numberWithOptions(
                                 decimal: true)
@@ -2287,15 +2465,16 @@ class _TagesabschlussSchritt2SeiteState
                         ),
                         onChanged: (String wert) {
                           setState(() {
-                            _kartenartenGesamtBetragCent = wert.trim().isEmpty
-                                ? null
-                                : _parsiereBetragCent(wert);
-                            // Betrag im Sub-Kachel-Titel synchron halten
-                            if (_ecBelegController.length > 1 &&
-                                _ecZahlungsartenBelegIndex <
-                                    _ecBelegeCent.length) {
-                              _ecBelegeCent[_ecZahlungsartenBelegIndex] =
-                                  _kartenartenGesamtBetragCent ?? 0;
+                            if (belegIndex < _kartenartenGesamtBetragCent.length) {
+                              _kartenartenGesamtBetragCent[belegIndex] =
+                                  wert.trim().isEmpty
+                                      ? null
+                                      : _parsiereBetragCent(wert);
+                              if (_ecBelegController.length > 1 &&
+                                  belegIndex < _ecBelegeCent.length) {
+                                _ecBelegeCent[belegIndex] =
+                                    _kartenartenGesamtBetragCent[belegIndex] ?? 0;
+                              }
                             }
                           });
                           _speichereEntwurf();
@@ -2331,7 +2510,7 @@ class _TagesabschlussSchritt2SeiteState
                 style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
               ),
             ),
-          _baueKartenartenEditButton(),
+          _baueKartenartenEditButton(belegIndex),
         ],
       ),
     );
@@ -2344,7 +2523,7 @@ class _TagesabschlussSchritt2SeiteState
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
     final int ecGesamtCent = _ecBelegeCent.fold(0, (int a, int b) => a + b);
-    final bool hatEcBelege = _scanHatStattgefunden || ecGesamtCent > 0;
+    final bool hatEcBelege = _scanHatStattgefunden.any((bool b) => b) || ecGesamtCent > 0;
     final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
         .where((int j) => _ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty)
         .length;
@@ -2775,7 +2954,7 @@ class _TagesabschlussSchritt2SeiteState
                               ),
                               const Spacer(),
                               if (!_ecKachelAufgeklappt &&
-                                  !_scanHatStattgefunden &&
+                                  !_scanHatStattgefunden.any((bool b) => b) &&
                                   !_scanLaeuft &&
                                   _ecBelegeCent.fold(
                                           0, (int a, int b) => a + b) ==
@@ -3025,8 +3204,10 @@ class _TagesabschlussSchritt2SeiteState
                                     ],
                                   ),
                                 ),
-                                if (_scanHatStattgefunden) _baueMetadatenBlock(),
-                                if (_zahlungsartZeilen.isNotEmpty) _baueZahlungsartenTabelle(),
+                                if (_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0])
+                                  _baueMetadatenBlock(0),
+                                if (_zahlungsartZeilen.isNotEmpty && _zahlungsartZeilen[0].isNotEmpty)
+                                  _baueZahlungsartenTabelle(0),
                               ] else ...<Widget>[
                                 // 2+-Beleg-Modus: Sub-Kacheln
                                 for (int i = _ecBelegController.length - 1; i >= 0; i--)
@@ -3246,12 +3427,13 @@ class _TagesabschlussSchritt2SeiteState
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.stretch,
                                                   children: <Widget>[
-                                                    // Kartendaten: nur wenn dieser Beleg aktiv ist
-                                                    if (_ecZahlungsartenBelegIndex == i &&
-                                                        _zahlungsartZeilen.isNotEmpty) ...<Widget>[
-                                                      _baueZahlungsartenTabelle(),
-                                                      if (_scanHatStattgefunden)
-                                                        _baueMetadatenBlock(),
+                                                    // Kartendaten: per-Beleg-State
+                                                    if (_zahlungsartZeilen.length > i &&
+                                                        _zahlungsartZeilen[i].isNotEmpty) ...<Widget>[
+                                                      _baueZahlungsartenTabelle(i),
+                                                      if (_scanHatStattgefunden.length > i &&
+                                                          _scanHatStattgefunden[i])
+                                                        _baueMetadatenBlock(i),
                                                     ] else if (_ecBelegeCent[i] > 0 ||
                                                         (_ecBelegLabels[i].isNotEmpty &&
                                                             !_subKachelTidUnleserlich(i)))
