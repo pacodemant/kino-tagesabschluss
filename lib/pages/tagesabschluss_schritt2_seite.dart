@@ -2186,7 +2186,13 @@ class _TagesabschlussSchritt2SeiteState
             child: Text(
               zeile.anzahlWert != null ? '${zeile.anzahlWert}' : '—',
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 13),
+              style: TextStyle(
+                fontSize: 13,
+                color: zeile.anzahlWert == null &&
+                        _istZeileImplausibel(zeile, belegIndex)
+                    ? Colors.red
+                    : null,
+              ),
             ),
           ),
           const SizedBox(width: 6),
@@ -2198,7 +2204,13 @@ class _TagesabschlussSchritt2SeiteState
                       zeile.betragCentWert!)
                   : '—',
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 13),
+              style: TextStyle(
+                fontSize: 13,
+                color: zeile.betragCentWert == null &&
+                        _istZeileImplausibel(zeile, belegIndex)
+                    ? Colors.red
+                    : null,
+              ),
             ),
           ),
         ],
@@ -3087,7 +3099,36 @@ class _TagesabschlussSchritt2SeiteState
                                 ),
                               if (_ecBelegController.length == 1) ...<Widget>[
                                 // 1-Beleg-Modus: flaches Layout
-                                Padding(
+                                if (_scanHatStattgefunden.isNotEmpty &&
+                                    _scanHatStattgefunden[0] &&
+                                    _kartenartenNurAnzeige.isNotEmpty &&
+                                    _kartenartenNurAnzeige[0])
+                                  // Read-Modus nach Scan
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 6),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Expanded(
+                                          child: Text(
+                                            _ecBelegLabels[0].isNotEmpty
+                                                ? _ecBelegLabels[0]
+                                                : '—',
+                                            style: const TextStyle(fontSize: 15),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        if (_ecBelegeCent[0] > 0)
+                                          Text(
+                                            TagesabschlussFormatierung
+                                                .formatiereEuro(_ecBelegeCent[0]),
+                                            style: const TextStyle(fontSize: 15),
+                                          ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  // Edit-Modus: Eingabefelder
+                                  Padding(
                                   padding: const EdgeInsets.only(bottom: 6),
                                   child: Row(
                                     children: <Widget>[
