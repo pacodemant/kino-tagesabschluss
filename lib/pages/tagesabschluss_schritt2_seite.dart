@@ -1336,6 +1336,9 @@ class _TagesabschlussSchritt2SeiteState
       if (i < _ecUnterkachelEditModus.length) {
         _ecUnterkachelEditModus[i] = true;
       }
+      if (i < _kartenartenNurAnzeige.length) {
+        _kartenartenNurAnzeige[i] = false;
+      }
     });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && i < _ecBelegLabelFocusNode.length) {
@@ -2225,6 +2228,8 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Widget _baueKartenartenEditButton(int belegIndex) {
+    // Im 2+-Beleg-Modus übernimmt der Sub-Kachel-"Manuell bearbeiten"-Button die Steuerung
+    if (_ecBelegController.length > 1) return const SizedBox.shrink();
     final bool nurAnzeige = belegIndex < _kartenartenNurAnzeige.length
         ? _kartenartenNurAnzeige[belegIndex]
         : false;
@@ -3487,9 +3492,13 @@ class _TagesabschlussSchritt2SeiteState
                                                         padding: const EdgeInsets.only(top: 4),
                                                         child: _ecUnterkachelEditModus[i]
                                                             ? TextButton(
-                                                                onPressed: () => setState(
-                                                                    () => _ecUnterkachelEditModus[i] =
-                                                                        false),
+                                                                onPressed: () => setState(() {
+                                                                    _ecUnterkachelEditModus[i] = false;
+                                                                    if (i < _kartenartenNurAnzeige.length &&
+                                                                        !_kartenartenImplausibel(i)) {
+                                                                      _kartenartenNurAnzeige[i] = true;
+                                                                    }
+                                                                  }),
                                                                 style: TextButton.styleFrom(
                                                                   padding: EdgeInsets.zero,
                                                                   minimumSize: const Size(0, 28),
