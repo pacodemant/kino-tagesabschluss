@@ -563,6 +563,19 @@ class _TagesabschlussSchritt2SeiteState
         }
       }
     }
+    // Nach dem Laden: Anzeige-Modus setzen für Belege mit Zahlungsarten-Daten
+    if (mounted) {
+      setState(() {
+        for (int b = 0; b < _zahlungsartZeilen.length; b++) {
+          if (_kartenartenNurAnzeige.length > b &&
+              (_scanHatStattgefunden.length > b && _scanHatStattgefunden[b] ||
+                  _zahlungsartZeilen[b]
+                      .any((_ZahlungsartZeile z) => z.anzahlWert != null || z.betragCentWert != null))) {
+            _kartenartenNurAnzeige[b] = true;
+          }
+        }
+      });
+    }
   }
 
   Future<void> _speichereEntwurf() async {
