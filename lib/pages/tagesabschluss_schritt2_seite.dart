@@ -1185,16 +1185,6 @@ class _TagesabschlussSchritt2SeiteState
 
   void _manuellBearbeitenAktivieren(int i) {
     setState(() {
-      if (_ecZahlungsartenBelegIndex != i) {
-        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen) {
-          zeile.reset();
-        }
-        _ecZahlungsartenBelegIndex = i;
-        _kartenartenGesamtAnzahl = null;
-        _kartenartenGesamtBetragCent = null;
-        _setzeControllerText(_kartenartenGesamtAnzahlController, '');
-        _setzeControllerText(_kartenartenGesamtBetragController, '');
-      }
       if (i < _ecUnterkachelEditModus.length) {
         _ecUnterkachelEditModus[i] = true;
       }
@@ -2911,22 +2901,14 @@ class _TagesabschlussSchritt2SeiteState
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
                               if (hatEcBelege)
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 6),
-                                    child: TextButton(
-                                      onPressed: _ecBelegHinzufuegen,
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: const Size(0, 28),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                      ),
-                                      child: const Text(
-                                        'Weiteren Beleg hinzufügen',
-                                        style: TextStyle(fontSize: 12),
-                                      ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: OutlinedButton(
+                                    onPressed: _scanLaeuft
+                                        ? null
+                                        : _ecBelegHinzufuegen,
+                                    child: const Text(
+                                      '+ Weiteren Beleg hinzufügen',
                                     ),
                                   ),
                                 ),
@@ -3260,71 +3242,93 @@ class _TagesabschlussSchritt2SeiteState
                                               const Divider(height: 1),
                                               Padding(
                                                 padding: const EdgeInsets.all(10),
-                                                child: (_ecZahlungsartenBelegIndex == i &&
-                                                        _zahlungsartZeilen.isNotEmpty)
-                                                    ? Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.stretch,
-                                                        children: <Widget>[
-                                                          _baueZahlungsartenTabelle(),
-                                                          if (_scanHatStattgefunden)
-                                                            _baueMetadatenBlock(),
-                                                          if (!_ecUnterkachelEditModus[i])
-                                                            Align(
-                                                              alignment: Alignment.centerLeft,
-                                                              child: Padding(
-                                                                padding: const EdgeInsets.only(top: 6),
-                                                                child: TextButton(
-                                                                  onPressed: () =>
-                                                                      _manuellBearbeitenAktivieren(i),
-                                                                  style: TextButton.styleFrom(
-                                                                    padding: EdgeInsets.zero,
-                                                                    minimumSize: const Size(0, 28),
-                                                                    tapTargetSize:
-                                                                        MaterialTapTargetSize.shrinkWrap,
-                                                                  ),
-                                                                  child: const Text(
-                                                                    'Manuell bearbeiten',
-                                                                    style: TextStyle(fontSize: 12),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.stretch,
+                                                  children: <Widget>[
+                                                    // Kartendaten: nur wenn dieser Beleg aktiv ist
+                                                    if (_ecZahlungsartenBelegIndex == i &&
+                                                        _zahlungsartZeilen.isNotEmpty) ...<Widget>[
+                                                      _baueZahlungsartenTabelle(),
+                                                      if (_scanHatStattgefunden)
+                                                        _baueMetadatenBlock(),
+                                                    ] else if (_ecBelegeCent[i] > 0 ||
+                                                        (_ecBelegLabels[i].isNotEmpty &&
+                                                            !_subKachelTidUnleserlich(i)))
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(bottom: 4),
+                                                        child: Text(
+                                                          'Betrag gespeichert. Für Umsatz-Aufschlüsselung Beleg erneut scannen.',
+                                                          style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.grey.shade600),
+                                                        ),
+                                                      )
+                                                    else
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(bottom: 4),
+                                                        child: Text(
+                                                          'Noch kein Beleg – Kamera verwenden.',
+                                                          style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.grey.shade500),
+                                                        ),
+                                                      ),
+                                                    // TID-Hinweis wenn unleserlich
+                                                    if (_subKachelTidUnleserlich(i))
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(bottom: 4),
+                                                        child: Text(
+                                                          'Terminal-ID konnte nicht gelesen werden – oben korrigieren.',
+                                                          style: TextStyle(
+                                                              fontSize: 12,
+                                                              color: Colors.red.shade700),
+                                                        ),
+                                                      ),
+                                                    // Manuell bearbeiten / Fertig
+                                                    Align(
+                                                      alignment: Alignment.centerLeft,
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.only(top: 4),
+                                                        child: _ecUnterkachelEditModus[i]
+                                                            ? TextButton(
+                                                                onPressed: () => setState(
+                                                                    () => _ecUnterkachelEditModus[i] =
+                                                                        false),
+                                                                style: TextButton.styleFrom(
+                                                                  padding: EdgeInsets.zero,
+                                                                  minimumSize: const Size(0, 28),
+                                                                  tapTargetSize:
+                                                                      MaterialTapTargetSize.shrinkWrap,
+                                                                ),
+                                                                child: const Text(
+                                                                  'Fertig.',
+                                                                  style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    fontWeight: FontWeight.w700,
+                                                                    decoration:
+                                                                        TextDecoration.underline,
                                                                   ),
                                                                 ),
+                                                              )
+                                                            : TextButton(
+                                                                onPressed: () =>
+                                                                    _manuellBearbeitenAktivieren(i),
+                                                                style: TextButton.styleFrom(
+                                                                  padding: EdgeInsets.zero,
+                                                                  minimumSize: const Size(0, 28),
+                                                                  tapTargetSize:
+                                                                      MaterialTapTargetSize.shrinkWrap,
+                                                                ),
+                                                                child: const Text(
+                                                                  'Manuell bearbeiten',
+                                                                  style: TextStyle(fontSize: 12),
+                                                                ),
                                                               ),
-                                                            ),
-                                                        ],
-                                                      )
-                                                    : Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment.stretch,
-                                                        children: <Widget>[
-                                                          if (_subKachelTidUnleserlich(i))
-                                                            Padding(
-                                                              padding: const EdgeInsets.only(bottom: 6),
-                                                              child: Text(
-                                                                'Terminal-ID konnte nicht gelesen werden — oben korrigieren.',
-                                                                style: TextStyle(
-                                                                    fontSize: 12,
-                                                                    color: Colors.red.shade700),
-                                                              ),
-                                                            ),
-                                                          Align(
-                                                            alignment: Alignment.centerLeft,
-                                                            child: TextButton(
-                                                              onPressed: () =>
-                                                                  _manuellBearbeitenAktivieren(i),
-                                                              style: TextButton.styleFrom(
-                                                                padding: EdgeInsets.zero,
-                                                                minimumSize: const Size(0, 28),
-                                                                tapTargetSize:
-                                                                    MaterialTapTargetSize.shrinkWrap,
-                                                              ),
-                                                              child: const Text(
-                                                                'Manuell bearbeiten',
-                                                                style: TextStyle(fontSize: 12),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
                                                       ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ],
                                           ],
