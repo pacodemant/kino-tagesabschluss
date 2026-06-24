@@ -1275,7 +1275,7 @@ class _TagesabschlussSchritt2SeiteState
           );
           _metadatenNurAnzeige[belegIndex] = true;
           _metadatenAufgeklappt[belegIndex] = false;
-          _kartenartenNurAnzeige[belegIndex] = !_kartenartenImplausibel(belegIndex);
+          _kartenartenNurAnzeige[belegIndex] = true;
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
@@ -2258,7 +2258,7 @@ class _TagesabschlussSchritt2SeiteState
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            nurAnzeige ? 'Umsätze manuell bearbeiten' : 'Fertig.',
+            nurAnzeige ? 'Belegdaten bearbeiten' : 'Fertig.',
             style: const TextStyle(
                 fontSize: 11, decoration: TextDecoration.underline),
           ),
@@ -3336,7 +3336,26 @@ class _TagesabschlussSchritt2SeiteState
                                                                   overflow: TextOverflow.ellipsis,
                                                                 )),
                                                     ),
-                                                    if (_ecBelegeCent[i] > 0)
+                                                    if (_ecUnterkachelEditModus[i])
+                                                      SizedBox(
+                                                        width: 96,
+                                                        height: 28,
+                                                        child: BetragCentEingabefeld(
+                                                          textController: _ecBelegController[i],
+                                                          focusNode: _ecBelegFocusNode[i],
+                                                          onChanged: (String wert) {
+                                                            setState(() {
+                                                              _letzteAenderung = DateTime.now();
+                                                              _ecBelegeCent[i] = _parsiereBetragCent(wert);
+                                                            });
+                                                            _speichereEntwurf();
+                                                          },
+                                                          schriftgroesse: 13,
+                                                          hinweisText: '0,00 €',
+                                                          mitKomma: _eingabeMitKomma,
+                                                        ),
+                                                      )
+                                                    else if (_ecBelegeCent[i] > 0)
                                                       Padding(
                                                         padding: const EdgeInsets.only(right: 4),
                                                         child: Text(
@@ -3525,7 +3544,7 @@ class _TagesabschlussSchritt2SeiteState
                                                                       MaterialTapTargetSize.shrinkWrap,
                                                                 ),
                                                                 child: const Text(
-                                                                  'Manuell bearbeiten',
+                                                                  'Belegdaten bearbeiten',
                                                                   style: TextStyle(fontSize: 12),
                                                                 ),
                                                               ),
