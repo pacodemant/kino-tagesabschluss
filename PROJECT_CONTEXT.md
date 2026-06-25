@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.11.1+279 · Run 281
+Version: 0.11.1+279 · Run 287
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -80,7 +80,7 @@ Zwei Ebenen, kein Backend:
 | `box_wechselgeld_entwuerfe`   | Wechselgeld-Entwürfe (Hive)         |
 | `box_getraenkeliste`          | Getränkeliste (Hive)                |
 | `box_einstellungen`           | Einstellungen (Hive)                |
-| SharedPreferences             | Dev-Modus, Auto-Fill, Wechselgeld-Sollwert |
+| SharedPreferences             | Dev-Modus, Auto-Fill, Wechselgeld-Sollwert, `flurbocash_location_id_[kinoId]` |
 
 Geldberechnung intern **in Cent** (niemals ändern).  
 Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`).
@@ -125,9 +125,9 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 279)
+## Laufender Entwicklungsstand (Run 287)
 
-Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
+Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
 - Run 275 ✅ EC-Kachel Layout & Terminal-ID — abgeschlossen
 - Run 275a…a10 ✅ Prüf-Popup vereinfacht, EC-Kachel-Korrekturen, Bugfixes — abgeschlossen
@@ -144,7 +144,8 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
 - Run 279e ✅ 1-Beleg-Modus: TID/Betrag nach Scan als Text; unleserliche Felder in Read-Ansicht rot.
 - Run 280 ✅ Dev-Modus: „JSON anzeigen"-Button auf Übertrag-Seite (Schritt 3)
 - Run 281 ✅ EcTerminalErgebnis-Modell; JSON-Aufbau pro Beleg mit korrekter TID-Zuordnung
-- Run 282 ⬜ Hilfetext: Belegkopie ziehen
+- Run 287 ✅ PIN-Schutz für Entwicklermodus (PIN 1929, Session); location_id-Feld in Einstellungen
+- Run 288 ⬜ (nächster Run)
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

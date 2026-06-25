@@ -4,7 +4,6 @@ import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
-import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
@@ -84,7 +83,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
-  bool _devModusAktiv = false;
   bool _eingabeMitKomma = false;
   bool _googleSheetsAktiv = true;
   bool _apiUploadAktiv = false;
@@ -103,8 +101,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final TextEditingController _apiUploadUrlCtrl = TextEditingController();
   final TextEditingController _apiUploadKeyCtrl = TextEditingController();
   final TextEditingController _anthropicApiKeyCtrl = TextEditingController();
+  final TextEditingController _locationIdCtrl = TextEditingController();
   late final FocusNode _mitarbeiterNameFocus;
   late final FocusNode _neuesGetraenkFocus;
+  late final FocusNode _locationIdFocus;
 
   @override
   void initState() {
@@ -128,6 +128,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _neuesGetraenkFocus.addListener(() {
       if (!_neuesGetraenkFocus.hasFocus) {
         _fuegeNeuesGetraenkEin();
+      }
+    });
+    _locationIdFocus = FocusNode();
+    _locationIdFocus.addListener(() {
+      if (!_locationIdFocus.hasFocus) {
+        _speichereLocationId();
       }
     });
     _pwaInstallVerfuegbar = pwaInstallVerfuegbar;
@@ -164,6 +170,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _apiUploadUrlCtrl.dispose();
     _apiUploadKeyCtrl.dispose();
     _anthropicApiKeyCtrl.dispose();
+    _locationIdCtrl.dispose();
+    _locationIdFocus.dispose();
     super.dispose();
   }
 
@@ -197,7 +205,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _aktiveKinoIndex = aktiveIndex;
       _aktiveKinoName = aktiveKino.name;
     }
-    final bool devAktiv = await DevModus.istAktiv();
     final bool googleSheetsAktiv = await FeatureFlags.googleSheetsAktiv();
     final bool apiUploadAktiv = await FeatureFlags.apiUploadAktiv();
     if (!mounted) {
@@ -238,15 +245,17 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String apiUploadKey = speicher.getString('api_upload_key') ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
+    final String locationId =
+        speicher.getString('flurbocash_location_id_$_aktiveKinoId') ?? '';
     if (!mounted) return;
     _mitarbeiterNameCtrl.text = mitarbeiterName;
     if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
     _apiUploadUrlCtrl.text = apiUploadUrl;
     _apiUploadKeyCtrl.text = apiUploadKey;
     _anthropicApiKeyCtrl.text = anthropicApiKey;
+    _locationIdCtrl.text = locationId;
 
     setState(() {
-      _devModusAktiv = devAktiv;
       _googleSheetsAktiv = googleSheetsAktiv;
       _apiUploadAktiv = apiUploadAktiv;
       _getraenkeliste = getraenkeliste;
@@ -318,19 +327,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         : '';
   }
 
-  Future<void> _onDevModusGeaendert(bool wert) async {
-    await DevModus.setzen(wert);
-    if (!mounted) return;
-    if (!wert) {
-      await FeatureFlags.googleSheetsSetzen(true);
-      if (!mounted) return;
-    }
-    setState(() {
-      _devModusAktiv = wert;
-      if (!wert) _googleSheetsAktiv = true;
-    });
-  }
-
   Future<void> _onGoogleSheetsGeaendert(bool wert) async {
     await FeatureFlags.googleSheetsSetzen(wert);
     if (!mounted) return;
@@ -357,6 +353,66 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString(
         'anthropic_api_key', _anthropicApiKeyCtrl.text.trim());
+  }
+
+  Future<void> _speichereLocationId() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+      'flurbocash_location_id_$_aktiveKinoId',
+      _locationIdCtrl.text.trim(),
+    );
+  }
+
+  Future<void> _zeigePinDialog() async {
+    final TextEditingController pinCtrl = TextEditingController();
+    String? eingegebenerPin;
+
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Entwicklermodus'),
+          content: TextField(
+            controller: pinCtrl,
+            obscureText: true,
+            keyboardType: TextInputType.number,
+            maxLength: 4,
+            autofocus: true,
+            decoration: const InputDecoration(
+              hintText: 'PIN',
+              counterText: '',
+            ),
+            onSubmitted: (String value) {
+              eingegebenerPin = value;
+              Navigator.of(dialogContext).pop();
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Abbrechen'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                eingegebenerPin = pinCtrl.text;
+                Navigator.of(dialogContext).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+    pinCtrl.dispose();
+    if (!mounted) return;
+    if (eingegebenerPin == null) return;
+    if (eingegebenerPin == '1929') {
+      setState(() => _devAufgeklappt = true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Falscher PIN')),
+      );
+    }
   }
 
   Future<void> _onEingabeMitKommaGeaendert(bool wert) async {
@@ -1285,25 +1341,20 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     'Entwicklermodus',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Switch(
-                        value: _devModusAktiv,
-                        onChanged: _onDevModusGeaendert,
-                        activeThumbColor: AppFarben.appBarRot,
-                      ),
-                      Icon(
-                        _devAufgeklappt
-                            ? Icons.expand_less
-                            : Icons.expand_more,
-                      ),
-                    ],
+                  trailing: Icon(
+                    _devAufgeklappt
+                        ? Icons.expand_less
+                        : Icons.expand_more,
                   ),
-                  onTap: () =>
-                      setState(() => _devAufgeklappt = !_devAufgeklappt),
+                  onTap: () {
+                    if (_devAufgeklappt) {
+                      setState(() => _devAufgeklappt = false);
+                    } else {
+                      _zeigePinDialog();
+                    }
+                  },
                 ),
-                if (_devAufgeklappt && _devModusAktiv) ...<Widget>[
+                if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
                   SwitchListTile(
                     title: const Text('Google Sheets Upload'),
@@ -1376,6 +1427,36 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                         ),
                       ),
                       onChanged: (_) => _speichereAnthropicApiKey(),
+                    ),
+                  ),
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Text(
+                          'Flurbocash location_id',
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                        const SizedBox(height: 4),
+                        TextField(
+                          controller: _locationIdCtrl,
+                          focusNode: _locationIdFocus,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          decoration: const InputDecoration(
+                            hintText: 'z. B. 1',
+                            isDense: true,
+                          ),
+                          onEditingComplete: () {
+                            _speichereLocationId();
+                            _locationIdFocus.unfocus();
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const Divider(height: 1),
