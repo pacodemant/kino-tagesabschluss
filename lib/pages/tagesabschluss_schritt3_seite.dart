@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
@@ -11,6 +13,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
+import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -108,6 +111,7 @@ class _TagesabschlussSchritt3SeiteState
   bool _autoSaveFehler = false;
   bool _uploadErledigt = false;
   bool _apiUploadErledigt = false;
+  bool _devModusAktiv = false;
 
   @override
   void initState() {
@@ -153,6 +157,9 @@ class _TagesabschlussSchritt3SeiteState
     if (!mounted) return;
     setState(() => _abschlussVorschau = abschluss);
     _autoSaveImHintergrund();
+    DevModus.istAktiv().then((bool aktiv) {
+      if (mounted) setState(() => _devModusAktiv = aktiv);
+    });
   }
 
   /// Speichert den Abschluss beim Öffnen der Seite automatisch.
@@ -367,6 +374,94 @@ class _TagesabschlussSchritt3SeiteState
                 );
               },
               child: const Text('Zurück zur Startseite'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _zeigeFlurbocashJson() {
+    final List<ZahlungsartErgebnis> zahlungsarten =
+        widget.argumente.zahlungsartenAufschluesselung ?? <ZahlungsartErgebnis>[];
+
+    int betragFuer(String art) {
+      for (final ZahlungsartErgebnis z in zahlungsarten) {
+        if (z.art == art) return z.betragCent ?? 0;
+      }
+      return 0;
+    }
+
+    // TODO: location_id aus Einstellungen laden (SharedPreferences-Key noch nicht vergeben)
+    final Map<String, dynamic> call1 = <String, dynamic>{
+      'location_id': 0,
+      'date': DatumsHelper.logischesIsoDatum(),
+    };
+
+    final List<Map<String, dynamic>> terminals = zahlungsarten.isEmpty
+        ? <Map<String, dynamic>>[]
+        : <Map<String, dynamic>>[
+            <String, dynamic>{
+              'tid': widget.argumente.terminalId ?? '',
+              'girocard': betragFuer('girocard'),
+              'lastschrift': betragFuer('lastschrift'),
+              'mastercard': betragFuer('mastercard'),
+              'visa': betragFuer('visa'),
+              'maestro': betragFuer('maestro'),
+              'vpay': betragFuer('vpay'),
+            },
+          ];
+
+    final Map<String, dynamic> call2 = <String, dynamic>{
+      'settlements': <Map<String, dynamic>>[
+        <String, dynamic>{
+          'cash_total':
+              _abschlussVorschau?.barBestandAbzglWechselgeldCent ?? 0,
+          'terminals': terminals,
+        },
+      ],
+    };
+
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    final String call1Json = encoder.convert(call1);
+    final String call2Json = encoder.convert(call2);
+
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Flurbocash JSON'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  'Call 1 — ensure:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                SelectableText(
+                  call1Json,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Call 2 — settlements:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                SelectableText(
+                  call2Json,
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Schließen'),
             ),
           ],
         );
@@ -643,6 +738,11 @@ class _TagesabschlussSchritt3SeiteState
                     ),
                   ),
                 ),
+                if (_devModusAktiv)
+                  TextButton(
+                    onPressed: _zeigeFlurbocashJson,
+                    child: const Text('JSON anzeigen'),
+                  ),
                 if (_autoSaveFehler)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),

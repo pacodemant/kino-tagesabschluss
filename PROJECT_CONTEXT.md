@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.11.1+279 · Run 279e
+Version: 0.11.1+279 · Run 280
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -142,7 +142,7 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280)**
 - Run 279d ✅ Bugfixes: nichtImScan-Default→true, _kartenartenNurAnzeige-Default→true,
   _kartenartenImplausibel-Gate entfernt, BetragCentEingabefeld aus Header revertiert.
 - Run 279e ✅ 1-Beleg-Modus: TID/Betrag nach Scan als Text; unleserliche Felder in Read-Ansicht rot.
-- Run 280 ⬜ Dev-Modus: "see JSON"-Button im Prüf-Popup
+- Run 280 ✅ Dev-Modus: „JSON anzeigen"-Button auf Übertrag-Seite (Schritt 3)
 - Run 281 ⬜ Hilfetext: Belegkopie ziehen
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,

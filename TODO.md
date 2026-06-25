@@ -43,24 +43,24 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
-- [ ] **Persongetränke zuerst** *(Run 281)* Persogetränke zu Beginn der Abrechnung
+- [ ] **Persongetränke zuerst** *(Run 282)* Persogetränke zu Beginn der Abrechnung
       abfragen (nicht am Ende) — verhindert Vergessen, entfernt das Banner auf der
       Kino-Seite.
 
-- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 282)* Haben Kupferfelder einen Inhalt,
+- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 283)* Haben Kupferfelder einen Inhalt,
       soll der Bereich automatisch aufgeklappt sein.
 
-- [ ] **Mitarbeitername im Verlauf** *(Run 283)* Name in lokalen Verlaufs-Datensätzen
+- [ ] **Mitarbeitername im Verlauf** *(Run 284)* Name in lokalen Verlaufs-Datensätzen
       speichern und anzeigen. Präfix "MitarbeiterIn: ".
 
-- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 284)* Unter Stückelungsübersicht
+- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 285)* Unter Stückelungsübersicht
       erklären was eine grüne Zeile bedeutet. Optionales Freitextfeld am Ende der
       Abrechnung.
 
-- [ ] **Desktop-Ansicht begrenzen** *(Run 285)* Inhalte auf Desktop-Browsern auf
+- [ ] **Desktop-Ansicht begrenzen** *(Run 286)* Inhalte auf Desktop-Browsern auf
       Smartphone-Breite begrenzen.
 
-- [ ] **DEV-Testwerte-Button im Web** *(Run 286)* Funktioniert bisher nur im Simulator.
+- [ ] **DEV-Testwerte-Button im Web** *(Run 287)* Funktioniert bisher nur im Simulator.
 
 - [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
 
@@ -114,14 +114,11 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       rot hervorgehoben (nur das konkret null-Feld). Hinweistext: "Rote Felder nach dem
       Übernehmen bitte korrigieren." Korrektur erfolgt in der EC-Kachel nach Übernehmen.
 
-- [ ] **"see JSON"-Button im Dev-Modus** *(Run 279)* Im Prüf-Popup sichtbar wenn
-      Dev-Modus aktiv. Zeigt JSON des aktuell geprüften Belegs. Dummy-"Senden"-Button
-      (Snackbar).
+- [x] **Dev-Modus: „JSON anzeigen"-Button auf Übertrag-Seite** *(Run 280)* Unterhalb
+      von „Kassenabrechnung senden" — zeigt Flurbocash-JSON (Call 1: ensure, Call 2:
+      settlements) in scrollbarem Monospace-Dialog.
 
-- [ ] **Hilfetext: Belegkopie ziehen** *(Run 280)* Info im Scan-Bereich was zu tun
-      ist wenn Beleg fehlt oder unlesbar ist.
-
-- [ ] **Hilfetext & Duplikat-Button** *(Run 280)* Info im Scan-Bereich was zu tun
+- [ ] **Hilfetext & Duplikat-Button** *(Run 281)* Info im Scan-Bereich was zu tun
       ist wenn Beleg fehlt oder unlesbar ist. Zusätzlich im Prüf-Popup: Dummy-Button
       öffnet Popup mit Platzhaltertext ("Hier folgt Anleitung / Tutorial") —
       Vorbereitung für spätere Tutorial-Videos oder Texte.
@@ -139,11 +136,11 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ### Einstellungen & Konfiguration *(Phase C, Runs 287–288)*
 
-- [ ] **PIN-Schutz Verwaltungsbereich** *(Run 287)* Vierstelliger PIN schützt
+- [ ] **PIN-Schutz Verwaltungsbereich** *(Run 288)* Vierstelliger PIN schützt
       Einstellungen. Felder für location_id, API-Key, Basis-URL, TID-Whitelist
       und Buchhaltungs-E-Mail — vorerst mit Platzhaltern.
 
-- [ ] **TID-Whitelist konfigurierbar** *(Run 288)* Pro Standort in Einstellungen
+- [ ] **TID-Whitelist konfigurierbar** *(Run 289)* Pro Standort in Einstellungen
       editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
       Setzt Run 287 voraus.
 
@@ -157,14 +154,14 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ### Flurbocash API-Integration *(Phase E, Runs 290–292 — wartet auf IT)*
 
-- [ ] **ApiUploadService Umbau** *(Run 290)* 1 Call → 2 Calls (ensure + settlements),
+- [ ] **ApiUploadService Umbau** *(Run 291)* 1 Call → 2 Calls (ensure + settlements),
       JSON statt form-encoded, report_id lokal speichern,
       Fehlerbehandlung für alle HTTP-Statuscodes (400/401/403/404/500).
       Wartet auf: Basis-URL, API-Key, location_ids, 6-Uhr-Knick-Absprache.
 
 - [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 
-- [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung** *(Run 291)*
+- [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung** *(Run 292)*
       `settlement_number: 1` statt neuem Eintrag. Bei `400 "maximum reached"`:
       verständliche Meldung + Textbutton "Info an Buchhaltung senden".
       Nach Tap: Mail an konfigurierte Adresse, Bestätigung "Buchhaltung ist
@@ -179,12 +176,12 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ### Stapel-Scanner *(Phase D/E, Runs 289 + 292)*
 
-- [ ] **Stapel-Scanner: Seite & Grundstruktur** *(Run 289)* Eigene Seite im
+- [ ] **Stapel-Scanner: Seite & Grundstruktur** *(Run 290)* Eigene Seite im
       Verwaltungsbereich (hinter PIN). MA scannt reihenweise Belege, gespeichert
       wie Verlauf. Nutzt EC-Kachel-Komponente aus Phase A. Senden-Button als Dummy.
       Setzt Runs 277 und 287 voraus.
 
-- [ ] **Stapel-Scanner: echter Versand** *(Run 292)* Dummy-Button durch echten
+- [ ] **Stapel-Scanner: echter Versand** *(Run 293)* Dummy-Button durch echten
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
       Setzt Runs 290 und 289 voraus.
 
