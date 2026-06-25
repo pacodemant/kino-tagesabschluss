@@ -114,6 +114,8 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       rot hervorgehoben (nur das konkret null-Feld). Hinweistext: "Rote Felder nach dem
       Übernehmen bitte korrigieren." Korrektur erfolgt in der EC-Kachel nach Übernehmen.
 
+- [x] **Flurbocash-JSON: korrekte TID-Zuordnung pro Beleg** *(Run 281)* EcTerminalErgebnis-Modell; _baueEcTerminals() in Schritt 2; JSON-Dialog wertet ecTerminals aus.
+
 - [x] **Dev-Modus: „JSON anzeigen"-Button auf Übertrag-Seite** *(Run 280)* Unterhalb
       von „Kassenabrechnung senden" — zeigt Flurbocash-JSON (Call 1: ensure, Call 2:
       settlements) in scrollbarem Monospace-Dialog.

@@ -8,6 +8,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_gegenpruef_dialog.dart';
@@ -675,6 +676,7 @@ class _TagesabschlussSchritt2SeiteState
         belegNrBis: _scanBelegNrBis,
         ecUhrzeit: _scanUhrzeit,
         zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
+        ecTerminals: _baueEcTerminals(),
       ),
     );
   }
@@ -1504,6 +1506,33 @@ class _TagesabschlussSchritt2SeiteState
       }
     }
     return liste.isEmpty ? null : liste;
+  }
+
+  List<EcTerminalErgebnis> _baueEcTerminals() {
+    final List<EcTerminalErgebnis> liste = <EcTerminalErgebnis>[];
+    for (int i = 0; i < _zahlungsartZeilen.length; i++) {
+      final String tid =
+          i < _ecBelegLabels.length ? _ecBelegLabels[i] : '';
+      final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[i];
+
+      int betragFuer(String art) {
+        for (final _ZahlungsartZeile z in zeilen) {
+          if (z.name == art) return z.betragCentWert ?? 0;
+        }
+        return 0;
+      }
+
+      liste.add(EcTerminalErgebnis(
+        tid: tid,
+        girocard: betragFuer('girocard'),
+        lastschrift: betragFuer('lastschrift'),
+        mastercard: betragFuer('mastercard'),
+        visa: betragFuer('visa'),
+        maestro: betragFuer('maestro'),
+        vpay: betragFuer('vpay'),
+      ));
+    }
+    return liste;
   }
 
   Future<void> _bestaetigeUndLeereEingaben() async {

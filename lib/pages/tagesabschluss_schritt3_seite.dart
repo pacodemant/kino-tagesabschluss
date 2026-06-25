@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
@@ -51,6 +52,7 @@ class TagesabschlussSchritt3Argumente {
     this.belegNrBis,
     this.ecUhrzeit,
     this.zahlungsartenAufschluesselung,
+    this.ecTerminals,
   });
 
   final String kinoId;
@@ -78,6 +80,7 @@ class TagesabschlussSchritt3Argumente {
   final String? belegNrBis;
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
+  final List<EcTerminalErgebnis>? ecTerminals;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -382,35 +385,26 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   void _zeigeFlurbocashJson() {
-    final List<ZahlungsartErgebnis> zahlungsarten =
-        widget.argumente.zahlungsartenAufschluesselung ?? <ZahlungsartErgebnis>[];
-
-    int betragFuer(String art) {
-      for (final ZahlungsartErgebnis z in zahlungsarten) {
-        if (z.art == art) return z.betragCent ?? 0;
-      }
-      return 0;
-    }
-
     // TODO: location_id aus Einstellungen laden (SharedPreferences-Key noch nicht vergeben)
     final Map<String, dynamic> call1 = <String, dynamic>{
       'location_id': 0,
       'date': DatumsHelper.logischesIsoDatum(),
     };
 
-    final List<Map<String, dynamic>> terminals = zahlungsarten.isEmpty
-        ? <Map<String, dynamic>>[]
-        : <Map<String, dynamic>>[
-            <String, dynamic>{
-              'tid': widget.argumente.terminalId ?? '',
-              'girocard': betragFuer('girocard'),
-              'lastschrift': betragFuer('lastschrift'),
-              'mastercard': betragFuer('mastercard'),
-              'visa': betragFuer('visa'),
-              'maestro': betragFuer('maestro'),
-              'vpay': betragFuer('vpay'),
-            },
-          ];
+    final List<EcTerminalErgebnis> ecTerminals =
+        widget.argumente.ecTerminals ?? <EcTerminalErgebnis>[];
+
+    final List<Map<String, dynamic>> terminals = ecTerminals
+        .map((EcTerminalErgebnis t) => <String, dynamic>{
+              'tid': t.tid,
+              'girocard': t.girocard,
+              'lastschrift': t.lastschrift,
+              'mastercard': t.mastercard,
+              'visa': t.visa,
+              'maestro': t.maestro,
+              'vpay': t.vpay,
+            })
+        .toList();
 
     final Map<String, dynamic> call2 = <String, dynamic>{
       'settlements': <Map<String, dynamic>>[

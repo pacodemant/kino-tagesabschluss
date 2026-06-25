@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 281: EcTerminalErgebnis-Modell (tid + 6 Kartenfelder in Cent). In Schritt 2: _baueEcTerminals() baut pro Beleg ein EcTerminalErgebnis aus _ecBelegLabels[i] (TID) und _zahlungsartZeilen[i] (Kartenbeträge); wird in _weiterZuSchritt3() als ecTerminals übergeben. TagesabschlussSchritt3Argumente um optionales ecTerminals-Feld erweitert. _zeigeFlurbocashJson() wertet ecTerminals aus statt des alten Einzelwerts terminalId + zahlungsartenAufschluesselung. Dateien: lib/models/ec_terminal_ergebnis.dart (neu), tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart.
+
 - Run 280: Dev-Modus-Button „JSON anzeigen" auf der Übertrag-Seite (Schritt 3). Unterhalb des „Kassenabrechnung senden"-Buttons wird im Dev-Modus ein TextButton „JSON anzeigen" eingeblendet. Tap öffnet Dialog „Flurbocash JSON" mit scrollbarem Monospace-Bereich: Call 1 (ensure: location_id=0 TODO + logisches ISO-Datum via DatumsHelper) und Call 2 (settlements: cash_total in Cent, terminals-Array mit allen 6 Kartentypen; leer wenn keine EC-Belege). Dateien: tagesabschluss_schritt3_seite.dart.
 
 - Run 279e: 1-Beleg-Modus: TID und Betrag nach Scan im Read-Modus (Text statt Eingabefelder); werden beim Tippen auf "Belegdaten bearbeiten" wieder editierbar. Zeile-Anzeige (_baueKartenartenZeileAnzeige): null-Felder werden rot dargestellt wenn _istZeileImplausibel — unleserliche Werte damit im Read-Modus sichtbar. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
