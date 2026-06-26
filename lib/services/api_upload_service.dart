@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
-import 'package:kino_bar_app/services/flurbocash_config_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUploadService {
@@ -39,37 +38,27 @@ class ApiUploadService {
   static Future<({String url, int locationId, String apiKey})> _ladeKonfigWerte(
     String kinoId,
   ) async {
-    final FlurbocashConfig? config = await FlurbocashConfigService.ladeConfig();
-    final FlurbocashStandort? standort =
-        await FlurbocashConfigService.fuerKinoId(kinoId);
-
     final SharedPreferences speicher = await SharedPreferences.getInstance();
 
-    // URL: JSON-Config hat Vorrang, Fallback auf manuell eingetragene api_upload_url
-    final String baseUrl = (config?.sandboxUrl.isNotEmpty == true)
-        ? config!.sandboxUrl
-        : (speicher.getString('api_upload_url') ?? '');
+    final String baseUrl = speicher.getString('api_upload_url') ?? '';
     if (baseUrl.isEmpty) {
       throw Exception(
         'Keine Flurbocash-URL konfiguriert. Bitte Upload-URL in den Einstellungen eintragen.',
       );
     }
 
-    // location_id: SharedPrefs-Override → JSON-Config → 0
-    final String? overrideId =
+    final String? locationIdStr =
         speicher.getString('flurbocash_location_id_$kinoId');
-    final int locationId = (overrideId != null && overrideId.isNotEmpty)
-        ? (int.tryParse(overrideId) ?? (standort?.locationId ?? 0))
-        : (standort?.locationId ?? 0);
+    final int locationId =
+        (locationIdStr != null && locationIdStr.isNotEmpty)
+            ? (int.tryParse(locationIdStr) ?? 0)
+            : 0;
 
-    // api_key: per-Kino-Override → JSON-Config → globaler api_upload_key → leer
-    final String? overrideKey =
+    final String? perKinoKey =
         speicher.getString('flurbocash_api_key_$kinoId');
-    final String apiKey = (overrideKey != null && overrideKey.isNotEmpty)
-        ? overrideKey
-        : (standort?.apiKey.isNotEmpty == true
-            ? standort!.apiKey
-            : (speicher.getString('api_upload_key') ?? ''));
+    final String apiKey = (perKinoKey != null && perKinoKey.isNotEmpty)
+        ? perKinoKey
+        : (speicher.getString('api_upload_key') ?? '');
 
     return (url: baseUrl, locationId: locationId, apiKey: apiKey);
   }

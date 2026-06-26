@@ -10,7 +10,6 @@ import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
-import 'package:kino_bar_app/services/flurbocash_config_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EinstellungenSeite extends StatefulWidget {
@@ -95,8 +94,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _pwaInstallVerfuegbar = false;
   bool _anthropicKeyVerdeckt = true;
 
-  int? _configLocationId;
-  String? _configApiKey;
   String? _overrideLocationId;
   String? _overrideApiKey;
 
@@ -265,8 +262,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString('flurbocash_location_id_$_aktiveKinoId');
     final String? overrideApiKey =
         speicher.getString('flurbocash_api_key_$_aktiveKinoId');
-    final FlurbocashStandort? flurbocashStandort =
-        await FlurbocashConfigService.fuerKinoId(_aktiveKinoId);
     if (!mounted) return;
     _mitarbeiterNameCtrl.text = mitarbeiterName;
     if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
@@ -282,8 +277,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _getraenkeliste = getraenkeliste;
       _eingabeMitKomma = eingabeMitKomma;
       _geladen = true;
-      _configLocationId = flurbocashStandort?.locationId;
-      _configApiKey = flurbocashStandort?.apiKey;
       _overrideLocationId = overrideLocationId;
       _overrideApiKey = overrideApiKey;
     });
@@ -389,14 +382,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     setState(() => _overrideLocationId = wert);
   }
 
-  Future<void> _setzeLokaleLocationIdZurueck() async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.remove('flurbocash_location_id_$_aktiveKinoId');
-    if (!mounted) return;
-    _locationIdCtrl.clear();
-    setState(() => _overrideLocationId = null);
-  }
-
   Future<void> _speichereFlurbocashApiKey() async {
     final String wert = _flurbocashApiKeyCtrl.text.trim();
     if (wert.isEmpty) return;
@@ -404,14 +389,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     await speicher.setString('flurbocash_api_key_$_aktiveKinoId', wert);
     if (!mounted) return;
     setState(() => _overrideApiKey = wert);
-  }
-
-  Future<void> _setzeLokaleApiKeyZurueck() async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.remove('flurbocash_api_key_$_aktiveKinoId');
-    if (!mounted) return;
-    _flurbocashApiKeyCtrl.clear();
-    setState(() => _overrideApiKey = null);
   }
 
   Future<void> _zeigePinDialog() async {
@@ -1490,8 +1467,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                           'Flurbocash location_id',
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
-                        const SizedBox(height: 4),
-                        Text('Config: ${_configLocationId?.toString() ?? '–'}'),
                         if (_overrideLocationId != null)
                           Text(
                             'Manuell überschrieben: $_overrideLocationId',
@@ -1512,7 +1487,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
                                 decoration: const InputDecoration(
-                                  hintText: 'Override eingeben',
+                                  hintText: 'location_id eingeben',
                                   isDense: true,
                                 ),
                                 onEditingComplete: () {
@@ -1525,10 +1500,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                               onPressed: _speichereLocationId,
                               child: const Text('Speichern'),
                             ),
-                            TextButton(
-                              onPressed: _setzeLokaleLocationIdZurueck,
-                              child: const Text('Zurücksetzen'),
-                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -1536,14 +1507,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                           'Flurbocash API-Key',
                           style: TextStyle(fontSize: 12, color: Colors.grey),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Config: ${_configApiKey != null ? '${_configApiKey!.substring(0, _configApiKey!.length > 16 ? 16 : _configApiKey!.length)}…' : '–'}',
-                        ),
                         if (_overrideApiKey != null)
-                          const Text(
-                            'Manuell überschrieben',
-                            style: TextStyle(
+                          Text(
+                            'Manuell überschrieben: $_overrideApiKey',
+                            style: const TextStyle(
                               color: Colors.orange,
                               fontSize: 12,
                             ),
@@ -1556,7 +1523,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                                 controller: _flurbocashApiKeyCtrl,
                                 focusNode: _flurbocashApiKeyFocus,
                                 decoration: const InputDecoration(
-                                  hintText: 'Override eingeben',
+                                  hintText: 'API-Key eingeben',
                                   isDense: true,
                                 ),
                                 onEditingComplete: () {
@@ -1568,10 +1535,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                             TextButton(
                               onPressed: _speichereFlurbocashApiKey,
                               child: const Text('Speichern'),
-                            ),
-                            TextButton(
-                              onPressed: _setzeLokaleApiKeyZurueck,
-                              child: const Text('Zurücksetzen'),
                             ),
                           ],
                         ),
