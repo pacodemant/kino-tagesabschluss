@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/services/flurbocash_config_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUploadService {
@@ -23,19 +24,47 @@ class ApiUploadService {
     'vpay': 'vpay',
   };
 
-  static Future<void> upload(
-    TagesabschlussFinal abrechnung,
-    String baseUrl,
-    String apiKey,
-  ) async {
-    final int locationId = await _ladeLocationId(abrechnung.kinoId);
+  static Future<void> upload(TagesabschlussFinal abrechnung) async {
+    final ({String url, int locationId, String apiKey}) konfig =
+        await _ladeKonfigWerte(abrechnung.kinoId);
     final String datumIso = _datumIso(abrechnung.datum);
 
     final int reportId =
-        await _ensure(baseUrl, apiKey, locationId, datumIso);
+        await _ensure(konfig.url, konfig.apiKey, konfig.locationId, datumIso);
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
-    await _settlements(baseUrl, apiKey, reportId, abrechnung);
+    await _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
+  }
+
+  static Future<({String url, int locationId, String apiKey})> _ladeKonfigWerte(
+    String kinoId,
+  ) async {
+    final FlurbocashConfig? config = await FlurbocashConfigService.ladeConfig();
+    final FlurbocashStandort? standort =
+        await FlurbocashConfigService.fuerKinoId(kinoId);
+
+    final String baseUrl = config?.sandboxUrl ?? '';
+    if (baseUrl.isEmpty) {
+      throw Exception(
+        'Flurbocash-Konfiguration nicht verfügbar. Bitte config/flurbocash_anbindung.json prüfen.',
+      );
+    }
+
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+
+    final String? overrideId =
+        speicher.getString('flurbocash_location_id_$kinoId');
+    final int locationId = (overrideId != null && overrideId.isNotEmpty)
+        ? (int.tryParse(overrideId) ?? (standort?.locationId ?? 0))
+        : (standort?.locationId ?? 0);
+
+    final String? overrideKey =
+        speicher.getString('flurbocash_api_key_$kinoId');
+    final String apiKey = (overrideKey != null && overrideKey.isNotEmpty)
+        ? overrideKey
+        : (standort?.apiKey ?? '');
+
+    return (url: baseUrl, locationId: locationId, apiKey: apiKey);
   }
 
   static Future<int> _ensure(
@@ -150,13 +179,6 @@ class ApiUploadService {
       default:
         throw Exception('Unbekannter Fehler (HTTP $code).');
     }
-  }
-
-  static Future<int> _ladeLocationId(String kinoId) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? wert =
-        speicher.getString('flurbocash_location_id_$kinoId');
-    return int.tryParse(wert ?? '') ?? 0;
   }
 
   static Future<void> _speichereReportId(

@@ -17,7 +17,6 @@ import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
@@ -209,9 +208,9 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
-  Future<void> _doApiUpload(String url, String apiKey) async {
+  Future<void> _doApiUpload() async {
     try {
-      await ApiUploadService.upload(_abschlussVorschau!, url, apiKey);
+      await ApiUploadService.upload(_abschlussVorschau!);
       _apiUploadErledigt = true;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -320,13 +319,7 @@ class _TagesabschlussSchritt3SeiteState
       final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
       if (!mounted) return;
       if (apiAktiv) {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        if (!mounted) return;
-        final String url = prefs.getString('api_upload_url') ?? '';
-        final String key = prefs.getString('api_upload_key') ?? '';
-        if (url.isNotEmpty) {
-          _doApiUpload(url, key).ignore();
-        }
+        _doApiUpload().ignore();
       }
     }
 

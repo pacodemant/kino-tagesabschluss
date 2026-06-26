@@ -10,7 +10,6 @@ import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -46,20 +45,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     setState(() => _sendet = true);
 
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String url = prefs.getString('api_upload_url') ?? '';
-      final String key = prefs.getString('api_upload_key') ?? '';
-
-      if (url.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('API-Upload nicht konfiguriert')),
-          );
-        }
-        return;
-      }
-
-      await ApiUploadService.upload(widget.abschluss, url, key);
+      await ApiUploadService.upload(widget.abschluss);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
