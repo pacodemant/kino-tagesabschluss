@@ -394,7 +394,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Entwicklermodus'),
+          title: const Text('Admin'),
           content: TextField(
             controller: pinCtrl,
             obscureText: true,
@@ -1361,7 +1361,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               children: <Widget>[
                 ListTile(
                   title: const Text(
-                    'Entwicklermodus',
+                    'Admin',
                     style: TextStyle(fontWeight: FontWeight.w600),
                   ),
                   trailing: Icon(
