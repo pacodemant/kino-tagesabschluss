@@ -1,95 +1,186 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
-import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUploadService {
   ApiUploadService._();
 
+  static const Map<String, String> _kartenartMapping = <String, String>{
+    'Girocard': 'girocard',
+    'girocard': 'girocard',
+    'SEPA Lastschrift': 'lastschrift',
+    'lastschrift': 'lastschrift',
+    'MasterCard': 'mastercard',
+    'mastercard': 'mastercard',
+    'Visa': 'visa',
+    'visa': 'visa',
+    'Maestro': 'maestro',
+    'maestro': 'maestro',
+    'V Pay': 'vpay',
+    'vpay': 'vpay',
+  };
+
   static Future<void> upload(
     TagesabschlussFinal abrechnung,
-    String url,
+    String baseUrl,
     String apiKey,
   ) async {
-    final String mitarbeiterName = await _ladeMitarbeiterName();
-    final String datum = _formatDatum(abrechnung.datum);
-    final String uhrzeit = _formatUhrzeit();
+    final int locationId = await _ladeLocationId(abrechnung.kinoId);
+    final String datumIso = _datumIso(abrechnung.datum);
 
-    // application/x-www-form-urlencoded ist ein CORS-"simple request" —
-    // kein Preflight, funktioniert in allen Browsern ohne Serveranpassung.
-    // Sobald der echte Kino-Server CORS-Header setzt, auf JSON umstellen.
-    final Map<String, String> formBody = <String, String>{
-      'datum': datum,
-      'uhrzeit': uhrzeit,
-      'mitarbeiter': mitarbeiterName,
-      'differenzAnfangsbestand': _euro(abrechnung.differenzAnfangsbestandCent).toString(),
-      'kinoSoll': _euro(abrechnung.kinoSollCent).toString(),
-      'bistroSoll': _euro(abrechnung.bistroSollCent).toString(),
-      'ausgaben': _euro(abrechnung.ausgabenCent).toString(),
-      'gesamtSoll': _euro(abrechnung.gesamtSollCent).toString(),
-      'ecUmsatz': _euro(abrechnung.ecUmsatzGesamtCent).toString(),
-      'barBestand': _euro(abrechnung.barBestandAbzglWechselgeldCent).toString(),
-      'gesamtIst': _euro(abrechnung.gesamtIstCent).toString(),
-      'differenzGesamt': _euro(abrechnung.differenzGesamtCent).toString(),
-    };
+    final int reportId =
+        await _ensure(baseUrl, apiKey, locationId, datumIso);
+    await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
-    final bool hatScanDaten = abrechnung.terminalId != null ||
-        abrechnung.belegNrVon != null ||
-        abrechnung.belegNrBis != null ||
-        abrechnung.ecUhrzeit != null ||
-        (abrechnung.zahlungsartenAufschluesselung?.isNotEmpty ?? false);
-    if (hatScanDaten) {
-      formBody['terminal_id'] = abrechnung.terminalId ?? 'nicht vorhanden';
-      formBody['beleg_nr_von'] = abrechnung.belegNrVon ?? 'nicht vorhanden';
-      formBody['beleg_nr_bis'] = abrechnung.belegNrBis ?? 'nicht vorhanden';
-      formBody['ec_uhrzeit'] = abrechnung.ecUhrzeit ?? 'nicht vorhanden';
+    await _settlements(baseUrl, apiKey, reportId, abrechnung);
+  }
+
+  static Future<int> _ensure(
+    String baseUrl,
+    String apiKey,
+    int locationId,
+    String datumIso,
+  ) async {
+    final Uri uri = Uri.parse('$baseUrl/api/daily-reports/ensure');
+    final http.Response response;
+    try {
+      response = await http.post(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
+        body: jsonEncode(<String, dynamic>{
+          'location_id': locationId,
+          'date': datumIso,
+        }),
+      );
+    } catch (_) {
+      throw Exception('Keine Verbindung zur Flurbocash-API.');
     }
+    _pruefeStatus(response);
+    final Map<String, dynamic> body =
+        jsonDecode(response.body) as Map<String, dynamic>;
+    return (body['report_id'] as num).toInt();
+  }
 
-    if (abrechnung.zahlungsartenAufschluesselung != null) {
-      for (final ZahlungsartErgebnis z
-          in abrechnung.zahlungsartenAufschluesselung!) {
-        final String key = _kartenartZuSnakeCase(z.art);
-        if (z.betragCent != null) {
-          formBody['ec_${key}_betrag_cent'] = z.betragCent!.toString();
-        }
-        formBody['ec_${key}_anzahl'] = (z.anzahl ?? 0).toString();
+  static Future<void> _settlements(
+    String baseUrl,
+    String apiKey,
+    int reportId,
+    TagesabschlussFinal abrechnung,
+  ) async {
+    final Uri uri =
+        Uri.parse('$baseUrl/api/daily-reports/$reportId/settlements');
+    final Map<String, int> karten = _kartenBetraege(abrechnung);
+    final http.Response response;
+    try {
+      response = await http.put(
+        uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
+        },
+        body: jsonEncode(<String, dynamic>{
+          'settlements': <Map<String, dynamic>>[
+            <String, dynamic>{
+              'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
+              'terminals': <Map<String, dynamic>>[
+                <String, dynamic>{
+                  'tid': abrechnung.terminalId ?? '',
+                  'girocard': karten['girocard'] ?? 0,
+                  'lastschrift': karten['lastschrift'] ?? 0,
+                  'mastercard': karten['mastercard'] ?? 0,
+                  'visa': karten['visa'] ?? 0,
+                  'maestro': karten['maestro'] ?? 0,
+                  'vpay': karten['vpay'] ?? 0,
+                },
+              ],
+            },
+          ],
+        }),
+      );
+    } catch (_) {
+      throw Exception('Keine Verbindung zur Flurbocash-API.');
+    }
+    _pruefeStatus(response);
+  }
+
+  static Map<String, int> _kartenBetraege(TagesabschlussFinal abrechnung) {
+    final Map<String, int> ergebnis = <String, int>{};
+    final List<ZahlungsartErgebnis>? liste =
+        abrechnung.zahlungsartenAufschluesselung;
+    if (liste == null || liste.isEmpty) return ergebnis;
+    for (final ZahlungsartErgebnis z in liste) {
+      final String? feldname = _kartenartMapping[z.art];
+      if (feldname != null && z.betragCent != null) {
+        ergebnis[feldname] = (ergebnis[feldname] ?? 0) + z.betragCent!;
       }
     }
+    return ergebnis;
+  }
 
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      body: formBody,
-    );
-
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception('HTTP ${response.statusCode}: ${response.body}');
+  static void _pruefeStatus(http.Response response) {
+    final int code = response.statusCode;
+    if (code >= 200 && code < 300) return;
+    switch (code) {
+      case 400:
+        throw Exception(
+          'Übertragung fehlgeschlagen: Ungültige Daten oder Terminal-ID unbekannt.',
+        );
+      case 401:
+        throw Exception(
+          'Zugang verweigert – API-Key ungültig. Bitte Einstellungen prüfen.',
+        );
+      case 403:
+        throw Exception(
+          'API-Key nicht berechtigt für diesen Standort. Bitte IT kontaktieren.',
+        );
+      case 404:
+        throw Exception(
+          'Tagesbericht nicht gefunden. Bitte erneut versuchen.',
+        );
+      case 500:
+        throw Exception(
+          'Serverfehler bei Flurbocash. Bitte später erneut versuchen.',
+        );
+      default:
+        throw Exception('Unbekannter Fehler (HTTP $code).');
     }
   }
 
-  static Future<String> _ladeMitarbeiterName() async {
-    return (await LokalerSpeicher.ladeMitarbeiterName()) ?? '';
+  static Future<int> _ladeLocationId(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? wert =
+        speicher.getString('flurbocash_location_id_$kinoId');
+    return int.tryParse(wert ?? '') ?? 0;
   }
 
-  static String _formatDatum(DateTime datum) {
-    final String tag = datum.day.toString().padLeft(2, '0');
+  static Future<void> _speichereReportId(
+    String kinoId,
+    DateTime datum,
+    int reportId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setInt(
+      'flurbocash_report_id_${kinoId}_${_datumKey(datum)}',
+      reportId,
+    );
+  }
+
+  static String _datumIso(DateTime datum) {
     final String monat = datum.month.toString().padLeft(2, '0');
-    return '$tag.$monat.${datum.year}';
+    final String tag = datum.day.toString().padLeft(2, '0');
+    return '${datum.year}-$monat-$tag';
   }
 
-  static String _formatUhrzeit() {
-    final DateTime now = DateTime.now();
-    final String stunde = now.hour.toString().padLeft(2, '0');
-    final String minute = now.minute.toString().padLeft(2, '0');
-    return '$stunde:$minute';
-  }
-
-  static double _euro(int cent) => cent / 100.0;
-
-  static String _kartenartZuSnakeCase(String art) {
-    return art
-        .toLowerCase()
-        .replaceAll(' ', '_')
-        .replaceAll(RegExp(r'[^a-z0-9_]'), '');
+  static String _datumKey(DateTime datum) {
+    final String monat = datum.month.toString().padLeft(2, '0');
+    final String tag = datum.day.toString().padLeft(2, '0');
+    return '${datum.year}_${monat}_$tag';
   }
 
   // Browser blockiert das Lesen der Antwort bei fehlendem CORS-Header,
