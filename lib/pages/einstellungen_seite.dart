@@ -102,7 +102,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       <TextEditingController>[];
   final TextEditingController _neuesGetraenkCtrl = TextEditingController();
   final TextEditingController _apiUploadUrlCtrl = TextEditingController();
-  final TextEditingController _apiUploadKeyCtrl = TextEditingController();
   final TextEditingController _anthropicApiKeyCtrl = TextEditingController();
   final TextEditingController _locationIdCtrl = TextEditingController();
   final TextEditingController _flurbocashApiKeyCtrl = TextEditingController();
@@ -136,17 +135,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       }
     });
     _locationIdFocus = FocusNode();
-    _locationIdFocus.addListener(() {
-      if (!_locationIdFocus.hasFocus) {
-        _speichereLocationId();
-      }
-    });
     _flurbocashApiKeyFocus = FocusNode();
-    _flurbocashApiKeyFocus.addListener(() {
-      if (!_flurbocashApiKeyFocus.hasFocus) {
-        _speichereFlurbocashApiKey();
-      }
-    });
     _pwaInstallVerfuegbar = pwaInstallVerfuegbar;
     _ladeWerte();
   }
@@ -179,7 +168,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _neuesGetraenkCtrl.dispose();
     _neuesGetraenkFocus.dispose();
     _apiUploadUrlCtrl.dispose();
-    _apiUploadKeyCtrl.dispose();
     _anthropicApiKeyCtrl.dispose();
     _locationIdCtrl.dispose();
     _locationIdFocus.dispose();
@@ -255,7 +243,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
     final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
-    final String apiUploadKey = speicher.getString('api_upload_key') ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
     final String? overrideLocationId =
@@ -266,7 +253,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _mitarbeiterNameCtrl.text = mitarbeiterName;
     if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
     _apiUploadUrlCtrl.text = apiUploadUrl;
-    _apiUploadKeyCtrl.text = apiUploadKey;
     _anthropicApiKeyCtrl.text = anthropicApiKey;
     _locationIdCtrl.text = overrideLocationId ?? '';
     _flurbocashApiKeyCtrl.text = overrideApiKey ?? '';
@@ -364,7 +350,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Future<void> _speichereApiUploadKonfig() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString('api_upload_url', _apiUploadUrlCtrl.text.trim());
-    await speicher.setString('api_upload_key', _apiUploadKeyCtrl.text.trim());
   }
 
   Future<void> _speichereAnthropicApiKey() async {
@@ -375,20 +360,30 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   Future<void> _speichereLocationId() async {
     final String wert = _locationIdCtrl.text.trim();
-    if (wert.isEmpty) return;
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString('flurbocash_location_id_$_aktiveKinoId', wert);
-    if (!mounted) return;
-    setState(() => _overrideLocationId = wert);
+    if (wert.isEmpty) {
+      await speicher.remove('flurbocash_location_id_$_aktiveKinoId');
+      if (!mounted) return;
+      setState(() => _overrideLocationId = null);
+    } else {
+      await speicher.setString('flurbocash_location_id_$_aktiveKinoId', wert);
+      if (!mounted) return;
+      setState(() => _overrideLocationId = wert);
+    }
   }
 
   Future<void> _speichereFlurbocashApiKey() async {
     final String wert = _flurbocashApiKeyCtrl.text.trim();
-    if (wert.isEmpty) return;
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString('flurbocash_api_key_$_aktiveKinoId', wert);
-    if (!mounted) return;
-    setState(() => _overrideApiKey = wert);
+    if (wert.isEmpty) {
+      await speicher.remove('flurbocash_api_key_$_aktiveKinoId');
+      if (!mounted) return;
+      setState(() => _overrideApiKey = null);
+    } else {
+      await speicher.setString('flurbocash_api_key_$_aktiveKinoId', wert);
+      if (!mounted) return;
+      setState(() => _overrideApiKey = wert);
+    }
   }
 
   Future<void> _zeigePinDialog() async {
@@ -1413,15 +1408,56 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                             ),
                             onChanged: (_) => _speichereApiUploadKonfig(),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 12),
                           TextField(
-                            controller: _apiUploadKeyCtrl,
+                            controller: _locationIdCtrl,
+                            focusNode: _locationIdFocus,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            decoration: const InputDecoration(
+                              labelText: 'location_id',
+                              isDense: true,
+                            ),
+                            onChanged: (_) => _speichereLocationId(),
+                            onEditingComplete: () =>
+                                _locationIdFocus.unfocus(),
+                          ),
+                          if (_overrideLocationId != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                'Gespeichert: $_overrideLocationId',
+                                style: const TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _flurbocashApiKeyCtrl,
+                            focusNode: _flurbocashApiKeyFocus,
                             decoration: const InputDecoration(
                               labelText: 'API-Key',
                               isDense: true,
                             ),
-                            onChanged: (_) => _speichereApiUploadKonfig(),
+                            onChanged: (_) => _speichereFlurbocashApiKey(),
+                            onEditingComplete: () =>
+                                _flurbocashApiKeyFocus.unfocus(),
                           ),
+                          if (_overrideApiKey != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                'Gespeichert: $_overrideApiKey',
+                                style: const TextStyle(
+                                  color: Colors.orange,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -1455,90 +1491,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                         ),
                       ),
                       onChanged: (_) => _speichereAnthropicApiKey(),
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Text(
-                          'Flurbocash location_id',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        if (_overrideLocationId != null)
-                          Text(
-                            'Manuell überschrieben: $_overrideLocationId',
-                            style: const TextStyle(
-                              color: Colors.orange,
-                              fontSize: 12,
-                            ),
-                          ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: TextField(
-                                controller: _locationIdCtrl,
-                                focusNode: _locationIdFocus,
-                                keyboardType: TextInputType.number,
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
-                                decoration: const InputDecoration(
-                                  hintText: 'location_id eingeben',
-                                  isDense: true,
-                                ),
-                                onEditingComplete: () {
-                                  _speichereLocationId();
-                                  _locationIdFocus.unfocus();
-                                },
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: _speichereLocationId,
-                              child: const Text('Speichern'),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Flurbocash API-Key',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
-                        ),
-                        if (_overrideApiKey != null)
-                          Text(
-                            'Manuell überschrieben: $_overrideApiKey',
-                            style: const TextStyle(
-                              color: Colors.orange,
-                              fontSize: 12,
-                            ),
-                          ),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: TextField(
-                                controller: _flurbocashApiKeyCtrl,
-                                focusNode: _flurbocashApiKeyFocus,
-                                decoration: const InputDecoration(
-                                  hintText: 'API-Key eingeben',
-                                  isDense: true,
-                                ),
-                                onEditingComplete: () {
-                                  _speichereFlurbocashApiKey();
-                                  _flurbocashApiKeyFocus.unfocus();
-                                },
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: _speichereFlurbocashApiKey,
-                              child: const Text('Speichern'),
-                            ),
-                          ],
-                        ),
-                      ],
                     ),
                   ),
                   const Divider(height: 1),
