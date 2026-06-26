@@ -72,7 +72,6 @@ flutter:
     - config/getraenke_atlantis.txt
     - config/getraenke_cinema_ostertor.txt
     - config/zahlungsarten.json
-    - config/flurbocash_anbindung.json
     - assets/images/qr_webapp_github.png
     - assets/images/demo_people.png
     - assets/images/logo_apprev.png

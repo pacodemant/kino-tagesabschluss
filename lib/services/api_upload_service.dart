@@ -43,26 +43,33 @@ class ApiUploadService {
     final FlurbocashStandort? standort =
         await FlurbocashConfigService.fuerKinoId(kinoId);
 
-    final String baseUrl = config?.sandboxUrl ?? '';
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+
+    // URL: JSON-Config hat Vorrang, Fallback auf manuell eingetragene api_upload_url
+    final String baseUrl = (config?.sandboxUrl.isNotEmpty == true)
+        ? config!.sandboxUrl
+        : (speicher.getString('api_upload_url') ?? '');
     if (baseUrl.isEmpty) {
       throw Exception(
-        'Flurbocash-Konfiguration nicht verfügbar. Bitte config/flurbocash_anbindung.json prüfen.',
+        'Keine Flurbocash-URL konfiguriert. Bitte Upload-URL in den Einstellungen eintragen.',
       );
     }
 
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-
+    // location_id: SharedPrefs-Override → JSON-Config → 0
     final String? overrideId =
         speicher.getString('flurbocash_location_id_$kinoId');
     final int locationId = (overrideId != null && overrideId.isNotEmpty)
         ? (int.tryParse(overrideId) ?? (standort?.locationId ?? 0))
         : (standort?.locationId ?? 0);
 
+    // api_key: per-Kino-Override → JSON-Config → globaler api_upload_key → leer
     final String? overrideKey =
         speicher.getString('flurbocash_api_key_$kinoId');
     final String apiKey = (overrideKey != null && overrideKey.isNotEmpty)
         ? overrideKey
-        : (standort?.apiKey ?? '');
+        : (standort?.apiKey.isNotEmpty == true
+            ? standort!.apiKey
+            : (speicher.getString('api_upload_key') ?? ''));
 
     return (url: baseUrl, locationId: locationId, apiKey: apiKey);
   }
