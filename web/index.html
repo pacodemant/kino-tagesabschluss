@@ -45,6 +45,15 @@
       window._pwaInstallEvent = e;
     });
   </script>
+
+  <!-- Lädt neue App-Version automatisch, sobald ein aktualisierter Service Worker die Kontrolle übernimmt -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        window.location.reload();
+      });
+    }
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

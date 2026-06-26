@@ -3,6 +3,6 @@
 
 _flutter.loader.load({
   serviceWorkerSettings: {
-    serviceWorkerVersion: null,
+    serviceWorkerVersion: {{flutter_service_worker_version}},
   }
 });
