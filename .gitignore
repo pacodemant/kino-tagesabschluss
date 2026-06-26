@@ -53,3 +53,4 @@ macos/Podfile.lock
 # Secrets (nie versionieren)
 secrets/
 secrets/*
+config/flurbocash_anbindung.json

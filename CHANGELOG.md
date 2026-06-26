@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 290: ApiUploadService vollständig auf Flurbocash-2-Call-Flow umgebaut. Schritt 1: POST /api/daily-reports/ensure (location_id aus SharedPreferences, date aus abrechnung.datum) → report_id; wird unter `flurbocash_report_id_{kinoId}_{yyyy_mm_dd}` gespeichert. Schritt 2: PUT /api/daily-reports/{report_id}/settlements (cash_total + terminals mit 6 Kartenfeldern). Explizites Kartenart-Mapping (Display-Strings und Lowercase-Keys). apiKey wird als X-API-Key-Header gesendet. Deutsche Fehlertexte für 400/401/403/404/500/Netzwerk. Alte form-encoded Logik entfernt. Version 0.9.0+290. Dateien: api_upload_service.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 287: PIN-Schutz für Entwicklermodus (PIN 1929, nur Session); location_id-Feld (SharedPreferences-Key `flurbocash_location_id_[kinoId]`) im Entwicklermodus-Bereich. Dateien: einstellungen_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 281: EcTerminalErgebnis-Modell (tid + 6 Kartenfelder in Cent). In Schritt 2: _baueEcTerminals() baut pro Beleg ein EcTerminalErgebnis aus _ecBelegLabels[i] (TID) und _zahlungsartZeilen[i] (Kartenbeträge); wird in _weiterZuSchritt3() als ecTerminals übergeben. TagesabschlussSchritt3Argumente um optionales ecTerminals-Feld erweitert. _zeigeFlurbocashJson() wertet ecTerminals aus statt des alten Einzelwerts terminalId + zahlungsartenAufschluesselung. Dateien: lib/models/ec_terminal_ergebnis.dart (neu), tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart.
