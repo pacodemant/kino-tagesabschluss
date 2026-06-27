@@ -20,6 +20,7 @@ import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
+import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
@@ -50,14 +51,45 @@ Future<void> main() async {
   await WechselgeldConfigService().initOnAppStart();
 
   runApp(const MeineApp());
+  initSwUpdateWatcher(() {
+    MeineApp.scaffoldMessengerKey.currentState?.showMaterialBanner(
+      MaterialBanner(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        content: const Row(
+          children: <Widget>[
+            Icon(Icons.system_update, color: Colors.deepOrange),
+            SizedBox(width: 12),
+            Text(
+              'Neue Version verfügbar',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              MeineApp.scaffoldMessengerKey.currentState
+                  ?.hideCurrentMaterialBanner();
+              reloadPage();
+            },
+            child: const Text('Jetzt laden'),
+          ),
+        ],
+      ),
+    );
+  });
 }
 
 class MeineApp extends StatelessWidget {
   const MeineApp({super.key});
 
+  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: MeineApp.scaffoldMessengerKey,
       title: 'Kassenabrechnung',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
