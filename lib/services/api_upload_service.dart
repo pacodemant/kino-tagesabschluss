@@ -83,8 +83,8 @@ class ApiUploadService {
           'date': datumIso,
         }),
       );
-    } catch (_) {
-      throw Exception('Keine Verbindung zur Flurbocash-API.');
+    } catch (e) {
+      throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
     }
     _pruefeStatus(response);
     final Map<String, dynamic> body =
@@ -128,8 +128,8 @@ class ApiUploadService {
           ],
         }),
       );
-    } catch (_) {
-      throw Exception('Keine Verbindung zur Flurbocash-API.');
+    } catch (e) {
+      throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
     }
     _pruefeStatus(response);
   }
