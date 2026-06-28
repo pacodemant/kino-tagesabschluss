@@ -47,11 +47,18 @@
   </script>
   <script>
     var _swUpdateReady = false;
+    var _hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
     function _reloadPage() { window.location.reload(); }
     if ('serviceWorker' in navigator) {
+      // Primär: feuert wenn neuer SW via skipWaiting() die Kontrolle übernimmt (Flutter-Default)
+      navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (_hadController) {
+          _swUpdateReady = true;
+        }
+      });
+      // Fallback für SWs ohne skipWaiting()
       navigator.serviceWorker.getRegistration().then(function(reg) {
         if (!reg) return;
-        // Race-condition-Fix: neuer SW könnte bereits warten
         if (reg.waiting && navigator.serviceWorker.controller) {
           _swUpdateReady = true;
           return;
@@ -65,7 +72,6 @@
             }
           });
         });
-        // Explizit auf neue Version prüfen, statt auf Browser-internen Check zu warten
         reg.update().catch(function() {});
       });
     }

@@ -391,12 +391,13 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final FocusNode pinFocus = FocusNode();
     String? eingegebenerPin;
 
-    await showDialog<void>(
+    await showGeneralDialog<void>(
       context: context,
-      builder: (BuildContext dialogContext) {
-        Future.delayed(const Duration(milliseconds: 100), () {
-          pinFocus.requestFocus();
-        });
+      barrierDismissible: true,
+      barrierLabel: 'Schließen',
+      barrierColor: Colors.black54,
+      transitionDuration: Duration.zero,
+      pageBuilder: (BuildContext dialogContext, Animation<double> _, Animation<double> __) {
         return AlertDialog(
           title: const Text('Admin'),
           content: TextField(
