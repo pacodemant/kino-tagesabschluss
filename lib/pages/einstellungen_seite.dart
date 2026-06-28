@@ -388,15 +388,20 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   Future<void> _zeigePinDialog() async {
     final TextEditingController pinCtrl = TextEditingController();
+    final FocusNode pinFocus = FocusNode();
     String? eingegebenerPin;
 
     await showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
+        Future.delayed(const Duration(milliseconds: 100), () {
+          pinFocus.requestFocus();
+        });
         return AlertDialog(
           title: const Text('Admin'),
           content: TextField(
             controller: pinCtrl,
+            focusNode: pinFocus,
             obscureText: true,
             keyboardType: TextInputType.number,
             maxLength: 4,
@@ -426,6 +431,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         );
       },
     );
+    pinFocus.dispose();
     pinCtrl.dispose();
     if (!mounted) return;
     if (eingegebenerPin == null) return;

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 294: PIN-Dialog (Einstellungen): FocusNode vor showDialog angelegt, dem TextField zugewiesen, nach Dialog-Öffnung via Future.delayed(100ms) requestFocus() aufgerufen, anschließend dispose(). Tastatur erscheint nun zuverlässig auf Flutter Web/iOS. Dateien: einstellungen_seite.dart.
+
 - Run 293: ApiUploadService: catch (_) → catch (e) in _ensure() und _settlements(); ursprünglicher Browser-Fehlertext (z. B. "Load failed") wird als ($e) in die Exception eingebettet, damit isCorsArtFehler() in der UI greift und CORS-Fehler korrekt als "Empfang nicht bestätigbar" angezeigt werden. Dateien: api_upload_service.dart.
 
 - Run 292: FlurbocashConfigService gelöscht; ApiUploadService._ladeKonfigWerte() liest ausschließlich SharedPreferences (api_upload_url, flurbocash_location_id_{kinoId}, flurbocash_api_key_{kinoId}, Fallback api_upload_key). Einstellungen Dev-Bereich: "Config: –"-Zeilen und "Zurücksetzen"-Buttons entfernt; Hints auf "location_id eingeben"/"API-Key eingeben"; orangefarbene "Manuell überschrieben: X"-Zeile zeigt gespeicherten Wert. config/flurbocash_anbindung.json nach secrets/ verschoben (lokal, kein Commit). Version 0.9.2+292. Dateien: flurbocash_config_service.dart (gelöscht), api_upload_service.dart, einstellungen_seite.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
