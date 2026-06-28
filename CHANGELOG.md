@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 295: Auto-Reload bei Tab-Öffnung (web/index.html): sessionStorage-Guard (_swFreshLoaded) — beim ersten Öffnen eines neuen Tabs werden alle SW-Caches gelöscht, alle SWs deregistriert und die Seite einmalig neu geladen; danach normaler Betrieb. Garantiert immer die neueste deployed Version beim App-Start. CLAUDE.md: Lösungsansatz-Check-Abschnitt ergänzt. Versionsstring auf r295. Dateien: web/index.html, CLAUDE.md, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 294c2: SW-Update-setInterval auf 1 Stunde korrigiert (war versehentlich 30 Sekunden). Datei: web/index.html.
 
 - Run 294c: SW-Update-Banner (index.html): setInterval alle 1 Stunde → reg.update(), damit ein offener Tab eine neue Version erkennt ohne dass die Seite neu geladen werden muss. Admin-PIN-Session (einstellungen_seite.dart): _devAufgeklappt als static — bleibt über Navigationswechsel hinweg bis zum Tab-Schließen erhalten. showGeneralDialog → showDialog zurückgebaut (Animation wiederhergestellt). Versionsstring auf r294c. Dateien: web/index.html, einstellungen_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.

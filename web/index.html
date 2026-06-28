@@ -46,6 +46,22 @@
     });
   </script>
   <script>
+    // Beim ersten Öffnen eines neuen Tabs: SW-Cache leeren + SW deregistrieren + neu laden.
+    // sessionStorage verhindert eine Reload-Schleife (wird beim Tab-Schließen zurückgesetzt).
+    if ('serviceWorker' in navigator && !sessionStorage.getItem('_swFreshLoaded')) {
+      sessionStorage.setItem('_swFreshLoaded', '1');
+      caches.keys().then(function(keys) {
+        return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+      }).then(function() {
+        return navigator.serviceWorker.getRegistrations();
+      }).then(function(regs) {
+        return Promise.all(regs.map(function(r) { return r.unregister(); }));
+      }).then(function() {
+        location.reload();
+      });
+    }
+  </script>
+  <script>
     var _swUpdateReady = false;
     var _hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
     function _reloadPage() { window.location.reload(); }

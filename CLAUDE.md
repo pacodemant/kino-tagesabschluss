@@ -39,6 +39,18 @@ abgeschlossen ist. Bei Abbruch: keine Änderungen an diesen Dateien.
 - Keine Architekturänderungen ohne expliziten Architektur-Run
 - Stabilität vor Tempo
 
+## Lösungsansatz-Check
+
+Vor jedem Run-Vorschlag prüfen:
+- Löst der beschriebene Ansatz das eigentliche Ziel —
+  oder nur das beschriebene Symptom?
+- Gibt es einen einfacheren Weg zum selben Ergebnis?
+- Ist der Ansatz angemessen für den tatsächlichen Use-Case
+  (Nutzerkreis, Häufigkeit, Kontext)?
+
+Bei Zweifeln: die einfachere Alternative zuerst nennen,
+bevor der ursprünglich beschriebene Weg umgesetzt wird.
+
 ## Standard-Lock
 
 Ohne expliziten Run-Prompt darf Claude NICHT:
