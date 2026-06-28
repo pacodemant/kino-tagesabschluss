@@ -51,14 +51,22 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistration().then(function(reg) {
         if (!reg) return;
+        // Race-condition-Fix: neuer SW könnte bereits warten
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          _swUpdateReady = true;
+          return;
+        }
         reg.addEventListener('updatefound', function() {
           var newWorker = reg.installing;
+          if (!newWorker) return;
           newWorker.addEventListener('statechange', function() {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
               _swUpdateReady = true;
             }
           });
         });
+        // Explizit auf neue Version prüfen, statt auf Browser-internen Check zu warten
+        reg.update().catch(function() {});
       });
     }
   </script>

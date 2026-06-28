@@ -1366,6 +1366,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 ListTile(
+                  leading: const Icon(Icons.settings),
                   title: const Text(
                     'Admin',
                     style: TextStyle(fontWeight: FontWeight.w600),
