@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 294c: SW-Update-Banner (index.html): setInterval alle 30 Sekunden → reg.update(), damit ein offener Tab eine neue Version erkennt ohne dass die Seite neu geladen werden muss. Admin-PIN-Session (einstellungen_seite.dart): _devAufgeklappt als static — bleibt über Navigationswechsel hinweg bis zum Tab-Schließen erhalten. showGeneralDialog → showDialog zurückgebaut (Animation wiederhergestellt). Versionsstring auf r294c. Dateien: web/index.html, einstellungen_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 294b: SW-Update-Detection (index.html): controllerchange-Listener als primären Mechanismus ergänzt (feuert wenn Flutter-SW via skipWaiting() die Kontrolle übernimmt); _hadController-Guard verhindert falsches Banner bei Erst-Installation. PIN-Dialog: showDialog → showGeneralDialog mit transitionDuration: Duration.zero; Future.delayed entfernt; autofocus: true bleibt (Tastatur erscheint nun im selben Frame wie der Tap). Versionsstring auf r294b. Dateien: web/index.html, einstellungen_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 294a: SW-Update-Detection (index.html): reg.waiting-Check als Race-Condition-Fix; reg.update() für sofortigen Update-Check; null-Guard auf newWorker. Admin-Kachel (Einstellungen): Zahnrad-Icon (Icons.settings) als leading-Widget. Versionsstring auf r294a. Dateien: web/index.html, einstellungen_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.

@@ -89,7 +89,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
-  bool _devAufgeklappt = false;
+  static bool _devAufgeklappt = false;
   bool _testwertAufgeklappt = false;
   bool _pwaInstallVerfuegbar = false;
   bool _anthropicKeyVerdeckt = true;
@@ -391,13 +391,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final FocusNode pinFocus = FocusNode();
     String? eingegebenerPin;
 
-    await showGeneralDialog<void>(
+    await showDialog<void>(
       context: context,
-      barrierDismissible: true,
-      barrierLabel: 'Schließen',
-      barrierColor: Colors.black54,
-      transitionDuration: Duration.zero,
-      pageBuilder: (BuildContext dialogContext, Animation<double> _, Animation<double> __) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: const Text('Admin'),
           content: TextField(

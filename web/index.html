@@ -73,6 +73,8 @@
           });
         });
         reg.update().catch(function() {});
+        // Periodisch prüfen — neue Version könnte während die App offen ist deployed werden
+        setInterval(function() { reg.update().catch(function() {}); }, 30000);
       });
     }
   </script>
