@@ -505,6 +505,10 @@ class _TagesabschlussSchritt2SeiteState
                 i++) {
               _zahlungsartZeilen[b][i].anzahlWert = (bAnzahl[i] as num?)?.toInt();
               _zahlungsartZeilen[b][i].betragCentWert = (bBetrag[i] as num?)?.toInt();
+              if (_zahlungsartZeilen[b][i].anzahlWert != null ||
+                  _zahlungsartZeilen[b][i].betragCentWert != null) {
+                _zahlungsartZeilen[b][i].nichtImScan = false;
+              }
             }
           }
         });
@@ -542,6 +546,10 @@ class _TagesabschlussSchritt2SeiteState
                 i++) {
               _zahlungsartZeilen[0][i].anzahlWert = (anzahlRoh[i] as num?)?.toInt();
               _zahlungsartZeilen[0][i].betragCentWert = (betragRoh[i] as num?)?.toInt();
+              if (_zahlungsartZeilen[0][i].anzahlWert != null ||
+                  _zahlungsartZeilen[0][i].betragCentWert != null) {
+                _zahlungsartZeilen[0][i].nichtImScan = false;
+              }
             }
           });
           for (int i = 0;

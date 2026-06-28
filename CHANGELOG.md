@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 295a: Bugfix EC-Belege: nichtImScan wird beim Laden jetzt wiederhergestellt — Kartenart-Zeilen mit gespeicherten Werten erscheinen nach Seitenwechsel korrekt in der Tabelle (neues + altes Persistenzformat). Datei: tagesabschluss_schritt2_seite.dart.
+
 - Run 295: Auto-Reload bei Tab-Öffnung (web/index.html): sessionStorage-Guard (_swFreshLoaded) — beim ersten Öffnen eines neuen Tabs werden alle SW-Caches gelöscht, alle SWs deregistriert und die Seite einmalig neu geladen; danach normaler Betrieb. Garantiert immer die neueste deployed Version beim App-Start. CLAUDE.md: Lösungsansatz-Check-Abschnitt ergänzt. Versionsstring auf r295. Dateien: web/index.html, CLAUDE.md, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 294c2: SW-Update-setInterval auf 1 Stunde korrigiert (war versehentlich 30 Sekunden). Datei: web/index.html.
