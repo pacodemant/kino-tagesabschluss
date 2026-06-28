@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juni 2026 · wird fortlaufend ergänzt
+Stand: Juni 2026 · Run 293 · wird fortlaufend ergänzt
 
 ---
 
@@ -43,24 +43,24 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
-- [ ] **Persongetränke zuerst** *(Run 282)* Persogetränke zu Beginn der Abrechnung
+- [ ] **Persongetränke zuerst** *(Run 294)* Persogetränke zu Beginn der Abrechnung
       abfragen (nicht am Ende) — verhindert Vergessen, entfernt das Banner auf der
       Kino-Seite.
 
-- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 283)* Haben Kupferfelder einen Inhalt,
+- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 295)* Haben Kupferfelder einen Inhalt,
       soll der Bereich automatisch aufgeklappt sein.
 
-- [ ] **Mitarbeitername im Verlauf** *(Run 284)* Name in lokalen Verlaufs-Datensätzen
+- [ ] **Mitarbeitername im Verlauf** *(Run 296)* Name in lokalen Verlaufs-Datensätzen
       speichern und anzeigen. Präfix "MitarbeiterIn: ".
 
-- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 285)* Unter Stückelungsübersicht
+- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 297)* Unter Stückelungsübersicht
       erklären was eine grüne Zeile bedeutet. Optionales Freitextfeld am Ende der
       Abrechnung.
 
-- [ ] **Desktop-Ansicht begrenzen** *(Run 286)* Inhalte auf Desktop-Browsern auf
+- [ ] **Desktop-Ansicht begrenzen** *(Run 298)* Inhalte auf Desktop-Browsern auf
       Smartphone-Breite begrenzen.
 
-- [ ] **DEV-Testwerte-Button im Web** *(Run 287)* Funktioniert bisher nur im Simulator.
+- [ ] **DEV-Testwerte-Button im Web** *(Run 299)* Funktioniert bisher nur im Simulator.
 
 - [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
 
@@ -92,7 +92,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
 
-### BelegScan & EC-Kachel *(Phase A, Runs 275–280)*
+### BelegScan & EC-Kachel *(Phase A, Runs 275–281)*
 
 - [x] **Architektur-Refactor: Zahlungsartzeilen pro Beleg** *(Run 279)*
       Alle Zahlungsarten-Felder auf per-Beleg-Listen umgestellt.
@@ -120,10 +120,18 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       von „Kassenabrechnung senden" — zeigt Flurbocash-JSON (Call 1: ensure, Call 2:
       settlements) in scrollbarem Monospace-Dialog.
 
-- [ ] **Hilfetext & Duplikat-Button** *(Run 281)* Info im Scan-Bereich was zu tun
+- [ ] **Hilfetext & Duplikat-Button** Info im Scan-Bereich was zu tun
       ist wenn Beleg fehlt oder unlesbar ist. Zusätzlich im Prüf-Popup: Dummy-Button
       öffnet Popup mit Platzhaltertext ("Hier folgt Anleitung / Tutorial") —
       Vorbereitung für spätere Tutorial-Videos oder Texte.
+
+- [ ] **Prüf-Popup entfernen — Fehler direkt in der Kachel** Fragliche Daten in der
+      Sub-Kachel direkt hervorheben und korrigierbar machen. Wenn nach Korrektur noch
+      Ungereimtheiten bestehen, Fertig-Button ausgegraut + Hinweis.
+
+- [ ] **Fertig-Button-Gate** Fertig-Button bleibt ausgegraut solange ein Datenfeld
+      leer oder nicht korrekt ist. Tap auf ausgegrauten Button: Hinweis
+      "Daten noch nicht vollständig — bitte korrigieren."
 
 - [ ] **Plausibilitätsprüfung deaktivierbar** Standardmäßig deaktiviert.
       Im Dev-Modus per Toggle einschaltbar. Das wird später noch weiterentwickelt.
@@ -136,15 +144,26 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 - [ ] **Belegscan Metadaten** zuklappbar machen
 
-### Einstellungen & Konfiguration *(Phase C, Runs 287–288)*
+- [ ] **KI-Prompt verbessern** KI soll nur relevante Daten lesen, nichts
+      hineininterpretieren und keine Bemerkungen zu Schreibgerät, Belegrissen o. Ä.
+      Im Prompt auf Zeilen-Zuordnung hinweisen — manchmal rutscht ein Kartenbetrag
+      zu einer falschen Kartenart.
 
-- [ ] **PIN-Schutz Verwaltungsbereich** *(Run 288)* Vierstelliger PIN schützt
-      Einstellungen. Felder für location_id, API-Key, Basis-URL, TID-Whitelist
-      und Buchhaltungs-E-Mail — vorerst mit Platzhaltern.
+### Einstellungen & Konfiguration *(Phase C)*
 
-- [ ] **TID-Whitelist konfigurierbar** *(Run 289)* Pro Standort in Einstellungen
+- [ ] **PIN-Schutz Verwaltungsbereich** PIN (1929/Session) + location_id +
+      API-Key-Felder bereits in Runs 287/291/292 umgesetzt. Noch offen:
+      Basis-URL-Feld in Einstellungen-UI. *(TID-Whitelist + Buchhaltungs-E-Mail
+      → eigene Punkte unten)*
+
+- [ ] **Standort vorauswählen (Admin)** Admin stellt in den Einstellungen den
+      Standort ein, damit MA nicht erst auswählen müssen.
+
+- [ ] **Admin-Passwort** Admin-Modus mit festem Passwort "flrbcsh" schützen
+      (aktuell: PIN 1929/Session).
+
+- [ ] **TID-Whitelist konfigurierbar** Pro Standort in Einstellungen
       editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
-      Setzt Run 287 voraus.
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
@@ -154,20 +173,19 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       an, Abrechnung als Datei zu speichern (iOS Dateien / Android Downloads,
       standortspezifischer Ordner).
 
-### Flurbocash API-Integration *(Phase E, Runs 290–292 — wartet auf IT)*
+### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
-- [ ] **ApiUploadService Umbau** *(Run 291)* 1 Call → 2 Calls (ensure + settlements),
+- [x] **ApiUploadService Umbau** *(Run 290)* 1 Call → 2 Calls (ensure + settlements),
       JSON statt form-encoded, report_id lokal speichern,
       Fehlerbehandlung für alle HTTP-Statuscodes (400/401/403/404/500).
-      Wartet auf: Basis-URL, API-Key, location_ids, 6-Uhr-Knick-Absprache.
 
 - [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 
-- [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung** *(Run 292)*
+- [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung**
       `settlement_number: 1` statt neuem Eintrag. Bei `400 "maximum reached"`:
       verständliche Meldung + Textbutton "Info an Buchhaltung senden".
       Nach Tap: Mail an konfigurierte Adresse, Bestätigung "Buchhaltung ist
-      informiert — Abrechnung beendet." Setzt Run 290 voraus.
+      informiert — Abrechnung beendet." Setzt CORS-Freigabe voraus.
 
 - [ ] **Buchhaltungs-E-Mail konfigurierbar** Empfängeradresse in Einstellungen.
       Mailmethode abhängig von Yannik-Antwort.
@@ -176,16 +194,15 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
       Erst relevant wenn BT implementiert wird.
 
-### Stapel-Scanner *(Phase D/E, Runs 289 + 292)*
+### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
-- [ ] **Stapel-Scanner: Seite & Grundstruktur** *(Run 290)* Eigene Seite im
+- [ ] **Stapel-Scanner: Seite & Grundstruktur** Eigene Seite im
       Verwaltungsbereich (hinter PIN). MA scannt reihenweise Belege, gespeichert
       wie Verlauf. Nutzt EC-Kachel-Komponente aus Phase A. Senden-Button als Dummy.
-      Setzt Runs 277 und 287 voraus.
+      Setzt TID-Whitelist und CORS-Freigabe voraus.
 
-- [ ] **Stapel-Scanner: echter Versand** *(Run 293)* Dummy-Button durch echten
+- [ ] **Stapel-Scanner: echter Versand** Dummy-Button durch echten
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
-      Setzt Runs 290 und 289 voraus.
 
 ### Weitere Features
 
@@ -207,6 +224,7 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 - [ ] **Bar Tabak (kino_05)** Komplexe Kassenstruktur (Kino-, Bar-, Lotterie-,
       Handy-Kasse; 2 Abschlüsse/Tag). Noch nicht implementiert.
+      Startseite: zwei Buttons „1. Abrechnung" und „2. Abrechnung".
 
 - [ ] **Refactoring** Wiederkehrende UI-Elemente als Widgets extrahieren,
       Inline-Styling durch Theme-Konstanten ersetzen, Logik in Services auslagern.
@@ -284,20 +302,12 @@ Stand: Juni 2026 · wird fortlaufend ergänzt
 
 ---
 
-## 💡 lose, schnell hinzugefügte Spontan-Ideen (hin und wieder mal in die Todos für .md korrekt formatiert einsortieren)
+## 💡 Spontan-Ideen (noch einzusortieren)
 
 - [ ] **Einstellungen Admin - Standort einstellen** In den Einstellungen soll der Admin den Standort einstellen können, damit die Mitarbeiter nicht erst noch den Standort auswählen müssen.
 
-- [ ] **Einstellungen Admin - neuer Name** In den Einstellungen soll Entwickler,modus oder developments Mode oder wie d.h. neu umbenannt werden in Admin.
+- [x] **Einstellungen Admin - Umbenennung** Entwicklermodus → Admin in der Einstellungen-UI. *(erledigt Run 292c)*
 
-- [ ] **Einstellungen Admin - Passwort** Der Admin Modus ist Passwort geschützt mit dem Code „flrbcsh“.
+- [ ] **Einstellungen Admin - Passwort** Der Admin-Modus soll mit dem Code „flrbcsh" geschützt sein. *(aktuell noch PIN 1929/Session aus Run 287)*
 
 - [ ] **BT mit 2 Abrechnungen/Tag** Auf der Startseite für die BT sollen zwei Buttons für die Kassenabrechnung stehen: 1. Abrechnung und 2. Abrechnung
-
-* In den Einstellungen soll der Admin den Standort einstellen können, damit die Mitarbeiter nicht erst noch den Standort auswählen müssen.
-* In den Einstellungen soll Entwickler,modus oder developments Mode oder wie d.h. neu umbenannt werden in Admin.
-* Der Admin Modus ist Passwort geschützt mit dem Code „flrbcsh“.
-* Auf der Startseite für die BT sollen zwei Buttons für die Kassenabrechnung stehen: 1. Abrechnung und 2. Abrechnung
-* ich glaube, das Prüf-Popup bei den Kartenzahlungen kann weg und fragliche Daten können in der Kachel bzw. Sub-Kachel direkt hervorgehoben und korrigiert werden. Wenn dann immer noch ungereimtheiten existieren
-* Den Prompt, der mit dem Beleg-Scan mitgeschickt wird, dahingehend anpassen, dass die KI nur die relevanten Daten lesen, nichts hineinininterpretieren und keine unnötigen Bemerkgungen (zb. von "Schreibgerät verdeckt" oder "Beleg ist eingerissen" und was die KI sonst noch für Besonderheiten feststellen könnte). Vielleicht sollte man im Prompt auch noch auf einiges Hinweisen, zb. dass die KI auf Zeilen achten sollen, denn manchmal rutscht ein Karten-Betrag zu einer anderen Kartenart, als sie auf dem Beleg notiert ist.
-+ ich kann die Belegerfassung erst abschließen, wenn alle Daten korrekt/plausibel sind. Dh, wenn auch nur ein Datenfeld leer oder nicht korrekt ist, bleibt der Fertig-Button ausgegraut. Wenn man auf den ausgegrauten Fertig-Button tippt, soll man darauf hingewiesen werden, dass die daten noch nicht korrigiert wurden und deshalb nicht abgeschickt werden können. 
