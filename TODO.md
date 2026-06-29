@@ -49,16 +49,22 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
       Ohne Abhaken ist der Weiter-Button zu Schritt 3 gesperrt.
       Banner „Perso-Getränke nicht vergessen!" auf der Kino-Kachel entfällt.
 
-- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 297)* Wenn beim Laden eines Entwurfs
+- [ ] **EC-Kachel State-Refactor** *(Run 297)* nichtImScan + _kartenartenNurAnzeige
+      durch einen expliziten ZeilenZustand-Enum pro Zeile ersetzen
+      (hidden / shown / editing). Rot-Highlighting als reine Render-Entscheidung
+      statt Flag. Alle Übergänge (Scan, Manuell, Draft-Load, Auto-Fill, Clear)
+      setzen den Zustand direkt und eindeutig.
+
+- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 298)* Wenn beim Laden eines Entwurfs
       Kupfer-Felder (lose Münzen oder Rollen) einen Wert enthalten, soll der
       Kupfer-Bereich automatisch aufgeklappt sein.
 
-- [ ] **Mitarbeitername in Schritt 1** *(Run 298)* Name nicht mehr in den Einstellungen
+- [ ] **Mitarbeitername in Schritt 1** *(Run 299)* Name nicht mehr in den Einstellungen
       festlegen (da das Gerät geteilt wird), sondern als Pflicht-/Freifeld am Anfang
       von Schritt 1 eingeben. Beim Abschluss wird der Name in den Verlaufseintrag
       übernommen und dort mit Präfix "MitarbeiterIn: " angezeigt.
 
-- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 299)*
+- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 300)*
       Legende: Unter der Stückelungsübersicht einen Hinweis einbauen —
       sinngemäß: „Grüne Zeile = die Anzahl der Scheine im Stapel entspricht
       genau dem Soll-Betrag; der gesamte Stapel kann direkt in den Umschlag
@@ -66,7 +72,7 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
       Anmerkungsfeld: In Schritt 2 unter den EC-Belegen eine eigene Kachel
       „Hinweis/Kommentar (optional):" einbauen.
 
-- [ ] **Desktop-Ansicht begrenzen** *(Run 300)* Inhalte auf Desktop-Browsern auf
+- [ ] **Desktop-Ansicht begrenzen** *(Run 301)* Inhalte auf Desktop-Browsern auf
       Smartphone-Breite begrenzen.
 
 - [x] **DEV-Testwerte-Button im Web** Funktioniert mittlerweile.
