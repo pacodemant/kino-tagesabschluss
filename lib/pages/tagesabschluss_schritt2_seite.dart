@@ -582,6 +582,9 @@ class _TagesabschlussSchritt2SeiteState
                   _zahlungsartZeilen[b]
                       .any((_ZahlungsartZeile z) => z.anzahlWert != null || z.betragCentWert != null))) {
             _kartenartenNurAnzeige[b] = true;
+          } else if (_kartenartenNurAnzeige.length > b &&
+              _ecBelegController.length == 1) {
+            _kartenartenNurAnzeige[b] = false;
           }
         }
       });
@@ -2160,6 +2163,7 @@ class _TagesabschlussSchritt2SeiteState
               onChanged: (String wert) {
                 setState(() {
                   zeile.anzahlWert = int.tryParse(wert.trim());
+                  if (zeile.anzahlWert != null) zeile.nichtImScan = false;
                 });
               },
             ),
@@ -2192,6 +2196,7 @@ class _TagesabschlussSchritt2SeiteState
               onChanged: (String wert) {
                 setState(() {
                   zeile.betragCentWert = _parsiereBetragCent(wert);
+                  if (zeile.betragCentWert != null) zeile.nichtImScan = false;
                 });
               },
             ),
@@ -2374,11 +2379,11 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           for (int i = 0; i < zeilen.length; i++)
-            if (!zeilen[i].nichtImScan)
+            if (!zeilen[i].nichtImScan || !nurAnzeige)
               nurAnzeige
                   ? _baueKartenartenZeileAnzeige(i, belegIndex)
                   : _baueKartenartenZeile(i, belegIndex),
-          if (zeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
+          if (nurAnzeige && zeilen.any((_ZahlungsartZeile z) => z.nichtImScan))
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Wrap(
