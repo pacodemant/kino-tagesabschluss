@@ -22,7 +22,6 @@ import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
-import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class TagesabschlussSchritt2Argumente {
@@ -177,8 +176,6 @@ class _TagesabschlussSchritt2SeiteState
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
   bool get _scanLaeuft => _scanBelegIndex != null;
-  bool get _hatGetraenke =>
-      KinoRepository.nachId(widget.kinoId)?.hatGetraenke ?? false;
   bool _eingabeMitKomma = false;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
@@ -2638,10 +2635,22 @@ class _TagesabschlussSchritt2SeiteState
             ],
             Expanded(
               child: ElevatedButton(
-                onPressed: (_hatGetraenke && !_personalgetraenkeGebot)
-                    ? null
-                    : _weiterZuSchritt3,
-                style: AppFarben.footerButtonStyle,
+                onPressed: () {
+                  if (!_personalgetraenkeGebot) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Personalgetränke gebont?')),
+                    );
+                    return;
+                  }
+                  _weiterZuSchritt3();
+                },
+                style: _personalgetraenkeGebot
+                    ? AppFarben.footerButtonStyle
+                    : ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.grey.shade300,
+                      ),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
@@ -2698,30 +2707,28 @@ class _TagesabschlussSchritt2SeiteState
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 12),
-                if (_hatGetraenke) ...<Widget>[
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          const Text('Personalgetränke gebont?'),
-                          Checkbox(
-                            value: _personalgetraenkeGebot,
-                            onChanged: (bool? v) {
-                              setState(
-                                  () => _personalgetraenkeGebot = v ?? false);
-                            },
-                            activeColor: Colors.green,
-                            shape: const CircleBorder(),
-                          ),
-                        ],
-                      ),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text('Personalgetränke gebont?'),
+                        Checkbox(
+                          value: _personalgetraenkeGebot,
+                          onChanged: (bool? v) {
+                            setState(
+                                () => _personalgetraenkeGebot = v ?? false);
+                          },
+                          activeColor: Colors.green,
+                          shape: const CircleBorder(),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                ],
+                ),
+                const SizedBox(height: 12),
                 Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),

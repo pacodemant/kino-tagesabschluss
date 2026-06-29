@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 296a: Personalgetränke-Checkbox für alle Standorte (hatGetraenke-Gate entfernt). Weiter-Button bleibt sichtbar und ausgegraut (grey.shade600/300); Tap ohne Haken zeigt SnackBar "Personalgetränke gebont?". Versionsstring r296a. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 296: Personalgetränke-Checkbox in Schritt 2 — über der Kachel "Differenz im Anfangsbestand" erscheint für Standorte mit Getränken (Atlantis, Schauburg, CO) eine Card-Kachel "Personalgetränke gebont?" mit runder grüner Checkbox. Weiter-Button bleibt gesperrt bis Checkbox abgehakt. Banner "Perso-Getränke nicht vergessen!" auf Startmenü-Kachel entfernt. Version 0.9.2+296. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
 
 - Run 295b: Echte Terminal-IDs (AT, SB, CO, BT) in config/terminal_ids.json eingetragen. FlurbocashConfigService (lib/services/flurbocash_config_service.dart) entfernt — war nicht mehr referenziert. Dummy-Dateien unter .dev/kassenberichte dummies/ in html/-Unterordner reorganisiert; Scan-Beispielbilder hinzugefügt. Dateien: config/terminal_ids.json, lib/services/flurbocash_config_service.dart (gelöscht), .dev/kassenberichte dummies/.
