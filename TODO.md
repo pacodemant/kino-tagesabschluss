@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juni 2026 · Run 293 · wird fortlaufend ergänzt
+Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 
 ---
 
@@ -43,24 +43,33 @@ Stand: Juni 2026 · Run 293 · wird fortlaufend ergänzt
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
-- [ ] **Persongetränke zuerst** *(Run 294)* Persogetränke zu Beginn der Abrechnung
-      abfragen (nicht am Ende) — verhindert Vergessen, entfernt das Banner auf der
-      Kino-Seite.
+- [ ] **Personalgetränke-Checkbox** *(Run 296)* In Schritt 2 über der Kachel
+      „Differenz im Anfangsbestand" eine eigene Kachel einbauen:
+      Links „Personalgetränke gebont?", rechts runde Checkbox (abgehakt = grün).
+      Ohne Abhaken ist der Weiter-Button zu Schritt 3 gesperrt.
+      Banner „Perso-Getränke nicht vergessen!" auf der Kino-Kachel entfällt.
 
-- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 295)* Haben Kupferfelder einen Inhalt,
-      soll der Bereich automatisch aufgeklappt sein.
+- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 297)* Wenn beim Laden eines Entwurfs
+      Kupfer-Felder (lose Münzen oder Rollen) einen Wert enthalten, soll der
+      Kupfer-Bereich automatisch aufgeklappt sein.
 
-- [ ] **Mitarbeitername im Verlauf** *(Run 296)* Name in lokalen Verlaufs-Datensätzen
-      speichern und anzeigen. Präfix "MitarbeiterIn: ".
+- [ ] **Mitarbeitername in Schritt 1** *(Run 298)* Name nicht mehr in den Einstellungen
+      festlegen (da das Gerät geteilt wird), sondern als Pflicht-/Freifeld am Anfang
+      von Schritt 1 eingeben. Beim Abschluss wird der Name in den Verlaufseintrag
+      übernommen und dort mit Präfix "MitarbeiterIn: " angezeigt.
 
-- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 297)* Unter Stückelungsübersicht
-      erklären was eine grüne Zeile bedeutet. Optionales Freitextfeld am Ende der
-      Abrechnung.
+- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 299)*
+      Legende: Unter der Stückelungsübersicht einen Hinweis einbauen —
+      sinngemäß: „Grüne Zeile = die Anzahl der Scheine im Stapel entspricht
+      genau dem Soll-Betrag; der gesamte Stapel kann direkt in den Umschlag
+      gelegt werden, nochmaliges Zählen entfällt."
+      Anmerkungsfeld: In Schritt 2 unter den EC-Belegen eine eigene Kachel
+      „Hinweis/Kommentar (optional):" einbauen.
 
-- [ ] **Desktop-Ansicht begrenzen** *(Run 298)* Inhalte auf Desktop-Browsern auf
+- [ ] **Desktop-Ansicht begrenzen** *(Run 300)* Inhalte auf Desktop-Browsern auf
       Smartphone-Breite begrenzen.
 
-- [ ] **DEV-Testwerte-Button im Web** *(Run 299)* Funktioniert bisher nur im Simulator.
+- [x] **DEV-Testwerte-Button im Web** Funktioniert mittlerweile.
 
 - [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
 

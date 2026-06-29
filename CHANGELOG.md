@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 295b: Echte Terminal-IDs (AT, SB, CO, BT) in config/terminal_ids.json eingetragen. FlurbocashConfigService (lib/services/flurbocash_config_service.dart) entfernt — war nicht mehr referenziert. Dummy-Dateien unter .dev/kassenberichte dummies/ in html/-Unterordner reorganisiert; Scan-Beispielbilder hinzugefügt. Dateien: config/terminal_ids.json, lib/services/flurbocash_config_service.dart (gelöscht), .dev/kassenberichte dummies/.
+
 - Run 295a: Bugfix EC-Belege: nichtImScan wird beim Laden jetzt wiederhergestellt — Kartenart-Zeilen mit gespeicherten Werten erscheinen nach Seitenwechsel korrekt in der Tabelle (neues + altes Persistenzformat). Datei: tagesabschluss_schritt2_seite.dart.
 
 - Run 295: Auto-Reload bei Tab-Öffnung (web/index.html): sessionStorage-Guard (_swFreshLoaded) — beim ersten Öffnen eines neuen Tabs werden alle SW-Caches gelöscht, alle SWs deregistriert und die Seite einmalig neu geladen; danach normaler Betrieb. Garantiert immer die neueste deployed Version beim App-Start. CLAUDE.md: Lösungsansatz-Check-Abschnitt ergänzt. Versionsstring auf r295. Dateien: web/index.html, CLAUDE.md, startmenue_seite.dart, kinoauswahl_seite.dart.
