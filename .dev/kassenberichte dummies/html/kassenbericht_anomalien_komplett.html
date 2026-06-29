@@ -1,0 +1,460 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.page{padding:1.5rem;}
+.section-head{font-family:Arial,sans-serif;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.12em;color:var(--color-text-secondary);border-bottom:.5px solid var(--color-border-tertiary);padding-bottom:6px;margin:2rem 0 1rem;}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.5rem;}
+.card-wrap{display:flex;flex-direction:column;gap:8px;}
+.label{font-family:Arial,sans-serif;font-size:11px;line-height:1.4;color:var(--color-text-primary);background:var(--color-background-secondary);border-left:3px solid var(--color-border-secondary);padding:6px 10px;border-radius:0 4px 4px 0;}
+.label strong{display:block;font-size:11px;font-weight:500;margin-bottom:2px;}
+.label span{font-size:10px;color:var(--color-text-secondary);}
+
+/* receipts base */
+.r{font-family:'Courier New',monospace;font-size:10px;line-height:1.55;background:#fff;color:#111;}
+.r .ln{display:flex;justify-content:space-between;padding:1px 0;}
+.r .sep{border:none;border-top:1px dashed #ccc;margin:6px 0;}
+.r .sep2{border:none;border-top:1px solid #bbb;margin:6px 0;}
+.r .tot{display:flex;justify-content:space-between;font-weight:700;}
+.r .hc{text-align:center;margin-bottom:8px;}
+.r .hc .n{font-size:12px;font-weight:700;letter-spacing:.08em;}
+.r .hc .s{font-size:9px;color:#666;}
+.r .inv{background:#111;color:#fff;padding:2px 6px;font-size:9px;letter-spacing:.07em;margin:5px 0;}
+
+/* blue-header style */
+.bh .head{background:#003b7a;color:#fff;padding:8px 12px;}
+.bh .head h1{font-size:12px;font-weight:700;}
+.bh .head p{font-size:9px;opacity:.75;}
+.bh .body{padding:10px 12px;}
+
+/* red-header style */
+.rh .head{background:#c0001a;color:#fff;padding:8px 12px;font-size:11px;font-weight:700;}
+.rh .body{padding:10px 12px;}
+
+/* dark-header style */
+.dh .head{background:#1a1a1a;color:#fff;padding:8px 12px;font-size:11px;font-weight:700;letter-spacing:.06em;}
+.dh .body{padding:10px 12px;}
+
+/* sans style */
+.sa{font-family:Arial,sans-serif;font-size:10.5px;line-height:1.5;background:#fff;color:#111;padding:14px;}
+.sa .ln{display:flex;justify-content:space-between;padding:2px 0;}
+.sa .sep{border:none;border-top:.5px solid #e0e0e0;margin:8px 0;}
+.sa .tot{font-size:16px;font-weight:700;margin:6px 0;}
+.sa label{font-size:8px;text-transform:uppercase;letter-spacing:.1em;color:#999;display:block;margin-bottom:1px;}
+
+/* left-accent style */
+.la{font-family:Arial,sans-serif;font-size:10.5px;line-height:1.6;background:#fff;color:#111;padding:14px;border-left:4px solid #111;}
+.la .ln{display:flex;justify-content:space-between;padding:2px 0;}
+.la .sep{border:none;border-top:.5px solid #ddd;margin:8px 0;}
+
+/* grid-report style */
+.gr{font-family:Arial,sans-serif;font-size:10px;line-height:1.5;background:#fff;color:#111;}
+.gr .ghead{background:#f4f4f4;border-bottom:1px solid #ccc;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;}
+.gr .ghead .gl{font-size:12px;font-weight:700;}
+.gr .ghead .gr2{font-size:9px;color:#888;text-align:right;}
+.gr .gbody{padding:10px 12px;}
+.gr .rh2{display:grid;grid-template-columns:2fr 1fr 1fr;font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:#999;border-bottom:.5px solid #ccc;padding-bottom:3px;margin-bottom:3px;}
+.gr .ro{display:grid;grid-template-columns:2fr 1fr 1fr;border-bottom:.5px solid #f0f0f0;padding:2px 0;}
+.gr .ro span:last-child,.gr .rh2 span:last-child{text-align:right;}
+.gr .ro span:nth-child(2),.gr .rh2 span:nth-child(2){text-align:center;}
+.gr .gtot{display:grid;grid-template-columns:2fr 1fr 1fr;background:#111;color:#fff;padding:4px 0;font-weight:700;}
+.gr .gtot span:last-child{text-align:right;}
+.gr .gtot span:nth-child(2){text-align:center;}
+.gr .gfoot{background:#f4f4f4;border-top:1px solid #ccc;padding:6px 12px;font-size:9px;color:#888;display:flex;justify-content:space-between;}
+
+/* anomaly highlights */
+.err{color:#c00;font-weight:700;}
+.warn{background:#fff3cd;padding:0 2px;}
+.ghost{opacity:.2;}
+.blur{filter:blur(2.5px);user-select:none;}
+.smear{display:inline-block;transform:skewX(-5deg);opacity:.5;letter-spacing:.2em;}
+.black-bar{background:#111;color:#111;border-radius:1px;}
+.missing{background:repeating-linear-gradient(45deg,#eee 0 3px,#fff 3px 6px);height:11px;display:inline-block;width:64px;border-radius:1px;vertical-align:middle;}
+.noise{opacity:.35;letter-spacing:.25em;}
+.strike{text-decoration:line-through;opacity:.45;}
+.dbl{opacity:.22;}
+.overprint{position:relative;}
+.overprint::after{content:'KOPIE';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-30deg);font-size:44px;font-weight:700;color:rgba(180,0,0,.1);pointer-events:none;white-space:nowrap;}
+</style>
+
+<div class="page">
+
+<!-- ══════════════════════════════════════
+     SEKTION 1: INHALTLICHE ANOMALIEN
+════════════════════════════════════════ -->
+<div class="section-head">1 — Inhaltliche Anomalien</div>
+<div class="grid">
+
+<!-- 1.1 Summe stimmt nicht -->
+<div class="card-wrap">
+<div class="label"><strong>1.1 · Einzelpositionen ≠ Gesamtsumme</strong><span>Kerntest: Kann die KI rechnen und Widersprüche erkennen? Girocard+Visa+MC+NFC–Storno = 3.641,50 — ausgewiesen sind 3.890,00.</span></div>
+<div class="r bh" style="border:1px solid #ccc;">
+  <div class="head"><h1>LICHTSPIELE NORD</h1><p>TID 44201188 · MID 8830049211 · Batch 0031</p></div>
+  <div class="body">
+    <div class="ln"><span>18.06.2026</span><span>22:14:03</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>1.520,00 €</span></div>
+    <div class="ln"><span>Visa</span><span>688,50 €</span></div>
+    <div class="ln"><span>Mastercard</span><span>411,00 €</span></div>
+    <div class="ln"><span>NFC</span><span>344,00 €</span></div>
+    <div class="ln"><span>Storno</span><span>–322,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span class="err">3.890,00 €</span></div>
+    <div class="ln"><span>Vorgänge</span><span>118</span></div>
+  </div>
+</div>
+</div>
+
+<!-- 1.2 USt falsch -->
+<div class="card-wrap">
+<div class="label"><strong>1.2 · USt.-Betrag passt nicht zum Brutto</strong><span>19% von 2.744,00 € wären 437,95 € — ausgewiesen sind 692,10 €. Typischer Buchungsfehler oder Steuersatz-Verwechslung.</span></div>
+<div class="r" style="border:1px solid #ccc;padding:14px;">
+  <div class="hc"><div class="n">FILMCASINO WIEN</div><div class="s">TID 39008821 · Batch 0044</div></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Datum:</span><span>18.06.2026</span></div>
+  <div class="ln"><span>Girocard</span><span>1.100,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>712,00 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>380,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–448,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot"><span>GESAMT</span><span>2.744,00 €</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>USt. 19%</span><span class="err">692,10 €</span></div>
+  <div class="ln"><span>USt. 7%</span><span>71,34 €</span></div>
+</div>
+</div>
+
+<!-- 1.3 Storno > Einzelposition -->
+<div class="card-wrap">
+<div class="label"><strong>1.3 · Storno größer als kleinste Einzelposition</strong><span>Amex-Umsatz: 88,00 € — Storno: 312,00 €. Unmöglich, wenn Storno nur Amex-Buchungen betrifft. Hinweis auf Doppelstorno oder falschen Betrag.</span></div>
+<div class="r rh" style="border:1px solid #ccc;">
+  <div class="head">CAPITOL FILMTHEATER · TAGESABSCHLUSS</div>
+  <div class="body">
+    <div class="ln"><span>18.06.2026 · 23:07:14</span><span>TID 51009944</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>1.440,00 €</span></div>
+    <div class="ln"><span>Visa</span><span>590,00 €</span></div>
+    <div class="ln"><span>Mastercard</span><span>310,00 €</span></div>
+    <div class="ln"><span>Amex</span><span>88,00 €</span></div>
+    <div class="ln"><span>NFC</span><span>277,00 €</span></div>
+    <div class="ln err"><span>Storno</span><span>–312,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span>2.393,00 €</span></div>
+  </div>
+</div>
+</div>
+
+<!-- 1.4 Batch 0000 -->
+<div class="card-wrap">
+<div class="label"><strong>1.4 · Batch-Nr. 0000 (Grenzwert)</strong><span>Batch 0000 signalisiert einen nicht initialisierten oder zurückgesetzten Zähler. Kann auf fehlgeschlagenen Tagesabschluss vom Vortag hinweisen.</span></div>
+<div class="r sa" style="border:1px solid #ddd;">
+  <label>Terminal</label><div style="font-size:11px;margin-bottom:8px;">Payone PT200 · MID 5530100288</div>
+  <div class="ln"><span style="color:#888;">Datum</span><span>18.06.2026</span></div>
+  <div class="ln"><span style="color:#888;">TID</span><span>22004471</span></div>
+  <div class="ln"><span style="color:#888;">Batch-Nr.</span><span class="err">0000</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>980,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>414,50 €</span></div>
+  <div class="ln"><span>NFC</span><span>288,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–31,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot" style="font-size:14px;">1.651,50 €</div>
+</div>
+</div>
+
+<!-- 1.5 Datum in der Zukunft -->
+<div class="card-wrap">
+<div class="label"><strong>1.5 · Datum liegt in der Zukunft</strong><span>Abschlussdatum 19.06.2026, Systemdatum 18.06.2026. Kann auf falsch gestellte Terminaluhr oder Zeitzonenversatz hinweisen.</span></div>
+<div class="r dh" style="border:1px solid #ccc;">
+  <div class="head">XENON KINO · Z-ABSCHLUSS</div>
+  <div class="body">
+    <div class="ln"><span>Datum:</span><span class="err">19.06.2026</span></div>
+    <div class="ln"><span>Uhrzeit:</span><span>00:03:11</span></div>
+    <div class="ln"><span>TID</span><span>88120033</span></div>
+    <div class="ln"><span>Batch</span><span>0058</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>1.210,00 €</span></div>
+    <div class="ln"><span>Visa</span><span>534,00 €</span></div>
+    <div class="ln"><span>Mastercard</span><span>299,50 €</span></div>
+    <div class="ln"><span>NFC</span><span>341,00 €</span></div>
+    <div class="ln"><span>Storno</span><span>–44,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span>2.340,50 €</span></div>
+  </div>
+</div>
+</div>
+
+<!-- 1.6 Netto > Brutto -->
+<div class="card-wrap">
+<div class="label"><strong>1.6 · Nettogutschrift höher als Bruttoumsatz</strong><span>Logisch unmöglich: nach Abzug des Acquirer-Entgelts kann Netto nie größer sein als Brutto. Deutet auf falsches Vorzeichen beim Entgelt hin.</span></div>
+<div class="r" style="border:1px solid #ccc;padding:14px;">
+  <div class="hc"><div class="n">KULTKINO AM LADEN</div><div class="s">TID 71003348 · Batch 0089</div></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.388,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>601,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>344,00 €</span></div>
+  <div class="ln"><span>NFC</span><span>298,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot"><span>BRUTTO</span><span>2.631,50 €</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Acquirer-Entgelt</span><span>+9,21 €</span></div>
+  <div class="ln err"><span>NETTO</span><span>2.640,71 €</span></div>
+</div>
+</div>
+
+<!-- 1.7 Entgelt 12% -->
+<div class="card-wrap">
+<div class="label"><strong>1.7 · Acquirer-Entgelt implausibel hoch (12%)</strong><span>Marktüblich sind 0,2–1,5%. Ein Entgelt von 12% (hier: 411,42 €) auf 3.428,50 € ist ein klarer Ausreißer — Tippfehler oder Systemfehler.</span></div>
+<div class="r sa" style="border:1px solid #ddd;">
+  <label>Betrieb</label><div style="margin-bottom:8px;font-size:11px;">Traumkino Freiburg · TID 63004419</div>
+  <div class="ln"><span style="color:#888;">MID</span><span>4410088231</span></div>
+  <div class="ln"><span style="color:#888;">Batch</span><span>0041</span></div>
+  <div class="ln"><span style="color:#888;">18.06.2026</span><span>22:44:55</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.299,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>881,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>566,00 €</span></div>
+  <div class="ln"><span>NFC</span><span>682,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot" style="font-size:14px;">3.428,50 €</div>
+  <div class="sep"></div>
+  <div class="ln"><span>Entgeltsatz</span><span class="err">12,00%</span></div>
+  <div class="ln err"><span>Entgelt</span><span>–411,42 €</span></div>
+  <div class="ln"><span>Netto</span><span>3.017,08 €</span></div>
+</div>
+</div>
+
+<!-- 1.8 Vorgänge 0, Umsatz > 0 -->
+<div class="card-wrap">
+<div class="label"><strong>1.8 · 0 Vorgänge, aber Umsatz vorhanden</strong><span>Widerspruch: Wenn kein Vorgang stattfand, kann kein Umsatz entstanden sein. Mögliche Ursache: Zähler nicht zurückgesetzt, Umsatz aus Vortag hängt nach.</span></div>
+<div class="r dh" style="border:1px solid #ccc;">
+  <div class="head">SOLO KINO · TAGESABSCHLUSS</div>
+  <div class="body">
+    <div class="ln"><span>18.06.2026 · 22:59:04</span><span>TID 29004417</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>744,00 €</span></div>
+    <div class="ln"><span>Visa</span><span>388,00 €</span></div>
+    <div class="ln"><span>NFC</span><span>211,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span>1.343,00 €</span></div>
+    <div class="ln err"><span>Vorgänge gesamt</span><span>0</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>USt. 19%</span><span>214,49 €</span></div>
+  </div>
+</div>
+</div>
+
+</div><!-- /grid -->
+
+<!-- ══════════════════════════════════════
+     SEKTION 2: FORMAT-ANOMALIEN
+════════════════════════════════════════ -->
+<div class="section-head">2 — Formatanomalien</div>
+<div class="grid">
+
+<!-- 2.1 Dezimaltrennzeichen gemischt -->
+<div class="card-wrap">
+<div class="label"><strong>2.1 · Dezimaltrennzeichen inkonsistent</strong><span>Punkt und Komma gemischt — typischer Import-/Exportfehler zwischen deutschen und angelsächsischen Systemen. Kann zu falsch geparsten Beträgen führen.</span></div>
+<div class="r bh" style="border:1px solid #ccc;">
+  <div class="head"><h1>KINOBAR CENTRAL</h1><p>TID 55001122 · Batch 0017</p></div>
+  <div class="body">
+    <div class="ln"><span>18.06.2026</span><span>21:48:30</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span class="err">1.220.50 €</span></div>
+    <div class="ln"><span>Visa</span><span>488,00 €</span></div>
+    <div class="ln"><span>Mastercard</span><span class="err">301.00 €</span></div>
+    <div class="ln"><span>NFC</span><span>219,50 €</span></div>
+    <div class="ln"><span>Storno</span><span>–38,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span class="err">2.191.00 €</span></div>
+  </div>
+</div>
+</div>
+
+<!-- 2.2 Währung inkonsistent -->
+<div class="card-wrap">
+<div class="label"><strong>2.2 · Währungsangabe inkonsistent</strong><span>EUR, €, und fehlende Währung im selben Beleg. Erschwert automatische Extraktion und kann bei Fremdwährungsvergleichen zu Fehlzuordnungen führen.</span></div>
+<div class="r" style="border:1px solid #ccc;padding:14px;">
+  <div class="hc"><div class="n">BROADWAY FILMPALAST</div><div class="s">TID 41009871 · 18.06.2026</div></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>EUR 1.188,00</span></div>
+  <div class="ln"><span>Visa</span><span>544,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span class="err">312,00</span></div>
+  <div class="ln"><span>NFC</span><span>EUR 281,00</span></div>
+  <div class="ln"><span>Storno</span><span>–52,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot"><span>GESAMT</span><span>€ 2.273,50</span></div>
+</div>
+</div>
+
+<!-- 2.3 TID 7-stellig -->
+<div class="card-wrap">
+<div class="label"><strong>2.3 · TID mit 7 Stellen statt 8</strong><span>Standard: 8 Stellen. Eine 7-stellige TID deutet auf Übertragungsfehler (führende Null verloren) oder falsch konfiguriertes Terminal hin.</span></div>
+<div class="r sa" style="border:1px solid #ddd;">
+  <label>Betrieb</label><div style="margin-bottom:8px;font-size:11px;">Passage Kino Köln</div>
+  <div class="ln"><span style="color:#888;">Datum</span><span>18.06.2026</span></div>
+  <div class="ln"><span style="color:#888;">TID</span><span class="err">3901884</span></div>
+  <div class="ln"><span style="color:#888;">MID</span><span>7720044811</span></div>
+  <div class="ln"><span style="color:#888;">Batch</span><span>0071</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.044,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>471,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>288,00 €</span></div>
+  <div class="ln"><span>NFC</span><span>311,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–48,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot" style="font-size:14px;">2.066,50 €</div>
+</div>
+</div>
+
+<!-- 2.4 Datum falsches Format -->
+<div class="card-wrap">
+<div class="label"><strong>2.4 · Datumsformat nicht normiert</strong><span>"Jun 18 2026" statt TT.MM.JJJJ. Häufig bei Terminals mit englischem Firmware-Locale. Parser müssen mehrere Formate erkennen können.</span></div>
+<div class="r la" style="border:1px solid #ddd;">
+  <div style="font-size:14px;font-weight:700;border-bottom:1px solid #111;padding-bottom:6px;margin-bottom:10px;">NETSUMI PAYMENT</div>
+  <div style="font-size:8px;text-transform:uppercase;letter-spacing:.12em;color:#888;margin-bottom:10px;">Terminal Settlement Report</div>
+  <div class="ln"><span style="color:#aaa;font-size:9px;">Date</span><span class="err">Jun 18 2026</span></div>
+  <div class="ln"><span style="color:#aaa;font-size:9px;">Time</span><span>22:31:07</span></div>
+  <div class="ln"><span style="color:#aaa;font-size:9px;">TID</span><span>90034412</span></div>
+  <div class="ln"><span style="color:#aaa;font-size:9px;">Batch</span><span>0033</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.122,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>503,50 €</span></div>
+  <div class="ln"><span>NFC</span><span>299,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–41,00 €</span></div>
+  <div class="sep"></div>
+  <div style="font-size:16px;font-weight:700;text-align:right;">1.883,50 €</div>
+</div>
+</div>
+
+<!-- 2.5 Negative Beträge in Klammern -->
+<div class="card-wrap">
+<div class="label"><strong>2.5 · Negative Beträge in Klammern statt Minuszeichen</strong><span>Angloamerikanische Buchhaltertradition: (61,00 €) statt –61,00 €. Regex-Parser die nur "–" suchen übersehen diese Beträge vollständig.</span></div>
+<div class="r rh" style="border:1px solid #ccc;">
+  <div class="head">ODEON FILMTHEATER · ABSCHLUSS</div>
+  <div class="body">
+    <div class="ln"><span>TID 66001239</span><span>18.06.2026</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>1.390,00 €</span></div>
+    <div class="ln"><span>Visa</span><span>612,50 €</span></div>
+    <div class="ln"><span>Mastercard</span><span>344,00 €</span></div>
+    <div class="ln"><span>NFC</span><span>388,00 €</span></div>
+    <div class="ln warn"><span>Storno</span><span>(61,00 €)</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span>2.673,50 €</span></div>
+    <div class="ln"><span>Vorgänge</span><span>109</span></div>
+  </div>
+</div>
+</div>
+
+</div><!-- /grid -->
+
+<!-- ══════════════════════════════════════
+     SEKTION 3: STRUKTURELLE LÜCKEN
+════════════════════════════════════════ -->
+<div class="section-head">3 — Strukturelle Lücken</div>
+<div class="grid">
+
+<!-- 3.1 TID leer -->
+<div class="card-wrap">
+<div class="label"><strong>3.1 · Pflichtfeld TID vorhanden aber leer</strong><span>Das Feld existiert, hat aber keinen Wert. Unterschied zu fehlendem Feld: Parser findet das Label, erhält aber leeren String — kann zu Folgefehler führen.</span></div>
+<div class="r" style="border:1px solid #ccc;padding:14px;">
+  <div class="hc"><div class="n">STUDIO KINO BERLIN</div><div class="s">18.06.2026 · Batch 0048</div></div>
+  <div class="sep"></div>
+  <div class="ln"><span>TID:</span><span class="err"></span></div>
+  <div class="ln"><span>MID:</span><span>3310077842</span></div>
+  <div class="ln"><span>Terminal:</span><span>Verifone VX 820</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.104,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>488,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>299,00 €</span></div>
+  <div class="ln"><span>NFC</span><span>322,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–35,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot"><span>GESAMT</span><span>2.178,50 €</span></div>
+</div>
+</div>
+
+<!-- 3.2 Zahlungsart doppelt -->
+<div class="card-wrap">
+<div class="label"><strong>3.2 · Gleiche Zahlungsart zweimal, unterschiedliche Beträge</strong><span>Visa erscheint zweimal mit verschiedenen Werten. Mögliche Ursachen: zwei Terminals zusammengeführt, Druckfehler, oder Split-Batch. Welcher Wert gilt?</span></div>
+<div class="r bh" style="border:1px solid #ccc;">
+  <div class="head"><h1>BABYLON KINO</h1><p>TID 48009933 · MID 6620011348 · Batch 0022</p></div>
+  <div class="body">
+    <div class="ln"><span>18.06.2026 · 22:18:44</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>1.280,00 €</span></div>
+    <div class="ln warn"><span>Visa</span><span>544,00 €</span></div>
+    <div class="ln warn"><span>Visa</span><span>211,50 €</span></div>
+    <div class="ln"><span>Mastercard</span><span>388,00 €</span></div>
+    <div class="ln"><span>NFC</span><span>301,00 €</span></div>
+    <div class="ln"><span>Storno</span><span>–49,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span>2.675,50 €</span></div>
+  </div>
+</div>
+</div>
+
+<!-- 3.3 Acquirer fehlt komplett -->
+<div class="card-wrap">
+<div class="label"><strong>3.3 · Acquirer-Block vollständig fehlend</strong><span>Kein Entgelt, keine Nettogutschrift, kein Acquirer-Name. Der Beleg endet nach dem Bruttoumsatz. Für Buchhaltungs-IT fehlt der entscheidende Abrechnungsblock.</span></div>
+<div class="r dh" style="border:1px solid #ccc;">
+  <div class="head">ARKADEN LICHTSPIELE · ABSCHLUSS</div>
+  <div class="body">
+    <div class="ln"><span>TID 31007712</span><span>18.06.2026</span></div>
+    <div class="ln"><span>Batch 0091</span><span>22:52:04</span></div>
+    <div class="sep"></div>
+    <div class="ln"><span>Girocard</span><span>1.188,00 €</span></div>
+    <div class="ln"><span>Visa</span><span>511,50 €</span></div>
+    <div class="ln"><span>Mastercard</span><span>334,00 €</span></div>
+    <div class="ln"><span>NFC</span><span>288,00 €</span></div>
+    <div class="ln"><span>Storno</span><span>–47,00 €</span></div>
+    <div class="sep"></div>
+    <div class="tot"><span>GESAMT</span><span>2.274,50 €</span></div>
+    <div class="ln"><span>Vorgänge</span><span>97</span></div>
+    <div class="ln"><span>USt. 19%</span><span>363,25 €</span></div>
+    <div style="height:28px;background:repeating-linear-gradient(45deg,#f5f5f5 0 4px,#fff 4px 8px);margin-top:8px;border-radius:2px;"></div>
+    <div style="font-size:9px;color:#bbb;text-align:center;margin-top:4px;">[Acquirer-Block nicht empfangen]</div>
+  </div>
+</div>
+</div>
+
+<!-- 3.4 Beleg truncated -->
+<div class="card-wrap">
+<div class="label"><strong>3.4 · Beleg ohne Abschlusszeile (abgebrochen)</strong><span>Kein "kein Zahlungsbeleg", kein Footer. Der Druck brach ab — z.B. Papierende. KI muss erkennen dass der Beleg unvollständig ist, statt ihn als vollständig zu werten.</span></div>
+<div class="r sa" style="border:1px solid #ddd;border-bottom:2px dashed #ccc;">
+  <label>Betrieb</label><div style="margin-bottom:8px;font-size:11px;">Corso Kino Frankfurt · TID 57002218</div>
+  <div class="ln"><span style="color:#888;">Datum</span><span>18.06.2026</span></div>
+  <div class="ln"><span style="color:#888;">Batch</span><span>0034</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.011,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>444,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>278,00 €</span></div>
+  <div class="ln"><span>NFC</span><span>301,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–33,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot" style="font-size:14px;">2.001,</div>
+</div>
+</div>
+
+<!-- 3.5 MID und TID vertauscht -->
+<div class="card-wrap">
+<div class="label"><strong>3.5 · MID und TID vertauscht</strong><span>MID (10 Stellen) steht unter "TID", TID (8 Stellen) unter "MID". Klassischer Konfigurationsfehler. Systeme die TID für Terminal-Lookup nutzen würden hier keinen Treffer landen.</span></div>
+<div class="r" style="border:1px solid #ccc;padding:14px;">
+  <div class="hc"><div class="n">CINEMAXX HANNOVER</div><div class="s">18.06.2026 · Batch 0067</div></div>
+  <div class="sep"></div>
+  <div class="ln"><span>TID:</span><span class="err">9940072811</span></div>
+  <div class="ln"><span>MID:</span><span class="err">31097654</span></div>
+  <div class="ln"><span>Terminal:</span><span>Ingenico iCT250</span></div>
+  <div class="sep"></div>
+  <div class="ln"><span>Girocard</span><span>1.340,00 €</span></div>
+  <div class="ln"><span>Visa</span><span>589,50 €</span></div>
+  <div class="ln"><span>Mastercard</span><span>322,00 €</span></div>
+  <div class="ln"><span>NFC</span><span>377,00 €</span></div>
+  <div class="ln"><span>Storno</span><span>–58,00 €</span></div>
+  <div class="sep"></div>
+  <div class="tot"><span>GESAMT</span><span>2.570,50 €</span></div>
+</div>
+</div>
+
+</div><!-- /grid -->
+</div><!-- /page -->

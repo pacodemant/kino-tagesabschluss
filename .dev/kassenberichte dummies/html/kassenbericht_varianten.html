@@ -1,0 +1,216 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+.wrap{display:flex;gap:24px;padding:2rem;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);flex-wrap:wrap;justify-content:center;}
+
+/* ── Variante A: modernes Thermopapier-Look, kompakt ── */
+.vA{width:280px;background:#f5f0e8;color:#1a1a1a;font-family:'Courier New',monospace;font-size:11px;padding:20px 16px;border-radius:2px;}
+.vA .head{text-align:center;margin-bottom:12px;}
+.vA .head-name{font-size:13px;font-weight:700;letter-spacing:.1em;}
+.vA .head-sub{font-size:10px;color:#555;margin-top:2px;}
+.vA .section-title{background:#1a1a1a;color:#f5f0e8;padding:2px 6px;font-size:10px;letter-spacing:.08em;margin:10px 0 6px;}
+.vA .row{display:flex;justify-content:space-between;padding:1px 0;}
+.vA .total-row{display:flex;justify-content:space-between;border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:3px 0;font-weight:700;font-size:12px;margin:6px 0;}
+.vA .dash{border:none;border-top:1px dashed #999;margin:8px 0;}
+.vA .footer{text-align:center;font-size:10px;color:#666;margin-top:12px;}
+
+/* ── Variante B: minimalistisch, serifenlos, viel Weißraum ── */
+.vB{width:300px;background:#ffffff;color:#111;font-family:Arial,Helvetica,sans-serif;font-size:11px;padding:28px 24px;border:1px solid #ddd;border-radius:3px;}
+.vB .top-bar{border-top:3px solid #111;padding-top:12px;margin-bottom:20px;}
+.vB .b-name{font-size:16px;font-weight:700;letter-spacing:-.01em;}
+.vB .b-type{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-top:2px;}
+.vB .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.vB .meta-cell label{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#888;margin-bottom:2px;}
+.vB .meta-cell span{font-size:12px;font-weight:700;}
+.vB .divider{border:none;border-top:.5px solid #ddd;margin:14px 0;}
+.vB .b-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;}
+.vB .b-label{font-size:11px;color:#555;}
+.vB .b-val{font-size:11px;font-weight:700;}
+.vB .b-total{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0 0;}
+.vB .b-total span:first-child{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#888;}
+.vB .b-total span:last-child{font-size:18px;font-weight:700;}
+.vB .bottom-bar{border-bottom:3px solid #111;padding-bottom:10px;margin-bottom:12px;}
+.vB .footer{font-size:9px;color:#aaa;text-align:center;}
+
+/* ── Variante C: zweispaltig, tabellarisch, Report-Stil ── */
+.vC{width:340px;background:#fff;color:#111;font-family:'Courier New',monospace;font-size:10.5px;padding:0;border:1px solid #ccc;}
+.vC .c-header{background:#1c3a5e;color:#fff;padding:12px 16px;}
+.vC .c-header h1{font-size:13px;font-weight:700;letter-spacing:.05em;}
+.vC .c-header p{font-size:10px;opacity:.75;margin-top:2px;}
+.vC .c-body{padding:14px 16px;}
+.vC .c-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.vC .c-block{padding:8px 0;}
+.vC .c-block-title{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#888;border-bottom:.5px solid #ddd;padding-bottom:4px;margin-bottom:6px;}
+.vC .c-row{display:flex;justify-content:space-between;padding:1px 0;}
+.vC .c-divider{border:none;border-top:.5px solid #ddd;margin:8px 0;}
+.vC .c-full{grid-column:1/-1;}
+.vC table{width:100%;border-collapse:collapse;font-size:10.5px;}
+.vC th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#888;border-bottom:.5px solid #ddd;padding:4px 4px 4px 0;}
+.vC th:last-child,.vC td:last-child{text-align:right;}
+.vC td{padding:3px 4px 3px 0;border-bottom:.5px solid #f0f0f0;}
+.vC .c-total-row{background:#1c3a5e;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;}
+.vC .c-total-row span:first-child{font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+.vC .c-total-row span:last-child{font-size:16px;font-weight:700;}
+.vC .c-footer{padding:8px 16px;background:#f8f8f8;border-top:.5px solid #ddd;font-size:9px;color:#888;display:flex;justify-content:space-between;}
+</style>
+
+<div class="wrap">
+
+<!-- ═══ VARIANTE A ═══ -->
+<div class="vA">
+  <div class="head">
+    <div class="head-name">LICHTBURG KINO</div>
+    <div class="head-sub">Limbecker Platz 7 · 45127 Essen</div>
+    <div class="head-sub">MID: 7730019284</div>
+  </div>
+  <hr class="dash">
+  <div style="text-align:center;font-weight:700;letter-spacing:.06em;margin-bottom:8px;">TAGESABSCHLUSS</div>
+  <div class="row"><span>Datum:</span><span>18.06.2026</span></div>
+  <div class="row"><span>Uhrzeit:</span><span>23:12:44</span></div>
+  <div class="row"><span>Terminal:</span><span>Ingenico Move/5000</span></div>
+  <div class="row"><span>TID:</span><span>83410026</span></div>
+  <div class="row"><span>Batch:</span><span>0093</span></div>
+  <hr class="dash">
+
+  <div class="section-title">ZAHLUNGSARTEN</div>
+  <div class="row"><span>Girocard</span><span>EUR 1.840,00</span></div>
+  <div class="row"><span>Visa</span><span>EUR   623,50</span></div>
+  <div class="row"><span>Mastercard</span><span>EUR   410,00</span></div>
+  <div class="row"><span>Amex</span><span>EUR   215,00</span></div>
+  <div class="row"><span>NFC/Mobil</span><span>EUR   388,00</span></div>
+  <div class="row"><span>Storno</span><span>EUR   -42,00</span></div>
+  <hr class="dash">
+  <div class="total-row"><span>GESAMT</span><span>EUR 3.434,50</span></div>
+  <div class="row"><span>Vorgänge:</span><span>128</span></div>
+  <div class="row"><span>USt. 19%:</span><span>EUR   548,51</span></div>
+  <div class="row"><span>USt. 7%:</span><span>EUR    89,20</span></div>
+  <hr class="dash">
+
+  <div class="section-title">ACQUIRER</div>
+  <div class="row"><span>Anbieter:</span><span>Nets / Payone</span></div>
+  <div class="row"><span>Entgelt:</span><span>EUR   -12,02</span></div>
+  <div class="row"><span>Netto:</span><span>EUR 3.422,48</span></div>
+  <div class="row"><span>Gutschr.:</span><span>19.06.2026</span></div>
+
+  <div class="footer" style="margin-top:14px;">
+    <div>★ ★ ★ kein Zahlungsbeleg ★ ★ ★</div>
+    <div style="margin-top:4px;">83410026 · 0093 · 18062026</div>
+  </div>
+</div>
+
+<!-- ═══ VARIANTE B ═══ -->
+<div class="vB">
+  <div class="top-bar bottom-bar">
+    <div class="b-name">Filmpalast am ZKM</div>
+    <div class="b-type">Tageskassenbericht · Kartenzahlung</div>
+  </div>
+
+  <div class="meta">
+    <div class="meta-cell"><label>Datum</label><span>18.06.2026</span></div>
+    <div class="meta-cell"><label>Uhrzeit</label><span>22:55:30</span></div>
+    <div class="meta-cell"><label>TID</label><span>61007742</span></div>
+    <div class="meta-cell"><label>Batch-Nr.</label><span>0211</span></div>
+    <div class="meta-cell"><label>Kassiererin</label><span>Miriam T.</span></div>
+    <div class="meta-cell"><label>Terminal</label><span>Verifone V400m</span></div>
+  </div>
+
+  <hr class="divider">
+  <div class="b-row"><span class="b-label">Girocard (ec)</span><span class="b-val">1.220,00 €</span></div>
+  <div class="b-row"><span class="b-label">Visa</span><span class="b-val">754,00 €</span></div>
+  <div class="b-row"><span class="b-label">Mastercard</span><span class="b-val">381,50 €</span></div>
+  <div class="b-row"><span class="b-label">Kontaktlos</span><span class="b-val">298,00 €</span></div>
+  <div class="b-row"><span class="b-label">Stornierungen</span><span class="b-val" style="color:#c00;">–55,00 €</span></div>
+  <hr class="divider">
+  <div class="b-row"><span class="b-label">Vorgänge gesamt</span><span class="b-val">96</span></div>
+  <div class="b-row"><span class="b-label">USt. 19 %</span><span class="b-val">399,71 €</span></div>
+  <div class="b-row"><span class="b-label">USt. 7 %</span><span class="b-val">72,14 €</span></div>
+  <hr class="divider">
+
+  <div class="b-total">
+    <span>Gesamtumsatz</span>
+    <span>2.598,50 €</span>
+  </div>
+  <div class="b-row" style="margin-top:4px;"><span class="b-label">Acquirer-Entgelt (0,35 %)</span><span class="b-val" style="color:#c00;">–9,09 €</span></div>
+  <div class="b-row"><span class="b-label">Nettogutschrift</span><span class="b-val">2.589,41 €</span></div>
+
+  <hr class="divider">
+  <div class="footer">
+    MID 4419087653 · TID 61007742 · Concardis GmbH<br>
+    Kein Zahlungsbeleg — nur für interne Zwecke
+  </div>
+</div>
+
+<!-- ═══ VARIANTE C ═══ -->
+<div class="vC">
+  <div class="c-header">
+    <h1>TAGESABSCHLUSS KARTENTERMINAL</h1>
+    <p>Cinema Paradiso · Hegelstr. 12 · 55122 Mainz</p>
+  </div>
+
+  <div class="c-body">
+    <div class="c-grid">
+      <div class="c-block">
+        <div class="c-block-title">Terminal</div>
+        <div class="c-row"><span>TID</span><span>29054400</span></div>
+        <div class="c-row"><span>MID</span><span>6618802341</span></div>
+        <div class="c-row"><span>Modell</span><span>PAX A920</span></div>
+        <div class="c-row"><span>Batch</span><span>0056</span></div>
+      </div>
+      <div class="c-block">
+        <div class="c-block-title">Abschluss</div>
+        <div class="c-row"><span>Datum</span><span>18.06.2026</span></div>
+        <div class="c-row"><span>Uhrzeit</span><span>22:31:17</span></div>
+        <div class="c-row"><span>Kassierer</span><span>Jonas R.</span></div>
+        <div class="c-row"><span>Kassen-ID</span><span>POS-003</span></div>
+      </div>
+    </div>
+
+    <hr class="c-divider">
+
+    <div class="c-block-title">Umsatz nach Zahlungsart</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Zahlungsart</th>
+          <th style="text-align:center;">Vorg.</th>
+          <th>Betrag</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Girocard (ec)</td><td style="text-align:center;">44</td><td style="text-align:right;">1.512,00 €</td></tr>
+        <tr><td>Visa</td><td style="text-align:center;">21</td><td style="text-align:right;">721,50 €</td></tr>
+        <tr><td>Mastercard</td><td style="text-align:center;">17</td><td style="text-align:right;">583,00 €</td></tr>
+        <tr><td>Amex</td><td style="text-align:center;">5</td><td style="text-align:right;">214,00 €</td></tr>
+        <tr><td>NFC / Apple Pay</td><td style="text-align:center;">31</td><td style="text-align:right;">874,00 €</td></tr>
+        <tr><td>Stornierungen</td><td style="text-align:center;">2</td><td style="text-align:right; color:#b00;">–68,00 €</td></tr>
+      </tbody>
+    </table>
+
+    <hr class="c-divider">
+
+    <div class="c-grid">
+      <div class="c-block">
+        <div class="c-block-title">Steuer</div>
+        <div class="c-row"><span>USt. 19%</span><span>619,70 €</span></div>
+        <div class="c-row"><span>USt. 7%</span><span>101,44 €</span></div>
+      </div>
+      <div class="c-block">
+        <div class="c-block-title">Acquirer</div>
+        <div class="c-row"><span>Anbieter</span><span>Adyen N.V.</span></div>
+        <div class="c-row"><span>Entgelt</span><span>–13,39 €</span></div>
+        <div class="c-row"><span>Netto</span><span>3.823,11 €</span></div>
+        <div class="c-row"><span>Gutschr.</span><span>19.06.2026</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="c-total-row">
+    <span>GESAMTUMSATZ</span>
+    <span>3.836,50 €</span>
+  </div>
+  <div class="c-footer">
+    <span>ZVT-Protokoll · Autorisierungsnetz CCSP</span>
+    <span>Kein Zahlungsbeleg</span>
+  </div>
+</div>
+
+</div>

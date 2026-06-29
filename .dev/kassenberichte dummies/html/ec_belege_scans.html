@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EC-Belege Scans</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 1.2rem;
+      color: #333;
+      margin-bottom: 24px;
+    }
+
+    .scan-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+      max-width: 600px;
+    }
+
+    .scan-item {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    .scan-item img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .scan-label {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: #666;
+      border-top: 1px solid #eee;
+    }
+
+    /* ── Thermopapier-Beleg-Simulation ── */
+    .thermo-receipt {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #111;
+      background: #fdfaf4;
+      padding: 20px 18px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .tr-center  { text-align: center; }
+    .tr-right   { text-align: right; }
+
+    .tr-name {
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+    }
+
+    .tr-title {
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      margin: 8px 0 4px;
+    }
+
+    .tr-dash {
+      border: none;
+      border-top: 1px solid #bbb;
+      margin: 5px 0;
+    }
+
+    .tr-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .tr-label {
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .tr-method {
+      display: flex;
+      justify-content: space-between;
+      padding-left: 12px;
+    }
+
+    .tr-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .tr-small {
+      font-size: 11px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>EC-Belege — Scans</h1>
+
+  <div class="scan-list">
+
+    <div class="scan-item">
+      <img src="../img/IMG_3606.JPG" alt="EC-Beleg Scan 1">
+      <div class="scan-label">IMG_3606.JPG</div>
+    </div>
+
+    <div class="scan-item">
+      <img src="../img/IMG_3608.JPG" alt="EC-Beleg Scan 2">
+      <div class="scan-label">IMG_3608.JPG</div>
+    </div>
+
+    <div class="scan-item">
+      <img src="../img/IMG_3611.JPG" alt="EC-Beleg Scan 3">
+      <div class="scan-label">IMG_3611.JPG</div>
+    </div>
+
+    <div class="scan-item">
+      <img src="../img/IMG_3612.JPG" alt="EC-Beleg Scan 4">
+      <div class="scan-label">IMG_3612.JPG</div>
+    </div>
+
+    <div class="scan-item">
+      <img src="../img/F22A9E04-5F90-4518-91A0-F47D270C8C80.JPG" alt="EC-Beleg Scan 5">
+      <div class="scan-label">F22A9E04-5F90-4518-91A0-F47D270C8C80.JPG</div>
+    </div>
+
+    <!-- SB – HTML-Simulation (Tagesabschluss-Beleg, TID 54017635) -->
+    <div class="scan-item">
+      <div class="thermo-receipt">
+        <div class="tr-center tr-name">Schauburg</div>
+        <div class="tr-center">Gluckhofstraße 12</div>
+        <div class="tr-center">28219 Bremen</div>
+        <div class="tr-center tr-title">TAGESABSCHLUSS</div>
+        <hr class="tr-dash">
+        <div class="tr-row">
+          <span>Datum:</span><span>24.06.2026&nbsp;&nbsp;22:18</span>
+        </div>
+        <div class="tr-row">
+          <span>F-Nr.:</span><span>TID 54017635</span>
+        </div>
+        <hr class="tr-dash">
+        <div class="tr-small">Beleg-Nr.: von 3102 bis 3119</div>
+        <hr class="tr-dash">
+        <div class="tr-right tr-small">Betrag</div>
+        <hr class="tr-dash">
+
+        <div class="tr-label">girocard</div>
+        <div class="tr-method"><span>Kauf</span><span>00003&nbsp;&nbsp;&nbsp;241,00</span></div>
+        <div class="tr-method"><span>Summe</span><span>241,00</span></div>
+        <hr class="tr-dash">
+
+        <div class="tr-label">Visa</div>
+        <div class="tr-method"><span>Kauf</span><span>00002&nbsp;&nbsp;&nbsp;&nbsp;84,00</span></div>
+        <div class="tr-method"><span>Summe</span><span>84,00</span></div>
+        <hr class="tr-dash">
+
+        <div class="tr-label">MasterCard</div>
+        <div class="tr-method"><span>Kauf</span><span>00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0,00</span></div>
+        <div class="tr-method"><span>Summe</span><span>0,00</span></div>
+        <hr class="tr-dash">
+
+        <div class="tr-label">SEPA Lastschrift Online</div>
+        <div class="tr-method"><span>Kauf</span><span>00001&nbsp;&nbsp;&nbsp;&nbsp;57,00</span></div>
+        <div class="tr-method"><span>Summe</span><span>57,00</span></div>
+        <hr class="tr-dash">
+
+        <div class="tr-total">
+          <span>**&nbsp;&nbsp;Summe</span>
+          <span>382,00&nbsp;&nbsp;**</span>
+        </div>
+        <hr class="tr-dash">
+
+        <div class="tr-center tr-label" style="margin-top:6px;">Belegmanagement</div>
+        <div class="tr-center tr-small">24.06.2026&nbsp;&nbsp;22:18&nbsp;&nbsp;TID&nbsp;54017635</div>
+        <hr class="tr-dash">
+        <div class="tr-small">Nicht aufgeführte Belege</div>
+        <div class="tr-small">ATZ 0 von 60</div>
+      </div>
+      <div class="scan-label">SB – HTML-Simulation (TID 54017635)</div>
+    </div>
+
+    <!-- weitere Scans hier einfügen -->
+
+  </div>
+
+</body>
+</html>

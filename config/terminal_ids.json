@@ -2,15 +2,15 @@
   "_comment": "Terminal-IDs pro Standort. Platzhalter XXXX durch echte TIDs von Yannik ersetzen.",
   "AT": {
     "name": "Atlantis",
-    "terminal_ids": ["XXXX"]
+    "terminal_ids": ["54069464"]
   },
   "SB": {
     "name": "Schauburg",
-    "terminal_ids": ["XXXX"]
+    "terminal_ids": ["54017635"]
   },
   "CO": {
     "name": "Cinema Ostertor",
-    "terminal_ids": ["XXXX"]
+    "terminal_ids": ["54017639"]
   },
   "GO": {
     "name": "Gondel",
@@ -18,6 +18,6 @@
   },
   "BT": {
     "name": "Bar Tabak",
-    "terminal_ids": ["XXXX", "XXXX"]
+    "terminal_ids": ["54069493", "54017664"]
   }
 }
