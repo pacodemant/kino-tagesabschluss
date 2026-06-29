@@ -43,7 +43,7 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
-- [ ] **Personalgetränke-Checkbox** *(Run 296)* In Schritt 2 über der Kachel
+- [x] **Personalgetränke-Checkbox** *(Run 296)* In Schritt 2 über der Kachel
       „Differenz im Anfangsbestand" eine eigene Kachel einbauen:
       Links „Personalgetränke gebont?", rechts runde Checkbox (abgehakt = grün).
       Ohne Abhaken ist der Weiter-Button zu Schritt 3 gesperrt.

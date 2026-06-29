@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 296: Personalgetränke-Checkbox in Schritt 2 — über der Kachel "Differenz im Anfangsbestand" erscheint für Standorte mit Getränken (Atlantis, Schauburg, CO) eine Card-Kachel "Personalgetränke gebont?" mit runder grüner Checkbox. Weiter-Button bleibt gesperrt bis Checkbox abgehakt. Banner "Perso-Getränke nicht vergessen!" auf Startmenü-Kachel entfernt. Version 0.9.2+296. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 295b: Echte Terminal-IDs (AT, SB, CO, BT) in config/terminal_ids.json eingetragen. FlurbocashConfigService (lib/services/flurbocash_config_service.dart) entfernt — war nicht mehr referenziert. Dummy-Dateien unter .dev/kassenberichte dummies/ in html/-Unterordner reorganisiert; Scan-Beispielbilder hinzugefügt. Dateien: config/terminal_ids.json, lib/services/flurbocash_config_service.dart (gelöscht), .dev/kassenberichte dummies/.
 
 - Run 295a: Bugfix EC-Belege: nichtImScan wird beim Laden jetzt wiederhergestellt — Kartenart-Zeilen mit gespeicherten Werten erscheinen nach Seitenwechsel korrekt in der Tabelle (neues + altes Persistenzformat). Datei: tagesabschluss_schritt2_seite.dart.
