@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 296b: EC-Kachel Kartenzahlungen — Edit-Modus zeigt jetzt alle Kartenarten als Eingabefelder (nicht mehr nur per Add-Button erschließbar). Add-Buttons nur noch im Read-Modus. Werte im Edit-Modus setzen nichtImScan=false automatisch → bleiben nach "Fertig" in der Read-Ansicht. 1-Beleg-Modus ohne Daten startet direkt im Edit-Modus. settings.json: Bash(git -C *) erlaubt, deny-Liste für destruktive Git-Befehle. Versionsstring r296b. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart, .claude/settings.json.
+
 - Run 296a: Personalgetränke-Checkbox für alle Standorte (hatGetraenke-Gate entfernt). Weiter-Button bleibt sichtbar und ausgegraut (grey.shade600/300); Tap ohne Haken zeigt SnackBar "Personalgetränke gebont?". Versionsstring r296a. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 296: Personalgetränke-Checkbox in Schritt 2 — über der Kachel "Differenz im Anfangsbestand" erscheint für Standorte mit Getränken (Atlantis, Schauburg, CO) eine Card-Kachel "Personalgetränke gebont?" mit runder grüner Checkbox. Weiter-Button bleibt gesperrt bis Checkbox abgehakt. Banner "Perso-Getränke nicht vergessen!" auf Startmenü-Kachel entfernt. Version 0.9.2+296. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
