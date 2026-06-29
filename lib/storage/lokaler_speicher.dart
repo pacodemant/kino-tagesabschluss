@@ -313,6 +313,8 @@ class LokalerSpeicher {
           'ausgabenCent': 0,
           'ecBelegCent': 38160,
           'differenzAnfangsbestandCent': 0,
+          'zahlungsartenNamen': <String>['Girocard', 'MasterCard', 'Visa'],
+          'zahlungsartenBetragCent': <int>[25000, 8000, 5160],
         };
       case 'kino_04':
         return <String, dynamic>{
@@ -321,6 +323,8 @@ class LokalerSpeicher {
           'ausgabenCent': 0,
           'ecBelegCent': 7750,
           'differenzAnfangsbestandCent': 0,
+          'zahlungsartenNamen': <String>['Girocard'],
+          'zahlungsartenBetragCent': <int>[7750],
         };
       default:
         return <String, dynamic>{
@@ -329,6 +333,8 @@ class LokalerSpeicher {
           'ausgabenCent': 0,
           'ecBelegCent': 57820,
           'differenzAnfangsbestandCent': 0,
+          'zahlungsartenNamen': <String>['Girocard', 'MasterCard', 'Visa'],
+          'zahlungsartenBetragCent': <int>[40000, 12000, 5820],
         };
     }
   }

@@ -118,7 +118,7 @@ class _ZahlungsartZeile {
     anzahlWert = null;
     betragCentWert = null;
     nichtPlausibel = false;
-    nichtImScan = false;
+    nichtImScan = true;
   }
 }
 
@@ -582,9 +582,6 @@ class _TagesabschlussSchritt2SeiteState
                   _zahlungsartZeilen[b]
                       .any((_ZahlungsartZeile z) => z.anzahlWert != null || z.betragCentWert != null))) {
             _kartenartenNurAnzeige[b] = true;
-          } else if (_kartenartenNurAnzeige.length > b &&
-              _ecBelegController.length == 1) {
-            _kartenartenNurAnzeige[b] = false;
           }
         }
       });
@@ -1043,6 +1040,32 @@ class _TagesabschlussSchritt2SeiteState
             : '',
       );
       _setzeControllerText(_ecBelegLabelController[0], '');
+      // Zahlungsarten aus Auto-Fill-Daten
+      if (_zahlungsartZeilen.isNotEmpty) {
+        final List<dynamic>? zahlungsartenNamen =
+            daten?['zahlungsartenNamen'] as List<dynamic>?;
+        final List<dynamic>? zahlungsartenBetragCent =
+            daten?['zahlungsartenBetragCent'] as List<dynamic>?;
+        if (zahlungsartenNamen != null) {
+          for (int k = 0; k < zahlungsartenNamen.length; k++) {
+            final String name = zahlungsartenNamen[k] as String;
+            final int? betrag = k < (zahlungsartenBetragCent?.length ?? 0)
+                ? (zahlungsartenBetragCent![k] as num?)?.toInt()
+                : null;
+            final int zeilenIdx =
+                _zahlungsartZeilen[0].indexWhere((_ZahlungsartZeile z) => z.name == name);
+            if (zeilenIdx >= 0 && betrag != null) {
+              _zahlungsartZeilen[0][zeilenIdx].betragCentWert = betrag;
+              _zahlungsartZeilen[0][zeilenIdx].nichtImScan = false;
+              _setzeControllerText(
+                _zahlungsartZeilen[0][zeilenIdx].betragController,
+                TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
+              );
+            }
+          }
+          if (_kartenartenNurAnzeige.isNotEmpty) _kartenartenNurAnzeige[0] = true;
+        }
+      }
     });
     _speichereEntwurf();
   }
