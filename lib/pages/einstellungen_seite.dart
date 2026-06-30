@@ -1125,7 +1125,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 children: <Widget>[
                   const ListTile(
                     title: Text(
-                      'Persönliche Einstellungen',
+                      'Allgemein',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
