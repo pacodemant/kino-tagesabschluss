@@ -57,7 +57,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   static const int _umschlagSlots = 3;
 
-  final TextEditingController _mitarbeiterNameCtrl = TextEditingController();
   final TextEditingController _wgCtrl = TextEditingController();
   int _aktiveKinoIndex = -1;
   String _aktiveKinoName = '';
@@ -86,7 +85,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _eingabeMitKomma = false;
   bool _googleSheetsAktiv = true;
   bool _apiUploadAktiv = false;
-  bool _nameAufgeklappt = true;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   static bool _devAufgeklappt = false;
@@ -105,7 +103,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final TextEditingController _anthropicApiKeyCtrl = TextEditingController();
   final TextEditingController _locationIdCtrl = TextEditingController();
   final TextEditingController _flurbocashApiKeyCtrl = TextEditingController();
-  late final FocusNode _mitarbeiterNameFocus;
   late final FocusNode _neuesGetraenkFocus;
   late final FocusNode _locationIdFocus;
   late final FocusNode _flurbocashApiKeyFocus;
@@ -122,12 +119,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final (String id, _, _) in _s1LoseMuenzFelder) {
       _s1LoseMuenzCtrl[id] = TextEditingController();
     }
-    _mitarbeiterNameFocus = FocusNode();
-    _mitarbeiterNameFocus.addListener(() {
-      if (!_mitarbeiterNameFocus.hasFocus) {
-        _speichereMitarbeiterName();
-      }
-    });
     _neuesGetraenkFocus = FocusNode();
     _neuesGetraenkFocus.addListener(() {
       if (!_neuesGetraenkFocus.hasFocus) {
@@ -142,8 +133,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   @override
   void dispose() {
-    _mitarbeiterNameCtrl.dispose();
-    _mitarbeiterNameFocus.dispose();
     _wgCtrl.dispose();
     for (final TextEditingController c in _s1StueckzahlCtrl.values) {
       c.dispose();
@@ -174,14 +163,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _flurbocashApiKeyCtrl.dispose();
     _flurbocashApiKeyFocus.dispose();
     super.dispose();
-  }
-
-  Future<void> _speichereMitarbeiterName() async {
-    final String name = _mitarbeiterNameCtrl.text.trim();
-    await LokalerSpeicher.speichereMitarbeiterName(name);
-    if (name.isNotEmpty && mounted) {
-      setState(() => _nameAufgeklappt = false);
-    }
   }
 
   Future<void> _ladeWerte() async {
@@ -238,8 +219,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     for (final String name in getraenkeliste) {
       _getraenkeController.add(TextEditingController(text: name));
     }
-    final String mitarbeiterName =
-        (await LokalerSpeicher.ladeMitarbeiterName()) ?? '';
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
     final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
@@ -250,8 +229,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String? overrideApiKey =
         speicher.getString('flurbocash_api_key_$_aktiveKinoId');
     if (!mounted) return;
-    _mitarbeiterNameCtrl.text = mitarbeiterName;
-    if (mitarbeiterName.isNotEmpty) _nameAufgeklappt = false;
     _apiUploadUrlCtrl.text = apiUploadUrl;
     _anthropicApiKeyCtrl.text = anthropicApiKey;
     _locationIdCtrl.text = overrideLocationId ?? '';
@@ -1146,68 +1123,31 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             child: Card(
               child: Column(
                 children: <Widget>[
-                  ListTile(
-                    title: const Text(
+                  const ListTile(
+                    title: Text(
                       'Persönliche Einstellungen',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        if (_mitarbeiterNameCtrl.text.isNotEmpty)
-                          Text(
-                            _mitarbeiterNameCtrl.text,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          _nameAufgeklappt
-                              ? Icons.expand_less
-                              : Icons.expand_more,
-                        ),
-                      ],
-                    ),
-                    onTap: () =>
-                        setState(() => _nameAufgeklappt = !_nameAufgeklappt),
                   ),
-                  if (_nameAufgeklappt) ...<Widget>[
-                    const Divider(height: 1),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                      child: TextField(
-                        controller: _mitarbeiterNameCtrl,
-                        focusNode: _mitarbeiterNameFocus,
-                        textCapitalization: TextCapitalization.words,
-                        decoration: const InputDecoration(
-                          hintText: 'z.B. Maria',
-                          isDense: true,
-                        ),
-                        onEditingComplete: () {
-                          _speichereMitarbeiterName();
-                          _mitarbeiterNameFocus.unfocus();
-                        },
+                  const Divider(height: 1),
+                  SwitchListTile(
+                    title: const Text('Beträge mit Komma eingeben'),
+                    value: _eingabeMitKomma,
+                    onChanged: _onEingabeMitKommaGeaendert,
+                    activeThumbColor: AppFarben.appBarRot,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: Text(
+                      _eingabeMitKomma
+                          ? 'Du musst die Beträge mit Komma eingeben, also „6,40" für 6 Euro 40 Cent.'
+                          : 'Du gibst die Beträge in Cent ein, also „640" für 6 Euro 40 Cent.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
                       ),
                     ),
-                    const Divider(height: 1),
-                    SwitchListTile(
-                      title: const Text('Beträge mit Komma eingeben'),
-                      value: _eingabeMitKomma,
-                      onChanged: _onEingabeMitKommaGeaendert,
-                      activeThumbColor: AppFarben.appBarRot,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                      child: Text(
-                        _eingabeMitKomma
-                            ? 'Du musst die Beträge mit Komma eingeben, also „6,40" für 6 Euro 40 Cent.'
-                            : 'Du gibst die Beträge in Cent ein, also „640" für 6 Euro 40 Cent.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ],
               ),
             ),

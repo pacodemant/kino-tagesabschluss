@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 298a: Mitarbeitername-Kachel aus Einstellungen entfernt — Feature entfällt komplett. Einstellungs-Card "Persönliche Einstellungen" zeigt jetzt nur noch den Komma-Eingabe-Switch. Versionsstring r298a. Dateien: einstellungen_seite.dart, tagesabschluss_schritt3_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 298: Kupfer-Bereich auto-aufklappen beim Laden — wenn beim Initialisieren von Schritt 1 Kupfer-Werte vorhanden sind (lose Münzen oder Rollen), werden die zugehörigen Bereiche automatisch aufgeklappt. Datei: tagesabschluss_schritt1_seite.dart.
 
 - Run 297: EC-Kachel State-Refactor — `nichtImScan` (bool per Zeile) und `_kartenartenNurAnzeige` (List<bool> per Beleg) durch `ZeilenZustand`-Enum (`hidden`/`shown`/`editing`) ersetzt. Pro Zeile exakt ein Zustand; `editModus` per Beleg als berechnetes Prädikat (`.any(z => editing)`). Neues `_kartenartenFertig()`-Hilfsmethode. Alle Render-/Lade-/Speicher-/Scan-Pfade auf den Enum umgestellt. Versionsstring r297. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.

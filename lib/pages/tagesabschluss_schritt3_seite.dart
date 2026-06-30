@@ -16,7 +16,6 @@ import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
-import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
@@ -122,7 +121,6 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   Future<void> _initialisierenAsync() async {
-    final String? mitarbeiterName = await LokalerSpeicher.ladeMitarbeiterName();
     final TagesabschlussFinal abschluss = _finalisierenUsecase.finalisieren(
       eingabe: TagesabschlussFinalisierenEingabe(
         kinoId: widget.argumente.kinoId,
@@ -144,9 +142,6 @@ class _TagesabschlussSchritt3SeiteState
         ausgabenBetraegeCent: widget.argumente.ausgabenBetraegeCent,
         ausgabenLabels: widget.argumente.ausgabenLabels,
         ecBelegeLabels: widget.argumente.ecBelegeLabels,
-        mitarbeiterName: mitarbeiterName?.isNotEmpty == true
-            ? mitarbeiterName
-            : null,
         terminalId: widget.argumente.terminalId,
         belegNrVon: widget.argumente.belegNrVon,
         belegNrBis: widget.argumente.belegNrBis,

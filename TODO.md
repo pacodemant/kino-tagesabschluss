@@ -59,10 +59,8 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
       Kupfer-Felder (lose Münzen oder Rollen) einen Wert enthalten, soll der
       Kupfer-Bereich automatisch aufgeklappt sein.
 
-- [ ] **Mitarbeitername in Schritt 1** *(Run 299)* Name nicht mehr in den Einstellungen
-      festlegen (da das Gerät geteilt wird), sondern als Pflicht-/Freifeld am Anfang
-      von Schritt 1 eingeben. Beim Abschluss wird der Name in den Verlaufseintrag
-      übernommen und dort mit Präfix "MitarbeiterIn: " angezeigt.
+- [x] **Mitarbeitername** *(Run 298a)* Feature entfällt — Kachel aus Einstellungen entfernt,
+      kein Freifeld in Schritt 1. Bei Bedarf leicht wieder einzubauen.
 
 - [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 300)*
       Legende: Unter der Stückelungsübersicht einen Hinweis einbauen —
