@@ -141,6 +141,9 @@ Inhalt:
   - TODO.md nach jedem Run abgleichen: per Read prüfen, ob der Run einen dort
     gelisteten Punkt erledigt hat (insbesondere Punkte mit passender
     *(Run NNN)*-Markierung) — erledigten Punkt abhaken oder entfernen.
+    Wenn das Ergebnis vom ursprünglich geplanten Punkt abweicht (Variante,
+    Einschränkung, Entfall), eine kurze Notiz hinter den Eintrag schreiben,
+    damit die TODO.md dokumentiert was tatsächlich gemacht wurde.
     Keine anderen TODO.md-Inhalte umformulieren oder verschieben.
   - PROJECT_CONTEXT.md: Kopfzeile (Version + Run), Entwicklungsstand und bei
     Bedarf betroffene Architekturabschnitte aktualisieren.
