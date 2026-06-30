@@ -55,7 +55,7 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
       statt Flag. Alle Übergänge (Scan, Manuell, Draft-Load, Auto-Fill, Clear)
       setzen den Zustand direkt und eindeutig.
 
-- [ ] **Kupfer-Bereich auto-aufklappen** *(Run 298)* Wenn beim Laden eines Entwurfs
+- [x] **Kupfer-Bereich auto-aufklappen** *(Run 298)* Wenn beim Laden eines Entwurfs
       Kupfer-Felder (lose Münzen oder Rollen) einen Wert enthalten, soll der
       Kupfer-Bereich automatisch aufgeklappt sein.
 

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.2+297 · Run 297
+Version: 0.9.2+298 · Run 298
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -153,7 +153,7 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 295 ✅ Auto-Reload bei Tab-Öffnung: SW-Cache + SW deregistrieren + einmaliger Reload via sessionStorage-Guard → immer neueste Version beim App-Start
 - Run 296 ✅ Personalgetränke-Checkbox Schritt 2 + EC-Kachel Kartenarten-Fixes (296a–296c)
 - Run 297 ✅ EC-Kachel State-Refactor: ZeilenZustand-Enum (hidden/shown/editing) löst nichtImScan + _kartenartenNurAnzeige ab
-- Run 298 🔜 Kupfer-Bereich auto-aufklappen bei Entwurf mit Kupfer-Werten
+- Run 298 ✅ Kupfer-Bereich auto-aufklappen beim Laden wenn Kupfer-Werte vorhanden
 - Run 299 🔜 Mitarbeitername in Schritt 1 (Freifeld statt Einstellungen)
 - Run 300 🔜 Stückelung — Legende + Anmerkungsfeld in Schritt 2
 - Run 301 🔜 Desktop-Ansicht auf Smartphone-Breite begrenzen

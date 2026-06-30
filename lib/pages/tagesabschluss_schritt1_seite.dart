@@ -266,9 +266,11 @@ class _TagesabschlussSchritt1SeiteState
       _laedt = false;
       if (hatKupferRollenWerte) {
         _kupferRollenSichtbar = true;
+        _rollenAufgeklappt = true;
       }
       if (hatKupferLoseWerte) {
         _kupferLoseSichtbar = true;
+        _loseMuenzenAufgeklappt = true;
       }
       if (erstesOeffnenHeute) {
         _loseMuenzenAufgeklappt = true;
