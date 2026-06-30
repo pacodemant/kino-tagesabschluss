@@ -3197,7 +3197,7 @@ class _TagesabschlussSchritt2SeiteState
                                         Expanded(
                                           child: Text(
                                             _ecBelegLabels[0].isNotEmpty
-                                                ? _ecBelegLabels[0]
+                                                ? 'Terminal: ${_ecBelegLabels[0]}'
                                                 : '—',
                                             style: const TextStyle(fontSize: 15),
                                           ),
@@ -3421,7 +3421,7 @@ class _TagesabschlussSchritt2SeiteState
                                                                   _ecBelegLabels[i].isNotEmpty &&
                                                                           _ecBelegLabels[i].trim().toLowerCase() !=
                                                                               'unleserlich'
-                                                                      ? _ecBelegLabels[i]
+                                                                      ? 'Terminal: ${_ecBelegLabels[i]}'
                                                                       : 'Beleg ${i + 1}',
                                                                   style: TextStyle(
                                                                     fontSize: 13,
