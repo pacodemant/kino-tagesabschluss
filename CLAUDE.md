@@ -115,9 +115,12 @@ Verbotene Befehle (nie ausführen):
 
 Commit-Format:
 
-    git add <nur betroffene Dateien>
+    git add <nur betroffene Dateien> .dev/run_counter.txt
     git commit -m "Run <NUMMER>: <Kurzbeschreibung>"
     git push
+
+`.dev/run_counter.txt` immer im selben Commit wie die Run-Änderungen —
+kein separater zweiter Commit, um unnötige CI-Builds zu vermeiden.
 
 ## Bericht nach jedem Run
 

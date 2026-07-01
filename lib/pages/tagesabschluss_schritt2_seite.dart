@@ -3726,7 +3726,7 @@ class _TagesabschlussSchritt2SeiteState
                           maxLines: null,
                           textCapitalization: TextCapitalization.sentences,
                           decoration: const InputDecoration(
-                            hintText: 'z.B. Kasse war kurz offline',
+                            hintText: 'Anmerkungen',
                             isDense: true,
                             border: OutlineInputBorder(),
                           ),
