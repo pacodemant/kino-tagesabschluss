@@ -2916,14 +2916,15 @@ class _TagesabschlussSchritt2SeiteState
                                         ),
                                         decoration: InputDecoration(
                                           hintText: 'Bezeichnung (optional)',
-                                          hintStyle: const TextStyle(
+                                          hintStyle: TextStyle(
                                             fontSize: 15,
+                                            color: _ausgabenLabelFocusNode[i].hasFocus ? Colors.transparent : null,
                                           ),
-                                          border: const OutlineInputBorder(),
+                                          border: const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot)),
                                           isDense: true,
                                           filled: _ausgabenLabelFocusNode[i].hasFocus,
                                           fillColor: _ausgabenLabelFocusNode[i].hasFocus
-                                              ? Colors.black87
+                                              ? AppFarben.appBarRot
                                               : null,
                                           contentPadding:
                                               const EdgeInsets.symmetric(
@@ -3246,7 +3247,7 @@ class _TagesabschlussSchritt2SeiteState
                                               _textInputActionFuerSchritt2(_ecBelegLabelFocusNode[0]),
                                           decoration: InputDecoration(
                                             hintText: 'Terminal-ID',
-                                            hintStyle: const TextStyle(fontSize: 15),
+                                            hintStyle: TextStyle(fontSize: 15, color: _ecBelegLabelFocusNode[0].hasFocus ? Colors.transparent : null),
                                             errorText: _pflichtfeldFehlertext(
                                               feldBeruehrt: _ecBelegLabel1Beruehrt,
                                               controller: _ecBelegLabelController[0],
@@ -3258,11 +3259,11 @@ class _TagesabschlussSchritt2SeiteState
                                             focusedErrorBorder: const OutlineInputBorder(
                                               borderSide: BorderSide(color: Colors.red, width: 2),
                                             ),
-                                            border: const OutlineInputBorder(),
+                                            border: const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot)),
                                             isDense: true,
                                             filled: _ecBelegLabelFocusNode[0].hasFocus,
                                             fillColor: _ecBelegLabelFocusNode[0].hasFocus
-                                                ? Colors.black87
+                                                ? AppFarben.appBarRot
                                                 : null,
                                             contentPadding: const EdgeInsets.symmetric(
                                               horizontal: 8,
@@ -3387,13 +3388,18 @@ class _TagesabschlussSchritt2SeiteState
                                                                   child: TextField(
                                                                     controller: _ecBelegLabelController[i],
                                                                     focusNode: _ecBelegLabelFocusNode[i],
-                                                                    style: const TextStyle(
+                                                                    style: TextStyle(
                                                                       fontSize: 13,
                                                                       fontWeight: FontWeight.w600,
+                                                                      color: _ecBelegLabelFocusNode[i].hasFocus ? Colors.white : null,
                                                                     ),
+                                                                    cursorColor: _ecBelegLabelFocusNode[i].hasFocus ? Colors.white : null,
                                                                     decoration: InputDecoration(
                                                                       hintText: 'Terminal-ID',
+                                                                      hintStyle: TextStyle(color: _ecBelegLabelFocusNode[i].hasFocus ? Colors.transparent : null),
                                                                       isDense: true,
+                                                                      filled: _ecBelegLabelFocusNode[i].hasFocus,
+                                                                      fillColor: AppFarben.appBarRot,
                                                                       contentPadding: const EdgeInsets.symmetric(
                                                                           horizontal: 6, vertical: 4),
                                                                       border: OutlineInputBorder(
@@ -3414,7 +3420,7 @@ class _TagesabschlussSchritt2SeiteState
                                                                         borderSide: BorderSide(
                                                                           color: _subKachelTidUnleserlich(i)
                                                                               ? Colors.red.shade700
-                                                                              : Colors.blue,
+                                                                              : AppFarben.appBarRot,
                                                                           width: 2,
                                                                         ),
                                                                       ),

@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 302d: Kino-Rot für Label-Felder in Schritt 2 — Ausgaben-Label, EC-Label single-Beleg und EC-Label multi-Beleg auf AppFarben.appBarRot-Fill + weiße Schrift + transparenter Hint bei Fokus umgestellt; focusedBorder TID-multi-Beleg von blau auf appBarRot. border-Fallback in Ausgaben- und EC-Label-Feldern ebenfalls auf appBarRot. Versionsstring r302d. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 302c: Hint-Text bei Fokus ausblenden — hintStyle mit transparenter Farbe wenn hatFokus=true in ganzzahl_eingabefeld.dart und betrag_cent_eingabefeld.dart. Versionsstring r302c. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 302b: fillColor fokussierter Felder → Kino-Rot — Colors.black87 in ganzzahl_eingabefeld.dart (fillColor) und betrag_cent_eingabefeld.dart (fuellFarbe) auf AppFarben.appBarRot geändert. Versionsstring r302b. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
