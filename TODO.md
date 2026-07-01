@@ -62,7 +62,7 @@ Stand: Juli 2026 · Run 300a · wird fortlaufend ergänzt
       macht, soll dort etwas automatisch nachgezogen werden? Zurückgestellt,
       da bei sauberen Scans kaum relevant.
 
-- [ ] **Schwarze Hervorhebungen** Sämtliche schwarze Feld-Hervorhebungen entfernen.
+- [ ] **Schwarze Hervorhebungen → Kino-Rot** Sämtliche schwarze Feld-Hervorhebungen auf `AppFarben.appBarRot` umstellen.
 
 - [ ] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"
       (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben.

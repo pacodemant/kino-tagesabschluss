@@ -111,6 +111,14 @@ class MeineApp extends StatelessWidget {
           ),
         ),
       ),
+      builder: (BuildContext context, Widget? child) {
+        return Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: child!,
+          ),
+        );
+      },
       initialRoute: StartpruefungSeite.routenName,
       onGenerateInitialRoutes: (String _) => <Route<void>>[
         MaterialPageRoute<void>(
