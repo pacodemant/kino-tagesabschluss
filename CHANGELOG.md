@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 302c: Hint-Text bei Fokus ausblenden — hintStyle mit transparenter Farbe wenn hatFokus=true in ganzzahl_eingabefeld.dart und betrag_cent_eingabefeld.dart. Versionsstring r302c. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 302b: fillColor fokussierter Felder → Kino-Rot — Colors.black87 in ganzzahl_eingabefeld.dart (fillColor) und betrag_cent_eingabefeld.dart (fuellFarbe) auf AppFarben.appBarRot geändert. Versionsstring r302b. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 302: Schwarze Borders → Kino-Rot — alle OutlineInputBorder() ohne Farbe in ganzzahl_eingabefeld.dart (Normal-Zustand) und betrag_cent_eingabefeld.dart (gruenWert/rotWert/Default-Zustand, je grenzeLinie) auf AppFarben.appBarRot umgestellt. ganzzahl_eingabefeld.dart: AppFarben-Import ergänzt. Versionsstring r302. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.

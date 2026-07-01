@@ -299,6 +299,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       decoration: InputDecoration(
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,
+        hintStyle: TextStyle(color: hatFokus ? Colors.transparent : null),
         suffix: SizedBox(
           height: 20,
           child: Row(

@@ -101,6 +101,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
       ],
       decoration: InputDecoration(
         hintText: widget.hinweisText,
+        hintStyle: TextStyle(color: hatFokus ? Colors.transparent : null),
         isDense: true,
         filled: hatFokus || rotFuellung,
         fillColor: hatFokus
