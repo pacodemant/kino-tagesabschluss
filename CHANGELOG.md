@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 299: Stückelung-Legende + Anmerkungsfeld in Schritt 2. Legende: grüner Hinweiskasten unter der Stückelungstabelle. Anmerkungsfeld: neue Kachel „Hinweis / Kommentar (optional)" am Ende von Schritt 2 (nach EC-Belegen); wird im Entwurf gespeichert und im Verlauf angezeigt. Versionsstring r299. Dateien: stueckelung_vorschlag_seite.dart, tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart, tagesabschluss_finalisieren_usecase.dart, tagesabschluss_final.dart, verlauf_detail_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 298a: Mitarbeitername-Kachel aus Einstellungen entfernt — Feature entfällt komplett. Einstellungs-Card "Persönliche Einstellungen" zeigt jetzt nur noch den Komma-Eingabe-Switch. Versionsstring r298a. Dateien: einstellungen_seite.dart, tagesabschluss_schritt3_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 298: Kupfer-Bereich auto-aufklappen beim Laden — wenn beim Initialisieren von Schritt 1 Kupfer-Werte vorhanden sind (lose Münzen oder Rollen), werden die zugehörigen Bereiche automatisch aufgeklappt. Datei: tagesabschluss_schritt1_seite.dart.

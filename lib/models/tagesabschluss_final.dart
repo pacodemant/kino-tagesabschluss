@@ -32,6 +32,7 @@ class TagesabschlussFinal {
     this.ausgabenLabels,
     this.ecBelegeLabels,
     this.mitarbeiterName,
+    this.anmerkung,
     this.terminalId,
     this.belegNrVon,
     this.belegNrBis,
@@ -75,6 +76,7 @@ class TagesabschlussFinal {
   final List<String>? ausgabenLabels;
   final List<String>? ecBelegeLabels;
   final String? mitarbeiterName;
+  final String? anmerkung;
 
   // EC-Belegscan-Metadaten – seit Run 274
   final String? terminalId;
@@ -118,6 +120,7 @@ class TagesabschlussFinal {
       if (ausgabenLabels != null) 'ausgabenLabels': ausgabenLabels,
       if (ecBelegeLabels != null) 'ecBelegeLabels': ecBelegeLabels,
       if (mitarbeiterName != null) 'mitarbeiterName': mitarbeiterName,
+      if (anmerkung != null) 'anmerkung': anmerkung,
       if (terminalId != null) 'terminalId': terminalId,
       if (belegNrVon != null) 'belegNrVon': belegNrVon,
       if (belegNrBis != null) 'belegNrBis': belegNrBis,
@@ -225,6 +228,7 @@ class TagesabschlussFinal {
       ausgabenLabels: ausgabenLabels,
       ecBelegeLabels: ecBelegeLabels,
       mitarbeiterName: json['mitarbeiterName'] as String?,
+      anmerkung: json['anmerkung'] as String?,
       terminalId: json['terminalId'] as String?,
       belegNrVon: json['belegNrVon'] as String?,
       belegNrBis: json['belegNrBis'] as String?,

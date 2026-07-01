@@ -28,6 +28,7 @@ class TagesabschlussFinalisierenEingabe {
     // EC-Beleg-Labels aus Schritt 2
     this.ecBelegeLabels,
     this.mitarbeiterName,
+    this.anmerkung,
     // EC-Belegscan-Metadaten aus Schritt 2
     this.terminalId,
     this.belegNrVon,
@@ -60,6 +61,7 @@ class TagesabschlussFinalisierenEingabe {
   // EC-Beleg-Labels aus Schritt 2
   final List<String>? ecBelegeLabels;
   final String? mitarbeiterName;
+  final String? anmerkung;
   // EC-Belegscan-Metadaten aus Schritt 2
   final String? terminalId;
   final String? belegNrVon;
@@ -210,6 +212,9 @@ class TagesabschlussFinalisierenUsecase {
           : null,
       mitarbeiterName: eingabe.mitarbeiterName?.isNotEmpty == true
           ? eingabe.mitarbeiterName
+          : null,
+      anmerkung: eingabe.anmerkung?.isNotEmpty == true
+          ? eingabe.anmerkung
           : null,
       terminalId: eingabe.terminalId,
       belegNrVon: eingabe.belegNrVon,

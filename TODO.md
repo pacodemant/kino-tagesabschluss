@@ -62,7 +62,7 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 - [x] **Mitarbeitername** *(Run 298a)* Feature entfällt — Kachel aus Einstellungen entfernt,
       kein Freifeld in Schritt 1. Bei Bedarf leicht wieder einzubauen.
 
-- [ ] **Stückelung — Legende + Anmerkungsfeld** *(Run 300)*
+- [x] **Stückelung — Legende + Anmerkungsfeld** *(Run 299)*
       Legende: Unter der Stückelungsübersicht einen Hinweis einbauen —
       sinngemäß: „Grüne Zeile = die Anzahl der Scheine im Stapel entspricht
       genau dem Soll-Betrag; der gesamte Stapel kann direkt in den Umschlag

@@ -173,6 +173,9 @@ class _TagesabschlussSchritt2SeiteState
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[];
   bool _personalgetraenkeGebot = false;
+  String _anmerkung = '';
+  final TextEditingController _anmerkungController = TextEditingController();
+  final FocusNode _anmerkungFocusNode = FocusNode();
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
@@ -299,6 +302,8 @@ class _TagesabschlussSchritt2SeiteState
         zeile.dispose();
       }
     }
+    _anmerkungController.dispose();
+    _anmerkungFocusNode.dispose();
     super.dispose();
   }
 
@@ -420,7 +425,11 @@ class _TagesabschlussSchritt2SeiteState
           ecBelegeLabelsListe[0].isNotEmpty) {
         _ecKachelAufgeklappt = true;
       }
+      _anmerkung = (daten['anmerkung'] as String?) ?? '';
     });
+    if (_anmerkung.isNotEmpty) {
+      _anmerkungController.text = _anmerkung;
+    }
 
     if (kinoSollCent != 0) {
       _setzeControllerText(
@@ -612,6 +621,7 @@ class _TagesabschlussSchritt2SeiteState
                 .map((_ZahlungsartZeile z) => z.betragCentWert)
                 .toList(),
         ],
+        if (_anmerkung.trim().isNotEmpty) 'anmerkung': _anmerkung.trim(),
       },
     );
   }
@@ -674,6 +684,7 @@ class _TagesabschlussSchritt2SeiteState
         ecUhrzeit: _scanUhrzeit,
         zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
         ecTerminals: _baueEcTerminals(),
+        anmerkung: _anmerkung.trim().isNotEmpty ? _anmerkung.trim() : null,
       ),
     );
   }
@@ -3694,6 +3705,40 @@ class _TagesabschlussSchritt2SeiteState
                       child: const Text('Weiteren Beleg hinzufügen'),
                     ),
                   ),
+                const SizedBox(height: 8),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Hinweis / Kommentar (optional)',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: _anmerkungController,
+                          focusNode: _anmerkungFocusNode,
+                          maxLines: null,
+                          textCapitalization: TextCapitalization.sentences,
+                          decoration: const InputDecoration(
+                            hintText: 'z.B. Kasse war kurz offline',
+                            isDense: true,
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (String wert) {
+                            _anmerkung = wert;
+                            _speichereEntwurf();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 8),
               ],
         ),

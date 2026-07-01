@@ -51,6 +51,7 @@ class TagesabschlussSchritt3Argumente {
     this.ecUhrzeit,
     this.zahlungsartenAufschluesselung,
     this.ecTerminals,
+    this.anmerkung,
   });
 
   final String kinoId;
@@ -79,6 +80,7 @@ class TagesabschlussSchritt3Argumente {
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
   final List<EcTerminalErgebnis>? ecTerminals;
+  final String? anmerkung;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -148,6 +150,7 @@ class _TagesabschlussSchritt3SeiteState
         ecUhrzeit: widget.argumente.ecUhrzeit,
         zahlungsartenAufschluesselung:
             widget.argumente.zahlungsartenAufschluesselung,
+        anmerkung: widget.argumente.anmerkung,
       ),
       jetzt: DateTime.now(),
     );

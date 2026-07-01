@@ -308,6 +308,17 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       ),
                     ),
                   ),
+                if (a.anmerkung != null && a.anmerkung!.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 6, 0, 0),
+                    child: Text(
+                      'Hinweis: ${a.anmerkung!}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
 
                 // Hinweis-Card – nur für vergangene Einträge
                 if (!istHeute)

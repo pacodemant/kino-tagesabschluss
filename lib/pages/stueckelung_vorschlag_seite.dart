@@ -412,6 +412,21 @@ class StueckelungVorschlagSeite extends StatelessWidget {
             )
           else
             ...zeilen.map(_baueZeile),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+            decoration: BoxDecoration(
+              color: AppFarben.validierungErfolgsHintergrund,
+              border: Border.all(color: AppFarben.stueckelungErfolgsRand),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: const Text(
+              'Grüne Zeile: Die Anzahl der Scheine im Stapel entspricht genau '
+              'dem Soll-Betrag — der gesamte Stapel kann direkt in den Umschlag '
+              'gelegt werden, nochmaliges Zählen entfällt.',
+              style: TextStyle(fontSize: 12),
+            ),
+          ),
           const SizedBox(height: 12),
           ElevatedButton(
             onPressed: argumente.onAbschliessen,
