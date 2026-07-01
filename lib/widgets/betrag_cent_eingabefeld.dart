@@ -255,19 +255,19 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       grenzeAktiviert = const OutlineInputBorder(borderSide: seite);
       grenzeFokussiert = const OutlineInputBorder(borderSide: seite);
     } else if (gruenWert) {
-      grenzeLinie = const OutlineInputBorder();
+      grenzeLinie = const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot));
       grenzeAktiviert = const OutlineInputBorder(
         borderSide: BorderSide(color: Colors.green, width: 2),
       );
       grenzeFokussiert = null;
     } else if (rotWert) {
-      grenzeLinie = const OutlineInputBorder();
+      grenzeLinie = const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot));
       grenzeAktiviert = const OutlineInputBorder(
         borderSide: BorderSide(color: Colors.red, width: 2),
       );
       grenzeFokussiert = null;
     } else {
-      grenzeLinie = const OutlineInputBorder();
+      grenzeLinie = const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot));
       grenzeAktiviert = null;
       grenzeFokussiert = null;
     }

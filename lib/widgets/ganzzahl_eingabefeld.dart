@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 
 class GanzzahlEingabefeld extends StatefulWidget {
@@ -109,7 +110,9 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
             ? const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red, width: 2),
               )
-            : const OutlineInputBorder(),
+            : const OutlineInputBorder(
+                borderSide: BorderSide(color: AppFarben.appBarRot),
+              ),
         enabledBorder: rotRahmen
             ? const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.red, width: 2),

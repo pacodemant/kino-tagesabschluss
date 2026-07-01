@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 302: Schwarze Borders → Kino-Rot — alle OutlineInputBorder() ohne Farbe in ganzzahl_eingabefeld.dart (Normal-Zustand) und betrag_cent_eingabefeld.dart (gruenWert/rotWert/Default-Zustand, je grenzeLinie) auf AppFarben.appBarRot umgestellt. ganzzahl_eingabefeld.dart: AppFarben-Import ergänzt. Versionsstring r302. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 301: Desktop-Ansicht begrenzen — `MaterialApp.builder` mit `Center` + `ConstrainedBox(maxWidth: 430)` hinzugefügt; auf Bildschirmen > 430 px wird der Inhalt zentriert dargestellt. Versionsstring r301. Dateien: main.dart, pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 300a: TODO.md aufgeräumt — abgehakte [x]-Einträge entfernt, *(Run NNN)*-Planungsmarker aus offenen Punkten gelöscht, Duplikate zusammengeführt (Standort vorauswählen + Admin-Passwort je einmal in Phase C; BT-2-Abrechnungen in Größere Umbauten), Spontan-Ideen-Abschnitt entfernt, EC-Kachel State-Refactor (Run 297, war fälschlich noch offen) entfernt. Datei: TODO.md.
