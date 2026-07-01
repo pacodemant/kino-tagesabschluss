@@ -155,6 +155,11 @@ Inhalt:
 
 ## Direkte Anweisungen ohne Run-Nummer
 
+**Vorbedingung:** Diese Regel gilt nur wenn die letzte Haupt-Run-Nummer (NNN)
+bereits committed ist — also für Korrekturen oder Ergänzungen *nach* einem
+abgeschlossenen Run. Entsteht ein Run erst aus der Diskussion, ohne dass ein
+Run NNN bereits existiert, erhält er die volle Nummer NNN (nicht NNNa).
+
 Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 
 - Änderung als `[letzte Run-Nr]a`, `[letzte Run-Nr]b` usw. bezeichnen
