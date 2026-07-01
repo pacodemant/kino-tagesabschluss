@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 300a · wird fortlaufend ergänzt
 
 ---
 
@@ -43,37 +43,8 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
-- [x] **Personalgetränke-Checkbox** *(Run 296)* In Schritt 2 über der Kachel
-      „Differenz im Anfangsbestand" eine eigene Kachel einbauen:
-      Links „Personalgetränke gebont?", rechts runde Checkbox (abgehakt = grün).
-      Ohne Abhaken ist der Weiter-Button zu Schritt 3 gesperrt.
-      Banner „Perso-Getränke nicht vergessen!" auf der Kino-Kachel entfällt.
-
-- [ ] **EC-Kachel State-Refactor** *(Run 297)* nichtImScan + _kartenartenNurAnzeige
-      durch einen expliziten ZeilenZustand-Enum pro Zeile ersetzen
-      (hidden / shown / editing). Rot-Highlighting als reine Render-Entscheidung
-      statt Flag. Alle Übergänge (Scan, Manuell, Draft-Load, Auto-Fill, Clear)
-      setzen den Zustand direkt und eindeutig.
-
-- [x] **Kupfer-Bereich auto-aufklappen** *(Run 298)* Wenn beim Laden eines Entwurfs
-      Kupfer-Felder (lose Münzen oder Rollen) einen Wert enthalten, soll der
-      Kupfer-Bereich automatisch aufgeklappt sein.
-
-- [x] **Mitarbeitername** *(Run 298a)* Feature entfällt — Kachel aus Einstellungen entfernt,
-      kein Freifeld in Schritt 1. Bei Bedarf leicht wieder einzubauen.
-
-- [x] **Stückelung — Legende + Anmerkungsfeld** *(Run 299)*
-      Legende: Unter der Stückelungsübersicht einen Hinweis einbauen —
-      sinngemäß: „Grüne Zeile = die Anzahl der Scheine im Stapel entspricht
-      genau dem Soll-Betrag; der gesamte Stapel kann direkt in den Umschlag
-      gelegt werden, nochmaliges Zählen entfällt."
-      Anmerkungsfeld: In Schritt 2 unter den EC-Belegen eine eigene Kachel
-      „Hinweis/Kommentar (optional):" einbauen.
-
-- [ ] **Desktop-Ansicht begrenzen** *(Run 301)* Inhalte auf Desktop-Browsern auf
+- [ ] **Desktop-Ansicht begrenzen** Inhalte auf Desktop-Browsern auf
       Smartphone-Breite begrenzen.
-
-- [x] **DEV-Testwerte-Button im Web** Funktioniert mittlerweile.
 
 - [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
 
@@ -83,11 +54,6 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 
 - [ ] **Getränke-Nachfüllliste persistieren** Lokal speichern wie andere
       Entwurfsdaten. Verhindert Datenverlust bei Absturz.
-
-- [x] **Immer aktuelle Version laden** Beim Start sicherstellen dass Browser/PWA
-      stets die aktuelle Version lädt.
-
-- [x] **Datenschutz-Hinweis** MA informieren dass alle Daten inkl. Name intern bleiben.
 
 - [ ] **Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag** Seit Run 274f4
       gibt es in der Kartenarten-Tabelle einen "+ Kartenart"-Button zum
@@ -99,39 +65,13 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 - [ ] **Schwarze Hervorhebungen** Sämtliche schwarze Feld-Hervorhebungen entfernen.
 
 - [ ] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"
-      (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben
+      (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben.
 
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–281)*
-
-- [x] **Architektur-Refactor: Zahlungsartzeilen pro Beleg** *(Run 279)*
-      Alle Zahlungsarten-Felder auf per-Beleg-Listen umgestellt.
-      Jede Sub-Kachel zeigt die Kartendaten-Aufschlüsselung ihres eigenen Belegs.
-
-- [x] **EC-Kachel: Layout & Terminal-ID** *(Run 275)* Metadaten kompakter,
-      Betragszeilen luftiger. "Bezeichnung (optional)" → "Terminal-ID" als Pflichtfeld.
-      Bei Scan automatisch befüllt.
-
-- [x] **EC-Kachel: Summe statt Kamera-Icon + "Weiteren Beleg"-Button** *(Run 276)*
-      Zugeklappte Kachel zeigt Gesamtsumme rechts. "Weiteren Beleg hinzufügen"
-      erscheint als Textbutton erst nach dem ersten Beleg.
-
-- [x] **EC-Kachel: Unterkacheln pro Beleg** *(Run 277)* Mehrere Belege pro Kachel
-      möglich. Jeder Beleg = eigene Unterkachel (zugklappbar, eigener Papierkorb,
-      eigener Foto-Button mit Rückfrage vor erneutem Scan).
-
-- [x] **Prüf-Popup: rote Felder + Hinweis** *(Run 278 + 278a)* Unleserliche Felder
-      rot hervorgehoben (nur das konkret null-Feld). Hinweistext: "Rote Felder nach dem
-      Übernehmen bitte korrigieren." Korrektur erfolgt in der EC-Kachel nach Übernehmen.
-
-- [x] **Flurbocash-JSON: korrekte TID-Zuordnung pro Beleg** *(Run 281)* EcTerminalErgebnis-Modell; _baueEcTerminals() in Schritt 2; JSON-Dialog wertet ecTerminals aus.
-
-- [x] **Dev-Modus: „JSON anzeigen"-Button auf Übertrag-Seite** *(Run 280)* Unterhalb
-      von „Kassenabrechnung senden" — zeigt Flurbocash-JSON (Call 1: ensure, Call 2:
-      settlements) in scrollbarem Monospace-Dialog.
 
 - [ ] **Hilfetext & Duplikat-Button** Info im Scan-Bereich was zu tun
       ist wenn Beleg fehlt oder unlesbar ist. Zusätzlich im Prüf-Popup: Dummy-Button
@@ -152,10 +92,10 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
       wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
 
-- [ ] **Storno auf Belegen** Ich hatte zwar noch nie einen solchen Fall, aber
-      die App muss auch Stornos erkennen können.
+- [ ] **Storno auf Belegen** Noch nie vorgekommen, aber die App muss
+      Stornos erkennen können.
 
-- [ ] **Belegscan Metadaten** zuklappbar machen
+- [ ] **Belegscan Metadaten** zuklappbar machen.
 
 - [ ] **KI-Prompt verbessern** KI soll nur relevante Daten lesen, nichts
       hineininterpretieren und keine Bemerkungen zu Schreibgerät, Belegrissen o. Ä.
@@ -187,10 +127,6 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
       standortspezifischer Ordner).
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
-
-- [x] **ApiUploadService Umbau** *(Run 290)* 1 Call → 2 Calls (ensure + settlements),
-      JSON statt form-encoded, report_id lokal speichern,
-      Fehlerbehandlung für alle HTTP-Statuscodes (400/401/403/404/500).
 
 - [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 
@@ -312,15 +248,3 @@ Stand: Juni 2026 · Run 295a · wird fortlaufend ergänzt
       zweites System, nicht V1
 
 - [ ] **Admin-Dashboard für Kino-IT** API-Key-Verwaltung, Konfiguration
-
----
-
-## 💡 Spontan-Ideen (noch einzusortieren)
-
-- [ ] **Einstellungen Admin - Standort einstellen** In den Einstellungen soll der Admin den Standort einstellen können, damit die Mitarbeiter nicht erst noch den Standort auswählen müssen.
-
-- [x] **Einstellungen Admin - Umbenennung** Entwicklermodus → Admin in der Einstellungen-UI. *(erledigt Run 292c)*
-
-- [ ] **Einstellungen Admin - Passwort** Der Admin-Modus soll mit dem Code „flrbcsh" geschützt sein. *(aktuell noch PIN 1929/Session aus Run 287)*
-
-- [ ] **BT mit 2 Abrechnungen/Tag** Auf der Startseite für die BT sollen zwei Buttons für die Kassenabrechnung stehen: 1. Abrechnung und 2. Abrechnung
