@@ -18,6 +18,7 @@ import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/google_sheets_service.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
@@ -375,10 +376,21 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
-  void _zeigeFlurbocashJson() {
-    // TODO: location_id aus Einstellungen laden (SharedPreferences-Key noch nicht vergeben)
+  Future<void> _zeigeFlurbocashJson() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? locationIdStr =
+        speicher.getString('flurbocash_location_id_${widget.argumente.kinoId}');
+    final int locationId =
+        (locationIdStr != null && locationIdStr.isNotEmpty)
+            ? (int.tryParse(locationIdStr) ?? 0)
+            : 0;
+
+    if (!mounted) {
+      return;
+    }
+
     final Map<String, dynamic> call1 = <String, dynamic>{
-      'location_id': 0,
+      'location_id': locationId,
       'date': DatumsHelper.logischesIsoDatum(),
     };
 
