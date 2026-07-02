@@ -91,33 +91,24 @@ enum ZeilenZustand { hidden, shown, editing }
 
 class _ZahlungsartZeile {
   _ZahlungsartZeile(this.name, {this.istUnbekannt = false})
-      : anzahlController = TextEditingController(),
-        betragController = TextEditingController(),
-        anzahlFocusNode = FocusNode(),
+      : betragController = TextEditingController(),
         betragFocusNode = FocusNode();
 
   String name;
   final bool istUnbekannt;
-  final TextEditingController anzahlController;
   final TextEditingController betragController;
-  final FocusNode anzahlFocusNode;
   final FocusNode betragFocusNode;
-  int? anzahlWert;
   int? betragCentWert;
   bool nichtPlausibel = false;
   ZeilenZustand zustand = ZeilenZustand.hidden;
 
   void dispose() {
-    anzahlController.dispose();
     betragController.dispose();
-    anzahlFocusNode.dispose();
     betragFocusNode.dispose();
   }
 
   void reset() {
-    anzahlController.clear();
     betragController.clear();
-    anzahlWert = null;
     betragCentWert = null;
     nichtPlausibel = false;
     zustand = ZeilenZustand.hidden;
@@ -152,9 +143,7 @@ class _TagesabschlussSchritt2SeiteState
   List<String> _zahlungsartKonfigNamen = <String>[];
   final List<List<_ZahlungsartZeile>> _zahlungsartZeilen = <List<_ZahlungsartZeile>>[];
   final List<bool> _scanHatStattgefunden = <bool>[];
-  final List<int?> _kartenartenGesamtAnzahl = <int?>[];
   final List<int?> _kartenartenGesamtBetragCent = <int?>[];
-  final List<TextEditingController> _kartenartenGesamtAnzahlController = <TextEditingController>[];
   final List<TextEditingController> _kartenartenGesamtBetragController = <TextEditingController>[];
   final List<bool> _metadatenAufgeklappt = <bool>[];
   final List<bool> _metadatenNurAnzeige = <bool>[];
@@ -257,7 +246,6 @@ class _TagesabschlussSchritt2SeiteState
       });
       for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
         for (final _ZahlungsartZeile zeile in belegZeilen) {
-          zeile.anzahlFocusNode.addListener(() { if (mounted) setState(() {}); });
           zeile.betragFocusNode.addListener(() { if (mounted) setState(() {}); });
         }
       }
@@ -287,7 +275,6 @@ class _TagesabschlussSchritt2SeiteState
     _scanUhrzeitFocusNode.dispose();
     _scanBelegNrVonFocusNode.dispose();
     _scanBelegNrBisFocusNode.dispose();
-    disposeControllers(_kartenartenGesamtAnzahlController);
     disposeControllers(_kartenartenGesamtBetragController);
     disposeControllers(_ecBelegController);
     disposeControllers(_ecBelegLabelController);
@@ -402,15 +389,6 @@ class _TagesabschlussSchritt2SeiteState
       _scanUhrzeit = daten['scanUhrzeit'] as String?;
       _scanBelegNrVon = daten['scanBelegNrVon'] as String?;
       _scanBelegNrBis = daten['scanBelegNrBis'] as String?;
-      // kartenartenGesamtAnzahl: neu List<int?>, rückwärtskompatibel int?
-      final Object? gesAnzahlRoh = daten['kartenartenGesamtAnzahl'];
-      if (gesAnzahlRoh is List<dynamic>) {
-        for (int b = 0; b < _kartenartenGesamtAnzahl.length && b < gesAnzahlRoh.length; b++) {
-          _kartenartenGesamtAnzahl[b] = (gesAnzahlRoh[b] as num?)?.toInt();
-        }
-      } else if (_kartenartenGesamtAnzahl.isNotEmpty) {
-        _kartenartenGesamtAnzahl[0] = (gesAnzahlRoh as num?)?.toInt();
-      }
       // kartenartenGesamtBetragCent: neu List<int?>, rückwärtskompatibel int?
       final Object? gesBetragRoh = daten['kartenartenGesamtBetragCent'];
       if (gesBetragRoh is List<dynamic>) {
@@ -461,11 +439,7 @@ class _TagesabschlussSchritt2SeiteState
     if (_scanBelegNrBis != null) {
       _setzeControllerText(_scanBelegNrBisController, _scanBelegNrBis!);
     }
-    for (int b = 0; b < _kartenartenGesamtAnzahlController.length; b++) {
-      final int? anz = _kartenartenGesamtAnzahl[b];
-      if (anz != null) {
-        _setzeControllerText(_kartenartenGesamtAnzahlController[b], '$anz');
-      }
+    for (int b = 0; b < _kartenartenGesamtBetragController.length; b++) {
       final int? bet = _kartenartenGesamtBetragCent[b];
       if (bet != null) {
         _setzeControllerText(
@@ -496,48 +470,31 @@ class _TagesabschlussSchritt2SeiteState
     }
 
     // Zahlungsarten-Tabelle pro Beleg wiederherstellen
-    final Object? anzahlRoh = daten['zahlungsartAnzahlWerte'];
     final Object? betragRoh = daten['zahlungsartBetragCentWerte'];
-    if (mounted && anzahlRoh is List<dynamic> && betragRoh is List<dynamic>) {
+    if (mounted && betragRoh is List<dynamic>) {
       // Neues Format: List<List<dynamic>>  –  altes Format: List<dynamic> (nur Beleg 0)
       final bool isNeuesFormat =
-          anzahlRoh.isNotEmpty && anzahlRoh.first is List<dynamic>;
+          betragRoh.isNotEmpty && betragRoh.first is List<dynamic>;
       if (isNeuesFormat) {
         setState(() {
-          for (int b = 0; b < _zahlungsartZeilen.length && b < anzahlRoh.length; b++) {
-            final List<dynamic> bAnzahl = anzahlRoh[b] as List<dynamic>;
-            final List<dynamic> bBetrag = b < betragRoh.length
-                ? (betragRoh[b] as List<dynamic>)
-                : <dynamic>[];
+          for (int b = 0; b < _zahlungsartZeilen.length && b < betragRoh.length; b++) {
+            final List<dynamic> bBetrag = betragRoh[b] as List<dynamic>;
             for (int i = 0;
-                i < _zahlungsartZeilen[b].length &&
-                    i < bAnzahl.length &&
-                    i < bBetrag.length;
+                i < _zahlungsartZeilen[b].length && i < bBetrag.length;
                 i++) {
-              _zahlungsartZeilen[b][i].anzahlWert = (bAnzahl[i] as num?)?.toInt();
               _zahlungsartZeilen[b][i].betragCentWert = (bBetrag[i] as num?)?.toInt();
-              if (_zahlungsartZeilen[b][i].anzahlWert != null ||
-                  _zahlungsartZeilen[b][i].betragCentWert != null) {
+              if (_zahlungsartZeilen[b][i].betragCentWert != null) {
                 _zahlungsartZeilen[b][i].zustand = ZeilenZustand.shown;
               }
             }
           }
         });
-        for (int b = 0; b < _zahlungsartZeilen.length && b < anzahlRoh.length; b++) {
-          final List<dynamic> bAnzahl = anzahlRoh[b] as List<dynamic>;
-          final List<dynamic> bBetrag = b < betragRoh.length
-              ? (betragRoh[b] as List<dynamic>)
-              : <dynamic>[];
+        for (int b = 0; b < _zahlungsartZeilen.length && b < betragRoh.length; b++) {
+          final List<dynamic> bBetrag = betragRoh[b] as List<dynamic>;
           for (int i = 0;
-              i < _zahlungsartZeilen[b].length &&
-                  i < bAnzahl.length &&
-                  i < bBetrag.length;
+              i < _zahlungsartZeilen[b].length && i < bBetrag.length;
               i++) {
-            final int? anzahl = _zahlungsartZeilen[b][i].anzahlWert;
             final int? betrag = _zahlungsartZeilen[b][i].betragCentWert;
-            if (anzahl != null) {
-              _setzeControllerText(_zahlungsartZeilen[b][i].anzahlController, '$anzahl');
-            }
             if (betrag != null) {
               _setzeControllerText(
                 _zahlungsartZeilen[b][i].betragController,
@@ -551,28 +508,18 @@ class _TagesabschlussSchritt2SeiteState
         if (_zahlungsartZeilen.isNotEmpty) {
           setState(() {
             for (int i = 0;
-                i < _zahlungsartZeilen[0].length &&
-                    i < anzahlRoh.length &&
-                    i < betragRoh.length;
+                i < _zahlungsartZeilen[0].length && i < betragRoh.length;
                 i++) {
-              _zahlungsartZeilen[0][i].anzahlWert = (anzahlRoh[i] as num?)?.toInt();
               _zahlungsartZeilen[0][i].betragCentWert = (betragRoh[i] as num?)?.toInt();
-              if (_zahlungsartZeilen[0][i].anzahlWert != null ||
-                  _zahlungsartZeilen[0][i].betragCentWert != null) {
+              if (_zahlungsartZeilen[0][i].betragCentWert != null) {
                 _zahlungsartZeilen[0][i].zustand = ZeilenZustand.shown;
               }
             }
           });
           for (int i = 0;
-              i < _zahlungsartZeilen[0].length &&
-                  i < anzahlRoh.length &&
-                  i < betragRoh.length;
+              i < _zahlungsartZeilen[0].length && i < betragRoh.length;
               i++) {
-            final int? anzahl = _zahlungsartZeilen[0][i].anzahlWert;
             final int? betrag = _zahlungsartZeilen[0][i].betragCentWert;
-            if (anzahl != null) {
-              _setzeControllerText(_zahlungsartZeilen[0][i].anzahlController, '$anzahl');
-            }
             if (betrag != null) {
               _setzeControllerText(
                 _zahlungsartZeilen[0][i].betragController,
@@ -605,15 +552,7 @@ class _TagesabschlussSchritt2SeiteState
         'scanUhrzeit': _scanUhrzeit,
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
-        'kartenartenGesamtAnzahl': List<int?>.from(_kartenartenGesamtAnzahl),
         'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
-        'zahlungsartAnzahlWerte': <List<int?>>[
-          for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
-            belegZeilen
-                .where((_ZahlungsartZeile z) => !z.istUnbekannt)
-                .map((_ZahlungsartZeile z) => z.anzahlWert)
-                .toList(),
-        ],
         'zahlungsartBetragCentWerte': <List<int?>>[
           for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
             belegZeilen
@@ -793,9 +732,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
       );
       _scanHatStattgefunden.add(false);
-      _kartenartenGesamtAnzahl.add(null);
       _kartenartenGesamtBetragCent.add(null);
-      _kartenartenGesamtAnzahlController.add(TextEditingController());
       _kartenartenGesamtBetragController.add(TextEditingController());
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
@@ -829,9 +766,7 @@ class _TagesabschlussSchritt2SeiteState
         _zahlungsartZeilen.removeAt(index);
       }
       if (index < _scanHatStattgefunden.length) _scanHatStattgefunden.removeAt(index);
-      if (index < _kartenartenGesamtAnzahl.length) _kartenartenGesamtAnzahl.removeAt(index);
       if (index < _kartenartenGesamtBetragCent.length) _kartenartenGesamtBetragCent.removeAt(index);
-      if (index < _kartenartenGesamtAnzahlController.length) _kartenartenGesamtAnzahlController.removeAt(index).dispose();
       if (index < _kartenartenGesamtBetragController.length) _kartenartenGesamtBetragController.removeAt(index).dispose();
       if (index < _metadatenAufgeklappt.length) _metadatenAufgeklappt.removeAt(index);
       if (index < _metadatenNurAnzeige.length) _metadatenNurAnzeige.removeAt(index);
@@ -870,9 +805,7 @@ class _TagesabschlussSchritt2SeiteState
         _zahlungsartZeilen.removeLast();
       }
       if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden.removeLast();
-      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl.removeLast();
       if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent.removeLast();
-      if (_kartenartenGesamtAnzahlController.isNotEmpty) _kartenartenGesamtAnzahlController.removeLast().dispose();
       if (_kartenartenGesamtBetragController.isNotEmpty) _kartenartenGesamtBetragController.removeLast().dispose();
       if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt.removeLast();
       if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige.removeLast();
@@ -902,9 +835,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
       );
       _scanHatStattgefunden.add(false);
-      _kartenartenGesamtAnzahl.add(null);
       _kartenartenGesamtBetragCent.add(null);
-      _kartenartenGesamtAnzahlController.add(TextEditingController());
       _kartenartenGesamtBetragController.add(TextEditingController());
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
@@ -1104,9 +1035,7 @@ class _TagesabschlussSchritt2SeiteState
       }
       if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige[0] = false;
       if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
-      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl[0] = null;
       if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
-      if (_kartenartenGesamtAnzahlController.isNotEmpty) _setzeControllerText(_kartenartenGesamtAnzahlController[0], '');
       if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
     });
   }
@@ -1156,9 +1085,7 @@ class _TagesabschlussSchritt2SeiteState
       }
       if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige[0] = false;
       if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
-      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl[0] = null;
       if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
-      if (_kartenartenGesamtAnzahlController.isNotEmpty) _setzeControllerText(_kartenartenGesamtAnzahlController[0], '');
       if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
     });
     await LokalerSpeicher.loescheSchritt2Entwurf(widget.kinoId);
@@ -1287,14 +1214,7 @@ class _TagesabschlussSchritt2SeiteState
           }
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis, belegIndex);
-          _kartenartenGesamtAnzahl[belegIndex] = geprueftes.gesamtAnzahl;
           _kartenartenGesamtBetragCent[belegIndex] = geprueftes.gesamtBetragCent;
-          _setzeControllerText(
-            _kartenartenGesamtAnzahlController[belegIndex],
-            _kartenartenGesamtAnzahl[belegIndex] != null
-                ? '${_kartenartenGesamtAnzahl[belegIndex]}'
-                : '',
-          );
           _setzeControllerText(
             _kartenartenGesamtBetragController[belegIndex],
             _kartenartenGesamtBetragCent[belegIndex] != null
@@ -1455,14 +1375,6 @@ class _TagesabschlussSchritt2SeiteState
       }
       zeile.zustand = ZeilenZustand.shown;
 
-      if (matching.anzahl != null) {
-        zeile.anzahlWert = matching.anzahl;
-        _setzeControllerText(zeile.anzahlController, '${matching.anzahl}');
-      } else {
-        zeile.anzahlWert = null;
-        _setzeControllerText(zeile.anzahlController, '');
-      }
-
       if (matching.betragCent != null) {
         zeile.betragCentWert = matching.betragCent;
         _setzeControllerText(
@@ -1478,7 +1390,7 @@ class _TagesabschlussSchritt2SeiteState
       if (original != null) {
         for (final ZahlungsartErgebnis z in original.zahlungsarten) {
           if (_matchKartenart(zeile.name, z.art)) {
-            origNichtPlausibel = z.betragCent == null || z.anzahl == null;
+            origNichtPlausibel = z.betragCent == null;
             break;
           }
         }
@@ -1487,37 +1399,27 @@ class _TagesabschlussSchritt2SeiteState
     }
 
     for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
-      if (z.art.trim().isEmpty && (z.betragCent != null || z.anzahl != null)) {
+      if (z.art.trim().isEmpty && z.betragCent != null) {
         final _ZahlungsartZeile unbekannte =
             _ZahlungsartZeile('', istUnbekannt: true);
-        unbekannte.anzahlFocusNode
-            .addListener(() { if (mounted) setState(() {}); });
         unbekannte.betragFocusNode
             .addListener(() { if (mounted) setState(() {}); });
-        if (z.anzahl != null) {
-          unbekannte.anzahlWert = z.anzahl;
-          _setzeControllerText(unbekannte.anzahlController, '${z.anzahl}');
-        }
-        if (z.betragCent != null) {
-          unbekannte.betragCentWert = z.betragCent;
-          _setzeControllerText(
-            unbekannte.betragController,
-            TagesabschlussFormatierung.formatiereEuroEingabe(z.betragCent!),
-          );
-        }
+        unbekannte.betragCentWert = z.betragCent;
+        _setzeControllerText(
+          unbekannte.betragController,
+          TagesabschlussFormatierung.formatiereEuroEingabe(z.betragCent!),
+        );
         _zahlungsartZeilen[belegIndex].insert(0, unbekannte);
       }
     }
   }
 
   bool _istZeileImplausibel(_ZahlungsartZeile zeile, int belegIndex) {
-    if (zeile.anzahlWert == null && zeile.betragCentWert == null) {
+    if (zeile.betragCentWert == null) {
       return belegIndex < _scanHatStattgefunden.length &&
           _scanHatStattgefunden[belegIndex] &&
           zeile.zustand != ZeilenZustand.hidden;
     }
-    if (zeile.anzahlWert == null || zeile.betragCentWert == null) return true;
-    if (zeile.anzahlWert == 0) return true;
     return false;
   }
 
@@ -1527,10 +1429,9 @@ class _TagesabschlussSchritt2SeiteState
       final String tid =
           belegIndex < _ecBelegLabels.length ? _ecBelegLabels[belegIndex] : '';
       for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
-        if (zeile.anzahlWert == null && zeile.betragCentWert == null) continue;
+        if (zeile.betragCentWert == null) continue;
         liste.add(ZahlungsartErgebnis(
           art: zeile.name,
-          anzahl: zeile.anzahlWert ?? 0,
           betragCent: zeile.betragCentWert,
           tid: tid.isEmpty ? null : tid,
         ));
@@ -1778,9 +1679,7 @@ class _TagesabschlussSchritt2SeiteState
       }
       if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige[0] = false;
       if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
-      if (_kartenartenGesamtAnzahl.isNotEmpty) _kartenartenGesamtAnzahl[0] = null;
       if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
-      if (_kartenartenGesamtAnzahlController.isNotEmpty) _setzeControllerText(_kartenartenGesamtAnzahlController[0], '');
       if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
       _letzteAenderung = DateTime.now();
     });
@@ -2163,30 +2062,6 @@ class _TagesabschlussSchritt2SeiteState
                   ),
           ),
           SizedBox(
-            width: 52,
-            child: TextField(
-              controller: zeile.anzahlController,
-              focusNode: zeile.anzahlFocusNode,
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 13),
-              decoration: InputDecoration(
-                hintText: '—',
-                isDense: true,
-                border: const OutlineInputBorder(),
-                enabledBorder: roteBorder,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-              ),
-              onChanged: (String wert) {
-                setState(() {
-                  zeile.anzahlWert = int.tryParse(wert.trim());
-                });
-              },
-            ),
-          ),
-          const SizedBox(width: 6),
-          SizedBox(
             width: 104,
             child: TextField(
               controller: zeile.betragController,
@@ -2241,21 +2116,6 @@ class _TagesabschlussSchritt2SeiteState
                   ),
           ),
           SizedBox(
-            width: 52,
-            child: Text(
-              zeile.anzahlWert != null ? '${zeile.anzahlWert}' : '—',
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 13,
-                color: zeile.anzahlWert == null &&
-                        _istZeileImplausibel(zeile, belegIndex)
-                    ? Colors.red
-                    : null,
-              ),
-            ),
-          ),
-          const SizedBox(width: 6),
-          SizedBox(
             width: 104,
             child: Text(
               zeile.betragCentWert != null
@@ -2281,7 +2141,7 @@ class _TagesabschlussSchritt2SeiteState
     if (belegIndex >= _zahlungsartZeilen.length) return;
     for (final _ZahlungsartZeile z in _zahlungsartZeilen[belegIndex]) {
       if (z.zustand == ZeilenZustand.editing) {
-        z.zustand = (z.anzahlWert != null || z.betragCentWert != null)
+        z.zustand = z.betragCentWert != null
             ? ZeilenZustand.shown
             : ZeilenZustand.hidden;
       }
@@ -2328,28 +2188,21 @@ class _TagesabschlussSchritt2SeiteState
     if (belegIndex >= _zahlungsartZeilen.length) return const SizedBox.shrink();
     final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
     final bool editModus = zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
-    final int? gesAnzahl = belegIndex < _kartenartenGesamtAnzahl.length
-        ? _kartenartenGesamtAnzahl[belegIndex]
-        : null;
     final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
         ? _kartenartenGesamtBetragCent[belegIndex]
         : null;
     int tabellenSummeCent = 0;
-    int tabellenSummeAnzahl = 0;
     for (final _ZahlungsartZeile zeile in zeilen) {
       if (zeile.betragCentWert != null) tabellenSummeCent += zeile.betragCentWert!;
-      if (zeile.anzahlWert != null) tabellenSummeAnzahl += zeile.anzahlWert!;
     }
     final int ecGesamtCent = belegIndex < _ecBelegeCent.length
         ? _ecBelegeCent[belegIndex]
         : 0;
     final bool summePasstNicht =
         tabellenSummeCent > 0 && ecGesamtCent > 0 && tabellenSummeCent != ecGesamtCent;
-    final bool anzahlMismatch = gesAnzahl != null && tabellenSummeAnzahl != gesAnzahl;
     final bool betragMismatch = gesBetrag != null && tabellenSummeCent != gesBetrag;
     final bool kartenartenHatFokus = zeilen.any(
-      (_ZahlungsartZeile z) =>
-          z.anzahlFocusNode.hasFocus || z.betragFocusNode.hasFocus,
+      (_ZahlungsartZeile z) => z.betragFocusNode.hasFocus,
     );
     final bool irgendEineZeileInkonsistent = zeilen
         .where((_ZahlungsartZeile z) => z.zustand != ZeilenZustand.hidden)
@@ -2374,19 +2227,6 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: 52,
-                  child: Text(
-                    'Anz.',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black54,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 6),
                 SizedBox(
                   width: 104,
                   child: Text(
@@ -2452,47 +2292,6 @@ class _TagesabschlussSchritt2SeiteState
                 ),
               ),
               SizedBox(
-                width: 52,
-                child: !editModus
-                    ? Text(
-                        gesAnzahl != null ? '$gesAnzahl' : '—',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: anzahlMismatch ? Colors.red.shade700 : null,
-                        ),
-                      )
-                    : TextField(
-                        controller: belegIndex < _kartenartenGesamtAnzahlController.length
-                            ? _kartenartenGesamtAnzahlController[belegIndex]
-                            : TextEditingController(),
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                        decoration: const InputDecoration(
-                          hintText: '—',
-                          isDense: true,
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 5),
-                        ),
-                        onChanged: (String wert) {
-                          setState(() {
-                            if (belegIndex < _kartenartenGesamtAnzahl.length) {
-                              _kartenartenGesamtAnzahl[belegIndex] =
-                                  int.tryParse(wert.trim());
-                            }
-                          });
-                          _speichereEntwurf();
-                        },
-                      ),
-              ),
-              const SizedBox(width: 6),
-              SizedBox(
                 width: 104,
                 child: !editModus
                     ? Text(
@@ -2553,15 +2352,6 @@ class _TagesabschlussSchritt2SeiteState
               ),
             ],
           ),
-          if (anzahlMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'Hinweis: Anzahl der Kartenvorgänge stimmt nicht mit der '
-                'erfassten Gesamtanzahl überein.',
-                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
-              ),
-            ),
           if (betragMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
             Padding(
               padding: const EdgeInsets.only(top: 4),

@@ -58,7 +58,7 @@ class _BelegScanGegenpruefDialogState
     if (_istUnleserlich(e.terminalId)) return true;
     if (e.gesamtBetragCent == null) return true;
     for (final ZahlungsartErgebnis z in e.zahlungsarten) {
-      if (z.betragCent == null || z.anzahl == null) return true;
+      if (z.betragCent == null) return true;
     }
     return false;
   }
@@ -141,17 +141,6 @@ class _BelegScanGegenpruefDialogState
             ),
           ),
           SizedBox(
-            width: 44,
-            child: Text(
-              z.anzahl != null ? '${z.anzahl}' : '—',
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 14,
-                color: z.anzahl == null ? Colors.red.shade700 : null,
-              ),
-            ),
-          ),
-          SizedBox(
             width: 104,
             child: Text(
               z.betragCent != null ? _formatCent(z.betragCent!) : '—',
@@ -177,17 +166,6 @@ class _BelegScanGegenpruefDialogState
             child: Text(
               'Gesamt',
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
-            ),
-          ),
-          SizedBox(
-            width: 44,
-            child: Text(
-              e.gesamtAnzahl?.toString() ?? '—',
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
             ),
           ),
           SizedBox(
@@ -355,18 +333,6 @@ class _BelegScanGegenpruefDialogState
                               Expanded(
                                 child: Text(
                                   'Kartenart',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black54,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 44,
-                                child: Text(
-                                  'Anz.',
-                                  textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,

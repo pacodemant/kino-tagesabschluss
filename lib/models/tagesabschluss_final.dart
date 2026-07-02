@@ -129,7 +129,6 @@ class TagesabschlussFinal {
         'zahlungsartenAufschluesselung': zahlungsartenAufschluesselung!
             .map((ZahlungsartErgebnis z) => <String, dynamic>{
                   'art': z.art,
-                  'anzahl': z.anzahl,
                   if (z.betragCent != null) 'betrag_cent': z.betragCent,
                   if (z.tid != null) 'tid': z.tid,
                 })

@@ -1,7 +1,6 @@
 class ZahlungsartErgebnis {
   ZahlungsartErgebnis({
     required this.art,
-    required this.anzahl,
     required this.betragCent,
     this.tid,
   });
@@ -9,14 +8,12 @@ class ZahlungsartErgebnis {
   factory ZahlungsartErgebnis.fromJson(Map<String, dynamic> json) {
     return ZahlungsartErgebnis(
       art: json['art'] as String? ?? '',
-      anzahl: (json['anzahl'] as num?)?.toInt(),
       betragCent: (json['betrag_cent'] as num?)?.toInt(),
       tid: json['tid'] as String?,
     );
   }
 
   final String art;
-  final int? anzahl;
   final int? betragCent;
   final String? tid;
 }
@@ -30,7 +27,6 @@ class BelegScanErgebnis {
     this.belegNrVon,
     this.belegNrBis,
     this.zahlungsarten = const <ZahlungsartErgebnis>[],
-    this.gesamtAnzahl,
     this.gesamtBetragCent,
     this.hinweis,
   });
@@ -50,7 +46,6 @@ class BelegScanErgebnis {
                   ZahlungsartErgebnis.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <ZahlungsartErgebnis>[],
-      gesamtAnzahl: (json['gesamt_anzahl'] as num?)?.toInt(),
       gesamtBetragCent: (json['gesamt_betrag_cent'] as num?)?.toInt(),
       hinweis: json['hinweis'] as String?,
     );
@@ -63,7 +58,6 @@ class BelegScanErgebnis {
   final String? belegNrVon;
   final String? belegNrBis;
   final List<ZahlungsartErgebnis> zahlungsarten;
-  final int? gesamtAnzahl;
   final int? gesamtBetragCent;
   final String? hinweis;
 
@@ -77,17 +71,7 @@ class BelegScanErgebnis {
     return summe == gesamtBetragCent;
   }
 
-  bool get anzahlPlausibel {
-    if (gesamtAnzahl == null) return false;
-    if (zahlungsarten.any((ZahlungsartErgebnis z) => z.anzahl == null)) {
-      return false;
-    }
-    final int summe = zahlungsarten.fold(
-        0, (int s, ZahlungsartErgebnis z) => s + (z.anzahl ?? 0));
-    return summe == gesamtAnzahl;
-  }
-
-  bool get istPlausibel => betraegePlausibel && anzahlPlausibel;
+  bool get istPlausibel => betraegePlausibel;
 }
 
 class BelegScanDialogErgebnis {
