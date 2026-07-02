@@ -26,10 +26,13 @@ class ApiUploadService {
   static Future<void> upload(TagesabschlussFinal abrechnung) async {
     final ({String url, int locationId, String apiKey}) konfig =
         await _ladeKonfigWerte(abrechnung.kinoId);
-    final String datumIso = _datumIso(abrechnung.datum);
 
-    final int reportId =
-        await _ensure(konfig.url, konfig.apiKey, konfig.locationId, datumIso);
+    final int reportId = await _ensure(
+      konfig.url,
+      konfig.apiKey,
+      konfig.locationId,
+      abrechnung,
+    );
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
     await _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
@@ -63,11 +66,43 @@ class ApiUploadService {
     return (url: baseUrl, locationId: locationId, apiKey: apiKey);
   }
 
+  static Map<String, dynamic> ensureBody(
+    TagesabschlussFinal abrechnung,
+    int locationId,
+  ) {
+    return <String, dynamic>{
+      'location_id': locationId,
+      'date': _datumIso(abrechnung.datum),
+    };
+  }
+
+  static Map<String, dynamic> settlementsBody(TagesabschlussFinal abrechnung) {
+    final Map<String, int> karten = _kartenBetraege(abrechnung);
+    return <String, dynamic>{
+      'settlements': <Map<String, dynamic>>[
+        <String, dynamic>{
+          'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
+          'terminals': <Map<String, dynamic>>[
+            <String, dynamic>{
+              'tid': abrechnung.terminalId ?? '',
+              'girocard': karten['girocard'] ?? 0,
+              'lastschrift': karten['lastschrift'] ?? 0,
+              'mastercard': karten['mastercard'] ?? 0,
+              'visa': karten['visa'] ?? 0,
+              'maestro': karten['maestro'] ?? 0,
+              'vpay': karten['vpay'] ?? 0,
+            },
+          ],
+        },
+      ],
+    };
+  }
+
   static Future<int> _ensure(
     String baseUrl,
     String apiKey,
     int locationId,
-    String datumIso,
+    TagesabschlussFinal abrechnung,
   ) async {
     final Uri uri = Uri.parse('$baseUrl/api/daily-reports/ensure');
     final http.Response response;
@@ -78,10 +113,7 @@ class ApiUploadService {
           'Content-Type': 'application/json',
           'X-API-Key': apiKey,
         },
-        body: jsonEncode(<String, dynamic>{
-          'location_id': locationId,
-          'date': datumIso,
-        }),
+        body: jsonEncode(ensureBody(abrechnung, locationId)),
       );
     } catch (e) {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
@@ -100,7 +132,6 @@ class ApiUploadService {
   ) async {
     final Uri uri =
         Uri.parse('$baseUrl/api/daily-reports/$reportId/settlements');
-    final Map<String, int> karten = _kartenBetraege(abrechnung);
     final http.Response response;
     try {
       response = await http.put(
@@ -109,24 +140,7 @@ class ApiUploadService {
           'Content-Type': 'application/json',
           'X-API-Key': apiKey,
         },
-        body: jsonEncode(<String, dynamic>{
-          'settlements': <Map<String, dynamic>>[
-            <String, dynamic>{
-              'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
-              'terminals': <Map<String, dynamic>>[
-                <String, dynamic>{
-                  'tid': abrechnung.terminalId ?? '',
-                  'girocard': karten['girocard'] ?? 0,
-                  'lastschrift': karten['lastschrift'] ?? 0,
-                  'mastercard': karten['mastercard'] ?? 0,
-                  'visa': karten['visa'] ?? 0,
-                  'maestro': karten['maestro'] ?? 0,
-                  'vpay': karten['vpay'] ?? 0,
-                },
-              ],
-            },
-          ],
-        }),
+        body: jsonEncode(settlementsBody(abrechnung)),
       );
     } catch (e) {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');

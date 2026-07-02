@@ -161,6 +161,7 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 302–302d ✅ Schwarze Feld-Hervorhebungen (Borders, fillColor, Hint, Label) → Kino-Rot
 - Run 303 ✅ Textlink „Alle zuklappen"/„Alle aufklappen" für Schritt 1 + Wechselgeld-Prüfen-Seite
 - Run 304 ✅ Dev-Dialog „JSON anzeigen" nutzt echte location_id aus SharedPreferences statt Platzhalter 0
+- Run 304a ✅ Dev-Dialog nutzt dieselben Body-Builder-Methoden wie der echte Flurbocash-Upload (ApiUploadService.ensureBody/settlementsBody) — garantiert identisch mit dem tatsächlich gesendeten JSON
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

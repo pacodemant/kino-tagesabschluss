@@ -389,35 +389,10 @@ class _TagesabschlussSchritt3SeiteState
       return;
     }
 
-    final Map<String, dynamic> call1 = <String, dynamic>{
-      'location_id': locationId,
-      'date': DatumsHelper.logischesIsoDatum(),
-    };
-
-    final List<EcTerminalErgebnis> ecTerminals =
-        widget.argumente.ecTerminals ?? <EcTerminalErgebnis>[];
-
-    final List<Map<String, dynamic>> terminals = ecTerminals
-        .map((EcTerminalErgebnis t) => <String, dynamic>{
-              'tid': t.tid,
-              'girocard': t.girocard,
-              'lastschrift': t.lastschrift,
-              'mastercard': t.mastercard,
-              'visa': t.visa,
-              'maestro': t.maestro,
-              'vpay': t.vpay,
-            })
-        .toList();
-
-    final Map<String, dynamic> call2 = <String, dynamic>{
-      'settlements': <Map<String, dynamic>>[
-        <String, dynamic>{
-          'cash_total':
-              _abschlussVorschau?.barBestandAbzglWechselgeldCent ?? 0,
-          'terminals': terminals,
-        },
-      ],
-    };
+    final Map<String, dynamic> call1 =
+        ApiUploadService.ensureBody(_abschlussVorschau!, locationId);
+    final Map<String, dynamic> call2 =
+        ApiUploadService.settlementsBody(_abschlussVorschau!);
 
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
     final String call1Json = encoder.convert(call1);
