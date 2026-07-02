@@ -4,6 +4,8 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 303: Textlink „Alle zuklappen"/„Alle aufklappen" für Schritt 1 (Bargeld zählen) und Wechselgeld-Prüfen-Seite — rechtsbündig über den vier Kacheln (Scheine, lose Münzen, Rollen, Sonstiges). Ein Tap setzt alle vier Sections auf denselben aufgeklappt-Zustand; Linktext wechselt je nachdem ob mindestens eine Kachel offen ist. Neuer Widget-Parameter `alleZuklappenLink` in Schritt1BodyContent. Versionsstring r303. Dateien: tagesabschluss_schritt1_seite.dart, wechselgeld_pruefen_seite.dart, schritt1_body_content.dart, startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 302d: Kino-Rot für Label-Felder in Schritt 2 — Ausgaben-Label, EC-Label single-Beleg und EC-Label multi-Beleg auf AppFarben.appBarRot-Fill + weiße Schrift + transparenter Hint bei Fokus umgestellt; focusedBorder TID-multi-Beleg von blau auf appBarRot. border-Fallback in Ausgaben- und EC-Label-Feldern ebenfalls auf appBarRot. Versionsstring r302d. Dateien: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 302c: Hint-Text bei Fokus ausblenden — hintStyle mit transparenter Farbe wenn hatFokus=true in ganzzahl_eingabefeld.dart und betrag_cent_eingabefeld.dart. Versionsstring r302c. Dateien: ganzzahl_eingabefeld.dart, betrag_cent_eingabefeld.dart, startmenue_seite.dart, kinoauswahl_seite.dart.

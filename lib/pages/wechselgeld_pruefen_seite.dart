@@ -644,6 +644,22 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     });
   }
 
+  bool get _irgendeineSectionAufgeklappt =>
+      _scheineAufgeklappt ||
+      _loseMuenzenAufgeklappt ||
+      _rollenAufgeklappt ||
+      _umschlaegeAufgeklappt;
+
+  void _toggleAlleSections() {
+    setState(() {
+      final bool neuerWert = !_irgendeineSectionAufgeklappt;
+      _scheineAufgeklappt = neuerWert;
+      _loseMuenzenAufgeklappt = neuerWert;
+      _rollenAufgeklappt = neuerWert;
+      _umschlaegeAufgeklappt = neuerWert;
+    });
+  }
+
   bool _oeffneSectionFuerFokusfeld(
     FocusNode zielFokusNode, {
     FocusNode? vorherigesFokusfeld,
@@ -1003,6 +1019,21 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         devToolsStickySichtbar: false,
         devToolsStickyHoehe: 0,
         devToolsPanel: const SizedBox.shrink(),
+        alleZuklappenLink: Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: _toggleAlleSections,
+            style: TextButton.styleFrom(
+              foregroundColor: AppFarben.appBarRot,
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              _irgendeineSectionAufgeklappt ? 'Alle zuklappen' : 'Alle aufklappen',
+            ),
+          ),
+        ),
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
         rollenGruppe: _baueRollenGruppe(),

@@ -125,7 +125,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 294)
+## Laufender Entwicklungsstand (Run 303)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -156,8 +156,10 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 298 ✅ Kupfer-Bereich auto-aufklappen beim Laden wenn Kupfer-Werte vorhanden
 - Run 298a ✅ Mitarbeitername-Feature entfernt (Einstellungs-Kachel + Schritt-3-Ladeaufruf)
 - Run 299 ✅ Stückelung-Legende + Anmerkungsfeld in Schritt 2
-- Run 300 🔜 Desktop-Ansicht auf Smartphone-Breite begrenzen
-- Run 301 🔜 Desktop-Ansicht auf Smartphone-Breite begrenzen
+- Run 300a ✅ TODO.md aufgeräumt (abgehakte Punkte entfernt, Duplikate zusammengeführt)
+- Run 301 ✅ Desktop-Ansicht auf Smartphone-Breite begrenzt (ConstrainedBox maxWidth 430)
+- Run 302–302d ✅ Schwarze Feld-Hervorhebungen (Borders, fillColor, Hint, Label) → Kino-Rot
+- Run 303 ✅ Textlink „Alle zuklappen"/„Alle aufklappen" für Schritt 1 + Wechselgeld-Prüfen-Seite
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

@@ -62,10 +62,11 @@ Stand: Juli 2026 · Run 300a · wird fortlaufend ergänzt
       macht, soll dort etwas automatisch nachgezogen werden? Zurückgestellt,
       da bei sauberen Scans kaum relevant.
 
-- [ ] **Schwarze Hervorhebungen → Kino-Rot** Sämtliche schwarze Feld-Hervorhebungen auf `AppFarben.appBarRot` umstellen.
+- [x] **Schwarze Hervorhebungen → Kino-Rot** Sämtliche schwarze Feld-Hervorhebungen auf `AppFarben.appBarRot` umstellen. *(Run 302–302d)*
 
-- [ ] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"
+- [x] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"
       (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben.
+      *(Run 303 — umgesetzt für Schritt 1 und Wechselgeld-Prüfen-Seite)*
 
 ---
 

@@ -611,6 +611,22 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
+  bool get _irgendeineSectionAufgeklappt =>
+      _scheineAufgeklappt ||
+      _loseMuenzenAufgeklappt ||
+      _rollenAufgeklappt ||
+      _umschlaegeAufgeklappt;
+
+  void _toggleAlleSections() {
+    setState(() {
+      final bool neuerWert = !_irgendeineSectionAufgeklappt;
+      _scheineAufgeklappt = neuerWert;
+      _loseMuenzenAufgeklappt = neuerWert;
+      _rollenAufgeklappt = neuerWert;
+      _umschlaegeAufgeklappt = neuerWert;
+    });
+  }
+
   // Oeffnet die Ziel-Section; bei Section-Wechsel wird die vorherige geschlossen.
   bool _oeffneSectionFuerFokusfeld(
     FocusNode zielFokusNode, {
@@ -1080,6 +1096,21 @@ class _TagesabschlussSchritt1SeiteState
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
         devToolsPanel: _baueDevToolsPanel(),
+        alleZuklappenLink: Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: _toggleAlleSections,
+            style: TextButton.styleFrom(
+              foregroundColor: AppFarben.appBarRot,
+              padding: EdgeInsets.zero,
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: Text(
+              _irgendeineSectionAufgeklappt ? 'Alle zuklappen' : 'Alle aufklappen',
+            ),
+          ),
+        ),
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
         rollenGruppe: gruppen.rollenGruppe,

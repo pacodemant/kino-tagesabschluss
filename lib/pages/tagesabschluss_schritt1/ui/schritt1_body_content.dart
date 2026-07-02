@@ -7,6 +7,7 @@ class Schritt1BodyContent extends StatelessWidget {
     required this.devToolsStickySichtbar,
     required this.devToolsStickyHoehe,
     required this.devToolsPanel,
+    required this.alleZuklappenLink,
     required this.scheineGruppe,
     required this.loseMuenzenGruppe,
     required this.rollenGruppe,
@@ -21,6 +22,7 @@ class Schritt1BodyContent extends StatelessWidget {
   final bool devToolsStickySichtbar;
   final double devToolsStickyHoehe;
   final Widget devToolsPanel;
+  final Widget alleZuklappenLink;
   final Widget scheineGruppe;
   final Widget loseMuenzenGruppe;
   final Widget rollenGruppe;
@@ -68,6 +70,7 @@ class Schritt1BodyContent extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate(<Widget>[
+                      alleZuklappenLink,
                       scheineGruppe,
                       loseMuenzenGruppe,
                       rollenGruppe,
