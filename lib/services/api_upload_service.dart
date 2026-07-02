@@ -77,22 +77,11 @@ class ApiUploadService {
   }
 
   static Map<String, dynamic> settlementsBody(TagesabschlussFinal abrechnung) {
-    final Map<String, int> karten = _kartenBetraege(abrechnung);
     return <String, dynamic>{
       'settlements': <Map<String, dynamic>>[
         <String, dynamic>{
           'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
-          'terminals': <Map<String, dynamic>>[
-            <String, dynamic>{
-              'tid': abrechnung.terminalId ?? '',
-              'girocard': karten['girocard'] ?? 0,
-              'lastschrift': karten['lastschrift'] ?? 0,
-              'mastercard': karten['mastercard'] ?? 0,
-              'visa': karten['visa'] ?? 0,
-              'maestro': karten['maestro'] ?? 0,
-              'vpay': karten['vpay'] ?? 0,
-            },
-          ],
+          'terminals': _terminalsListe(abrechnung),
         },
       ],
     };
@@ -148,18 +137,46 @@ class ApiUploadService {
     _pruefeStatus(response);
   }
 
-  static Map<String, int> _kartenBetraege(TagesabschlussFinal abrechnung) {
-    final Map<String, int> ergebnis = <String, int>{};
+  static List<Map<String, dynamic>> _terminalsListe(
+    TagesabschlussFinal abrechnung,
+  ) {
     final List<ZahlungsartErgebnis>? liste =
         abrechnung.zahlungsartenAufschluesselung;
-    if (liste == null || liste.isEmpty) return ergebnis;
+    if (liste == null || liste.isEmpty) {
+      return <Map<String, dynamic>>[
+        _terminalEintrag(abrechnung.terminalId ?? '', <String, int>{}),
+      ];
+    }
+
+    final Map<String, Map<String, int>> proTid = <String, Map<String, int>>{};
     for (final ZahlungsartErgebnis z in liste) {
       final String? feldname = _kartenartMapping[z.art];
-      if (feldname != null && z.betragCent != null) {
-        ergebnis[feldname] = (ergebnis[feldname] ?? 0) + z.betragCent!;
-      }
+      if (feldname == null || z.betragCent == null) continue;
+      final String tid = z.tid ?? abrechnung.terminalId ?? '';
+      final Map<String, int> betraege =
+          proTid.putIfAbsent(tid, () => <String, int>{});
+      betraege[feldname] = (betraege[feldname] ?? 0) + z.betragCent!;
     }
-    return ergebnis;
+
+    return proTid.entries
+        .map((MapEntry<String, Map<String, int>> e) =>
+            _terminalEintrag(e.key, e.value))
+        .toList();
+  }
+
+  static Map<String, dynamic> _terminalEintrag(
+    String tid,
+    Map<String, int> karten,
+  ) {
+    return <String, dynamic>{
+      'tid': tid,
+      'girocard': karten['girocard'] ?? 0,
+      'lastschrift': karten['lastschrift'] ?? 0,
+      'mastercard': karten['mastercard'] ?? 0,
+      'visa': karten['visa'] ?? 0,
+      'maestro': karten['maestro'] ?? 0,
+      'vpay': karten['vpay'] ?? 0,
+    };
   }
 
   static void _pruefeStatus(http.Response response) {

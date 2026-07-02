@@ -1523,13 +1523,16 @@ class _TagesabschlussSchritt2SeiteState
 
   List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
     final List<ZahlungsartErgebnis> liste = <ZahlungsartErgebnis>[];
-    for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
-      for (final _ZahlungsartZeile zeile in belegZeilen) {
+    for (int belegIndex = 0; belegIndex < _zahlungsartZeilen.length; belegIndex++) {
+      final String tid =
+          belegIndex < _ecBelegLabels.length ? _ecBelegLabels[belegIndex] : '';
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
         if (zeile.anzahlWert == null && zeile.betragCentWert == null) continue;
         liste.add(ZahlungsartErgebnis(
           art: zeile.name,
           anzahl: zeile.anzahlWert ?? 0,
           betragCent: zeile.betragCentWert,
+          tid: tid.isEmpty ? null : tid,
         ));
       }
     }

@@ -3,6 +3,7 @@ class ZahlungsartErgebnis {
     required this.art,
     required this.anzahl,
     required this.betragCent,
+    this.tid,
   });
 
   factory ZahlungsartErgebnis.fromJson(Map<String, dynamic> json) {
@@ -10,12 +11,14 @@ class ZahlungsartErgebnis {
       art: json['art'] as String? ?? '',
       anzahl: (json['anzahl'] as num?)?.toInt(),
       betragCent: (json['betrag_cent'] as num?)?.toInt(),
+      tid: json['tid'] as String?,
     );
   }
 
   final String art;
   final int? anzahl;
   final int? betragCent;
+  final String? tid;
 }
 
 class BelegScanErgebnis {
