@@ -1294,6 +1294,22 @@ class _TagesabschlussSchritt2SeiteState
     return label.isEmpty || label.trim().toLowerCase() == 'unleserlich';
   }
 
+  bool _ersterBelegIstLeer() {
+    return !_scanHatStattgefunden.any((bool b) => b) &&
+        !_scanLaeuft &&
+        _ecBelegeCent.fold(0, (int a, int b) => a + b) == 0;
+  }
+
+  /// Öffnet beim ersten (noch leeren) Beleg direkt alle Kartenart-Zeilen zur
+  /// Bearbeitung, damit die manuelle Eingabe ohne Zwischenschritt möglich ist.
+  void _oeffneErstenBelegZurBearbeitungFallsLeer() {
+    if (_ersterBelegIstLeer() && _zahlungsartZeilen.isNotEmpty) {
+      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+        zeile.zustand = ZeilenZustand.editing;
+      }
+    }
+  }
+
   void _manuellBearbeitenAktivieren(int i) {
     setState(() {
       if (i < _ecUnterkachelEditModus.length) {
@@ -1386,6 +1402,7 @@ class _TagesabschlussSchritt2SeiteState
       }
       if (matching == null) {
         zeile.zustand = ZeilenZustand.hidden;
+        zeile.nichtPlausibel = false;
         continue;
       }
       zeile.zustand = ZeilenZustand.shown;
@@ -1429,13 +1446,12 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
+  /// Rot markiert werden nur echte Scan-Problemfälle (Kartenart laut Rohdaten
+  /// erkannt, aber Betrag nicht lesbar) — solange noch kein Betrag nachgetragen
+  /// wurde. Zeilen, die schlicht nicht auf dem Beleg stehen oder 0 enthalten,
+  /// bleiben unmarkiert.
   bool _istZeileImplausibel(_ZahlungsartZeile zeile, int belegIndex) {
-    if (zeile.betragCentWert == null) {
-      return belegIndex < _scanHatStattgefunden.length &&
-          _scanHatStattgefunden[belegIndex] &&
-          zeile.zustand != ZeilenZustand.hidden;
-    }
-    return false;
+    return zeile.nichtPlausibel && zeile.betragCentWert == null;
   }
 
   List<ZahlungsartErgebnis>? _baueZahlungsartenListe() {
@@ -2140,8 +2156,7 @@ class _TagesabschlussSchritt2SeiteState
               textAlign: TextAlign.right,
               style: TextStyle(
                 fontSize: 13,
-                color: zeile.betragCentWert == null &&
-                        _istZeileImplausibel(zeile, belegIndex)
+                color: _istZeileImplausibel(zeile, belegIndex)
                     ? Colors.red
                     : null,
               ),
@@ -2300,13 +2315,49 @@ class _TagesabschlussSchritt2SeiteState
           const Divider(height: 10),
           Row(
             children: <Widget>[
-              const Expanded(
-                child: Text(
-                  'Gesamt (laut Beleg)',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                  ),
+              Expanded(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      wurdeGescannt ? 'Gesamt (laut Beleg)' : 'Gesamt',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 28,
+                      height: 28,
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        tooltip: 'Hilfe',
+                        icon: Icon(Icons.help_outline,
+                            size: 16, color: Colors.grey.shade600),
+                        onPressed: () {
+                          showDialog<void>(
+                            context: context,
+                            builder: (BuildContext ctx) => AlertDialog(
+                              title: const Text('Gesamtbetrag'),
+                              content: const Text(
+                                'Die Gesamtsumme wird nicht automatisch berechnet, '
+                                'sondern muss selbst eingegeben werden. Sie dient '
+                                'der Kontrolle, ob alle Beträge korrekt erfasst '
+                                'wurden.',
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(),
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(
@@ -2866,8 +2917,13 @@ class _TagesabschlussSchritt2SeiteState
                       // Header
                       InkWell(
                         onTap: () {
-                          setState(() =>
-                              _ecKachelAufgeklappt = !_ecKachelAufgeklappt);
+                          final bool wirdGeoeffnet = !_ecKachelAufgeklappt;
+                          setState(() {
+                            _ecKachelAufgeklappt = !_ecKachelAufgeklappt;
+                            if (wirdGeoeffnet) {
+                              _oeffneErstenBelegZurBearbeitungFallsLeer();
+                            }
+                          });
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             if (mounted) _aktualisiereScrollPfeil();
                           });
@@ -2884,22 +2940,12 @@ class _TagesabschlussSchritt2SeiteState
                                 ),
                               ),
                               const Spacer(),
-                              if (!_ecKachelAufgeklappt &&
-                                  !_scanHatStattgefunden.any((bool b) => b) &&
-                                  !_scanLaeuft &&
-                                  _ecBelegeCent.fold(
-                                          0, (int a, int b) => a + b) ==
-                                      0)
+                              if (!_ecKachelAufgeklappt && _ersterBelegIstLeer())
                                 GestureDetector(
                                   onTap: () {
                                     setState(() {
                                       _ecKachelAufgeklappt = true;
-                                      if (_zahlungsartZeilen.isNotEmpty) {
-                                        for (final _ZahlungsartZeile zeile
-                                            in _zahlungsartZeilen[0]) {
-                                          zeile.zustand = ZeilenZustand.editing;
-                                        }
-                                      }
+                                      _oeffneErstenBelegZurBearbeitungFallsLeer();
                                     });
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
