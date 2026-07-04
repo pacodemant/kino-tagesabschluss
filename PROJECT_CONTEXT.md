@@ -167,6 +167,7 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 304d ✅ Oberes Gesamtbetrag-Feld (1-Beleg-Modus) entfernt, Pflichtfeld auf "Gesamt (laut Beleg)" verlegt; neuer Beleg im Mehrbeleg-Modus startet mit editierbarem TID-Feld
 - Run 304d2 ✅ Korrektur: "+ Weiteren Beleg hinzufügen" wieder erst nach erster Eingabe/Scan sichtbar; "Gesamt (laut Beleg)" wieder nur editierbar nach "Belegdaten bearbeiten" bzw. "manuell eingeben"; Kartenart-"+"-Buttons nur noch nach Scan für nicht erkannte Kartenarten
 - Run 304d3 ✅ Leere EC-Kachel öffnet Header-Tap/"manuell eingeben" direkt alle Kartenart-Zeilen + Gesamt-Feld zur Bearbeitung; Gesamt-Label "Gesamt" (manuell) vs. "Gesamt (laut Beleg)" (nach Scan) + Hilfe-Icon; rote Hervorhebung korrigiert auf echte Scan-Problemfälle (`nichtPlausibel`) statt Pauschal-Regel
+- Run 304d4 ✅ Rote Einfärbung des Gesamt-Betrags bei Summen-Mismatch entfernt (nur noch orangener Hinweistext), damit MA den ganzen Beleg statt nur das Gesamt-Feld prüft
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

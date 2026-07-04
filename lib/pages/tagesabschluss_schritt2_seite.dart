@@ -2369,10 +2369,9 @@ class _TagesabschlussSchritt2SeiteState
                                 gesBetrag)
                             : '—',
                         textAlign: TextAlign.right,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          color: betragMismatch ? Colors.red.shade700 : null,
                         ),
                       )
                     : TextField(
@@ -2392,10 +2391,9 @@ class _TagesabschlussSchritt2SeiteState
                                 CentWaehrungsEingabeFormatter(),
                               ],
                         textAlign: TextAlign.right,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          color: betragMismatch ? Colors.red.shade700 : null,
                         ),
                         decoration: InputDecoration(
                           hintText: '0,00',
