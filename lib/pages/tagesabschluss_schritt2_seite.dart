@@ -639,6 +639,11 @@ class _TagesabschlussSchritt2SeiteState
           !_ecUnterkachelAufgeklappt[0]) {
         _ecUnterkachelAufgeklappt[0] = true;
       }
+      if (_zahlungsartZeilen.isNotEmpty) {
+        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+          zeile.zustand = ZeilenZustand.editing;
+        }
+      }
     });
 
     final List<({TextEditingController controller, FocusNode fokus})>
@@ -2197,6 +2202,9 @@ class _TagesabschlussSchritt2SeiteState
   Widget _baueZahlungsartenTabelle(int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return const SizedBox.shrink();
     final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
+    final bool editModus = zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
+    final bool wurdeGescannt =
+        belegIndex < _scanHatStattgefunden.length && _scanHatStattgefunden[belegIndex];
     final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
         ? _kartenartenGesamtBetragCent[belegIndex]
         : null;
@@ -2256,7 +2264,8 @@ class _TagesabschlussSchritt2SeiteState
               zeilen[i].zustand == ZeilenZustand.editing
                   ? _baueKartenartenZeile(i, belegIndex)
                   : _baueKartenartenZeileAnzeige(i, belegIndex),
-          if (zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.hidden))
+          if (wurdeGescannt &&
+              zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.hidden))
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Wrap(
@@ -2302,65 +2311,78 @@ class _TagesabschlussSchritt2SeiteState
               ),
               SizedBox(
                 width: 104,
-                child: TextField(
-                  controller: belegIndex < _kartenartenGesamtBetragController.length
-                      ? _kartenartenGesamtBetragController[belegIndex]
-                      : TextEditingController(),
-                  focusNode: belegIndex < _kartenartenGesamtBetragFocusNode.length
-                      ? _kartenartenGesamtBetragFocusNode[belegIndex]
-                      : null,
-                  keyboardType: _eingabeMitKomma
-                      ? const TextInputType.numberWithOptions(decimal: true)
-                      : TextInputType.number,
-                  inputFormatters: _eingabeMitKomma
-                      ? <TextInputFormatter>[]
-                      : <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly,
-                          CentWaehrungsEingabeFormatter(),
-                        ],
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
-                    color: betragMismatch ? Colors.red.shade700 : null,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: '0,00',
-                    isDense: true,
-                    border: const OutlineInputBorder(),
-                    errorBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red),
-                    ),
-                    focusedErrorBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(color: Colors.red, width: 2),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 5),
-                    errorText: belegIndex == 0
-                        ? _pflichtfeldFehlertext(
-                            feldBeruehrt: _kartenartenGesamt1Beruehrt,
-                            controller: _kartenartenGesamtBetragController.first,
-                          )
-                        : null,
-                  ),
-                  onChanged: (String wert) {
-                    setState(() {
-                      if (belegIndex < _kartenartenGesamtBetragCent.length) {
-                        _kartenartenGesamtBetragCent[belegIndex] =
-                            wert.trim().isEmpty
-                                ? null
-                                : _parsiereBetragCent(wert);
-                        if (belegIndex < _ecBelegeCent.length) {
-                          _ecBelegeCent[belegIndex] =
-                              _kartenartenGesamtBetragCent[belegIndex] ?? 0;
-                        }
-                      }
-                      if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
-                      _letzteAenderung = DateTime.now();
-                    });
-                    _speichereEntwurf();
-                  },
-                ),
+                child: !editModus
+                    ? Text(
+                        gesBetrag != null
+                            ? TagesabschlussFormatierung.formatiereEuro(
+                                gesBetrag)
+                            : '—',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: betragMismatch ? Colors.red.shade700 : null,
+                        ),
+                      )
+                    : TextField(
+                        controller: belegIndex < _kartenartenGesamtBetragController.length
+                            ? _kartenartenGesamtBetragController[belegIndex]
+                            : TextEditingController(),
+                        focusNode: belegIndex < _kartenartenGesamtBetragFocusNode.length
+                            ? _kartenartenGesamtBetragFocusNode[belegIndex]
+                            : null,
+                        keyboardType: _eingabeMitKomma
+                            ? const TextInputType.numberWithOptions(decimal: true)
+                            : TextInputType.number,
+                        inputFormatters: _eingabeMitKomma
+                            ? <TextInputFormatter>[]
+                            : <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                                CentWaehrungsEingabeFormatter(),
+                              ],
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: betragMismatch ? Colors.red.shade700 : null,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: '0,00',
+                          isDense: true,
+                          border: const OutlineInputBorder(),
+                          errorBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red, width: 2),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 5),
+                          errorText: belegIndex == 0
+                              ? _pflichtfeldFehlertext(
+                                  feldBeruehrt: _kartenartenGesamt1Beruehrt,
+                                  controller: _kartenartenGesamtBetragController.first,
+                                )
+                              : null,
+                        ),
+                        onChanged: (String wert) {
+                          setState(() {
+                            if (belegIndex < _kartenartenGesamtBetragCent.length) {
+                              _kartenartenGesamtBetragCent[belegIndex] =
+                                  wert.trim().isEmpty
+                                      ? null
+                                      : _parsiereBetragCent(wert);
+                              if (belegIndex < _ecBelegeCent.length) {
+                                _ecBelegeCent[belegIndex] =
+                                    _kartenartenGesamtBetragCent[belegIndex] ?? 0;
+                              }
+                            }
+                            if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
+                            _letzteAenderung = DateTime.now();
+                          });
+                          _speichereEntwurf();
+                        },
+                      ),
               ),
             ],
           ),
@@ -2870,8 +2892,15 @@ class _TagesabschlussSchritt2SeiteState
                                       0)
                                 GestureDetector(
                                   onTap: () {
-                                    setState(
-                                        () => _ecKachelAufgeklappt = true);
+                                    setState(() {
+                                      _ecKachelAufgeklappt = true;
+                                      if (_zahlungsartZeilen.isNotEmpty) {
+                                        for (final _ZahlungsartZeile zeile
+                                            in _zahlungsartZeilen[0]) {
+                                          zeile.zustand = ZeilenZustand.editing;
+                                        }
+                                      }
+                                    });
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (mounted) {
@@ -2988,7 +3017,8 @@ class _TagesabschlussSchritt2SeiteState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              Padding(
+                              if (hatEcBelege)
+                                Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
                                   child: OutlinedButton(
                                     onPressed: _scanLaeuft
