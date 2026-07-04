@@ -164,6 +164,7 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 304a ✅ Dev-Dialog nutzt dieselben Body-Builder-Methoden wie der echte Flurbocash-Upload (ApiUploadService.ensureBody/settlementsBody) — garantiert identisch mit dem tatsächlich gesendeten JSON
 - Run 304b ✅ Mehrere EC-Terminals/Belege korrekt an Flurbocash gemeldet — ein terminals[]-Eintrag pro TID statt einem Summen-Eintrag über alle Belege
 - Run 304c ✅ Anzahl-Felder komplett aus EC-Belege-Erfassung entfernt (BelegScan, Scan-Dialog, Schritt 2, Persistenz) — nur noch Beträge zählen
+- Run 304d ✅ Oberes Gesamtbetrag-Feld (1-Beleg-Modus) entfernt, Pflichtfeld auf "Gesamt (laut Beleg)" verlegt (jetzt immer editierbar); "+ Weiteren Beleg hinzufügen" immer verfügbar; neuer Beleg im Mehrbeleg-Modus startet mit editierbarem TID-Feld
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

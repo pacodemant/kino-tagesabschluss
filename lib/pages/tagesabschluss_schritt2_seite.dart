@@ -145,6 +145,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<bool> _scanHatStattgefunden = <bool>[];
   final List<int?> _kartenartenGesamtBetragCent = <int?>[];
   final List<TextEditingController> _kartenartenGesamtBetragController = <TextEditingController>[];
+  final List<FocusNode> _kartenartenGesamtBetragFocusNode = <FocusNode>[];
   final List<bool> _metadatenAufgeklappt = <bool>[];
   final List<bool> _metadatenNurAnzeige = <bool>[];
 
@@ -173,7 +174,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
-  bool _ecBeleg1Beruehrt = false;
+  bool _kartenartenGesamt1Beruehrt = false;
   bool _ecBelegLabel1Beruehrt = false;
   bool _laedt = true;
   DateTime _letzteAenderung = DateTime.now();
@@ -276,6 +277,7 @@ class _TagesabschlussSchritt2SeiteState
     _scanBelegNrVonFocusNode.dispose();
     _scanBelegNrBisFocusNode.dispose();
     disposeControllers(_kartenartenGesamtBetragController);
+    disposeFocusNodes(_kartenartenGesamtBetragFocusNode);
     disposeControllers(_ecBelegController);
     disposeControllers(_ecBelegLabelController);
     disposeFocusNodes(_ecBelegFocusNode);
@@ -648,7 +650,10 @@ class _TagesabschlussSchritt2SeiteState
         controller: _ecBelegLabelController.first,
         fokus: _ecBelegLabelFocusNode.first
       ),
-      (controller: _ecBelegController.first, fokus: _ecBelegFocusNode.first),
+      (
+        controller: _kartenartenGesamtBetragController.first,
+        fokus: _kartenartenGesamtBetragFocusNode.first
+      ),
     ];
 
     for (final ({TextEditingController controller, FocusNode fokus}) feld
@@ -720,7 +725,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
       _ecUnterkachelAufgeklappt.add(true);
-      _ecUnterkachelEditModus.add(false);
+      // Neuer Beleg startet im Mehrbeleg-Modus sofort editierbar (TID direkt eingebbar).
+      _ecUnterkachelEditModus.add(true);
       _ecBelegScanGescannt.add(false);
       // per-Beleg
       _zahlungsartZeilen.add(
@@ -734,6 +740,7 @@ class _TagesabschlussSchritt2SeiteState
       _scanHatStattgefunden.add(false);
       _kartenartenGesamtBetragCent.add(null);
       _kartenartenGesamtBetragController.add(TextEditingController());
+      _kartenartenGesamtBetragFocusNode.add(FocusNode());
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
     });
@@ -768,6 +775,7 @@ class _TagesabschlussSchritt2SeiteState
       if (index < _scanHatStattgefunden.length) _scanHatStattgefunden.removeAt(index);
       if (index < _kartenartenGesamtBetragCent.length) _kartenartenGesamtBetragCent.removeAt(index);
       if (index < _kartenartenGesamtBetragController.length) _kartenartenGesamtBetragController.removeAt(index).dispose();
+      if (index < _kartenartenGesamtBetragFocusNode.length) _kartenartenGesamtBetragFocusNode.removeAt(index).dispose();
       if (index < _metadatenAufgeklappt.length) _metadatenAufgeklappt.removeAt(index);
       if (index < _metadatenNurAnzeige.length) _metadatenNurAnzeige.removeAt(index);
     });
@@ -807,6 +815,7 @@ class _TagesabschlussSchritt2SeiteState
       if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden.removeLast();
       if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent.removeLast();
       if (_kartenartenGesamtBetragController.isNotEmpty) _kartenartenGesamtBetragController.removeLast().dispose();
+      if (_kartenartenGesamtBetragFocusNode.isNotEmpty) _kartenartenGesamtBetragFocusNode.removeLast().dispose();
       if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt.removeLast();
       if (_metadatenNurAnzeige.isNotEmpty) _metadatenNurAnzeige.removeLast();
     }
@@ -837,6 +846,7 @@ class _TagesabschlussSchritt2SeiteState
       _scanHatStattgefunden.add(false);
       _kartenartenGesamtBetragCent.add(null);
       _kartenartenGesamtBetragController.add(TextEditingController());
+      _kartenartenGesamtBetragFocusNode.add(FocusNode());
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
     }
@@ -1048,7 +1058,7 @@ class _TagesabschlussSchritt2SeiteState
       _differenzAnfangsbestandCent = 0;
       _kinoSollBeruehrt = false;
       _bistroSollBeruehrt = false;
-      _ecBeleg1Beruehrt = false;
+      _kartenartenGesamt1Beruehrt = false;
       _ecBelegLabel1Beruehrt = false;
       _validierungAusgeloest = false;
 
@@ -1178,7 +1188,7 @@ class _TagesabschlussSchritt2SeiteState
               TagesabschlussFormatierung.formatiereEuroEingabe(
                   geprueftes.gesamtBetragCent!),
             );
-            if (belegIndex == 0) _ecBeleg1Beruehrt = true;
+            if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
           }
           _scanTerminalId = _feldWertOderNull(geprueftes.terminalId);
           if (_scanTerminalId != null) {
@@ -1531,8 +1541,8 @@ class _TagesabschlussSchritt2SeiteState
     final List<FocusNode> ecBelegFokus = <FocusNode>[];
     for (int i = 0; i < _ecBelegLabelFocusNode.length; i++) {
       ecBelegFokus.add(_ecBelegLabelFocusNode[i]);
-      if (i < _ecBelegFocusNode.length) {
-        ecBelegFokus.add(_ecBelegFocusNode[i]);
+      if (i < _kartenartenGesamtBetragFocusNode.length) {
+        ecBelegFokus.add(_kartenartenGesamtBetragFocusNode[i]);
       }
     }
     return <FocusNode>[
@@ -1607,8 +1617,8 @@ class _TagesabschlussSchritt2SeiteState
         _ausgabenBetragFocusNode[i]: _ausgabenBetragController[i],
       for (int i = 0; i < _ecBelegLabelFocusNode.length; i++)
         _ecBelegLabelFocusNode[i]: _ecBelegLabelController[i],
-      for (int i = 0; i < _ecBelegFocusNode.length; i++)
-        _ecBelegFocusNode[i]: _ecBelegController[i],
+      for (int i = 0; i < _kartenartenGesamtBetragFocusNode.length; i++)
+        _kartenartenGesamtBetragFocusNode[i]: _kartenartenGesamtBetragController[i],
     };
     for (final FocusNode fn in _fokusReihenfolgeSchritt2()) {
       if (lookup[fn]?.text.isEmpty ?? true) {
@@ -1666,7 +1676,7 @@ class _TagesabschlussSchritt2SeiteState
       }
       _ecBelegeCent[0] = 0;
       _setzeControllerText(_ecBelegController[0], '');
-      _ecBeleg1Beruehrt = false;
+      _kartenartenGesamt1Beruehrt = false;
       _ecBelegLabels[0] = '';
       _setzeControllerText(_ecBelegLabelController[0], '');
       _ecBelegLabel1Beruehrt = false;
@@ -2187,7 +2197,6 @@ class _TagesabschlussSchritt2SeiteState
   Widget _baueZahlungsartenTabelle(int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return const SizedBox.shrink();
     final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
-    final bool editModus = zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
     final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
         ? _kartenartenGesamtBetragCent[belegIndex]
         : null;
@@ -2293,62 +2302,65 @@ class _TagesabschlussSchritt2SeiteState
               ),
               SizedBox(
                 width: 104,
-                child: !editModus
-                    ? Text(
-                        gesBetrag != null
-                            ? TagesabschlussFormatierung.formatiereEuro(
-                                gesBetrag)
-                            : '—',
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: betragMismatch ? Colors.red.shade700 : null,
-                        ),
-                      )
-                    : TextField(
-                        controller: belegIndex < _kartenartenGesamtBetragController.length
-                            ? _kartenartenGesamtBetragController[belegIndex]
-                            : TextEditingController(),
-                        keyboardType: _eingabeMitKomma
-                            ? const TextInputType.numberWithOptions(
-                                decimal: true)
-                            : TextInputType.number,
-                        inputFormatters: _eingabeMitKomma
-                            ? <TextInputFormatter>[]
-                            : <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                CentWaehrungsEingabeFormatter(),
-                              ],
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                        decoration: const InputDecoration(
-                          hintText: '0,00',
-                          isDense: true,
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 5),
-                        ),
-                        onChanged: (String wert) {
-                          setState(() {
-                            if (belegIndex < _kartenartenGesamtBetragCent.length) {
-                              _kartenartenGesamtBetragCent[belegIndex] =
-                                  wert.trim().isEmpty
-                                      ? null
-                                      : _parsiereBetragCent(wert);
-                              if (_ecBelegController.length > 1 &&
-                                  belegIndex < _ecBelegeCent.length) {
-                                _ecBelegeCent[belegIndex] =
-                                    _kartenartenGesamtBetragCent[belegIndex] ?? 0;
-                              }
-                            }
-                          });
-                          _speichereEntwurf();
-                        },
-                      ),
+                child: TextField(
+                  controller: belegIndex < _kartenartenGesamtBetragController.length
+                      ? _kartenartenGesamtBetragController[belegIndex]
+                      : TextEditingController(),
+                  focusNode: belegIndex < _kartenartenGesamtBetragFocusNode.length
+                      ? _kartenartenGesamtBetragFocusNode[belegIndex]
+                      : null,
+                  keyboardType: _eingabeMitKomma
+                      ? const TextInputType.numberWithOptions(decimal: true)
+                      : TextInputType.number,
+                  inputFormatters: _eingabeMitKomma
+                      ? <TextInputFormatter>[]
+                      : <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                          CentWaehrungsEingabeFormatter(),
+                        ],
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    color: betragMismatch ? Colors.red.shade700 : null,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: '0,00',
+                    isDense: true,
+                    border: const OutlineInputBorder(),
+                    errorBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.red, width: 2),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 6, vertical: 5),
+                    errorText: belegIndex == 0
+                        ? _pflichtfeldFehlertext(
+                            feldBeruehrt: _kartenartenGesamt1Beruehrt,
+                            controller: _kartenartenGesamtBetragController.first,
+                          )
+                        : null,
+                  ),
+                  onChanged: (String wert) {
+                    setState(() {
+                      if (belegIndex < _kartenartenGesamtBetragCent.length) {
+                        _kartenartenGesamtBetragCent[belegIndex] =
+                            wert.trim().isEmpty
+                                ? null
+                                : _parsiereBetragCent(wert);
+                        if (belegIndex < _ecBelegeCent.length) {
+                          _ecBelegeCent[belegIndex] =
+                              _kartenartenGesamtBetragCent[belegIndex] ?? 0;
+                        }
+                      }
+                      if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
+                      _letzteAenderung = DateTime.now();
+                    });
+                    _speichereEntwurf();
+                  },
+                ),
               ),
             ],
           ),
@@ -2976,8 +2988,7 @@ class _TagesabschlussSchritt2SeiteState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              if (hatEcBelege)
-                                Padding(
+                              Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
                                   child: OutlinedButton(
                                     onPressed: _scanLaeuft
@@ -3018,13 +3029,10 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                   )
                                 else
-                                  // Edit-Modus: Eingabefelder
+                                  // Edit-Modus: Terminal-ID-Eingabe
                                   Padding(
                                   padding: const EdgeInsets.only(bottom: 6),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Expanded(
-                                        child: TextField(
+                                  child: TextField(
                                           controller: _ecBelegLabelController[0],
                                           focusNode: _ecBelegLabelFocusNode[0],
                                           style: TextStyle(
@@ -3099,36 +3107,6 @@ class _TagesabschlussSchritt2SeiteState
                                             _speichereEntwurf();
                                           },
                                         ),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      SizedBox(
-                                        width: 120,
-                                        child: BetragCentEingabefeld(
-                                          textController: _ecBelegController[0],
-                                          focusNode: _ecBelegFocusNode[0],
-                                          textInputAction:
-                                              _textInputActionFuerSchritt2(_ecBelegFocusNode[0]),
-                                          onSubmitted: (_) =>
-                                              _beiEingabeAbgeschlossenSchritt2(_ecBelegFocusNode[0]),
-                                          onChanged: (String wert) {
-                                            setState(() {
-                                              _letzteAenderung = DateTime.now();
-                                              _ecBeleg1Beruehrt = true;
-                                              _ecBelegeCent[0] = _parsiereBetragCent(wert);
-                                            });
-                                            _speichereEntwurf();
-                                          },
-                                          schriftgroesse: 15,
-                                          hinweisText: '0,00 €',
-                                          fehlermeldungText: _pflichtfeldFehlertext(
-                                            feldBeruehrt: _ecBeleg1Beruehrt,
-                                            controller: _ecBelegController.first,
-                                          ),
-                                          mitKomma: _eingabeMitKomma,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                                 ),
                                 if (_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0])
                                   _baueMetadatenBlock(0),
