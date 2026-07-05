@@ -92,6 +92,15 @@
         // Periodisch prüfen — neue Version könnte während die App offen ist deployed werden
         setInterval(function() { reg.update().catch(function() {}); }, 3600000);
       });
+      // PWA hat keine Tabs: beim Zurückkehren aus dem Hintergrund (Home-Bildschirm-Icon
+      // erneut geöffnet) läuft kein neuer Seitenaufbau, daher hier aktiv nachfragen.
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+          navigator.serviceWorker.getRegistration().then(function(reg) {
+            if (reg) reg.update().catch(function() {});
+          });
+        }
+      });
     }
   </script>
 </head>

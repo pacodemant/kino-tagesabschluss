@@ -52,44 +52,16 @@ Future<void> main() async {
 
   runApp(const MeineApp());
   initSwUpdateWatcher(() {
-    MeineApp.scaffoldMessengerKey.currentState?.showMaterialBanner(
-      MaterialBanner(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        content: const Row(
-          children: <Widget>[
-            Icon(Icons.system_update, color: Colors.deepOrange),
-            SizedBox(width: 12),
-            Text(
-              'Neue Version verfügbar',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              MeineApp.scaffoldMessengerKey.currentState
-                  ?.hideCurrentMaterialBanner();
-              reloadPage();
-            },
-            child: const Text('Jetzt laden'),
-          ),
-        ],
-      ),
-    );
+    reloadPage();
   });
 }
 
 class MeineApp extends StatelessWidget {
   const MeineApp({super.key});
 
-  static final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      scaffoldMessengerKey: MeineApp.scaffoldMessengerKey,
       title: 'Kassenabrechnung',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
