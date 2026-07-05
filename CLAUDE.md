@@ -176,6 +176,7 @@ Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 ## Ausgabeformat
 
 Diagnosen, Analysen und Berichte immer in einem einzigen Codeblock ausgeben — zum einfachen Kopieren per Klick.
+Zeilen innerhalb dieser Codeblöcke auf max. 80 Zeichen umbrechen (auch Fließtext, nicht nur Listen).
 
 ## Sprache
 
