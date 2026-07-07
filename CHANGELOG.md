@@ -4,6 +4,15 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 310: TODO.md korrigiert — Punkt "Automatisches Geräte-Backup
+  beim Senden" abgehakt. War bereits erledigt:
+  `_autoSaveImHintergrund()` in tagesabschluss_schritt3_seite.dart
+  speichert die Abrechnung automatisch beim Erreichen von Schritt 3
+  lokal (Hive box_tagesabschluesse), unabhängig vom späteren
+  API-Upload-Ergebnis; Schritt 3 hat keine editierbaren Felder, die
+  danach noch verloren gehen könnten. Kein App-Code geändert. Datei:
+  TODO.md.
+
 - Run 309: TODO.md korrigiert — Punkt "Belegscan Metadaten
   zuklappbar machen" abgehakt. War bereits erledigt:
   `_baueMetadatenBlock()` in tagesabschluss_schritt2_seite.dart hat
