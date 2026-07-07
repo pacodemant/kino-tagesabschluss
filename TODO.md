@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 305 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 306 · wird fortlaufend ergänzt
 
 ---
 
@@ -42,9 +42,6 @@ Stand: Juli 2026 · Run 305 · wird fortlaufend ergänzt
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
-
-- [ ] **Getränke-Nachfüllliste persistieren** Lokal speichern wie andere
-      Entwurfsdaten. Verhindert Datenverlust bei Absturz.
 
 - [ ] **Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag** Seit Run 274f4
       gibt es in der Kartenarten-Tabelle einen "+ Kartenart"-Button zum

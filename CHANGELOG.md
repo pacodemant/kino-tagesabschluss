@@ -4,6 +4,13 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 306: TODO.md korrigiert — Punkt „Getränke-Nachfüllliste
+  persistieren" entfernt. War bereits erledigt:
+  `getraenke_auffuellen_seite.dart` speichert Mengen bei jeder Eingabe
+  über `LokalerSpeicher.speichereGetraenkeMengen()` in die Hive-Box
+  `box_getraenke_mengen` und lädt sie beim Öffnen wieder. Kein App-Code
+  geändert. Datei: TODO.md.
+
 - Run 305: TODO.md aufgeräumt — drei erledigte/obsolete Punkte aus „Kleine
   Fixes" entfernt: „Desktop-Ansicht begrenzen" (bereits in Run 301
   umgesetzt), „Beleg-Eingabe: Textbuttons" (Button existiert bereits, kein
