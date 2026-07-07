@@ -4,6 +4,12 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 309: TODO.md korrigiert — Punkt "Belegscan Metadaten
+  zuklappbar machen" abgehakt. War bereits erledigt:
+  `_baueMetadatenBlock()` in tagesabschluss_schritt2_seite.dart hat
+  bereits einen Klapp-Mechanismus über `_metadatenAufgeklappt`. Kein
+  App-Code geändert. Datei: TODO.md.
+
 - Run 308: TODO.md ergänzt um Klärungspunkt "Terminals bei doppelter
   TID am selben Tag" unter "Blockiert — wartet auf IT". Anlass: Beim
   Testen von Run 307 stellte sich heraus, dass zwei EC-Belege

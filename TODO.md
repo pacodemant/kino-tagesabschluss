@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 308 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 309 · wird fortlaufend ergänzt
 
 ---
 
@@ -103,7 +103,8 @@ Stand: Juli 2026 · Run 308 · wird fortlaufend ergänzt
 - [ ] **Storno auf Belegen** Noch nie vorgekommen, aber die App muss
       Stornos erkennen können.
 
-- [ ] **Belegscan Metadaten** zuklappbar machen.
+- [x] **Belegscan Metadaten** zuklappbar machen. *(bereits umgesetzt —
+      `_baueMetadatenBlock()` mit `_metadatenAufgeklappt`-Toggle)*
 
 - [ ] **KI-Prompt verbessern** KI soll nur relevante Daten lesen, nichts
       hineininterpretieren und keine Bemerkungen zu Schreibgerät, Belegrissen o. Ä.
