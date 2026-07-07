@@ -4,6 +4,22 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 307: Prüf-Popup nach EC-Beleg-Scan entfernt — nach einem
+  erfolgreichen Scan wird das Ergebnis jetzt direkt in die EC-Kachel
+  übernommen, ohne den bisherigen Zwischenschritt „EC-Beleg-Scan
+  prüfen" (Übernehmen/nochmal). Die Warnhinweise aus dem Popup waren
+  seit Run 304d3/304d4 redundant, da unplausible/unlesbare Werte
+  bereits direkt in der Kachel rot/orange markiert und korrigierbar
+  sind. Erneutes Fotografieren bleibt jederzeit über den
+  Kamera-Button pro Beleg-Zeile möglich (überschreibt die bisherigen
+  Werte). Der separate „Kein Terminal-Beleg"-Fehlerdialog bleibt
+  unverändert bestehen. `beleg_scan_gegenpruef_dialog.dart` gelöscht
+  (nirgends mehr verwendet), Klasse `BelegScanDialogErgebnis` aus
+  `beleg_scan_ergebnis.dart` entfernt. Versionsstring r307. Dateien:
+  tagesabschluss_schritt2_seite.dart, beleg_scan_ergebnis.dart,
+  beleg_scan_gegenpruef_dialog.dart (gelöscht), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 306: TODO.md korrigiert — Punkt „Getränke-Nachfüllliste
   persistieren" entfernt. War bereits erledigt:
   `getraenke_auffuellen_seite.dart` speichert Mengen bei jeder Eingabe

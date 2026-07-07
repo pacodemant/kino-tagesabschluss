@@ -73,19 +73,3 @@ class BelegScanErgebnis {
 
   bool get istPlausibel => betraegePlausibel;
 }
-
-class BelegScanDialogErgebnis {
-  const BelegScanDialogErgebnis({
-    required BelegScanErgebnis this.ergebnis,
-    required this.kachelOeffnen,
-  });
-
-  const BelegScanDialogErgebnis.nochmalScannen()
-      : ergebnis = null,
-        kachelOeffnen = false;
-
-  final BelegScanErgebnis? ergebnis;
-  final bool kachelOeffnen;
-
-  bool get istNeueScanAnfrage => ergebnis == null;
-}

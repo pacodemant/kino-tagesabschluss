@@ -11,7 +11,6 @@ import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
-import 'package:kino_bar_app/widgets/beleg_scan_gegenpruef_dialog.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -1166,25 +1165,7 @@ class _TagesabschlussSchritt2SeiteState
           }
           return;
         }
-        final BelegScanDialogErgebnis? dialogErgebnis =
-            await showDialog<BelegScanDialogErgebnis>(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext dialogContext) =>
-              BelegScanGegenpruefDialog(ergebnis: ergebnis),
-        );
-        if (!mounted) return;
-        if (dialogErgebnis == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Scan abgebrochen.')),
-          );
-          return;
-        }
-        if (dialogErgebnis.istNeueScanAnfrage) {
-          wiederholen = true;
-          continue;
-        }
-        final BelegScanErgebnis geprueftes = dialogErgebnis.ergebnis!;
+        final BelegScanErgebnis geprueftes = ergebnis;
         setState(() {
           if (geprueftes.gesamtBetragCent != null) {
             _ecBelegeCent[belegIndex] = geprueftes.gesamtBetragCent!;
