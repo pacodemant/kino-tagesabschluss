@@ -4,6 +4,13 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 305: TODO.md aufgeräumt — drei erledigte/obsolete Punkte aus „Kleine
+  Fixes" entfernt: „Desktop-Ansicht begrenzen" (bereits in Run 301
+  umgesetzt), „Beleg-Eingabe: Textbuttons" (Button existiert bereits, kein
+  Textlink mehr) und „PWA-Install-Button (iOS)" (obsolet, da Geräte an den
+  Standorten vorkonfiguriert mit installierter PWA ausgeliefert werden).
+  Kein App-Code geändert. Datei: TODO.md.
+
 - Run 304d5: PWA lädt neue Version jetzt automatisch statt über Banner-Button — `web/index.html` bekommt einen `visibilitychange`-Listener, der beim Zurückkehren aus dem Hintergrund aktiv `reg.update()` auslöst (bei einer installierten PWA gibt es keinen "neuen Tab", der den bisherigen Check anstößt). `main.dart`: `initSwUpdateWatcher`-Callback ruft bei erkannter neuer Version direkt `reloadPage()` auf statt ein `MaterialBanner` mit "Jetzt laden"-Button zu zeigen; da alle Eingaben (Schritt 1, Schritt 2, Wechselgeld) laufend als Entwurf persistiert werden, geht dabei nichts verloren. `MeineApp.scaffoldMessengerKey` (nur für den Banner gebraucht) entfernt. Versionsstring r304d5. Dateien: web/index.html, main.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 304d4: Rote Hervorhebung des "Gesamt"-Betrags bei Summen-Mismatch entfernt — wenn die Kartenart-Summe nicht mit dem eingegebenen Gesamtbetrag übereinstimmt, bleibt der Betrag jetzt neutral gefärbt (nur der orange Hinweistext darunter bleibt), damit der MA nicht fälschlich glaubt, das Gesamt-Feld selbst sei falsch, statt den ganzen Beleg zu prüfen. Versionsstring r304d4. Datei: tagesabschluss_schritt2_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.

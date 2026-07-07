@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 300a · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 305 · wird fortlaufend ergänzt
 
 ---
 
@@ -42,15 +42,6 @@ Stand: Juli 2026 · Run 300a · wird fortlaufend ergänzt
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
-
-- [ ] **Desktop-Ansicht begrenzen** Inhalte auf Desktop-Browsern auf
-      Smartphone-Breite begrenzen.
-
-- [ ] **Beleg-Eingabe: Textbuttons** Buttons zum Hinzufügen als Textbuttons gestalten.
-
-- [ ] **PWA-Install-Button (iOS)** Chrome/Edge: Button in Einstellungen vorhanden
-      (beforeinstallprompt). iOS-Safari: kein beforeinstallprompt — stattdessen
-      Hinweistext in Einstellungen „Teilen → Zum Home-Bildschirm" einblenden.
 
 - [ ] **Getränke-Nachfüllliste persistieren** Lokal speichern wie andere
       Entwurfsdaten. Verhindert Datenverlust bei Absturz.
