@@ -141,12 +141,12 @@
     <div class="scan-item">
       <div class="thermo-receipt">
         <div class="tr-center tr-name">Schauburg</div>
-        <div class="tr-center">Gluckhofstraße 12</div>
-        <div class="tr-center">28219 Bremen</div>
+        <div class="tr-center">Vor dem Steintor 114</div>
+        <div class="tr-center">28203 Bremen</div>
         <div class="tr-center tr-title">TAGESABSCHLUSS</div>
         <hr class="tr-dash">
         <div class="tr-row">
-          <span>Datum:</span><span>24.06.2026&nbsp;&nbsp;22:18</span>
+          <span>Datum:</span><span><span class="tr-date">24.06.2026</span>&nbsp;&nbsp;22:18</span>
         </div>
         <div class="tr-row">
           <span>F-Nr.:</span><span>TID 54017635</span>
@@ -184,7 +184,7 @@
         <hr class="tr-dash">
 
         <div class="tr-center tr-label" style="margin-top:6px;">Belegmanagement</div>
-        <div class="tr-center tr-small">24.06.2026&nbsp;&nbsp;22:18&nbsp;&nbsp;TID&nbsp;54017635</div>
+        <div class="tr-center tr-small"><span class="tr-date">24.06.2026</span>&nbsp;&nbsp;22:18&nbsp;&nbsp;TID&nbsp;54017635</div>
         <hr class="tr-dash">
         <div class="tr-small">Nicht aufgeführte Belege</div>
         <div class="tr-small">ATZ 0 von 60</div>
@@ -211,12 +211,12 @@
     <div class="scan-item">
       <div class="thermo-receipt">
         <div class="tr-center tr-name">Schauburg</div>
-        <div class="tr-center">Gluckhofstraße 12</div>
-        <div class="tr-center">28219 Bremen</div>
+        <div class="tr-center">Vor dem Steintor 114</div>
+        <div class="tr-center">28203 Bremen</div>
         <div class="tr-center tr-title">TAGESABSCHLUSS</div>
         <hr class="tr-dash">
         <div class="tr-row">
-          <span>Datum:</span><span>24.06.2026&nbsp;&nbsp;14:32</span>
+          <span>Datum:</span><span><span class="tr-date">24.06.2026</span>&nbsp;&nbsp;14:32</span>
         </div>
         <div class="tr-row">
           <span>F-Nr.:</span><span>TID 54017635</span>
@@ -254,7 +254,7 @@
         <hr class="tr-dash">
 
         <div class="tr-center tr-label" style="margin-top:6px;">Belegmanagement</div>
-        <div class="tr-center tr-small">24.06.2026&nbsp;&nbsp;14:32&nbsp;&nbsp;TID&nbsp;54017635</div>
+        <div class="tr-center tr-small"><span class="tr-date">24.06.2026</span>&nbsp;&nbsp;14:32&nbsp;&nbsp;TID&nbsp;54017635</div>
         <hr class="tr-dash">
         <div class="tr-small">Nicht aufgeführte Belege</div>
         <div class="tr-small">ATZ 0 von 60</div>
@@ -266,12 +266,12 @@
     <div class="scan-item">
       <div class="thermo-receipt">
         <div class="tr-center tr-name">Schauburg</div>
-        <div class="tr-center">Gluckhofstraße 12</div>
-        <div class="tr-center">28219 Bremen</div>
+        <div class="tr-center">Vor dem Steintor 114</div>
+        <div class="tr-center">28203 Bremen</div>
         <div class="tr-center tr-title">TAGESABSCHLUSS</div>
         <hr class="tr-dash">
         <div class="tr-row">
-          <span>Datum:</span><span>25.06.2026&nbsp;&nbsp;22:41</span>
+          <span>Datum:</span><span><span class="tr-date">25.06.2026</span>&nbsp;&nbsp;22:41</span>
         </div>
         <div class="tr-row">
           <span>F-Nr.:</span><span>TID 54017635</span>
@@ -309,7 +309,7 @@
         <hr class="tr-dash">
 
         <div class="tr-center tr-label" style="margin-top:6px;">Belegmanagement</div>
-        <div class="tr-center tr-small">25.06.2026&nbsp;&nbsp;22:41&nbsp;&nbsp;TID&nbsp;54017635</div>
+        <div class="tr-center tr-small"><span class="tr-date">25.06.2026</span>&nbsp;&nbsp;22:41&nbsp;&nbsp;TID&nbsp;54017635</div>
         <hr class="tr-dash">
         <div class="tr-small">Nicht aufgeführte Belege</div>
         <div class="tr-small">ATZ 0 von 60</div>
@@ -321,12 +321,12 @@
     <div class="scan-item">
       <div class="thermo-receipt">
         <div class="tr-center tr-name">Schauburg</div>
-        <div class="tr-center">Gluckhofstraße 12</div>
-        <div class="tr-center">28219 Bremen</div>
+        <div class="tr-center">Vor dem Steintor 114</div>
+        <div class="tr-center">28203 Bremen</div>
         <div class="tr-center tr-title">TAGESABSCHLUSS</div>
         <hr class="tr-dash">
         <div class="tr-row">
-          <span>Datum:</span><span>26.06.2026&nbsp;&nbsp;21:57</span>
+          <span>Datum:</span><span><span class="tr-date">26.06.2026</span>&nbsp;&nbsp;21:57</span>
         </div>
         <div class="tr-row">
           <span>F-Nr.:</span><span>TID 54017635</span>
@@ -364,7 +364,7 @@
         <hr class="tr-dash">
 
         <div class="tr-center tr-label" style="margin-top:6px;">Belegmanagement</div>
-        <div class="tr-center tr-small">26.06.2026&nbsp;&nbsp;21:57&nbsp;&nbsp;TID&nbsp;54017635</div>
+        <div class="tr-center tr-small"><span class="tr-date">26.06.2026</span>&nbsp;&nbsp;21:57&nbsp;&nbsp;TID&nbsp;54017635</div>
         <hr class="tr-dash">
         <div class="tr-small">Nicht aufgeführte Belege</div>
         <div class="tr-small">ATZ 0 von 60</div>
@@ -375,6 +375,19 @@
     <!-- weitere Scans hier einfügen -->
 
   </div>
+
+  <script>
+    (function () {
+      var heute = new Date();
+      var tag = String(heute.getDate()).padStart(2, '0');
+      var monat = String(heute.getMonth() + 1).padStart(2, '0');
+      var jahr = heute.getFullYear();
+      var datum = tag + '.' + monat + '.' + jahr;
+      document.querySelectorAll('.tr-date').forEach(function (el) {
+        el.textContent = datum;
+      });
+    })();
+  </script>
 
 </body>
 </html>
