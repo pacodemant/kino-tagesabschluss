@@ -21,6 +21,7 @@ import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
@@ -47,6 +48,7 @@ Future<void> main() async {
     if (kino.hatGetraenke) {
       await GetraenkeConfigService(kinoId: kino.id).initOnAppStart();
     }
+    await LokalerSpeicher.bereinigeAlteTagesabschluesse(kino.id);
   }
   await WechselgeldConfigService().initOnAppStart();
 

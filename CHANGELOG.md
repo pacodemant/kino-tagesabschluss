@@ -4,6 +4,17 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 311: Verlauf-30-Tage-Bereinigung — neue Methode
+  `LokalerSpeicher.bereinigeAlteTagesabschluesse(kinoId, {maxAlterTage
+  = 30})` entfernt beim App-Start abgeschlossene Tagesabrechnungen,
+  deren Kalendertag mehr als 30 Tage zurückliegt (Datenschutz); wird
+  nur geschrieben, wenn sich tatsächlich etwas ändert. In `main.dart`
+  in die bestehende Kino-Schleife beim Start eingehängt (analog zur
+  GetraenkeConfigService-Initialisierung), läuft still ohne
+  Nutzer-Interaktion. Versionsstring r311. Dateien:
+  lokaler_speicher.dart, main.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 310: TODO.md korrigiert — Punkt "Automatisches Geräte-Backup
   beim Senden" abgehakt. War bereits erledigt:
   `_autoSaveImHintergrund()` in tagesabschluss_schritt3_seite.dart

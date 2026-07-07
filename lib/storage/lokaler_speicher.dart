@@ -430,6 +430,46 @@ class LokalerSpeicher {
     await box.put(key, jsonEncode(aktualisiert));
   }
 
+  /// Entfernt abgeschlossene Tagesabrechnungen, deren Kalendertag mehr als
+  /// [maxAlterTage] zurueckliegt (Datenschutz). Schreibt nur, wenn sich
+  /// tatsaechlich etwas geaendert hat.
+  static Future<void> bereinigeAlteTagesabschluesse(
+    String kinoId, {
+    int maxAlterTage = 30,
+  }) async {
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
+    final String key = finaleTagesabschluesseKey(kinoId);
+    final String? rohwert = box.get(key) as String?;
+    if (rohwert == null) {
+      return;
+    }
+
+    final DateTime grenze =
+        DateTime.now().subtract(Duration(days: maxAlterTage));
+    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
+    bool geaendert = false;
+    try {
+      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+      for (final dynamic eintrag in geparst) {
+        if (eintrag is Map<String, dynamic>) {
+          final TagesabschlussFinal bestehend =
+              TagesabschlussFinal.fromJson(eintrag);
+          if (bestehend.datum.isBefore(grenze)) {
+            geaendert = true;
+          } else {
+            aktualisiert.add(eintrag);
+          }
+        }
+      }
+    } catch (_) {
+      return;
+    }
+
+    if (geaendert) {
+      await box.put(key, jsonEncode(aktualisiert));
+    }
+  }
+
   static Future<bool> istErstesSchritt1OeffnenHeute(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? gespeichert =

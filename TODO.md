@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 310 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 311 · wird fortlaufend ergänzt
 
 ---
 
@@ -177,8 +177,8 @@ Stand: Juli 2026 · Run 310 · wird fortlaufend ergänzt
       Erreichen von Schritt 3, noch vor SENDEN; Schritt 3 hat keine
       editierbaren Felder, die danach noch verloren gehen könnten.)*
 
-- [ ] **Verlauf — 30-Tage-Bereinigung** Abgeschlossene Abrechnungen automatisch
-      nach 30 Tagen löschen (Datenschutz).
+- [x] **Verlauf — 30-Tage-Bereinigung** Abgeschlossene Abrechnungen
+      automatisch nach 30 Tagen löschen (Datenschutz). *(Run 311)*
 
 ---
 
