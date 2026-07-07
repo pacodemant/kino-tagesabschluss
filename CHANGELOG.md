@@ -4,6 +4,18 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 308: TODO.md ergänzt um Klärungspunkt "Terminals bei doppelter
+  TID am selben Tag" unter "Blockiert — wartet auf IT". Anlass: Beim
+  Testen von Run 307 stellte sich heraus, dass zwei EC-Belege
+  derselben TID im JSON-Preview nur als eine (summierte)
+  Terminal-Zeile erscheinen. Prüfung der IT-Spezifikation
+  (`EXTERNAL_API_Schauburg_de.md`) zeigt: die Upsert-Semantik bei
+  Korrekturen legt nahe, dass TID der eindeutige Schlüssel je
+  Abrechnung ist — ein rein lokaler Fix (zwei Terminal-Zeilen mit
+  gleicher TID senden) hätte bei Flurbocash vermutlich nichts
+  bewirkt. Kein Code geändert, Klärung mit Yannik nötig. Datei:
+  TODO.md.
+
 - Run 307: Prüf-Popup nach EC-Beleg-Scan entfernt — nach einem
   erfolgreichen Scan wird das Ergebnis jetzt direkt in die EC-Kachel
   übernommen, ohne den bisherigen Zwischenschritt „EC-Beleg-Scan

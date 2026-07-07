@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 307 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 308 · wird fortlaufend ergänzt
 
 ---
 
@@ -15,6 +15,22 @@ Stand: Juli 2026 · Run 307 · wird fortlaufend ergänzt
 
 - [ ] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in Flurbocash
       für welchen Standort hinterlegt?
+
+- [ ] **Terminals bei doppelter TID am selben Tag** Wenn dieselbe
+      physische Terminal-ID an einem Tag zweimal abgerechnet wird
+      (z. B. zwei EC-Belege desselben Terminals zu unterschiedlichen
+      Zeiten), aktuell werden die Kartenbeträge in der App
+      stillschweigend zu einer Terminal-Zeile summiert
+      (`ApiUploadService._terminalsListe()`). Laut
+      `EXTERNAL_API_Schauburg_de.md` scheint die TID der eindeutige
+      Schlüssel je Abrechnung zu sein (Korrektur-Calls "upserten"
+      Terminals über die TID) — zwei Terminal-Zeilen mit derselben TID
+      innerhalb einer Abrechnung würden bei Flurbocash vermutlich
+      ohnehin zusammenfallen. Klären: Sollen zwei Vorgänge derselben
+      TID am selben Tag (a) weiterhin zu einer Terminal-Zeile summiert
+      werden, oder (b) als zwei separate `settlements[]`-Einträge
+      übertragen werden (das Format erlaubt bis zu 4 Abrechnungen/Tag,
+      siehe auch "Bar Tabak: 2-Settlement-Logik" unten)?
 
 - [ ] **CORS-Header** Server muss `Access-Control-Allow-Origin: *` senden.
       Bereits konfiguriert?
