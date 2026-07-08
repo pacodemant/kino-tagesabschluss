@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 311 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 312 · wird fortlaufend ergänzt
 
 ---
 

@@ -4,6 +4,19 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 312: Lade-Splash in web/index.html — `#splash`-Div (Hintergrund
+  Kino-Rot `#5C0A0A`, zentriertes App-Icon `icons/Icon-192.png`)
+  direkt im `<body>` vor dem Flutter-Bootstrap-Script ersetzt den
+  weißen Blitzer beim App-Start. Wird per `flutter-first-frame`-
+  Browser-Event automatisch ausgeblendet (300ms Fade) und entfernt,
+  sobald Flutter den ersten Frame gerendert hat — reines HTML/CSS/JS,
+  kein Dart-Code nötig (der Blitzer entsteht, bevor die Flutter-Engine
+  überhaupt läuft). Mit Playwright gegen einen lokalen Release-Build
+  getestet: Splash sichtbar direkt nach domcontentloaded, sauber
+  entfernt nach dem ersten Frame, keine Konsolenfehler. Versionsstring
+  r312. Dateien: web/index.html, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 311: Verlauf-30-Tage-Bereinigung — neue Methode
   `LokalerSpeicher.bereinigeAlteTagesabschluesse(kinoId, {maxAlterTage
   = 30})` entfernt beim App-Start abgeschlossene Tagesabrechnungen,
