@@ -3519,6 +3519,20 @@ class _TagesabschlussSchritt2SeiteState
                           ),
                         ),
                       ),
+                  if (_scanLaeuft)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.85),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Center(
+                          child: CircularProgressIndicator(
+                            color: AppFarben.appBarRot,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
                 if (!_ecKachelAufgeklappt && hatEcBelege)

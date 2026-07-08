@@ -4,6 +4,21 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313: Ladesplash-Overlay über die komplette EC-Belege-Kachel
+  während eines Scans — zusätzlich zum bestehenden Spinner im
+  Kamera-Button wird jetzt die gesamte Kachel (Header + Terminal-ID +
+  Kartenarten-Tabelle, egal ob ein- oder mehrere Belege) mit einem
+  halbtransparenten Scrim (`Colors.white`, Alpha 0.85) und zentriertem
+  `CircularProgressIndicator` in Kino-Rot überdeckt, solange
+  `_scanLaeuft` aktiv ist — nutzt denselben `Stack`, der bereits den
+  Scroll-Pfeil-Gradient trägt. Der Overlay blockiert dabei auch
+  Eingaben in der Kachel während des Scans (kein `IgnorePointer`).
+  Mit Playwright gegen einen lokalen Release-Build visuell geprüft
+  (Overlay temporär erzwungen, Screenshots im ein- und
+  aufgeklappten Zustand angesehen, danach vollständig zurückgesetzt).
+  Versionsstring r313. Dateien: tagesabschluss_schritt2_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 312: Lade-Splash in web/index.html — `#splash`-Div (Hintergrund
   Kino-Rot `#5C0A0A`, zentriertes App-Icon `icons/Icon-192.png`)
   direkt im `<body>` vor dem Flutter-Bootstrap-Script ersetzt den
