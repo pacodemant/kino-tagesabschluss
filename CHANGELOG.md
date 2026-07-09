@@ -4,6 +4,14 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313c: SB-Auto-Fill (Dev-Tools) auf Belege-Seite befüllt jetzt
+  auch die Terminal-ID (Dummy-Wert "TID-TEST") sowie das editierbare
+  Summenfeld "Gesamt (laut Beleg)" in der Kartenarten-Tabelle
+  (`_kartenartenGesamtBetragCent`/-Controller) — bisher wurde die
+  Summe nur im Titel der EC-Belege-Kachel angezeigt, TID-Feld und
+  Gesamt-Feld blieben leer. Versionsstring r313c. Datei:
+  tagesabschluss_schritt2_seite.dart.
+
 - Run 313b: Stückzahl-Eingabefelder (Scheine/Rollen) erlauben jetzt
   dreistellige Werte — bisher war bei 99 Schluss (`maxLaenge: 2`),
   wodurch sich z. B. 102 Zehner-Scheine nicht eintragen ließen.

@@ -947,7 +947,10 @@ class _TagesabschlussSchritt2SeiteState
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = ecBeleg;
-      _ecBelegLabels[0] = '';
+      _ecBelegLabels[0] = 'TID-TEST';
+      _kartenartenGesamtBetragCent[0] = ecBeleg;
+      _kartenartenGesamt1Beruehrt = true;
+      _ecBelegLabel1Beruehrt = true;
 
       _setzeAusgabenAnzahl(1);
       _ausgabenBetrageCent[0] = ausgaben;
@@ -979,7 +982,13 @@ class _TagesabschlussSchritt2SeiteState
             ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
             : '',
       );
-      _setzeControllerText(_ecBelegLabelController[0], '');
+      _setzeControllerText(_ecBelegLabelController[0], 'TID-TEST');
+      _setzeControllerText(
+        _kartenartenGesamtBetragController[0],
+        ecBeleg != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
+            : '',
+      );
       // Zahlungsarten aus Auto-Fill-Daten
       if (_zahlungsartZeilen.isNotEmpty) {
         final List<dynamic>? zahlungsartenNamen =
