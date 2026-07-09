@@ -1235,7 +1235,8 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
             ),
             _ZusammenfassungsZeile(
               label: 'Differenz',
-              wert: _formatiereEuro(differenzCent),
+              wert: TagesabschlussFormatierung.formatiereEuroMitVorzeichen(
+                  differenzCent),
               hervorheben: true,
               farbe: differenzNull ? Colors.green.shade700 : Colors.red,
             ),

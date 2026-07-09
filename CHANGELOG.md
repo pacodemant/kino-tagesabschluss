@@ -4,6 +4,16 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313f: Wechselgeld-Prüfen-Seite — Differenz-Zeile in der
+  Zusammenfassung zeigt jetzt ein Vorzeichen (+/−) vor dem Betrag,
+  damit auf einen Blick erkennbar ist, ob zu viel oder zu wenig Geld
+  in der Wechselgeldkasse liegt. Rote Hervorhebung bei jeder
+  Abweichung ≠ 0 bleibt unverändert (bewusst so gewünscht). Nutzt
+  die bereits vorhandene `TagesabschlussFormatierung.
+  formatiereEuroMitVorzeichen()` statt der vorzeichenlosen
+  `formatiereEuro()`. Versionsstring r313f. Datei:
+  wechselgeld_pruefen_seite.dart.
+
 - Run 313e: Pflichtfeld-Prüfung vor "Weiter" zu Schritt 3
   (`_pruefePflichtfelderVorSchritt3()`) prüfte Terminal-ID und
   Gesamt-Betrag bisher nur für den ersten EC-Beleg (`.first`) — im
