@@ -4,6 +4,23 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313b: Stückzahl-Eingabefelder (Scheine/Rollen) erlauben jetzt
+  dreistellige Werte — bisher war bei 99 Schluss (`maxLaenge: 2`),
+  wodurch sich z. B. 102 Zehner-Scheine nicht eintragen ließen.
+  `Schritt1ZeilenEintrag` (gemeinsames Widget für Schritt 1 und die
+  Wechselgeld-Prüfen-Seite) setzt `maxLaenge: 3` auf dem
+  `GanzzahlEingabefeld`. Versionsstring r313b. Dateien:
+  schritt1_ui_builder.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
+- Run 313a: TODO.md nach Besprechung offener Punkte aktualisiert —
+  „Fallback-Export bei fehlgeschlagenem Upload" als nicht nötig
+  markiert (bereits durch automatisches Geräte-Backup abgedeckt),
+  „Plausibilitätsprüfung deaktivierbar" als nicht nötig markiert
+  (Prüfung ist bereits nur weicher Hinweis), „Admin-Passwort" bleibt
+  PIN 1929, „Standort vorauswählen" und „Safari-iOS: Lokale
+  Speicherung" als zurückgestellt vermerkt. Datei: TODO.md.
+
 - Run 313: Ladesplash-Overlay über die komplette EC-Belege-Kachel
   während eines Scans — zusätzlich zum bestehenden Spinner im
   Kamera-Button wird jetzt die gesamte Kachel (Header + Terminal-ID +
