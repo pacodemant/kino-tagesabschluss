@@ -4,6 +4,20 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313e: Pflichtfeld-Prüfung vor "Weiter" zu Schritt 3
+  (`_pruefePflichtfelderVorSchritt3()`) prüfte Terminal-ID und
+  Gesamt-Betrag bisher nur für den ersten EC-Beleg (`.first`) — im
+  Mehrbeleg-Modus (2+ EC-Belege) konnten weitere Belege mit leerer
+  TID/leerem Gesamt-Betrag unbemerkt zu Schritt 3 durchrutschen.
+  Prüfung läuft jetzt über alle vorhandenen EC-Belege, klappt die
+  jeweilige Unterkachel auf und fokussiert das erste fehlerhafte
+  Feld. Gesamt-Betrag-Fehlertext ("Pflichtfeld") wird jetzt auch für
+  Beleg 2+ angezeigt statt nur für Beleg 1. TODO.md:
+  "Fertig-Button-Gate" mit angepasster Umsetzung abgehakt (Button-
+  Ausgrauen entfiel als redundant, echte Lücke stattdessen
+  geschlossen). Versionsstring r313e. Datei:
+  tagesabschluss_schritt2_seite.dart.
+
 - Run 313d: BelegScan-KI-Prompt um zwei Regeln ergänzt —
   (1) Kartenbeträge müssen anhand der Zeilenposition auf dem Beleg
   der richtigen Kartenart zugeordnet werden (nicht nach Reihenfolge/

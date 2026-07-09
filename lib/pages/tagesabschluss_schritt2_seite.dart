@@ -634,13 +634,17 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _validierungAusgeloest = true;
       if (!_ecKachelAufgeklappt) _ecKachelAufgeklappt = true;
-      if (_ecUnterkachelAufgeklappt.isNotEmpty &&
-          !_ecUnterkachelAufgeklappt[0]) {
-        _ecUnterkachelAufgeklappt[0] = true;
-      }
-      if (_zahlungsartZeilen.isNotEmpty) {
-        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
-          zeile.zustand = ZeilenZustand.editing;
+      for (int i = 0; i < _ecBelegController.length; i++) {
+        if (i < _ecUnterkachelAufgeklappt.length) {
+          _ecUnterkachelAufgeklappt[i] = true;
+        }
+        if (i < _ecUnterkachelEditModus.length) {
+          _ecUnterkachelEditModus[i] = true;
+        }
+        if (i < _zahlungsartZeilen.length) {
+          for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[i]) {
+            zeile.zustand = ZeilenZustand.editing;
+          }
         }
       }
     });
@@ -650,14 +654,17 @@ class _TagesabschlussSchritt2SeiteState
       (controller: _kinoSollController, fokus: _kinoSollFocusNode),
       if (widget.kinoId != 'kino_04')
         (controller: _bistroSollController, fokus: _bistroSollFocusNode),
-      (
-        controller: _ecBelegLabelController.first,
-        fokus: _ecBelegLabelFocusNode.first
-      ),
-      (
-        controller: _kartenartenGesamtBetragController.first,
-        fokus: _kartenartenGesamtBetragFocusNode.first
-      ),
+      for (int i = 0; i < _ecBelegController.length; i++) ...<
+          ({TextEditingController controller, FocusNode fokus})>[
+        (
+          controller: _ecBelegLabelController[i],
+          fokus: _ecBelegLabelFocusNode[i]
+        ),
+        (
+          controller: _kartenartenGesamtBetragController[i],
+          fokus: _kartenartenGesamtBetragFocusNode[i]
+        ),
+      ],
     ];
 
     for (final ({TextEditingController controller, FocusNode fokus}) feld
@@ -2397,10 +2404,12 @@ class _TagesabschlussSchritt2SeiteState
                           ),
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 5),
-                          errorText: belegIndex == 0
+                          errorText: belegIndex < _kartenartenGesamtBetragController.length
                               ? _pflichtfeldFehlertext(
-                                  feldBeruehrt: _kartenartenGesamt1Beruehrt,
-                                  controller: _kartenartenGesamtBetragController.first,
+                                  feldBeruehrt: belegIndex == 0
+                                      ? _kartenartenGesamt1Beruehrt
+                                      : false,
+                                  controller: _kartenartenGesamtBetragController[belegIndex],
                                 )
                               : null,
                         ),

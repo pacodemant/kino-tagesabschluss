@@ -90,9 +90,15 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
       Popup selbst entfernt. Das "Fertig-Button ausgegraut"-Verhalten
       bleibt offen, siehe "Fertig-Button-Gate" unten.)*
 
-- [ ] **Fertig-Button-Gate** Fertig-Button bleibt ausgegraut solange ein Datenfeld
+- [x] **Fertig-Button-Gate** Fertig-Button bleibt ausgegraut solange ein Datenfeld
       leer oder nicht korrekt ist. Tap auf ausgegrauten Button: Hinweis
-      "Daten noch nicht vollständig — bitte korrigieren."
+      "Daten noch nicht vollständig — bitte korrigieren." — Variante: Button
+      ausgrauen entfiel, da der "Weiter"-Button bereits reaktiv auf leere
+      Pflichtfelder prüft. Stattdessen echte Lücke geschlossen: die
+      Pflichtfeld-Prüfung lief bisher nur für den ersten EC-Beleg
+      (`.first`); im Mehrbeleg-Modus wurden TID/Gesamt-Betrag weiterer
+      Belege vor "Weiter" gar nicht geprüft. `_pruefePflichtfelderVorSchritt3()`
+      prüft jetzt alle vorhandenen EC-Belege. *(Run 313e)*
 
 - [x] **Plausibilitätsprüfung deaktivierbar** Nicht mehr nötig — die Prüfung
       (Kartensumme = Gesamtbetrag laut Beleg) ist bereits nur ein weicher
