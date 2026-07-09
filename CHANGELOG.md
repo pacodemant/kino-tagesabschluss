@@ -4,6 +4,16 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313g: Admin-PIN-Dialog (Einstellungen) — Fokus/Tastatur
+  erscheint jetzt wieder zuverlässig automatisch beim Öffnen (100ms-
+  Delay + requestFocus() nach Run-294-Vorbild, war seit Run 294c
+  wieder unzuverlässig weil showGeneralDialog+Duration.zero zugunsten
+  der Öffnungs-Animation zurückgebaut wurde). Zusätzlich: Eingabe
+  wird bei 4 Ziffern automatisch bestätigt (kein Tippen auf "OK"
+  mehr nötig, auch bei korrekter PIN nicht) — wie bei Enter/
+  onSubmitted, nur automatisch nach der letzten Ziffer. Versionsstring
+  r313g. Datei: einstellungen_seite.dart.
+
 - Run 313f: Wechselgeld-Prüfen-Seite — Differenz-Zeile in der
   Zusammenfassung zeigt jetzt ein Vorzeichen (+/−) vor dem Betrag,
   damit auf einen Blick erkennbar ist, ob zu viel oder zu wenig Geld

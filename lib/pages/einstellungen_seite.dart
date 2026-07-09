@@ -368,6 +368,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final FocusNode pinFocus = FocusNode();
     String? eingegebenerPin;
 
+    Future<void>.delayed(const Duration(milliseconds: 100), () {
+      if (pinFocus.canRequestFocus) pinFocus.requestFocus();
+    });
+
     await showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -384,6 +388,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               hintText: 'PIN',
               counterText: '',
             ),
+            onChanged: (String value) {
+              if (value.length == 4) {
+                eingegebenerPin = value;
+                Navigator.of(dialogContext).pop();
+              }
+            },
             onSubmitted: (String value) {
               eingegebenerPin = value;
               Navigator.of(dialogContext).pop();
