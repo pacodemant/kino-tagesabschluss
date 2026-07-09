@@ -40,7 +40,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.3.3
   http: ^1.2.0
-  google_sign_in: ^6.2.2
   image_picker: ^1.1.2
   connectivity_plus: ^7.1.1
 

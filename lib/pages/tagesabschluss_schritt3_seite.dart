@@ -15,7 +15,6 @@ import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.da
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
-import 'package:kino_bar_app/services/google_sheets_service.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -113,7 +112,6 @@ class _TagesabschlussSchritt3SeiteState
   bool _autoSaveErledigt = false;
   bool _autoSaveLaeuft = false;
   bool _autoSaveFehler = false;
-  bool _uploadErledigt = false;
   bool _apiUploadErledigt = false;
   bool _devModusAktiv = false;
 
@@ -244,27 +242,6 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
-  Future<void> _doUpload(String accessToken) async {
-    try {
-      await GoogleSheetsService.uploadAbrechnung(_abschlussVorschau!, accessToken);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Abrechnung hochgeladen ✓')),
-        );
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Upload fehlgeschlagen — Abrechnung wurde lokal gespeichert',
-            ),
-          ),
-        );
-      }
-    }
-  }
-
   Future<void> _zeigeAbschlussDialog() async {
     // Falls Auto-Save noch läuft, kurz warten und erneut prüfen.
     if (_autoSaveLaeuft) {
@@ -289,29 +266,6 @@ class _TagesabschlussSchritt3SeiteState
 
     if (!mounted) {
       return;
-    }
-
-    if (!_uploadErledigt) {
-      final bool googleSheetsAktiv = await FeatureFlags.googleSheetsAktiv();
-      if (!mounted) return;
-      if (googleSheetsAktiv) {
-        try {
-          final String token = await GoogleSheetsService.authenticate();
-          if (!mounted) return;
-          _uploadErledigt = true;
-          _doUpload(token).ignore();
-        } catch (_) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text(
-                  'Upload fehlgeschlagen — Abrechnung wurde lokal gespeichert',
-                ),
-              ),
-            );
-          }
-        }
-      }
     }
 
     if (!_apiUploadErledigt) {

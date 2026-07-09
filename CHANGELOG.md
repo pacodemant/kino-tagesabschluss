@@ -4,6 +4,25 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313h: Einstellungen-Admin-Bereich aufgeräumt.
+  (1) Wechselgeldbestand-Karte war bisher frei zugänglich (vor dem
+  PIN-geschützten Admin-Bereich) — jetzt in den Admin-Bereich
+  verschoben, nur noch nach PIN-Eingabe sichtbar/änderbar.
+  (2) "Google Sheets Upload" komplett entfernt (Google Sheets wird
+  nicht mehr genutzt, Test läuft jetzt über Flurbocash): Switch in
+  den Einstellungen, GoogleSheetsService/-Config (Dateien gelöscht),
+  Upload-Aufruf in tagesabschluss_schritt3_seite.dart,
+  FeatureFlags.googleSheetsAktiv()/-Setzen(), Dependency
+  google_sign_in aus pubspec.yaml, GIDClientID/CFBundleURLTypes aus
+  ios/Runner/Info.plist, lokale Dev-Dateien (Client-Secret-JSON,
+  Test-Skript) aus secrets/ (nie eingecheckt, nur lokal). (3) Switch
+  "API Upload (Test)" umbenannt in "Flurbocash-Upload (Test)".
+  Versionsstring r313h. Dateien: einstellungen_seite.dart,
+  tagesabschluss_schritt3_seite.dart, feature_flags.dart,
+  pubspec.yaml, ios/Runner/Info.plist,
+  lib/services/google_sheets_service.dart (gelöscht),
+  lib/services/google_sheets_config.dart (gelöscht).
+
 - Run 313g: Admin-PIN-Dialog (Einstellungen) — Fokus/Tastatur
   erscheint jetzt wieder zuverlässig automatisch beim Öffnen (100ms-
   Delay + requestFocus() nach Run-294-Vorbild, war seit Run 294c

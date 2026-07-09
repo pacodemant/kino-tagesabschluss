@@ -83,7 +83,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
   bool _eingabeMitKomma = false;
-  bool _googleSheetsAktiv = true;
   bool _apiUploadAktiv = false;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
@@ -187,7 +186,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _aktiveKinoIndex = aktiveIndex;
       _aktiveKinoName = aktiveKino.name;
     }
-    final bool googleSheetsAktiv = await FeatureFlags.googleSheetsAktiv();
     final bool apiUploadAktiv = await FeatureFlags.apiUploadAktiv();
     if (!mounted) {
       return;
@@ -235,7 +233,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _flurbocashApiKeyCtrl.text = overrideApiKey ?? '';
 
     setState(() {
-      _googleSheetsAktiv = googleSheetsAktiv;
       _apiUploadAktiv = apiUploadAktiv;
       _getraenkeliste = getraenkeliste;
       _eingabeMitKomma = eingabeMitKomma;
@@ -306,14 +303,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _s2DifferenzCtrl.text = differenz != 0
         ? TagesabschlussFormatierung.formatiereEuroEingabe(differenz)
         : '';
-  }
-
-  Future<void> _onGoogleSheetsGeaendert(bool wert) async {
-    await FeatureFlags.googleSheetsSetzen(wert);
-    if (!mounted) return;
-    setState(() {
-      _googleSheetsAktiv = wert;
-    });
   }
 
   Future<void> _onApiUploadGeaendert(bool wert) async {
@@ -1162,80 +1151,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Card(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: const Text(
-                      'Wechselgeldbestand',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        if (_wgCtrl.text.isNotEmpty)
-                          Text(
-                            _wgCtrl.text,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          _wechselgeldAufgeklappt
-                              ? Icons.expand_less
-                              : Icons.expand_more,
-                        ),
-                      ],
-                    ),
-                    onTap: () => setState(
-                      () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
-                    ),
-                  ),
-                  if (_wechselgeldAufgeklappt && _aktiveKinoIndex >= 0) ...<Widget>[
-                    const Divider(height: 1),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            'Wechselgeld $_aktiveKinoName',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 120,
-                            child: TextField(
-                              controller: _wgCtrl,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                CentWaehrungsEingabeFormatter(),
-                              ],
-                              textAlign: TextAlign.right,
-                              decoration: const InputDecoration(
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                suffixText: '€',
-                              ),
-                              onTap: () {
-                                if (_wgCtrl.text == '0') _wgCtrl.clear();
-                              },
-                              onChanged: _onWgChanged,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
           const SizedBox(height: 4),
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -1333,15 +1248,74 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 ),
                 if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
-                  SwitchListTile(
-                    title: const Text('Google Sheets Upload'),
-                    value: _googleSheetsAktiv,
-                    onChanged: _onGoogleSheetsGeaendert,
-                    activeThumbColor: AppFarben.appBarRot,
+                  ListTile(
+                    title: const Text(
+                      'Wechselgeldbestand',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        if (_wgCtrl.text.isNotEmpty)
+                          Text(
+                            _wgCtrl.text,
+                            style: const TextStyle(fontSize: 11),
+                          ),
+                        const SizedBox(width: 4),
+                        Icon(
+                          _wechselgeldAufgeklappt
+                              ? Icons.expand_less
+                              : Icons.expand_more,
+                        ),
+                      ],
+                    ),
+                    onTap: () => setState(
+                      () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
+                    ),
                   ),
+                  if (_wechselgeldAufgeklappt && _aktiveKinoIndex >= 0) ...<Widget>[
+                    const Divider(height: 1),
+                    Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            'Wechselgeld $_aktiveKinoName',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(width: 8),
+                          SizedBox(
+                            width: 120,
+                            child: TextField(
+                              controller: _wgCtrl,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly,
+                                CentWaehrungsEingabeFormatter(),
+                              ],
+                              textAlign: TextAlign.right,
+                              decoration: const InputDecoration(
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                suffixText: '€',
+                              ),
+                              onTap: () {
+                                if (_wgCtrl.text == '0') _wgCtrl.clear();
+                              },
+                              onChanged: _onWgChanged,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('API Upload (Test)'),
+                    title: const Text('Flurbocash-Upload (Test)'),
                     value: _apiUploadAktiv,
                     onChanged: _onApiUploadGeaendert,
                     activeThumbColor: AppFarben.appBarRot,
