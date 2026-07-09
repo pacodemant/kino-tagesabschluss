@@ -94,8 +94,11 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
       leer oder nicht korrekt ist. Tap auf ausgegrauten Button: Hinweis
       "Daten noch nicht vollständig — bitte korrigieren."
 
-- [ ] **Plausibilitätsprüfung deaktivierbar** Standardmäßig deaktiviert.
-      Im Dev-Modus per Toggle einschaltbar. Das wird später noch weiterentwickelt.
+- [x] **Plausibilitätsprüfung deaktivierbar** Nicht mehr nötig — die Prüfung
+      (Kartensumme = Gesamtbetrag laut Beleg) ist bereits nur ein weicher
+      Hinweis, kein Blocker (seit Run 304d4). Eine Deaktivierung hätte nur
+      kosmetischen Effekt. Aktiv gelassen, da sie verhindert, dass eine
+      falsche Kartenaufschlüsselung unbemerkt an Flurbocash geht.
 
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
       wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
@@ -119,21 +122,28 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
       → eigene Punkte unten)*
 
 - [ ] **Standort vorauswählen (Admin)** Admin stellt in den Einstellungen den
-      Standort ein, damit MA nicht erst auswählen müssen.
+      Standort ein, damit MA nicht erst auswählen müssen. *(Zurückgestellt —
+      an der Einstellungsseite stehen ohnehin noch weitere Anpassungen an,
+      dann zusammen angehen.)*
 
-- [ ] **Admin-Passwort** Admin-Modus mit festem Passwort "flrbcsh" schützen
-      (aktuell: PIN 1929/Session).
+- [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
+      festem Passwort gewünscht.
 
 - [ ] **TID-Whitelist konfigurierbar** Pro Standort in Einstellungen
       editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
-      regelmäßiger Export-Hinweis.
+      regelmäßiger Export-Hinweis. *(Vorerst zurückgestellt — Zielplattform
+      ist Android an allen Standorten, ITP betrifft nur iOS/Safari und damit
+      nur Pacos private Testumgebung.)*
 
-- [ ] **Fallback-Export bei fehlgeschlagenem Upload** App bietet automatisch
-      an, Abrechnung als Datei zu speichern (iOS Dateien / Android Downloads,
-      standortspezifischer Ordner).
+- [x] **Fallback-Export bei fehlgeschlagenem Upload** Nicht nötig — die
+      Abrechnung wird bereits unabhängig vom Upload-Ergebnis automatisch im
+      Verlauf gespeichert (siehe "Automatisches Geräte-Backup beim Senden"
+      weiter unten). Ein zusätzlicher Datei-Export wäre nur bei konkretem
+      Bedarf sinnvoll (z. B. Weitergabe an Buchhaltung bei Langzeitausfall
+      des Uploads).
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
