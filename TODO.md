@@ -213,7 +213,11 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
 ## ✅ Validierungen & Plausibilitätsprüfungen
 
 ### Stückelung — Harte Fehler
-- [ ] Scheinfeld nicht durch Nennwert teilbar (z. B. 75 € im 50-€-Feld)
+- [x] Scheinfeld nicht durch Nennwert teilbar (z. B. 75 € im 50-€-Feld) —
+      entfällt: Scheine/Rollen werden als Stückzahl (Ganzzahl) erfasst,
+      nicht als Betrag. Bei einem Stückzahl-Feld ist eine nicht durch
+      den Nennwert teilbare Eingabe technisch nicht möglich.
+      *(geprüft Run 313d)*
 - [ ] Negativer Betrag in irgendeinem Zählfeld
 - *(Münzfeld-Teilbarkeit: bereits implementiert)*
 

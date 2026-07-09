@@ -4,8 +4,19 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313d: BelegScan-KI-Prompt um zwei Regeln ergänzt —
+  (1) Kartenbeträge müssen anhand der Zeilenposition auf dem Beleg
+  der richtigen Kartenart zugeordnet werden (nicht nach Reihenfolge/
+  Erfahrungswerten), (2) gesamt_betrag_cent muss vom gedruckten
+  Gesamtfeld abgelesen werden statt aus den Zahlungsart-Beträgen
+  berechnet zu werden — sonst liefe der bestehende Summen-Abgleich
+  ("hinweis"-Regel) ins Leere. TODO.md: Punkt "Scheinfeld nicht durch
+  Nennwert teilbar" als entfallen markiert (Scheine/Rollen sind
+  Stückzahl-Felder, das beschriebene Problem kann dort nicht
+  auftreten). Dateien: beleg_scan_service.dart, TODO.md.
+
 - Run 313c: SB-Auto-Fill (Dev-Tools) auf Belege-Seite befüllt jetzt
-  auch die Terminal-ID (Dummy-Wert "TID-TEST") sowie das editierbare
+  auch die Terminal-ID der Schauburg (54017635) sowie das editierbare
   Summenfeld "Gesamt (laut Beleg)" in der Kartenarten-Tabelle
   (`_kartenartenGesamtBetragCent`/-Controller) — bisher wurde die
   Summe nur im Titel der EC-Belege-Kachel angezeigt, TID-Feld und

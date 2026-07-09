@@ -947,7 +947,7 @@ class _TagesabschlussSchritt2SeiteState
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = ecBeleg;
-      _ecBelegLabels[0] = 'TID-TEST';
+      _ecBelegLabels[0] = '54017635';
       _kartenartenGesamtBetragCent[0] = ecBeleg;
       _kartenartenGesamt1Beruehrt = true;
       _ecBelegLabel1Beruehrt = true;
@@ -982,7 +982,7 @@ class _TagesabschlussSchritt2SeiteState
             ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
             : '',
       );
-      _setzeControllerText(_ecBelegLabelController[0], 'TID-TEST');
+      _setzeControllerText(_ecBelegLabelController[0], '54017635');
       _setzeControllerText(
         _kartenartenGesamtBetragController[0],
         ecBeleg != 0
