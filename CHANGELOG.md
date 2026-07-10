@@ -4,6 +4,24 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313i: Anthropic-API-Key aus den Einstellungen wieder aktiv
+  genutzt. Seit Run 272 war das Feld funktionslos (Umstellung des
+  Beleg-Scans auf einen Cloudflare-Worker als Proxy, dabei wurde die
+  Key-Verwendung im Client bewusst entfernt — "kein API-Key im
+  Client"). `BelegScanService.scan()` liest den gespeicherten Key
+  jetzt wieder aus SharedPreferences und schickt ihn, falls
+  vorhanden, als `x-api-key`-Header an den Worker mit.
+  **Wichtig:** Das allein reicht noch nicht — der Cloudflare-Worker
+  (kartenzahlungsbelegscan.pacodemant.workers.dev, Code liegt nicht
+  in diesem Repo) muss zusätzlich so angepasst werden, dass er einen
+  eingehenden `x-api-key`-Header als Override für seinen eigenen
+  serverseitigen Key verwendet — sonst wird der Header zwar
+  gesendet, aber vom Worker ignoriert. Bis dahin bleibt der
+  Sicherheits-Kompromiss aus Run 272 (Key nicht im Netzwerkverkehr
+  sichtbar) nur teilweise aufgehoben: der Header wird jetzt
+  mitgeschickt, hat aber ohne Worker-Anpassung keine Wirkung.
+  Versionsstring r313i. Datei: beleg_scan_service.dart.
+
 - Run 313h: Einstellungen-Admin-Bereich aufgeräumt.
   (1) Wechselgeldbestand-Karte war bisher frei zugänglich (vor dem
   PIN-geschützten Admin-Bereich) — jetzt in den Admin-Bereich
