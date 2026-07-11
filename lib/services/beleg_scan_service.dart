@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class BelegScanException implements Exception {
   BelegScanException(this.message);
@@ -99,17 +98,12 @@ class BelegScanService {
       ],
     };
 
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String anthropicApiKey =
-        (speicher.getString('anthropic_api_key') ?? '').trim();
-
     final http.Response response;
     try {
       response = await http.post(
         Uri.parse(_workerUrl),
         headers: <String, String>{
           'content-type': 'application/json',
-          if (anthropicApiKey.isNotEmpty) 'x-api-key': anthropicApiKey,
         },
         body: jsonEncode(requestBody),
       );

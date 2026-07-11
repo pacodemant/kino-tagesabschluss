@@ -4,6 +4,19 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 313j: Regression aus Run 313i behoben — Beleg-Scan brach mit
+  "Keine Internetverbindung" ab, sobald ein Anthropic-API-Key in den
+  Einstellungen eingetragen war. Ursache: Der zusätzlich gesendete
+  x-api-key-Header löste im Browser eine CORS-Preflight-Anfrage aus,
+  die der Cloudflare-Worker nicht erlaubt — der Browser blockierte
+  die Anfrage komplett, bevor sie das Netzwerk verließ, was als
+  "keine Verbindung" erschien. x-api-key-Header-Versand wieder
+  entfernt, `scan()` sendet wie vor Run 313i nur `content-type`.
+  Das Einstellungen-Feld bleibt bestehen, ist aber wie zuvor (seit
+  Run 272) ohne Wirkung auf den Scan, bis eine passende
+  Worker-seitige CORS-/Header-Anpassung vorliegt (nicht Teil dieses
+  Repos). Versionsstring r313j. Datei: beleg_scan_service.dart.
+
 - Run 313i: Anthropic-API-Key aus den Einstellungen wieder aktiv
   genutzt. Seit Run 272 war das Feld funktionslos (Umstellung des
   Beleg-Scans auf einen Cloudflare-Worker als Proxy, dabei wurde die
