@@ -1214,6 +1214,10 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
 
   Widget _baueZusammenfassung(int differenzCent) {
     final bool differenzNull = differenzCent == 0;
+    final bool differenzAuffaellig =
+        TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig(
+      differenzCent,
+    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1240,6 +1244,15 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               hervorheben: true,
               farbe: differenzNull ? Colors.green.shade700 : Colors.red,
             ),
+            if (differenzAuffaellig)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  'Hinweis: Die Differenz zum Wechselgeld-Sollwert ist '
+                  'ungewöhnlich hoch — bitte noch einmal nachzählen.',
+                  style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
+                ),
+              ),
           ],
         ),
       ),

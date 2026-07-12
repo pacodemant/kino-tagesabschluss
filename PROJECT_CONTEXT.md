@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+313 · Run 313
+Version: 0.9.3+314 · Run 314
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -169,6 +169,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 304d3 ✅ Leere EC-Kachel öffnet Header-Tap/"manuell eingeben" direkt alle Kartenart-Zeilen + Gesamt-Feld zur Bearbeitung; Gesamt-Label "Gesamt" (manuell) vs. "Gesamt (laut Beleg)" (nach Scan) + Hilfe-Icon; rote Hervorhebung korrigiert auf echte Scan-Problemfälle (`nichtPlausibel`) statt Pauschal-Regel
 - Run 304d4 ✅ Rote Einfärbung des Gesamt-Betrags bei Summen-Mismatch entfernt (nur noch orangener Hinweistext), damit MA den ganzen Beleg statt nur das Gesamt-Feld prüft
 - Run 304d5 ✅ PWA-Update-Erkennung: `visibilitychange`-Listener löst Update-Check beim Zurückkehren aus dem Hintergrund aus; neue Version wird automatisch neu geladen (kein Banner/Button mehr, da Entwürfe laufend persistiert werden)
+- Run 314 ✅ Validierungs-Serie aus TODO.md gestartet: "Differenz
+  Anfangsbestand > 20 €" als weicher Hinweis umgesetzt (mit
+  Unit-Test); zwei weitere Punkte als technisch gegenstandslos
+  geprüft und als entfällt markiert. Ab jetzt werden neue
+  Validierungsregeln immer mit Unit-Test im selben Run umgesetzt.
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

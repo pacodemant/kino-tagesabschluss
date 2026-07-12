@@ -224,11 +224,19 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
       nicht als Betrag. Bei einem Stückzahl-Feld ist eine nicht durch
       den Nennwert teilbare Eingabe technisch nicht möglich.
       *(geprüft Run 313d)*
-- [ ] Negativer Betrag in irgendeinem Zählfeld
+- [x] Negativer Betrag in irgendeinem Zählfeld — entfällt:
+      `GanzzahlEingabefeld` filtert Eingaben mit
+      `FilteringTextInputFormatter.digitsOnly` (auch bei Paste) —
+      ein Minuszeichen kann im Stückzahl-Feld technisch nicht
+      eingegeben werden. Einziger Verwendungsort:
+      `schritt1_ui_builder.dart`. *(geprüft Run 314)*
 - *(Münzfeld-Teilbarkeit: bereits implementiert)*
 
 ### Stückelung — Weiche Warnungen
-- [ ] 500 € / 200 €-Scheine vorhanden
+- [x] 500 € / 200 €-Scheine vorhanden — entfällt: Die App kennt in
+      `StueckelungKonfiguration.scheine` gar keine 200-€- oder
+      500-€-Denomination (nur 100/50/20/10/5 €) — ein solcher
+      Schein kann nirgends erfasst werden. *(geprüft Run 314)*
 - [ ] Gesamtbarbestand nach Wechselgeld überschreitet Schwellwert (z. B. 3.000 €)
 - [ ] Einzelne Denomination > 80 % des Gesamtbestands
 
@@ -244,7 +252,11 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
 ### Differenz / Kassenstand
 - [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung
 - [ ] Ist > Soll — Warnung mit Erklärungstext
-- [ ] Differenz Anfangsbestand > 20 € — weicher Hinweis
+- [x] Differenz Anfangsbestand > 20 € — weicher Hinweis, nicht
+      blockierend. Umgesetzt in `wechselgeld_pruefen_seite.dart`
+      (Zusammenfassung), Schwellwert-Logik in
+      `TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig()`.
+      *(Run 314)*
 
 ### Belege / Ausgaben
 - [ ] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld

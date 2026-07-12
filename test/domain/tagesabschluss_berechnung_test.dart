@@ -84,6 +84,29 @@ void main() {
         100,
       );
     });
+
+    test(
+      'istAnfangsbestandDifferenzAuffaellig greift erst über 20 € '
+      '(in beide Richtungen)',
+      () {
+        expect(
+          TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig(2000),
+          isFalse,
+        );
+        expect(
+          TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig(2001),
+          isTrue,
+        );
+        expect(
+          TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig(-2001),
+          isTrue,
+        );
+        expect(
+          TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig(0),
+          isFalse,
+        );
+      },
+    );
   });
 
   group('TagesabschlussFormatierung', () {

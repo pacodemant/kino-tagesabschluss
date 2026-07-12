@@ -4,6 +4,25 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 314: Erste Validierungspunkte aus TODO.md abgearbeitet.
+  (1) "Negativer Betrag im Zählfeld" als entfällt markiert —
+  `GanzzahlEingabefeld` filtert Eingaben bereits mit
+  `FilteringTextInputFormatter.digitsOnly`, ein Minuszeichen kann
+  dort technisch nicht eingegeben werden. (2) "500 €/200 €-Scheine
+  vorhanden" ebenfalls entfällt — die App kennt diese
+  Denominationen in `StueckelungKonfiguration.scheine` gar nicht
+  (max. 100 €). (3) "Differenz Anfangsbestand > 20 €" umgesetzt:
+  neue Methode `TagesabschlussBerechnung
+  .istAnfangsbestandDifferenzAuffaellig()` (Schwellwert 2000 Cent)
+  mit Unit-Test, dazu weicher Hinweistext (nicht blockierend) in
+  der Zusammenfassung von `wechselgeld_pruefen_seite.dart`, wenn
+  die Differenz zum Wechselgeld-Sollwert die 20-€-Marke
+  überschreitet. Ab diesem Run werden neue Validierungsregeln aus
+  TODO.md grundsätzlich zusammen mit einem Unit-Test im selben Run
+  umgesetzt. Versionsstring r314. Dateien:
+  tagesabschluss_berechnung.dart,
+  tagesabschluss_berechnung_test.dart, wechselgeld_pruefen_seite.dart.
+
 - Run 313j: Regression aus Run 313i behoben — Beleg-Scan brach mit
   "Keine Internetverbindung" ab, sobald ein Anthropic-API-Key in den
   Einstellungen eingetragen war. Ursache: Der zusätzlich gesendete
