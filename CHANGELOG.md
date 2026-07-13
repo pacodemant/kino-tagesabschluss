@@ -4,6 +4,18 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 316d: TODO.md-Punkte im Block "Blockiert — wartet auf IT
+  (Yannik)" mit aktuellem Wissensstand (2026-07-12) abgeglichen.
+  Beantwortet/abgehakt: location_id (SB=1, Atlantis=3,
+  BarTabac=4; Gondel/CO weiterhin offen, aber laut Plan erst
+  nach SB relevant), X-API-Key-Modell (ein eigener Key pro
+  Standort, kein gemeinsamer — Key-Werte selbst nicht in der
+  Datei, nur in den App-Einstellungen), Testumgebung (Sandbox-
+  URL bekannt). CORS-Header-Punkt präzisiert: Origin ist
+  gesetzt, einziger noch offener Blocker ist X-API-Key in
+  access-control-allow-headers (Anfrage an Yannik läuft). Keine
+  App-Code-Änderung. Versionsstring r316d. Datei: TODO.md.
+
 - Run 316c: Flurbocash-Fehlermeldungen präzisiert. Bisher zeigte
   ApiUploadService._pruefeStatus bei einem Fehler (400/401/403/
   404/500) nur eine fest einprogrammierte, generische deutsche

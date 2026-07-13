@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+316c · Run 316c
+Version: 0.9.3+316d · Run 316d
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -198,6 +198,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Flurbocash-Fehlern (400/401/403/404/500) zeigen jetzt zusätzlich
   den tatsächlichen Klartext aus der Server-Antwort an, statt nur
   einer generischen App-Meldung.
+- Run 316d ✅ TODO.md-Block "Blockiert — wartet auf IT" mit
+  aktuellem Wissensstand abgeglichen (location_id, X-API-Key-
+  Modell, Testumgebung beantwortet; CORS-Punkt präzisiert:
+  einziger offener Blocker ist X-API-Key in access-control-
+  allow-headers). Keine App-Code-Änderung.
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

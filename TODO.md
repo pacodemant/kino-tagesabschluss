@@ -1,20 +1,31 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 316c · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 316d · wird fortlaufend ergänzt
 
 ---
 
 ## 🔴 Blockiert — wartet auf IT (Yannik)
 
-- [ ] **location_id pro Standort** Welche interne Flurbocash-ID hat jeder Standort?
+- [x] **location_id pro Standort** Welche interne Flurbocash-ID hat jeder Standort?
       (Schauburg, Gondel, Atlantis, Cinema Ostertor, Bar Tabak)
+      Teilweise beantwortet (Mail Yannik, 2026-07-12): Schauburg = 1,
+      Atlantis = 3, Bar Tabak = 4. Gondel/Cinema Ostertor noch offen —
+      laut Plan aber erst relevant, wenn SB vollständig läuft.
 
 - [ ] **Basis-URL Flurbocash-Server** HTTPS-Adresse der API.
+      Sandbox bekannt: https://sandbox.flurbocash.c137-prime.de:666
+      (wird aktuell für alle Tests genutzt). Ob das auch die
+      Produktiv-URL ist oder Yannik später eine andere gibt: offen.
 
-- [ ] **X-API-Key** Tatsächlicher Schlüssel — ein Key für alle oder je einer
+- [x] **X-API-Key** Tatsächlicher Schlüssel — ein Key für alle oder je einer
       pro Standort, nach Yanniks Ermessen.
+      Beantwortet (Mail Yannik, 2026-07-12): je ein eigener Key pro
+      Standort, kein gemeinsamer Key für alle. Die konkreten Key-Werte
+      stehen NICHT hier, sondern nur in den App-Einstellungen pro Kino.
 
 - [ ] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in Flurbocash
       für welchen Standort hinterlegt?
+      Für SB steht aktuell "54017635" in config/terminal_ids.json — bisher
+      nur Annahme, von Yannik noch nicht bestätigt (Stand 2026-07-12).
 
 - [ ] **Terminals bei doppelter TID am selben Tag** Wenn dieselbe
       physische Terminal-ID an einem Tag zweimal abgerechnet wird
@@ -34,6 +45,14 @@ Stand: Juli 2026 · Run 316c · wird fortlaufend ergänzt
 
 - [ ] **CORS-Header** Server muss `Access-Control-Allow-Origin: *` senden.
       Bereits konfiguriert?
+      Stand 2026-07-12: access-control-allow-origin ist gesetzt (echot
+      https://pacodemant.github.io, funktional gleichwertig zu `*`).
+      Einziger noch bekannter Blocker: access-control-allow-headers
+      erlaubt bisher nur "Content-Type, Authorization" — X-API-Key fehlt
+      (bestätigt per Browser-Fehler UND Yanniks eigenem curl-Test).
+      Yannik wurde konkret gebeten, X-API-Key zu ergänzen — Antwort
+      steht noch aus. Das ist aktuell der einzige bestätigte technische
+      Blocker für den Flurbocash-Upload.
 
 - [ ] **6-Uhr-Knick abstimmen** Welches Datum erwartet Flurbocash für
       Nachtabrechnungen (z. B. 1 Uhr nachts) — Kalendertag oder logischer
@@ -43,7 +62,9 @@ Stand: Juli 2026 · Run 316c · wird fortlaufend ergänzt
       Mitarbeitername, Differenz an Flurbocash übermittelt werden — oder holt das
       System sie selbst aus dem Kassensystem?
 
-- [ ] **Testumgebung** Gibt es eine Staging-Instanz von Flurbocash?
+- [x] **Testumgebung** Gibt es eine Staging-Instanz von Flurbocash?
+      Ja: Sandbox unter https://sandbox.flurbocash.c137-prime.de:666
+      (Stand 2026-07-12, wird aktuell für alle Tests genutzt).
 
 - [ ] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT oder MA?
       Wer pflegt Änderungen (neuer API-Key, neue TID)?
