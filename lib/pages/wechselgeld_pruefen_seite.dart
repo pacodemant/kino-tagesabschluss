@@ -333,38 +333,37 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     );
   }
 
-  Future<void> _pruefeDifferenzVorVerlassen(VoidCallback zielAktion) async {
+  Future<void> _versucheAbschlussDialogZuOeffnen() async {
     final int differenzCent = _kassenbestandGesamtCent - _wechselgeldSollwertCent;
-    if (differenzCent == 0) {
-      zielAktion();
-      return;
-    }
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogKontext) {
-        return AlertDialog(
-          title: const Text('Wechselgeld stimmt nicht'),
-          content: Text(
-            'Differenz zum Sollwert: '
-            '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
-            'Trotzdem fortfahren?',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(false),
-              child: const Text('Zurück zum Zählen'),
+    if (differenzCent != 0) {
+      final bool? bestaetigt = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext dialogKontext) {
+          return AlertDialog(
+            title: const Text('Wechselgeld stimmt nicht'),
+            content: Text(
+              'Differenz zum Sollwert: '
+              '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
+              'Trotzdem fortfahren?',
             ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(true),
-              child: const Text('Ja, trotzdem weiter'),
-            ),
-          ],
-        );
-      },
-    );
-    if (bestaetigt == true) {
-      zielAktion();
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(dialogKontext).pop(false),
+                child: const Text('Zurück zum Zählen'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(dialogKontext).pop(true),
+                child: const Text('Ja, trotzdem weiter'),
+              ),
+            ],
+          );
+        },
+      );
+      if (bestaetigt != true) {
+        return;
+      }
     }
+    await _zeigeAbschlussDialog();
   }
 
   Future<void> _zeigeAbschlussDialog() async {
@@ -384,19 +383,17 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               TextButton(
                 onPressed: () {
                   Navigator.of(dialogKontext).pop();
-                  _pruefeDifferenzVorVerlassen(() {
-                    Navigator.of(context).pushNamed(
-                      GetraenkeAuffuellenSeite.routenName,
-                      arguments: widget.kinoId,
-                    );
-                  });
+                  Navigator.of(context).pushNamed(
+                    GetraenkeAuffuellenSeite.routenName,
+                    arguments: widget.kinoId,
+                  );
                 },
                 child: const Text('Getränke auffüllen'),
               ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(dialogKontext).pop();
-                _pruefeDifferenzVorVerlassen(_zurueckZurStartseite);
+                _zurueckZurStartseite();
               },
               child: const Text('Fertig / Startseite'),
             ),
@@ -1042,7 +1039,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
             const SizedBox(width: 8),
             Expanded(
               child: ElevatedButton(
-                onPressed: _zeigeAbschlussDialog,
+                onPressed: _versucheAbschlussDialogZuOeffnen,
                 style: AppFarben.footerButtonStyle,
                 child: const Text('Fertig / Startseite'),
               ),

@@ -4,6 +4,19 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 314a2: Korrektur von Run 314a (T1) — Die Differenz-Prüfung
+  lief bisher erst NACH dem Öffnen des Menüs "Was möchtest du als
+  nächstes tun?" (Nutzer wählte z. B. "Fertig / Startseite", dann
+  erst kam der Bestätigungsdialog). Jetzt läuft die Prüfung VOR
+  dem Öffnen dieses Menüs: `_versucheAbschlussDialogZuOeffnen()`
+  ersetzt den direkten Aufruf von `_zeigeAbschlussDialog()` am
+  Footer-Button. Bei Differenz ≠ 0 erscheint zuerst der
+  Bestätigungsdialog; das Menü öffnet sich erst danach (bzw. sofort
+  bei Differenz = 0). Betrifft sowohl "Fertig / Startseite" als
+  auch "Getränke auffüllen", da beide nur über dieses eine Menü
+  erreichbar sind. Versionsstring r314a2. Datei:
+  wechselgeld_pruefen_seite.dart.
+
 - Run 314a: Korrektur von Run 314 — "Differenz Anfangsbestand"
   von passivem Hinweis-beim-Zählen auf Bestätigungssperre-beim-
   Verlassen umgestellt. Grund: Ein Text in der Zusammenfassungs-
