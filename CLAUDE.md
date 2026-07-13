@@ -148,6 +148,8 @@ Inhalt:
     Einschränkung, Entfall), eine kurze Notiz hinter den Eintrag schreiben,
     damit die TODO.md dokumentiert was tatsächlich gemacht wurde.
     Keine anderen TODO.md-Inhalte umformulieren oder verschieben.
+    Kopfzeile (Zeile 2, „Stand: ... · Run NNN") bei jedem Run — auch
+    Sub-Runs — auf die aktuelle Run-Nummer aktualisieren.
   - PROJECT_CONTEXT.md: Kopfzeile (Version + Run), Entwicklungsstand und bei
     Bedarf betroffene Architekturabschnitte aktualisieren.
   - AGENTS.md: synchron mit CLAUDE.md halten wenn sich Workflow-Regeln ändern

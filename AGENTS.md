@@ -128,7 +128,9 @@ Nach einem erfolgreichen Run aktualisieren:
 
 1. `.dev/run_counter.txt`
 2. `CHANGELOG.md` — neuen Eintrag hinzufügen
-3. `TODO.md` — erledigte Punkte abhaken (`[x]`), neue Punkte eintragen wenn besprochen
+3. `TODO.md` — erledigte Punkte abhaken (`[x]`), neue Punkte eintragen wenn besprochen.
+   Kopfzeile (Zeile 2, „Stand: ... · Run NNN") bei jedem Run — auch Sub-Runs —
+   auf die aktuelle Run-Nummer aktualisieren.
 4. `PROJECT_CONTEXT.md` — Kopfzeile (Version + Run), Entwicklungsstand,
    bei strukturellen Änderungen betroffene Abschnitte aktualisieren
 5. `AGENTS.md` — bei Änderungen an Workflow-Regeln synchron mit CLAUDE.md halten

@@ -4,6 +4,13 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 316b: TODO.md-Kopfzeile war seit Run 313h nicht mehr
+  aktualisiert worden (stand noch auf "Run 313") — auf aktuellen
+  Stand (Run 316b) korrigiert. Neue Regel in CLAUDE.md und
+  AGENTS.md ergänzt, damit die Kopfzeile künftig bei jedem Run
+  (auch Sub-Runs) mitgezogen wird. Keine App-Code-Änderung.
+  Dateien: TODO.md, CLAUDE.md, AGENTS.md.
+
 - Run 316a: Korrektur von Run 316 — Hinweis "Bistro SOLL ist
   höher als Kino SOLL" wieder entfernt. Grund: Prämisse gilt
   nicht standortübergreifend (Gondel hat Restaurant-Umsatz, dort
