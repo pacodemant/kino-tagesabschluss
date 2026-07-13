@@ -4,6 +4,18 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 316c: Flurbocash-Fehlermeldungen präzisiert. Bisher zeigte
+  ApiUploadService._pruefeStatus bei einem Fehler (400/401/403/
+  404/500) nur eine fest einprogrammierte, generische deutsche
+  Meldung — der tatsächliche Klartext-Grund aus der Server-Antwort
+  wurde verworfen. Jetzt wird response.body (falls vorhanden) in
+  Klammern an die bestehende Meldung angehängt, sodass z. B. bei
+  einem 400 sichtbar wird, ob der Grund "unknown tid", "maximum
+  of 4 settlements per day reached" oder "report is finalized"
+  war, statt nur der pauschalen Vermutung "Ungültige Daten oder
+  Terminal-ID unbekannt". Versionsstring r316c. Datei:
+  api_upload_service.dart.
+
 - Run 316b: TODO.md-Kopfzeile war seit Run 313h nicht mehr
   aktualisiert worden (stand noch auf "Run 313") — auf aktuellen
   Stand (Run 316b) korrigiert. Neue Regel in CLAUDE.md und

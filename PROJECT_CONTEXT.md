@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+316b · Run 316b
+Version: 0.9.3+316c · Run 316c
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -194,6 +194,10 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   aktuellen Run-Stand korrigiert; CLAUDE.md/AGENTS.md um Regel
   ergänzt, dass die Kopfzeile künftig bei jedem Run mitgepflegt
   wird.
+- Run 316c ✅ ApiUploadService._pruefeStatus: Fehlermeldungen bei
+  Flurbocash-Fehlern (400/401/403/404/500) zeigen jetzt zusätzlich
+  den tatsächlichen Klartext aus der Server-Antwort an, statt nur
+  einer generischen App-Meldung.
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

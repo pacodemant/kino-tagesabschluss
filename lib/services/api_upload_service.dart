@@ -182,29 +182,31 @@ class ApiUploadService {
   static void _pruefeStatus(http.Response response) {
     final int code = response.statusCode;
     if (code >= 200 && code < 300) return;
+    final String serverText = response.body.trim();
+    final String hinweis = serverText.isEmpty ? '' : ' ($serverText)';
     switch (code) {
       case 400:
         throw Exception(
-          'Übertragung fehlgeschlagen: Ungültige Daten oder Terminal-ID unbekannt.',
+          'Übertragung fehlgeschlagen: Ungültige Daten oder Terminal-ID unbekannt.$hinweis',
         );
       case 401:
         throw Exception(
-          'Zugang verweigert – API-Key ungültig. Bitte Einstellungen prüfen.',
+          'Zugang verweigert – API-Key ungültig. Bitte Einstellungen prüfen.$hinweis',
         );
       case 403:
         throw Exception(
-          'API-Key nicht berechtigt für diesen Standort. Bitte IT kontaktieren.',
+          'API-Key nicht berechtigt für diesen Standort. Bitte IT kontaktieren.$hinweis',
         );
       case 404:
         throw Exception(
-          'Tagesbericht nicht gefunden. Bitte erneut versuchen.',
+          'Tagesbericht nicht gefunden. Bitte erneut versuchen.$hinweis',
         );
       case 500:
         throw Exception(
-          'Serverfehler bei Flurbocash. Bitte später erneut versuchen.',
+          'Serverfehler bei Flurbocash. Bitte später erneut versuchen.$hinweis',
         );
       default:
-        throw Exception('Unbekannter Fehler (HTTP $code).');
+        throw Exception('Unbekannter Fehler (HTTP $code).$hinweis');
     }
   }
 
