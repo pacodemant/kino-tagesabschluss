@@ -262,7 +262,10 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
       (Fertig/Startseite UND Getränke auffüllen), ob die Differenz
       zum Wechselgeld-Sollwert exakt 0 ist — jede Abweichung, kein
       Schwellwert. Bei Abweichung: Bestätigungsdialog "Trotzdem
-      fortfahren?". *(Run 314 → korrigiert in Run 314a)*
+      fortfahren?". Der Dialog öffnet sich vor (nicht nach) dem
+      Abschluss-Menü "Was möchtest du als nächstes tun?".
+      *(Run 314 → korrigiert in Run 314a, Timing korrigiert in
+      Run 314a2)*
 
 ### Belege / Ausgaben
 - [ ] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld

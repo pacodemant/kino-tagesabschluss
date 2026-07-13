@@ -4,6 +4,13 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 315a: Zeilenabstand bei "nur benötigte anzeigen" von 1 auf
+  0.7 verkleinert (Feinjustierung durch Paco); dabei versehentlich
+  eingefügten Tippfehler (`TableRow(flutt`) behoben. TODO.md-Notiz
+  zur Differenz-Anfangsbestand-Prüfung um die Timing-Korrektur aus
+  Run 314a2 ergänzt (fehlte bisher). Datei:
+  getraenke_auffuellen_seite.dart, TODO.md.
+
 - Run 315: Getränke-Auffüllen-Seite — Unterstreichung der
   Mengenfelder wird nur noch gezeigt, wenn "alle anzeigen" aktiv
   ist; bei aktivem Filter "nur benötigte anzeigen" verschwindet die

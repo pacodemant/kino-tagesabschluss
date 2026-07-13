@@ -273,7 +273,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           textAlign: _istLinkshaender ? TextAlign.right : TextAlign.left,
         );
       }
-      final double zeilenAbstand = _nurBenoetigte ? 1 : 3;
+      final double zeilenAbstand = _nurBenoetigte ? 0.7 : 3;
       final Widget name = Padding(
         padding: EdgeInsets.symmetric(vertical: zeilenAbstand),
         child: nameInhalt,
