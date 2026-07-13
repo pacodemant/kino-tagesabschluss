@@ -4,6 +4,17 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 316: Weicher Hinweis "Bistro SOLL ist höher als Kino SOLL"
+  in Schritt 2, sobald beide Felder befüllt sind und keines
+  fokussiert ist (Wiederverwendung des bestehenden
+  Hinweistext-Musters). Neue reine Funktion
+  `TagesabschlussBerechnung.bistroSollUeberschreitetKinoSollCent()`
+  mit Unit-Test. TODO.md: Punkt abgehakt; zusätzlich "Soll-Felder
+  leer"-Punkt als bereits umgesetzt markiert (war veraltet).
+  Dateien: tagesabschluss_berechnung.dart,
+  tagesabschluss_schritt2_seite.dart,
+  tagesabschluss_berechnung_test.dart, TODO.md.
+
 - Run 315a: Zeilenabstand bei "nur benötigte anzeigen" von 1 auf
   0.7 verkleinert (Feinjustierung durch Paco); dabei versehentlich
   eingefügten Tippfehler (`TableRow(flutt`) behoben. TODO.md-Notiz

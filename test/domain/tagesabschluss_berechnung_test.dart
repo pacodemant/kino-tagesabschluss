@@ -84,6 +84,32 @@ void main() {
         100,
       );
     });
+
+    test(
+        'bistroSollUeberschreitetKinoSollCent erkennt Bistro-Soll > Kino-Soll',
+        () {
+      expect(
+        TagesabschlussBerechnung.bistroSollUeberschreitetKinoSollCent(
+          kinoSollCent: 1000,
+          bistroSollCent: 1500,
+        ),
+        true,
+      );
+      expect(
+        TagesabschlussBerechnung.bistroSollUeberschreitetKinoSollCent(
+          kinoSollCent: 1500,
+          bistroSollCent: 1000,
+        ),
+        false,
+      );
+      expect(
+        TagesabschlussBerechnung.bistroSollUeberschreitetKinoSollCent(
+          kinoSollCent: 1000,
+          bistroSollCent: 1000,
+        ),
+        false,
+      );
+    });
   });
 
   group('TagesabschlussFormatierung', () {

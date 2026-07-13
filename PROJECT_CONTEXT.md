@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+315a · Run 315a
+Version: 0.9.3+316 · Run 316
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -181,6 +181,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 315 ✅ Getränke-Auffüllen: Unterstreichung der Mengenfelder
   nur noch bei "alle anzeigen" sichtbar, bei "nur benötigte
   anzeigen" ausgeblendet + kleinerer Zeilenabstand.
+- Run 315a ✅ Zeilenabstand-Feinjustierung (1 → 0,7) + Tippfehler-Fix.
+- Run 316 ✅ Schritt 2: Weicher Hinweis "Bistro SOLL höher als
+  Kino SOLL" (mit Unit-Test); TODO.md-Punkte "Bistro-Soll >
+  Kino-Soll" und "Soll-Felder leer" abgehakt (Letzteres war schon
+  vorher umgesetzt).
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).

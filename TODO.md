@@ -242,8 +242,13 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
 
 ### Soll-Felder
 - [ ] Kino-Soll = 0 — Bestätigung erforderlich
-- [ ] Bistro-Soll > Kino-Soll — weicher Hinweis
-- [ ] Soll-Felder leer beim Abschluss-Start — Pflichtfeld
+- [x] Bistro-Soll > Kino-Soll — weicher Hinweis (orangener Text
+      unterhalb des Bistro-SOLL-Felds, sobald beide Felder befüllt
+      sind und keines gerade fokussiert ist). *(Run 316)*
+- [x] Soll-Felder leer beim Abschluss-Start — Pflichtfeld: war
+      bereits umgesetzt (`_pruefePflichtfelderVorSchritt3()` prüft
+      Kino- und Bistro-SOLL), TODO-Punkt war veraltet. *(geprüft
+      Run 316)*
 
 ### EC-Umsatz
 - [ ] EC-Betrag > Gesamt-Soll — harter Fehler

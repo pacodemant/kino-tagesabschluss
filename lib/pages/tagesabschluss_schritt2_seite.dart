@@ -2735,7 +2735,7 @@ class _TagesabschlussSchritt2SeiteState
                               _speichereEntwurf();
                             },
                           ),
-                          if (widget.kinoId != 'kino_04')
+                          if (widget.kinoId != 'kino_04') ...<Widget>[
                             _baueEingabeZeile(
                               label: 'Bistro SOLL',
                               controller: _bistroSollController,
@@ -2753,6 +2753,25 @@ class _TagesabschlussSchritt2SeiteState
                                 _speichereEntwurf();
                               },
                             ),
+                            if (!_istPflichtfeldLeer(_kinoSollController) &&
+                                !_istPflichtfeldLeer(_bistroSollController) &&
+                                !_kinoSollFocusNode.hasFocus &&
+                                !_bistroSollFocusNode.hasFocus &&
+                                TagesabschlussBerechnung
+                                    .bistroSollUeberschreitetKinoSollCent(
+                                  kinoSollCent: _kinoSollCent,
+                                  bistroSollCent: _bistroSollCent,
+                                ))
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  'Hinweis: Bistro SOLL ist höher als Kino SOLL.',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.orange.shade700),
+                                ),
+                              ),
+                          ],
                           const Padding(
                             padding: EdgeInsets.only(top: 4, bottom: 8),
                             child: Text(
