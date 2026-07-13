@@ -4,6 +4,26 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 314a: Korrektur von Run 314 — "Differenz Anfangsbestand"
+  von passivem Hinweis-beim-Zählen auf Bestätigungssperre-beim-
+  Verlassen umgestellt. Grund: Ein Text in der Zusammenfassungs-
+  Karte hätte das eigentliche Problem (MA übersieht/ignoriert die
+  Differenz) nicht gelöst — dieselbe Schwäche wie die schon vorher
+  sichtbare rote Differenz-Zeile. Neue Methode
+  `_pruefeDifferenzVorVerlassen()` in `wechselgeld_pruefen_seite.dart`
+  prüft beim Tap auf "Fertig / Startseite" ODER "Getränke
+  auffüllen", ob die Differenz zum Wechselgeld-Sollwert exakt 0
+  ist (kein Schwellwert mehr — jede Abweichung zählt, da der
+  Wechselgeldbestand für den nächsten Tag exakt stimmen muss).
+  Bei Abweichung: Bestätigungsdialog "Wechselgeld stimmt nicht —
+  Differenz: X,XX €. Trotzdem fortfahren?", erst nach "Ja,
+  trotzdem weiter" geht's weiter. Die in Run 314 dafür angelegte
+  20-€-Schwellwert-Methode
+  (`istAnfangsbestandDifferenzAuffaellig`) samt Unit-Test wieder
+  entfernt, da ohne Restnutzen. Versionsstring r314a. Dateien:
+  tagesabschluss_berechnung.dart, tagesabschluss_berechnung_test.dart,
+  wechselgeld_pruefen_seite.dart.
+
 - Run 314: Erste Validierungspunkte aus TODO.md abgearbeitet.
   (1) "Negativer Betrag im Zählfeld" als entfällt markiert —
   `GanzzahlEingabefeld` filtert Eingaben bereits mit

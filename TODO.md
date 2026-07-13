@@ -252,11 +252,17 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
 ### Differenz / Kassenstand
 - [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung
 - [ ] Ist > Soll — Warnung mit Erklärungstext
-- [x] Differenz Anfangsbestand > 20 € — weicher Hinweis, nicht
-      blockierend. Umgesetzt in `wechselgeld_pruefen_seite.dart`
-      (Zusammenfassung), Schwellwert-Logik in
-      `TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig()`.
-      *(Run 314)*
+- [x] Differenz Anfangsbestand ≠ 0 — abweichend von der
+      ursprünglichen Planung (weicher Hinweis > 20 € beim Zählen)
+      auf Bestätigungssperre umgestellt: Ein passiver Hinweis beim
+      Zählen hätte das eigentliche Problem (MA übersieht/ignoriert
+      die Differenz) nicht gelöst. Stattdessen prüft
+      `_pruefeDifferenzVorVerlassen()` in
+      `wechselgeld_pruefen_seite.dart` beim Verlassen der Seite
+      (Fertig/Startseite UND Getränke auffüllen), ob die Differenz
+      zum Wechselgeld-Sollwert exakt 0 ist — jede Abweichung, kein
+      Schwellwert. Bei Abweichung: Bestätigungsdialog "Trotzdem
+      fortfahren?". *(Run 314 → korrigiert in Run 314a)*
 
 ### Belege / Ausgaben
 - [ ] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld

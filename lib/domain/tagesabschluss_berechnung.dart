@@ -103,14 +103,6 @@ class TagesabschlussBerechnung {
   }) {
     return gesamtIstCent - gesamtSollCent;
   }
-
-  /// Schwellwert (Cent) ab dem eine Anfangsbestand-Differenz
-  /// (Wechselgeld-Zaehlung ggü. Sollwert) als auffaellig gilt.
-  static const int anfangsbestandDifferenzSchwellwertCent = 2000;
-
-  static bool istAnfangsbestandDifferenzAuffaellig(int differenzCent) {
-    return differenzCent.abs() > anfangsbestandDifferenzSchwellwertCent;
-  }
 }
 
 class TagesabschlussFormatierung {

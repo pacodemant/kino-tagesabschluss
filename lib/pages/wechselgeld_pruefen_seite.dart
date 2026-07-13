@@ -333,6 +333,40 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     );
   }
 
+  Future<void> _pruefeDifferenzVorVerlassen(VoidCallback zielAktion) async {
+    final int differenzCent = _kassenbestandGesamtCent - _wechselgeldSollwertCent;
+    if (differenzCent == 0) {
+      zielAktion();
+      return;
+    }
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogKontext) {
+        return AlertDialog(
+          title: const Text('Wechselgeld stimmt nicht'),
+          content: Text(
+            'Differenz zum Sollwert: '
+            '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
+            'Trotzdem fortfahren?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(false),
+              child: const Text('Zurück zum Zählen'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(true),
+              child: const Text('Ja, trotzdem weiter'),
+            ),
+          ],
+        );
+      },
+    );
+    if (bestaetigt == true) {
+      zielAktion();
+    }
+  }
+
   Future<void> _zeigeAbschlussDialog() async {
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
     await showDialog<void>(
@@ -350,17 +384,19 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               TextButton(
                 onPressed: () {
                   Navigator.of(dialogKontext).pop();
-                  Navigator.of(context).pushNamed(
-                    GetraenkeAuffuellenSeite.routenName,
-                    arguments: widget.kinoId,
-                  );
+                  _pruefeDifferenzVorVerlassen(() {
+                    Navigator.of(context).pushNamed(
+                      GetraenkeAuffuellenSeite.routenName,
+                      arguments: widget.kinoId,
+                    );
+                  });
                 },
                 child: const Text('Getränke auffüllen'),
               ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(dialogKontext).pop();
-                _zurueckZurStartseite();
+                _pruefeDifferenzVorVerlassen(_zurueckZurStartseite);
               },
               child: const Text('Fertig / Startseite'),
             ),
@@ -1214,10 +1250,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
 
   Widget _baueZusammenfassung(int differenzCent) {
     final bool differenzNull = differenzCent == 0;
-    final bool differenzAuffaellig =
-        TagesabschlussBerechnung.istAnfangsbestandDifferenzAuffaellig(
-      differenzCent,
-    );
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -1244,15 +1276,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               hervorheben: true,
               farbe: differenzNull ? Colors.green.shade700 : Colors.red,
             ),
-            if (differenzAuffaellig)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Hinweis: Die Differenz zum Wechselgeld-Sollwert ist '
-                  'ungewöhnlich hoch — bitte noch einmal nachzählen.',
-                  style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
-                ),
-              ),
           ],
         ),
       ),
