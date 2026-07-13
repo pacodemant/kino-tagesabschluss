@@ -228,6 +228,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           filled: feldHatFokus,
           fillColor: feldHatFokus ? Colors.black87 : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          border: _nurBenoetigte ? InputBorder.none : null,
         ),
         onChanged: (_) {
           setState(() {});
@@ -272,12 +273,13 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           textAlign: _istLinkshaender ? TextAlign.right : TextAlign.left,
         );
       }
+      final double zeilenAbstand = _nurBenoetigte ? 1 : 3;
       final Widget name = Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
+        padding: EdgeInsets.symmetric(vertical: zeilenAbstand),
         child: nameInhalt,
       );
       final Widget feldZelle = Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
+        padding: EdgeInsets.symmetric(vertical: zeilenAbstand),
         child: feld,
       );
       return TableRow(

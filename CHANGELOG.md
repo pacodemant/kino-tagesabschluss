@@ -4,6 +4,14 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 315: Getränke-Auffüllen-Seite — Unterstreichung der
+  Mengenfelder wird nur noch gezeigt, wenn "alle anzeigen" aktiv
+  ist; bei aktivem Filter "nur benötigte anzeigen" verschwindet die
+  Unterstreichung (`border: InputBorder.none`) und der vertikale
+  Zeilenabstand verkleinert sich (3 → 1), damit mehr Getränke ohne
+  Scrollen auf eine Seite passen. Datei:
+  getraenke_auffuellen_seite.dart.
+
 - Run 314a2: Korrektur von Run 314a (T1) — Die Differenz-Prüfung
   lief bisher erst NACH dem Öffnen des Menüs "Was möchtest du als
   nächstes tun?" (Nutzer wählte z. B. "Fertig / Startseite", dann

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+314 · Run 314
+Version: 0.9.3+315 · Run 315
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -174,6 +174,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Unit-Test); zwei weitere Punkte als technisch gegenstandslos
   geprüft und als entfällt markiert. Ab jetzt werden neue
   Validierungsregeln immer mit Unit-Test im selben Run umgesetzt.
+- Run 314a ✅ Wechselgeld-Differenz-Prüfung von Hinweis auf
+  Bestätigungssperre beim Verlassen umgestellt.
+- Run 314a2 ✅ Korrektur von 314a (T1): Differenz-Bestätigung
+  erscheint jetzt vor statt nach dem Abschluss-Menü.
+- Run 315 ✅ Getränke-Auffüllen: Unterstreichung der Mengenfelder
+  nur noch bei "alle anzeigen" sichtbar, bei "nur benötigte
+  anzeigen" ausgeblendet + kleinerer Zeilenabstand.
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).
