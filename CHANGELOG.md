@@ -4,6 +4,15 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 316a: Korrektur von Run 316 — Hinweis "Bistro SOLL ist
+  höher als Kino SOLL" wieder entfernt. Grund: Prämisse gilt
+  nicht standortübergreifend (Gondel hat Restaurant-Umsatz, dort
+  kann Bistro-Soll legitim höher sein als Kino-Soll). Bewusst
+  vorerst weggelassen; TODO.md-Punkt wieder auf offen gesetzt
+  mit Begründung. Dateien: tagesabschluss_berechnung.dart,
+  tagesabschluss_schritt2_seite.dart,
+  tagesabschluss_berechnung_test.dart, TODO.md.
+
 - Run 316: Weicher Hinweis "Bistro SOLL ist höher als Kino SOLL"
   in Schritt 2, sobald beide Felder befüllt sind und keines
   fokussiert ist (Wiederverwendung des bestehenden

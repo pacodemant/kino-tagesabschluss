@@ -90,13 +90,6 @@ class TagesabschlussBerechnung {
     return kinoSollCent + bistroSollCent - ausgabenCent;
   }
 
-  static bool bistroSollUeberschreitetKinoSollCent({
-    required int kinoSollCent,
-    required int bistroSollCent,
-  }) {
-    return bistroSollCent > kinoSollCent;
-  }
-
   static int gesamtIstCent({
     required int ecUmsatzGesamtCent,
     required int barBestandAbzglWechselgeldCent,

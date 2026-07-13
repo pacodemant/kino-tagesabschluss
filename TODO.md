@@ -242,9 +242,13 @@ Stand: Juli 2026 · Run 313 · wird fortlaufend ergänzt
 
 ### Soll-Felder
 - [ ] Kino-Soll = 0 — Bestätigung erforderlich
-- [x] Bistro-Soll > Kino-Soll — weicher Hinweis (orangener Text
-      unterhalb des Bistro-SOLL-Felds, sobald beide Felder befüllt
-      sind und keines gerade fokussiert ist). *(Run 316)*
+- [ ] Bistro-Soll > Kino-Soll — weicher Hinweis: in Run 316
+      umgesetzt, in Run 316a wieder entfernt. Grund: Prämisse
+      trifft nicht standortübergreifend zu — in der Gondel gibt
+      es Restaurant-Umsatz aus der Küche, dort kann Bistro-Soll
+      legitim höher sein als Kino-Soll. Vorerst bewusst offen
+      gelassen (MA prüfen Eingabe manuell); bei Bedarf durch die
+      Kino-Leitung ggf. später standortabhängig wieder einführen.
 - [x] Soll-Felder leer beim Abschluss-Start — Pflichtfeld: war
       bereits umgesetzt (`_pruefePflichtfelderVorSchritt3()` prüft
       Kino- und Bistro-SOLL), TODO-Punkt war veraltet. *(geprüft

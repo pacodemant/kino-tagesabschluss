@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+316 · Run 316
+Version: 0.9.3+316a · Run 316a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -186,6 +186,10 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Kino SOLL" (mit Unit-Test); TODO.md-Punkte "Bistro-Soll >
   Kino-Soll" und "Soll-Felder leer" abgehakt (Letzteres war schon
   vorher umgesetzt).
+- Run 316a ✅ Korrektur: Hinweis aus Run 316 wieder entfernt —
+  Prämisse (Kino-Umsatz > Bistro-Umsatz) gilt nicht standort-
+  übergreifend (Gondel: Restaurant-Umsatz). TODO.md-Punkt wieder
+  offen mit Begründung.
 
 Blockiert (wartet auf IT / Yannik): Flurbocash-Credentials (location_id, API-Key,
 Basis-URL, TID-Whitelist, CORS, 6-Uhr-Knick-Absprache).
