@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 317 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 317a · wird fortlaufend ergänzt
 
 ---
 
@@ -43,16 +43,14 @@ Stand: Juli 2026 · Run 317 · wird fortlaufend ergänzt
       übertragen werden (das Format erlaubt bis zu 4 Abrechnungen/Tag,
       siehe auch "Bar Tabak: 2-Settlement-Logik" unten)?
 
-- [ ] **CORS-Header** Server muss `Access-Control-Allow-Origin: *` senden.
+- [x] **CORS-Header** Server muss `Access-Control-Allow-Origin: *` senden.
       Bereits konfiguriert?
-      Stand 2026-07-12: access-control-allow-origin ist gesetzt (echot
-      https://pacodemant.github.io, funktional gleichwertig zu `*`).
-      Einziger noch bekannter Blocker: access-control-allow-headers
-      erlaubt bisher nur "Content-Type, Authorization" — X-API-Key fehlt
-      (bestätigt per Browser-Fehler UND Yanniks eigenem curl-Test).
-      Yannik wurde konkret gebeten, X-API-Key zu ergänzen — Antwort
-      steht noch aus. Das ist aktuell der einzige bestätigte technische
-      Blocker für den Flurbocash-Upload.
+      Erledigt (Stand 2026-07-14): Yannik hat X-API-Key zu
+      access-control-allow-headers ergänzt ("x-api-keys sind nun
+      erlaubt"). Erster echter Live-Test für Schauburg (location_id 1)
+      erfolgreich — Tagesbericht kam im Flurbocash-Dashboard korrekt
+      an (Bargeld + EC-Kartenaufschlüsselung stimmen exakt mit der
+      App-Eingabe überein).
 
 - [ ] **6-Uhr-Knick abstimmen** Welches Datum erwartet Flurbocash für
       Nachtabrechnungen (z. B. 1 Uhr nachts) — Kalendertag oder logischer

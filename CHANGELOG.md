@@ -4,6 +4,14 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 317a: TODO.md-Punkt "CORS-Header" abgehakt. Yannik hat
+  X-API-Key zu access-control-allow-headers ergänzt ("x-api-keys
+  sind nun erlaubt", 2026-07-14). Erster echter Live-Test des
+  Flurbocash-Uploads für Schauburg (location_id 1) erfolgreich —
+  Tagesbericht im Flurbocash-Dashboard korrekt angekommen, Bargeld-
+  und EC-Kartenwerte stimmen exakt mit der App-Eingabe überein.
+  Keine App-Code-Änderung. Versionsstring r317a. Datei: TODO.md.
+
 - Run 317: Validierungen Schritt 2 + „Eingabe mit Komma"-Einstellung
   entfernt. Pflichtfeld-Fehler zeigen jetzt AlertDialog statt Snackbar.
   Neue Validierungen: Ausgaben mit Label aber Betrag = 0 (V3, harter
