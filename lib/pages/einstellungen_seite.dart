@@ -1110,33 +1110,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             child: Card(
               child: Column(
                 children: <Widget>[
-                  const ListTile(
-                    title: Text(
-                      'Allgemein',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                    child: Text(
-                      'Beträge in Cent eingeben, also „640" für 6 Euro 40 Cent.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Card(
-              child: Column(
-                children: <Widget>[
                   ListTile(
                     title: const Text(
                       'Getränkeliste',
