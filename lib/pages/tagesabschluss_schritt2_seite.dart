@@ -13,7 +13,6 @@ import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
@@ -169,7 +168,6 @@ class _TagesabschlussSchritt2SeiteState
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
   bool get _scanLaeuft => _scanBelegIndex != null;
-  bool _eingabeMitKomma = false;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
@@ -210,13 +208,6 @@ class _TagesabschlussSchritt2SeiteState
       setState(() {
         _devModusAktiv = aktiv;
       });
-    });
-    SharedPreferences.getInstance().then((SharedPreferences prefs) {
-      if (mounted) {
-        setState(() {
-          _eingabeMitKomma = prefs.getBool('eingabe_mit_komma') ?? false;
-        });
-      }
     });
     _scrollController.addListener(_aktualisiereScrollPfeil);
     for (final FocusNode fn in <FocusNode>[
@@ -593,10 +584,63 @@ class _TagesabschlussSchritt2SeiteState
     ).format(_letzteAenderung);
   }
 
-  void _weiterZuSchritt3() {
-    if (!_pruefePflichtfelderVorSchritt3()) {
+  Future<void> _weiterZuSchritt3() async {
+    if (!await _pruefePflichtfelderVorSchritt3()) {
       return;
     }
+    if (!mounted) return;
+
+    // V5: Kino-Soll = 0
+    if (_kinoSollCent == 0) {
+      final bool? bestaetigt = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext ctx) => AlertDialog(
+          content:
+              const Text('Kino-Soll ist 0 € — ist das korrekt?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Korrigieren'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Ja, stimmt so'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted) return;
+      if (bestaetigt != true) {
+        FocusScope.of(context).requestFocus(_kinoSollFocusNode);
+        return;
+      }
+    }
+
+    // V7: EC = 0
+    if (TagesabschlussBerechnung.istEcNull(_ecBelegeCent)) {
+      final bool? weiter = await showDialog<bool>(
+        context: context,
+        builder: (BuildContext ctx) => AlertDialog(
+          content: const Text(
+            'Kein EC-Umsatz erfasst — nur wenn heute '
+            'ausschließlich bar bezahlt wurde.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Korrigieren'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: const Text('Trotzdem weiter'),
+            ),
+          ],
+        ),
+      );
+      if (!mounted) return;
+      if (weiter != true) return;
+    }
+
     Navigator.of(context).pushNamed(
       TagesabschlussSchritt3Seite.routenName,
       arguments: TagesabschlussSchritt3Argumente(
@@ -629,8 +673,7 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  /// Prueft nur die fachlich noetigen Pflichtfelder vor dem finalen Abschluss.
-  bool _pruefePflichtfelderVorSchritt3() {
+  Future<bool> _pruefePflichtfelderVorSchritt3() async {
     setState(() {
       _validierungAusgeloest = true;
       if (!_ecKachelAufgeklappt) _ecKachelAufgeklappt = true;
@@ -649,28 +692,70 @@ class _TagesabschlussSchritt2SeiteState
       }
     });
 
-    final List<({TextEditingController controller, FocusNode fokus})>
-    pflichtfelder = <({TextEditingController controller, FocusNode fokus})>[
-      (controller: _kinoSollController, fokus: _kinoSollFocusNode),
+    // V3: Ausgaben mit Label aber Betrag = 0
+    for (int i = 0; i < _ausgabenLabels.length; i++) {
+      if (_ausgabenLabels[i].trim().isNotEmpty &&
+          (i < _ausgabenBetrageCent.length && _ausgabenBetrageCent[i] == 0)) {
+        await _zeigeValidierungsfehlerUndFokussiere(
+          fokusNode: _ausgabenBetragFocusNode[i],
+          feldBezeichnung: 'Betrag für „${_ausgabenLabels[i]}"',
+        );
+        return false;
+      }
+    }
+
+    final List<
+            ({
+              TextEditingController controller,
+              FocusNode fokus,
+              String bezeichnung
+            })>
+        pflichtfelder = <
+            ({
+              TextEditingController controller,
+              FocusNode fokus,
+              String bezeichnung
+            })>[
+      (
+        controller: _kinoSollController,
+        fokus: _kinoSollFocusNode,
+        bezeichnung: 'Kino-Soll',
+      ),
       if (widget.kinoId != 'kino_04')
-        (controller: _bistroSollController, fokus: _bistroSollFocusNode),
+        (
+          controller: _bistroSollController,
+          fokus: _bistroSollFocusNode,
+          bezeichnung: 'Bistro-Soll',
+        ),
       for (int i = 0; i < _ecBelegController.length; i++) ...<
-          ({TextEditingController controller, FocusNode fokus})>[
+          ({
+            TextEditingController controller,
+            FocusNode fokus,
+            String bezeichnung
+          })>[
         (
           controller: _ecBelegLabelController[i],
-          fokus: _ecBelegLabelFocusNode[i]
+          fokus: _ecBelegLabelFocusNode[i],
+          bezeichnung: 'Terminal-ID',
         ),
         (
           controller: _kartenartenGesamtBetragController[i],
-          fokus: _kartenartenGesamtBetragFocusNode[i]
+          fokus: _kartenartenGesamtBetragFocusNode[i],
+          bezeichnung: 'EC-Gesamtbetrag',
         ),
       ],
     ];
 
-    for (final ({TextEditingController controller, FocusNode fokus}) feld
-        in pflichtfelder) {
+    for (final ({
+      TextEditingController controller,
+      FocusNode fokus,
+      String bezeichnung
+    }) feld in pflichtfelder) {
       if (feld.controller.text.trim().isEmpty) {
-        _zeigeValidierungsfehlerUndFokussiere(fokusNode: feld.fokus);
+        await _zeigeValidierungsfehlerUndFokussiere(
+          fokusNode: feld.fokus,
+          feldBezeichnung: feld.bezeichnung,
+        );
         return false;
       }
     }
@@ -693,11 +778,25 @@ class _TagesabschlussSchritt2SeiteState
     return fehlertext;
   }
 
-  /// Zeigt eine knappe Rueckmeldung und macht das erste fehlerhafte Feld sichtbar.
-  void _zeigeValidierungsfehlerUndFokussiere({required FocusNode fokusNode}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bitte Pflichtfelder ausfüllen.')),
+  Future<void> _zeigeValidierungsfehlerUndFokussiere({
+    required FocusNode fokusNode,
+    String feldBezeichnung = 'Dieses Feld',
+  }) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        content:
+            Text('„$feldBezeichnung" ist ein Pflichtfeld — bitte ausfüllen.'),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Ändern'),
+          ),
+        ],
+      ),
     );
+    if (!mounted) return;
     FocusScope.of(context).requestFocus(fokusNode);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _macheFehlerfeldSichtbar(fokusNode);
@@ -793,9 +892,8 @@ class _TagesabschlussSchritt2SeiteState
     _speichereEntwurf();
   }
 
-  int _parsiereBetragCent(String wert) => _eingabeMitKomma
-      ? TagesabschlussBerechnung.parseCentKomma(wert)
-      : TagesabschlussBerechnung.parseCentZiffern(wert);
+  int _parsiereBetragCent(String wert) =>
+      TagesabschlussBerechnung.parseCentZiffern(wert);
 
   void _setzeControllerText(TextEditingController controller, String text) {
     controller.value = TextEditingValue(
@@ -1738,7 +1836,7 @@ class _TagesabschlussSchritt2SeiteState
         hinweisText: '0,00 €',
         fehlermeldungText: fehlermeldungText,
         farbeNachWert: farbeNachWert,
-        mitKomma: _eingabeMitKomma,
+        mitKomma: false,
       );
     }
 
@@ -1764,7 +1862,7 @@ class _TagesabschlussSchritt2SeiteState
               hinweisText: '0,00 €',
               fehlermeldungText: fehlermeldungText,
               farbeNachWert: farbeNachWert,
-              mitKomma: _eingabeMitKomma,
+              mitKomma: false,
             ),
           ),
           if (zeigeLoeschen) ...<Widget>[
@@ -2094,15 +2192,11 @@ class _TagesabschlussSchritt2SeiteState
             child: TextField(
               controller: zeile.betragController,
               focusNode: zeile.betragFocusNode,
-              keyboardType: _eingabeMitKomma
-                  ? const TextInputType.numberWithOptions(decimal: true)
-                  : TextInputType.number,
-              inputFormatters: _eingabeMitKomma
-                  ? <TextInputFormatter>[]
-                  : <TextInputFormatter>[
-                      FilteringTextInputFormatter.digitsOnly,
-                      CentWaehrungsEingabeFormatter(),
-                    ],
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.digitsOnly,
+                CentWaehrungsEingabeFormatter(),
+              ],
               textAlign: TextAlign.right,
               style: const TextStyle(fontSize: 13),
               decoration: InputDecoration(
@@ -2378,15 +2472,11 @@ class _TagesabschlussSchritt2SeiteState
                         focusNode: belegIndex < _kartenartenGesamtBetragFocusNode.length
                             ? _kartenartenGesamtBetragFocusNode[belegIndex]
                             : null,
-                        keyboardType: _eingabeMitKomma
-                            ? const TextInputType.numberWithOptions(decimal: true)
-                            : TextInputType.number,
-                        inputFormatters: _eingabeMitKomma
-                            ? <TextInputFormatter>[]
-                            : <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                CentWaehrungsEingabeFormatter(),
-                              ],
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly,
+                          CentWaehrungsEingabeFormatter(),
+                        ],
                         textAlign: TextAlign.right,
                         style: const TextStyle(
                           fontWeight: FontWeight.w600,
@@ -2872,7 +2962,7 @@ class _TagesabschlussSchritt2SeiteState
                                         },
                                         schriftgroesse: 15,
                                         hinweisText: '0,00 €',
-                                        mitKomma: _eingabeMitKomma,
+                                        mitKomma: false,
                                       ),
                                     ),
                                     if (_ausgabenBetragController.length >

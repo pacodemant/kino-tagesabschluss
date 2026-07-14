@@ -103,6 +103,19 @@ class TagesabschlussBerechnung {
   }) {
     return gesamtIstCent - gesamtSollCent;
   }
+
+  static bool hatAusgabeMitFehlendemBetrag(
+      List<String> labels, List<int> betraege) {
+    for (int i = 0; i < labels.length && i < betraege.length; i++) {
+      if (labels[i].trim().isNotEmpty && betraege[i] == 0) return true;
+    }
+    return false;
+  }
+
+  static bool istEcNull(List<int> ecBetraege) {
+    if (ecBetraege.isEmpty) return false;
+    return ecBetraege.every((int b) => b == 0);
+  }
 }
 
 class TagesabschlussFormatierung {

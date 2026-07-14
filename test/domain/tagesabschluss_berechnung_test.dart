@@ -86,6 +86,39 @@ void main() {
     });
   });
 
+  group('Validierungen', () {
+    test('hatAusgabeMitFehlendemBetrag erkennt Label ohne Betrag', () {
+      expect(
+        TagesabschlussBerechnung.hatAusgabeMitFehlendemBetrag(
+          <String>['Lieferant'], <int>[0]),
+        isTrue,
+      );
+      expect(
+        TagesabschlussBerechnung.hatAusgabeMitFehlendemBetrag(
+          <String>['Lieferant'], <int>[500]),
+        isFalse,
+      );
+      expect(
+        TagesabschlussBerechnung.hatAusgabeMitFehlendemBetrag(
+          <String>[''], <int>[0]),
+        isFalse,
+      );
+      expect(
+        TagesabschlussBerechnung.hatAusgabeMitFehlendemBetrag(
+          <String>[], <int>[]),
+        isFalse,
+      );
+    });
+
+    test('istEcNull erkennt fehlenden EC-Umsatz', () {
+      expect(TagesabschlussBerechnung.istEcNull(<int>[0]), isTrue);
+      expect(TagesabschlussBerechnung.istEcNull(<int>[0, 0]), isTrue);
+      expect(TagesabschlussBerechnung.istEcNull(<int>[0, 100]), isFalse);
+      expect(TagesabschlussBerechnung.istEcNull(<int>[100]), isFalse);
+      expect(TagesabschlussBerechnung.istEcNull(<int>[]), isFalse);
+    });
+  });
+
   group('TagesabschlussFormatierung', () {
     test('formatiereEuro und formatiereEuroEingabe formatieren Cent korrekt', () {
       expect(TagesabschlussFormatierung.formatiereEuro(1234), '12,34 €');

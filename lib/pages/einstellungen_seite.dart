@@ -82,7 +82,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
-  bool _eingabeMitKomma = false;
   bool _apiUploadAktiv = false;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
@@ -218,7 +217,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _getraenkeController.add(TextEditingController(text: name));
     }
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final bool eingabeMitKomma = speicher.getBool('eingabe_mit_komma') ?? false;
     final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
@@ -235,7 +233,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     setState(() {
       _apiUploadAktiv = apiUploadAktiv;
       _getraenkeliste = getraenkeliste;
-      _eingabeMitKomma = eingabeMitKomma;
       _geladen = true;
       _overrideLocationId = overrideLocationId;
       _overrideApiKey = overrideApiKey;
@@ -415,15 +412,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         const SnackBar(content: Text('Falscher PIN')),
       );
     }
-  }
-
-  Future<void> _onEingabeMitKommaGeaendert(bool wert) async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setBool('eingabe_mit_komma', wert);
-    if (!mounted) return;
-    setState(() {
-      _eingabeMitKomma = wert;
-    });
   }
 
   void _onWgChanged(String text) {
@@ -1129,18 +1117,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                     ),
                   ),
                   const Divider(height: 1),
-                  SwitchListTile(
-                    title: const Text('Beträge mit Komma eingeben'),
-                    value: _eingabeMitKomma,
-                    onChanged: _onEingabeMitKommaGeaendert,
-                    activeThumbColor: AppFarben.appBarRot,
-                  ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                     child: Text(
-                      _eingabeMitKomma
-                          ? 'Du musst die Beträge mit Komma eingeben, also „6,40" für 6 Euro 40 Cent.'
-                          : 'Du gibst die Beträge in Cent ein, also „640" für 6 Euro 40 Cent.',
+                      'Beträge in Cent eingeben, also „640" für 6 Euro 40 Cent.',
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,

@@ -4,6 +4,17 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 317: Validierungen Schritt 2 + „Eingabe mit Komma"-Einstellung
+  entfernt. Pflichtfeld-Fehler zeigen jetzt AlertDialog statt Snackbar.
+  Neue Validierungen: Ausgaben mit Label aber Betrag = 0 (V3, harter
+  Fehler), Kino-Soll = 0 (V5, Bestätigung), EC = 0 (V7, Bestätigung).
+  Eingabemodus fix auf Ziffern-Modus (wie EC-Terminal). Unit-Tests für
+  hatAusgabeMitFehlendemBetrag und istEcNull. Geänderte Dateien:
+  tagesabschluss_berechnung.dart, tagesabschluss_berechnung_test.dart,
+  einstellungen_seite.dart, tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 316d: TODO.md-Punkte im Block "Blockiert — wartet auf IT
   (Yannik)" mit aktuellem Wissensstand (2026-07-12) abgeglichen.
   Beantwortet/abgehakt: location_id (SB=1, Atlantis=3,

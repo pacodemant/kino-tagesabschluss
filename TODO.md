@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 316d · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 317 · wird fortlaufend ergänzt
 
 ---
 
@@ -259,10 +259,14 @@ Stand: Juli 2026 · Run 316d · wird fortlaufend ergänzt
       500-€-Denomination (nur 100/50/20/10/5 €) — ein solcher
       Schein kann nirgends erfasst werden. *(geprüft Run 314)*
 - [ ] Gesamtbarbestand nach Wechselgeld überschreitet Schwellwert (z. B. 3.000 €)
+      *(Run 317: bewusst weggelassen — Schritt-1-Übersicht macht den Wert
+      bereits sichtbar, Dialog wäre meist falsch-positiv.)*
 - [ ] Einzelne Denomination > 80 % des Gesamtbestands
+      *(Run 317: bewusst weggelassen — beim physischen Zählen offensichtlich,
+      zu edge-case für MA-Alltag.)*
 
 ### Soll-Felder
-- [ ] Kino-Soll = 0 — Bestätigung erforderlich
+- [x] Kino-Soll = 0 — Bestätigung erforderlich *(Run 317)*
 - [ ] Bistro-Soll > Kino-Soll — weicher Hinweis: in Run 316
       umgesetzt, in Run 316a wieder entfernt. Grund: Prämisse
       trifft nicht standortübergreifend zu — in der Gondel gibt
@@ -277,11 +281,15 @@ Stand: Juli 2026 · Run 316d · wird fortlaufend ergänzt
 
 ### EC-Umsatz
 - [ ] EC-Betrag > Gesamt-Soll — harter Fehler
-- [ ] EC = 0 an normalem Betriebstag — weicher Hinweis
+      *(Run 317: weggelassen — im Ziffern-Modus kein realistisches Risiko.)*
+- [x] EC = 0 an normalem Betriebstag — Bestätigung *(Run 317)*
 
 ### Differenz / Kassenstand
 - [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung
+      *(Run 317: weggelassen — Schritt 3 zeigt Differenz bereits rot/grün,
+      Dialog wäre redundante Friction.)*
 - [ ] Ist > Soll — Warnung mit Erklärungstext
+      *(Run 317: weggelassen — grüne Differenz in Schritt 3 reicht.)*
 - [x] Differenz Anfangsbestand ≠ 0 — abweichend von der
       ursprünglichen Planung (weicher Hinweis > 20 € beim Zählen)
       auf Bestätigungssperre umgestellt: Ein passiver Hinweis beim
@@ -298,8 +306,9 @@ Stand: Juli 2026 · Run 316d · wird fortlaufend ergänzt
       Run 314a2)*
 
 ### Belege / Ausgaben
-- [ ] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld
+- [x] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld *(Run 317)*
 - [ ] Ausgaben > Barbestand — harter Fehler
+      *(Run 317: weggelassen — im Ziffern-Modus kein realistisches Risiko.)*
 
 ### Zeitliche Plausibilität
 - [ ] Zweite Abrechnung: Soll niedriger als erste — weicher Hinweis
