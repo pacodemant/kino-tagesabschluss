@@ -16,6 +16,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
+import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
@@ -1280,6 +1281,16 @@ class _TagesabschlussSchritt2SeiteState
           return;
         }
         final BelegScanErgebnis geprueftes = ergebnis;
+        final bool uebernehmen = await zeigeBelegScanBestaetigenDialog(
+          context,
+          ergebnis: geprueftes,
+          zeilen: _baueScanVorschauZeilen(geprueftes, belegIndex),
+        );
+        if (!mounted) return;
+        if (!uebernehmen) {
+          wiederholen = true;
+          continue;
+        }
         setState(() {
           if (geprueftes.gesamtBetragCent != null) {
             _ecBelegeCent[belegIndex] = geprueftes.gesamtBetragCent!;
@@ -1428,6 +1439,41 @@ class _TagesabschlussSchritt2SeiteState
     final String c = configName.trim().toLowerCase();
     final String b = belegArt.trim().toLowerCase();
     return b.contains(c) || c.contains(b);
+  }
+
+  /// Baut eine reine Lese-Vorschau der Scan-Zahlungsarten für das
+  /// Bestätigungs-Popup, ohne `_zahlungsartZeilen` zu verändern.
+  List<BelegScanZeilenVorschau> _baueScanVorschauZeilen(
+      BelegScanErgebnis ergebnis, int belegIndex) {
+    final List<BelegScanZeilenVorschau> vorschau = <BelegScanZeilenVorschau>[];
+    final List<_ZahlungsartZeile> zeilen =
+        belegIndex < _zahlungsartZeilen.length
+            ? _zahlungsartZeilen[belegIndex]
+            : const <_ZahlungsartZeile>[];
+    for (final ZahlungsartErgebnis z in ergebnis.zahlungsarten) {
+      if (z.art.trim().isEmpty) {
+        if (z.betragCent != null) {
+          vorschau.add(BelegScanZeilenVorschau(
+            name: 'Unbekannte Kartenart',
+            betragCent: z.betragCent,
+          ));
+        }
+        continue;
+      }
+      String name = z.art;
+      for (final _ZahlungsartZeile zeile in zeilen) {
+        if (_matchKartenart(zeile.name, z.art)) {
+          name = zeile.name;
+          break;
+        }
+      }
+      vorschau.add(BelegScanZeilenVorschau(
+        name: name,
+        betragCent: z.betragCent,
+        nichtLesbar: z.betragCent == null,
+      ));
+    }
+    return vorschau;
   }
 
   void _bereinigUnbekannteZeilen(int belegIndex) {
