@@ -4,6 +4,12 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 318b: Kunden-Übersicht "Eingabeprüfungen & Fehlervermeidung"
+  als HTML-Dokument angelegt (gleiches Design wie die bestehenden
+  Verkaufsunterlagen: DM-Serif/DM-Sans, Tags Stopp/Rückfrage/
+  Hinweis/Automatik). Keine App-Code-Änderung. Datei:
+  .dev/verkauf/kassenabrechnung-validierungen.html.
+
 - Run 317a: TODO.md-Punkt "CORS-Header" abgehakt. Yannik hat
   X-API-Key zu access-control-allow-headers ergänzt ("x-api-keys
   sind nun erlaubt", 2026-07-14). Erster echter Live-Test des
