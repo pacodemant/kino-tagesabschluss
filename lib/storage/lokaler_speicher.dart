@@ -109,7 +109,10 @@ class LokalerSpeicher {
     await StoragePersistService.requestIfNeeded();
   }
 
-  /// Ersetzt die finale Tagesabrechnung desselben Kalendertags.
+  /// Ersetzt die zuletzt erstellte finale Tagesabrechnung desselben
+  /// Kalendertags. Gibt es fuer den Tag mehrere Eintraege (z.B. Bar Tabak
+  /// mit zwei Abrechnungen/Tag), bleiben die uebrigen erhalten — es wird
+  /// gezielt nur der juengste (per createdAt) ersetzt.
   static Future<void> ersetzeFinalenTagesabschluss(
     TagesabschlussFinal abschluss,
   ) async {
@@ -117,7 +120,8 @@ class LokalerSpeicher {
     final String key = finaleTagesabschluesseKey(abschluss.kinoId);
     final String? rohwert = box.get(key) as String?;
 
-    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
+    final List<Map<String, dynamic>> gleicherTag = <Map<String, dynamic>>[];
+    final List<Map<String, dynamic>> andereTage = <Map<String, dynamic>>[];
     if (rohwert != null) {
       try {
         final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
@@ -129,8 +133,10 @@ class LokalerSpeicher {
                 bestehend.datum.year == abschluss.datum.year &&
                 bestehend.datum.month == abschluss.datum.month &&
                 bestehend.datum.day == abschluss.datum.day;
-            if (!gleichenTag) {
-              aktualisiert.add(eintrag);
+            if (gleichenTag) {
+              gleicherTag.add(eintrag);
+            } else {
+              andereTage.add(eintrag);
             }
           }
         }
@@ -139,7 +145,21 @@ class LokalerSpeicher {
       }
     }
 
-    aktualisiert.add(abschluss.toJson());
+    if (gleicherTag.isNotEmpty) {
+      gleicherTag.sort(
+        (Map<String, dynamic> a, Map<String, dynamic> b) =>
+            TagesabschlussFinal.fromJson(a).createdAt.compareTo(
+                  TagesabschlussFinal.fromJson(b).createdAt,
+                ),
+      );
+      gleicherTag.removeLast();
+    }
+
+    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[
+      ...andereTage,
+      ...gleicherTag,
+      abschluss.toJson(),
+    ];
     await box.put(key, jsonEncode(aktualisiert));
   }
 

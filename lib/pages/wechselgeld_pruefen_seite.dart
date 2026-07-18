@@ -8,7 +8,6 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
-import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
@@ -333,35 +332,43 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     );
   }
 
-  Future<void> _versucheAbschlussDialogZuOeffnen() async {
+  /// Prueft die Differenz zum Wechselgeld-Sollwert unabhaengig vom
+  /// gewaehlten Ausgang (Fertig-Button, Zurueck-Pfeil, Haus-Button).
+  /// Gibt true zurueck, wenn die Seite verlassen werden darf.
+  Future<bool> _pruefeDifferenzUndBestaetigeVerlassen() async {
     final int differenzCent = _kassenbestandGesamtCent - _wechselgeldSollwertCent;
-    if (differenzCent != 0) {
-      final bool? bestaetigt = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext dialogKontext) {
-          return AlertDialog(
-            title: const Text('Wechselgeld stimmt nicht'),
-            content: Text(
-              'Differenz zum Sollwert: '
-              '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
-              'Trotzdem fortfahren?',
+    if (differenzCent == 0) {
+      return true;
+    }
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogKontext) {
+        return AlertDialog(
+          title: const Text('Wechselgeld stimmt nicht'),
+          content: Text(
+            'Differenz zum Sollwert: '
+            '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
+            'Trotzdem fortfahren?',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(false),
+              child: const Text('Zurück zum Zählen'),
             ),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(dialogKontext).pop(false),
-                child: const Text('Zurück zum Zählen'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(dialogKontext).pop(true),
-                child: const Text('Ja, trotzdem weiter'),
-              ),
-            ],
-          );
-        },
-      );
-      if (bestaetigt != true) {
-        return;
-      }
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogKontext).pop(true),
+              child: const Text('Ja, trotzdem weiter'),
+            ),
+          ],
+        );
+      },
+    );
+    return bestaetigt == true;
+  }
+
+  Future<void> _versucheAbschlussDialogZuOeffnen() async {
+    if (!await _pruefeDifferenzUndBestaetigeVerlassen()) {
+      return;
     }
     await _zeigeAbschlussDialog();
   }
@@ -994,7 +1001,16 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     final int differenzCent =
         _kassenbestandGesamtCent - _wechselgeldSollwertCent;
 
-    return TagesabschlussScaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return;
+        final NavigatorState navigator = Navigator.of(context);
+        final bool darfVerlassen = await _pruefeDifferenzUndBestaetigeVerlassen();
+        if (!mounted || !darfVerlassen) return;
+        navigator.pop();
+      },
+      child: TagesabschlussScaffold(
       backgroundColor: hintergrundFarbe,
       zeigeHausButton: false,
       appBar: TagesabschlussHeader(
@@ -1023,7 +1039,26 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         height: 36,
         child: Row(
           children: <Widget>[
-            const HausButton(),
+            SizedBox(
+              width: 36,
+              height: 36,
+              child: ElevatedButton(
+                onPressed: () async {
+                  if (await _pruefeDifferenzUndBestaetigeVerlassen()) {
+                    _zurueckZurStartseite();
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppFarben.appBarRot,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.zero,
+                  shape: const CircleBorder(),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Icon(Icons.home, size: 20),
+              ),
+            ),
             const SizedBox(width: 8),
             ElevatedButton(
               onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
@@ -1075,6 +1110,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
+      ),
       ),
     );
   }

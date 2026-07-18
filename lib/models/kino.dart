@@ -5,6 +5,7 @@ class Kino {
     required this.kuerzel,
     this.hatGetraenke = false,
     this.hatWechselgeld = false,
+    this.maxAbrechnungenProTag = 1,
   });
 
   final String id;
@@ -12,6 +13,7 @@ class Kino {
   final String kuerzel;
   final bool hatGetraenke;
   final bool hatWechselgeld;
+  final int maxAbrechnungenProTag;
 }
 
 class KinoRepository {
@@ -20,7 +22,7 @@ class KinoRepository {
     Kino(id: 'kino_01', name: 'Schauburg',        kuerzel: 'SB', hatGetraenke: true, hatWechselgeld: true),
     Kino(id: 'kino_04', name: 'Cinema Ostertor',  kuerzel: 'CO', hatGetraenke: true, hatWechselgeld: true),
     Kino(id: 'kino_02', name: 'Gondel',           kuerzel: 'GO'),
-    Kino(id: 'kino_05', name: 'Bar Tabak',        kuerzel: 'BT'),
+    Kino(id: 'kino_05', name: 'Bar Tabak',        kuerzel: 'BT', maxAbrechnungenProTag: 2),
   ];
 
   static Kino? nachId(String id) {

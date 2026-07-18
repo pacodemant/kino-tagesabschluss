@@ -1365,9 +1365,10 @@ class _TagesabschlussSchritt2SeiteState
           SnackBar(
             content: Text(
               istNetzwerkFehler
-                  ? e.message
+                  ? '${e.message}\nBeleg kann auch manuell eingegeben werden.'
                   : 'Scan nicht lesbar – bitte erneut versuchen\n'
-                      '(z.B. unscharf, zu dunkel oder kein Beleg).',
+                      '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
+                      'manuell eingeben.',
             ),
           ),
         );
@@ -1377,7 +1378,8 @@ class _TagesabschlussSchritt2SeiteState
           const SnackBar(
             content: Text(
               'Scan nicht lesbar – bitte erneut versuchen\n'
-              '(z.B. unscharf, zu dunkel oder kein Beleg).',
+              '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
+              'manuell eingeben.',
             ),
           ),
         );

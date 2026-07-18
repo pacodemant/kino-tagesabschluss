@@ -162,7 +162,10 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   /// Speichert den Abschluss beim Öffnen der Seite automatisch.
-  /// Duplikat → stillschweigend überschreiben (kein Dialog).
+  /// Duplikat → stillschweigend überschreiben (kein Dialog) — außer für
+  /// Kinos mit mehr als einer Abrechnung/Tag (z.B. Bar Tabak): dort wird
+  /// vorher nachgefragt, ob ersetzt oder als weitere Abrechnung des
+  /// selben Tages gespeichert werden soll.
   Future<void> _autoSaveImHintergrund() async {
     if (_autoSaveLaeuft || _autoSaveErledigt) {
       return;
@@ -180,9 +183,17 @@ class _TagesabschlussSchritt3SeiteState
       }
 
       if (ergebnis.bereitsVorhanden) {
+        bool alsZusaetzlicheAbrechnung = false;
+        if (ergebnis.weitereAbrechnungMoeglich) {
+          alsZusaetzlicheAbrechnung = await _frageZusaetzlicheAbrechnungAb();
+          if (!mounted) {
+            return;
+          }
+        }
         await _speichereUsecase.ausfuehren(
           _abschlussVorschau!,
-          ueberschreiben: true,
+          ueberschreiben: !alsZusaetzlicheAbrechnung,
+          alsZusaetzlicheAbrechnung: alsZusaetzlicheAbrechnung,
         );
         if (!mounted) {
           return;
@@ -203,6 +214,36 @@ class _TagesabschlussSchritt3SeiteState
         _autoSaveFehler = true;
       });
     }
+  }
+
+  /// Nur relevant fuer Kinos mit mehr als einer Abrechnung/Tag: fragt ab,
+  /// ob der bereits gespeicherte Abschluss ersetzt werden soll (selbe
+  /// Abrechnung, z.B. erneut geoeffnet) oder ob dies eine zusaetzliche,
+  /// zweite Abrechnung desselben Tages ist.
+  Future<bool> _frageZusaetzlicheAbrechnungAb() async {
+    final bool? zusaetzlich = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Bereits eine Abrechnung heute vorhanden'),
+        content: const Text(
+          'Für dieses Kino ist heute schon ein Tagesabschluss gespeichert. '
+          'Ist das derselbe Abschluss (ersetzen) oder eine zusätzliche, '
+          'zweite Abrechnung des Tages?',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Ersetzen'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Zusätzliche Abrechnung'),
+          ),
+        ],
+      ),
+    );
+    return zusaetzlich ?? false;
   }
 
   Future<void> _doApiUpload() async {

@@ -260,12 +260,25 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       case _ZeilenArt.restbetrag:
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          child: Text(
-            'Nicht abdeckbar: ${_euro(zeile.betragCent)}',
-            style: TextStyle(
-              color: AppFarben.differenzNegativ,
-              fontWeight: FontWeight.w600,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Nicht abdeckbar: ${_euro(zeile.betragCent)}',
+                style: TextStyle(
+                  color: AppFarben.differenzNegativ,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                'Steckt vermutlich in Rollen oder Umschlägen — dort '
+                'nachzählen.',
+                style: TextStyle(
+                  color: AppFarben.differenzNegativ,
+                  fontSize: 12,
+                ),
+              ),
+            ],
           ),
         );
 

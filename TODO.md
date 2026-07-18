@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 319 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 319a · wird fortlaufend ergänzt
 
 ---
 
@@ -102,6 +102,10 @@ Stand: Juli 2026 · Run 319 · wird fortlaufend ergänzt
       als Dummy-Button im Prüf-Popup geplant — Popup existiert seit
       Run 307 nicht mehr, neuer Ort muss geklärt werden.
       Vorbereitung für spätere Tutorial-Videos oder Texte.
+      Teilschritt erledigt (Run 319a): Die Fehlermeldung bei
+      unscharfem Foto/Netzwerkproblem weist jetzt zusätzlich auf die
+      manuelle Eingabe hin. Ein dauerhaft sichtbarer Hilfetext im
+      Scan-Bereich selbst bleibt offen.
 
 - [x] **Prüf-Popup entfernen — Fehler direkt in der Kachel** Fragliche
       Daten werden in der Sub-Kachel direkt hervorgehoben und
@@ -231,6 +235,13 @@ Stand: Juli 2026 · Run 319 · wird fortlaufend ergänzt
 - [ ] **Bar Tabak (kino_05)** Komplexe Kassenstruktur (Kino-, Bar-, Lotterie-,
       Handy-Kasse; 2 Abschlüsse/Tag). Noch nicht implementiert.
       Startseite: zwei Buttons „1. Abrechnung" und „2. Abrechnung".
+      Sicherheitsnetz bereits vorhanden (Run 319a): `Kino.maxAbrechnungenProTag`
+      (Standard 1, Bar Tabak 2) verhindert in
+      `SpeichereTagesabschlussUsecase`, dass eine zweite Abrechnung am
+      selben Tag die erste stillschweigend überschreibt — stattdessen
+      Rückfrage "Ersetzen" vs. "Zusätzliche Abrechnung". Ersetzt NICHT
+      die eigentliche Umbau-Idee mit den zwei Startseiten-Buttons, die
+      bleibt offen.
 
 - [ ] **Refactoring** Wiederkehrende UI-Elemente als Widgets extrahieren,
       Inline-Styling durch Theme-Konstanten ersetzen, Logik in Services auslagern.
@@ -302,13 +313,16 @@ Stand: Juli 2026 · Run 319 · wird fortlaufend ergänzt
       auf Bestätigungssperre umgestellt: Ein passiver Hinweis beim
       Zählen hätte das eigentliche Problem (MA übersieht/ignoriert
       die Differenz) nicht gelöst. Stattdessen prüft
-      `_pruefeDifferenzVorVerlassen()` in
-      `wechselgeld_pruefen_seite.dart` beim Verlassen der Seite
-      (Fertig/Startseite UND Getränke auffüllen), ob die Differenz
-      zum Wechselgeld-Sollwert exakt 0 ist — jede Abweichung, kein
-      Schwellwert. Bei Abweichung: Bestätigungsdialog "Trotzdem
-      fortfahren?". Der Dialog öffnet sich vor (nicht nach) dem
-      Abschluss-Menü "Was möchtest du als nächstes tun?".
+      `_pruefeDifferenzUndBestaetigeVerlassen()` in
+      `wechselgeld_pruefen_seite.dart` beim Verlassen der Seite, ob
+      die Differenz zum Wechselgeld-Sollwert exakt 0 ist — jede
+      Abweichung, kein Schwellwert. Bei Abweichung: Bestätigungsdialog
+      "Trotzdem fortfahren?". Der Dialog öffnet sich vor (nicht nach)
+      dem Abschluss-Menü "Was möchtest du als nächstes tun?".
+      Deckte ursprünglich nur den Fertig-Button ab — Zurück-Pfeil und
+      Haus-Button umgingen die Prüfung komplett. Seit Run 319a via
+      `PopScope` (Zurück-Pfeil/System-Zurück) und geprüftem
+      Haus-Button auf allen drei Ausgängen der Seite aktiv.
       *(Run 314 → korrigiert in Run 314a, Timing korrigiert in
       Run 314a2)*
 

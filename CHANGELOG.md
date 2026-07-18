@@ -4,6 +4,45 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 319a: Korrekturen aus Review der Kunden-Übersicht
+  (kassenabrechnung-validierungen.html). (1) Dokument korrigiert:
+  Ziffernfilter gilt für alle Zähl- UND Betragsfelder (nicht nur
+  Stückzahl); "Umschlag nicht deckbar" erklärt jetzt, dass Rollen/
+  Umschläge nicht in den Vorschlag einfließen; Personalgetränke-
+  Bestätigung von "Rückfrage" auf "Stopp" korrigiert (kein
+  Bypass-Button); Scan-Fehlermeldung erwähnt jetzt manuelle
+  Eingabe. (2) wechselgeld_pruefen_seite.dart: Differenz-Prüfung
+  in `_pruefeDifferenzUndBestaetigeVerlassen()` extrahiert und per
+  `PopScope` + geprüftem Haus-Button auf alle drei Ausgänge der
+  Seite gelegt (Zurück-Pfeil und Haus-Button umgingen die Prüfung
+  bisher komplett, nur Fertig-Button war abgedeckt). (3)
+  tagesabschluss_schritt2_seite.dart: Scan-Fehlermeldungen
+  (Netzwerkfehler, unscharfes Foto) weisen zusätzlich auf die
+  Möglichkeit zur manuellen Eingabe hin. (4)
+  stueckelung_vorschlag_seite.dart: "Nicht abdeckbar"-Zeile zeigt
+  jetzt einen Erklärungssatz (Rollen/Umschläge nachzählen). (5)
+  Sicherheitsnetz gegen stillen Datenverlust bei mehreren
+  Abrechnungen pro Tag: neues Feld `Kino.maxAbrechnungenProTag`
+  (Standard 1, Bar Tabak 2); `SpeichereTagesabschlussUsecase` gibt
+  `weitereAbrechnungMoeglich` zurück statt automatisch zu
+  überschreiben; Schritt 3 fragt bei Kinos mit >1 Abrechnung/Tag
+  "Ersetzen" vs. "Zusätzliche Abrechnung" ab, statt still zu
+  überschreiben; `LokalerSpeicher.ersetzeFinalenTagesabschluss`
+  ersetzt nur noch den jüngsten gleichentags-Eintrag statt aller
+  (verhindert Verlust einer bereits gespeicherten zweiten
+  Abrechnung). Betrifft nur Bar Tabak — Verhalten für alle anderen
+  Standorte unverändert. Ersetzt NICHT die eigentliche "1./2.
+  Abrechnung"-Buttons-Umstellung (TODO.md "Größere Umbauten"),
+  reduziert nur das Datenverlust-Risiko bis dahin. Grundlage für
+  (5): Yannik/Flurbocash-Doku bestätigt, dass BT serverseitig
+  bereits über auto-nummerierte `settlement_number` unterstützt
+  wird — die App-lokale Seite hatte dafür bisher keine
+  Absicherung. Versionsstring r319a. Dateien:
+  kassenabrechnung-validierungen.html, wechselgeld_pruefen_seite.dart,
+  tagesabschluss_schritt2_seite.dart, stueckelung_vorschlag_seite.dart,
+  kino.dart, speichere_tagesabschluss_usecase.dart,
+  lokaler_speicher.dart, tagesabschluss_schritt3_seite.dart, TODO.md.
+
 - Run 319: Datenschutzhinweise vorgezogen an den geplanten
   Flurbocash-Belegfoto-Versand angepasst (Abschnitt „Ausnahme:
   BelegScan (optional)"): Belegfoto wird künftig zusätzlich zur

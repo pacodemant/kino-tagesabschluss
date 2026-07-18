@@ -1,3 +1,4 @@
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
@@ -5,30 +6,45 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 class SpeichereTagesabschlussUsecase {
   const SpeichereTagesabschlussUsecase();
 
-  /// Duplikat-Regel: Pro Kino und Kalendertag darf es maximal einen Abschluss geben.
+  /// Duplikat-Regel: Pro Kino und Kalendertag darf es maximal
+  /// `Kino.maxAbrechnungenProTag` Abschluesse geben (Standard: 1).
+  /// Ist fuer das Kino mehr als eine Abrechnung pro Tag vorgesehen (z.B.
+  /// Bar Tabak) und das Tageslimit noch nicht erreicht, kann ein weiterer
+  /// Abschluss statt eines Ueberschreibens explizit als zusaetzliche
+  /// Abrechnung gespeichert werden (alsZusaetzlicheAbrechnung).
   Future<SpeichereTagesabschlussErgebnis> ausfuehren(
     TagesabschlussFinal abschluss, {
     bool ueberschreiben = false,
+    bool alsZusaetzlicheAbrechnung = false,
   }) async {
     final List<TagesabschlussFinal> vorhandeneAbschluesse =
         await LokalerSpeicher.ladeFinaleTagesabschluesse(abschluss.kinoId);
 
-    final bool bereitsVorhanden = vorhandeneAbschluesse.any(
-      (TagesabschlussFinal eintrag) => _istGleicherKalendertag(
-        eintrag.datum,
-        abschluss.datum,
-      ),
-    );
+    final int anzahlHeute = vorhandeneAbschluesse
+        .where(
+          (TagesabschlussFinal eintrag) => _istGleicherKalendertag(
+            eintrag.datum,
+            abschluss.datum,
+          ),
+        )
+        .length;
 
-    if (bereitsVorhanden && !ueberschreiben) {
-      return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: true);
-    }
-
-    if (bereitsVorhanden) {
-      await LokalerSpeicher.ersetzeFinalenTagesabschluss(abschluss);
-    } else {
+    if (anzahlHeute == 0 || alsZusaetzlicheAbrechnung) {
       await LokalerSpeicher.speichereFinalenTagesabschluss(abschluss);
+      return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: false);
     }
+
+    if (!ueberschreiben) {
+      final int maxProTag = KinoRepository.nachId(abschluss.kinoId)
+              ?.maxAbrechnungenProTag ??
+          1;
+      return SpeichereTagesabschlussErgebnis(
+        bereitsVorhanden: true,
+        weitereAbrechnungMoeglich: maxProTag > 1 && anzahlHeute < maxProTag,
+      );
+    }
+
+    await LokalerSpeicher.ersetzeFinalenTagesabschluss(abschluss);
     return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: false);
   }
 
@@ -40,7 +56,15 @@ class SpeichereTagesabschlussUsecase {
 }
 
 class SpeichereTagesabschlussErgebnis {
-  const SpeichereTagesabschlussErgebnis({required this.bereitsVorhanden});
+  const SpeichereTagesabschlussErgebnis({
+    required this.bereitsVorhanden,
+    this.weitereAbrechnungMoeglich = false,
+  });
 
   final bool bereitsVorhanden;
+
+  /// true, wenn fuer dieses Kino am selben Tag noch eine weitere
+  /// (zusaetzliche) Abrechnung erlaubt ist, statt die vorhandene zu
+  /// ueberschreiben.
+  final bool weitereAbrechnungMoeglich;
 }
