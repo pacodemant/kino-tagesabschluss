@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+317a · Run 317a
+Version: 0.9.3+319 · Run 319
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -211,6 +211,10 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 317a ✅ CORS-Header-Blocker aufgelöst: Yannik hat X-API-Key
   freigeschaltet. Erster echter Flurbocash-Live-Test (Schauburg,
   location_id 1) erfolgreich. Keine App-Code-Änderung.
+- Run 319 ✅ Datenschutzhinweise vorgezogen an den geplanten
+  Flurbocash-Belegfoto-Versand angepasst (datenschutz_seite.dart).
+  TODO.md-Punkt für die technische Umsetzung (base64-Versand)
+  ergänzt — wartet weiterhin auf Yannik-API-Vertrag.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

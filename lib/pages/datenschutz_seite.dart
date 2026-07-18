@@ -55,7 +55,7 @@ class DatenschutzSeite extends StatelessWidget {
                 _DatenschutzAbschnitt(
                   titel: 'Ausnahme: BelegScan (optional)',
                   text:
-                      'Wird der optionale BelegScan verwendet, wird das aufgenommene Belegfoto zur Auswertung an die Anthropic API (USA) übermittelt. An die Buchhaltung werden ausschließlich die ausgelesenen Zahlenwerte übergeben — kein Foto wird gespeichert oder weitergeleitet. Die Funktion ist deaktivierbar.',
+                      'Wird der optionale BelegScan verwendet, wird das aufgenommene Belegfoto zur Auswertung an die Anthropic API (USA) übermittelt. An die Buchhaltung werden die ausgelesenen Zahlenwerte übergeben; das Belegfoto selbst wird zusätzlich an den kino-internen Server (Flurbocash) übertragen, um eine rechtskonforme Archivierung des Originalbelegs zu ermöglichen. Das Foto verlässt dabei nie die interne Kino-IT der Schauburg GmbH.',
                 ),
 
               ],

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 317a · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 319 · wird fortlaufend ergänzt
 
 ---
 
@@ -186,6 +186,15 @@ Stand: Juli 2026 · Run 317a · wird fortlaufend ergänzt
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
       Erst relevant wenn BT implementiert wird.
+
+- [ ] **Belegfoto als base64 an Flurbocash** Yannik übernimmt die
+      PDF-Wandlung serverseitig, App muss nur base64 mitschicken
+      (Konvertierung bereits vorhanden in `BelegScanService.scan()`,
+      muss aber bis zum Upload durchgereicht werden — aktuell wird
+      das Foto nach der KI-Auswertung verworfen). API-Vertrag
+      (Feld/Endpunkt) noch nicht in `EXTERNAL_API_Schauburg_de.md`
+      definiert — wartet auf Yannik. Datenschutzhinweise dafür
+      bereits vorgezogen angepasst *(Run 319)*.
 
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 

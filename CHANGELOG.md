@@ -4,6 +4,17 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 319: Datenschutzhinweise vorgezogen an den geplanten
+  Flurbocash-Belegfoto-Versand angepasst (Abschnitt „Ausnahme:
+  BelegScan (optional)"): Belegfoto wird künftig zusätzlich zur
+  KI-Auswertung an den kino-internen Server (Flurbocash) zur
+  rechtskonformen Archivierung übertragen; Satz „kein Foto wird
+  gespeichert oder weitergeleitet" entfernt. TODO.md-Punkt
+  „Belegfoto als base64 an Flurbocash" ergänzt (wartet auf
+  Yannik-API-Vertrag). Versionsstring r319. Dateien:
+  datenschutz_seite.dart, TODO.md, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 318b: Kunden-Übersicht "Eingabeprüfungen & Fehlervermeidung"
   als HTML-Dokument angelegt (gleiches Design wie die bestehenden
   Verkaufsunterlagen: DM-Serif/DM-Sans, Tags Stopp/Rückfrage/
