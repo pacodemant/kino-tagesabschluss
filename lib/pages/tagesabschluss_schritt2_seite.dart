@@ -1454,12 +1454,12 @@ class _TagesabschlussSchritt2SeiteState
             : const <_ZahlungsartZeile>[];
     for (final ZahlungsartErgebnis z in ergebnis.zahlungsarten) {
       if (z.art.trim().isEmpty) {
-        if (z.betragCent != null) {
-          vorschau.add(BelegScanZeilenVorschau(
-            name: 'Unbekannte Kartenart',
-            betragCent: z.betragCent,
-          ));
-        }
+        vorschau.add(BelegScanZeilenVorschau(
+          name: 'Unbekannte Kartenart',
+          betragCent: z.betragCent,
+          nichtLesbar: z.betragCent == null,
+          nameNichtLesbar: true,
+        ));
         continue;
       }
       String name = z.art;

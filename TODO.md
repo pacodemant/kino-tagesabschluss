@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 319b · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 319c · wird fortlaufend ergänzt
 
 ---
 
@@ -91,16 +91,18 @@ Stand: Juli 2026 · Run 319b · wird fortlaufend ergänzt
       (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben.
       *(Run 303 — umgesetzt für Schritt 1 und Wechselgeld-Prüfen-Seite)*
 
-- [x] **Kein Screen-Flip** App soll beim Drehen des Smartphones hochkant
-      bleiben. Bereits umgesetzt: `main.dart` sperrt via
+- [ ] **Kein Screen-Flip** App soll beim Drehen des Smartphones hochkant
+      bleiben. Code-seitig vorhanden: `main.dart` sperrt via
       `SystemChrome.setPreferredOrientations` auf `portraitUp`;
       zusätzlich `web/manifest.json` mit `"orientation":
-      "portrait-primary"` für die installierte PWA. Einschränkung:
-      Die Manifest-Sperre greift zuverlässig nur, wenn die App als
-      installierte/Standalone-PWA läuft (Zielplattform: vorkonfigurierte
-      Android-Geräte) — in einem normalen Browser-Tab (z. B. Pacos
-      iOS-Safari-Testumgebung) kann das Betriebssystem trotzdem drehen.
-      *(geprüft Run 319b)*
+      "portrait-primary"`. Test (Run 319b, Pacos iPhone-PWA): Screen
+      flippt trotzdem weiterhin — die Manifest-Sperre wird von iOS/
+      WebKit bekanntermaßen unzuverlässig bis gar nicht umgesetzt,
+      auch für installierte PWAs. Da Zielplattform vorkonfigurierte
+      Android-Geräte sind (dort wird die Manifest-Sperre von Chrome/
+      Android zuverlässiger unterstützt): auf einem echten Android-Gerät
+      (als installierte PWA) testen, bevor als erledigt gilt. Bleibt bis
+      dahin offen. *(getestet Run 319b — iOS bestätigt fehlerhaft)*
 
 - [x] **"Eingabe mit Komma"-Einstellung entfernen** App-weit fest auf
       Eingabe ohne Komma (230 statt 2,30). Bereits erledigt: Die

@@ -8,11 +8,16 @@ class BelegScanZeilenVorschau {
     required this.name,
     required this.betragCent,
     this.nichtLesbar = false,
+    this.nameNichtLesbar = false,
   });
 
   final String name;
   final int? betragCent;
   final bool nichtLesbar;
+
+  /// true, wenn die Kartenart selbst nicht zuverlässig lesbar war
+  /// (z.B. "Unbekannte Kartenart") — Name wird dann rot hervorgehoben.
+  final bool nameNichtLesbar;
 }
 
 Future<bool> zeigeBelegScanBestaetigenDialog(
@@ -31,8 +36,7 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             if (ergebnis.datum != null) _metaZeile('Datum', ergebnis.datum!),
-            if (ergebnis.terminalId != null)
-              _metaZeile('TID', ergebnis.terminalId!),
+            _metaZeileTid(ergebnis.terminalId),
             const Divider(height: 20),
             if (zeilen.isEmpty)
               const Padding(
@@ -93,6 +97,32 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
   return uebernehmen ?? false;
 }
 
+Widget _metaZeileTid(String? terminalId) {
+  if (terminalId != null) {
+    return _metaZeile('TID', terminalId);
+  }
+  return const Padding(
+    padding: EdgeInsets.only(bottom: 4),
+    child: Row(
+      children: <Widget>[
+        SizedBox(
+          width: 60,
+          child: Text(
+            'TID',
+            style: TextStyle(fontSize: 13, color: Colors.black54),
+          ),
+        ),
+        Icon(Icons.warning_amber_rounded, size: 14, color: Colors.red),
+        SizedBox(width: 4),
+        Text(
+          'nicht lesbar',
+          style: TextStyle(fontSize: 13, color: Colors.red),
+        ),
+      ],
+    ),
+  );
+}
+
 Widget _metaZeile(String label, String wert) {
   return Padding(
     padding: const EdgeInsets.only(bottom: 4),
@@ -117,7 +147,22 @@ Widget _betragZeile(BelegScanZeilenVorschau zeile) {
     child: Row(
       children: <Widget>[
         Expanded(
-          child: Text(zeile.name, style: const TextStyle(fontSize: 13)),
+          child: zeile.nameNichtLesbar
+              ? Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Icon(Icons.warning_amber_rounded,
+                        size: 14, color: Colors.red),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        zeile.name,
+                        style: const TextStyle(fontSize: 13, color: Colors.red),
+                      ),
+                    ),
+                  ],
+                )
+              : Text(zeile.name, style: const TextStyle(fontSize: 13)),
         ),
         if (zeile.nichtLesbar)
           const Row(

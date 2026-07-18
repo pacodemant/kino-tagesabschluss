@@ -4,6 +4,28 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 319c: Korrekturen aus Testfeedback zu Run 319a/319b. (1)
+  Belegscan-Prüf-Popup (`beleg_scan_bestaetigen_dialog.dart`): TID
+  wurde bei unlesbarem Wert bisher komplett ausgeblendet (zeigte
+  gar nichts an, obwohl Pflichtfeld) — zeigt jetzt "nicht lesbar"
+  in Rot. Neues Feld `nameNichtLesbar` auf `BelegScanZeilenVorschau`:
+  "Unbekannte Kartenart" wird jetzt rot hervorgehoben statt normal
+  dargestellt. Bugfix in `_baueScanVorschauZeilen`
+  (tagesabschluss_schritt2_seite.dart): Zahlungsart-Zeilen, bei
+  denen sowohl Kartenart als auch Betrag unlesbar waren, wurden
+  bisher komplett übersprungen (unsichtbar im Popup) — werden jetzt
+  als Zeile mit "nicht lesbar" angezeigt. Das manuelle Nachtragen
+  war bereits vorher möglich (Kachel-Felder bleiben nach
+  "übernehmen" leer und editierbar) — das eigentliche Problem war
+  die fehlende Sichtbarkeit im Popup selbst, nicht eine fehlende
+  Editiermöglichkeit. (2) TODO.md "Kein Screen-Flip" wieder auf
+  offen gesetzt: Test auf Pacos iPhone-PWA zeigt weiterhin Rotation
+  trotz Manifest-Sperre (iOS/WebKit unterstützt das bekanntermaßen
+  unzuverlässig) — Verifikation auf echtem Android-Gerät (Zielplattform)
+  noch ausstehend. Versionsstring r319c. Dateien:
+  beleg_scan_bestaetigen_dialog.dart, tagesabschluss_schritt2_seite.dart,
+  TODO.md.
+
 - Run 319b: TODO.md-Gesamtaudit + 4 neue Punkte aus Nutzer-Feedback.
   Geprüft und abgehakt: "Kein Screen-Flip" (bereits per
   SystemChrome + web/manifest.json portrait-primary umgesetzt, mit
