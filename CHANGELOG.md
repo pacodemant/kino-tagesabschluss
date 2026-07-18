@@ -4,6 +4,25 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 319b: TODO.md-Gesamtaudit + 4 neue Punkte aus Nutzer-Feedback.
+  Geprüft und abgehakt: "Kein Screen-Flip" (bereits per
+  SystemChrome + web/manifest.json portrait-primary umgesetzt, mit
+  Einschränkung für nicht-installierte Browser-Tabs), "Eingabe mit
+  Komma"-Einstellung (bereits seit Run 317 vollständig entfernt),
+  "KI-Prompt verbessern" (aktueller System-Prompt erfüllt bereits
+  alle genannten Punkte). Neu gefunden und ergänzt: Sicherheitslücke
+  im Verwaltungsbereich — `_devAufgeklappt` in
+  `einstellungen_seite.dart` ist fälschlich `static`, wodurch die
+  PIN-Entsperrung für die gesamte App-Sitzung bestehen bleibt statt
+  nur für den aktuellen Seitenaufruf (noch nicht behoben, nur
+  dokumentiert). "Standort vorauswählen (Admin)" um die neue
+  Anforderung erweitert (Betriebsmodus Alle/SB/CO/AT/GO/BT,
+  "Kino wechseln"-Button nur bei "Alle" sichtbar). Neuer Punkt:
+  Getränkeliste soll im Filter "nur benötigte anzeigen" Checkboxen
+  bekommen, abgehakte Einträge wandern ans Listenende, Reihenfolge
+  wird beim Zurückschalten auf "alle anzeigen" zurückgesetzt. Keine
+  App-Code-Änderung. Versionsstring r319b. Datei: TODO.md.
+
 - Run 319a: Korrekturen aus Review der Kunden-Übersicht
   (kassenabrechnung-validierungen.html). (1) Dokument korrigiert:
   Ziffernfilter gilt für alle Zähl- UND Betragsfelder (nicht nur

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 319a · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 319b · wird fortlaufend ergänzt
 
 ---
 
@@ -91,6 +91,33 @@ Stand: Juli 2026 · Run 319a · wird fortlaufend ergänzt
       (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben.
       *(Run 303 — umgesetzt für Schritt 1 und Wechselgeld-Prüfen-Seite)*
 
+- [x] **Kein Screen-Flip** App soll beim Drehen des Smartphones hochkant
+      bleiben. Bereits umgesetzt: `main.dart` sperrt via
+      `SystemChrome.setPreferredOrientations` auf `portraitUp`;
+      zusätzlich `web/manifest.json` mit `"orientation":
+      "portrait-primary"` für die installierte PWA. Einschränkung:
+      Die Manifest-Sperre greift zuverlässig nur, wenn die App als
+      installierte/Standalone-PWA läuft (Zielplattform: vorkonfigurierte
+      Android-Geräte) — in einem normalen Browser-Tab (z. B. Pacos
+      iOS-Safari-Testumgebung) kann das Betriebssystem trotzdem drehen.
+      *(geprüft Run 319b)*
+
+- [x] **"Eingabe mit Komma"-Einstellung entfernen** App-weit fest auf
+      Eingabe ohne Komma (230 statt 2,30). Bereits erledigt: Die
+      Einstellung (`eingabe_mit_komma`) wurde in Run 317 vollständig
+      entfernt — kein Vorkommen mehr im Code, `mitKomma` ist überall
+      fest auf `false`. *(geprüft Run 319b)*
+
+- [ ] **Admin-Bereich entsperrt zu lange** Bug gefunden beim
+      TODO-Review: `_devAufgeklappt` in `einstellungen_seite.dart:88`
+      ist als `static` deklariert statt als normales State-Feld. Nach
+      einmaliger korrekter PIN-Eingabe bleibt der Verwaltungsbereich
+      für die gesamte App-Sitzung entsperrt — auch nach Verlassen und
+      erneutem Aufrufen der Einstellungsseite, ohne erneute PIN-Abfrage.
+      Da mobile Browser/PWAs beim Wechseln zwischen Apps oft nicht neu
+      laden, wirkt das PIN-Passwort dadurch praktisch dauerhaft
+      gemerkt. Fix: `static` entfernen (normales Instanzfeld).
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
@@ -138,10 +165,15 @@ Stand: Juli 2026 · Run 319a · wird fortlaufend ergänzt
 - [x] **Belegscan Metadaten** zuklappbar machen. *(bereits umgesetzt —
       `_baueMetadatenBlock()` mit `_metadatenAufgeklappt`-Toggle)*
 
-- [ ] **KI-Prompt verbessern** KI soll nur relevante Daten lesen, nichts
+- [x] **KI-Prompt verbessern** KI soll nur relevante Daten lesen, nichts
       hineininterpretieren und keine Bemerkungen zu Schreibgerät, Belegrissen o. Ä.
       Im Prompt auf Zeilen-Zuordnung hinweisen — manchmal rutscht ein Kartenbetrag
-      zu einer falschen Kartenart.
+      zu einer falschen Kartenart. Bereits umgesetzt: aktueller System-Prompt
+      (`beleg_scan_service.dart`) verbietet Schätzen/Interpolieren/Ergänzen
+      explizit, verlangt strikte Zeilen-Zuordnung ("nicht anhand von
+      Reihenfolge... zuordnen") und beschränkt "hinweis" ausschließlich
+      auf den Summen-Abgleich (kein Freitext, keine visuellen
+      Einschätzungen). *(geprüft Run 319b)*
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
@@ -150,10 +182,16 @@ Stand: Juli 2026 · Run 319a · wird fortlaufend ergänzt
       Basis-URL-Feld in Einstellungen-UI. *(TID-Whitelist + Buchhaltungs-E-Mail
       → eigene Punkte unten)*
 
-- [ ] **Standort vorauswählen (Admin)** Admin stellt in den Einstellungen den
-      Standort ein, damit MA nicht erst auswählen müssen. *(Zurückgestellt —
-      an der Einstellungsseite stehen ohnehin noch weitere Anpassungen an,
-      dann zusammen angehen.)*
+- [ ] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
+      für welchen Standort das Gerät arbeitet: „Alle", SB, CO, AT, GO
+      oder BT. Ist ein einzelner Standort gewählt, entfällt für MA die
+      Kinoauswahl (Erweiterung von "Standort vorauswählen", siehe unten)
+      UND der Textbutton "Kino wechseln" auf der Startseite
+      (`startmenue_seite.dart`) wird ausgeblendet — er erscheint nur,
+      wenn "Alle" eingestellt ist. So verstanden; bitte gegenprüfen,
+      falls die gewünschte Logik anders gemeint war. *(Zurückgestellt —
+      an der Einstellungsseite stehen ohnehin noch weitere Anpassungen
+      an, dann zusammen angehen.)*
 
 - [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
       festem Passwort gewünscht.
@@ -211,6 +249,15 @@ Stand: Juli 2026 · Run 319a · wird fortlaufend ergänzt
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
 
 ### Weitere Features
+
+- [ ] **Getränkeliste: Abhaken bei "nur benötigte anzeigen"** Im
+      Filtermodus "nur benötigte anzeigen" (`getraenke_auffuellen_seite.dart`,
+      `_nurBenoetigte`) sollen Einträge zusätzlich eine runde Checkbox
+      bekommen. Hakt der MA einen Eintrag ab, wandert er ans Ende der
+      (gefilterten) Liste. Beim Zurückschalten auf "alle anzeigen"
+      wird wieder die ursprüngliche Reihenfolge angezeigt — das
+      Abhaken beeinflusst also nur die Sortierung im gefilterten Modus,
+      nicht die Grundreihenfolge der Liste.
 
 - [ ] **Gondel-Abrechnung (kino_02)** Workflow wie Schauburg,
       Wechselgeld 1.400 €.
