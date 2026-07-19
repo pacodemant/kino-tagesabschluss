@@ -1343,8 +1343,16 @@ class _TagesabschlussSchritt2SeiteState
             if (belegIndex < _ecUnterkachelEditModus.length) {
               _ecUnterkachelEditModus[belegIndex] = true;
             }
+            // Nur die tatsächlich betroffenen Zeilen öffnen: erkannte
+            // Kartenart mit unlesbarem Betrag, sowie die "unbekannte
+            // Kartenart"-Zeile. Kartenarten ohne Umsatz bleiben hidden
+            // und weiterhin nur über den "+"-Chip erreichbar.
             for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
-              zeile.zustand = ZeilenZustand.editing;
+              if (zeile.istUnbekannt ||
+                  (zeile.zustand == ZeilenZustand.shown &&
+                      _istZeileImplausibel(zeile, belegIndex))) {
+                zeile.zustand = ZeilenZustand.editing;
+              }
             }
           }
           _kartenartenGesamtBetragCent[belegIndex] = geprueftes.gesamtBetragCent;
@@ -1520,6 +1528,15 @@ class _TagesabschlussSchritt2SeiteState
             !bereitsGewaehlt.contains(z.name))
         .map((_ZahlungsartZeile z) => z.name)
         .toList();
+  }
+
+  /// true, wenn eine "unbekannte Kartenart"-Zeile bereits diesen Namen
+  /// zugeordnet bekommen hat — der "+"-Chip für diesen Namen soll dann
+  /// verschwinden, da die Kartenart schon erfasst ist.
+  bool _kartenartBereitsAlsUnbekannteZugeordnet(String name, int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return false;
+    return _zahlungsartZeilen[belegIndex]
+        .any((_ZahlungsartZeile z) => z.istUnbekannt && z.name == name);
   }
 
   void _sortiereZahlungsartenNachBeleg(
@@ -2429,7 +2446,9 @@ class _TagesabschlussSchritt2SeiteState
                   ? _baueKartenartenZeile(i, belegIndex)
                   : _baueKartenartenZeileAnzeige(i, belegIndex),
           if (wurdeGescannt &&
-              zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.hidden))
+              zeilen.any((_ZahlungsartZeile z) =>
+                  z.zustand == ZeilenZustand.hidden &&
+                  !_kartenartBereitsAlsUnbekannteZugeordnet(z.name, belegIndex)))
             Padding(
               padding: const EdgeInsets.only(bottom: 6),
               child: Wrap(
@@ -2437,7 +2456,9 @@ class _TagesabschlussSchritt2SeiteState
                 runSpacing: 4,
                 children: <Widget>[
                   for (final _ZahlungsartZeile zeile in zeilen)
-                    if (zeile.zustand == ZeilenZustand.hidden)
+                    if (zeile.zustand == ZeilenZustand.hidden &&
+                        !_kartenartBereitsAlsUnbekannteZugeordnet(
+                            zeile.name, belegIndex))
                       TextButton.icon(
                         onPressed: () {
                           setState(() {
@@ -3225,7 +3246,8 @@ class _TagesabschlussSchritt2SeiteState
                                 if (_scanHatStattgefunden.isNotEmpty &&
                                     _scanHatStattgefunden[0] &&
                                     _zahlungsartZeilen.isNotEmpty &&
-                                    !_zahlungsartZeilen[0].any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing))
+                                    !_zahlungsartZeilen[0].any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing) &&
+                                    !_subKachelTidUnleserlich(0))
                                   // Read-Modus nach Scan
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 6),
@@ -3268,7 +3290,9 @@ class _TagesabschlussSchritt2SeiteState
                                           textInputAction:
                                               _textInputActionFuerSchritt2(_ecBelegLabelFocusNode[0]),
                                           decoration: InputDecoration(
-                                            hintText: 'Terminal-ID',
+                                            hintText: _subKachelTidUnleserlich(0)
+                                                ? 'Terminal-ID?'
+                                                : 'Terminal-ID',
                                             hintStyle: TextStyle(
                                               fontSize: 15,
                                               color: _ecBelegLabelFocusNode[0].hasFocus
@@ -3394,7 +3418,9 @@ class _TagesabschlussSchritt2SeiteState
                                                                     ),
                                                                     cursorColor: _ecBelegLabelFocusNode[i].hasFocus ? Colors.white : null,
                                                                     decoration: InputDecoration(
-                                                                      hintText: 'Terminal-ID',
+                                                                      hintText: _subKachelTidUnleserlich(i)
+                                                                          ? 'Terminal-ID?'
+                                                                          : 'Terminal-ID',
                                                                       hintStyle: TextStyle(
                                                                         color: _ecBelegLabelFocusNode[i].hasFocus
                                                                             ? Colors.transparent

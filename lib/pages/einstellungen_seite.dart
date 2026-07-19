@@ -1261,7 +1261,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   ],
                   const Divider(height: 1),
                   SwitchListTile(
-                    title: const Text('Flurbocash-Upload (Test)'),
+                    title: const Text('Flurbocash-Anbindung'),
                     value: _apiUploadAktiv,
                     onChanged: _onApiUploadGeaendert,
                     activeThumbColor: AppFarben.appBarRot,
