@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+320 · Run 320
+Version: 0.9.3+321 · Run 321
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -219,6 +219,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   verlässt nie die interne Kino-IT" widersprach der Anthropic-
   USA-Übermittlung im selben Absatz und wurde entfernt; Hinweis
   auf EU-Standardvertragsklauseln als Rechtsgrundlage ergänzt.
+- Run 321 ✅ Datenschutzhinweise-Link zusätzlich auf
+  startmenue_seite.dart ergänzt (bisher nur auf
+  kinoauswahl_seite.dart), damit er erreichbar bleibt, sobald
+  der geplante Standort-Betriebsmodus die Kinoauswahl für MA
+  überspringt.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

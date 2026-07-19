@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
+import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
@@ -124,7 +125,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.3 · r320 @ GitHub:',
+                    'Web App 0.9.3 · r321 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
@@ -133,6 +134,23 @@ class StartmenueSeite extends StatelessWidget {
                   child: Image.asset(
                     'assets/images/qr_webapp_github.png',
                     width: 100,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: GestureDetector(
+                    onTap: () => Navigator.of(
+                      context,
+                    ).pushNamed(DatenschutzSeite.routenName),
+                    child: const Text(
+                      'Datenschutzhinweise',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppFarben.subtilerText,
+                        decoration: TextDecoration.underline,
+                        decorationColor: AppFarben.subtilerText,
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 8),

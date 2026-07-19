@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 320 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 321 · wird fortlaufend ergänzt
 
 ---
 
@@ -194,7 +194,9 @@ Stand: Juli 2026 · Run 320 · wird fortlaufend ergänzt
       wenn "Alle" eingestellt ist. So verstanden; bitte gegenprüfen,
       falls die gewünschte Logik anders gemeint war. *(Zurückgestellt —
       an der Einstellungsseite stehen ohnehin noch weitere Anpassungen
-      an, dann zusammen angehen.)*
+      an, dann zusammen angehen. Datenschutzhinweise-Link ist seit
+      Run 321 bereits zusätzlich auf startmenue_seite.dart vorhanden,
+      bleibt also auch bei entfallender Kinoauswahl erreichbar.)*
 
 - [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
       festem Passwort gewünscht.

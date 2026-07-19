@@ -4,6 +4,14 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 321: Datenschutzhinweise-Link zusätzlich auf
+  `startmenue_seite.dart` ergänzt (bisher nur auf
+  `kinoauswahl_seite.dart` sichtbar). Grund: Sobald der geplante
+  Standort-Betriebsmodus für MA-Geräte die Kinoauswahl-Seite
+  überspringt, wäre der Link sonst nirgends mehr erreichbar.
+  Versionsstring r321. Dateien: startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 320: Sicherheitslücke Admin-Bereich behoben —
   `_devAufgeklappt` in `einstellungen_seite.dart` war fälschlich
   als `static` deklariert, wodurch der PIN-geschützte
