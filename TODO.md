@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 319d · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 320 · wird fortlaufend ergänzt
 
 ---
 
@@ -110,15 +110,16 @@ Stand: Juli 2026 · Run 319d · wird fortlaufend ergänzt
       entfernt — kein Vorkommen mehr im Code, `mitKomma` ist überall
       fest auf `false`. *(geprüft Run 319b)*
 
-- [ ] **Admin-Bereich entsperrt zu lange** Bug gefunden beim
-      TODO-Review: `_devAufgeklappt` in `einstellungen_seite.dart:88`
-      ist als `static` deklariert statt als normales State-Feld. Nach
-      einmaliger korrekter PIN-Eingabe bleibt der Verwaltungsbereich
-      für die gesamte App-Sitzung entsperrt — auch nach Verlassen und
-      erneutem Aufrufen der Einstellungsseite, ohne erneute PIN-Abfrage.
-      Da mobile Browser/PWAs beim Wechseln zwischen Apps oft nicht neu
-      laden, wirkt das PIN-Passwort dadurch praktisch dauerhaft
-      gemerkt. Fix: `static` entfernen (normales Instanzfeld).
+- [x] **Admin-Bereich entsperrt zu lange** `_devAufgeklappt` in
+      `einstellungen_seite.dart` war als `static` deklariert statt
+      als normales State-Feld — Verwaltungsbereich blieb für die
+      gesamte App-Sitzung entsperrt, auch nach Verlassen und
+      erneutem Aufrufen der Einstellungsseite. Fix: `static`
+      entfernt (normales Instanzfeld) — PIN wird bei jedem erneuten
+      Öffnen der Seite wieder verlangt. Offen bleibt der Edge-Case
+      "Seite bleibt im Hintergrund geöffnet, MA wechselt kurz die
+      App" (State wird dabei nicht disposed, PIN bliebe entsperrt) —
+      bewusst zurückgestellt, Praxis-Relevanz unklar. *(Run 320)*
 
 ---
 

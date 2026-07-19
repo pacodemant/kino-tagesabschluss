@@ -85,7 +85,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _apiUploadAktiv = false;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
-  static bool _devAufgeklappt = false;
+  bool _devAufgeklappt = false;
   bool _testwertAufgeklappt = false;
   bool _pwaInstallVerfuegbar = false;
   bool _anthropicKeyVerdeckt = true;

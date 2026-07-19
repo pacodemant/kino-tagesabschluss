@@ -4,6 +4,19 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 320: Sicherheitslücke Admin-Bereich behoben —
+  `_devAufgeklappt` in `einstellungen_seite.dart` war fälschlich
+  als `static` deklariert, wodurch der PIN-geschützte
+  Verwaltungsbereich für die gesamte laufende App-Sitzung
+  entsperrt blieb, auch nach Verlassen und erneutem Öffnen der
+  Einstellungen-Seite. Jetzt normales Instanzfeld — jeder erneute
+  Aufruf der Seite erzeugt einen neuen State mit
+  `_devAufgeklappt = false`, PIN wird wieder verlangt. Bewusst
+  kein zusätzlicher AppLifecycleState-Listener für
+  Hintergrund/Vordergrund (Edge-Case zurückgestellt, siehe
+  TODO.md). Versionsstring r320. Dateien: einstellungen_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 319d: Widerspruch in den Datenschutzhinweisen behoben
   (`datenschutz_seite.dart`, Abschnitt „Ausnahme: BelegScan
   (optional)"): Satz „Das Foto verlässt dabei nie die interne
