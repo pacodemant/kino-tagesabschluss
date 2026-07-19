@@ -4,6 +4,16 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 319d: Widerspruch in den Datenschutzhinweisen behoben
+  (`datenschutz_seite.dart`, Abschnitt „Ausnahme: BelegScan
+  (optional)"): Satz „Das Foto verlässt dabei nie die interne
+  Kino-IT" widersprach dem vorherigen Satz zur Anthropic-API (USA)
+  und wurde entfernt. Stattdessen Hinweis ergänzt, dass die
+  Anthropic-Übermittlung über EU-Standardvertragsklauseln rechtlich
+  abgesichert ist. Versionsstring r319d. Dateien:
+  datenschutz_seite.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 319c: Korrekturen aus Testfeedback zu Run 319a/319b. (1)
   Belegscan-Prüf-Popup (`beleg_scan_bestaetigen_dialog.dart`): TID
   wurde bei unlesbarem Wert bisher komplett ausgeblendet (zeigte
