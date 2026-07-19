@@ -20,6 +20,18 @@ class BelegScanZeilenVorschau {
   final bool nameNichtLesbar;
 }
 
+/// true, wenn im Scan mindestens ein Wert (Kartenart, Betrag oder TID)
+/// nicht zuverlässig lesbar war – also alles, was im Prüf-Popup rot
+/// hervorgehoben wird.
+bool belegScanHatUnlesbareDaten(
+  BelegScanErgebnis ergebnis,
+  List<BelegScanZeilenVorschau> zeilen,
+) {
+  return ergebnis.terminalId == null ||
+      zeilen.any((BelegScanZeilenVorschau z) =>
+          z.nichtLesbar || z.nameNichtLesbar);
+}
+
 Future<bool> zeigeBelegScanBestaetigenDialog(
   BuildContext context, {
   required BelegScanErgebnis ergebnis,
@@ -51,6 +63,15 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                 _betragZeile(zeile),
             const Divider(height: 20),
             _summeZeile('Gesamt laut Beleg', ergebnis.gesamtBetragCent),
+            if (belegScanHatUnlesbareDaten(ergebnis, zeilen)) ...<Widget>[
+              const SizedBox(height: 8),
+              const Text(
+                'Rot markierte Werte können nach der Übernahme direkt '
+                'in den Feldern nachgetragen oder korrigiert werden – '
+                'oder du scannst den Beleg noch einmal.',
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+            ],
             if (ergebnis.hinweis != null) ...<Widget>[
               const SizedBox(height: 8),
               Row(

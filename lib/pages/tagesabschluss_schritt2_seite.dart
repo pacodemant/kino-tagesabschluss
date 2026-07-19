@@ -1281,16 +1281,20 @@ class _TagesabschlussSchritt2SeiteState
           return;
         }
         final BelegScanErgebnis geprueftes = ergebnis;
+        final List<BelegScanZeilenVorschau> vorschauZeilen =
+            _baueScanVorschauZeilen(geprueftes, belegIndex);
         final bool uebernehmen = await zeigeBelegScanBestaetigenDialog(
           context,
           ergebnis: geprueftes,
-          zeilen: _baueScanVorschauZeilen(geprueftes, belegIndex),
+          zeilen: vorschauZeilen,
         );
         if (!mounted) return;
         if (!uebernehmen) {
           wiederholen = true;
           continue;
         }
+        final bool hatUnlesbareDaten =
+            belegScanHatUnlesbareDaten(geprueftes, vorschauZeilen);
         setState(() {
           if (geprueftes.gesamtBetragCent != null) {
             _ecBelegeCent[belegIndex] = geprueftes.gesamtBetragCent!;
@@ -1335,6 +1339,14 @@ class _TagesabschlussSchritt2SeiteState
           }
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis, belegIndex);
+          if (hatUnlesbareDaten) {
+            if (belegIndex < _ecUnterkachelEditModus.length) {
+              _ecUnterkachelEditModus[belegIndex] = true;
+            }
+            for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
+              zeile.zustand = ZeilenZustand.editing;
+            }
+          }
           _kartenartenGesamtBetragCent[belegIndex] = geprueftes.gesamtBetragCent;
           _setzeControllerText(
             _kartenartenGesamtBetragController[belegIndex],
@@ -2208,8 +2220,7 @@ class _TagesabschlussSchritt2SeiteState
                     value: zeile.name.isEmpty ? null : zeile.name,
                     hint: const Text(
                       'Kartenart?',
-                      style: TextStyle(
-                          fontSize: 12, color: Color(0xFFF57F17)),
+                      style: TextStyle(fontSize: 12, color: Colors.red),
                     ),
                     isExpanded: true,
                     isDense: true,
@@ -2275,10 +2286,9 @@ class _TagesabschlussSchritt2SeiteState
         children: <Widget>[
           Expanded(
             child: zeile.istUnbekannt && zeile.name.isEmpty
-                ? Text(
+                ? const Text(
                     '?',
-                    style: TextStyle(
-                        fontSize: 13, color: Colors.orange.shade700),
+                    style: TextStyle(fontSize: 13, color: Colors.red),
                   )
                 : Text(
                     zeile.name,
@@ -3259,7 +3269,14 @@ class _TagesabschlussSchritt2SeiteState
                                               _textInputActionFuerSchritt2(_ecBelegLabelFocusNode[0]),
                                           decoration: InputDecoration(
                                             hintText: 'Terminal-ID',
-                                            hintStyle: TextStyle(fontSize: 15, color: _ecBelegLabelFocusNode[0].hasFocus ? Colors.transparent : null),
+                                            hintStyle: TextStyle(
+                                              fontSize: 15,
+                                              color: _ecBelegLabelFocusNode[0].hasFocus
+                                                  ? Colors.transparent
+                                                  : (_subKachelTidUnleserlich(0)
+                                                      ? Colors.red
+                                                      : null),
+                                            ),
                                             errorText: _pflichtfeldFehlertext(
                                               feldBeruehrt: _ecBelegLabel1Beruehrt,
                                               controller: _ecBelegLabelController[0],
@@ -3378,7 +3395,13 @@ class _TagesabschlussSchritt2SeiteState
                                                                     cursorColor: _ecBelegLabelFocusNode[i].hasFocus ? Colors.white : null,
                                                                     decoration: InputDecoration(
                                                                       hintText: 'Terminal-ID',
-                                                                      hintStyle: TextStyle(color: _ecBelegLabelFocusNode[i].hasFocus ? Colors.transparent : null),
+                                                                      hintStyle: TextStyle(
+                                                                        color: _ecBelegLabelFocusNode[i].hasFocus
+                                                                            ? Colors.transparent
+                                                                            : (_subKachelTidUnleserlich(i)
+                                                                                ? Colors.red
+                                                                                : null),
+                                                                      ),
                                                                       isDense: true,
                                                                       filled: _ecBelegLabelFocusNode[i].hasFocus,
                                                                       fillColor: AppFarben.appBarRot,
