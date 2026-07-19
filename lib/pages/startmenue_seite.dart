@@ -122,21 +122,7 @@ class StartmenueSeite extends StatelessWidget {
                   onPressed: () => _oeffneVerlauf(context),
                   child: const Text('Verlauf'),
                 ),
-                const Spacer(),
-                const Center(
-                  child: Text(
-                    'Web App 0.9.3 · r321 @ GitHub:',
-                    style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Center(
-                  child: Image.asset(
-                    'assets/images/qr_webapp_github.png',
-                    width: 100,
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
                 Center(
                   child: GestureDetector(
                     onTap: () => Navigator.of(
@@ -151,6 +137,20 @@ class StartmenueSeite extends StatelessWidget {
                         decorationColor: AppFarben.subtilerText,
                       ),
                     ),
+                  ),
+                ),
+                const Spacer(),
+                const Center(
+                  child: Text(
+                    'Web App 0.9.3 · r321a @ GitHub:',
+                    style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Center(
+                  child: Image.asset(
+                    'assets/images/qr_webapp_github.png',
+                    width: 100,
                   ),
                 ),
                 const SizedBox(height: 8),

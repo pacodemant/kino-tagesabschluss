@@ -4,6 +4,13 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 321a: Datenschutzhinweise-Link auf `startmenue_seite.dart`
+  von unterhalb des QR-Codes direkt unter den "Verlauf"-Button
+  verschoben — dort ging er vor dem grafisch unruhigen
+  Hintergrundbild (`demo_people.png`) unter. Versionsstring
+  r321a. Dateien: startmenue_seite.dart, kinoauswahl_seite.dart,
+  pubspec.yaml.
+
 - Run 321: Datenschutzhinweise-Link zusätzlich auf
   `startmenue_seite.dart` ergänzt (bisher nur auf
   `kinoauswahl_seite.dart` sichtbar). Grund: Sobald der geplante
