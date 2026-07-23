@@ -16,6 +16,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
+import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
@@ -118,6 +119,7 @@ class _TagesabschlussSchritt2SeiteState
     extends State<TagesabschlussSchritt2Seite>
     with ControllerDisposeMixin {
   static const double _devToolsPanelHoehe = 68;
+  final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
 
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
@@ -203,6 +205,9 @@ class _TagesabschlussSchritt2SeiteState
   @override
   void initState() {
     super.initState();
+    _verknuepfeFeldNavigationSchritt2(_kinoSollFocusNode);
+    _verknuepfeFeldNavigationSchritt2(_bistroSollFocusNode);
+    _verknuepfeFeldNavigationSchritt2(_differenzAnfangsbestandFocusNode);
     _setzeEcBelegAnzahl(1);
     _setzeAusgabenAnzahl(1);
     DevModus.istAktiv().then((bool aktiv) {
@@ -831,7 +836,9 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegController.add(TextEditingController());
       _ecBelegLabelController.add(TextEditingController());
       _ecBelegFocusNode.add(FocusNode());
-      _ecBelegLabelFocusNode.add(FocusNode());
+      final FocusNode neueEcBelegLabelFn = FocusNode();
+      _verknuepfeFeldNavigationSchritt2(neueEcBelegLabelFn);
+      _ecBelegLabelFocusNode.add(neueEcBelegLabelFn);
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
@@ -851,7 +858,9 @@ class _TagesabschlussSchritt2SeiteState
       _scanHatStattgefunden.add(false);
       _kartenartenGesamtBetragCent.add(null);
       _kartenartenGesamtBetragController.add(TextEditingController());
-      _kartenartenGesamtBetragFocusNode.add(FocusNode());
+      final FocusNode neuerKartenartenGesamtBetragFn = FocusNode();
+      _verknuepfeFeldNavigationSchritt2(neuerKartenartenGesamtBetragFn);
+      _kartenartenGesamtBetragFocusNode.add(neuerKartenartenGesamtBetragFn);
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
     });
@@ -937,6 +946,7 @@ class _TagesabschlussSchritt2SeiteState
         ..addListener(() {
           if (mounted) setState(() {});
         });
+      _verknuepfeFeldNavigationSchritt2(ecBelegLabelFn);
       _ecBelegLabelFocusNode.add(ecBelegLabelFn);
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
@@ -956,7 +966,9 @@ class _TagesabschlussSchritt2SeiteState
       _scanHatStattgefunden.add(false);
       _kartenartenGesamtBetragCent.add(null);
       _kartenartenGesamtBetragController.add(TextEditingController());
-      _kartenartenGesamtBetragFocusNode.add(FocusNode());
+      final FocusNode kartenartenGesamtBetragFn = FocusNode();
+      _verknuepfeFeldNavigationSchritt2(kartenartenGesamtBetragFn);
+      _kartenartenGesamtBetragFocusNode.add(kartenartenGesamtBetragFn);
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
     }
@@ -965,10 +977,14 @@ class _TagesabschlussSchritt2SeiteState
   void _ausgabeHinzufuegen() {
     setState(() {
       _letzteAenderung = DateTime.now();
+      final FocusNode neueAusgabenBetragFn = FocusNode();
+      final FocusNode neueAusgabenLabelFn = FocusNode();
+      _verknuepfeFeldNavigationSchritt2(neueAusgabenBetragFn);
+      _verknuepfeFeldNavigationSchritt2(neueAusgabenLabelFn);
       _ausgabenBetragController.add(TextEditingController());
       _ausgabenLabelController.add(TextEditingController());
-      _ausgabenBetragFocusNode.add(FocusNode());
-      _ausgabenLabelFocusNode.add(FocusNode());
+      _ausgabenBetragFocusNode.add(neueAusgabenBetragFn);
+      _ausgabenLabelFocusNode.add(neueAusgabenLabelFn);
       _ausgabenBetrageCent.add(0);
       _ausgabenLabels.add('');
       _ausgabenIds.add(_naechsteAusgabeId++);
@@ -1013,11 +1029,14 @@ class _TagesabschlussSchritt2SeiteState
     while (_ausgabenBetragController.length < anzahl) {
       _ausgabenBetragController.add(TextEditingController());
       _ausgabenLabelController.add(TextEditingController());
-      _ausgabenBetragFocusNode.add(FocusNode());
+      final FocusNode ausgabenBetragFn = FocusNode();
+      _verknuepfeFeldNavigationSchritt2(ausgabenBetragFn);
+      _ausgabenBetragFocusNode.add(ausgabenBetragFn);
       final FocusNode ausgabenLabelFn = FocusNode()
         ..addListener(() {
           if (mounted) setState(() {});
         });
+      _verknuepfeFeldNavigationSchritt2(ausgabenLabelFn);
       _ausgabenLabelFocusNode.add(ausgabenLabelFn);
       _ausgabenBetrageCent.add(0);
       _ausgabenLabels.add('');
@@ -1775,8 +1794,22 @@ class _TagesabschlussSchritt2SeiteState
       FocusScope.of(context).unfocus();
       return;
     }
-    FocusScope.of(context).requestFocus(naechstesFeld);
-    _scrolleZurMitteNachFokus(naechstesFeld);
+    _fokussiereFeldSchritt2(naechstesFeld);
+  }
+
+  void _fokussiereFeldSchritt2(FocusNode ziel) {
+    FocusScope.of(context).requestFocus(ziel);
+    _scrolleZurMitteNachFokus(ziel);
+  }
+
+  void _verknuepfeFeldNavigationSchritt2(FocusNode fokusNode) {
+    fokusNode.onKeyEvent = (FocusNode node, KeyEvent event) =>
+        _navHelper.onKeyEventFuerFeld(
+          context: context,
+          event: event,
+          reihenfolge: _fokusReihenfolgeSchritt2,
+          fokussiere: _fokussiereFeldSchritt2,
+        );
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
@@ -2682,13 +2715,15 @@ class _TagesabschlussSchritt2SeiteState
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
               ElevatedButton(
-                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('funktioniert noch nicht')),
+                onPressed: () => _navHelper.springeZuNaechstem(
+                  context: context,
+                  reihenfolge: _fokusReihenfolgeSchritt2(),
+                  fokussiere: _fokussiereFeldSchritt2,
+                  vorwaerts: true,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade200,
-                  foregroundColor: Colors.grey.shade400,
+                  backgroundColor: AppFarben.appBarRot,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,

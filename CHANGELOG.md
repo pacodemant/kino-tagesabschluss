@@ -4,6 +4,31 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 323: Next-Button in Schritt 1, Schritt 2 und
+  Wechselgeld-Prüfen funktioniert jetzt — er sprang zuvor nur
+  eine Platzhalter-SnackBar an ("funktioniert noch nicht"),
+  obwohl er nicht ausgegraut aussah. Zusätzlich springt der
+  Fokus jetzt auch per Tab/Shift+Tab und Pfeil-runter/-hoch
+  zum logisch nächsten/vorherigen Feld, einheitlich über alle
+  drei Seiten. Neue gemeinsame Klasse
+  `lib/utils/feld_navigation_helper.dart`
+  (`FeldNavigationHelper`) kapselt das Schema (nächstes/
+  vorheriges Feld ermitteln, Next-Button und Tastatur-Events
+  darauf abbilden); jede Seite liefert nur ihre eigene
+  Feld-Reihenfolge und Fokussier-Methode. Betroffen sind nur
+  Felder, die schon vorher Teil der "nächstes Feld"-Kette
+  waren (Scheine, Münzen, Rollen, Umschläge, Ausgaben,
+  EC-Belege, Kino-/Bistro-Soll, Differenz Anfangsbestand).
+  `Schritt1InitialisierungHelper` bekam dafür einen neuen
+  Konstruktor-Parameter `verknuepfeFeldNavigation`. Next-Button
+  optisch von Grau auf Kino-Rot umgestellt (war nur noch aus
+  historischen Gründen grau, obwohl tippbar). Versionsstring
+  r323. Dateien: feld_navigation_helper.dart (neu),
+  tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, wechselgeld_pruefen_seite.dart,
+  schritt1_initialisierung_helper.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 322: Grauen "Original-Name"-Hinweis auf der Seite
   "Getränke auffüllen" entfernt (`getraenke_auffuellen_seite.dart`).
   Dieser wurde eingeblendet, wenn ein Getränk in der Zentrale
