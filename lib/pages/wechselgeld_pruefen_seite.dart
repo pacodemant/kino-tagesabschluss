@@ -1075,19 +1075,22 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               ),
             ),
             const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () => _navHelper.springeZuNaechstem(
-                context: context,
-                reihenfolge: _fokusReihenfolge(),
-                fokussiere: _fokussiereTextfeld,
-                vorwaerts: true,
+            TapRegion(
+              groupId: EditableText,
+              child: ElevatedButton(
+                onPressed: () => _navHelper.springeZuNaechstem(
+                  context: context,
+                  reihenfolge: _fokusReihenfolge(),
+                  fokussiere: _fokussiereTextfeld,
+                  vorwaerts: true,
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppFarben.appBarRot,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(0, 36),
+                ),
+                child: const Text('Next'),
               ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppFarben.appBarRot,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(0, 36),
-              ),
-              child: const Text('Next'),
             ),
             const SizedBox(width: 8),
             Expanded(

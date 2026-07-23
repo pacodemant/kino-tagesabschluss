@@ -4,6 +4,28 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 323a: Korrektur aus Testfeedback zu Run 323 — Next-
+  Button schloss Fokus und Tastatur statt zum nächsten Feld
+  zu springen (Schritt 1 reproduziert, Getränke-Auffüllen
+  identisch mit dem dort schon vorher komplett deaktivierten
+  "next"-Button). Ursache: Flutter schließt die Tastatur
+  automatisch, sobald außerhalb des fokussierten Feldes
+  getippt wird — ein normaler Button zählt dafür als
+  "außerhalb", auch wenn er nichts tut. Fix: Next-Button in
+  allen vier Seiten mit TapRegion(groupId: EditableText, …)
+  umschlossen, damit er zur selben Tastatur-Zone wie die
+  Eingabefelder gehört und die automatische Schließung nicht
+  mehr auslöst. Getränke-Auffüllen-Seite zusätzlich komplett
+  neu verdrahtet (hatte bisher gar keine Feld-Navigation):
+  beide "next"-Buttons aktiviert, FeldNavigationHelper
+  eingebunden, Reihenfolge berücksichtigt den "nur benötigte
+  anzeigen"-Filter (ausgeblendete Zeilen werden übersprungen,
+  da ihr Feld nicht gebaut ist). Versionsstring r323a.
+  Dateien: tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart,
+  wechselgeld_pruefen_seite.dart, getraenke_auffuellen_seite.dart,
+  startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 323: Next-Button in Schritt 1, Schritt 2 und
   Wechselgeld-Prüfen funktioniert jetzt — er sprang zuvor nur
   eine Platzhalter-SnackBar an ("funktioniert noch nicht"),
