@@ -22,7 +22,6 @@ class GetraenkeAuffuellenSeite extends StatefulWidget {
 
 class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   List<String> _getraenkeliste = <String>[];
-  List<String> _originalNamen = <String>[];
   final List<TextEditingController> _mengeController =
       <TextEditingController>[];
   final List<FocusNode> _mengeFocusNode = <FocusNode>[];
@@ -73,12 +72,8 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     }
     final bool linkshaender = await LokalerSpeicher.ladeLinkshaenderModus();
     if (!mounted) return;
-    final List<String> originale =
-        await GetraenkeConfigService(kinoId: widget.kinoId).ladeOriginalNamen();
-    if (!mounted) return;
     setState(() {
       _getraenkeliste = liste;
-      _originalNamen = originale;
       _istLinkshaender = linkshaender;
       _geladen = true;
     });
@@ -235,44 +230,11 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           _speichereMengen();
         },
       );
-      final String? originalName =
-          (idx < _originalNamen.length &&
-              _originalNamen[idx] != _getraenkeliste[idx])
-              ? _originalNamen[idx]
-              : null;
-      final Widget nameInhalt;
-      if (originalName != null) {
-        nameInhalt = Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: _istLinkshaender
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              _getraenkeliste[idx],
-              style: const TextStyle(fontSize: 15),
-            ),
-            LimitedBox(
-              maxWidth: 0,
-              child: Text(
-                originalName,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: Colors.grey.shade500,
-                  height: 1.1,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        );
-      } else {
-        nameInhalt = Text(
-          _getraenkeliste[idx],
-          style: const TextStyle(fontSize: 15),
-          textAlign: _istLinkshaender ? TextAlign.right : TextAlign.left,
-        );
-      }
+      final Widget nameInhalt = Text(
+        _getraenkeliste[idx],
+        style: const TextStyle(fontSize: 15),
+        textAlign: _istLinkshaender ? TextAlign.right : TextAlign.left,
+      );
       final double zeilenAbstand = _nurBenoetigte ? 0.7 : 3;
       final Widget name = Padding(
         padding: EdgeInsets.symmetric(vertical: zeilenAbstand),

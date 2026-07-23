@@ -144,15 +144,6 @@ class GetraenkeConfigService {
     return (datum, liste);
   }
 
-  Future<List<String>> ladeOriginalNamen() async {
-    try {
-      final (_, List<String> liste) = await _ladeAsset();
-      return liste;
-    } catch (_) {
-      return <String>[];
-    }
-  }
-
   Future<void> _speichereListeUndDatum(
     SharedPreferences prefs,
     List<String> liste,

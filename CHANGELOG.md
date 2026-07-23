@@ -4,6 +4,17 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 322: Grauen "Original-Name"-Hinweis auf der Seite
+  "Getränke auffüllen" entfernt (`getraenke_auffuellen_seite.dart`).
+  Dieser wurde eingeblendet, wenn ein Getränk in der Zentrale
+  umbenannt wurde und die App noch den alten Namen kannte —
+  Feld war zweitrangig und verwirrte optisch. Dazugehöriger toter
+  Code entfernt: `_originalNamen`-Feld sowie
+  `GetraenkeConfigService.ladeOriginalNamen()`. Versionsstring
+  r322. Dateien: getraenke_auffuellen_seite.dart,
+  getraenke_config_service.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 321a: Datenschutzhinweise-Link auf `startmenue_seite.dart`
   von unterhalb des QR-Codes direkt unter den "Verlauf"-Button
   verschoben — dort ging er vor dem grafisch unruhigen

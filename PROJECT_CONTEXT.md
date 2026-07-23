@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+321a · Run 321a
+Version: 0.9.3+322 · Run 322
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -228,6 +228,9 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   direkt unter den "Verlauf"-Button verschoben (statt unter den
   QR-Code) — dort ging er vor dem unruhigen Hintergrundbild
   unter.
+- Run 322 ✅ Getränke-Auffüllen: grauer "Original-Name"-Hinweis
+  (zweites Namensfeld bei Zentrale-Umbenennungen) entfernt,
+  inkl. totem Code (_originalNamen, ladeOriginalNamen()).
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
