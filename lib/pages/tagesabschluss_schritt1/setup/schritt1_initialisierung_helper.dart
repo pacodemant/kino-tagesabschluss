@@ -20,6 +20,7 @@ class Schritt1InitialisierungHelper {
     required this.formatiereEuroEingabe,
     required this.entferneFeldKey,
     required this.naechsteUmschlagId,
+    required this.verknuepfeFeldNavigation,
   });
 
   final Map<String, int> stueckzahlen;
@@ -37,6 +38,7 @@ class Schritt1InitialisierungHelper {
   final String Function(int cent) formatiereEuroEingabe;
   final void Function(FocusNode focusNode) entferneFeldKey;
   final int Function() naechsteUmschlagId;
+  final void Function(FocusNode focusNode) verknuepfeFeldNavigation;
 
   Future<int> ladeInitialeDaten({required String kinoId}) async {
     final int wechselgeld =
@@ -85,6 +87,8 @@ class Schritt1InitialisierungHelper {
     );
     final FocusNode betragFocusNode = FocusNode();
     final FocusNode bezeichnungFocusNode = FocusNode();
+    verknuepfeFeldNavigation(betragFocusNode);
+    verknuepfeFeldNavigation(bezeichnungFocusNode);
     umschlagBetragFocusNode.add(betragFocusNode);
     umschlagBezeichnungFocusNode.add(bezeichnungFocusNode);
     umschlagIds.add(naechsteUmschlagId());

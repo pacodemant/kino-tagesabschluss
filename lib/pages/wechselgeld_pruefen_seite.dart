@@ -18,6 +18,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_o
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart' as schritt1_ui;
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -40,6 +41,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   static const int _sectionUmschlaege = 4;
   final Schritt1StateController _stateController =
       const Schritt1StateController();
+  final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
   final Schritt1OrchestrierungHelper _orchestrierungHelper =
       const Schritt1OrchestrierungHelper();
   final Schritt1GruppenOrchestrierung _gruppenOrchestrierung =
@@ -120,16 +122,19 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       formatiereEuroEingabe: _formatiereEuroEingabe,
       entferneFeldKey: _scrollHelper.entferneFeldKey,
       naechsteUmschlagId: () => _naechsteUmschlagId++,
+      verknuepfeFeldNavigation: _verknuepfeFeldNavigation,
     );
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
       _stueckzahlFocusNode[zeile.id] = FocusNode();
+      _verknuepfeFeldNavigation(_stueckzahlFocusNode[zeile.id]!);
     }
     for (final Kassenzeile zeile in _loseMuenzarten) {
       _loseMuenzenNachArtCent[zeile.id] = 0;
       _loseMuenzenController[zeile.id] = TextEditingController();
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
+      _verknuepfeFeldNavigation(_loseMuenzenFocusNode[zeile.id]!);
     }
     _scrollController.addListener(_beiScrollAenderung);
     _ladeInitialeDaten().then((_) {
@@ -598,6 +603,16 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     _scrolleZurMitteNachFokus(fokusNode);
   }
 
+  void _verknuepfeFeldNavigation(FocusNode fokusNode) {
+    fokusNode.onKeyEvent = (FocusNode node, KeyEvent event) =>
+        _navHelper.onKeyEventFuerFeld(
+          context: context,
+          event: event,
+          reihenfolge: _fokusReihenfolge,
+          fokussiere: _fokussiereTextfeld,
+        );
+  }
+
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted || !fn.hasFocus || !context.mounted) return;
@@ -1061,12 +1076,15 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
             ),
             const SizedBox(width: 8),
             ElevatedButton(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('funktioniert noch nicht')),
+              onPressed: () => _navHelper.springeZuNaechstem(
+                context: context,
+                reihenfolge: _fokusReihenfolge(),
+                fokussiere: _fokussiereTextfeld,
+                vorwaerts: true,
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey.shade200,
-                foregroundColor: Colors.grey.shade400,
+                backgroundColor: AppFarben.appBarRot,
+                foregroundColor: Colors.white,
                 minimumSize: const Size(0, 36),
               ),
               child: const Text('Next'),

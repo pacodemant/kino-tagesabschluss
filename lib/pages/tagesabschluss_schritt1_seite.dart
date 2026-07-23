@@ -20,6 +20,7 @@ import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
+import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -61,6 +62,7 @@ class _TagesabschlussSchritt1SeiteState
   static const double _devToolsStickyHoehe = 86;
   final Schritt1StateController _stateController =
       const Schritt1StateController();
+  final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
   final Schritt1OrchestrierungHelper _orchestrierungHelper =
       const Schritt1OrchestrierungHelper();
   final Schritt1GruppenOrchestrierung _gruppenOrchestrierung =
@@ -141,16 +143,19 @@ class _TagesabschlussSchritt1SeiteState
       formatiereEuroEingabe: _formatiereEuroEingabe,
       entferneFeldKey: _scrollHelper.entferneFeldKey,
       naechsteUmschlagId: () => _naechsteUmschlagId++,
+      verknuepfeFeldNavigation: _verknuepfeFeldNavigation,
     );
     for (final Kassenzeile zeile in _alleStueckzahlZeilen) {
       _stueckzahlen[zeile.id] = 0;
       _stueckzahlController[zeile.id] = TextEditingController();
       _stueckzahlFocusNode[zeile.id] = FocusNode();
+      _verknuepfeFeldNavigation(_stueckzahlFocusNode[zeile.id]!);
     }
     for (final Kassenzeile zeile in _loseMuenzarten) {
       _loseMuenzenNachArtCent[zeile.id] = 0;
       _loseMuenzenController[zeile.id] = TextEditingController();
       _loseMuenzenFocusNode[zeile.id] = FocusNode();
+      _verknuepfeFeldNavigation(_loseMuenzenFocusNode[zeile.id]!);
     }
     _baueFocusNodeSectionMap();
     _scrollController.addListener(_beiScrollAenderung);
@@ -542,6 +547,16 @@ class _TagesabschlussSchritt1SeiteState
       mounted: mounted,
     );
     _scrolleZurMitteNachFokus(fokusNode);
+  }
+
+  void _verknuepfeFeldNavigation(FocusNode fokusNode) {
+    fokusNode.onKeyEvent = (FocusNode node, KeyEvent event) =>
+        _navHelper.onKeyEventFuerFeld(
+          context: context,
+          event: event,
+          reihenfolge: _fokusReihenfolgeSchritt1,
+          fokussiere: _fokussiereTextfeld,
+        );
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
@@ -1046,13 +1061,15 @@ class _TagesabschlussSchritt1SeiteState
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
               ElevatedButton(
-                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('funktioniert noch nicht')),
+                onPressed: () => _navHelper.springeZuNaechstem(
+                  context: context,
+                  reihenfolge: _fokusReihenfolgeSchritt1(),
+                  fokussiere: _fokussiereTextfeld,
+                  vorwaerts: true,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade200,
-                  foregroundColor: Colors.grey.shade400,
+                  backgroundColor: AppFarben.appBarRot,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 8,
