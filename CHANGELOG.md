@@ -15,6 +15,52 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
   getraenke_config_service.dart, startmenue_seite.dart,
   kinoauswahl_seite.dart, pubspec.yaml.
 
+- Run 321b2: Korrektur aus Testfeedback zu Run 321b (t1). Das
+  automatische Öffnen des Bearbeitungsmodus hatte ALLE Kartenart-
+  Zeilen editierbar gemacht, auch die ohne Umsatz — dadurch
+  standen leere/0-gefüllte Felder für nicht auf dem Beleg
+  vorhandene Kartenarten in der Kachel, UND das "Kartenart?"-
+  Auswahl-Dropdown (für die "unbekannte Kartenart"-Zeile) blieb
+  leer/funktionslos, weil keine Zeile mehr im Zustand `hidden` war,
+  aus dem die Dropdown-Optionen gespeist werden. Jetzt gezielt: nur
+  Zeilen mit unlesbarem Betrag und die "unbekannte Kartenart"-Zeile
+  werden automatisch editierbar; Kartenarten ohne Umsatz bleiben
+  ausgeblendet (weiterhin nur über "+"-Chip erreichbar). Neue
+  Methode `_kartenartBereitsAlsUnbekannteZugeordnet()`: sobald im
+  Dropdown eine Kartenart gewählt wird, verschwindet der zugehörige
+  "+"-Chip automatisch. 1-Beleg-Modus: TID-Feld jetzt auch dann
+  editierbar, wenn nur die TID unlesbar war (unabhängig vom Zustand
+  der Kartenart-Zeilen). Platzhaltertext zeigt bei unlesbarer TID
+  "Terminal-ID?" statt "Terminal-ID" (analog "Kartenart?").
+  Zusätzlich: manuelle Korrektur des Labels "Flurbocash-Upload
+  (Test)" → "Flurbocash-Anbindung" in `einstellungen_seite.dart`
+  (von Paco direkt vorgenommen, mit committet). Versionsstring
+  r321b2. Dateien: tagesabschluss_schritt2_seite.dart,
+  einstellungen_seite.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
+- Run 321b: Belegscan-Popup erweitert + EC-Kachel öffnet sich nach
+  unlesbaren Daten automatisch zur Bearbeitung. (1)
+  `beleg_scan_bestaetigen_dialog.dart`: neue Funktion
+  `belegScanHatUnlesbareDaten()`; im Popup erscheint jetzt unter der
+  Gesamtsumme ein Hinweistext, dass fehlende/unlesbare Werte nach
+  der Übernahme nachgetragen/korrigiert oder der Beleg neu
+  gescannt werden kann — nur wenn tatsächlich unlesbare Daten
+  vorliegen. (2) `tagesabschluss_schritt2_seite.dart`: Wenn nach
+  "übernehmen" unlesbare Daten vorlagen, werden alle Kartenart-
+  Zeilen automatisch auf Bearbeitungsmodus gesetzt (im Mehr-Belege-
+  Modus zusätzlich `_ecUnterkachelEditModus`) — der Zustand, den
+  sonst der Button "Belegdaten bearbeiten" auslöst (korrigiert in
+  321b2, s.o.). TID-Feld-Platzhalter "Terminal-ID" wird rot
+  dargestellt, wenn die TID laut Scan nicht lesbar war
+  (`_subKachelTidUnleserlich()`, beide Kachel-Modi). Markierung für
+  nicht zuordenbare Kartenart ("?" in der Anzeige, "Kartenart?" im
+  Auswahl-Dropdown) von Orange auf Rot geändert, konsistent mit der
+  Popup-Farbe. Versionsstring r321b. Dateien:
+  beleg_scan_bestaetigen_dialog.dart,
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 321a: Datenschutzhinweise-Link auf `startmenue_seite.dart`
   von unterhalb des QR-Codes direkt unter den "Verlauf"-Button
   verschoben — dort ging er vor dem grafisch unruhigen
@@ -149,6 +195,27 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
   Verkaufsunterlagen: DM-Serif/DM-Sans, Tags Stopp/Rückfrage/
   Hinweis/Automatik). Keine App-Code-Änderung. Datei:
   .dev/verkauf/kassenabrechnung-validierungen.html.
+
+- Run 318: Bestätigungs-Popup nach EC-Beleg-Scan eingeführt (neue
+  Datei `beleg_scan_bestaetigen_dialog.dart`): zeigt Datum, TID,
+  alle erkannten Kartenarten mit Beträgen sowie die vom Beleg
+  gelesene Gesamtsumme, mit den Aktionen "nochmal" (Kamera-Icon)
+  und "übernehmen". Die Formularübernahme (Beträge, TID, Datum,
+  Kartenart-Tabelle) in `_starteEcBelegScan()`
+  (tagesabschluss_schritt2_seite.dart) passiert jetzt erst nach
+  "übernehmen" statt automatisch direkt nach dem Scan — Ziel: den
+  Reflex verhindern, Scan-Ergebnisse unkontrolliert zu übernehmen.
+  Neue read-only Methode `_baueScanVorschauZeilen()` baut die
+  Popup-Vorschau, ohne die eigentlichen Formularfelder zu
+  verändern. Der bestehende "Kein Terminal-Beleg"-Fehlerdialog
+  bleibt unverändert und läuft weiterhin davor. Kein Bezug zum
+  alten `BelegScanGegenpruefDialog` (bereits in Run 307 aus
+  anderem Grund entfernt — dort ging es um Fehler-/
+  Plausibilitätshinweise, hier um eine bewusste Bestätigung vor
+  der Übernahme). Versionsstring r318. Dateien:
+  beleg_scan_bestaetigen_dialog.dart (neu),
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
 
 - Run 317a: TODO.md-Punkt "CORS-Header" abgehakt. Yannik hat
   X-API-Key zu access-control-allow-headers ergänzt ("x-api-keys

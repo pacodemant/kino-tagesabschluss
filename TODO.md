@@ -129,8 +129,13 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
 
 - [ ] **Hilfetext & Duplikat-Button** Info im Scan-Bereich was zu tun
       ist wenn Beleg fehlt oder unlesbar ist. Ursprünglich zusätzlich
-      als Dummy-Button im Prüf-Popup geplant — Popup existiert seit
-      Run 307 nicht mehr, neuer Ort muss geklärt werden.
+      als Dummy-Button im Prüf-Popup geplant — Popup existierte
+      zwischen Run 307 und Run 318 nicht. Seit Run 318 gibt es
+      wieder ein Prüf-Popup (`beleg_scan_bestaetigen_dialog.dart`,
+      anderer Zweck als vor Run 307: bewusste Bestätigung vor der
+      Übernahme statt Fehlerprüfung) — könnte wieder als Ort in
+      Frage kommen, Hilfetext/Duplikat-Button selbst sind dort
+      aber nicht umgesetzt.
       Vorbereitung für spätere Tutorial-Videos oder Texte.
       Teilschritt erledigt (Run 319a): Die Fehlermeldung bei
       unscharfem Foto/Netzwerkproblem weist jetzt zusätzlich auf die
@@ -141,7 +146,10 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       Daten werden in der Sub-Kachel direkt hervorgehoben und
       korrigierbar gemacht. *(Run 304d3/304d4 — Hervorhebung; Run 307 —
       Popup selbst entfernt. Das "Fertig-Button ausgegraut"-Verhalten
-      bleibt offen, siehe "Fertig-Button-Gate" unten.)*
+      bleibt offen, siehe "Fertig-Button-Gate" unten.)* Hinweis: Seit
+      Run 318 gibt es ein neues, anders motiviertes Prüf-Popup
+      (Bestätigung vor der Übernahme, nicht Fehlerprüfung) — kein
+      Widerspruch zu diesem abgehakten Punkt, siehe CHANGELOG Run 318.
 
 - [x] **Fertig-Button-Gate** Fertig-Button bleibt ausgegraut solange ein Datenfeld
       leer oder nicht korrekt ist. Tap auf ausgegrauten Button: Hinweis

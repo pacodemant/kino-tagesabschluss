@@ -109,7 +109,10 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 - `BetragCentEingabefeld` — Cent-Eingabe mit automatischem Komma (Supermarktkassen-Format)
 - `TagesabschlussScaffold` — gemeinsames Layout (AppBar, Footer-Button, Keyboard-Handling)
 - `CollapsibleCardSection` — klappbare Card-Sektion
-- `BelegScanGegenpruefDialog` — Prüf-Popup nach EC-Beleg-Scan
+- `zeigeBelegScanBestaetigenDialog` (`beleg_scan_bestaetigen_dialog.dart`)
+  — Bestätigungs-Popup nach EC-Beleg-Scan ("nochmal"/"übernehmen"),
+  seit Run 318. Ersetzt NICHT das gleichnamig klingende, in Run 307
+  entfernte `BelegScanGegenpruefDialog` (anderer Zweck).
 
 ---
 
@@ -228,6 +231,19 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   direkt unter den "Verlauf"-Button verschoben (statt unter den
   QR-Code) — dort ging er vor dem unruhigen Hintergrundbild
   unter.
+- Run 318 ✅ Bestätigungs-Popup nach EC-Beleg-Scan
+  (`beleg_scan_bestaetigen_dialog.dart`): Datum/TID/Kartenarten/
+  Gesamtsumme, Aktionen "nochmal"/"übernehmen". Formularübernahme
+  passiert jetzt erst nach "übernehmen" statt automatisch.
+- Run 321b ✅ Popup-Hinweistext bei unlesbaren Daten (Nachtragen
+  oder neu scannen); Kachel öffnet sich danach zur Bearbeitung;
+  TID- und Kartenart-Markierung rot statt orange.
+- Run 321b2 ✅ Korrektur aus Testfeedback: nur die tatsächlich
+  betroffenen Kartenart-Zeilen öffnen sich automatisch (nicht alle
+  — Kartenarten ohne Umsatz blieben sonst fälschlich sichtbar);
+  "Kartenart?"-Dropdown dadurch wieder funktionsfähig, zugehöriger
+  "+"-Chip verschwindet bei Auswahl; "Terminal-ID?" bei unlesbarer
+  TID.
 - Run 322 ✅ Getränke-Auffüllen: grauer "Original-Name"-Hinweis
   (zweites Namensfeld bei Zentrale-Umbenennungen) entfernt,
   inkl. totem Code (_originalNamen, ladeOriginalNamen()).
