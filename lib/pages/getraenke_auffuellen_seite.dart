@@ -4,6 +4,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -21,6 +22,7 @@ class GetraenkeAuffuellenSeite extends StatefulWidget {
 }
 
 class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
+  final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _mengeController =
       <TextEditingController>[];
@@ -67,6 +69,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
         }
         setState(() {});
       });
+      _verknuepfeFeldNavigation(fn);
       _mengeController.add(ctrl);
       _mengeFocusNode.add(fn);
     }
@@ -104,6 +107,36 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       widget.kinoId,
       <String, dynamic>{'mengen': mengen},
     );
+  }
+
+  // Nur aktuell sichtbare Felder — bei "nur benötigte anzeigen" sind
+  // ausgeblendete Zeilen nicht gebaut, ihr FocusNode kann nicht fokussiert
+  // werden.
+  List<FocusNode> _fokusReihenfolge() =>
+      _gezeigteIndizes.map((int i) => _mengeFocusNode[i]).toList();
+
+  void _fokussiereFeld(FocusNode ziel) {
+    FocusScope.of(context).requestFocus(ziel);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final BuildContext? feldKontext = ziel.context;
+      if (!mounted || feldKontext == null) return;
+      Scrollable.ensureVisible(
+        feldKontext,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        alignment: 0.3,
+      );
+    });
+  }
+
+  void _verknuepfeFeldNavigation(FocusNode fokusNode) {
+    fokusNode.onKeyEvent = (FocusNode node, KeyEvent event) =>
+        _navHelper.onKeyEventFuerFeld(
+          context: context,
+          event: event,
+          reihenfolge: _fokusReihenfolge,
+          fokussiere: _fokussiereFeld,
+        );
   }
 
   List<int> get _gezeigteIndizes {
@@ -338,29 +371,45 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppFarben.appBarRot,
-                      disabledForegroundColor: Colors.grey.shade400,
-                      disabledBackgroundColor: Colors.grey.shade200,
-                      minimumSize: const Size(130, 36),
+                  TapRegion(
+                    groupId: EditableText,
+                    child: ElevatedButton(
+                      onPressed: () => _navHelper.springeZuNaechstem(
+                        context: context,
+                        reihenfolge: _fokusReihenfolge(),
+                        fokussiere: _fokussiereFeld,
+                        vorwaerts: true,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppFarben.appBarRot,
+                        disabledForegroundColor: Colors.grey.shade400,
+                        disabledBackgroundColor: Colors.grey.shade200,
+                        minimumSize: const Size(130, 36),
+                      ),
+                      child: const Text('next'),
                     ),
-                    child: const Text('next'),
                   ),
                 ]
               : <Widget>[
-                  ElevatedButton(
-                    onPressed: null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppFarben.appBarRot,
-                      disabledForegroundColor: Colors.grey.shade400,
-                      disabledBackgroundColor: Colors.grey.shade200,
-                      minimumSize: const Size(130, 36),
+                  TapRegion(
+                    groupId: EditableText,
+                    child: ElevatedButton(
+                      onPressed: () => _navHelper.springeZuNaechstem(
+                        context: context,
+                        reihenfolge: _fokusReihenfolge(),
+                        fokussiere: _fokussiereFeld,
+                        vorwaerts: true,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppFarben.appBarRot,
+                        disabledForegroundColor: Colors.grey.shade400,
+                        disabledBackgroundColor: Colors.grey.shade200,
+                        minimumSize: const Size(130, 36),
+                      ),
+                      child: const Text('next'),
                     ),
-                    child: const Text('next'),
                   ),
                   const SizedBox(width: 8),
                   Expanded(

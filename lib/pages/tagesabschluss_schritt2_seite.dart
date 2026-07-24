@@ -2714,24 +2714,27 @@ class _TagesabschlussSchritt2SeiteState
         child: Row(
           children: <Widget>[
             if (tastaturOffen) ...<Widget>[
-              ElevatedButton(
-                onPressed: () => _navHelper.springeZuNaechstem(
-                  context: context,
-                  reihenfolge: _fokusReihenfolgeSchritt2(),
-                  fokussiere: _fokussiereFeldSchritt2,
-                  vorwaerts: true,
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppFarben.appBarRot,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+              TapRegion(
+                groupId: EditableText,
+                child: ElevatedButton(
+                  onPressed: () => _navHelper.springeZuNaechstem(
+                    context: context,
+                    reihenfolge: _fokusReihenfolgeSchritt2(),
+                    fokussiere: _fokussiereFeldSchritt2,
+                    vorwaerts: true,
                   ),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppFarben.appBarRot,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Next'),
                 ),
-                child: const Text('Next'),
               ),
               const SizedBox(width: 8),
             ],
