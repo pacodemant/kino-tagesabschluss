@@ -4,6 +4,16 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 324: Neu-Laden-Button in den Einstellungen ergänzt
+  (außerhalb der Admin-Kachel, für alle MA sichtbar). Nutzt
+  den bereits vorhandenen `reloadPage()`-Service
+  (`sw_update_service.dart`, bisher nur für den
+  automatischen Reload bei Service-Worker-Update genutzt) —
+  ruft im Web schlicht `window.location.reload()` auf.
+  Versionsstring r324.
+  Dateien: einstellungen_seite.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 323b: Reine Doku-Änderung, kein App-Code betroffen.
   Pfeiltasten (▲▼) der iOS-Tastatur-Werkzeugleiste navigieren
   nicht zwischen Feldern — Ursache geklärt: native iOS-

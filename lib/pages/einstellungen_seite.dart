@@ -6,6 +6,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
+import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
@@ -1169,6 +1170,36 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             ),
           ],
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      'App neu laden',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Lädt die App neu, falls eine neuere Version vorliegt.',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: reloadPage,
+                        child: const Text('Neu laden'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
           Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
