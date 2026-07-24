@@ -19,6 +19,24 @@ class LokalerSpeicher {
     await speicher.setString(aktivesKinoIdKey, kinoId);
   }
 
+  static const String standortModusKey = 'standort_modus';
+
+  /// Liefert die fest eingestellte Kino-ID des Geräts, oder null bei
+  /// "Alle" (Standard: Kinoauswahl bleibt für den MA sichtbar).
+  static Future<String?> ladeStandortModus() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getString(standortModusKey);
+  }
+
+  static Future<void> speichereStandortModus(String? kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    if (kinoId == null) {
+      await speicher.remove(standortModusKey);
+    } else {
+      await speicher.setString(standortModusKey, kinoId);
+    }
+  }
+
   static Future<int> ladeWechselgeldSollwertCent(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     return speicher.getInt('change_target_cents_$kinoId') ?? 0;

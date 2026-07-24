@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 323a · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 325a · wird fortlaufend ergänzt
 
 ---
 
@@ -104,6 +104,20 @@ Stand: Juli 2026 · Run 323a · wird fortlaufend ergänzt
       (als installierte PWA) testen, bevor als erledigt gilt. Bleibt bis
       dahin offen. *(getestet Run 319b — iOS bestätigt fehlerhaft)*
 
+- [x] **Pfeiltasten der iOS-Tastaturleiste navigieren nicht** Die
+      Werkzeugleiste über der Zifferntastatur (▲▼ + Haken) ist native
+      iOS-Safari-Chrome, kein App-Bestandteil. Der Haken ist die
+      App-eigene "Weiter"-Aktion (`TextInputAction.next` +
+      `FeldNavigationHelper`, seit Run 323/323a korrekt). Die
+      Pfeiltasten sind Safaris eigene Vor-/Zurück-Navigation zwischen
+      Formularfeldern und laufen ins Leere: Flutter Web nutzt ohne
+      `AutofillGroup` (hier nicht verwendet) ein einziges verstecktes
+      HTML-Inputfeld für alle Felder — der Browser sieht dadurch kein
+      "nächstes Feld" im DOM. Nur mit größerer Architekturänderung
+      behebbar (echte Einzel-Inputs je Feld). Kein Blocker: Zielplattform
+      ist durchgängig Android, diese iOS-Safari-spezifische Leiste tritt
+      dort in dieser Form i. d. R. nicht auf. *(dokumentiert Run 323b)*
+
 - [x] **"Eingabe mit Komma"-Einstellung entfernen** App-weit fest auf
       Eingabe ohne Komma (230 statt 2,30). Bereits erledigt: Die
       Einstellung (`eingabe_mit_komma`) wurde in Run 317 vollständig
@@ -193,18 +207,15 @@ Stand: Juli 2026 · Run 323a · wird fortlaufend ergänzt
       Basis-URL-Feld in Einstellungen-UI. *(TID-Whitelist + Buchhaltungs-E-Mail
       → eigene Punkte unten)*
 
-- [ ] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
-      für welchen Standort das Gerät arbeitet: „Alle", SB, CO, AT, GO
-      oder BT. Ist ein einzelner Standort gewählt, entfällt für MA die
-      Kinoauswahl (Erweiterung von "Standort vorauswählen", siehe unten)
-      UND der Textbutton "Kino wechseln" auf der Startseite
-      (`startmenue_seite.dart`) wird ausgeblendet — er erscheint nur,
-      wenn "Alle" eingestellt ist. So verstanden; bitte gegenprüfen,
-      falls die gewünschte Logik anders gemeint war. *(Zurückgestellt —
-      an der Einstellungsseite stehen ohnehin noch weitere Anpassungen
-      an, dann zusammen angehen. Datenschutzhinweise-Link ist seit
-      Run 321 bereits zusätzlich auf startmenue_seite.dart vorhanden,
-      bleibt also auch bei entfallender Kinoauswahl erreichbar.)*
+- [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
+      für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
+      Ist ein einzelner Standort gewählt, entfällt für MA die Kinoauswahl
+      UND der Textbutton "Kino wechseln" auf der Startseite wird
+      ausgeblendet — er erscheint nur, wenn "Alle" eingestellt ist. Wie
+      geplant umgesetzt. Speicherung lokal auf dem Gerät (SharedPreferences,
+      kein Backend). Datenschutzhinweise-Link ist seit Run 321 bereits
+      zusätzlich auf startmenue_seite.dart vorhanden, bleibt also auch bei
+      entfallender Kinoauswahl erreichbar. *(Run 325)*
 
 - [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
       festem Passwort gewünscht.
