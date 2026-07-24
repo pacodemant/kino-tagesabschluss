@@ -22,6 +22,11 @@ class AppFarben {
   // Subtiler Text
   static const Color subtilerText = Color(0x8A000000);           // black54
 
+  // Gruppierung zusammengehöriger Einstellungen (Admin-Bereich),
+  // abwechselnde Bänder ähnlich Tabellenkalkulations-Zeilenfarben.
+  static const Color gruppierungBandA = Colors.white;
+  static const Color gruppierungBandB = Color(0xFFF6EFEF);
+
   static final ButtonStyle footerButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: Colors.white,
     foregroundColor: AppFarben.appBarRot,

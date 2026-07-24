@@ -4,6 +4,41 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 326a: Korrektur aus Testfeedback — der "Neu laden"-Button
+  (Run 324) brachte trotz Tap weiterhin die alte Version, da er
+  nur einen einfachen window.location.reload() auslöste. Ein
+  einfacher Reload wird aber weiterhin vom (evtl. veralteten)
+  Service-Worker-Cache bedient statt vom Server, da der Service
+  Worker die Anfrage abfängt. Fix: neue gemeinsame JS-Funktion
+  _purgeCachesUndSw() (Caches löschen + Service Worker
+  abmelden) — bisher nur vom Fresh-Tab-Reset genutzt — wird
+  jetzt auch von _reloadPage() vor dem Reload aufgerufen.
+  Betrifft damit sowohl den manuellen Button als auch den
+  bestehenden automatischen Reload bei erkanntem SW-Update
+  (initSwUpdateWatcher in main.dart), da beide dieselbe
+  _reloadPage()-Funktion nutzen. Versionsstring r326a.
+  Dateien: web/index.html, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 326: Einstellungen-Seite Feinschliff, drei Teile.
+  (1) Getränkeliste-Card-Titel zeigt jetzt das Standortkürzel
+  des aktiven Kinos ("Getränkeliste SB" statt nur
+  "Getränkeliste"). (2) Neuer Schalter "Admin-Status halten"
+  in der Admin-Kachel: Schalterstellung wird gespeichert
+  (SharedPreferences); ist er aktiv, bleibt der entsperrte
+  Admin-Status beim Verlassen/Wiederöffnen der Einstellungen-
+  Seite erhalten (statisches Feld, überlebt neue State-
+  Instanzen im selben App-Lauf) und verfällt erst bei echtem
+  Neuladen der App. (3) Zusammengehörende Einstellungen
+  innerhalb der Admin-Kachel (Standort+Admin-Status-Halten /
+  Wechselgeldbestand / Flurbocash-Anbindung / KI-Belegscan /
+  Testwerte) sind jetzt in abwechselnd getönte Container
+  gruppiert (neue Farben AppFarben.gruppierungBandA/B),
+  ähnlich Zeilenfarbwechsel in einer Tabellenkalkulation.
+  Versionsstring r326.
+  Dateien: einstellungen_seite.dart, app_farben.dart,
+  startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 325a: Korrektur aus Testfeedback zu Run 324 — der
   "Neu laden"-Button stand in einer eigenen Card. Card entfernt,
   Button steht jetzt nackt (kein Titel, kein Beschreibungstext)
