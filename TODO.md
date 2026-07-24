@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 324 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 325 · wird fortlaufend ergänzt
 
 ---
 
@@ -207,18 +207,15 @@ Stand: Juli 2026 · Run 324 · wird fortlaufend ergänzt
       Basis-URL-Feld in Einstellungen-UI. *(TID-Whitelist + Buchhaltungs-E-Mail
       → eigene Punkte unten)*
 
-- [ ] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
-      für welchen Standort das Gerät arbeitet: „Alle", SB, CO, AT, GO
-      oder BT. Ist ein einzelner Standort gewählt, entfällt für MA die
-      Kinoauswahl (Erweiterung von "Standort vorauswählen", siehe unten)
-      UND der Textbutton "Kino wechseln" auf der Startseite
-      (`startmenue_seite.dart`) wird ausgeblendet — er erscheint nur,
-      wenn "Alle" eingestellt ist. So verstanden; bitte gegenprüfen,
-      falls die gewünschte Logik anders gemeint war. *(Zurückgestellt —
-      an der Einstellungsseite stehen ohnehin noch weitere Anpassungen
-      an, dann zusammen angehen. Datenschutzhinweise-Link ist seit
-      Run 321 bereits zusätzlich auf startmenue_seite.dart vorhanden,
-      bleibt also auch bei entfallender Kinoauswahl erreichbar.)*
+- [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
+      für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
+      Ist ein einzelner Standort gewählt, entfällt für MA die Kinoauswahl
+      UND der Textbutton "Kino wechseln" auf der Startseite wird
+      ausgeblendet — er erscheint nur, wenn "Alle" eingestellt ist. Wie
+      geplant umgesetzt. Speicherung lokal auf dem Gerät (SharedPreferences,
+      kein Backend). Datenschutzhinweise-Link ist seit Run 321 bereits
+      zusätzlich auf startmenue_seite.dart vorhanden, bleibt also auch bei
+      entfallender Kinoauswahl erreichbar. *(Run 325)*
 
 - [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
       festem Passwort gewünscht.

@@ -4,6 +4,29 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 325: Standort-Betriebsmodus im Admin-Bereich. Neue
+  Dropdown-Einstellung "Standort" (Admin-Kachel, PIN-
+  geschützt): "Alle" oder ein fest eingestelltes Kino.
+  Persistenz lokal auf dem Gerät via SharedPreferences
+  (`LokalerSpeicher.ladeStandortModus()` /
+  `speichereStandortModus()`, Key `standort_modus`). Ist ein
+  Standort fest eingestellt, hat er beim App-Start Vorrang
+  vor dem zuletzt manuell gewählten Kino
+  (`StartzielBestimmenUsecase`, hält `activeCinemaId`
+  synchron) — die Kinoauswahl-Seite entfällt dadurch für den
+  MA. Der Textbutton "Kino wechseln" auf der Startseite wird
+  in diesem Fall ausgeblendet (`FutureBuilder` um den Button
+  in `startmenue_seite.dart`, da die Seite bislang
+  StatelessWidget ist und keine größere Umstellung nötig
+  sein sollte). Bekannte Grenze: eine Änderung des Standort-
+  Modus während eine Startseite bereits offen ist, wirkt sich
+  erst beim nächsten Öffnen/Neuladen der Startseite aus, nicht
+  live in der offenen Instanz. Versionsstring r325.
+  Dateien: lib/storage/lokaler_speicher.dart,
+  lib/domain/usecases/startziel_bestimmen_usecase.dart,
+  einstellungen_seite.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 324: Neu-Laden-Button in den Einstellungen ergänzt
   (außerhalb der Admin-Kachel, für alle MA sichtbar). Nutzt
   den bereits vorhandenen `reloadPage()`-Service

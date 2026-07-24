@@ -93,6 +93,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   String? _overrideLocationId;
   String? _overrideApiKey;
+  String? _standortModusKinoId;
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -225,6 +226,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString('flurbocash_location_id_$_aktiveKinoId');
     final String? overrideApiKey =
         speicher.getString('flurbocash_api_key_$_aktiveKinoId');
+    final String? standortModus = await LokalerSpeicher.ladeStandortModus();
     if (!mounted) return;
     _apiUploadUrlCtrl.text = apiUploadUrl;
     _anthropicApiKeyCtrl.text = anthropicApiKey;
@@ -237,7 +239,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _geladen = true;
       _overrideLocationId = overrideLocationId;
       _overrideApiKey = overrideApiKey;
+      _standortModusKinoId = standortModus;
     });
+  }
+
+  Future<void> _onStandortModusGeaendert(String? kinoId) async {
+    await LokalerSpeicher.speichereStandortModus(kinoId);
+    if (!mounted) return;
+    setState(() => _standortModusKinoId = kinoId);
   }
 
   void _setzeAutoFillSchritt1Controller(Map<String, dynamic>? daten) {
@@ -1225,6 +1234,42 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 ),
                 if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const Text(
+                          'Standort',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                        DropdownButton<String?>(
+                          value: _standortModusKinoId,
+                          items: <DropdownMenuItem<String?>>[
+                            const DropdownMenuItem<String?>(
+                              value: null,
+                              child: Text('Alle'),
+                            ),
+                            for (final Kino kino in KinoRepository.kinos)
+                              DropdownMenuItem<String?>(
+                                value: kino.id,
+                                child: Text(kino.name),
+                              ),
+                          ],
+                          onChanged: _onStandortModusGeaendert,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: Text(
+                      'Bei fester Auswahl entfällt für den Mitarbeiter die '
+                      'Kinoauswahl und der Button "Kino wechseln".',
+                      style: TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ),
                   ListTile(
                     title: const Text(
                       'Wechselgeldbestand',
