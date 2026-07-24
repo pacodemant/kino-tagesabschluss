@@ -1179,36 +1179,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               ),
             ),
           ],
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const Text(
-                      'App neu laden',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Lädt die App neu, falls eine neuere Version vorliegt.',
-                      style: TextStyle(fontSize: 13),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: reloadPage,
-                        child: const Text('Neu laden'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
           Card(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1487,6 +1457,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   ],
                 ],
               ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: reloadPage,
+              child: const Text('Neu laden'),
             ),
           ),
         ],

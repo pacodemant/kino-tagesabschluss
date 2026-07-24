@@ -4,6 +4,14 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 325a: Korrektur aus Testfeedback zu Run 324 — der
+  "Neu laden"-Button stand in einer eigenen Card. Card entfernt,
+  Button steht jetzt nackt (kein Titel, kein Beschreibungstext)
+  ganz unten auf der Einstellungen-Seite, nach der Admin-Kachel.
+  Versionsstring r325a.
+  Dateien: einstellungen_seite.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 325: Standort-Betriebsmodus im Admin-Bereich. Neue
   Dropdown-Einstellung "Standort" (Admin-Kachel, PIN-
   geschützt): "Alle" oder ein fest eingestelltes Kino.
