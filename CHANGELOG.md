@@ -4,6 +4,22 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 326a: Korrektur aus Testfeedback — der "Neu laden"-Button
+  (Run 324) brachte trotz Tap weiterhin die alte Version, da er
+  nur einen einfachen window.location.reload() auslöste. Ein
+  einfacher Reload wird aber weiterhin vom (evtl. veralteten)
+  Service-Worker-Cache bedient statt vom Server, da der Service
+  Worker die Anfrage abfängt. Fix: neue gemeinsame JS-Funktion
+  _purgeCachesUndSw() (Caches löschen + Service Worker
+  abmelden) — bisher nur vom Fresh-Tab-Reset genutzt — wird
+  jetzt auch von _reloadPage() vor dem Reload aufgerufen.
+  Betrifft damit sowohl den manuellen Button als auch den
+  bestehenden automatischen Reload bei erkanntem SW-Update
+  (initSwUpdateWatcher in main.dart), da beide dieselbe
+  _reloadPage()-Funktion nutzen. Versionsstring r326a.
+  Dateien: web/index.html, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 326: Einstellungen-Seite Feinschliff, drei Teile.
   (1) Getränkeliste-Card-Titel zeigt jetzt das Standortkürzel
   des aktiven Kinos ("Getränkeliste SB" statt nur
