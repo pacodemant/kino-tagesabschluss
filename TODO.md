@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 323a · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 323b · wird fortlaufend ergänzt
 
 ---
 
@@ -103,6 +103,20 @@ Stand: Juli 2026 · Run 323a · wird fortlaufend ergänzt
       Android zuverlässiger unterstützt): auf einem echten Android-Gerät
       (als installierte PWA) testen, bevor als erledigt gilt. Bleibt bis
       dahin offen. *(getestet Run 319b — iOS bestätigt fehlerhaft)*
+
+- [x] **Pfeiltasten der iOS-Tastaturleiste navigieren nicht** Die
+      Werkzeugleiste über der Zifferntastatur (▲▼ + Haken) ist native
+      iOS-Safari-Chrome, kein App-Bestandteil. Der Haken ist die
+      App-eigene "Weiter"-Aktion (`TextInputAction.next` +
+      `FeldNavigationHelper`, seit Run 323/323a korrekt). Die
+      Pfeiltasten sind Safaris eigene Vor-/Zurück-Navigation zwischen
+      Formularfeldern und laufen ins Leere: Flutter Web nutzt ohne
+      `AutofillGroup` (hier nicht verwendet) ein einziges verstecktes
+      HTML-Inputfeld für alle Felder — der Browser sieht dadurch kein
+      "nächstes Feld" im DOM. Nur mit größerer Architekturänderung
+      behebbar (echte Einzel-Inputs je Feld). Kein Blocker: Zielplattform
+      ist durchgängig Android, diese iOS-Safari-spezifische Leiste tritt
+      dort in dieser Form i. d. R. nicht auf. *(dokumentiert Run 323b)*
 
 - [x] **"Eingabe mit Komma"-Einstellung entfernen** App-weit fest auf
       Eingabe ohne Komma (230 statt 2,30). Bereits erledigt: Die

@@ -4,6 +4,21 @@ Alle relevanten Änderungen am Projekt werden hier kurz dokumentiert.
 
 ## Unreleased
 
+- Run 323b: Reine Doku-Änderung, kein App-Code betroffen.
+  Pfeiltasten (▲▼) der iOS-Tastatur-Werkzeugleiste navigieren
+  nicht zwischen Feldern — Ursache geklärt: native iOS-
+  Safari-Chrome, unabhängig vom App-eigenen Next-Button
+  (funktioniert seit Run 323a korrekt über
+  `FeldNavigationHelper`). Flutter Web nutzt ohne
+  `AutofillGroup` ein einziges verstecktes HTML-Inputfeld für
+  alle Felder, wodurch der Browser kein "nächstes Feld" im DOM
+  zum Springen findet. Nur mit größerer Architekturänderung
+  behebbar, kein Blocker, da Zielplattform Android ist und
+  diese Leiste iOS-Safari-spezifisch ist. In TODO.md als
+  bekannt/kein Blocker dokumentiert. Versionsstring r323b.
+  Dateien: TODO.md, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 323a: Korrektur aus Testfeedback zu Run 323 — Next-
   Button schloss Fokus und Tastatur statt zum nächsten Feld
   zu springen (Schritt 1 reproduziert, Getränke-Auffüllen
