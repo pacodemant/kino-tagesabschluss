@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+325 · Run 325
+Version: 0.9.3+326 · Run 326
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 325)
+## Laufender Entwicklungsstand (Run 326)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -264,6 +264,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Dropdown "Alle"/festes Kino, Speicherung lokal auf dem
   Gerät (SharedPreferences). Bei festem Kino entfällt für MA
   Kinoauswahl + "Kino wechseln"-Button.
+- Run 325a ✅ Neu-Laden-Button aus eigener Card gelöst, steht
+  jetzt nackt ganz unten auf der Einstellungen-Seite.
+- Run 326 ✅ Einstellungen-Feinschliff: Getränkeliste-Card-
+  Titel zeigt Standortkürzel; neuer Schalter "Admin-Status
+  halten" (übersteht Seitenwechsel im selben App-Lauf, nicht
+  aber echtes Neuladen); zusammengehörende Admin-Einstellungen
+  in abwechselnd getönten Bändern gruppiert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
