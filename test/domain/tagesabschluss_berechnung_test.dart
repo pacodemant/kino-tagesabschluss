@@ -10,6 +10,46 @@ void main() {
       expect(TagesabschlussBerechnung.parseCentZiffern('abc'), 0);
     });
 
+    test('parseCentKomma parst einfache Euro-Komma-Eingaben', () {
+      expect(TagesabschlussBerechnung.parseCentKomma('6,40'), 640);
+      expect(TagesabschlussBerechnung.parseCentKomma('380'), 38000);
+      expect(TagesabschlussBerechnung.parseCentKomma('0,0'), 0);
+      expect(TagesabschlussBerechnung.parseCentKomma(''), 0);
+    });
+
+    test('parseCentKomma verarbeitet einstellige Cent-Angaben mal 10', () {
+      // "6,4" ist als "6,40" gemeint, nicht als "6,04".
+      expect(TagesabschlussBerechnung.parseCentKomma('6,4'), 640);
+    });
+
+    test('parseCentKomma akzeptiert Punkt als Dezimaltrenner', () {
+      expect(TagesabschlussBerechnung.parseCentKomma('12.34'), 1234);
+    });
+
+    test('parseCentKomma entfernt Euro-Zeichen und Leerraum', () {
+      expect(TagesabschlussBerechnung.parseCentKomma('  12,34 €  '), 1234);
+    });
+
+    test('parseCentKomma nimmt bei Punkt+Komma das Komma als Dezimaltrenner',
+        () {
+      // Deutsches Format "1.234,56" (Punkt = Tausendertrenner).
+      expect(TagesabschlussBerechnung.parseCentKomma('1.234,56'), 123456);
+    });
+
+    test(
+        'parseCentKomma: bekannte Einschraenkung bei reinem Tausenderpunkt '
+        'ohne Komma', () {
+      // "1.400" (z. B. Wechselgeld-Sollwert Gondel, siehe TODO.md) wird
+      // hier als Dezimaltrenner interpretiert, nicht als Tausenderpunkt:
+      // Ergebnis ist 1,40 EUR statt der vermutlich gemeinten 1.400,00 EUR.
+      // Dieser Pfad ist seit Run 317 nirgends mehr aktiv (mitKomma ist
+      // app-weit fest auf false, siehe TODO.md "Eingabe mit Komma"), daher
+      // kein akutes Risiko - der Test dokumentiert nur das bestehende
+      // Verhalten, damit eine künftige Reaktivierung nicht stillschweigend
+      // in diese Falle läuft.
+      expect(TagesabschlussBerechnung.parseCentKomma('1.400'), 140);
+    });
+
     test('summeStueckzahlGruppeCent summiert nur bekannte IDs', () {
       const List<Kassenzeile> zeilen = <Kassenzeile>[
         Kassenzeile(id: 'schein_20', bezeichnung: '20€', einzelwertCent: 2000),

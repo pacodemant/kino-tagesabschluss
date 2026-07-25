@@ -1,26 +1,19 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 323 · wird fortlaufend ergänzt
+
+Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
+(gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
+abgeglichen, daher hält diese Datei nur die offenen Punkte schlank.
+Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ---
 
 ## 🔴 Blockiert — wartet auf IT (Yannik)
 
-- [x] **location_id pro Standort** Welche interne Flurbocash-ID hat jeder Standort?
-      (Schauburg, Gondel, Atlantis, Cinema Ostertor, Bar Tabak)
-      Teilweise beantwortet (Mail Yannik, 2026-07-12): Schauburg = 1,
-      Atlantis = 3, Bar Tabak = 4. Gondel/Cinema Ostertor noch offen —
-      laut Plan aber erst relevant, wenn SB vollständig läuft.
-
 - [ ] **Basis-URL Flurbocash-Server** HTTPS-Adresse der API.
       Sandbox bekannt: https://sandbox.flurbocash.c137-prime.de:666
       (wird aktuell für alle Tests genutzt). Ob das auch die
       Produktiv-URL ist oder Yannik später eine andere gibt: offen.
-
-- [x] **X-API-Key** Tatsächlicher Schlüssel — ein Key für alle oder je einer
-      pro Standort, nach Yanniks Ermessen.
-      Beantwortet (Mail Yannik, 2026-07-12): je ein eigener Key pro
-      Standort, kein gemeinsamer Key für alle. Die konkreten Key-Werte
-      stehen NICHT hier, sondern nur in den App-Einstellungen pro Kino.
 
 - [ ] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in Flurbocash
       für welchen Standort hinterlegt?
@@ -43,15 +36,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       übertragen werden (das Format erlaubt bis zu 4 Abrechnungen/Tag,
       siehe auch "Bar Tabak: 2-Settlement-Logik" unten)?
 
-- [x] **CORS-Header** Server muss `Access-Control-Allow-Origin: *` senden.
-      Bereits konfiguriert?
-      Erledigt (Stand 2026-07-14): Yannik hat X-API-Key zu
-      access-control-allow-headers ergänzt ("x-api-keys sind nun
-      erlaubt"). Erster echter Live-Test für Schauburg (location_id 1)
-      erfolgreich — Tagesbericht kam im Flurbocash-Dashboard korrekt
-      an (Bargeld + EC-Kartenaufschlüsselung stimmen exakt mit der
-      App-Eingabe überein).
-
 - [ ] **6-Uhr-Knick abstimmen** Welches Datum erwartet Flurbocash für
       Nachtabrechnungen (z. B. 1 Uhr nachts) — Kalendertag oder logischer
       Abrechnungstag (= Vortag)?
@@ -59,10 +43,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
 - [ ] **Weitere Abrechnungsfelder** Sollen Kino-Soll, Bistro-Soll, Ausgaben,
       Mitarbeitername, Differenz an Flurbocash übermittelt werden — oder holt das
       System sie selbst aus dem Kassensystem?
-
-- [x] **Testumgebung** Gibt es eine Staging-Instanz von Flurbocash?
-      Ja: Sandbox unter https://sandbox.flurbocash.c137-prime.de:666
-      (Stand 2026-07-12, wird aktuell für alle Tests genutzt).
 
 - [ ] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT oder MA?
       Wer pflegt Änderungen (neuer API-Key, neue TID)?
@@ -85,12 +65,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       macht, soll dort etwas automatisch nachgezogen werden? Zurückgestellt,
       da bei sauberen Scans kaum relevant.
 
-- [x] **Schwarze Hervorhebungen → Kino-Rot** Sämtliche schwarze Feld-Hervorhebungen auf `AppFarben.appBarRot` umstellen. *(Run 302–302d)*
-
-- [x] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"
-      (bzw. aufklappen) bekommen, der alle Kacheln schließt, um dem MA eine bessere Übersicht zu geben.
-      *(Run 303 — umgesetzt für Schritt 1 und Wechselgeld-Prüfen-Seite)*
-
 - [ ] **Kein Screen-Flip** App soll beim Drehen des Smartphones hochkant
       bleiben. Code-seitig vorhanden: `main.dart` sperrt via
       `SystemChrome.setPreferredOrientations` auf `portraitUp`;
@@ -103,23 +77,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       Android zuverlässiger unterstützt): auf einem echten Android-Gerät
       (als installierte PWA) testen, bevor als erledigt gilt. Bleibt bis
       dahin offen. *(getestet Run 319b — iOS bestätigt fehlerhaft)*
-
-- [x] **"Eingabe mit Komma"-Einstellung entfernen** App-weit fest auf
-      Eingabe ohne Komma (230 statt 2,30). Bereits erledigt: Die
-      Einstellung (`eingabe_mit_komma`) wurde in Run 317 vollständig
-      entfernt — kein Vorkommen mehr im Code, `mitKomma` ist überall
-      fest auf `false`. *(geprüft Run 319b)*
-
-- [x] **Admin-Bereich entsperrt zu lange** `_devAufgeklappt` in
-      `einstellungen_seite.dart` war als `static` deklariert statt
-      als normales State-Feld — Verwaltungsbereich blieb für die
-      gesamte App-Sitzung entsperrt, auch nach Verlassen und
-      erneutem Aufrufen der Einstellungsseite. Fix: `static`
-      entfernt (normales Instanzfeld) — PIN wird bei jedem erneuten
-      Öffnen der Seite wieder verlangt. Offen bleibt der Edge-Case
-      "Seite bleibt im Hintergrund geöffnet, MA wechselt kurz die
-      App" (State wird dabei nicht disposed, PIN bliebe entsperrt) —
-      bewusst zurückgestellt, Praxis-Relevanz unklar. *(Run 320)*
 
 ---
 
@@ -142,49 +99,11 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       manuelle Eingabe hin. Ein dauerhaft sichtbarer Hilfetext im
       Scan-Bereich selbst bleibt offen.
 
-- [x] **Prüf-Popup entfernen — Fehler direkt in der Kachel** Fragliche
-      Daten werden in der Sub-Kachel direkt hervorgehoben und
-      korrigierbar gemacht. *(Run 304d3/304d4 — Hervorhebung; Run 307 —
-      Popup selbst entfernt. Das "Fertig-Button ausgegraut"-Verhalten
-      bleibt offen, siehe "Fertig-Button-Gate" unten.)* Hinweis: Seit
-      Run 318 gibt es ein neues, anders motiviertes Prüf-Popup
-      (Bestätigung vor der Übernahme, nicht Fehlerprüfung) — kein
-      Widerspruch zu diesem abgehakten Punkt, siehe CHANGELOG Run 318.
-
-- [x] **Fertig-Button-Gate** Fertig-Button bleibt ausgegraut solange ein Datenfeld
-      leer oder nicht korrekt ist. Tap auf ausgegrauten Button: Hinweis
-      "Daten noch nicht vollständig — bitte korrigieren." — Variante: Button
-      ausgrauen entfiel, da der "Weiter"-Button bereits reaktiv auf leere
-      Pflichtfelder prüft. Stattdessen echte Lücke geschlossen: die
-      Pflichtfeld-Prüfung lief bisher nur für den ersten EC-Beleg
-      (`.first`); im Mehrbeleg-Modus wurden TID/Gesamt-Betrag weiterer
-      Belege vor "Weiter" gar nicht geprüft. `_pruefePflichtfelderVorSchritt3()`
-      prüft jetzt alle vorhandenen EC-Belege. *(Run 313e)*
-
-- [x] **Plausibilitätsprüfung deaktivierbar** Nicht mehr nötig — die Prüfung
-      (Kartensumme = Gesamtbetrag laut Beleg) ist bereits nur ein weicher
-      Hinweis, kein Blocker (seit Run 304d4). Eine Deaktivierung hätte nur
-      kosmetischen Effekt. Aktiv gelassen, da sie verhindert, dass eine
-      falsche Kartenaufschlüsselung unbemerkt an Flurbocash geht.
-
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
       wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
 
 - [ ] **Storno auf Belegen** Noch nie vorgekommen, aber die App muss
       Stornos erkennen können.
-
-- [x] **Belegscan Metadaten** zuklappbar machen. *(bereits umgesetzt —
-      `_baueMetadatenBlock()` mit `_metadatenAufgeklappt`-Toggle)*
-
-- [x] **KI-Prompt verbessern** KI soll nur relevante Daten lesen, nichts
-      hineininterpretieren und keine Bemerkungen zu Schreibgerät, Belegrissen o. Ä.
-      Im Prompt auf Zeilen-Zuordnung hinweisen — manchmal rutscht ein Kartenbetrag
-      zu einer falschen Kartenart. Bereits umgesetzt: aktueller System-Prompt
-      (`beleg_scan_service.dart`) verbietet Schätzen/Interpolieren/Ergänzen
-      explizit, verlangt strikte Zeilen-Zuordnung ("nicht anhand von
-      Reihenfolge... zuordnen") und beschränkt "hinweis" ausschließlich
-      auf den Summen-Abgleich (kein Freitext, keine visuellen
-      Einschätzungen). *(geprüft Run 319b)*
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
@@ -206,9 +125,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       Run 321 bereits zusätzlich auf startmenue_seite.dart vorhanden,
       bleibt also auch bei entfallender Kinoauswahl erreichbar.)*
 
-- [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
-      festem Passwort gewünscht.
-
 - [ ] **TID-Whitelist konfigurierbar** Pro Standort in Einstellungen
       editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
 
@@ -217,13 +133,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       regelmäßiger Export-Hinweis. *(Vorerst zurückgestellt — Zielplattform
       ist Android an allen Standorten, ITP betrifft nur iOS/Safari und damit
       nur Pacos private Testumgebung.)*
-
-- [x] **Fallback-Export bei fehlgeschlagenem Upload** Nicht nötig — die
-      Abrechnung wird bereits unabhängig vom Upload-Ergebnis automatisch im
-      Verlauf gespeichert (siehe "Automatisches Geräte-Backup beim Senden"
-      weiter unten). Ein zusätzlicher Datei-Export wäre nur bei konkretem
-      Bedarf sinnvoll (z. B. Weitergabe an Buchhaltung bei Langzeitausfall
-      des Uploads).
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
@@ -278,16 +187,6 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
 - [ ] **Abschluss-Export (PDF / Teilen)** Tagesabrechnung als PDF oder Text
       per WhatsApp / Mail an Kinoleitung.
 
-- [x] **Automatisches Geräte-Backup beim Senden** Abrechnung wird
-      lokal gespeichert, unabhängig vom Upload-Ergebnis. *(bereits
-      umgesetzt — `_autoSaveImHintergrund()` in
-      tagesabschluss_schritt3_seite.dart speichert automatisch beim
-      Erreichen von Schritt 3, noch vor SENDEN; Schritt 3 hat keine
-      editierbaren Felder, die danach noch verloren gehen könnten.)*
-
-- [x] **Verlauf — 30-Tage-Bereinigung** Abgeschlossene Abrechnungen
-      automatisch nach 30 Tagen löschen (Datenschutz). *(Run 311)*
-
 ---
 
 ## 🔴 Größere Umbauten
@@ -318,33 +217,18 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
 ## ✅ Validierungen & Plausibilitätsprüfungen
 
 ### Stückelung — Harte Fehler
-- [x] Scheinfeld nicht durch Nennwert teilbar (z. B. 75 € im 50-€-Feld) —
-      entfällt: Scheine/Rollen werden als Stückzahl (Ganzzahl) erfasst,
-      nicht als Betrag. Bei einem Stückzahl-Feld ist eine nicht durch
-      den Nennwert teilbare Eingabe technisch nicht möglich.
-      *(geprüft Run 313d)*
-- [x] Negativer Betrag in irgendeinem Zählfeld — entfällt:
-      `GanzzahlEingabefeld` filtert Eingaben mit
-      `FilteringTextInputFormatter.digitsOnly` (auch bei Paste) —
-      ein Minuszeichen kann im Stückzahl-Feld technisch nicht
-      eingegeben werden. Einziger Verwendungsort:
-      `schritt1_ui_builder.dart`. *(geprüft Run 314)*
 - *(Münzfeld-Teilbarkeit: bereits implementiert)*
 
 ### Stückelung — Weiche Warnungen
-- [x] 500 € / 200 €-Scheine vorhanden — entfällt: Die App kennt in
-      `StueckelungKonfiguration.scheine` gar keine 200-€- oder
-      500-€-Denomination (nur 100/50/20/10/5 €) — ein solcher
-      Schein kann nirgends erfasst werden. *(geprüft Run 314)*
 - [ ] Gesamtbarbestand nach Wechselgeld überschreitet Schwellwert (z. B. 3.000 €)
       *(Run 317: bewusst weggelassen — Schritt-1-Übersicht macht den Wert
       bereits sichtbar, Dialog wäre meist falsch-positiv.)*
+
 - [ ] Einzelne Denomination > 80 % des Gesamtbestands
       *(Run 317: bewusst weggelassen — beim physischen Zählen offensichtlich,
       zu edge-case für MA-Alltag.)*
 
 ### Soll-Felder
-- [x] Kino-Soll = 0 — Bestätigung erforderlich *(Run 317)*
 - [ ] Bistro-Soll > Kino-Soll — weicher Hinweis: in Run 316
       umgesetzt, in Run 316a wieder entfernt. Grund: Prämisse
       trifft nicht standortübergreifend zu — in der Gondel gibt
@@ -352,47 +236,26 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       legitim höher sein als Kino-Soll. Vorerst bewusst offen
       gelassen (MA prüfen Eingabe manuell); bei Bedarf durch die
       Kino-Leitung ggf. später standortabhängig wieder einführen.
-- [x] Soll-Felder leer beim Abschluss-Start — Pflichtfeld: war
-      bereits umgesetzt (`_pruefePflichtfelderVorSchritt3()` prüft
-      Kino- und Bistro-SOLL), TODO-Punkt war veraltet. *(geprüft
-      Run 316)*
 
 ### EC-Umsatz
 - [ ] EC-Betrag > Gesamt-Soll — harter Fehler
       *(Run 317: weggelassen — im Ziffern-Modus kein realistisches Risiko.)*
-- [x] EC = 0 an normalem Betriebstag — Bestätigung *(Run 317)*
 
 ### Differenz / Kassenstand
 - [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung
       *(Run 317: weggelassen — Schritt 3 zeigt Differenz bereits rot/grün,
       Dialog wäre redundante Friction.)*
+
 - [ ] Ist > Soll — Warnung mit Erklärungstext
       *(Run 317: weggelassen — grüne Differenz in Schritt 3 reicht.)*
-- [x] Differenz Anfangsbestand ≠ 0 — abweichend von der
-      ursprünglichen Planung (weicher Hinweis > 20 € beim Zählen)
-      auf Bestätigungssperre umgestellt: Ein passiver Hinweis beim
-      Zählen hätte das eigentliche Problem (MA übersieht/ignoriert
-      die Differenz) nicht gelöst. Stattdessen prüft
-      `_pruefeDifferenzUndBestaetigeVerlassen()` in
-      `wechselgeld_pruefen_seite.dart` beim Verlassen der Seite, ob
-      die Differenz zum Wechselgeld-Sollwert exakt 0 ist — jede
-      Abweichung, kein Schwellwert. Bei Abweichung: Bestätigungsdialog
-      "Trotzdem fortfahren?". Der Dialog öffnet sich vor (nicht nach)
-      dem Abschluss-Menü "Was möchtest du als nächstes tun?".
-      Deckte ursprünglich nur den Fertig-Button ab — Zurück-Pfeil und
-      Haus-Button umgingen die Prüfung komplett. Seit Run 319a via
-      `PopScope` (Zurück-Pfeil/System-Zurück) und geprüftem
-      Haus-Button auf allen drei Ausgängen der Seite aktiv.
-      *(Run 314 → korrigiert in Run 314a, Timing korrigiert in
-      Run 314a2)*
 
 ### Belege / Ausgaben
-- [x] Beleg angelegt, Betrag = 0 oder leer — Pflichtfeld *(Run 317)*
 - [ ] Ausgaben > Barbestand — harter Fehler
       *(Run 317: weggelassen — im Ziffern-Modus kein realistisches Risiko.)*
 
 ### Zeitliche Plausibilität
 - [ ] Zweite Abrechnung: Soll niedriger als erste — weicher Hinweis
+
 - [ ] Abschluss-Uhrzeit außerhalb Betriebszeiten (3–5 Uhr) — weicher Hinweis
 
 ### Fehlerstufen
@@ -422,3 +285,4 @@ Stand: Juli 2026 · Run 322 · wird fortlaufend ergänzt
       zweites System, nicht V1
 
 - [ ] **Admin-Dashboard für Kino-IT** API-Key-Verwaltung, Konfiguration
+

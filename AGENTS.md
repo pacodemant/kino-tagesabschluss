@@ -1,13 +1,19 @@
 # AGENTS.md
 
 ## Zweck
-Diese Datei definiert den verbindlichen Arbeitsvertrag für KI-Coding-Agenten in diesem Repository.
+Diese Datei ist die einzige Quelle für den verbindlichen Arbeitsvertrag
+für KI-Coding-Agenten in diesem Repository. CLAUDE.md verweist hierher
+und enthält nur noch Claude-Code-spezifische Ergänzungen (Sprache,
+Ausgabeformat, Session-Start) — Workflow-Regeln werden nur noch hier
+gepflegt, nicht mehr dupliziert.
 
 Projekt:
 - Kino-App (Tagesabschluss)
 - Stack: Flutter / Dart
 - Repository: kino_bar_app
 - Hauptbranch: master
+- Persistenz: SharedPreferences (kein Backend)
+- Geldberechnung: intern in Cent
 
 ## Arbeitsmodus
 - Änderungen erfolgen ausschließlich über kleine, kontrollierte Runs.
@@ -15,6 +21,18 @@ Projekt:
 - Keine Nebenbei-Refactors.
 - Keine Architekturänderungen ohne expliziten Architektur-Run.
 - Stabilität vor Tempo.
+
+## Lösungsansatz-Check
+
+Vor jedem Run-Vorschlag prüfen:
+- Löst der beschriebene Ansatz das eigentliche Ziel —
+  oder nur das beschriebene Symptom?
+- Gibt es einen einfacheren Weg zum selben Ergebnis?
+- Ist der Ansatz angemessen für den tatsächlichen Use-Case
+  (Nutzerkreis, Häufigkeit, Kontext)?
+
+Bei Zweifeln: die einfachere Alternative zuerst nennen,
+bevor der ursprünglich beschriebene Weg umgesetzt wird.
 
 ## Standard-Lock
 Ohne einen expliziten Run-Prompt darf der Agent NICHT:
@@ -34,6 +52,14 @@ Erlaubt ohne Run-Prompt:
 - Risiken oder Unklarheiten benennen
 - einen nächsten Mini-Run vorschlagen
 - Lesende Shell-Befehle ausführen (cat, sed -n, grep, ls, find, git log, git diff)
+
+## Globale Claude-Skills
+
+Auf diesem Rechner sind global (`~/.claude/skills/`) zusätzliche Skills
+installiert (u. a. `tdd`, `diagnosing-bugs`, `code-review`, `domain-modeling`).
+Sie sind dem Standard-Lock hier untergeordnet: Vorschläge, Diagnosen und
+Risikohinweise sind erlaubt, aber kein automatisches Auslösen von Code-
+oder Datei-Änderungen ohne expliziten Run-Prompt.
 
 ## Run-Ablauf
 
@@ -64,6 +90,11 @@ Die Run-Nummer aus Chat-Kontexten darf nicht als primäre Quelle verwendet werde
 
 ## Direkte Anweisungen ohne Run-Nummer
 
+**Vorbedingung:** Diese Regel gilt nur wenn die letzte Haupt-Run-Nummer (NNN)
+bereits committed ist — also für Korrekturen oder Ergänzungen *nach* einem
+abgeschlossenen Run. Entsteht ein Run erst aus der Diskussion, ohne dass ein
+Run NNN bereits existiert, erhält er die volle Nummer NNN (nicht NNNa).
+
 Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 
 - Änderung als `[letzte Run-Nr]a`, `[letzte Run-Nr]b` usw. bezeichnen
@@ -74,6 +105,8 @@ Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 - Commit mit passender Message erstellen
 - Direkt `git push origin master` ausführen
 - `run_counter` NICHT erhöhen
+- Auf nächstes Prompt warten
+- **Bericht trotzdem ausgeben** — im gleichen Codeblock-Format wie § „Bericht nach jedem Run"
 
 ## Technische Leitplanken
 
@@ -102,47 +135,60 @@ Automatisch verbotene destruktive Befehle:
 
 Commit-Format:
 
-    git add <nur betroffene Dateien>
+    git add <nur betroffene Dateien> .dev/run_counter.txt
     git commit -m "Run <NUMMER>: <Kurzbeschreibung>"
     git push
 
-## Bericht nach einem Run
+`.dev/run_counter.txt` immer im selben Commit wie die Run-Änderungen —
+kein separater zweiter Commit, um unnötige CI-Builds zu vermeiden.
 
-Nach einem erfolgreichen Run muss der Agent berichten (ein einziger Codeblock,
-Überschrift „Claude Code-Bericht Run <NUMMER>"):
+## Bericht nach jedem Run
 
-- Tatsächlich geänderte Dateien (kurze Beschreibung der Änderung)
-- Manuelle Testschritte mit erwartetem Verhalten
+Ausnahme: Betrifft der Run ausschließlich Dateien unter `config/` und/oder
+`.dev/` (keine App-Code-Änderung), reicht eine kurze Bestätigung
+(geänderte Dateien + Commit-Hash) statt des vollständigen Berichtsformats.
+Spart Tokens, da hier kein Testbedarf am App-Verhalten besteht.
+
+Format (sonst): ein einziger Codeblock, Überschrift „Claude Code-Bericht Run <NUMMER>"
+
+Inhalt:
+- Geänderte Dateien (kurze Beschreibung der Änderung)
+- Manuelle Testschritte mit erwartetem Verhalten (kein flutter analyze als Testschritt)
   - Genau so viele Tests wie es relevante Risiken gibt — einen pro Risiko, nicht mehr, nicht weniger
   - Keine Tests erfinden, die nichts verifizieren, das durch die Änderung hätte brechen können
 - Status von `flutter analyze`
 - Status von `flutter test` (falls Tests vorhanden)
-- Letzter Commit-Hash + Run-Nummer
-
-Ausnahme: Betrifft der Run ausschließlich Dateien unter `config/` und/oder `.dev/`
-(keine App-Code-Änderung), reicht eine kurze Bestätigung statt des vollständigen Formats.
-
-## Counter- und Changelog-Pflege
-
-Nach einem erfolgreichen Run aktualisieren:
-
-1. `.dev/run_counter.txt`
-2. `CHANGELOG.md` — neuen Eintrag hinzufügen
-3. `TODO.md` — erledigte Punkte abhaken (`[x]`), neue Punkte eintragen wenn besprochen.
-   Kopfzeile (Zeile 2, „Stand: ... · Run NNN") bei jedem Run — auch Sub-Runs —
-   auf die aktuelle Run-Nummer aktualisieren.
-4. `PROJECT_CONTEXT.md` — Kopfzeile (Version + Run), Entwicklungsstand,
-   bei strukturellen Änderungen betroffene Abschnitte aktualisieren
-5. `AGENTS.md` — bei Änderungen an Workflow-Regeln synchron mit CLAUDE.md halten
-
-Alle Dateien nur aktualisieren wenn der Run vollständig abgeschlossen ist.
-Bei Abbruch: keine Änderungen.
+- Letzter Commit-Hash — daneben: Run-Nummer und ob sie vom User vorgegeben oder von Claude selbst abgeleitet wurde (z. B. „Run 203 – vom User vorgegeben" oder „Run 203 – aus run_counter.txt abgeleitet")
+- Bestätigung: `.dev/run_counter.txt`, `CHANGELOG.md`, `TODO.md` und `PROJECT_CONTEXT.md` aktualisiert
+  - CHANGELOG.md vor dem Schreiben per Read prüfen — nie behaupten, sie existiere nicht, ohne vorher nachgesehen zu haben.
+    Neue Einträge kommen an den Anfang von CHANGELOG.md (aktuelle Runs), nicht ins
+    CHANGELOG_ARCHIV.md. Wenn CHANGELOG.md wieder über ~60-70 Runs anwächst: ältere
+    Runs analog zu Run 323 erneut nach CHANGELOG_ARCHIV.md verschieben (siehe
+    Hinweis am Kopf von CHANGELOG.md).
+  - TODO.md nach jedem Run abgleichen: per Read prüfen, ob der Run einen dort
+    gelisteten Punkt erledigt hat (insbesondere Punkte mit passender
+    *(Run NNN)*-Markierung). Erledigten Punkt NICHT nur mit `[x]` markieren,
+    sondern vollständig aus TODO.md entfernen und mit `[x]` sowie einer
+    kurzen Notiz zum tatsächlichen Ergebnis in TODO_ERLEDIGT.md eintragen
+    (im gleichen Abschnitt/Unterabschnitt wie in TODO.md, damit die Struktur
+    beider Dateien vergleichbar bleibt). So bleibt TODO.md dauerhaft auf die
+    offenen Punkte beschränkt, statt mit der Zeit wieder mit erledigten
+    Punkten anzuwachsen.
+    Wenn das Ergebnis vom ursprünglich geplanten Punkt abweicht (Variante,
+    Einschränkung, Entfall), eine kurze Notiz hinter den Eintrag schreiben,
+    damit TODO_ERLEDIGT.md dokumentiert was tatsächlich gemacht wurde.
+    Keine anderen TODO.md-Inhalte umformulieren oder verschieben.
+    Kopfzeile (Zeile 2, „Stand: ... · Run NNN") bei jedem Run — auch
+    Sub-Runs — auf die aktuelle Run-Nummer aktualisieren.
+  - PROJECT_CONTEXT.md: Kopfzeile (Version + Run), Entwicklungsstand und bei
+    Bedarf betroffene Architekturabschnitte aktualisieren.
 
 ## Run-Typen
 
 - standard — normale UX-/Logik-Änderung im Zielbereich
 - architecture — Strukturänderung ohne funktionales Redesign
 - documentation — nur Kommentare / Dokumentation
+- tests — Testabdeckung erweitern, ohne App-Verhalten zu ändern
 
 ## Versionierung
 
