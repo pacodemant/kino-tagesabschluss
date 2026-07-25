@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 328a2: Korrektur aus Testfeedback zu Run 328a (Punkt 3) —
+  direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von 328a
+  daher mit Zahlensuffix statt neuem Buchstaben. Die Bedingung war
+  genau umgekehrt: das Feld soll sich bei Fokus im Modus "alle
+  anzeigen" leeren, im Modus "nur benötigte anzeigen" dagegen NICHT
+  — vorherige Umsetzung (328a) hatte es andersherum. Ein Zeichen
+  geändert: `!_nurBenoetigte` statt `_nurBenoetigte` im
+  Fokus-Listener. `flutter analyze`/`flutter test` weiterhin nicht
+  ausführbar (kein Flutter-SDK in dieser Remote-Umgebung). Dateien:
+  getraenke_auffuellen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, CHANGELOG.md,
+  PROJECT_CONTEXT.md.
+
 - Run 328a: Korrektur aus Testfeedback zu Run 328 (Getränkeliste-
   Abhaken), direkte Anweisung ohne eigene Run-Nummer. (1) Runde
   Checkboxen: `fillColor` per `WidgetStateProperty.resolveWith`

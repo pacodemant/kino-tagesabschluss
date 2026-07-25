@@ -65,7 +65,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       final TextEditingController ctrl = TextEditingController(text: menge);
       final FocusNode fn = FocusNode();
       fn.addListener(() {
-        if (fn.hasFocus && _nurBenoetigte) {
+        if (fn.hasFocus && !_nurBenoetigte) {
           ctrl.clear();
         }
         setState(() {});

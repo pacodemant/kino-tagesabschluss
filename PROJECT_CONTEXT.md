@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.4+328a · Run 328a
+Version: 0.9.4+328a2 · Run 328a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 328a)
+## Laufender Entwicklungsstand (Run 328a2)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -286,6 +286,9 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   randnah verankerten Zeilenanfang verlegt (statt unverankertes
   Zeilenende), Feld-Leerung bei Fokus nur noch im Filtermodus
   aktiv (nicht mehr bei "alle anzeigen").
+- Run 328a2 ✅ Korrektur: Feld-Leerung bei Fokus war in 328a
+  genau umgekehrt umgesetzt — jetzt korrekt: leert sich bei
+  "alle anzeigen", bleibt gefüllt bei "nur benötigte anzeigen".
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
