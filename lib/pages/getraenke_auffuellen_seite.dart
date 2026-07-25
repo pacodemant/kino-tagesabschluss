@@ -65,7 +65,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
       final TextEditingController ctrl = TextEditingController(text: menge);
       final FocusNode fn = FocusNode();
       fn.addListener(() {
-        if (fn.hasFocus) {
+        if (fn.hasFocus && _nurBenoetigte) {
           ctrl.clear();
         }
         setState(() {});
@@ -244,20 +244,36 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Widget _baueTabelle() {
+    // Checkbox steht auf der Seite, an der die Zeile im jeweiligen
+    // Händigkeits-Modus verankert ist (Rechtshänder: Zeilenanfang/links,
+    // Linkshänder: Zeilenende/rechts) — dort ist sie nah am Rand statt
+    // im ungebundenen Leerraum am anderen Ende der Zeile.
+    final List<TableColumnWidth> basisSpalten = _istLinkshaender
+        ? const <TableColumnWidth>[
+            IntrinsicColumnWidth(), // Namen
+            FixedColumnWidth(8), // Abstand
+            FixedColumnWidth(72), // Eingabe
+          ]
+        : const <TableColumnWidth>[
+            FixedColumnWidth(72), // Eingabe
+            FixedColumnWidth(8), // Abstand
+            IntrinsicColumnWidth(), // Namen
+          ];
+    const List<TableColumnWidth> checkboxSpalten = <TableColumnWidth>[
+      FixedColumnWidth(36), // Checkbox
+      FixedColumnWidth(4), // Abstand
+    ];
+    final List<TableColumnWidth> spaltenListe = !_nurBenoetigte
+        ? basisSpalten
+        : _istLinkshaender
+            ? <TableColumnWidth>[
+                ...basisSpalten,
+                checkboxSpalten[1],
+                checkboxSpalten[0],
+              ]
+            : <TableColumnWidth>[...checkboxSpalten, ...basisSpalten];
     final Map<int, TableColumnWidth> spaltenBreiten = <int, TableColumnWidth>{
-      ..._istLinkshaender
-          ? const <int, TableColumnWidth>{
-              0: IntrinsicColumnWidth(), // Namen
-              1: FixedColumnWidth(8), // Abstand
-              2: FixedColumnWidth(72), // Eingabe
-            }
-          : const <int, TableColumnWidth>{
-              0: FixedColumnWidth(72), // Eingabe
-              1: FixedColumnWidth(8), // Abstand
-              2: IntrinsicColumnWidth(), // Namen
-            },
-      if (_nurBenoetigte) 3: const FixedColumnWidth(4), // Abstand
-      if (_nurBenoetigte) 4: const FixedColumnWidth(36), // Checkbox
+      for (int i = 0; i < spaltenListe.length; i++) i: spaltenListe[i],
     };
 
     TableRow baueEintragZeile(int idx) {
@@ -310,12 +326,20 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           shape: const CircleBorder(),
           visualDensity: VisualDensity.compact,
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          fillColor: WidgetStateProperty.resolveWith<Color?>(
+            (Set<WidgetState> states) => states.contains(WidgetState.selected)
+                ? Colors.green
+                : Colors.grey,
+          ),
+          checkColor: Colors.white,
           value: _abgehakt.contains(idx),
           onChanged: (_) => _toggleAbgehakt(idx),
         ),
       );
       return TableRow(
-        children: <Widget>[...basisZellen, const SizedBox(), checkboxZelle],
+        children: _istLinkshaender
+            ? <Widget>[...basisZellen, const SizedBox(), checkboxZelle]
+            : <Widget>[checkboxZelle, const SizedBox(), ...basisZellen],
       );
     }
 
@@ -350,9 +374,11 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           ]
         : <Widget>[gesamtZahl, const SizedBox(), gesamtLabel];
     final TableRow gesamtZeile = TableRow(
-      children: _nurBenoetigte
-          ? <Widget>[...gesamtBasisZellen, const SizedBox(), const SizedBox()]
-          : gesamtBasisZellen,
+      children: !_nurBenoetigte
+          ? gesamtBasisZellen
+          : _istLinkshaender
+              ? <Widget>[...gesamtBasisZellen, const SizedBox(), const SizedBox()]
+              : <Widget>[const SizedBox(), const SizedBox(), ...gesamtBasisZellen],
     );
 
     return Table(

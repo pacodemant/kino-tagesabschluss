@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 328a: Korrektur aus Testfeedback zu Run 328 (Getränkeliste-
+  Abhaken), direkte Anweisung ohne eigene Run-Nummer. (1) Runde
+  Checkboxen: `fillColor` per `WidgetStateProperty.resolveWith`
+  auf Grau (nicht abgehakt) bzw. Grün (abgehakt) gesetzt, weißes
+  Häkchen (`checkColor`). (2) Checkbox-Position im Rechtshänder-
+  Modus von ganz rechts (unverankertes Zeilenende, dadurch weit
+  vom Rand bzw. teils außerhalb der sichtbaren Breite) auf den
+  Zeilenanfang/links verlegt — dort ist die Zeile durch
+  `mainAxisAlignment.start` + linkem Seiten-Padding ohnehin schon
+  randnah verankert, kein zusätzlicher Abstand nötig. Linkshänder-
+  Modus unverändert (Checkbox am Zeilenende, das dort bereits
+  durch `mainAxisAlignment.end` + rechtem Padding randnah liegt).
+  `spaltenBreiten`/Gesamtzeile entsprechend auf die neue
+  Spaltenreihenfolge umgestellt. (3) Bug behoben: Antippen eines
+  Mengenfelds leerte das Feld bisher in JEDEM Modus (Listener seit
+  Run 311, ursprünglich wohl nur für den Filtermodus gedacht) —
+  jetzt nur noch, wenn `_nurBenoetigte` aktiv ist; in "alle
+  anzeigen" bleibt der vorhandene Wert beim Antippen erhalten.
+  `flutter analyze`/`flutter test` weiterhin nicht ausführbar
+  (kein Flutter-SDK in dieser Remote-Umgebung). Dateien:
+  getraenke_auffuellen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, CHANGELOG.md,
+  PROJECT_CONTEXT.md.
+
 - Run 328: Getränkeliste — Abhaken im Filtermodus "nur benötigte
   anzeigen" umgesetzt (`getraenke_auffuellen_seite.dart`). Jede
   Zeile bekommt in diesem Modus zusätzlich eine runde Checkbox

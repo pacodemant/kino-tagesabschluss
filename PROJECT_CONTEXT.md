@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.4+328 · Run 328
+Version: 0.9.4+328a · Run 328a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 328)
+## Laufender Entwicklungsstand (Run 328a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -281,6 +281,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   benötigte anzeigen" (runde Checkbox pro Zeile, abgehakte
   Einträge wandern ans Ende der gefilterten Liste). Nicht
   persistiert, nur Session-Sortierhilfe.
+- Run 328a ✅ Korrektur aus Testfeedback: Checkbox-Farben grau/
+  grün (abgehakt), Checkbox im Rechtshänder-Modus an den
+  randnah verankerten Zeilenanfang verlegt (statt unverankertes
+  Zeilenende), Feld-Leerung bei Fokus nur noch im Filtermodus
+  aktiv (nicht mehr bei "alle anzeigen").
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
