@@ -121,7 +121,10 @@ Vor jedem Commit `git status` prüfen.
 
 Bei einem dieser Zustände → STOPP, nur Diagnose ausgeben:
 
-- nicht auf Branch `master`
+- nicht auf Branch `master` *(gilt für lokale/CLI-Sessions ohne
+  Branch-Vorgabe. In Remote-Sessions, denen die Umgebung selbst einen
+  Feature-Branch zuweist — siehe „Remote-Sessions" unten —, ist dieser
+  zugewiesene Branch der erwartete Arbeits-Branch, kein STOPP-Zustand.)*
 - detached HEAD
 - unerwartete fremde Änderungen
 - unerwartete Deletes
@@ -141,6 +144,37 @@ Commit-Format:
 
 `.dev/run_counter.txt` immer im selben Commit wie die Run-Änderungen —
 kein separater zweiter Commit, um unnötige CI-Builds zu vermeiden.
+
+## Remote-Sessions (Claude Code Web/App): Merge nach master
+
+Hintergrund: `.github/workflows/deploy.yml` (baut die Web-App nach
+GitHub Pages, das ist die URL hinter Pacos installierter PWA) feuert
+ausschließlich bei Push auf `master`. Remote-Sessions committen aber
+auf einen von der Umgebung zugewiesenen Feature-Branch, nicht direkt
+auf `master` — ohne Merge nach `master` gibt es keinen neuen Build,
+und Paco sieht auf dem iPhone weiterhin die alte Version, egal wie
+oft er die PWA neu lädt.
+
+Deshalb gilt für Remote-Sessions zusätzlich zum normalen Run-Ablauf:
+
+1. Nach jedem committeten und gepushten Run/Sub-Run: PR vom
+   zugewiesenen Feature-Branch nach `master` anlegen (falls noch
+   nicht vorhanden) bzw. den bestehenden PR weiterverwenden.
+2. PR direkt mergen (`merge`, kein Force) — kein zusätzliches
+   Nachfragen nötig, das ist bereits die Standing-Freigabe.
+3. Danach kurz bestätigen, dass gemerged wurde (Commit-Hash/PR-Nr.),
+   damit Paco weiß, dass GitHub Actions jetzt baut.
+
+STOPP-Bedingungen — mergen abbrechen und Paco stattdessen warnen,
+NICHT stillschweigend überspringen und NICHT erzwingen:
+
+- PR-`mergeable_state` ist nicht „clean" (Konflikte, fehlgeschlagene
+  Checks, Branch-Protection-Blocker, ausstehende Reviews o. Ä.)
+- einer der STOPP-Zustände aus dem Git-Sicherheitsvertrag oben
+- sonstiger Fehler beim Push/Merge (z. B. Netzwerk, Berechtigung)
+
+In diesen Fällen: PR/Branch unangetastet lassen, den genauen Grund
+benennen und auf Anweisung warten.
 
 ## Bericht nach jedem Run
 
