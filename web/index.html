@@ -63,17 +63,26 @@
     });
   </script>
   <script>
-    // Beim ersten Öffnen eines neuen Tabs: SW-Cache leeren + SW deregistrieren + neu laden.
-    // sessionStorage verhindert eine Reload-Schleife (wird beim Tab-Schließen zurückgesetzt).
-    if ('serviceWorker' in navigator && !sessionStorage.getItem('_swFreshLoaded')) {
-      sessionStorage.setItem('_swFreshLoaded', '1');
-      caches.keys().then(function(keys) {
+    // Löscht alle Caches + meldet alle Service Worker ab. Gemeinsam genutzt
+    // vom Fresh-Tab-Reset und vom erzwungenen Neu-Laden (Button + Auto-
+    // Update) — ein einfacher Reload allein würde weiterhin vom (evtl.
+    // veralteten) Service-Worker-Cache bedient statt vom Server.
+    function _purgeCachesUndSw() {
+      if (!('serviceWorker' in navigator)) return Promise.resolve();
+      return caches.keys().then(function(keys) {
         return Promise.all(keys.map(function(k) { return caches.delete(k); }));
       }).then(function() {
         return navigator.serviceWorker.getRegistrations();
       }).then(function(regs) {
         return Promise.all(regs.map(function(r) { return r.unregister(); }));
-      }).then(function() {
+      });
+    }
+
+    // Beim ersten Öffnen eines neuen Tabs: SW-Cache leeren + SW deregistrieren + neu laden.
+    // sessionStorage verhindert eine Reload-Schleife (wird beim Tab-Schließen zurückgesetzt).
+    if ('serviceWorker' in navigator && !sessionStorage.getItem('_swFreshLoaded')) {
+      sessionStorage.setItem('_swFreshLoaded', '1');
+      _purgeCachesUndSw().then(function() {
         location.reload();
       });
     }
@@ -81,7 +90,13 @@
   <script>
     var _swUpdateReady = false;
     var _hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
-    function _reloadPage() { window.location.reload(); }
+    function _reloadPage() {
+      _purgeCachesUndSw().then(function() {
+        window.location.reload();
+      }).catch(function() {
+        window.location.reload();
+      });
+    }
     if ('serviceWorker' in navigator) {
       // Primär: feuert wenn neuer SW via skipWaiting() die Kontrolle übernimmt (Flutter-Default)
       navigator.serviceWorker.addEventListener('controllerchange', function() {

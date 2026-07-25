@@ -60,6 +60,20 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       App" (State wird dabei nicht disposed, PIN bliebe entsperrt) —
       bewusst zurückgestellt, Praxis-Relevanz unklar. *(Run 320)*
 
+- [x] **Pfeiltasten der iOS-Tastaturleiste navigieren nicht** Die
+      Werkzeugleiste über der Zifferntastatur (▲▼ + Haken) ist native
+      iOS-Safari-Chrome, kein App-Bestandteil. Der Haken ist die
+      App-eigene "Weiter"-Aktion (`TextInputAction.next` +
+      `FeldNavigationHelper`, seit Run 323/323a korrekt). Die
+      Pfeiltasten sind Safaris eigene Vor-/Zurück-Navigation zwischen
+      Formularfeldern und laufen ins Leere: Flutter Web nutzt ohne
+      `AutofillGroup` (hier nicht verwendet) ein einziges verstecktes
+      HTML-Inputfeld für alle Felder — der Browser sieht dadurch kein
+      "nächstes Feld" im DOM. Nur mit größerer Architekturänderung
+      behebbar (echte Einzel-Inputs je Feld). Kein Blocker: Zielplattform
+      ist durchgängig Android, diese iOS-Safari-spezifische Leiste tritt
+      dort in dieser Form i. d. R. nicht auf. *(dokumentiert Run 323b)*
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)

@@ -8,6 +8,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 
 class StartmenueSeite extends StatelessWidget {
   const StartmenueSeite({super.key, required this.kino});
@@ -61,14 +62,22 @@ class StartmenueSeite extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.normal),
         ),
         actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              Navigator.of(
-                context,
-              ).pushReplacementNamed(KinoauswahlSeite.routenName);
+          FutureBuilder<String?>(
+            future: LokalerSpeicher.ladeStandortModus(),
+            builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
+              if (snapshot.data != null) {
+                return const SizedBox.shrink();
+              }
+              return TextButton(
+                onPressed: () {
+                  Navigator.of(
+                    context,
+                  ).pushReplacementNamed(KinoauswahlSeite.routenName);
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.white),
+                child: const Text('Kino wechseln'),
+              );
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.white),
-            child: const Text('Kino wechseln'),
           ),
         ],
       ),
@@ -142,7 +151,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.3 · r322 @ GitHub:',
+                    'Web App 0.9.3 · r326a @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),

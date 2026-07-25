@@ -6,6 +6,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
+import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
@@ -58,6 +59,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   static const int _umschlagSlots = 3;
 
   final TextEditingController _wgCtrl = TextEditingController();
+  /// Bleibt über neue State-Instanzen dieser Seite hinweg erhalten
+  /// (im selben App-Lauf), verfällt aber bei echtem Neuladen der App —
+  /// Grundlage für "Admin-Status halten".
+  static bool _adminSessionEntsperrt = false;
+
   int _aktiveKinoIndex = -1;
   String _aktiveKinoName = '';
   final Map<String, TextEditingController> _s1StueckzahlCtrl =
@@ -92,6 +98,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   String? _overrideLocationId;
   String? _overrideApiKey;
+  String? _standortModusKinoId;
+  bool _adminStatusHaltenAktiv = false;
+
+  String get _aktiveKinoKuerzel => _aktiveKinoIndex >= 0
+      ? KinoRepository.kinos[_aktiveKinoIndex].kuerzel
+      : '';
 
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
@@ -224,6 +236,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString('flurbocash_location_id_$_aktiveKinoId');
     final String? overrideApiKey =
         speicher.getString('flurbocash_api_key_$_aktiveKinoId');
+    final String? standortModus = await LokalerSpeicher.ladeStandortModus();
+    final bool adminStatusHaltenAktiv =
+        speicher.getBool('admin_status_halten_aktiv') ?? false;
     if (!mounted) return;
     _apiUploadUrlCtrl.text = apiUploadUrl;
     _anthropicApiKeyCtrl.text = anthropicApiKey;
@@ -236,7 +251,25 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _geladen = true;
       _overrideLocationId = overrideLocationId;
       _overrideApiKey = overrideApiKey;
+      _standortModusKinoId = standortModus;
+      _adminStatusHaltenAktiv = adminStatusHaltenAktiv;
+      if (adminStatusHaltenAktiv && _adminSessionEntsperrt) {
+        _devAufgeklappt = true;
+      }
     });
+  }
+
+  Future<void> _onStandortModusGeaendert(String? kinoId) async {
+    await LokalerSpeicher.speichereStandortModus(kinoId);
+    if (!mounted) return;
+    setState(() => _standortModusKinoId = kinoId);
+  }
+
+  Future<void> _onAdminStatusHaltenGeaendert(bool wert) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setBool('admin_status_halten_aktiv', wert);
+    if (!mounted) return;
+    setState(() => _adminStatusHaltenAktiv = wert);
   }
 
   void _setzeAutoFillSchritt1Controller(Map<String, dynamic>? daten) {
@@ -399,6 +432,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     if (!mounted) return;
     if (eingegebenerPin == null) return;
     if (eingegebenerPin == '1929') {
+      _adminSessionEntsperrt = true;
       setState(() => _devAufgeklappt = true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1104,9 +1138,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               child: Column(
                 children: <Widget>[
                   ListTile(
-                    title: const Text(
-                      'Getränkeliste',
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                    title: Text(
+                      _aktiveKinoKuerzel.isEmpty
+                          ? 'Getränkeliste'
+                          : 'Getränkeliste $_aktiveKinoKuerzel',
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     trailing: Icon(
                       _getraenkelisteAufgeklappt
@@ -1194,223 +1230,328 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 ),
                 if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
-                  ListTile(
-                    title: const Text(
-                      'Wechselgeldbestand',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+                  Container(
+                    color: AppFarben.gruppierungBandA,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        if (_wgCtrl.text.isNotEmpty)
-                          Text(
-                            _wgCtrl.text,
-                            style: const TextStyle(fontSize: 11),
-                          ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          _wechselgeldAufgeklappt
-                              ? Icons.expand_less
-                              : Icons.expand_more,
-                        ),
-                      ],
-                    ),
-                    onTap: () => setState(
-                      () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
-                    ),
-                  ),
-                  if (_wechselgeldAufgeklappt && _aktiveKinoIndex >= 0) ...<Widget>[
-                    const Divider(height: 1),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            'Wechselgeld $_aktiveKinoName',
-                            style: const TextStyle(fontSize: 14),
-                          ),
-                          const SizedBox(width: 8),
-                          SizedBox(
-                            width: 120,
-                            child: TextField(
-                              controller: _wgCtrl,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly,
-                                CentWaehrungsEingabeFormatter(),
-                              ],
-                              textAlign: TextAlign.right,
-                              decoration: const InputDecoration(
-                                isDense: true,
-                                contentPadding: EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                suffixText: '€',
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              const Text(
+                                'Standort',
+                                style: TextStyle(fontWeight: FontWeight.w600),
                               ),
-                              onTap: () {
-                                if (_wgCtrl.text == '0') _wgCtrl.clear();
-                              },
-                              onChanged: _onWgChanged,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const Divider(height: 1),
-                  SwitchListTile(
-                    title: const Text('Flurbocash-Anbindung'),
-                    value: _apiUploadAktiv,
-                    onChanged: _onApiUploadGeaendert,
-                    activeThumbColor: AppFarben.appBarRot,
-                  ),
-                  if (_apiUploadAktiv) ...<Widget>[
-                    const Divider(height: 1),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          TextField(
-                            controller: _apiUploadUrlCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Upload-URL',
-                              hintText: 'https://...',
-                              isDense: true,
-                            ),
-                            onChanged: (_) => _speichereApiUploadKonfig(),
-                          ),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _locationIdCtrl,
-                            focusNode: _locationIdFocus,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly,
+                              DropdownButton<String?>(
+                                value: _standortModusKinoId,
+                                items: <DropdownMenuItem<String?>>[
+                                  const DropdownMenuItem<String?>(
+                                    value: null,
+                                    child: Text('Alle'),
+                                  ),
+                                  for (final Kino kino in KinoRepository.kinos)
+                                    DropdownMenuItem<String?>(
+                                      value: kino.id,
+                                      child: Text(kino.name),
+                                    ),
+                                ],
+                                onChanged: _onStandortModusGeaendert,
+                              ),
                             ],
-                            decoration: const InputDecoration(
-                              labelText: 'location_id',
-                              isDense: true,
-                            ),
-                            onChanged: (_) => _speichereLocationId(),
-                            onEditingComplete: () =>
-                                _locationIdFocus.unfocus(),
-                          ),
-                          if (_overrideLocationId != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Gespeichert: $_overrideLocationId',
-                                style: const TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 12),
-                          TextField(
-                            controller: _flurbocashApiKeyCtrl,
-                            focusNode: _flurbocashApiKeyFocus,
-                            decoration: const InputDecoration(
-                              labelText: 'API-Key',
-                              isDense: true,
-                            ),
-                            onChanged: (_) => _speichereFlurbocashApiKey(),
-                            onEditingComplete: () =>
-                                _flurbocashApiKeyFocus.unfocus(),
-                          ),
-                          if (_overrideApiKey != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Text(
-                                'Gespeichert: $_overrideApiKey',
-                                style: const TextStyle(
-                                  color: Colors.orange,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const Divider(),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-                    child: Text(
-                      'KI-Belegscan (Anthropic)',
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 4),
-                    child: TextField(
-                      controller: _anthropicApiKeyCtrl,
-                      obscureText: _anthropicKeyVerdeckt,
-                      decoration: InputDecoration(
-                        labelText: 'Anthropic API-Key',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _anthropicKeyVerdeckt
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () => setState(
-                            () => _anthropicKeyVerdeckt =
-                                !_anthropicKeyVerdeckt,
                           ),
                         ),
-                      ),
-                      onChanged: (_) => _speichereAnthropicApiKey(),
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        const Text(
-                          'Testwerte',
-                          style: TextStyle(fontSize: 16),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                          child: Text(
+                            'Bei fester Auswahl entfällt für den Mitarbeiter '
+                            'die Kinoauswahl und der Button "Kino wechseln".',
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
                         ),
-                        TextButton.icon(
-                          onPressed: () => setState(
-                            () => _testwertAufgeklappt =
-                                !_testwertAufgeklappt,
+                        SwitchListTile(
+                          title: const Text('Admin-Status halten'),
+                          value: _adminStatusHaltenAktiv,
+                          onChanged: _onAdminStatusHaltenGeaendert,
+                          activeThumbColor: AppFarben.appBarRot,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                          child: Text(
+                            'Hält Admin-Status bis zum nächsten Laden/Öffnen '
+                            'aufrecht.',
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
                           ),
-                          icon: Icon(
-                            _testwertAufgeklappt
-                                ? Icons.expand_less
-                                : Icons.expand_more,
-                          ),
-                          label: const Text('Werte eingeben'),
                         ),
                       ],
                     ),
                   ),
-                  if (_testwertAufgeklappt) ...<Widget>[
-                    const Divider(height: 1),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: TextButton(
-                          onPressed: _setzeStandardTestwerte,
-                          child: const Text('Standard-Testwerte übernehmen'),
+                  Container(
+                    color: AppFarben.gruppierungBandB,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        ListTile(
+                          title: const Text(
+                            'Wechselgeldbestand',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              if (_wgCtrl.text.isNotEmpty)
+                                Text(
+                                  _wgCtrl.text,
+                                  style: const TextStyle(fontSize: 11),
+                                ),
+                              const SizedBox(width: 4),
+                              Icon(
+                                _wechselgeldAufgeklappt
+                                    ? Icons.expand_less
+                                    : Icons.expand_more,
+                              ),
+                            ],
+                          ),
+                          onTap: () => setState(
+                            () => _wechselgeldAufgeklappt =
+                                !_wechselgeldAufgeklappt,
+                          ),
                         ),
-                      ),
+                        if (_wechselgeldAufgeklappt &&
+                            _aktiveKinoIndex >= 0) ...<Widget>[
+                          const Divider(height: 1),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  'Wechselgeld $_aktiveKinoName',
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(width: 8),
+                                SizedBox(
+                                  width: 120,
+                                  child: TextField(
+                                    controller: _wgCtrl,
+                                    keyboardType: TextInputType.number,
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      CentWaehrungsEingabeFormatter(),
+                                    ],
+                                    textAlign: TextAlign.right,
+                                    decoration: const InputDecoration(
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      suffixText: '€',
+                                    ),
+                                    onTap: () {
+                                      if (_wgCtrl.text == '0') _wgCtrl.clear();
+                                    },
+                                    onChanged: _onWgChanged,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: _baueAutoFillInhalt(),
+                  ),
+                  Container(
+                    color: AppFarben.gruppierungBandA,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Divider(height: 1),
+                        SwitchListTile(
+                          title: const Text('Flurbocash-Anbindung'),
+                          value: _apiUploadAktiv,
+                          onChanged: _onApiUploadGeaendert,
+                          activeThumbColor: AppFarben.appBarRot,
+                        ),
+                        if (_apiUploadAktiv) ...<Widget>[
+                          const Divider(height: 1),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                TextField(
+                                  controller: _apiUploadUrlCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Upload-URL',
+                                    hintText: 'https://...',
+                                    isDense: true,
+                                  ),
+                                  onChanged: (_) =>
+                                      _speichereApiUploadKonfig(),
+                                ),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: _locationIdCtrl,
+                                  focusNode: _locationIdFocus,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  decoration: const InputDecoration(
+                                    labelText: 'location_id',
+                                    isDense: true,
+                                  ),
+                                  onChanged: (_) => _speichereLocationId(),
+                                  onEditingComplete: () =>
+                                      _locationIdFocus.unfocus(),
+                                ),
+                                if (_overrideLocationId != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      'Gespeichert: $_overrideLocationId',
+                                      style: const TextStyle(
+                                        color: Colors.orange,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: _flurbocashApiKeyCtrl,
+                                  focusNode: _flurbocashApiKeyFocus,
+                                  decoration: const InputDecoration(
+                                    labelText: 'API-Key',
+                                    isDense: true,
+                                  ),
+                                  onChanged: (_) =>
+                                      _speichereFlurbocashApiKey(),
+                                  onEditingComplete: () =>
+                                      _flurbocashApiKeyFocus.unfocus(),
+                                ),
+                                if (_overrideApiKey != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Text(
+                                      'Gespeichert: $_overrideApiKey',
+                                      style: const TextStyle(
+                                        color: Colors.orange,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
+                  ),
+                  Container(
+                    color: AppFarben.gruppierungBandB,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Divider(),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
+                          child: Text(
+                            'KI-Belegscan (Anthropic)',
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
+                          child: TextField(
+                            controller: _anthropicApiKeyCtrl,
+                            obscureText: _anthropicKeyVerdeckt,
+                            decoration: InputDecoration(
+                              labelText: 'Anthropic API-Key',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _anthropicKeyVerdeckt
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                ),
+                                onPressed: () => setState(
+                                  () => _anthropicKeyVerdeckt =
+                                      !_anthropicKeyVerdeckt,
+                                ),
+                              ),
+                            ),
+                            onChanged: (_) => _speichereAnthropicApiKey(),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    color: AppFarben.gruppierungBandA,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Divider(height: 1),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              const Text(
+                                'Testwerte',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              TextButton.icon(
+                                onPressed: () => setState(
+                                  () => _testwertAufgeklappt =
+                                      !_testwertAufgeklappt,
+                                ),
+                                icon: Icon(
+                                  _testwertAufgeklappt
+                                      ? Icons.expand_less
+                                      : Icons.expand_more,
+                                ),
+                                label: const Text('Werte eingeben'),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_testwertAufgeklappt) ...<Widget>[
+                          const Divider(height: 1),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: TextButton(
+                                onPressed: _setzeStandardTestwerte,
+                                child: const Text(
+                                    'Standard-Testwerte übernehmen'),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: _baueAutoFillInhalt(),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: reloadPage,
+              child: const Text('Neu laden'),
             ),
           ),
         ],

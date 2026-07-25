@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+322 · Run 323
+Version: 0.9.3+326a · Run 327
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -21,7 +21,9 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
     lib/domain/             → Berechnungslogik, UseCases
     lib/widgets/            → Wiederverwendbare UI-Widgets
     lib/theme/              → AppFarben (appBarRot #7B0000 u. a.)
-    lib/utils/              → DatumsHelper (4-Uhr-Knick-Logik)
+    lib/utils/              → DatumsHelper (4-Uhr-Knick-Logik),
+                              FeldNavigationHelper (Next-Button,
+                              Tab/Pfeiltasten-Feldnavigation)
     lib/config/             → FeatureFlags
     config/                 → Asset-Textdateien (Getränkelisten, Zahlungsarten)
     .dev/                   → Entwicklungsworkflow und Run-System
@@ -80,7 +82,7 @@ Zwei Ebenen, kein Backend:
 | `box_wechselgeld_entwuerfe`   | Wechselgeld-Entwürfe (Hive)         |
 | `box_getraenkeliste`          | Getränkeliste (Hive)                |
 | `box_einstellungen`           | Einstellungen (Hive)                |
-| SharedPreferences             | Dev-Modus, Auto-Fill, Wechselgeld-Sollwert, `flurbocash_location_id_[kinoId]` |
+| SharedPreferences             | Dev-Modus, Auto-Fill, Wechselgeld-Sollwert, `flurbocash_location_id_[kinoId]`, `standort_modus` (Admin-Betriebsmodus, fest eingestelltes Kino oder "Alle") |
 
 Geldberechnung intern **in Cent** (niemals ändern).  
 Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`).
@@ -128,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 304)
+## Laufender Entwicklungsstand (Run 326a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -247,6 +249,34 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 322 ✅ Getränke-Auffüllen: grauer "Original-Name"-Hinweis
   (zweites Namensfeld bei Zentrale-Umbenennungen) entfernt,
   inkl. totem Code (_originalNamen, ladeOriginalNamen()).
+- Run 323 ✅ Next-Button in Schritt 1, Schritt 2 und
+  Wechselgeld-Prüfen springt jetzt zum nächsten Feld.
+- Run 323a ✅ Next-Button-Korrektur: TapRegion(groupId:
+  EditableText) verhindert automatisches Tastatur-Schließen;
+  Getränke-Auffüllen-Seite komplett neu mit Feld-Navigation
+  verdrahtet.
+- Run 323b ✅ Reine Doku-Änderung: iOS-Safari-Pfeiltasten der
+  Tastatur-Werkzeugleiste als bekannt/kein Blocker
+  dokumentiert (natives Browser-Verhalten, kein App-Bug).
+- Run 324 ✅ Neu-Laden-Button in Einstellungen (außerhalb
+  Admin-Kachel), nutzt vorhandenen reloadPage()-Service.
+- Run 325 ✅ Standort-Betriebsmodus im Admin-Bereich:
+  Dropdown "Alle"/festes Kino, Speicherung lokal auf dem
+  Gerät (SharedPreferences). Bei festem Kino entfällt für MA
+  Kinoauswahl + "Kino wechseln"-Button.
+- Run 325a ✅ Neu-Laden-Button aus eigener Card gelöst, steht
+  jetzt nackt ganz unten auf der Einstellungen-Seite.
+- Run 326 ✅ Einstellungen-Feinschliff: Getränkeliste-Card-
+  Titel zeigt Standortkürzel; neuer Schalter "Admin-Status
+  halten" (übersteht Seitenwechsel im selben App-Lauf, nicht
+  aber echtes Neuladen); zusammengehörende Admin-Einstellungen
+  in abwechselnd getönten Bändern gruppiert.
+- Run 326a ✅ "Neu laden"-Button (Run 324) wirkte trotz Tap
+  wirkungslos, da nur ein einfacher Reload ausgelöst wurde —
+  der Service Worker lieferte weiter seinen alten Cache aus.
+  _reloadPage() löscht jetzt vorher Caches + meldet den
+  Service Worker ab (dieselbe Logik wie der Fresh-Tab-Reset),
+  betrifft auch den bestehenden Auto-Reload bei SW-Update.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

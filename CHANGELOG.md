@@ -9,7 +9,7 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
-- Run 323: Token-Kosten-Optimierungen am Projekt-Workflow selbst
+- Run 327: Token-Kosten-Optimierungen am Projekt-Workflow selbst
   umgesetzt (Anlass: Analyse eines Videos über Token-Abrechnung/
   Cache-Misses). (1) CHANGELOG.md aufgeteilt: Run 63–269 nach
   CHANGELOG_ARCHIV.md ausgelagert (neue Datei), CHANGELOG.md enthält
@@ -48,6 +48,144 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
   TODO_ERLEDIGT.md (neu), CLAUDE.md, AGENTS.md,
   tagesabschluss_berechnung_test.dart, PROJECT_CONTEXT.md,
   .dev/run_counter.txt.
+
+- Run 326a: Korrektur aus Testfeedback — der "Neu laden"-Button
+  (Run 324) brachte trotz Tap weiterhin die alte Version, da er
+  nur einen einfachen window.location.reload() auslöste. Ein
+  einfacher Reload wird aber weiterhin vom (evtl. veralteten)
+  Service-Worker-Cache bedient statt vom Server, da der Service
+  Worker die Anfrage abfängt. Fix: neue gemeinsame JS-Funktion
+  _purgeCachesUndSw() (Caches löschen + Service Worker
+  abmelden) — bisher nur vom Fresh-Tab-Reset genutzt — wird
+  jetzt auch von _reloadPage() vor dem Reload aufgerufen.
+  Betrifft damit sowohl den manuellen Button als auch den
+  bestehenden automatischen Reload bei erkanntem SW-Update
+  (initSwUpdateWatcher in main.dart), da beide dieselbe
+  _reloadPage()-Funktion nutzen. Versionsstring r326a.
+  Dateien: web/index.html, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 326: Einstellungen-Seite Feinschliff, drei Teile.
+  (1) Getränkeliste-Card-Titel zeigt jetzt das Standortkürzel
+  des aktiven Kinos ("Getränkeliste SB" statt nur
+  "Getränkeliste"). (2) Neuer Schalter "Admin-Status halten"
+  in der Admin-Kachel: Schalterstellung wird gespeichert
+  (SharedPreferences); ist er aktiv, bleibt der entsperrte
+  Admin-Status beim Verlassen/Wiederöffnen der Einstellungen-
+  Seite erhalten (statisches Feld, überlebt neue State-
+  Instanzen im selben App-Lauf) und verfällt erst bei echtem
+  Neuladen der App. (3) Zusammengehörende Einstellungen
+  innerhalb der Admin-Kachel (Standort+Admin-Status-Halten /
+  Wechselgeldbestand / Flurbocash-Anbindung / KI-Belegscan /
+  Testwerte) sind jetzt in abwechselnd getönte Container
+  gruppiert (neue Farben AppFarben.gruppierungBandA/B),
+  ähnlich Zeilenfarbwechsel in einer Tabellenkalkulation.
+  Versionsstring r326.
+  Dateien: einstellungen_seite.dart, app_farben.dart,
+  startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 325a: Korrektur aus Testfeedback zu Run 324 — der
+  "Neu laden"-Button stand in einer eigenen Card. Card entfernt,
+  Button steht jetzt nackt (kein Titel, kein Beschreibungstext)
+  ganz unten auf der Einstellungen-Seite, nach der Admin-Kachel.
+  Versionsstring r325a.
+  Dateien: einstellungen_seite.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 325: Standort-Betriebsmodus im Admin-Bereich. Neue
+  Dropdown-Einstellung "Standort" (Admin-Kachel, PIN-
+  geschützt): "Alle" oder ein fest eingestelltes Kino.
+  Persistenz lokal auf dem Gerät via SharedPreferences
+  (`LokalerSpeicher.ladeStandortModus()` /
+  `speichereStandortModus()`, Key `standort_modus`). Ist ein
+  Standort fest eingestellt, hat er beim App-Start Vorrang
+  vor dem zuletzt manuell gewählten Kino
+  (`StartzielBestimmenUsecase`, hält `activeCinemaId`
+  synchron) — die Kinoauswahl-Seite entfällt dadurch für den
+  MA. Der Textbutton "Kino wechseln" auf der Startseite wird
+  in diesem Fall ausgeblendet (`FutureBuilder` um den Button
+  in `startmenue_seite.dart`, da die Seite bislang
+  StatelessWidget ist und keine größere Umstellung nötig
+  sein sollte). Bekannte Grenze: eine Änderung des Standort-
+  Modus während eine Startseite bereits offen ist, wirkt sich
+  erst beim nächsten Öffnen/Neuladen der Startseite aus, nicht
+  live in der offenen Instanz. Versionsstring r325.
+  Dateien: lib/storage/lokaler_speicher.dart,
+  lib/domain/usecases/startziel_bestimmen_usecase.dart,
+  einstellungen_seite.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 324: Neu-Laden-Button in den Einstellungen ergänzt
+  (außerhalb der Admin-Kachel, für alle MA sichtbar). Nutzt
+  den bereits vorhandenen `reloadPage()`-Service
+  (`sw_update_service.dart`, bisher nur für den
+  automatischen Reload bei Service-Worker-Update genutzt) —
+  ruft im Web schlicht `window.location.reload()` auf.
+  Versionsstring r324.
+  Dateien: einstellungen_seite.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 323b: Reine Doku-Änderung, kein App-Code betroffen.
+  Pfeiltasten (▲▼) der iOS-Tastatur-Werkzeugleiste navigieren
+  nicht zwischen Feldern — Ursache geklärt: native iOS-
+  Safari-Chrome, unabhängig vom App-eigenen Next-Button
+  (funktioniert seit Run 323a korrekt über
+  `FeldNavigationHelper`). Flutter Web nutzt ohne
+  `AutofillGroup` ein einziges verstecktes HTML-Inputfeld für
+  alle Felder, wodurch der Browser kein "nächstes Feld" im DOM
+  zum Springen findet. Nur mit größerer Architekturänderung
+  behebbar, kein Blocker, da Zielplattform Android ist und
+  diese Leiste iOS-Safari-spezifisch ist. In TODO.md als
+  bekannt/kein Blocker dokumentiert. Versionsstring r323b.
+  Dateien: TODO.md, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
+- Run 323a: Korrektur aus Testfeedback zu Run 323 — Next-
+  Button schloss Fokus und Tastatur statt zum nächsten Feld
+  zu springen (Schritt 1 reproduziert, Getränke-Auffüllen
+  identisch mit dem dort schon vorher komplett deaktivierten
+  "next"-Button). Ursache: Flutter schließt die Tastatur
+  automatisch, sobald außerhalb des fokussierten Feldes
+  getippt wird — ein normaler Button zählt dafür als
+  "außerhalb", auch wenn er nichts tut. Fix: Next-Button in
+  allen vier Seiten mit TapRegion(groupId: EditableText, …)
+  umschlossen, damit er zur selben Tastatur-Zone wie die
+  Eingabefelder gehört und die automatische Schließung nicht
+  mehr auslöst. Getränke-Auffüllen-Seite zusätzlich komplett
+  neu verdrahtet (hatte bisher gar keine Feld-Navigation):
+  beide "next"-Buttons aktiviert, FeldNavigationHelper
+  eingebunden, Reihenfolge berücksichtigt den "nur benötigte
+  anzeigen"-Filter (ausgeblendete Zeilen werden übersprungen,
+  da ihr Feld nicht gebaut ist). Versionsstring r323a.
+  Dateien: tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart,
+  wechselgeld_pruefen_seite.dart, getraenke_auffuellen_seite.dart,
+  startmenue_seite.dart, kinoauswahl_seite.dart, pubspec.yaml.
+
+- Run 323: Next-Button in Schritt 1, Schritt 2 und
+  Wechselgeld-Prüfen funktioniert jetzt — er sprang zuvor nur
+  eine Platzhalter-SnackBar an ("funktioniert noch nicht"),
+  obwohl er nicht ausgegraut aussah. Zusätzlich springt der
+  Fokus jetzt auch per Tab/Shift+Tab und Pfeil-runter/-hoch
+  zum logisch nächsten/vorherigen Feld, einheitlich über alle
+  drei Seiten. Neue gemeinsame Klasse
+  `lib/utils/feld_navigation_helper.dart`
+  (`FeldNavigationHelper`) kapselt das Schema (nächstes/
+  vorheriges Feld ermitteln, Next-Button und Tastatur-Events
+  darauf abbilden); jede Seite liefert nur ihre eigene
+  Feld-Reihenfolge und Fokussier-Methode. Betroffen sind nur
+  Felder, die schon vorher Teil der "nächstes Feld"-Kette
+  waren (Scheine, Münzen, Rollen, Umschläge, Ausgaben,
+  EC-Belege, Kino-/Bistro-Soll, Differenz Anfangsbestand).
+  `Schritt1InitialisierungHelper` bekam dafür einen neuen
+  Konstruktor-Parameter `verknuepfeFeldNavigation`. Next-Button
+  optisch von Grau auf Kino-Rot umgestellt (war nur noch aus
+  historischen Gründen grau, obwohl tippbar). Versionsstring
+  r323. Dateien: feld_navigation_helper.dart (neu),
+  tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, wechselgeld_pruefen_seite.dart,
+  schritt1_initialisierung_helper.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
 
 - Run 322: Grauen "Original-Name"-Hinweis auf der Seite
   "Getränke auffüllen" entfernt (`getraenke_auffuellen_seite.dart`).
