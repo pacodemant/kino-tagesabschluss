@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 327 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 328 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -168,15 +168,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
 
 ### Weitere Features
-
-- [ ] **Getränkeliste: Abhaken bei "nur benötigte anzeigen"** Im
-      Filtermodus "nur benötigte anzeigen" (`getraenke_auffuellen_seite.dart`,
-      `_nurBenoetigte`) sollen Einträge zusätzlich eine runde Checkbox
-      bekommen. Hakt der MA einen Eintrag ab, wandert er ans Ende der
-      (gefilterten) Liste. Beim Zurückschalten auf "alle anzeigen"
-      wird wieder die ursprüngliche Reihenfolge angezeigt — das
-      Abhaken beeinflusst also nur die Sortierung im gefilterten Modus,
-      nicht die Grundreihenfolge der Liste.
 
 - [ ] **Gondel-Abrechnung (kino_02)** Workflow wie Schauburg,
       Wechselgeld 1.400 €.

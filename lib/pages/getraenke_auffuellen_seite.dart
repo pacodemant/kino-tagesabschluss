@@ -30,6 +30,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   bool _geladen = false;
   bool _istLinkshaender = false;
   bool _nurBenoetigte = false;
+  final Set<int> _abgehakt = <int>{};
 
   @override
   void initState() {
@@ -96,6 +97,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     }
     setState(() {
       _nurBenoetigte = false;
+      _abgehakt.clear();
     });
     _speichereMengen();
   }
@@ -140,12 +142,27 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   List<int> get _gezeigteIndizes {
+    final List<int> alle =
+        List<int>.generate(_getraenkeliste.length, (int i) => i);
     if (!_nurBenoetigte) {
-      return List<int>.generate(_getraenkeliste.length, (int i) => i);
+      return alle;
     }
-    return List<int>.generate(_getraenkeliste.length, (int i) => i)
+    final List<int> benoetigte = alle
         .where((int i) => (int.tryParse(_mengeController[i].text) ?? 0) > 0)
         .toList();
+    final List<int> nichtAbgehakt =
+        benoetigte.where((int i) => !_abgehakt.contains(i)).toList();
+    final List<int> abgehakt =
+        benoetigte.where((int i) => _abgehakt.contains(i)).toList();
+    return <int>[...nichtAbgehakt, ...abgehakt];
+  }
+
+  void _toggleAbgehakt(int idx) {
+    setState(() {
+      if (!_abgehakt.remove(idx)) {
+        _abgehakt.add(idx);
+      }
+    });
   }
 
   Future<void> _toggleHandedness() async {
@@ -227,17 +244,21 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Widget _baueTabelle() {
-    final Map<int, TableColumnWidth> spaltenBreiten = _istLinkshaender
-        ? const <int, TableColumnWidth>{
-            0: IntrinsicColumnWidth(), // Namen
-            1: FixedColumnWidth(8), // Abstand
-            2: FixedColumnWidth(72), // Eingabe
-          }
-        : const <int, TableColumnWidth>{
-            0: FixedColumnWidth(72), // Eingabe
-            1: FixedColumnWidth(8), // Abstand
-            2: IntrinsicColumnWidth(), // Namen
-          };
+    final Map<int, TableColumnWidth> spaltenBreiten = <int, TableColumnWidth>{
+      ..._istLinkshaender
+          ? const <int, TableColumnWidth>{
+              0: IntrinsicColumnWidth(), // Namen
+              1: FixedColumnWidth(8), // Abstand
+              2: FixedColumnWidth(72), // Eingabe
+            }
+          : const <int, TableColumnWidth>{
+              0: FixedColumnWidth(72), // Eingabe
+              1: FixedColumnWidth(8), // Abstand
+              2: IntrinsicColumnWidth(), // Namen
+            },
+      if (_nurBenoetigte) 3: const FixedColumnWidth(4), // Abstand
+      if (_nurBenoetigte) 4: const FixedColumnWidth(36), // Checkbox
+    };
 
     TableRow baueEintragZeile(int idx) {
       final bool feldHatFokus = _mengeFocusNode[idx].hasFocus;
@@ -277,10 +298,24 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
         padding: EdgeInsets.symmetric(vertical: zeilenAbstand),
         child: feld,
       );
+      final List<Widget> basisZellen = _istLinkshaender
+          ? <Widget>[name, const SizedBox(), feldZelle]
+          : <Widget>[feldZelle, const SizedBox(), name];
+      if (!_nurBenoetigte) {
+        return TableRow(children: basisZellen);
+      }
+      final Widget checkboxZelle = Transform.scale(
+        scale: 0.85,
+        child: Checkbox(
+          shape: const CircleBorder(),
+          visualDensity: VisualDensity.compact,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          value: _abgehakt.contains(idx),
+          onChanged: (_) => _toggleAbgehakt(idx),
+        ),
+      );
       return TableRow(
-        children: _istLinkshaender
-            ? <Widget>[name, const SizedBox(), feldZelle]
-            : <Widget>[feldZelle, const SizedBox(), name],
+        children: <Widget>[...basisZellen, const SizedBox(), checkboxZelle],
       );
     }
 
@@ -299,22 +334,25 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
       ),
     );
-    final TableRow gesamtZeile = TableRow(
-      children: _istLinkshaender
-          ? <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Text(
-                  'Gesamt',
-                  textAlign: TextAlign.right,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 15),
-                ),
+    final List<Widget> gesamtBasisZellen = _istLinkshaender
+        ? <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Text(
+                'Gesamt',
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 15),
               ),
-              const SizedBox(),
-              gesamtZahl,
-            ]
-          : <Widget>[gesamtZahl, const SizedBox(), gesamtLabel],
+            ),
+            const SizedBox(),
+            gesamtZahl,
+          ]
+        : <Widget>[gesamtZahl, const SizedBox(), gesamtLabel];
+    final TableRow gesamtZeile = TableRow(
+      children: _nurBenoetigte
+          ? <Widget>[...gesamtBasisZellen, const SizedBox(), const SizedBox()]
+          : gesamtBasisZellen,
     );
 
     return Table(

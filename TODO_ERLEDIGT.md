@@ -146,6 +146,14 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 - [x] **Verlauf — 30-Tage-Bereinigung** Abgeschlossene Abrechnungen
       automatisch nach 30 Tagen löschen (Datenschutz). *(Run 311)*
 
+- [x] **Getränkeliste: Abhaken bei "nur benötigte anzeigen"** Im
+      Filtermodus "nur benötigte anzeigen" bekommt jede Zeile eine
+      runde Checkbox; abgehakte Einträge wandern ans Ende der
+      gefilterten Liste, unabgehakte behalten ihre Reihenfolge. Bei
+      "alle anzeigen" keine Checkbox, Grundreihenfolge unverändert.
+      Abhak-Status bewusst nicht persistiert (reine
+      Session-Sortierhilfe). *(Run 328)*
+
 ---
 
 ## 🔴 Größere Umbauten

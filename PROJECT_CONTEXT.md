@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.3+326a · Run 327
+Version: 0.9.4+328 · Run 328
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 326a)
+## Laufender Entwicklungsstand (Run 328)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -277,6 +277,10 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   _reloadPage() löscht jetzt vorher Caches + meldet den
   Service Worker ab (dieselbe Logik wie der Fresh-Tab-Reset),
   betrifft auch den bestehenden Auto-Reload bei SW-Update.
+- Run 328 ✅ Getränke-Auffüllen: Abhaken im Filtermodus "nur
+  benötigte anzeigen" (runde Checkbox pro Zeile, abgehakte
+  Einträge wandern ans Ende der gefilterten Liste). Nicht
+  persistiert, nur Session-Sortierhilfe.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
