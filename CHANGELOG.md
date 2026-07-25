@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 328: Getränkeliste — Abhaken im Filtermodus "nur benötigte
+  anzeigen" umgesetzt (`getraenke_auffuellen_seite.dart`). Jede
+  Zeile bekommt in diesem Modus zusätzlich eine runde Checkbox
+  (`Checkbox` mit `CircleBorder`). Abgehakte Einträge wandern ans
+  Ende der gefilterten Liste, unabgehakte behalten ihre
+  ursprüngliche Reihenfolge — Sortierung erfolgt in
+  `_gezeigteIndizes` durch Partitionierung nach `_abgehakt`-Set,
+  Zuordnung über den festen Listenindex (nicht die Anzeigeposition),
+  daher robust gegenüber Auf-/Abhaken in beliebiger Reihenfolge. Bei
+  "alle anzeigen" bleibt die Grundreihenfolge unverändert und keine
+  Checkbox sichtbar — Abhak-Status wirkt sich nur auf die Sortierung
+  im gefilterten Modus aus, wie in TODO.md gefordert. "Clear"-Button
+  setzt `_abgehakt` zusätzlich zu den Mengenfeldern zurück, da
+  abgehakte Einträge ohne Menge ohnehin aus dem Filter fallen würden.
+  Tabellenspalten (`spaltenBreiten`, Kopf-/Gesamtzeile) um eine
+  bedingte Checkbox-Spalte erweitert, nur wenn der Filter aktiv ist.
+  Abhak-Status ist bewusst nicht persistiert (SharedPreferences) —
+  reine Session-Sortierhilfe beim Auffüllen, TODO.md verlangte keine
+  Persistenz und Persistenz-Verträge sind laut AGENTS.md ohne
+  ausdrückliche Freigabe tabu. `flutter analyze`/`flutter test`
+  konnten in dieser Remote-Umgebung nicht ausgeführt werden (kein
+  Flutter-SDK installiert) — Paco muss lokal testen. Dateien:
+  getraenke_auffuellen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, CHANGELOG.md,
+  TODO.md, TODO_ERLEDIGT.md, PROJECT_CONTEXT.md,
+  .dev/run_counter.txt.
+
 - Run 327: Token-Kosten-Optimierungen am Projekt-Workflow selbst
   umgesetzt (Anlass: Analyse eines Videos über Token-Abrechnung/
   Cache-Misses). (1) CHANGELOG.md aufgeteilt: Run 63–269 nach
