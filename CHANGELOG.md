@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 328a3: AGENTS.md um festen Abschnitt "Remote-Sessions (Claude
+  Code Web/App): Merge nach master" ergänzt, direkte Anweisung ohne
+  eigene Run-Nummer. Anlass: `.github/workflows/deploy.yml` (Build →
+  GitHub Pages, die URL hinter Pacos installierter PWA) feuert nur
+  bei Push auf `master`; Remote-Sessions committen aber auf einen
+  von der Umgebung zugewiesenen Feature-Branch, wodurch Pacos "Neu
+  laden" auf dem iPhone ohne Merge nach master wirkungslos blieb.
+  Neue Standing-Regel: Remote-Sessions legen nach jedem Run/Sub-Run
+  eine PR an bzw. nutzen die bestehende und mergen direkt nach
+  master, ohne erneut nachzufragen — mit klaren STOPP-Bedingungen
+  (Merge-Konflikte, fehlgeschlagene Checks, Branch-Protection-
+  Blocker, Git-Sicherheitsvertrag-STOPP-Zustände), bei denen
+  stattdessen gewarnt statt gemergt wird. Bestehende "nicht auf
+  Branch master"-STOPP-Bedingung im Git-Sicherheitsvertrag um
+  Klarstellung ergänzt, dass sie nur für lokale/CLI-Sessions gilt.
+  Reine Dokumentationsänderung, keine App-Code-Änderung. PR #6 (Run
+  328a/328a2) und PR #7 (Run 328a3 selbst) im Zuge dessen nach
+  master gemergt. Dateien: AGENTS.md, CHANGELOG.md,
+  PROJECT_CONTEXT.md.
+
 - Run 328a2: Korrektur aus Testfeedback zu Run 328a (Punkt 3) —
   direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von 328a
   daher mit Zahlensuffix statt neuem Buchstaben. Die Bedingung war

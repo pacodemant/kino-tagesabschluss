@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.4+328a2 · Run 328a2
+Version: 0.9.4+328a2 · Run 328a3
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 328a2)
+## Laufender Entwicklungsstand (Run 328a3)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -289,6 +289,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
 - Run 328a2 ✅ Korrektur: Feld-Leerung bei Fokus war in 328a
   genau umgekehrt umgesetzt — jetzt korrekt: leert sich bei
   "alle anzeigen", bleibt gefüllt bei "nur benötigte anzeigen".
+- Run 328a3 ✅ AGENTS.md: feste Regel für Remote-Sessions ergänzt
+  — PRs werden nach jedem Run/Sub-Run automatisch nach master
+  gemergt (löst den GitHub-Pages-Deploy für Pacos PWA aus), mit
+  klaren STOPP-Bedingungen bei Konflikten/fehlgeschlagenen Checks.
+  Reine Doku-Änderung, kein App-Code betroffen.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
