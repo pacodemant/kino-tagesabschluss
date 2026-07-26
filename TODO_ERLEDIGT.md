@@ -120,6 +120,15 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
+- [x] **BelegScan-Service-URL editierbar** Neues TextField "Service-URL"
+      im Admin-Bereich (Abschnitt "KI-Belegscan (Anthropic)"), über dem
+      Anthropic-API-Key-Feld — analog zu Upload-URL/location_id/API-Key.
+      `BelegScanService.ladeWorkerUrl()` liest den Wert aus
+      SharedPreferences (Key `belegscan_service_url`), Fallback auf
+      `standardWorkerUrl` (bisher hart codiert als `_workerUrl`) wenn
+      leer/nicht gesetzt. *(Run 332; entdeckt bei Testfeedback zu
+      Run 329, dort als eigener TODO-Punkt aufgenommen.)*
+
 - [x] **PIN-Schutz Verwaltungsbereich** PIN (1929/Session) + location_id +
       API-Key-Felder in Runs 287/291/292 umgesetzt. Basis-URL-Feld
       ("Upload-URL", SharedPreferences-Key `api_upload_url`) war entgegen

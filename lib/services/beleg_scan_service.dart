@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BelegScanException implements Exception {
   BelegScanException(this.message);
@@ -15,8 +16,18 @@ class BelegScanException implements Exception {
 class BelegScanService {
   BelegScanService._();
 
-  static const String _workerUrl =
+  static const String belegScanUrlPrefKey = 'belegscan_service_url';
+
+  static const String standardWorkerUrl =
       'https://kartenzahlungsbelegscan.pacodemant.workers.dev';
+
+  static Future<String> ladeWorkerUrl() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? gespeichert = speicher.getString(belegScanUrlPrefKey);
+    return (gespeichert != null && gespeichert.trim().isNotEmpty)
+        ? gespeichert.trim()
+        : standardWorkerUrl;
+  }
 
   static const String _systemPrompt =
       'Du bist ein Belegscanner für Kassensysteme. '
@@ -98,10 +109,11 @@ class BelegScanService {
       ],
     };
 
+    final String workerUrl = await ladeWorkerUrl();
     final http.Response response;
     try {
       response = await http.post(
-        Uri.parse(_workerUrl),
+        Uri.parse(workerUrl),
         headers: <String, String>{
           'content-type': 'application/json',
         },

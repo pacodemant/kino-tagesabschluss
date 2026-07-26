@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 332: BelegScan-Service-URL im Admin-Bereich editierbar gemacht.
+  `BelegScanService._workerUrl` (hart codiert) durch
+  `standardWorkerUrl` (Fallback-Default) ersetzt; neue Methode
+  `ladeWorkerUrl()` liest die URL zur Laufzeit aus SharedPreferences
+  (Key `belegscan_service_url`), fällt bei leerem/fehlendem Wert auf
+  den Default zurück. `scan()` nutzt sie entsprechend. Einstellungen
+  Admin-Bereich, Abschnitt "KI-Belegscan (Anthropic)": neues TextField
+  "Service-URL" über dem Anthropic-API-Key-Feld, Hint zeigt den
+  Default, Speicherung bei jeder Änderung, Leerfeld = Default. Löst
+  TODO-Punkt "BelegScan-Service-URL editierbar" (Testfeedback zu
+  Run 329). Version 0.9.8+332. Dateien: beleg_scan_service.dart,
+  einstellungen_seite.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 331: Zwei weitere Stellen auf bereits bestehende
   Theme-Konstanten umgestellt (reine Konsistenz, keine optische
   Änderung möglich — identische Werte). (1) einstellungen_seite.dart

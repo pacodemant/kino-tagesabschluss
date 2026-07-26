@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.7+331 · Run 331
+Version: 0.9.8+332 · Run 332
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -336,6 +336,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Colors.black54 durch AppFarben.subtilerText ersetzt. Dritter
   Kandidat (Dev-Tools-Panel-Gelb) bewusst ausgelassen — Dev-Modus
   fliegt später komplett raus.
+- Run 332 ✅ BelegScan-Service-URL im Admin-Bereich editierbar
+  (Abschnitt "KI-Belegscan (Anthropic)", TextField "Service-URL" über
+  dem API-Key-Feld). SharedPreferences-Key `belegscan_service_url`,
+  Fallback auf bisherigen hart codierten Wert. Löst länger offenen
+  TODO-Punkt aus Run 329.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -4,6 +4,7 @@ import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
@@ -110,6 +111,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       <TextEditingController>[];
   final TextEditingController _neuesGetraenkCtrl = TextEditingController();
   final TextEditingController _apiUploadUrlCtrl = TextEditingController();
+  final TextEditingController _belegScanUrlCtrl = TextEditingController();
   final TextEditingController _anthropicApiKeyCtrl = TextEditingController();
   final TextEditingController _locationIdCtrl = TextEditingController();
   final TextEditingController _flurbocashApiKeyCtrl = TextEditingController();
@@ -167,6 +169,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _neuesGetraenkCtrl.dispose();
     _neuesGetraenkFocus.dispose();
     _apiUploadUrlCtrl.dispose();
+    _belegScanUrlCtrl.dispose();
     _anthropicApiKeyCtrl.dispose();
     _locationIdCtrl.dispose();
     _locationIdFocus.dispose();
@@ -230,6 +233,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
+    final String belegScanUrl =
+        speicher.getString(BelegScanService.belegScanUrlPrefKey) ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
     final String? overrideLocationId =
@@ -241,6 +246,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getBool('admin_status_halten_aktiv') ?? false;
     if (!mounted) return;
     _apiUploadUrlCtrl.text = apiUploadUrl;
+    _belegScanUrlCtrl.text = belegScanUrl;
     _anthropicApiKeyCtrl.text = anthropicApiKey;
     _locationIdCtrl.text = overrideLocationId ?? '';
     _flurbocashApiKeyCtrl.text = overrideApiKey ?? '';
@@ -346,6 +352,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Future<void> _speichereApiUploadKonfig() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString('api_upload_url', _apiUploadUrlCtrl.text.trim());
+  }
+
+  Future<void> _speichereBelegScanUrl() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+        BelegScanService.belegScanUrlPrefKey, _belegScanUrlCtrl.text.trim());
   }
 
   Future<void> _speichereAnthropicApiKey() async {
@@ -1462,6 +1474,19 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                           child: Text(
                             'KI-Belegscan (Anthropic)',
                             style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
+                          child: TextField(
+                            controller: _belegScanUrlCtrl,
+                            decoration: InputDecoration(
+                              labelText: 'Service-URL',
+                              hintText: BelegScanService.standardWorkerUrl,
+                              isDense: true,
+                            ),
+                            onChanged: (_) => _speichereBelegScanUrl(),
                           ),
                         ),
                         Padding(

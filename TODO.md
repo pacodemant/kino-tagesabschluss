@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 331 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 332 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -109,16 +109,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Stornos erkennen können.
 
 ### Einstellungen & Konfiguration *(Phase C)*
-
-- [ ] **BelegScan-Service-URL editierbar** Die Worker-URL für den
-      KI-Belegscan (`_workerUrl` in `beleg_scan_service.dart`,
-      aktuell hart codiert auf
-      `https://kartenzahlungsbelegscan.pacodemant.workers.dev`)
-      soll wie Upload-URL/location_id/API-Key im Admin-Bereich
-      überschreibbar sein (SharedPreferences-Override, Fallback auf
-      den bisherigen Wert). Entdeckt bei Testfeedback zu Run 329 —
-      Paco meinte ursprünglich diese URL, nicht die Flurbocash-
-      Upload-URL. Noch nicht umgesetzt, als Run 330 vorgeschlagen.
 
 - [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
       für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
