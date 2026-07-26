@@ -105,7 +105,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
         isDense: true,
         filled: hatFokus || rotFuellung,
         fillColor: hatFokus
-            ? AppFarben.appBarRot
+            ? AppFarben.fokusFarbe
             : (rotFuellung ? Colors.red.shade50 : null),
         border: rotRahmen
             ? const OutlineInputBorder(

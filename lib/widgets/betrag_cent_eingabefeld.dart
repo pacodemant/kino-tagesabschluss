@@ -235,7 +235,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
 
     final Color? fuellFarbe;
     if (hatFokus) {
-      fuellFarbe = AppFarben.appBarRot;
+      fuellFarbe = AppFarben.fokusFarbe;
     } else if (rotValidierung) {
       fuellFarbe = AppFarben.validierungFehlerHintergrund;
     } else if (gruenWert) {

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 329a2 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 330 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -200,7 +200,9 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 - [ ] **Refactoring** Wiederkehrende UI-Elemente als Widgets extrahieren,
       Inline-Styling durch Theme-Konstanten ersetzen, Logik in Services auslagern.
-      Provider/State-Management einführen.
+      Provider/State-Management einführen. Erster kleiner Schritt bereits
+      in Run 330: Fokus-Füllfarbe von Eingabefeldern über eigene Konstante
+      `AppFarben.fokusFarbe` zentralisiert (statt appBarRot mitzunutzen).
 
 - [ ] **Getränke-Audioeingabe** Audio + Getränkeliste → KI → Felder automatisch
       befüllen (Fuzzy Matching). Unsichere Zuordnungen gekennzeichnet.

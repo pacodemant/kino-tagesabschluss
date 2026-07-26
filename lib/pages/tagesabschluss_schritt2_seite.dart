@@ -3010,7 +3010,7 @@ class _TagesabschlussSchritt2SeiteState
                                           isDense: true,
                                           filled: _ausgabenLabelFocusNode[i].hasFocus,
                                           fillColor: _ausgabenLabelFocusNode[i].hasFocus
-                                              ? AppFarben.appBarRot
+                                              ? AppFarben.fokusFarbe
                                               : null,
                                           contentPadding:
                                               const EdgeInsets.symmetric(
@@ -3395,7 +3395,7 @@ class _TagesabschlussSchritt2SeiteState
                                             isDense: true,
                                             filled: _ecBelegLabelFocusNode[0].hasFocus,
                                             fillColor: _ecBelegLabelFocusNode[0].hasFocus
-                                                ? AppFarben.appBarRot
+                                                ? AppFarben.fokusFarbe
                                                 : null,
                                             contentPadding: const EdgeInsets.symmetric(
                                               horizontal: 8,
@@ -3509,7 +3509,7 @@ class _TagesabschlussSchritt2SeiteState
                                                                       ),
                                                                       isDense: true,
                                                                       filled: _ecBelegLabelFocusNode[i].hasFocus,
-                                                                      fillColor: AppFarben.appBarRot,
+                                                                      fillColor: AppFarben.fokusFarbe,
                                                                       contentPadding: const EdgeInsets.symmetric(
                                                                           horizontal: 6, vertical: 4),
                                                                       border: OutlineInputBorder(

@@ -5,6 +5,9 @@ class AppFarben {
   static const Color appBarRot = Color(0xFF5C0A0A);
   static const Color seitenHintergrund = Color(0xFFFCE7E7);
 
+  // Fokus-Füllfarbe für Eingabefelder (Splash-Ladebalken-Orange).
+  static const Color fokusFarbe = Color(0xFFFF9800);
+
   // Differenz-Ampel (Verlauf)
   static const Color differenzPositiv = Color(0xFF388E3C);       // green.shade700
   static const Color differenzNegativ = Color(0xFFD32F2F);       // red.shade700

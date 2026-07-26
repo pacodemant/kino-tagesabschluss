@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 330: Fokus-Füllfarbe von Eingabefeldern zentralisiert und von
+  Rot auf Orange umgestellt. Neue Konstante AppFarben.fokusFarbe
+  (Color(0xFFFF9800), identischer Ton wie der Splash-Ladebalken aus
+  Run 328a4) in lib/theme/app_farben.dart ergänzt. Bisher nutzte die
+  Fokus-Füllung dieselbe Konstante AppFarben.appBarRot wie AppBar/
+  Buttons/Ränder — ein direktes Umfärben von appBarRot hätte auch
+  diese mit eingefärbt. Stattdessen gezielt an den 5 Stellen ersetzt,
+  an denen ein Feld beim Fokus mit appBarRot gefüllt wurde: (1)
+  betrag_cent_eingabefeld.dart (Euro-Beträge, App-weit), (2)
+  ganzzahl_eingabefeld.dart (Stückzahlen, App-weit), (3)-(5)
+  tagesabschluss_schritt2_seite.dart (Ausgaben-Bezeichnung,
+  Terminal-ID 1-Beleg-Modus, Terminal-ID Sub-Kachel Mehrbeleg-Modus).
+  Ränder (border/enabledBorder) bleiben bewusst unverändert rot —
+  das ist die Randfarbe im Ruhezustand, kein Fokus-Verhalten. Weißer
+  Text/Cursor auf dem gefüllten Feld bleibt unverändert; Kontrast auf
+  Orange ist geringer als vorher auf Dunkelrot — bei Bedarf als
+  kleine Korrektur nachziehbar. Version 0.9.6+330. Dateien:
+  app_farben.dart, betrag_cent_eingabefeld.dart,
+  ganzzahl_eingabefeld.dart, tagesabschluss_schritt2_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 329a2: Korrektur aus Testfeedback zu Run 329a, Fortsetzung mit
   Zahlensuffix (329a ist bereits durch Buchstaben benannt). Hinweis
   im Scan-Bereich von Wrap (Text + GestureDetector + Text) auf
