@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.6+330a · Run 330a
+Version: 0.9.7+331 · Run 331
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 330a)
+## Laufender Entwicklungsstand (Run 331)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -329,6 +329,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Weiß auf Schwarz (Kontrast zu schwach). Zentraler Helfer
   clearIconFarbe() ebenfalls auf Schwarz — behebt nebenbei ein
   Kontrastproblem auf einem weiteren, hellgelben Feld.
+- Run 331 ✅ Zwei weitere Stellen auf bereits bestehende
+  Theme-Konstanten umgestellt (reine Konsistenz, keine optische
+  Änderung): einstellungen_seite.dart nutzt jetzt
+  AppFarben.footerDecoration statt eigener Kopie; 10× rohes
+  Colors.black54 durch AppFarben.subtilerText ersetzt. Dritter
+  Kandidat (Dev-Tools-Panel-Gelb) bewusst ausgelassen — Dev-Modus
+  fliegt später komplett raus.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

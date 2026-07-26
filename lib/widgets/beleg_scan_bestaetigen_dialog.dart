@@ -55,7 +55,7 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                 padding: EdgeInsets.only(bottom: 8),
                 child: Text(
                   'Keine Kartenposten erkannt.',
-                  style: TextStyle(fontSize: 13, color: Colors.black54),
+                  style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                 ),
               )
             else
@@ -69,7 +69,7 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                 'Rot markierte Werte können nach der Übernahme direkt '
                 'in den Feldern nachgetragen oder korrigiert werden – '
                 'oder du scannst den Beleg noch einmal.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: AppFarben.subtilerText),
               ),
             ],
             if (ergebnis.hinweis != null) ...<Widget>[
@@ -130,7 +130,7 @@ Widget _metaZeileTid(String? terminalId) {
           width: 60,
           child: Text(
             'TID',
-            style: TextStyle(fontSize: 13, color: Colors.black54),
+            style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
           ),
         ),
         Icon(Icons.warning_amber_rounded, size: 14, color: Colors.red),
@@ -153,7 +153,7 @@ Widget _metaZeile(String label, String wert) {
           width: 60,
           child: Text(
             label,
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
+            style: const TextStyle(fontSize: 13, color: AppFarben.subtilerText),
           ),
         ),
         Text(wert, style: const TextStyle(fontSize: 13)),

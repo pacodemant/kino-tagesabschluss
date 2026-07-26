@@ -2047,7 +2047,7 @@ class _TagesabschlussSchritt2SeiteState
             width: 110,
             child: Text(
               label,
-              style: const TextStyle(fontSize: 12, color: Colors.black54),
+              style: const TextStyle(fontSize: 12, color: AppFarben.subtilerText),
             ),
           ),
           Expanded(
@@ -2081,7 +2081,7 @@ class _TagesabschlussSchritt2SeiteState
             width: 110,
             child: Text(
               label,
-              style: const TextStyle(fontSize: 12, color: Colors.black54),
+              style: const TextStyle(fontSize: 12, color: AppFarben.subtilerText),
             ),
           ),
           Expanded(
@@ -2159,7 +2159,7 @@ class _TagesabschlussSchritt2SeiteState
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black54,
+                      color: AppFarben.subtilerText,
                     ),
                   ),
                 ),
@@ -2198,7 +2198,7 @@ class _TagesabschlussSchritt2SeiteState
                       ? Icons.expand_less
                       : Icons.expand_more,
                   size: 16,
-                  color: Colors.black54,
+                  color: AppFarben.subtilerText,
                 ),
               ],
             ),
@@ -2458,7 +2458,7 @@ class _TagesabschlussSchritt2SeiteState
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black54,
+                      color: AppFarben.subtilerText,
                     ),
                   ),
                 ),
@@ -2470,7 +2470,7 @@ class _TagesabschlussSchritt2SeiteState
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black54,
+                      color: AppFarben.subtilerText,
                     ),
                   ),
                 ),

@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 331: Zwei weitere Stellen auf bereits bestehende
+  Theme-Konstanten umgestellt (reine Konsistenz, keine optische
+  Änderung möglich — identische Werte). (1) einstellungen_seite.dart
+  `_hausFooter` baute die Footer-BoxDecoration (schwarz + weißer
+  Rand + Schatten) Byte-für-Byte per Hand nach, obwohl dafür bereits
+  AppFarben.footerDecoration existiert (genutzt in verlauf_seite.dart,
+  verlauf_detail_seite.dart, tagesabschluss_scaffold.dart) — jetzt
+  ebenfalls darauf umgestellt. (2) 10 Stellen mit rohem
+  Colors.black54 (tagesabschluss_schritt2_seite.dart: 6×,
+  beleg_scan_bestaetigen_dialog.dart: 4×) durch die bereits
+  existierende, wertgleiche Konstante AppFarben.subtilerText ersetzt
+  (bisher nur in startmenue_seite.dart/kinoauswahl_seite.dart
+  genutzt). Ein dritter Kandidat (Color(0xFFFFF8E1), Dev-Tools-Panel-
+  Hintergrund) bewusst nicht angefasst — gehört zum Dev-Modus, der
+  laut Paco später komplett entfernt wird. Version 0.9.7+331.
+  Dateien: einstellungen_seite.dart, tagesabschluss_schritt2_seite.dart,
+  beleg_scan_bestaetigen_dialog.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 330a: Korrektur aus Testfeedback zu Run 330, direkte Anweisung
   ohne eigene Run-Nummer. Textfarbe innerhalb orange gefüllter Felder
   von Weiß auf Schwarz umgestellt (Kontrast auf Orange war zu
