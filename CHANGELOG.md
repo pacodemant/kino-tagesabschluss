@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 328a4: Ladebalken im Splash-Screen ergänzt — direkte
+  Anweisung ohne eigene Run-Nummer, Fortsetzung von 328a3 mit
+  Zahlensuffix. Anlass: sichtbares Feedback beim App-Start bzw.
+  bei jedem Neu-Laden (Button, Auto-Update, Fresh-Tab-Reset) fehlte
+  bisher — nur Icon, kein Fortschrittshinweis. In `web/index.html`
+  unter dem Icon im `#splash`-Div einen animierten, unbestimmten
+  Ladebalken ergänzt: 25vw breit (Vorgabe: 1/4 der Displaybreite),
+  Farbe Orange (#FF9800) auf halbtransparenter weißer Spur. Rein
+  CSS-animiert (kein echter Ladefortschritt aus Flutter verdrahtet),
+  verschwindet wie das Icon beim `flutter-first-frame`-Event. Reine
+  HTML/CSS-Änderung, kein Dart-Code betroffen. Dateien: web/index.html,
+  pubspec.yaml, lib/pages/startmenue_seite.dart,
+  lib/pages/kinoauswahl_seite.dart, CHANGELOG.md, PROJECT_CONTEXT.md.
+
 - Run 328a3: AGENTS.md um festen Abschnitt "Remote-Sessions (Claude
   Code Web/App): Merge nach master" ergänzt, direkte Anweisung ohne
   eigene Run-Nummer. Anlass: `.github/workflows/deploy.yml` (Build →

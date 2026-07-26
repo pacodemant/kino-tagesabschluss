@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.4+328a2 · Run 328a3
+Version: 0.9.4+328a4 · Run 328a4
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 328a3)
+## Laufender Entwicklungsstand (Run 328a4)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -294,6 +294,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   gemergt (löst den GitHub-Pages-Deploy für Pacos PWA aus), mit
   klaren STOPP-Bedingungen bei Konflikten/fehlgeschlagenen Checks.
   Reine Doku-Änderung, kein App-Code betroffen.
+- Run 328a4 ✅ Ladebalken im Splash-Screen (web/index.html):
+  animierter Balken (25vw Breite, orange #FF9800) unter dem
+  App-Icon, sichtbar bei jedem Laden/Neu-Laden der Seite (App-
+  Start, "Neu laden"-Button, Auto-Update, Fresh-Tab-Reset) —
+  verschwindet zusammen mit dem Icon beim ersten Flutter-Frame.
+  Reine HTML/CSS-Änderung, kein Dart-Code betroffen.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

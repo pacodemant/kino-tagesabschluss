@@ -43,14 +43,37 @@
       inset: 0;
       background: #5C0A0A;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 24px;
       z-index: 9999;
       transition: opacity 0.3s ease;
     }
     #splash img {
       width: 96px;
       height: 96px;
+    }
+    /* Ladebalken: sichtbar solange die Seite lädt bzw. neu lädt (Start,
+       erzwungenes Neu-Laden, Auto-Update, Fresh-Tab-Reset) — verschwindet
+       zusammen mit #splash beim ersten Flutter-Frame. */
+    #splash-balken-spur {
+      width: 25vw;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    #splash-balken-fuellung {
+      width: 40%;
+      height: 100%;
+      background: #FF9800;
+      border-radius: 3px;
+      animation: splash-balken-lauf 1.4s ease-in-out infinite;
+    }
+    @keyframes splash-balken-lauf {
+      0% { margin-left: -40%; }
+      100% { margin-left: 100%; }
     }
   </style>
 
@@ -139,6 +162,9 @@
 <body>
   <div id="splash">
     <img src="icons/Icon-192.png" alt="">
+    <div id="splash-balken-spur">
+      <div id="splash-balken-fuellung"></div>
+    </div>
   </div>
   <script>
     window.addEventListener('flutter-first-frame', function () {
