@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 329a: Korrektur aus Testfeedback zu Run 329, direkte Anweisung
+  ohne eigene Run-Nummer. Hilfetext im Scan-Bereich der EC-Belege-
+  Kachel um zusätzlichen Text-Link "Belegdaten bearbeiten" ergänzt
+  (kursiv, unterstrichen, Kino-Rot; fokussiert beim Tap das
+  Terminal-ID-Feld des ersten Belegs). Hinweistext samt Link
+  verschwindet jetzt, sobald mindestens ein Beleg Daten hat
+  (`hatEcBelege`) — vorher war er unbedingt sichtbar. Außerdem
+  TODO.md um neuen Punkt "BelegScan-Service-URL editierbar" ergänzt:
+  Paco meinte mit der ursprünglichen Basis-URL-Anfrage die Worker-URL
+  des KI-Belegscans (`_workerUrl` in beleg_scan_service.dart,
+  aktuell hart codiert), nicht die Flurbocash-Upload-URL — noch
+  nicht umgesetzt, als Run 330 vorgeschlagen. Version 0.9.5+329a.
+  Dateien: tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md,
+  CHANGELOG.md, PROJECT_CONTEXT.md.
+
 - Run 329: Dauerhaft sichtbarer Hilfetext im Scan-Bereich der EC-Belege-
   Kachel (Schritt 2) ergänzt — Text "Beleg fehlt oder ist unlesbar?
   Fehlende Felder unten einfach manuell eintragen." erscheint immer,

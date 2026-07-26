@@ -3267,17 +3267,45 @@ class _TagesabschlussSchritt2SeiteState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: Text(
-                                  'Beleg fehlt oder ist unlesbar? Fehlende '
-                                  'Felder unten einfach manuell eintragen.',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
+                              if (!hatEcBelege)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: Wrap(
+                                    children: <Widget>[
+                                      Text(
+                                        'Beleg fehlt oder ist unlesbar? '
+                                        'Fehlende Felder unten einfach '
+                                        'manuell eintragen. Tippe auf ',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () => FocusScope.of(context)
+                                            .requestFocus(
+                                                _ecBelegLabelFocusNode[0]),
+                                        child: const Text(
+                                          'Belegdaten bearbeiten',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontStyle: FontStyle.italic,
+                                            color: AppFarben.appBarRot,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        '.',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
                               if (hatEcBelege)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8),

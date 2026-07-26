@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.5+329 · Run 329
+Version: 0.9.5+329a · Run 329a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 329)
+## Laufender Entwicklungsstand (Run 329a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -306,6 +306,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   geplante Basis-URL-Feld in den Einstellungen existierte bereits
   seit Run 292 ("Upload-URL", Key `api_upload_url`) — TODO.md war
   veraltet, kein Code dafür nötig.
+- Run 329a ✅ Korrektur aus Testfeedback: Hilfetext um Text-Link
+  "Belegdaten bearbeiten" ergänzt (kursiv, fokussiert Terminal-ID-
+  Feld), verschwindet jetzt sobald mind. ein Beleg Daten hat.
+  TODO.md: neuer Punkt "BelegScan-Service-URL editierbar" (Worker-
+  URL in beleg_scan_service.dart, aktuell hart codiert) — Paco
+  meinte damit ursprünglich die KI-Scan-URL, nicht die Flurbocash-
+  Upload-URL. Als Run 330 vorgeschlagen.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

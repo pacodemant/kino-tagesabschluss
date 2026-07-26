@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 329 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 329a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -94,9 +94,12 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Teilschritt erledigt (Run 319a): Die Fehlermeldung bei
       unscharfem Foto/Netzwerkproblem weist zusätzlich auf die
       manuelle Eingabe hin.
-      Teilschritt erledigt (Run 329): Dauerhaft sichtbarer Hilfetext
-      im Scan-Bereich ("Beleg fehlt oder ist unlesbar? Fehlende
-      Felder unten einfach manuell eintragen.") ergänzt. Nur der
+      Teilschritt erledigt (Run 329/329a): Dauerhaft sichtbarer
+      Hilfetext im Scan-Bereich ("Beleg fehlt oder ist unlesbar?
+      Fehlende Felder unten einfach manuell eintragen. Tippe auf
+      Belegdaten bearbeiten.") mit zusätzlichem kursivem Text-Link,
+      der auf das Terminal-ID-Feld fokussiert; Hinweis verschwindet
+      sobald mind. ein Beleg Daten hat (`hatEcBelege`). Nur der
       Duplikat-Button selbst bleibt offen.
 
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
@@ -106,6 +109,16 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Stornos erkennen können.
 
 ### Einstellungen & Konfiguration *(Phase C)*
+
+- [ ] **BelegScan-Service-URL editierbar** Die Worker-URL für den
+      KI-Belegscan (`_workerUrl` in `beleg_scan_service.dart`,
+      aktuell hart codiert auf
+      `https://kartenzahlungsbelegscan.pacodemant.workers.dev`)
+      soll wie Upload-URL/location_id/API-Key im Admin-Bereich
+      überschreibbar sein (SharedPreferences-Override, Fallback auf
+      den bisherigen Wert). Entdeckt bei Testfeedback zu Run 329 —
+      Paco meinte ursprünglich diese URL, nicht die Flurbocash-
+      Upload-URL. Noch nicht umgesetzt, als Run 330 vorgeschlagen.
 
 - [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
       für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
