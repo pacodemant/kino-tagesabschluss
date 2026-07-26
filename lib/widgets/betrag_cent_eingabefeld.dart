@@ -284,10 +284,10 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
           : TextInputType.number,
       textInputAction: widget.textInputAction,
       textAlign: TextAlign.center,
-      cursorColor: hatFokus ? Colors.white : null,
+      cursorColor: hatFokus ? Colors.black : null,
       style: TextStyle(
         fontSize: widget.schriftgroesse,
-        color: hatFokus ? Colors.white : null,
+        color: hatFokus ? Colors.black : null,
         fontWeight: hatFokus ? FontWeight.w700 : FontWeight.normal,
       ),
       inputFormatters: widget.mitKomma
@@ -324,7 +324,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
               Text(
                 '€',
                 style: TextStyle(
-                  color: hatFokus ? Colors.white : null,
+                  color: hatFokus ? Colors.black : null,
                 ),
               ),
             ],

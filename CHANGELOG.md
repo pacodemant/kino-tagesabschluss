@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 330a: Korrektur aus Testfeedback zu Run 330, direkte Anweisung
+  ohne eigene Run-Nummer. Textfarbe innerhalb orange gefüllter Felder
+  von Weiß auf Schwarz umgestellt (Kontrast auf Orange war zu
+  schwach). Betroffen: cursorColor + style-color in
+  betrag_cent_eingabefeld.dart und ganzzahl_eingabefeld.dart;
+  cursorColor + style-color + "X"-Clear-Icon in
+  tagesabschluss_schritt2_seite.dart an allen 3 in Run 330
+  umgestellten Feldern (Ausgaben-Bezeichnung, Terminal-ID 1-Beleg-
+  Modus, Terminal-ID Sub-Kachel); zusätzlich zentraler Helfer
+  clearIconFarbe() (eingabefeld_clear_helper.dart) auf Schwarz
+  umgestellt — behebt nebenbei auch ein bereits vorher bestehendes
+  Kontrastproblem des Clear-Icons auf dem hellgelben
+  Kartenarten-Betrag-Feld (Color(0xFFFFF8E1)), das denselben Helfer
+  nutzt. Version 0.9.6+330a. Dateien: betrag_cent_eingabefeld.dart,
+  ganzzahl_eingabefeld.dart, eingabefeld_clear_helper.dart,
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 330: Fokus-Füllfarbe von Eingabefeldern zentralisiert und von
   Rot auf Orange umgestellt. Neue Konstante AppFarben.fokusFarbe
   (Color(0xFFFF9800), identischer Ton wie der Splash-Ladebalken aus

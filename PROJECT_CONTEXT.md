@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.6+330 · Run 330
+Version: 0.9.6+330a · Run 330a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 330)
+## Laufender Entwicklungsstand (Run 330a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -325,6 +325,10 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   ganzzahl_eingabefeld.dart, 3× tagesabschluss_schritt2_seite.dart).
   Ränder bleiben bewusst rot (appBarRot), da Ruhezustand-Farbe,
   kein Fokus-Verhalten.
+- Run 330a ✅ Korrektur: Textfarbe in orange gefüllten Feldern von
+  Weiß auf Schwarz (Kontrast zu schwach). Zentraler Helfer
+  clearIconFarbe() ebenfalls auf Schwarz — behebt nebenbei ein
+  Kontrastproblem auf einem weiteren, hellgelben Feld.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

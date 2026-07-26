@@ -88,10 +88,10 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
       keyboardType: TextInputType.number,
       textInputAction: widget.textInputAction,
       textAlign: widget.textAusrichtung,
-      cursorColor: hatFokus ? Colors.white : null,
+      cursorColor: hatFokus ? Colors.black : null,
       style: TextStyle(
         fontSize: widget.schriftgroesse,
-        color: hatFokus ? Colors.white : null,
+        color: hatFokus ? Colors.black : null,
         fontWeight: hatFokus ? FontWeight.w700 : FontWeight.normal,
       ),
       inputFormatters: <TextInputFormatter>[

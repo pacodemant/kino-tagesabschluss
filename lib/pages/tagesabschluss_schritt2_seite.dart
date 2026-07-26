@@ -2990,11 +2990,11 @@ class _TagesabschlussSchritt2SeiteState
                                         style: TextStyle(
                                           fontSize: 15,
                                           color: _ausgabenLabelFocusNode[i].hasFocus
-                                              ? Colors.white
+                                              ? Colors.black
                                               : null,
                                         ),
                                         cursorColor: _ausgabenLabelFocusNode[i].hasFocus
-                                            ? Colors.white
+                                            ? Colors.black
                                             : null,
                                         textInputAction:
                                             _textInputActionFuerSchritt2(
@@ -3032,7 +3032,7 @@ class _TagesabschlussSchritt2SeiteState
                                                     Icons.close,
                                                     size: 18,
                                                     color: _ausgabenLabelFocusNode[i].hasFocus
-                                                        ? Colors.white
+                                                        ? Colors.black
                                                         : null,
                                                   ),
                                                   onPressed: () {
@@ -3360,11 +3360,11 @@ class _TagesabschlussSchritt2SeiteState
                                           style: TextStyle(
                                             fontSize: 15,
                                             color: _ecBelegLabelFocusNode[0].hasFocus
-                                                ? Colors.white
+                                                ? Colors.black
                                                 : null,
                                           ),
                                           cursorColor: _ecBelegLabelFocusNode[0].hasFocus
-                                              ? Colors.white
+                                              ? Colors.black
                                               : null,
                                           textInputAction:
                                               _textInputActionFuerSchritt2(_ecBelegLabelFocusNode[0]),
@@ -3416,7 +3416,7 @@ class _TagesabschlussSchritt2SeiteState
                                                       Icons.close,
                                                       size: 18,
                                                       color: _ecBelegLabelFocusNode[0].hasFocus
-                                                          ? Colors.white
+                                                          ? Colors.black
                                                           : null,
                                                     ),
                                                     onPressed: () {
@@ -3493,9 +3493,9 @@ class _TagesabschlussSchritt2SeiteState
                                                                     style: TextStyle(
                                                                       fontSize: 13,
                                                                       fontWeight: FontWeight.w600,
-                                                                      color: _ecBelegLabelFocusNode[i].hasFocus ? Colors.white : null,
+                                                                      color: _ecBelegLabelFocusNode[i].hasFocus ? Colors.black : null,
                                                                     ),
-                                                                    cursorColor: _ecBelegLabelFocusNode[i].hasFocus ? Colors.white : null,
+                                                                    cursorColor: _ecBelegLabelFocusNode[i].hasFocus ? Colors.black : null,
                                                                     decoration: InputDecoration(
                                                                       hintText: _subKachelTidUnleserlich(i)
                                                                           ? 'Terminal-ID?'

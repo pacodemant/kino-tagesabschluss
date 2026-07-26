@@ -12,4 +12,4 @@ VoidCallback baueClearAktion({
     };
 
 Color clearIconFarbe(bool hatFokus) =>
-    hatFokus ? Colors.white : Colors.grey.shade600;
+    hatFokus ? Colors.black : Colors.grey.shade600;
