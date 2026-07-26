@@ -66,36 +66,54 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                   Expanded(
                     child: baueFeldMitKey(
                       focusNode: bezeichnungFocusNode,
-                      child: TextField(
-                        controller: umschlagBezeichnungController[i],
-                        focusNode: bezeichnungFocusNode,
-                        style: const TextStyle(fontSize: 15),
-                        textInputAction: textInputActionFuerSchritt1(
-                          bezeichnungFocusNode,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Label (optional)',
-                          hintStyle: const TextStyle(fontSize: 15),
-                          border: const OutlineInputBorder(),
-                          isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
-                          ),
-                          suffixIcon: umschlagBezeichnungController[i].text.isEmpty
-                              ? null
-                              : IconButton(
-                                  icon: const Icon(Icons.close, size: 18),
-                                  onPressed: () {
-                                    umschlagBezeichnungController[i].clear();
-                                    beiUmschlagBezeichnungGeaendert(i, '');
-                                  },
-                                ),
-                        ),
-                        onSubmitted: (_) =>
-                            beiEingabeAbgeschlossen(bezeichnungFocusNode),
-                        onChanged: (String wert) =>
-                            beiUmschlagBezeichnungGeaendert(i, wert),
+                      child: ListenableBuilder(
+                        listenable: bezeichnungFocusNode,
+                        builder: (BuildContext context, Widget? _) {
+                          final bool hatFokus = bezeichnungFocusNode.hasFocus;
+                          return TextField(
+                            controller: umschlagBezeichnungController[i],
+                            focusNode: bezeichnungFocusNode,
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: hatFokus ? Colors.black : null,
+                            ),
+                            cursorColor: hatFokus ? Colors.black : null,
+                            textInputAction: textInputActionFuerSchritt1(
+                              bezeichnungFocusNode,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Label (optional)',
+                              hintStyle: const TextStyle(fontSize: 15),
+                              border: const OutlineInputBorder(),
+                              isDense: true,
+                              filled: hatFokus,
+                              fillColor:
+                                  hatFokus ? AppFarben.fokusFarbe : null,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                              suffixIcon:
+                                  umschlagBezeichnungController[i]
+                                      .text
+                                      .isEmpty
+                                  ? null
+                                  : IconButton(
+                                      icon: const Icon(Icons.close, size: 18),
+                                      onPressed: () {
+                                        umschlagBezeichnungController[i]
+                                            .clear();
+                                        beiUmschlagBezeichnungGeaendert(
+                                            i, '');
+                                      },
+                                    ),
+                            ),
+                            onSubmitted: (_) =>
+                                beiEingabeAbgeschlossen(bezeichnungFocusNode),
+                            onChanged: (String wert) =>
+                                beiUmschlagBezeichnungGeaendert(i, wert),
+                          );
+                        },
                       ),
                     ),
                   ),

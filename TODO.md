@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 332 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 332a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -195,6 +195,19 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       `AppFarben.fokusFarbe` zentralisiert statt appBarRot mitzunutzen),
       Run 331 (Footer-Deko in einstellungen_seite.dart und 10× rohes
       Colors.black54 auf bereits bestehende Theme-Konstanten umgestellt).
+
+- [ ] **Fokus-Farbe: verbleibende Sonderfälle klären** Bei der
+      Konsistenz-Korrektur in Run 332a bewusst nicht angefasst, weil
+      unklar ob Absicht oder Versehen: (1) die vier Metadaten-Felder
+      in tagesabschluss_schritt2_seite.dart (Datum, Uhrzeit, Beleg-Nr.
+      von/bis, `_baueMetadatenEditZeile`) füllen sich bei Fokus
+      hellgelb (Color(0xFFFFF8E1)) statt AppFarben.fokusFarbe. (2)
+      Sämtliche Admin-Bereich-Felder in einstellungen_seite.dart
+      (Upload-URL, location_id, API-Key, BelegScan-Service-URL,
+      Getränkeliste-Verwaltung, Testwerte, Wechselgeld) haben gar
+      keine Fokus-Füllfarbe — nicht MA-sichtbar (PIN-geschützt), daher
+      geringere Priorität. Klären: beides ebenfalls auf Orange
+      umstellen, oder bewusst als Ausnahme belassen?
 
 - [ ] **Getränke-Audioeingabe** Audio + Getränkeliste → KI → Felder automatisch
       befüllen (Fuzzy Matching). Unsichere Zuordnungen gekennzeichnet.

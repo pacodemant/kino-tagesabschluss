@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.8+332 · Run 332
+Version: 0.9.8+332a · Run 332a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -341,6 +341,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   dem API-Key-Feld). SharedPreferences-Key `belegscan_service_url`,
   Fallback auf bisherigen hart codierten Wert. Löst länger offenen
   TODO-Punkt aus Run 329.
+- Run 332a ✅ Fokus-Orange-Konsistenz (Run 330/330a) in weiteren
+  MA-sichtbaren Feldern nachgezogen: Getränke-auffüllen-Mengenfeld
+  (war schwarz/weiß), Umschlag-Label (Schritt 1), Zahlungsart-Betrag/
+  Gesamtbetrag/Anmerkung (Schritt 2). Bewusst offen gelassen:
+  Metadaten-Felder (hellgelb statt orange) und Admin-Bereich-Felder —
+  Rücksprache mit Paco nötig, ob dort ebenfalls vereinheitlicht wird.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

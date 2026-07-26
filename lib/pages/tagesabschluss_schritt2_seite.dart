@@ -224,6 +224,7 @@ class _TagesabschlussSchritt2SeiteState
       _scanUhrzeitFocusNode,
       _scanBelegNrVonFocusNode,
       _scanBelegNrBisFocusNode,
+      _anmerkungFocusNode,
     ]) {
       fn.addListener(() {
         if (mounted) setState(() {});
@@ -864,6 +865,9 @@ class _TagesabschlussSchritt2SeiteState
       _kartenartenGesamtBetragController.add(TextEditingController());
       final FocusNode neuerKartenartenGesamtBetragFn = FocusNode();
       _verknuepfeFeldNavigationSchritt2(neuerKartenartenGesamtBetragFn);
+      neuerKartenartenGesamtBetragFn.addListener(() {
+        if (mounted) setState(() {});
+      });
       _kartenartenGesamtBetragFocusNode.add(neuerKartenartenGesamtBetragFn);
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
@@ -972,6 +976,9 @@ class _TagesabschlussSchritt2SeiteState
       _kartenartenGesamtBetragController.add(TextEditingController());
       final FocusNode kartenartenGesamtBetragFn = FocusNode();
       _verknuepfeFeldNavigationSchritt2(kartenartenGesamtBetragFn);
+      kartenartenGesamtBetragFn.addListener(() {
+        if (mounted) setState(() {});
+      });
       _kartenartenGesamtBetragFocusNode.add(kartenartenGesamtBetragFn);
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
@@ -2311,10 +2318,18 @@ class _TagesabschlussSchritt2SeiteState
                 CentWaehrungsEingabeFormatter(),
               ],
               textAlign: TextAlign.right,
-              style: const TextStyle(fontSize: 13),
+              cursorColor: zeile.betragFocusNode.hasFocus ? Colors.black : null,
+              style: TextStyle(
+                fontSize: 13,
+                color: zeile.betragFocusNode.hasFocus ? Colors.black : null,
+              ),
               decoration: InputDecoration(
                 hintText: '0,00',
                 isDense: true,
+                filled: zeile.betragFocusNode.hasFocus,
+                fillColor: zeile.betragFocusNode.hasFocus
+                    ? AppFarben.fokusFarbe
+                    : null,
                 border: const OutlineInputBorder(),
                 enabledBorder: roteBorder,
                 contentPadding:
@@ -2439,6 +2454,9 @@ class _TagesabschlussSchritt2SeiteState
     final bool kartenartenHatFokus = zeilen.any(
       (_ZahlungsartZeile z) => z.betragFocusNode.hasFocus,
     );
+    final bool gesamtBetragHatFokus =
+        belegIndex < _kartenartenGesamtBetragFocusNode.length &&
+            _kartenartenGesamtBetragFocusNode[belegIndex].hasFocus;
     final bool irgendEineZeileInkonsistent = zeilen
         .where((_ZahlungsartZeile z) => z.zustand != ZeilenZustand.hidden)
         .any((_ZahlungsartZeile z) => _istZeileImplausibel(z, belegIndex));
@@ -2594,13 +2612,19 @@ class _TagesabschlussSchritt2SeiteState
                           CentWaehrungsEingabeFormatter(),
                         ],
                         textAlign: TextAlign.right,
-                        style: const TextStyle(
+                        cursorColor: gesamtBetragHatFokus ? Colors.black : null,
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
+                          color: gesamtBetragHatFokus ? Colors.black : null,
                         ),
                         decoration: InputDecoration(
                           hintText: '0,00',
                           isDense: true,
+                          filled: gesamtBetragHatFokus,
+                          fillColor: gesamtBetragHatFokus
+                              ? AppFarben.fokusFarbe
+                              : null,
                           border: const OutlineInputBorder(),
                           errorBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.red),
@@ -3855,10 +3879,21 @@ class _TagesabschlussSchritt2SeiteState
                           focusNode: _anmerkungFocusNode,
                           maxLines: null,
                           textCapitalization: TextCapitalization.sentences,
-                          decoration: const InputDecoration(
+                          cursorColor:
+                              _anmerkungFocusNode.hasFocus ? Colors.black : null,
+                          style: TextStyle(
+                            color: _anmerkungFocusNode.hasFocus
+                                ? Colors.black
+                                : null,
+                          ),
+                          decoration: InputDecoration(
                             hintText: 'Anmerkungen',
                             isDense: true,
-                            border: OutlineInputBorder(),
+                            filled: _anmerkungFocusNode.hasFocus,
+                            fillColor: _anmerkungFocusNode.hasFocus
+                                ? AppFarben.fokusFarbe
+                                : null,
+                            border: const OutlineInputBorder(),
                           ),
                           onChanged: (String wert) {
                             _anmerkung = wert;

@@ -283,15 +283,15 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
         focusNode: _mengeFocusNode[idx],
         keyboardType: TextInputType.number,
         textAlign: _istLinkshaender ? TextAlign.left : TextAlign.right,
-        style: TextStyle(color: feldHatFokus ? Colors.white : null),
-        cursorColor: feldHatFokus ? Colors.white : null,
+        style: TextStyle(color: feldHatFokus ? Colors.black : null),
+        cursorColor: feldHatFokus ? Colors.black : null,
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.digitsOnly,
         ],
         decoration: InputDecoration(
           isDense: true,
           filled: feldHatFokus,
-          fillColor: feldHatFokus ? Colors.black87 : null,
+          fillColor: feldHatFokus ? AppFarben.fokusFarbe : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           border: _nurBenoetigte ? InputBorder.none : null,
         ),

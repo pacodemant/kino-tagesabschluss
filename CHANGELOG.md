@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 332a: Korrektur aus Testfeedback, direkte Anweisung ohne eigene
+  Run-Nummer. Fehlende Fokus-Orange-Konsistenz (Run 330/330a) in
+  mehreren MA-sichtbaren Eingabefeldern nachgezogen, die außerhalb der
+  zentralen Widgets BetragCentEingabefeld/GanzzahlEingabefeld liegen
+  und daher bei der Umstellung nicht erfasst wurden: (1)
+  getraenke_auffuellen_seite.dart — Mengenfeld war bei Fokus schwarz
+  gefüllt mit weißer Schrift (älterer, eigenständiger Stil), jetzt
+  AppFarben.fokusFarbe + schwarze Schrift. (2)
+  schritt1_umschlaege_section.dart — Umschlag-Label-Feld hatte gar
+  keine Fokus-Füllung; da das Feld in einem StatelessWidget ohne
+  eigenen Rebuild-Mechanismus liegt, zusätzlich in ListenableBuilder
+  gewrappt, damit der Fokuswechsel überhaupt sichtbar wird. (3)
+  tagesabschluss_schritt2_seite.dart — drei Felder ohne Fokus-Füllung:
+  Zahlungsart-Betrag in der Kartenarten-Tabelle (Listener existierte
+  bereits), Kartenarten-Gesamtbetrag und Anmerkung/Kommentar-Feld
+  (für beide neu: FocusNode-Listener mit `setState`, da bisher kein
+  Rebuild bei Fokuswechsel ausgelöst wurde). Bewusst NICHT angefasst:
+  die vier Metadaten-Felder (Datum/Uhrzeit/Beleg-Nr., hellgelbes
+  Color(0xFFFFF8E1) statt Orange bei Fokus) sowie sämtliche
+  Admin-Bereich-Felder in einstellungen_seite.dart (Upload-URL,
+  location_id, API-Key, Service-URL, Getränkeliste-Verwaltung,
+  Testwerte, Wechselgeld) — beides ohne Rücksprache mit Paco, ob das
+  ebenfalls vereinheitlicht werden soll oder bewusst abweicht. Version
+  0.9.8+332a. Dateien: getraenke_auffuellen_seite.dart,
+  schritt1_umschlaege_section.dart, tagesabschluss_schritt2_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 332: BelegScan-Service-URL im Admin-Bereich editierbar gemacht.
   `BelegScanService._workerUrl` (hart codiert) durch
   `standardWorkerUrl` (Fallback-Default) ersetzt; neue Methode
