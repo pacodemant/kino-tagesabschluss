@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.4+328a4 · Run 328a4
+Version: 0.9.5+329 · Run 329
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 328a4)
+## Laufender Entwicklungsstand (Run 329)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -300,6 +300,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Start, "Neu laden"-Button, Auto-Update, Fresh-Tab-Reset) —
   verschwindet zusammen mit dem Icon beim ersten Flutter-Frame.
   Reine HTML/CSS-Änderung, kein Dart-Code betroffen.
+- Run 329 ✅ Dauerhaft sichtbarer Hilfetext im Scan-Bereich der
+  EC-Belege-Kachel (Schritt 2), immer sichtbar sobald die Kachel
+  aufgeklappt ist. Bei der Recherche festgestellt: das ebenfalls
+  geplante Basis-URL-Feld in den Einstellungen existierte bereits
+  seit Run 292 ("Upload-URL", Key `api_upload_url`) — TODO.md war
+  veraltet, kein Code dafür nötig.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

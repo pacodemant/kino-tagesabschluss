@@ -120,6 +120,14 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
+- [x] **PIN-Schutz Verwaltungsbereich** PIN (1929/Session) + location_id +
+      API-Key-Felder in Runs 287/291/292 umgesetzt. Basis-URL-Feld
+      ("Upload-URL", SharedPreferences-Key `api_upload_url`) war entgegen
+      dem bisherigen TODO.md-Stand bereits seit Run 292 vorhanden — bei
+      der Run-329-Recherche festgestellt, TODO.md-Eintrag war veraltet.
+      Kein neuer Code nötig. *(Runs 287/291/292; TID-Whitelist +
+      Buchhaltungs-E-Mail sind eigene, weiterhin offene Punkte.)*
+
 - [x] **Admin-Passwort** Bleibt bei PIN 1929 (Session) — kein Wechsel zu
       festem Passwort gewünscht.
 

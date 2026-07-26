@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 329: Dauerhaft sichtbarer Hilfetext im Scan-Bereich der EC-Belege-
+  Kachel (Schritt 2) ergänzt — Text "Beleg fehlt oder ist unlesbar?
+  Fehlende Felder unten einfach manuell eintragen." erscheint immer,
+  sobald die Kachel aufgeklappt ist (1-Beleg- und Mehrbeleg-Modus).
+  Schließt den TODO-Punkt "Hilfetext" ab (Duplikat-Button bleibt offen).
+  Bei der Recherche zum ursprünglich zweiten Run-Bestandteil
+  (Basis-URL-Feld in den Einstellungen) festgestellt: das Feld
+  existiert bereits ("Upload-URL", `einstellungen_seite.dart`,
+  SharedPreferences-Key `api_upload_url`, im PIN-geschützten
+  Admin-Bereich) — seit Run 292 vorhanden, TODO.md-Eintrag war
+  veraltet. Kein Code dafür nötig; TODO.md/TODO_ERLEDIGT.md
+  entsprechend korrigiert. Version 0.9.5+329. Dateien:
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md,
+  TODO_ERLEDIGT.md.
+
 - Run 328a4: Ladebalken im Splash-Screen ergänzt — direkte
   Anweisung ohne eigene Run-Nummer, Fortsetzung von 328a3 mit
   Zahlensuffix. Anlass: sichtbares Feedback beim App-Start bzw.

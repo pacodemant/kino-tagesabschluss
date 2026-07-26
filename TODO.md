@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Juli 2026 · Run 328 · wird fortlaufend ergänzt
+Stand: Juli 2026 · Run 329 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -84,20 +84,20 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–281)*
 
-- [ ] **Hilfetext & Duplikat-Button** Info im Scan-Bereich was zu tun
-      ist wenn Beleg fehlt oder unlesbar ist. Ursprünglich zusätzlich
-      als Dummy-Button im Prüf-Popup geplant — Popup existierte
-      zwischen Run 307 und Run 318 nicht. Seit Run 318 gibt es
-      wieder ein Prüf-Popup (`beleg_scan_bestaetigen_dialog.dart`,
-      anderer Zweck als vor Run 307: bewusste Bestätigung vor der
-      Übernahme statt Fehlerprüfung) — könnte wieder als Ort in
-      Frage kommen, Hilfetext/Duplikat-Button selbst sind dort
+- [ ] **Duplikat-Button** Ursprünglich zusätzlich als Dummy-Button im
+      Prüf-Popup geplant — Popup existierte zwischen Run 307 und
+      Run 318 nicht. Seit Run 318 gibt es wieder ein Prüf-Popup
+      (`beleg_scan_bestaetigen_dialog.dart`, anderer Zweck als vor
+      Run 307: bewusste Bestätigung vor der Übernahme statt
+      Fehlerprüfung) — könnte als Ort in Frage kommen, ist dort
       aber nicht umgesetzt.
-      Vorbereitung für spätere Tutorial-Videos oder Texte.
       Teilschritt erledigt (Run 319a): Die Fehlermeldung bei
-      unscharfem Foto/Netzwerkproblem weist jetzt zusätzlich auf die
-      manuelle Eingabe hin. Ein dauerhaft sichtbarer Hilfetext im
-      Scan-Bereich selbst bleibt offen.
+      unscharfem Foto/Netzwerkproblem weist zusätzlich auf die
+      manuelle Eingabe hin.
+      Teilschritt erledigt (Run 329): Dauerhaft sichtbarer Hilfetext
+      im Scan-Bereich ("Beleg fehlt oder ist unlesbar? Fehlende
+      Felder unten einfach manuell eintragen.") ergänzt. Nur der
+      Duplikat-Button selbst bleibt offen.
 
 - [ ] **Prüfen-Flag für Buchhaltung** Erst mit IT klären ob gewünscht und
       wie es übermittelt wird (Flurbocash-Feld, E-Mail o. Ä.). Dann einplanen.
@@ -106,11 +106,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Stornos erkennen können.
 
 ### Einstellungen & Konfiguration *(Phase C)*
-
-- [ ] **PIN-Schutz Verwaltungsbereich** PIN (1929/Session) + location_id +
-      API-Key-Felder bereits in Runs 287/291/292 umgesetzt. Noch offen:
-      Basis-URL-Feld in Einstellungen-UI. *(TID-Whitelist + Buchhaltungs-E-Mail
-      → eigene Punkte unten)*
 
 - [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
       für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.

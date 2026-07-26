@@ -3267,6 +3267,17 @@ class _TagesabschlussSchritt2SeiteState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Text(
+                                  'Beleg fehlt oder ist unlesbar? Fehlende '
+                                  'Felder unten einfach manuell eintragen.',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ),
                               if (hatEcBelege)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
