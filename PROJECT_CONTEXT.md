@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.5+329a · Run 329a
+Version: 0.9.5+329a2 · Run 329a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 329a)
+## Laufender Entwicklungsstand (Run 329a2)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -313,6 +313,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   URL in beleg_scan_service.dart, aktuell hart codiert) — Paco
   meinte damit ursprünglich die KI-Scan-URL, nicht die Flurbocash-
   Upload-URL. Als Run 330 vorgeschlagen.
+- Run 329a2 ✅ Korrektur: Hinweistext von Wrap auf Text.rich
+  (TextSpan + TapGestureRecognizer) umgestellt, damit der Link
+  "Belegdaten bearbeiten" direkt im Fließtext hinter "Tippe auf"
+  steht statt in einer neuen Zeile; gesamter Hinweis durchgehend
+  kursiv.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

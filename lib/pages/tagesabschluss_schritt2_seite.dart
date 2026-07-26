@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -129,6 +130,8 @@ class _TagesabschlussSchritt2SeiteState
   final FocusNode _bistroSollFocusNode = FocusNode();
   final FocusNode _differenzAnfangsbestandFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
+  final TapGestureRecognizer _belegdatenBearbeitenRecognizer =
+      TapGestureRecognizer();
   final List<TextEditingController> _ecBelegController = <TextEditingController>[];
   final List<TextEditingController> _ecBelegLabelController = <TextEditingController>[];
   final List<FocusNode> _ecBelegFocusNode = <FocusNode>[];
@@ -264,6 +267,7 @@ class _TagesabschlussSchritt2SeiteState
     _bistroSollFocusNode.dispose();
     _differenzAnfangsbestandFocusNode.dispose();
     _scrollController.dispose();
+    _belegdatenBearbeitenRecognizer.dispose();
     _scanDatumController.dispose();
     _scanUhrzeitController.dispose();
     _scanBelegNrVonController.dispose();
@@ -3270,40 +3274,38 @@ class _TagesabschlussSchritt2SeiteState
                               if (!hatEcBelege)
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8),
-                                  child: Wrap(
-                                    children: <Widget>[
-                                      Text(
-                                        'Beleg fehlt oder ist unlesbar? '
-                                        'Fehlende Felder unten einfach '
-                                        'manuell eintragen. Tippe auf ',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey.shade600,
-                                        ),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.grey.shade600,
                                       ),
-                                      GestureDetector(
-                                        onTap: () => FocusScope.of(context)
-                                            .requestFocus(
-                                                _ecBelegLabelFocusNode[0]),
-                                        child: const Text(
-                                          'Belegdaten bearbeiten',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            fontStyle: FontStyle.italic,
+                                      children: <InlineSpan>[
+                                        const TextSpan(
+                                          text: 'Beleg fehlt oder ist '
+                                              'unlesbar? Fehlende Felder '
+                                              'unten einfach manuell '
+                                              'eintragen. Tippe auf ',
+                                        ),
+                                        TextSpan(
+                                          text: 'Belegdaten bearbeiten',
+                                          style: const TextStyle(
                                             color: AppFarben.appBarRot,
                                             decoration:
                                                 TextDecoration.underline,
                                           ),
+                                          recognizer:
+                                              _belegdatenBearbeitenRecognizer
+                                                ..onTap = () =>
+                                                    FocusScope.of(context)
+                                                        .requestFocus(
+                                                            _ecBelegLabelFocusNode[
+                                                                0]),
                                         ),
-                                      ),
-                                      Text(
-                                        '.',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                                    ],
+                                        const TextSpan(text: '.'),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               if (hatEcBelege)

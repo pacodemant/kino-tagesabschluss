@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 329a2: Korrektur aus Testfeedback zu Run 329a, Fortsetzung mit
+  Zahlensuffix (329a ist bereits durch Buchstaben benannt). Hinweis
+  im Scan-Bereich von Wrap (Text + GestureDetector + Text) auf
+  Text.rich (TextSpan + TapGestureRecognizer) umgestellt: Wrap
+  brach den Link "Belegdaten bearbeiten" auf eine eigene Zeile um,
+  sobald der Hinweistext allein schon die Zeile füllte — Text.rich
+  lässt den kompletten Satz inkl. Link als einen zusammenhängenden
+  Fließtext umbrechen, der Link folgt jetzt direkt hinter "Tippe
+  auf" statt in der nächsten Zeile. Ganzer Hinweistext (inkl. Link)
+  jetzt durchgehend kursiv (Paco hatte den ersten Teil bereits
+  selbst in tagesabschluss_schritt2_seite.dart korrigiert — war
+  bereits richtig). Neues Feld _belegdatenBearbeitenRecognizer
+  (TapGestureRecognizer) mit Dispose in dispose(); neuer Import
+  package:flutter/gestures.dart. Version 0.9.5+329a2. Dateien:
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, CHANGELOG.md,
+  PROJECT_CONTEXT.md.
+
 - Run 329a: Korrektur aus Testfeedback zu Run 329, direkte Anweisung
   ohne eigene Run-Nummer. Hilfetext im Scan-Bereich der EC-Belege-
   Kachel um zusätzlichen Text-Link "Belegdaten bearbeiten" ergänzt
