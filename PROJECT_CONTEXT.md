@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.8+332a2 · Run 332a2
+Version: 0.9.9+333 · Run 333
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -355,6 +355,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Web-Build/PWA. Getränke-auffüllen: Checkbox-Zwischenraum bei "nur
   benötigte anzeigen" verkleinert (Checkbox-Spalte auf
   IntrinsicColumnWidth, Eingabefeld-Spalte 72→44).
+- Run 333 ✅ Neuer Button "Übertrag auf Umschlag" auf der Kino-
+  Startseite — zeigt nachträglich die Übertrag-Werte (gleiches
+  Karten-Layout wie Schritt 3) eines heute bereits abgeschlossenen
+  Tagesabschlusses, als eigenständige neue, rein lesende Seite
+  (uebertrag_umschlag_seite.dart). Ausgegraut (aber antippbar mit
+  Hinweis-Dialog) solange heute keine Abrechnung vorliegt; bei
+  mehreren Abschlüssen am Tag (Bar Tabak) Auswahl-BottomSheet. Neue
+  Helper-Methode LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse().
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

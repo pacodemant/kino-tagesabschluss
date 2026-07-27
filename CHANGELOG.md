@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 333: Neuer Button "Übertrag auf Umschlag" auf der Kino-
+  Startseite. Zeigt nachträglich die Übertrag-Werte eines heute
+  bereits abgeschlossenen Tagesabschlusses — gleiches Karten-Layout
+  wie tagesabschluss_schritt3_seite.dart (Differenz Anfangsbestand,
+  SOLL, IST, Differenz Kassenabrechnung), aber als eigenständige,
+  rein lesende neue Datei (uebertrag_umschlag_seite.dart) statt
+  Eingriff in Schritt 3 — dort hängen Auto-Save, Duplikat-Dialog und
+  die Buttons "Kassenabrechnung senden"/"Stückelung" am aktiven
+  Abrechnungs-Flow, für eine reine Nachträglich-Anzeige ungeeignet
+  bis riskant. Neue Methode
+  LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kinoId) liefert
+  die Abschlüsse des aktuellen logischen Tages (6-Uhr-Knick), ohne
+  die bestehende "ist heute"-Logik in verlauf_seite.dart bzw.
+  speichere_tagesabschluss_usecase.dart anzufassen. Button-
+  Verhalten: kein heutiger Abschluss → optisch ausgegraut (grauer
+  ElevatedButton-Style, bleibt aber antippbar), Tap zeigt Dialog "Du
+  musst erst eine Abrechnung durchführen."; genau ein Abschluss →
+  Tap navigiert direkt zur neuen Seite; mehrere Abschlüsse (nur Bar
+  Tabak möglich, max. 2/Tag) → Tap zeigt Auswahl-BottomSheet
+  (Uhrzeit + Mitarbeitername), danach Navigation. Neue Route
+  '/uebertrag-umschlag' in main.dart. Version 0.9.9+333. Dateien:
+  uebertrag_umschlag_seite.dart (neu), lokaler_speicher.dart,
+  startmenue_seite.dart, main.dart, pubspec.yaml,
+  kinoauswahl_seite.dart.
+
 - Run 332a2: Korrektur aus Testfeedback zu Run 332a, direkte
   Anweisung ohne eigene Run-Nummer (von Paco selbst lokal umgesetzt,
   hier nur getestet/dokumentiert/committed). (1) main.dart: neues

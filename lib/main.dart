@@ -15,6 +15,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
+import 'package:kino_bar_app/pages/uebertrag_umschlag_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
@@ -247,6 +248,17 @@ class MeineApp extends StatelessWidget {
           }
           return MaterialPageRoute<bool>(
             builder: (_) => VerlaufDetailSeite(abschluss: argument),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == UebertragUmschlagSeite.routenName) {
+          final Object? argument = settings.arguments;
+          if (argument is! TagesabschlussFinal) {
+            return null;
+          }
+          return MaterialPageRoute<void>(
+            builder: (_) => UebertragUmschlagSeite(abschluss: argument),
             settings: settings,
           );
         }

@@ -210,6 +210,21 @@ class LokalerSpeicher {
     }
   }
 
+  /// Laedt die finalen Tagesabschluesse eines Kinos, die dem aktuellen
+  /// logischen Tag (6-Uhr-Knick) zugeordnet sind (neueste zuerst).
+  static Future<List<TagesabschlussFinal>> ladeHeutigeFinaleTagesabschluesse(
+    String kinoId,
+  ) async {
+    final List<TagesabschlussFinal> alle =
+        await ladeFinaleTagesabschluesse(kinoId);
+    return alle
+        .where(
+          (TagesabschlussFinal a) =>
+              DatumsHelper.isoDatum(a.datum) == DatumsHelper.logischesIsoDatum(),
+        )
+        .toList();
+  }
+
   /// Key fuer alle finalen Tagesabschluesse eines Kinos.
   static String finaleTagesabschluesseKey(String kinoId) {
     return 'final/$kinoId/closures';

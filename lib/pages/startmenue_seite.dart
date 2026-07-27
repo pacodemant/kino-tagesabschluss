@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
+import 'package:kino_bar_app/pages/uebertrag_umschlag_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
@@ -24,6 +26,81 @@ class StartmenueSeite extends StatelessWidget {
         kinoId: kino.id,
         kinoName: kino.name,
       ),
+    );
+  }
+
+  Future<void> _oeffneUebertragUmschlag(BuildContext context) async {
+    final List<TagesabschlussFinal> heutige =
+        await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kino.id);
+    if (!context.mounted) {
+      return;
+    }
+
+    if (heutige.isEmpty) {
+      await showDialog<void>(
+        context: context,
+        builder: (BuildContext dialogContext) => AlertDialog(
+          content: const Text('Du musst erst eine Abrechnung durchführen.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    if (heutige.length == 1) {
+      Navigator.of(context).pushNamed(
+        UebertragUmschlagSeite.routenName,
+        arguments: heutige.first,
+      );
+      return;
+    }
+
+    final TagesabschlussFinal? ausgewaehlt =
+        await showModalBottomSheet<TagesabschlussFinal>(
+      context: context,
+      builder: (BuildContext sheetContext) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Welche Abrechnung von heute?',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              for (final TagesabschlussFinal eintrag in heutige)
+                ListTile(
+                  title: Text(
+                    '${eintrag.createdAt.hour.toString().padLeft(2, '0')}:'
+                    '${eintrag.createdAt.minute.toString().padLeft(2, '0')} Uhr',
+                  ),
+                  subtitle: (eintrag.mitarbeiterName != null &&
+                          eintrag.mitarbeiterName!.isNotEmpty)
+                      ? Text(eintrag.mitarbeiterName!)
+                      : null,
+                  onTap: () => Navigator.of(sheetContext).pop(eintrag),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+    if (ausgewaehlt == null || !context.mounted) {
+      return;
+    }
+    Navigator.of(context).pushNamed(
+      UebertragUmschlagSeite.routenName,
+      arguments: ausgewaehlt,
     );
   }
 
@@ -107,6 +184,28 @@ class StartmenueSeite extends StatelessWidget {
                   onPressed: () => _oeffneTagesabschlussSchritt1(context),
                   child: const Text('Kassenabrechnung (4 Schritte)'),
                 ),
+                const SizedBox(height: 12),
+                FutureBuilder<List<TagesabschlussFinal>>(
+                  future:
+                      LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kino.id),
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<List<TagesabschlussFinal>> snapshot,
+                  ) {
+                    final bool aktiv = (snapshot.data ?? <TagesabschlussFinal>[])
+                        .isNotEmpty;
+                    return ElevatedButton(
+                      onPressed: () => _oeffneUebertragUmschlag(context),
+                      style: aktiv
+                          ? null
+                          : ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade400,
+                              foregroundColor: Colors.grey.shade700,
+                            ),
+                      child: const Text('Übertrag auf Umschlag'),
+                    );
+                  },
+                ),
                 if (kino.hatWechselgeld) ...<Widget>[
                   const SizedBox(height: 12),
                   ElevatedButton(
@@ -151,7 +250,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.8 · r332a2 @ GitHub:',
+                    'Web App 0.9.9 · r333 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
