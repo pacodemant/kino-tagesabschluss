@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 333b: Korrektur aus Testfeedback zu Run 333a, direkte
+  Anweisung ohne eigene Run-Nummer. Testbefund: Nach Löschen der
+  aktuellen (heutigen) Abrechnung im Verlauf blieb der Button
+  "Übertrag auf Umschlag" weiterhin rot (aktiv), obwohl der
+  Hinweis-Dialog beim Tippen korrekt "Du musst erst eine Abrechnung
+  durchführen" zeigte — Style und Verhalten liefen auseinander.
+  Ursache: Kehrt man von VerlaufSeite per Zurück-Pfeil (pop()) zur
+  Startseite zurück, wird die StartmenueSeite-Instanz NICHT neu
+  erzeugt (kein neuer initState()-Aufruf) — der in Run 333a
+  eingeführte, nur einmalig ladende Button-State blieb daher auf dem
+  Stand von vor dem Löschen hängen, während der Klick-Handler jedes
+  Mal frisch nachlud. Gleichzeitig als Anti-Pattern identifiziert (auf
+  Nachfrage): der FutureBuilder für den "Kino wechseln"-Button
+  (ladeStandortModus() inline im build()) hatte dasselbe
+  Grundproblem, nur harmloser (kurzes Aufblitzen statt Dauerzustand).
+  Beides gemeinsam behoben: StartmenueSeite von StatelessWidget auf
+  StatefulWidget mit RouteAware umgestellt (neuer globaler
+  RouteObserver in route_observer.dart, registriert in main.dart über
+  navigatorObservers). didPopNext() lädt beide Werte (heutige
+  Abschlüsse + Standort-Modus) neu, sobald die Seite nach einem pop()
+  wieder sichtbar wird — behebt beide Anti-Pattern-Stellen einheitlich
+  und hält Button-Style und Klick-Verhalten konsistent (beide nutzen
+  denselben State). Version 0.9.9+333b. Dateien: startmenue_seite.dart,
+  route_observer.dart (neu), main.dart, pubspec.yaml,
+  kinoauswahl_seite.dart.
+
 - Run 333a: Korrektur aus Testfeedback zu Run 333, direkte Anweisung
   ohne eigene Run-Nummer. Testbefund: Button "Übertrag auf Umschlag"
   blieb nach frisch abgeschlossener Abrechnung ausgegraut, wurde erst

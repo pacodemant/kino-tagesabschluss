@@ -11,13 +11,70 @@ import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/route_observer.dart';
 
-class StartmenueSeite extends StatelessWidget {
+class StartmenueSeite extends StatefulWidget {
   const StartmenueSeite({super.key, required this.kino});
 
   static const String routenName = '/start-menu';
 
   final Kino kino;
+
+  @override
+  State<StartmenueSeite> createState() => _StartmenueSeiteState();
+}
+
+/// Lädt "heutige Abschlüsse" und "Standort-Modus" zentral und hält sie über
+/// RouteAware aktuell: Kehrt man von einer anderen Seite (z. B. Verlauf,
+/// nach Löschen/Erstellen einer Abrechnung) per pop() zur Startseite zurück,
+/// wird die bereits existierende Widget-Instanz NICHT neu erzeugt — ein
+/// simples initState()-Laden (oder ein FutureBuilder mit inline erzeugtem
+/// Future) bliebe daher auf dem veralteten Stand hängen. didPopNext() löst
+/// stattdessen ein frisches Nachladen aus.
+class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
+  List<TagesabschlussFinal>? _heutigeAbschluesse;
+  String? _standortModus;
+
+  Kino get kino => widget.kino;
+
+  @override
+  void initState() {
+    super.initState();
+    _ladeDaten();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final ModalRoute<dynamic>? route = ModalRoute.of(context);
+    if (route is PageRoute<dynamic>) {
+      routeObserver.subscribe(this, route);
+    }
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    _ladeDaten();
+  }
+
+  Future<void> _ladeDaten() async {
+    final List<TagesabschlussFinal> heutige =
+        await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kino.id);
+    final String? standortModus = await LokalerSpeicher.ladeStandortModus();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _heutigeAbschluesse = heutige;
+      _standortModus = standortModus;
+    });
+  }
 
   void _oeffneTagesabschlussSchritt1(BuildContext context) {
     Navigator.of(context).pushNamed(
@@ -31,10 +88,7 @@ class StartmenueSeite extends StatelessWidget {
 
   Future<void> _oeffneUebertragUmschlag(BuildContext context) async {
     final List<TagesabschlussFinal> heutige =
-        await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kino.id);
-    if (!context.mounted) {
-      return;
-    }
+        _heutigeAbschluesse ?? <TagesabschlussFinal>[];
 
     if (heutige.isEmpty) {
       await showDialog<void>(
@@ -128,6 +182,10 @@ class StartmenueSeite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool uebertragAktiv =
+        (_heutigeAbschluesse ?? <TagesabschlussFinal>[]).isNotEmpty;
+    final bool zeigeKinoWechseln = _standortModus == null;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -139,23 +197,16 @@ class StartmenueSeite extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.normal),
         ),
         actions: <Widget>[
-          FutureBuilder<String?>(
-            future: LokalerSpeicher.ladeStandortModus(),
-            builder: (BuildContext context, AsyncSnapshot<String?> snapshot) {
-              if (snapshot.data != null) {
-                return const SizedBox.shrink();
-              }
-              return TextButton(
-                onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).pushReplacementNamed(KinoauswahlSeite.routenName);
-                },
-                style: TextButton.styleFrom(foregroundColor: Colors.white),
-                child: const Text('Kino wechseln'),
-              );
-            },
-          ),
+          if (zeigeKinoWechseln)
+            TextButton(
+              onPressed: () {
+                Navigator.of(
+                  context,
+                ).pushReplacementNamed(KinoauswahlSeite.routenName);
+              },
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+              child: const Text('Kino wechseln'),
+            ),
         ],
       ),
       body: Stack(
@@ -185,10 +236,15 @@ class StartmenueSeite extends StatelessWidget {
                   child: const Text('Kassenabrechnung (4 Schritte)'),
                 ),
                 const SizedBox(height: 12),
-                _UebertragUmschlagButton(
-                  kinoId: kino.id,
-                  onPressed: (BuildContext context) =>
-                      _oeffneUebertragUmschlag(context),
+                ElevatedButton(
+                  onPressed: () => _oeffneUebertragUmschlag(context),
+                  style: uebertragAktiv
+                      ? null
+                      : ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey.shade400,
+                          foregroundColor: Colors.grey.shade700,
+                        ),
+                  child: const Text('Übertrag auf Umschlag'),
                 ),
                 if (kino.hatWechselgeld) ...<Widget>[
                   const SizedBox(height: 12),
@@ -234,7 +290,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.9 · r333a @ GitHub:',
+                    'Web App 0.9.9 · r333b @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
@@ -251,60 +307,6 @@ class StartmenueSeite extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Lädt den "heutige Abschlüsse"-Status genau einmal beim Erzeugen (statt
-/// bei jedem Rebuild von StartmenueSeite neu, wie es ein FutureBuilder mit
-/// inline erzeugtem Future tun würde) — vermeidet, dass der Button nach
-/// einer frischen Abrechnung fälschlich ausgegraut hängen bleibt.
-class _UebertragUmschlagButton extends StatefulWidget {
-  const _UebertragUmschlagButton({
-    required this.kinoId,
-    required this.onPressed,
-  });
-
-  final String kinoId;
-  final void Function(BuildContext context) onPressed;
-
-  @override
-  State<_UebertragUmschlagButton> createState() =>
-      _UebertragUmschlagButtonState();
-}
-
-class _UebertragUmschlagButtonState extends State<_UebertragUmschlagButton> {
-  List<TagesabschlussFinal>? _heutige;
-
-  @override
-  void initState() {
-    super.initState();
-    _laden();
-  }
-
-  Future<void> _laden() async {
-    final List<TagesabschlussFinal> heutige =
-        await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(
-      widget.kinoId,
-    );
-    if (!mounted) {
-      return;
-    }
-    setState(() => _heutige = heutige);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bool aktiv = (_heutige ?? <TagesabschlussFinal>[]).isNotEmpty;
-    return ElevatedButton(
-      onPressed: () => widget.onPressed(context),
-      style: aktiv
-          ? null
-          : ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade400,
-              foregroundColor: Colors.grey.shade700,
-            ),
-      child: const Text('Übertrag auf Umschlag'),
     );
   }
 }

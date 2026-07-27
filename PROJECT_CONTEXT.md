@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.9+333a · Run 333a
+Version: 0.9.9+333b · Run 333b
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -368,6 +368,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Datenfehler). FutureBuilder mit inline erzeugtem Future durch
   privates StatefulWidget _UebertragUmschlagButton ersetzt, das nur
   einmal in initState() lädt.
+- Run 333b ✅ Weiterer Fall desselben Anti-Patterns behoben: Button
+  blieb nach Löschen der heutigen Abrechnung im Verlauf fälschlich
+  rot (initState() lädt nicht erneut bei pop()-Rückkehr). Auch der
+  "Kino wechseln"-FutureBuilder war betroffen. StartmenueSeite jetzt
+  StatefulWidget mit RouteAware (neuer globaler RouteObserver,
+  route_observer.dart) — didPopNext() lädt beide Werte neu, sobald
+  die Seite nach einem pop() wieder sichtbar wird.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
