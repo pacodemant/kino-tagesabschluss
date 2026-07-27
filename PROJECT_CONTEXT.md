@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.9+333b · Run 333b
+Version: 0.9.10+334 · Run 334
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -375,6 +375,15 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   StatefulWidget mit RouteAware (neuer globaler RouteObserver,
   route_observer.dart) — didPopNext() lädt beide Werte neu, sobald
   die Seite nach einem pop() wieder sichtbar wird.
+- Run 334 ✅ BelegScan-Service-URL: hart codierten Fallback
+  (`standardWorkerUrl`) aus beleg_scan_service.dart entfernt.
+  `ladeWorkerUrl()` liefert nur noch den in SharedPreferences
+  gespeicherten Wert; ist er leer, wirft `scan()` jetzt eine klare
+  BelegScanException ("Service-URL nicht konfiguriert"), statt still
+  auf einen unsichtbaren Code-Default zurückzufallen. Admin-Bereich-
+  Hint zeigt nur noch ein Format-Beispiel, keinen echten Wert mehr.
+  Betriebs-Konsequenz: Auf jedem Gerät, auf dem das Feld bisher leer
+  war, muss die URL jetzt manuell einmalig eingetragen werden.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

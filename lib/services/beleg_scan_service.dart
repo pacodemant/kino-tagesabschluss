@@ -18,15 +18,10 @@ class BelegScanService {
 
   static const String belegScanUrlPrefKey = 'belegscan_service_url';
 
-  static const String standardWorkerUrl =
-      'https://kartenzahlungsbelegscan.pacodemant.workers.dev';
-
   static Future<String> ladeWorkerUrl() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? gespeichert = speicher.getString(belegScanUrlPrefKey);
-    return (gespeichert != null && gespeichert.trim().isNotEmpty)
-        ? gespeichert.trim()
-        : standardWorkerUrl;
+    return gespeichert?.trim() ?? '';
   }
 
   static const String _systemPrompt =
@@ -110,6 +105,10 @@ class BelegScanService {
     };
 
     final String workerUrl = await ladeWorkerUrl();
+    if (workerUrl.isEmpty) {
+      throw BelegScanException(
+          'Service-URL nicht konfiguriert – bitte in den Einstellungen eintragen.');
+    }
     final http.Response response;
     try {
       response = await http.post(

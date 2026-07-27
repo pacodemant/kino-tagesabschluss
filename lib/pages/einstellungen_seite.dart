@@ -1481,9 +1481,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                               horizontal: 16, vertical: 4),
                           child: TextField(
                             controller: _belegScanUrlCtrl,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Service-URL',
-                              hintText: BelegScanService.standardWorkerUrl,
+                              hintText: 'z. B. https://…workers.dev',
                               isDense: true,
                             ),
                             onChanged: (_) => _speichereBelegScanUrl(),

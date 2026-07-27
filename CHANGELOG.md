@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 334: BelegScan-Service-URL: hart codierten Fallback aus dem
+  Code entfernt, rein aus der Einstellung gelesen. Auslöser:
+  Paco hatte im Admin-Bereich ("KI-Belegscan") nachgesehen und dort
+  ein leeres Feld vorgefunden — der zuvor gespeicherte Eindruck
+  "hardcoded" war berechtigt, weil die tatsächlich aktive URL nie
+  als echter Feldinhalt sichtbar war, sondern nur als grauer
+  Hint-Text (seit Run 332). `BelegScanService.standardWorkerUrl`
+  (Konstante mit dem Cloudflare-Worker-Default) entfernt;
+  `ladeWorkerUrl()` liefert jetzt ausschließlich den in
+  SharedPreferences gespeicherten Wert (Key `belegscan_service_url`,
+  getrimmt), ohne Fallback. `scan()` wirft eine sprechende
+  BelegScanException ("Service-URL nicht konfiguriert – bitte in den
+  Einstellungen eintragen."), wenn die URL leer ist, statt mit einer
+  leeren URI zu scheitern. einstellungen_seite.dart: Hint-Text des
+  Felds "Service-URL" zeigt nur noch ein Format-Beispiel
+  ("z. B. https://…workers.dev"), keinen echten Wert mehr.
+  **Betriebs-Konsequenz:** Da die URL lokal pro Gerät in
+  SharedPreferences liegt (kein Server-Abgleich zwischen Standorten),
+  funktioniert der Scan ab sofort auf JEDEM Gerät nicht mehr, auf dem
+  das Feld bisher leer war (verließ sich auf den jetzt entfernten
+  Code-Fallback) — dort muss die URL
+  (https://kartenzahlungsbelegscan.pacodemant.workers.dev) einmalig
+  manuell im Admin-Bereich nachgetragen werden. Version 0.9.10+334.
+  Dateien: beleg_scan_service.dart, einstellungen_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 333b: Korrektur aus Testfeedback zu Run 333a, direkte
   Anweisung ohne eigene Run-Nummer. Testbefund: Nach Löschen der
   aktuellen (heutigen) Abrechnung im Verlauf blieb der Button
