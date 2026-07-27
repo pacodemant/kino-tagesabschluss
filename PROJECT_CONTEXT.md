@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.8+332a · Run 332a
+Version: 0.9.8+332a2 · Run 332a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -347,6 +347,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Gesamtbetrag/Anmerkung (Schritt 2). Bewusst offen gelassen:
   Metadaten-Felder (hellgelb statt orange) und Admin-Bereich-Felder —
   Rücksprache mit Paco nötig, ob dort ebenfalls vereinheitlicht wird.
+  Metadaten-Farbe zwischenzeitlich als Absicht bestätigt, nur
+  Admin-Bereich bleibt offen (TODO.md).
+- Run 332a2 ✅ Neues Dev-Tool in main.dart: Layout-Begrenzungslinien
+  (`debugPaintSizeEnabled`) nur bei `kDebugMode && !kIsWeb` — schnelles
+  Layout-Tuning per Hot-Reload im iOS-Simulator, nie sichtbar im
+  Web-Build/PWA. Getränke-auffüllen: Checkbox-Zwischenraum bei "nur
+  benötigte anzeigen" verkleinert (Checkbox-Spalte auf
+  IntrinsicColumnWidth, Eingabefeld-Spalte 72→44).
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

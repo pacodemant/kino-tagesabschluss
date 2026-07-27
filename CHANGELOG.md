@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 332a2: Korrektur aus Testfeedback zu Run 332a, direkte
+  Anweisung ohne eigene Run-Nummer (von Paco selbst lokal umgesetzt,
+  hier nur getestet/dokumentiert/committed). (1) main.dart: neues
+  Dev-Tool — `debugPaintSizeEnabled = true` zeigt Layout-
+  Begrenzungslinien, aber nur wenn `kDebugMode && !kIsWeb` (Simulator/
+  Gerät im Debug-Build ja, Web-Build/PWA nie), damit schnelles
+  Layout-Tuning per Hot-Reload im iOS-Simulator möglich ist, ohne dass
+  das Overlay je in der echten PWA auftaucht. (2)
+  getraenke_auffuellen_seite.dart: Zwischenraum zwischen Checkbox und
+  Folgetext bei "nur benötigte anzeigen" verkleinert — Checkbox-Spalte
+  von FixedColumnWidth(36) auf IntrinsicColumnWidth() (Transform.scale
+  verkleinert nur die Optik, nicht die Layout-Box; IntrinsicColumnWidth
+  lässt die Spalte der tatsächlichen Checkbox-Größe folgen),
+  Eingabefeld-Spalte von FixedColumnWidth(72) auf FixedColumnWidth(44)
+  (beide Händigkeits-Varianten). Version 0.9.8+332a2. Dateien:
+  main.dart, getraenke_auffuellen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 332a: Korrektur aus Testfeedback, direkte Anweisung ohne eigene
   Run-Nummer. Fehlende Fokus-Orange-Konsistenz (Run 330/330a) in
   mehreren MA-sichtbaren Eingabefeldern nachgezogen, die außerhalb der

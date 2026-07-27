@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -26,6 +28,17 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Layout-Debugging: zeichnet Begrenzungslinien um jede Layout-Box
+  // (Tabellen, Zellen, Padding). Nur im Debug-Build UND nicht im Web-
+  // Build aktiv (Simulator/Gerät ja, Web-Build/PWA nie) — Paco testet
+  // kleine Layout-Änderungen lokal im iOS-Simulator, ohne jedes Mal
+  // auf einen Web-Build warten zu müssen; größere Änderungen testet
+  // er weiterhin als PWA, dort soll das Debug-Overlay nicht erscheinen.
+  if (kDebugMode && !kIsWeb) {
+    debugPaintSizeEnabled = true;
+  }
+
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
   ]);

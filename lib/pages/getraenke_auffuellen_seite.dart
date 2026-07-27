@@ -252,15 +252,15 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
         ? const <TableColumnWidth>[
             IntrinsicColumnWidth(), // Namen
             FixedColumnWidth(8), // Abstand
-            FixedColumnWidth(72), // Eingabe
+            FixedColumnWidth(44), // Eingabe
           ]
         : const <TableColumnWidth>[
-            FixedColumnWidth(72), // Eingabe
+            FixedColumnWidth(44), // Eingabe
             FixedColumnWidth(8), // Abstand
             IntrinsicColumnWidth(), // Namen
           ];
     const List<TableColumnWidth> checkboxSpalten = <TableColumnWidth>[
-      FixedColumnWidth(36), // Checkbox
+      IntrinsicColumnWidth(), // Checkbox
       FixedColumnWidth(4), // Abstand
     ];
     final List<TableColumnWidth> spaltenListe = !_nurBenoetigte
