@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.9+333 · Run 333
+Version: 0.9.9+333a · Run 333a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -363,6 +363,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Hinweis-Dialog) solange heute keine Abrechnung vorliegt; bei
   mehreren Abschlüssen am Tag (Bar Tabak) Auswahl-BottomSheet. Neue
   Helper-Methode LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse().
+- Run 333a ✅ Korrektur: Button blieb nach frischer Abrechnung
+  ausgegraut (Reload half — Timing-/Rebuild-Problem, keine
+  Datenfehler). FutureBuilder mit inline erzeugtem Future durch
+  privates StatefulWidget _UebertragUmschlagButton ersetzt, das nur
+  einmal in initState() lädt.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

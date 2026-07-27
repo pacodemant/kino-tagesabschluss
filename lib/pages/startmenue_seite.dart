@@ -185,26 +185,10 @@ class StartmenueSeite extends StatelessWidget {
                   child: const Text('Kassenabrechnung (4 Schritte)'),
                 ),
                 const SizedBox(height: 12),
-                FutureBuilder<List<TagesabschlussFinal>>(
-                  future:
-                      LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kino.id),
-                  builder: (
-                    BuildContext context,
-                    AsyncSnapshot<List<TagesabschlussFinal>> snapshot,
-                  ) {
-                    final bool aktiv = (snapshot.data ?? <TagesabschlussFinal>[])
-                        .isNotEmpty;
-                    return ElevatedButton(
-                      onPressed: () => _oeffneUebertragUmschlag(context),
-                      style: aktiv
-                          ? null
-                          : ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey.shade400,
-                              foregroundColor: Colors.grey.shade700,
-                            ),
-                      child: const Text('Übertrag auf Umschlag'),
-                    );
-                  },
+                _UebertragUmschlagButton(
+                  kinoId: kino.id,
+                  onPressed: (BuildContext context) =>
+                      _oeffneUebertragUmschlag(context),
                 ),
                 if (kino.hatWechselgeld) ...<Widget>[
                   const SizedBox(height: 12),
@@ -250,7 +234,7 @@ class StartmenueSeite extends StatelessWidget {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.9 · r333 @ GitHub:',
+                    'Web App 0.9.9 · r333a @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
@@ -267,6 +251,60 @@ class StartmenueSeite extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Lädt den "heutige Abschlüsse"-Status genau einmal beim Erzeugen (statt
+/// bei jedem Rebuild von StartmenueSeite neu, wie es ein FutureBuilder mit
+/// inline erzeugtem Future tun würde) — vermeidet, dass der Button nach
+/// einer frischen Abrechnung fälschlich ausgegraut hängen bleibt.
+class _UebertragUmschlagButton extends StatefulWidget {
+  const _UebertragUmschlagButton({
+    required this.kinoId,
+    required this.onPressed,
+  });
+
+  final String kinoId;
+  final void Function(BuildContext context) onPressed;
+
+  @override
+  State<_UebertragUmschlagButton> createState() =>
+      _UebertragUmschlagButtonState();
+}
+
+class _UebertragUmschlagButtonState extends State<_UebertragUmschlagButton> {
+  List<TagesabschlussFinal>? _heutige;
+
+  @override
+  void initState() {
+    super.initState();
+    _laden();
+  }
+
+  Future<void> _laden() async {
+    final List<TagesabschlussFinal> heutige =
+        await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(
+      widget.kinoId,
+    );
+    if (!mounted) {
+      return;
+    }
+    setState(() => _heutige = heutige);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bool aktiv = (_heutige ?? <TagesabschlussFinal>[]).isNotEmpty;
+    return ElevatedButton(
+      onPressed: () => widget.onPressed(context),
+      style: aktiv
+          ? null
+          : ElevatedButton.styleFrom(
+              backgroundColor: Colors.grey.shade400,
+              foregroundColor: Colors.grey.shade700,
+            ),
+      child: const Text('Übertrag auf Umschlag'),
     );
   }
 }

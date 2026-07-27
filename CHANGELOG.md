@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 333a: Korrektur aus Testfeedback zu Run 333, direkte Anweisung
+  ohne eigene Run-Nummer. Testbefund: Button "Übertrag auf Umschlag"
+  blieb nach frisch abgeschlossener Abrechnung ausgegraut, wurde erst
+  nach manuellem Neu-Laden korrekt aktiv/rot — spricht für ein
+  Timing-/Rebuild-Problem, nicht für falsch gespeicherte Daten (Reload
+  behebt es). Ursache: Der FutureBuilder in startmenue_seite.dart
+  erzeugte das Future (ladeHeutigeFinaleTagesabschluesse) direkt
+  inline im build() — bei jedem Rebuild der Seite entsteht dadurch ein
+  neues Future, wodurch der Button auf den "waiting"-Zustand (=
+  ausgegraut) zurückfällt. Behoben durch neues privates StatefulWidget
+  _UebertragUmschlagButton, das nur einmal in initState() lädt statt
+  bei jedem Elternteil-Rebuild neu. Version 0.9.9+333a. Dateien:
+  startmenue_seite.dart, pubspec.yaml, kinoauswahl_seite.dart.
+
 - Run 333: Neuer Button "Übertrag auf Umschlag" auf der Kino-
   Startseite. Zeigt nachträglich die Übertrag-Werte eines heute
   bereits abgeschlossenen Tagesabschlusses — gleiches Karten-Layout
