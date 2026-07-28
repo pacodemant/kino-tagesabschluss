@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 334a2: Zwei direkte Anweisungen ohne eigene Run-Nummer,
+  gebündelt. (1) Snackbar-Hinweistext bei Netzwerk-/
+  Konfigurationsfehlern (_starteEcBelegScan,
+  tagesabschluss_schritt2_seite.dart): Satz "Beleg kann auch manuell
+  eingegeben werden." jetzt fett dargestellt (Text.rich mit zwei
+  TextSpans statt einfachem Text) — hebt die Ausweich-Option optisch
+  hervor. (2) Button-Farben auf der Kino-Startseite
+  (startmenue_seite.dart): Erster Button ("Kassenabrechnung (4
+  Schritte)") jetzt AppFarben.fokusFarbe (Orange, gleiche Farbe wie
+  die bestehende Fokus-Füllfarbe) mit schwarzem Text statt
+  Theme-Default-Rot. Die beiden letzten Buttons ("Einstellungen",
+  "Verlauf") jetzt mit neuer Konstante AppFarben.appBarRotGedaempft
+  (appBarRot bei 50% Alpha, Color(0x805C0A0A)) — bewusst
+  nachrangig/gedämpft gegenüber den übrigen Aktions-Buttons. Version
+  0.9.10+334a2. Dateien: tagesabschluss_schritt2_seite.dart,
+  app_farben.dart, startmenue_seite.dart, pubspec.yaml,
+  kinoauswahl_seite.dart.
+
 - Run 334a: Korrektur aus Testfeedback zu Run 334, direkte Anweisung
   ohne eigene Run-Nummer. Testbefund: Die neue, sprechende
   BelegScanException ("Service-URL nicht konfiguriert – bitte in den

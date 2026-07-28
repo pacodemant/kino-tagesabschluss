@@ -1415,13 +1415,23 @@ class _TagesabschlussSchritt2SeiteState
             e.message.startsWith('Service-URL nicht konfiguriert');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              (istNetzwerkFehler || istKonfigurationsFehler)
-                  ? '${e.message}\nBeleg kann auch manuell eingegeben werden.'
-                  : 'Scan nicht lesbar – bitte erneut versuchen\n'
-                      '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
-                      'manuell eingeben.',
-            ),
+            content: (istNetzwerkFehler || istKonfigurationsFehler)
+                ? Text.rich(
+                    TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(text: '${e.message}\n'),
+                        const TextSpan(
+                          text: 'Beleg kann auch manuell eingegeben werden.',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  )
+                : const Text(
+                    'Scan nicht lesbar – bitte erneut versuchen\n'
+                    '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
+                    'manuell eingeben.',
+                  ),
           ),
         );
       } catch (_) {

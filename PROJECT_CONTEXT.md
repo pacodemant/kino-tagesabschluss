@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.10+334a · Run 334a
+Version: 0.9.10+334a2 · Run 334a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -391,6 +391,11 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   abbildete. Neue Prüfung `istKonfigurationsFehler` zeigt bei
   fehlender Service-URL jetzt den echten Klartext statt des
   irreführenden Lesbarkeits-Hinweises.
+- Run 334a2 ✅ Zwei gebündelte Direkt-Anweisungen: Snackbar-Hinweis
+  "Beleg kann auch manuell eingegeben werden." jetzt fett. Kino-
+  Startseite: erster Button orange (AppFarben.fokusFarbe), "Einstel-
+  lungen"/"Verlauf" in neuem AppFarben.appBarRotGedaempft (50%-Rot)
+  statt Theme-Default-Rot.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

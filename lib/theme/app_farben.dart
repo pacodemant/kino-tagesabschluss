@@ -25,6 +25,9 @@ class AppFarben {
   // Subtiler Text
   static const Color subtilerText = Color(0x8A000000);           // black54
 
+  // 50%-Rot für nachrangige Buttons (Startseite: Einstellungen/Verlauf).
+  static const Color appBarRotGedaempft = Color(0x805C0A0A);
+
   // Gruppierung zusammengehöriger Einstellungen (Admin-Bereich),
   // abwechselnde Bänder ähnlich Tabellenkalkulations-Zeilenfarben.
   static const Color gruppierungBandA = Colors.white;

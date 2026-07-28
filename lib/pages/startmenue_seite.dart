@@ -233,6 +233,10 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => _oeffneTagesabschlussSchritt1(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppFarben.fokusFarbe,
+                    foregroundColor: Colors.black87,
+                  ),
                   child: const Text('Kassenabrechnung (4 Schritte)'),
                 ),
                 const SizedBox(height: 12),
@@ -263,11 +267,17 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => _oeffneEinstellungen(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppFarben.appBarRotGedaempft,
+                  ),
                   child: const Text('Einstellungen'),
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => _oeffneVerlauf(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppFarben.appBarRotGedaempft,
+                  ),
                   child: const Text('Verlauf'),
                 ),
                 const SizedBox(height: 12),
@@ -290,7 +300,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.10 · r334a @ GitHub:',
+                    'Web App 0.9.10 · r334a2 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
