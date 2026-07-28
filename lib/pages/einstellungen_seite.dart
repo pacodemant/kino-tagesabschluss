@@ -5,6 +5,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
@@ -93,12 +94,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   bool _devAufgeklappt = false;
+  bool _devModusAktiv = true;
   bool _testwertAufgeklappt = false;
   bool _pwaInstallVerfuegbar = false;
-  bool _anthropicKeyVerdeckt = true;
 
-  String? _overrideLocationId;
-  String? _overrideApiKey;
   String? _standortModusKinoId;
   bool _adminStatusHaltenAktiv = false;
 
@@ -201,6 +200,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _aktiveKinoName = aktiveKino.name;
     }
     final bool apiUploadAktiv = await FeatureFlags.apiUploadAktiv();
+    final bool devModusAktiv = await DevModus.istAktiv();
     if (!mounted) {
       return;
     }
@@ -253,10 +253,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     setState(() {
       _apiUploadAktiv = apiUploadAktiv;
+      _devModusAktiv = devModusAktiv;
       _getraenkeliste = getraenkeliste;
       _geladen = true;
-      _overrideLocationId = overrideLocationId;
-      _overrideApiKey = overrideApiKey;
       _standortModusKinoId = standortModus;
       _adminStatusHaltenAktiv = adminStatusHaltenAktiv;
       if (adminStatusHaltenAktiv && _adminSessionEntsperrt) {
@@ -276,6 +275,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     await speicher.setBool('admin_status_halten_aktiv', wert);
     if (!mounted) return;
     setState(() => _adminStatusHaltenAktiv = wert);
+  }
+
+  Future<void> _onDevModusGeaendert(bool wert) async {
+    await DevModus.setzen(wert);
+    if (!mounted) return;
+    setState(() => _devModusAktiv = wert);
   }
 
   void _setzeAutoFillSchritt1Controller(Map<String, dynamic>? daten) {
@@ -371,12 +376,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     if (wert.isEmpty) {
       await speicher.remove('flurbocash_location_id_$_aktiveKinoId');
-      if (!mounted) return;
-      setState(() => _overrideLocationId = null);
     } else {
       await speicher.setString('flurbocash_location_id_$_aktiveKinoId', wert);
-      if (!mounted) return;
-      setState(() => _overrideLocationId = wert);
     }
   }
 
@@ -385,12 +386,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     if (wert.isEmpty) {
       await speicher.remove('flurbocash_api_key_$_aktiveKinoId');
-      if (!mounted) return;
-      setState(() => _overrideApiKey = null);
     } else {
       await speicher.setString('flurbocash_api_key_$_aktiveKinoId', wert);
-      if (!mounted) return;
-      setState(() => _overrideApiKey = wert);
     }
   }
 
@@ -1421,17 +1418,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                                   onEditingComplete: () =>
                                       _locationIdFocus.unfocus(),
                                 ),
-                                if (_overrideLocationId != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      'Gespeichert: $_overrideLocationId',
-                                      style: const TextStyle(
-                                        color: Colors.orange,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
                                 const SizedBox(height: 12),
                                 TextField(
                                   controller: _flurbocashApiKeyCtrl,
@@ -1445,17 +1431,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                                   onEditingComplete: () =>
                                       _flurbocashApiKeyFocus.unfocus(),
                                 ),
-                                if (_overrideApiKey != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Text(
-                                      'Gespeichert: $_overrideApiKey',
-                                      style: const TextStyle(
-                                        color: Colors.orange,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
                               ],
                             ),
                           ),
@@ -1494,20 +1469,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                               horizontal: 16, vertical: 4),
                           child: TextField(
                             controller: _anthropicApiKeyCtrl,
-                            obscureText: _anthropicKeyVerdeckt,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Anthropic API-Key',
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _anthropicKeyVerdeckt
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
-                                onPressed: () => setState(
-                                  () => _anthropicKeyVerdeckt =
-                                      !_anthropicKeyVerdeckt,
-                                ),
-                              ),
                             ),
                             onChanged: (_) => _speichereAnthropicApiKey(),
                           ),
@@ -1521,6 +1484,20 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         const Divider(height: 1),
+                        SwitchListTile(
+                          title: const Text('Dev-Modus (Auto-Fill)'),
+                          value: _devModusAktiv,
+                          onChanged: _onDevModusGeaendert,
+                          activeThumbColor: AppFarben.appBarRot,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
+                          child: Text(
+                            'Blendet die Auto-Fill-Werkzeuge auf Schritt '
+                            '1-3 ein oder aus.',
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
+                        ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
                           child: Row(

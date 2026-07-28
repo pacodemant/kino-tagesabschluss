@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.10+334a2 · Run 334a2
+Version: 0.9.11+335 · Run 335
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,7 +130,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 331)
+## Laufender Entwicklungsstand (Run 335)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -396,6 +396,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Startseite: erster Button orange (AppFarben.fokusFarbe), "Einstel-
   lungen"/"Verlauf" in neuem AppFarben.appBarRotGedaempft (50%-Rot)
   statt Theme-Default-Rot.
+- Run 335 ✅ Drei Korrekturen im Einstellungen-Admin-Bereich: (1)
+  Dev-Modus-Schalter wiederhergestellt (seit Run 287 fehlte der UI-
+  Schalter, DevModus.setzen() wurde nirgends mehr aufgerufen) — neuer
+  SwitchListTile über dem Testwerte-Block. (2) Redundante orange
+  "Gespeichert: ..."-Hinweise unter location_id/Flurbocash-API-Key
+  entfernt. (3) Anthropic-API-Key-Feld zeigt den Wert jetzt im
+  Klartext, kein Augen-Icon mehr.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

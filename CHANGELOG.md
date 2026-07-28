@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 335: Drei Korrekturen im Einstellungen-Admin-Bereich aus
+  Testfeedback. (1) Dev-Modus-Schalter wiederhergestellt: Der
+  DevModus-Service (dev_modus.dart, Key "dev_modus_aktiv") steuert
+  das DEV-Tools-Panel (Auto-Fill/Alles-leeren) auf Schritt 1-3,
+  hatte aber seit Run 287 keinen UI-Schalter mehr — DevModus.setzen()
+  wurde seither nirgends mehr aufgerufen. Neuer SwitchListTile
+  "Dev-Modus (Auto-Fill)" im PIN-geschützten Admin-Bereich, direkt
+  über dem Testwerte-Block, verbunden mit DevModus.istAktiv()/
+  setzen(). (2) Zwei redundante orangefarbene "Gespeichert: ..."
+  Hinweise unter den Feldern location_id und Flurbocash-API-Key
+  entfernt (Wert war bereits im Feld selbst sichtbar); zugehörige
+  State-Felder _overrideLocationId/_overrideApiKey mit entfernt,
+  _speichereLocationId()/_speichereFlurbocashApiKey() dadurch auf
+  reines Speichern vereinfacht. (3) Anthropic-API-Key-Feld zeigt
+  den Wert jetzt im Klartext (obscureText + Augen-Icon-Button
+  entfernt, Feld _anthropicKeyVerdeckt entfernt). Version 0.9.11+335.
+  Dateien: einstellungen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 334a2: Zwei direkte Anweisungen ohne eigene Run-Nummer,
   gebündelt. (1) Snackbar-Hinweistext bei Netzwerk-/
   Konfigurationsfehlern (_starteEcBelegScan,
