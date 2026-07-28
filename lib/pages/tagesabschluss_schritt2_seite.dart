@@ -1411,10 +1411,12 @@ class _TagesabschlussSchritt2SeiteState
         if (!mounted) return;
         final bool istNetzwerkFehler = e.message.startsWith('Keine Internet') ||
             e.message.startsWith('HTTP ');
+        final bool istKonfigurationsFehler =
+            e.message.startsWith('Service-URL nicht konfiguriert');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              istNetzwerkFehler
+              (istNetzwerkFehler || istKonfigurationsFehler)
                   ? '${e.message}\nBeleg kann auch manuell eingegeben werden.'
                   : 'Scan nicht lesbar – bitte erneut versuchen\n'
                       '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '

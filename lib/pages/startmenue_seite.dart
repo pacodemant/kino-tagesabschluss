@@ -290,7 +290,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.10 · r334 @ GitHub:',
+                    'Web App 0.9.10 · r334a @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),

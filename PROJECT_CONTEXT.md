@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.10+334 · Run 334
+Version: 0.9.10+334a · Run 334a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -384,6 +384,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Hint zeigt nur noch ein Format-Beispiel, keinen echten Wert mehr.
   Betriebs-Konsequenz: Auf jedem Gerät, auf dem das Feld bisher leer
   war, muss die URL jetzt manuell einmalig eingetragen werden.
+- Run 334a ✅ Korrektur: Die neue Fehlermeldung aus Run 334 kam nie
+  beim Nutzer an, weil der Snackbar-Filter in _starteEcBelegScan
+  (tagesabschluss_schritt2_seite.dart) bislang jeden Fehler außer
+  Netzwerkfehlern auf den generischen Text "Scan nicht lesbar"
+  abbildete. Neue Prüfung `istKonfigurationsFehler` zeigt bei
+  fehlender Service-URL jetzt den echten Klartext statt des
+  irreführenden Lesbarkeits-Hinweises.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

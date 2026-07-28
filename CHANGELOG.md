@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 334a: Korrektur aus Testfeedback zu Run 334, direkte Anweisung
+  ohne eigene Run-Nummer. Testbefund: Die neue, sprechende
+  BelegScanException ("Service-URL nicht konfiguriert – bitte in den
+  Einstellungen eintragen.") kam nie beim Nutzer an — der
+  Snackbar-Filter in _starteEcBelegScan (tagesabschluss_schritt2_seite.dart,
+  seit Run 274e2) unterschied bisher nur zwischen Netzwerkfehlern
+  (Text beginnt mit "Keine Internet"/"HTTP ") und "allem anderen",
+  und zeigte für "alles andere" immer den generischen Text
+  "Scan nicht lesbar – bitte erneut versuchen (z.B. unscharf, zu
+  dunkel oder kein Beleg)" — fachlich falsch bei fehlender
+  Konfiguration, weil das eine Foto-Qualität suggeriert statt eines
+  Einstellungs-Problems. Neue Prüfung `istKonfigurationsFehler`
+  (Text beginnt mit "Service-URL nicht konfiguriert") ergänzt;
+  zeigt jetzt wie bei Netzwerkfehlern den echten Klartext der
+  Exception plus Hinweis auf manuelle Eingabe, statt des generischen
+  Lesbarkeits-Texts. Version 0.9.10+334a. Datei:
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 334: BelegScan-Service-URL: hart codierten Fallback aus dem
   Code entfernt, rein aus der Einstellung gelesen. Auslöser:
   Paco hatte im Admin-Bereich ("KI-Belegscan") nachgesehen und dort
