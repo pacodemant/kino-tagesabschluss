@@ -119,7 +119,7 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   SizedBox(
-                    width: 132,
+                    width: 172,
                     child: baueFeldMitKey(
                       focusNode: betragFocusNode,
                       child: BetragCentEingabefeld(

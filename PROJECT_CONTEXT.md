@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.12+336a · Run 336a
+Version: 0.9.12+336a2 · Run 336a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 336a)
+## Laufender Entwicklungsstand (Run 336a2)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -425,6 +425,19 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   nach Tap auf "+"-Button (Text wurde sonst komplett markiert statt
   Cursor ans Ende zu setzen). Icon-Reihenfolge im Betragsfeld:
   €-Zeichen zuerst, dann "+", dann Löschen-X mit mehr Abstand.
+- Run 336a2 ✅ Weitere Korrekturen nach Skizze aus Pacos zweitem
+  Gerätetest: "+"/"X" jetzt als graue Button-Chips mit echten
+  Trennlinien (neue Helfer in eingabefeld_clear_helper.dart, von
+  beiden Eingabefeldern genutzt) statt bloßer Icons mit Abstand.
+  Mehrere Felder verbreitert (Scheine-Anzahl, lose Münzen, Umschläge,
+  Kassenbons, Ausgaben), damit dreistellige Werte nicht mehr
+  abgeschnitten werden. BetragCentEingabefeld: textAlign right statt
+  center (Betrag liegt jetzt direkt am €). Keyboard-Dismiss-Bug beim
+  "+"-Tap auf bereits fokussiertem Feld adressiert (requestFocus() nur
+  noch bei fehlendem Fokus) — Best-Effort, noch nicht auf Gerät
+  verifiziert. Bewusst NICHT die volle feldhohe Zellen-Trennung aus
+  der Skizze umgesetzt (hätte InputDecoration/labelText/
+  fehlermeldungText umgehen müssen).
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

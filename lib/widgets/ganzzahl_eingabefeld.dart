@@ -127,12 +127,18 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
       widget.focusNode?.requestFocus();
       return;
     }
+    final bool hatteBereitsFokus = widget.focusNode?.hasFocus ?? false;
     final String neuerText = '$aktuellerText+';
     widget.textController.value = TextEditingValue(
       text: neuerText,
       selection: TextSelection.collapsed(offset: neuerText.length),
     );
-    widget.focusNode?.requestFocus();
+    // War das Feld schon fokussiert, würde ein erneuter requestFocus()-Aufruf
+    // die Text-Input-Verbindung neu aufbauen — das lässt auf iOS Safari die
+    // virtuelle Tastatur verschwinden. Nur bei fehlendem Fokus nötig.
+    if (!hatteBereitsFokus) {
+      widget.focusNode?.requestFocus();
+    }
     widget.onChanged(neuerText);
     // Fokuswechsel setzt die Selektion browserseitig teils auf "alles
     // markiert" zurück; Cursor nach dem Frame erneut ans Ende setzen,
@@ -213,31 +219,25 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
             : null,
         suffix: hatText
             ? SizedBox(
-                height: 20,
+                height: 26,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    GestureDetector(
+                    baueEingabefeldAktionsChip(
+                      icon: Icons.add,
                       onTap: _fuegeAdditionHinzu,
-                      child: Icon(
-                        Icons.add,
-                        size: 18,
-                        color: clearIconFarbe(hatFokus),
-                      ),
+                      hatFokus: hatFokus,
                     ),
-                    const SizedBox(width: 10),
-                    GestureDetector(
+                    baueEingabefeldTrennlinie(),
+                    baueEingabefeldAktionsChip(
+                      icon: Icons.clear,
                       onTap: baueClearAktion(
                         controller: widget.textController,
                         onChanged: widget.onChanged,
                         focusNode: widget.focusNode,
                       ),
-                      child: Icon(
-                        Icons.clear,
-                        size: 18,
-                        color: clearIconFarbe(hatFokus),
-                      ),
+                      hatFokus: hatFokus,
                     ),
                   ],
                 ),

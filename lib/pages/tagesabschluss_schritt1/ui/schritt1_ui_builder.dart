@@ -92,7 +92,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         SizedBox(
-          width: 96,
+          width: 140,
           child: baueFeldMitKey(
             focusNode: focusNode,
             child: GanzzahlEingabefeld(
@@ -173,7 +173,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         SizedBox(
-          width: 148,
+          width: 190,
           child: baueFeldMitKey(
             focusNode: focusNode,
             child: BetragCentEingabefeld(

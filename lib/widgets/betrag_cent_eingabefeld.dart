@@ -213,12 +213,18 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       widget.focusNode?.requestFocus();
       return;
     }
+    final bool hatteBereitsFokus = widget.focusNode?.hasFocus ?? false;
     final String neuerText = '$aktuellerText+';
     widget.textController.value = TextEditingValue(
       text: neuerText,
       selection: TextSelection.collapsed(offset: neuerText.length),
     );
-    widget.focusNode?.requestFocus();
+    // War das Feld schon fokussiert, würde ein erneuter requestFocus()-Aufruf
+    // die Text-Input-Verbindung neu aufbauen — das lässt auf iOS Safari die
+    // virtuelle Tastatur verschwinden. Nur bei fehlendem Fokus nötig.
+    if (!hatteBereitsFokus) {
+      widget.focusNode?.requestFocus();
+    }
     widget.onChanged(neuerText);
     // Fokuswechsel setzt die Selektion browserseitig teils auf "alles
     // markiert" zurück; Cursor nach dem Frame erneut ans Ende setzen,
@@ -331,7 +337,10 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
           // ein "+" zeigt (für Additions-Eingaben wie "260+20").
           : TextInputType.phone,
       textInputAction: widget.textInputAction,
-      textAlign: TextAlign.center,
+      // Rechtsbündig statt zentriert, damit der Betrag direkt am
+      // Eurozeichen anliegt statt durch die Zentrierung Abstand zu
+      // bekommen.
+      textAlign: TextAlign.right,
       cursorColor: hatFokus ? Colors.black : null,
       style: TextStyle(
         fontSize: widget.schriftgroesse,
@@ -349,7 +358,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         hintText: bereinigterHinweisText,
         hintStyle: TextStyle(color: hatFokus ? Colors.transparent : null),
         suffix: SizedBox(
-          height: 20,
+          height: 26,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -361,29 +370,23 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
                 ),
               ),
               if (hatText && !widget.mitKomma) ...<Widget>[
-                const SizedBox(width: 6),
-                GestureDetector(
+                baueEingabefeldTrennlinie(),
+                baueEingabefeldAktionsChip(
+                  icon: Icons.add,
                   onTap: _fuegeAdditionHinzu,
-                  child: Icon(
-                    Icons.add,
-                    size: 16,
-                    color: clearIconFarbe(hatFokus),
-                  ),
+                  hatFokus: hatFokus,
                 ),
               ],
               if (hatText) ...<Widget>[
-                const SizedBox(width: 10),
-                GestureDetector(
+                baueEingabefeldTrennlinie(),
+                baueEingabefeldAktionsChip(
+                  icon: Icons.clear,
                   onTap: baueClearAktion(
                     controller: widget.textController,
                     onChanged: widget.onChanged,
                     focusNode: widget.focusNode,
                   ),
-                  child: Icon(
-                    Icons.clear,
-                    size: 16,
-                    color: clearIconFarbe(hatFokus),
-                  ),
+                  hatFokus: hatFokus,
                 ),
               ],
             ],

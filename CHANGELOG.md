@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 336a2: Fünf Korrekturen aus Pacos zweitem Gerätetest von Run
+  336/336a (mit Skizze). (1) "+"/"X" jetzt als eigene graue Button-
+  Chips (Hintergrund + Rundung) statt bloßer Icons, echte Trennlinien
+  zwischen Wert/€, "+" und "X" statt nur SizedBox-Abstand — neue
+  gemeinsame Helfer baueEingabefeldTrennlinie()/
+  baueEingabefeldAktionsChip() in eingabefeld_clear_helper.dart, von
+  BetragCentEingabefeld UND GanzzahlEingabefeld genutzt. Bewusst NICHT
+  die im Sketch gezeigte volle feldhohe Zellen-Trennung umgesetzt, da
+  das InputDecoration (labelText/fehlermeldungText) hätte umgangen
+  werden müssen. (2) Eingabefelder verbreitert, damit dreistellige
+  Zahlen/Beträge nicht mehr abgeschnitten werden: Scheine-Anzahl
+  96→140, lose Münzen 148→190, Umschläge 132→172, Kassenbons-Betrag
+  148→190, Ausgaben-Betrag 120→155. (3) BetragCentEingabefeld:
+  textAlign von center auf right geändert, damit der Betrag direkt am
+  Eurozeichen anliegt statt durch Zentrierung Abstand zu bekommen.
+  (4) Keyboard-Dismiss-Bug: Tippen auf "+" bei bereits fokussiertem
+  Feld ließ die virtuelle Tastatur auf iOS Safari verschwinden;
+  requestFocus() wird jetzt nur noch aufgerufen, wenn das Feld vorher
+  NICHT fokussiert war (Best-Effort-Fix, auf echtem Gerät noch zu
+  verifizieren). Version 0.9.12+336a2. Dateien:
+  eingabefeld_clear_helper.dart, betrag_cent_eingabefeld.dart,
+  ganzzahl_eingabefeld.dart, schritt1_ui_builder.dart,
+  schritt1_umschlaege_section.dart, tagesabschluss_schritt2_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 336a: Drei Korrekturen aus Pacos erstem Gerätetest (iPhone
   Safari) von Run 336. (1) Die numerische iPhone-Tastatur zeigt kein
   "+", betraf aber auch das Stückzahl-Feld (GanzzahlEingabefeld, z.B.

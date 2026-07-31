@@ -1984,7 +1984,7 @@ class _TagesabschlussSchritt2SeiteState
             ),
           ),
           SizedBox(
-            width: 148,
+            width: 190,
             child: BetragCentEingabefeld(
               textController: controller,
               focusNode: focusNode,
@@ -3096,7 +3096,7 @@ class _TagesabschlussSchritt2SeiteState
                                     ),
                                     const SizedBox(width: 8),
                                     SizedBox(
-                                      width: 120,
+                                      width: 155,
                                       child: BetragCentEingabefeld(
                                         textController:
                                             _ausgabenBetragController[i],
