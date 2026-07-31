@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 336a3: Diesmal per Playwright gegen einen lokalen Release-Build
+  selbst visuell geprüft (Build + Python-http.server + Chromium-
+  Screenshots über mehrere Bildschirme bis Schritt 1). Dabei zwei
+  eigene Erkenntnisse ohne neue Paco-Rückmeldung umgesetzt: (1) Beim
+  Klick-Testen der neuen "+"/"X"-Chips aus Run 336a2 brauchte selbst
+  ein pixelgenauer Mausklick mehrere Anläufe, um zu treffen — die
+  tatsächliche Tippfläche war kleiner als sichtbar. baueEingabefeld-
+  AktionsChip() bekommt jetzt eine unsichtbar größere Tippfläche
+  (GestureDetector mit HitTestBehavior.opaque + zusätzlichem Padding)
+  ohne den sichtbaren Chip zu vergrößern; Trennlinien-Rand von 6 auf 4
+  reduziert, um die Zeile nicht unnötig breiter zu machen. Suffix-
+  Höhe in beiden Feldern von 26 auf 36 erhöht, damit die größere
+  Tippfläche nicht abgeschnitten wird. (2) Alle Layout-Änderungen aus
+  336a/336a2 (Chip-Design, Feldbreiten, Cursor-Position,
+  Additions-Workflow in Betrags- UND Anzahlfeld) end-to-end mit
+  echten Klicks nachgestellt und per Screenshot bestätigt — keine
+  Overflow- oder Konsolenfehler. Version 0.9.12+336a3. Dateien:
+  eingabefeld_clear_helper.dart, betrag_cent_eingabefeld.dart,
+  ganzzahl_eingabefeld.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 336a2: Fünf Korrekturen aus Pacos zweitem Gerätetest von Run
   336/336a (mit Skizze). (1) "+"/"X" jetzt als eigene graue Button-
   Chips (Hintergrund + Rundung) statt bloßer Icons, echte Trennlinien

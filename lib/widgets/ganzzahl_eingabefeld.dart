@@ -219,7 +219,7 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
             : null,
         suffix: hatText
             ? SizedBox(
-                height: 26,
+                height: 36,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,

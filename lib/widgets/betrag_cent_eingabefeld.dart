@@ -358,7 +358,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         hintText: bereinigterHinweisText,
         hintStyle: TextStyle(color: hatFokus ? Colors.transparent : null),
         suffix: SizedBox(
-          height: 26,
+          height: 36,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,

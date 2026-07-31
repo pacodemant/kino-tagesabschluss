@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.12+336a2 · Run 336a2
+Version: 0.9.12+336a3 · Run 336a3
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 336a2)
+## Laufender Entwicklungsstand (Run 336a3)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -438,6 +438,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   verifiziert. Bewusst NICHT die volle feldhohe Zellen-Trennung aus
   der Skizze umgesetzt (hätte InputDecoration/labelText/
   fehlermeldungText umgehen müssen).
+- Run 336a3 ✅ Erstmals per Playwright (Chromium headless) gegen
+  lokalen Release-Build selbst visuell geprüft, inkl. Klick-Workflow
+  bis Schritt 1. Dabei entdeckt: Die "+"/"X"-Chip-Tippfläche aus
+  336a2 war kleiner als sichtbar — selbst gezielte Mausklicks
+  brauchten mehrere Anläufe. baueEingabefeldAktionsChip() bekommt
+  jetzt eine unsichtbar größere Tippfläche (HitTestBehavior.opaque +
+  zusätzliches Padding), Suffix-Höhe in beiden Feldern 26→36 damit
+  nichts abgeschnitten wird.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
