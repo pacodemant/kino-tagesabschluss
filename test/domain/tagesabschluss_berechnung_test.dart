@@ -18,6 +18,14 @@ void main() {
       expect(TagesabschlussBerechnung.parseCentZiffern('+'), 0);
     });
 
+    test('parseGanzzahlSumme summiert "+"-getrennte Ganzzahlen', () {
+      expect(TagesabschlussBerechnung.parseGanzzahlSumme('5+3'), 8);
+      expect(TagesabschlussBerechnung.parseGanzzahlSumme('5'), 5);
+      expect(TagesabschlussBerechnung.parseGanzzahlSumme('5+'), 5);
+      expect(TagesabschlussBerechnung.parseGanzzahlSumme('12+34+1'), 47);
+      expect(TagesabschlussBerechnung.parseGanzzahlSumme(''), 0);
+    });
+
     test('parseCentKomma parst einfache Euro-Komma-Eingaben', () {
       expect(TagesabschlussBerechnung.parseCentKomma('6,40'), 640);
       expect(TagesabschlussBerechnung.parseCentKomma('380'), 38000);

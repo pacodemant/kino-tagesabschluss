@@ -220,6 +220,16 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     );
     widget.focusNode?.requestFocus();
     widget.onChanged(neuerText);
+    // Fokuswechsel setzt die Selektion browserseitig teils auf "alles
+    // markiert" zurück; Cursor nach dem Frame erneut ans Ende setzen,
+    // damit direkt weitergetippt werden kann statt den Betrag zu ersetzen.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        widget.textController.selection = TextSelection.collapsed(
+          offset: widget.textController.text.length,
+        );
+      }
+    });
   }
 
   static String _formatiereNennwert(int cent) {
@@ -344,7 +354,14 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              Text(
+                '€',
+                style: TextStyle(
+                  color: hatFokus ? Colors.black : null,
+                ),
+              ),
               if (hatText && !widget.mitKomma) ...<Widget>[
+                const SizedBox(width: 6),
                 GestureDetector(
                   onTap: _fuegeAdditionHinzu,
                   child: Icon(
@@ -353,9 +370,9 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
                     color: clearIconFarbe(hatFokus),
                   ),
                 ),
-                const SizedBox(width: 4),
               ],
               if (hatText) ...<Widget>[
+                const SizedBox(width: 10),
                 GestureDetector(
                   onTap: baueClearAktion(
                     controller: widget.textController,
@@ -368,14 +385,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
                     color: clearIconFarbe(hatFokus),
                   ),
                 ),
-                const SizedBox(width: 2),
               ],
-              Text(
-                '€',
-                style: TextStyle(
-                  color: hatFokus ? Colors.black : null,
-                ),
-              ),
             ],
           ),
         ),

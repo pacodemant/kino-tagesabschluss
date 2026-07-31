@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.12+336 · Run 336
+Version: 0.9.12+336a · Run 336a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -107,7 +107,9 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 
 ### Wichtige Widgets
 
-- `GanzzahlEingabefeld` — Ganzzahl-Eingabe mit Clear-Button, Fokus-Hervorhebung
+- `GanzzahlEingabefeld` — Ganzzahl-Eingabe mit Clear-Button, Fokus-
+  Hervorhebung; seit Run 336a zusätzlich "+"-Additions-Eingabe
+  möglich (z. B. "5+3" → 8 nach Fokusverlust)
 - `BetragCentEingabefeld` — Cent-Eingabe mit automatischem Komma
   (Supermarktkassen-Format); seit Run 336 zusätzlich "+"-Additions-
   Eingabe möglich (z. B. "260+20" → 280 nach Fokusverlust)
@@ -132,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 336)
+## Laufender Entwicklungsstand (Run 336a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -417,6 +419,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   im Widget duplizierten Parse-Logik. `GanzzahlEingabefeld`
   (Stückzahl) bewusst unverändert, da der beschriebene Anwendungsfall
   nur Beträge betrifft.
+- Run 336a ✅ Korrekturen aus Pacos erstem Gerätetest (iPhone Safari):
+  "+"-Button jetzt auch im `GanzzahlEingabefeld` (Stückzahl, z.B.
+  Scheine), da die iPhone-Zifferntastatur kein "+" zeigt. Cursor-Fix
+  nach Tap auf "+"-Button (Text wurde sonst komplett markiert statt
+  Cursor ans Ende zu setzen). Icon-Reihenfolge im Betragsfeld:
+  €-Zeichen zuerst, dann "+", dann Löschen-X mit mehr Abstand.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

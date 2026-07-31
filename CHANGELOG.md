@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 336a: Drei Korrekturen aus Pacos erstem Gerätetest (iPhone
+  Safari) von Run 336. (1) Die numerische iPhone-Tastatur zeigt kein
+  "+", betraf aber auch das Stückzahl-Feld (GanzzahlEingabefeld, z.B.
+  Scheine-Anzahl) — dort gab es noch gar keinen "+"-Button. Neuer
+  GanzzahlSegmentLaengeFormatter begrenzt jedes "+"-Segment einzeln
+  auf maxLaenge statt die Gesamtlänge zu deckeln (sonst würde z.B.
+  bei maxLaenge 3 "12+3" zu "12+" abgeschnitten); neue
+  TagesabschlussBerechnung.parseGanzzahlSumme summiert "+"-getrennte
+  Ganzzahlen, Schritt1StateController.parseGanzzahl nutzt sie jetzt
+  statt eigener Parse-Logik. (2) Tippen auf den "+"-Button markierte
+  den kompletten Bestandstext (Browser/iOS wählt beim programmatischen
+  Fokussieren teils alles an) — Cursor wird jetzt nach dem Frame per
+  addPostFrameCallback erneut ans Ende gesetzt, damit direkt weiter-
+  getippt werden kann. Betrifft BetragCentEingabefeld UND
+  GanzzahlEingabefeld. (3) Icon-Reihenfolge im Betragsfeld-Suffix
+  korrigiert: Eurozeichen jetzt zuerst (direkt nach dem Betrag), dann
+  "+"-Button, dann Löschen-X — mit größerem Abstand zwischen "+" und
+  X, da diese sonst schlecht einzeln zu treffen waren. Version
+  0.9.12+336a. Dateien: ganzzahl_eingabefeld.dart,
+  betrag_cent_eingabefeld.dart, tagesabschluss_berechnung.dart,
+  schritt1_state_controller.dart, tagesabschluss_berechnung_test.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 336: "+"-Additions-Eingabe im BetragCentEingabefeld (Scheine,
   Rollen, lose Münzen, Umschläge, Kassenbons/Wechselgeld). Auslöser:
   Frage, ob man beim Zählen (z. B. Geldscheine in zwei Etappen, oder

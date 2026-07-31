@@ -7,7 +7,7 @@ class Schritt1StateController {
   const Schritt1StateController();
 
   int parseGanzzahl(String wert) {
-    return int.tryParse(wert) ?? 0;
+    return TagesabschlussBerechnung.parseGanzzahlSumme(wert);
   }
 
   void setzeStueckzahl(

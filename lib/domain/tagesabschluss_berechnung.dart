@@ -14,6 +14,15 @@ class TagesabschlussBerechnung {
     );
   }
 
+  /// Summiert "+"-getrennte Ganzzahlen, z.B. "5+3" → 8.
+  /// Ohne "+" identisch zum reinen int.tryParse.
+  static int parseGanzzahlSumme(String wert) {
+    return wert.split('+').fold<int>(
+      0,
+      (int summe, String teil) => summe + (int.tryParse(teil) ?? 0),
+    );
+  }
+
   /// Parst Euro-Komma-Eingabe: "6,40" → 640, "380" → 38000, "0,0" → 0.
   static int parseCentKomma(String wert) {
     final String s = wert.trim().replaceAll('€', '').trim();
