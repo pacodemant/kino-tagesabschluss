@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.12+336a3 · Run 336a3
+Version: 0.9.12+336a4 · Run 336a4
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 336a3)
+## Laufender Entwicklungsstand (Run 336a4)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -446,6 +446,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   jetzt eine unsichtbar größere Tippfläche (HitTestBehavior.opaque +
   zusätzliches Padding), Suffix-Höhe in beiden Feldern 26→36 damit
   nichts abgeschnitten wird.
+- Run 336a4 ✅ Paco-Feedback: die 36px-Suffix-Höhe aus 336a3 ließ
+  Felder mit Wert (Buttons sichtbar) höher wirken als leere Felder —
+  unerwünscht, Feldhöhe soll konstant bleiben. Feste SizedBox-Höhe
+  komplett entfernt (Zeile sizt sich am größten Kind aus), Chip-
+  Vertikal-Padding 6+4→0+2 (nur noch horizontales Tipp-Polster).
+  Per Playwright verifiziert: befüllte/leere Zeilen jetzt gleich
+  hoch.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

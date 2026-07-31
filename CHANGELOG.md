@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 336a4: Paco-Feedback: Eingabefelder wurden höher, sobald ein
+  Wert (und damit die "+"/"X"-Buttons) drinstand — unerwünscht,
+  Vorgabe: Feldhöhe soll konstant bleiben, Ränder dürfen näher an die
+  Buttons rücken. Ursache: GanzzahlEingabefeld erzwang den Suffix nur
+  bei hatText mit fester Höhe 36 (SizedBox), leeres Feld hatte gar
+  keinen Suffix → sichtbarer Sprung beim ersten Zeichen.
+  BetragCentEingabefeld hatte durch dieselbe feste Höhe 36 zwar
+  durchgängig, aber gegenüber vorher unnötig viel Platz. Fix: feste
+  SizedBox-Höhe komplett entfernt (Row sizt sich jetzt natürlich an
+  ihrem größten Kind aus), Chip-Vertikal-Padding von
+  baueEingabefeldAktionsChip() von 6+4 auf 0+2 reduziert (nur noch
+  horizontal zusätzliches Tipp-Polster, das die Höhe nicht
+  beeinflusst). Per Playwright gegen einen lokalen Release-Build
+  verifiziert: befüllte und leere Zeilen (Scheine, lose Münzen)
+  jetzt sichtbar gleich hoch. Version 0.9.12+336a4. Dateien:
+  eingabefeld_clear_helper.dart, betrag_cent_eingabefeld.dart,
+  ganzzahl_eingabefeld.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 336a3: Diesmal per Playwright gegen einen lokalen Release-Build
   selbst visuell geprüft (Build + Python-http.server + Chromium-
   Screenshots über mehrere Bildschirme bis Schritt 1). Dabei zwei

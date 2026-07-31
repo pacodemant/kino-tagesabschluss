@@ -357,40 +357,37 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
         labelText: widget.labelText,
         hintText: bereinigterHinweisText,
         hintStyle: TextStyle(color: hatFokus ? Colors.transparent : null),
-        suffix: SizedBox(
-          height: 36,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                '€',
-                style: TextStyle(
-                  color: hatFokus ? Colors.black : null,
-                ),
+        suffix: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              '€',
+              style: TextStyle(
+                color: hatFokus ? Colors.black : null,
               ),
-              if (hatText && !widget.mitKomma) ...<Widget>[
-                baueEingabefeldTrennlinie(),
-                baueEingabefeldAktionsChip(
-                  icon: Icons.add,
-                  onTap: _fuegeAdditionHinzu,
-                  hatFokus: hatFokus,
-                ),
-              ],
-              if (hatText) ...<Widget>[
-                baueEingabefeldTrennlinie(),
-                baueEingabefeldAktionsChip(
-                  icon: Icons.clear,
-                  onTap: baueClearAktion(
-                    controller: widget.textController,
-                    onChanged: widget.onChanged,
-                    focusNode: widget.focusNode,
-                  ),
-                  hatFokus: hatFokus,
-                ),
-              ],
+            ),
+            if (hatText && !widget.mitKomma) ...<Widget>[
+              baueEingabefeldTrennlinie(),
+              baueEingabefeldAktionsChip(
+                icon: Icons.add,
+                onTap: _fuegeAdditionHinzu,
+                hatFokus: hatFokus,
+              ),
             ],
-          ),
+            if (hatText) ...<Widget>[
+              baueEingabefeldTrennlinie(),
+              baueEingabefeldAktionsChip(
+                icon: Icons.clear,
+                onTap: baueClearAktion(
+                  controller: widget.textController,
+                  onChanged: widget.onChanged,
+                  focusNode: widget.focusNode,
+                ),
+                hatFokus: hatFokus,
+              ),
+            ],
+          ],
         ),
         isDense: true,
         filled: fuellFarbe != null,

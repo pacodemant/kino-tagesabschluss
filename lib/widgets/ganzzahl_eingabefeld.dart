@@ -218,29 +218,26 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
               )
             : null,
         suffix: hatText
-            ? SizedBox(
-                height: 36,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    baueEingabefeldAktionsChip(
-                      icon: Icons.add,
-                      onTap: _fuegeAdditionHinzu,
-                      hatFokus: hatFokus,
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  baueEingabefeldAktionsChip(
+                    icon: Icons.add,
+                    onTap: _fuegeAdditionHinzu,
+                    hatFokus: hatFokus,
+                  ),
+                  baueEingabefeldTrennlinie(),
+                  baueEingabefeldAktionsChip(
+                    icon: Icons.clear,
+                    onTap: baueClearAktion(
+                      controller: widget.textController,
+                      onChanged: widget.onChanged,
+                      focusNode: widget.focusNode,
                     ),
-                    baueEingabefeldTrennlinie(),
-                    baueEingabefeldAktionsChip(
-                      icon: Icons.clear,
-                      onTap: baueClearAktion(
-                        controller: widget.textController,
-                        onChanged: widget.onChanged,
-                        focusNode: widget.focusNode,
-                      ),
-                      hatFokus: hatFokus,
-                    ),
-                  ],
-                ),
+                    hatFokus: hatFokus,
+                  ),
+                ],
               )
             : null,
       ),

@@ -24,9 +24,10 @@ Widget baueEingabefeldTrennlinie() => Container(
 );
 
 // Button-Chip (Hintergrund + Rundung) für "+"/"X" im Eingabefeld — größere,
-// klar als Button erkennbare Tippfläche statt bloßem Icon. Die eigentliche
-// Tippfläche (HitTestBehavior.opaque + Padding) ist bewusst größer als der
-// sichtbare Chip, sonst trifft man ihn mit dem Finger leicht daneben.
+// klar als Button erkennbare Tippfläche statt bloßem Icon. Nur horizontal
+// zusätzliches Tipp-Polster (HitTestBehavior.opaque + Padding) — vertikal
+// bewusst kein Zusatzraum, damit das Feld nicht höher wird, sobald ein Wert
+// (und damit die Buttons) drinsteht.
 Widget baueEingabefeldAktionsChip({
   required IconData icon,
   required VoidCallback onTap,
@@ -36,9 +37,9 @@ Widget baueEingabefeldAktionsChip({
     behavior: HitTestBehavior.opaque,
     onTap: onTap,
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
         decoration: BoxDecoration(
           color: Colors.grey.shade200,
           borderRadius: BorderRadius.circular(4),
