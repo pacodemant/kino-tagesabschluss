@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 336: "+"-Additions-Eingabe im BetragCentEingabefeld (Scheine,
+  Rollen, lose Münzen, Umschläge, Kassenbons/Wechselgeld). Auslöser:
+  Frage, ob man beim Zählen (z. B. Geldscheine in zwei Etappen, oder
+  nachträglich gefundene Münzen) einfach "260+20" statt selbst
+  ausrechnen könnte. CentWaehrungsEingabeFormatter formatiert jetzt
+  jedes "+"-getrennte Segment live (z. B. "260+20" → "2,60+0,20"
+  während der Eingabe); nach Fokusverlust wird zum Endbetrag
+  zusammengefasst ("2,80"). Neuer "+"-Button im Feld (neben dem
+  bestehenden Clear-Icon), da Android-Zifferntastaturen meist kein
+  "+" haben — zusätzlich Tastatur auf TextInputType.phone umgestellt
+  als Fallback, da diese üblicherweise ein "+" zeigt. Zentrale Summen-
+  Logik: TagesabschlussBerechnung.parseCentZiffern summiert jetzt
+  "+"-getrennte Teilbeträge; das Widget nutzt diese Funktion jetzt
+  auch intern (_parseCentAusText) statt eigener doppelter Parse-Logik.
+  GanzzahlEingabefeld (Stückzahl) bewusst unverändert, da der Anwen-
+  dungsfall nur Beträge betrifft. Neuer Unit-Test für die Summierung.
+  Version 0.9.12+336. Dateien: tagesabschluss_berechnung.dart,
+  betrag_cent_eingabefeld.dart, tagesabschluss_berechnung_test.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 335: Drei Korrekturen im Einstellungen-Admin-Bereich aus
   Testfeedback. (1) Dev-Modus-Schalter wiederhergestellt: Der
   DevModus-Service (dev_modus.dart, Key "dev_modus_aktiv") steuert

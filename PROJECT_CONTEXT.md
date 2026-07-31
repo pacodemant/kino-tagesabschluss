@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.11+335 · Run 335
+Version: 0.9.12+336 · Run 336
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -108,7 +108,9 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 ### Wichtige Widgets
 
 - `GanzzahlEingabefeld` — Ganzzahl-Eingabe mit Clear-Button, Fokus-Hervorhebung
-- `BetragCentEingabefeld` — Cent-Eingabe mit automatischem Komma (Supermarktkassen-Format)
+- `BetragCentEingabefeld` — Cent-Eingabe mit automatischem Komma
+  (Supermarktkassen-Format); seit Run 336 zusätzlich "+"-Additions-
+  Eingabe möglich (z. B. "260+20" → 280 nach Fokusverlust)
 - `TagesabschlussScaffold` — gemeinsames Layout (AppBar, Footer-Button, Keyboard-Handling)
 - `CollapsibleCardSection` — klappbare Card-Sektion
 - `zeigeBelegScanBestaetigenDialog` (`beleg_scan_bestaetigen_dialog.dart`)
@@ -130,7 +132,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 335)
+## Laufender Entwicklungsstand (Run 336)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -403,6 +405,18 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   "Gespeichert: ..."-Hinweise unter location_id/Flurbocash-API-Key
   entfernt. (3) Anthropic-API-Key-Feld zeigt den Wert jetzt im
   Klartext, kein Augen-Icon mehr.
+- Run 336 ✅ "+"-Additions-Eingabe im `BetragCentEingabefeld`
+  (Scheine/Münzen/Rollen/Umschläge/Kassenbons): Ziffernformatter
+  erlaubt jetzt zusätzlich "+", jedes Segment wird während der
+  Eingabe live formatiert (z. B. "260+20" → "2,60+0,20"); nach
+  Fokusverlust wird zum Endbetrag zusammengefasst ("2,80"). Neuer
+  "+"-Button im Feld ergänzt die Tastatur-Eingabe (Telefon-Tasten-
+  feld statt Zifferblock, da dieses meist ein "+" zeigt) — garantiert
+  nutzbar unabhängig vom Tastatur-Layout auf Android. Zentrale Summen-
+  Logik (`TagesabschlussBerechnung.parseCentZiffern`) statt der bisher
+  im Widget duplizierten Parse-Logik. `GanzzahlEingabefeld`
+  (Stückzahl) bewusst unverändert, da der beschriebene Anwendungsfall
+  nur Beträge betrifft.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -12,22 +12,26 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final String ziffern = newValue.text.replaceAll(_nichtZiffern, '');
-    if (ziffern.isEmpty) {
-      return const TextEditingValue(
-        text: '',
-        selection: TextSelection.collapsed(offset: 0),
-      );
-    }
-
-    final int cent = int.tryParse(ziffern) ?? 0;
-    final String formatiert =
-        TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+    // Jedes "+"-getrennte Segment wird unabhängig live formatiert, damit
+    // z.B. "260+20" während der Eingabe als "2,60+0,20" angezeigt wird.
+    final String formatiert = newValue.text
+        .split('+')
+        .map(_formatiereSegment)
+        .join('+');
 
     return TextEditingValue(
       text: formatiert,
       selection: TextSelection.collapsed(offset: formatiert.length),
     );
+  }
+
+  static String _formatiereSegment(String segment) {
+    final String ziffern = segment.replaceAll(_nichtZiffern, '');
+    if (ziffern.isEmpty) {
+      return '';
+    }
+    final int cent = int.tryParse(ziffern) ?? 0;
+    return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
   }
 }
 
@@ -143,6 +147,20 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       }
     }
 
+    // "+"-Summe (z.B. "2,60+0,20"): nach Fokusverlust zum Endbetrag
+    // zusammenfassen, damit das Feld den berechneten Wert zeigt.
+    if (!widget.mitKomma && text.contains('+')) {
+      final String formatiert =
+          TagesabschlussFormatierung.formatiereEuroEingabe(cent);
+      if (widget.textController.text != formatiert) {
+        widget.textController.value = TextEditingValue(
+          text: formatiert,
+          selection: TextSelection.collapsed(offset: formatiert.length),
+        );
+        widget.onChanged(formatiert);
+      }
+    }
+
     if (widget.nennwertCent != null && widget.nennwertCent! > 0) {
       _pruefeNennwert();
     } else {
@@ -183,7 +201,25 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     if (widget.mitKomma) {
       return TagesabschlussBerechnung.parseCentKomma(text);
     }
-    return int.tryParse(text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+    return TagesabschlussBerechnung.parseCentZiffern(text);
+  }
+
+  // Hängt "+" an, damit ein weiterer Betrag addiert werden kann (z.B. beim
+  // Nachzählen gefundener Münzen). Funktioniert unabhängig davon, ob die
+  // Tastatur ein "+"-Zeichen anbietet.
+  void _fuegeAdditionHinzu() {
+    final String aktuellerText = widget.textController.text;
+    if (aktuellerText.isEmpty || aktuellerText.endsWith('+')) {
+      widget.focusNode?.requestFocus();
+      return;
+    }
+    final String neuerText = '$aktuellerText+';
+    widget.textController.value = TextEditingValue(
+      text: neuerText,
+      selection: TextSelection.collapsed(offset: neuerText.length),
+    );
+    widget.focusNode?.requestFocus();
+    widget.onChanged(neuerText);
   }
 
   static String _formatiereNennwert(int cent) {
@@ -281,7 +317,9 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       focusNode: widget.focusNode,
       keyboardType: widget.mitKomma
           ? const TextInputType.numberWithOptions(decimal: true)
-          : TextInputType.number,
+          // Telefon-Tastenfeld statt reinem Zifferblock, da dieses meist
+          // ein "+" zeigt (für Additions-Eingaben wie "260+20").
+          : TextInputType.phone,
       textInputAction: widget.textInputAction,
       textAlign: TextAlign.center,
       cursorColor: hatFokus ? Colors.black : null,
@@ -293,7 +331,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       inputFormatters: widget.mitKomma
           ? <TextInputFormatter>[]
           : <TextInputFormatter>[
-              FilteringTextInputFormatter.digitsOnly,
+              FilteringTextInputFormatter.allow(RegExp(r'[0-9+]')),
               CentWaehrungsEingabeFormatter(),
             ],
       decoration: InputDecoration(
@@ -306,6 +344,17 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              if (hatText && !widget.mitKomma) ...<Widget>[
+                GestureDetector(
+                  onTap: _fuegeAdditionHinzu,
+                  child: Icon(
+                    Icons.add,
+                    size: 16,
+                    color: clearIconFarbe(hatFokus),
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
               if (hatText) ...<Widget>[
                 GestureDetector(
                   onTap: baueClearAktion(

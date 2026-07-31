@@ -10,6 +10,14 @@ void main() {
       expect(TagesabschlussBerechnung.parseCentZiffern('abc'), 0);
     });
 
+    test('parseCentZiffern summiert "+"-getrennte Teilbeträge', () {
+      expect(TagesabschlussBerechnung.parseCentZiffern('2,60+0,20'), 280);
+      expect(TagesabschlussBerechnung.parseCentZiffern('2,60+'), 260);
+      expect(TagesabschlussBerechnung.parseCentZiffern('+0,20'), 20);
+      expect(TagesabschlussBerechnung.parseCentZiffern('1,00+2,00+3,00'), 600);
+      expect(TagesabschlussBerechnung.parseCentZiffern('+'), 0);
+    });
+
     test('parseCentKomma parst einfache Euro-Komma-Eingaben', () {
       expect(TagesabschlussBerechnung.parseCentKomma('6,40'), 640);
       expect(TagesabschlussBerechnung.parseCentKomma('380'), 38000);

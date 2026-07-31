@@ -3,12 +3,15 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 class TagesabschlussBerechnung {
   const TagesabschlussBerechnung._();
 
+  /// Summiert "+"-getrennte Teilbeträge, z.B. "260+20" → 280.
+  /// Ohne "+" identisch zum reinen Ziffern-Parsing.
   static int parseCentZiffern(String wert) {
-    final String nurZiffern = wert.replaceAll(RegExp(r'[^0-9]'), '');
-    if (nurZiffern.isEmpty) {
-      return 0;
-    }
-    return int.tryParse(nurZiffern) ?? 0;
+    return wert.split('+').fold<int>(
+      0,
+      (int summe, String teil) =>
+          summe +
+          (int.tryParse(teil.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0),
+    );
   }
 
   /// Parst Euro-Komma-Eingabe: "6,40" → 640, "380" → 38000, "0,0" → 0.
