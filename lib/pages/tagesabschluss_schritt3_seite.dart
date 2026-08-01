@@ -114,6 +114,7 @@ class _TagesabschlussSchritt3SeiteState
   bool _autoSaveFehler = false;
   bool _apiUploadErledigt = false;
   bool _devModusAktiv = false;
+  bool _abrechnungGesendet = false;
 
   @override
   void initState() {
@@ -316,6 +317,8 @@ class _TagesabschlussSchritt3SeiteState
         _doApiUpload().ignore();
       }
     }
+
+    setState(() => _abrechnungGesendet = true);
 
     await showDialog<void>(
       context: context,
@@ -698,10 +701,19 @@ class _TagesabschlussSchritt3SeiteState
                       foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 44),
                     ),
-                    child: Text(
-                      _autoSaveLaeuft
-                          ? 'Wird gespeichert...'
-                          : 'Kassenabrechnung senden',
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          _autoSaveLaeuft
+                              ? 'Wird gespeichert...'
+                              : 'Abrechnung an Büro senden',
+                        ),
+                        if (_abrechnungGesendet) ...<Widget>[
+                          const SizedBox(width: 8),
+                          const Icon(Icons.check_circle, color: Colors.green),
+                        ],
+                      ],
                     ),
                   ),
                 ),

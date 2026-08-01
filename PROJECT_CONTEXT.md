@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.12+336a4 · Run 336a4
+Version: 0.9.13+337 · Run 337
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 336a4)
+## Laufender Entwicklungsstand (Run 337)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -453,6 +453,15 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Vertikal-Padding 6+4→0+2 (nur noch horizontales Tipp-Polster).
   Per Playwright verifiziert: befüllte/leere Zeilen jetzt gleich
   hoch.
+- Run 337 ✅ Fünf kleine Paco-Feedback-Korrekturen gebündelt:
+  AppBar "<Kino> Abrechnung"; Personalgetränke-Flag jetzt Teil von
+  _speichereEntwurf()/_ladeEntwurf() (ging vorher bei Neuladen der
+  Seite verloren); DevModus.istAktiv()-Default von `true` auf
+  `false` korrigiert (Root-Cause dafür, dass "JSON anzeigen" auf
+  vorkonfigurierten Geräten für alle MA sichtbar war);
+  AppFarben.footerButtonStyle-Hintergrund weiß→orange (fokusFarbe);
+  grünes Häkchen-Icon hinter "Abrechnung an Büro senden" sobald
+  Autosave erledigt ist (neues Flag _abrechnungGesendet).
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -34,7 +34,7 @@ class AppFarben {
   static const Color gruppierungBandB = Color(0xFFF6EFEF);
 
   static final ButtonStyle footerButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: Colors.white,
+    backgroundColor: AppFarben.fokusFarbe,
     foregroundColor: AppFarben.appBarRot,
   );
 

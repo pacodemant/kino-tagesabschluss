@@ -407,6 +407,7 @@ class _TagesabschlussSchritt2SeiteState
         _ecKachelAufgeklappt = true;
       }
       _anmerkung = (daten['anmerkung'] as String?) ?? '';
+      _personalgetraenkeGebot = (daten['personalgetraenkeGebot'] as bool?) ?? false;
     });
     if (_anmerkung.isNotEmpty) {
       _anmerkungController.text = _anmerkung;
@@ -556,6 +557,7 @@ class _TagesabschlussSchritt2SeiteState
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
         'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
+        'personalgetraenkeGebot': _personalgetraenkeGebot,
         'zahlungsartBetragCentWerte': <List<int?>>[
           for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
             belegZeilen
@@ -2865,6 +2867,7 @@ class _TagesabschlussSchritt2SeiteState
                           onChanged: (bool? v) {
                             setState(
                                 () => _personalgetraenkeGebot = v ?? false);
+                            _speichereEntwurf();
                           },
                           activeColor: Colors.green,
                           shape: const CircleBorder(),

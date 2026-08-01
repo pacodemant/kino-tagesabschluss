@@ -7,7 +7,7 @@ class DevModus {
 
   static Future<bool> istAktiv() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_key) ?? true;
+    return prefs.getBool(_key) ?? false;
   }
 
   static Future<void> setzen(bool wert) async {

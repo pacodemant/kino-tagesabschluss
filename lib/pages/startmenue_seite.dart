@@ -193,7 +193,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: Text(
-          kino.name,
+          '${kino.name} Abrechnung',
           style: const TextStyle(fontWeight: FontWeight.normal),
         ),
         actions: <Widget>[
@@ -300,7 +300,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.12 · r336a4 @ GitHub:',
+                    'Web App 0.9.13 · r337 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),

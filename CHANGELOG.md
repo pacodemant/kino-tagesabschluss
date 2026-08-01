@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 337: Fünf kleine Korrekturen aus Paco-Feedback, gebündelt in
+  einem Run (unabhängige, risikoarme Änderungen). (1) AppBar der
+  Kino-Homepage zeigt jetzt "<Kinoname> Abrechnung" statt nur den
+  Kinonamen (startmenue_seite.dart). (2) Personalgetränke-Flag
+  ("Personalgetränke gebont?" in Schritt 2) wurde nirgends
+  persistiert und ging bei Verlassen/Neuladen der Seite verloren —
+  jetzt Teil von _speichereEntwurf()/_ladeEntwurf() (additiv,
+  rückwärtskompatibel: alte Entwürfe ohne das Feld laden mit Default
+  false). (3) Root-Cause für "JSON anzeigen" außerhalb des Dev-Modus
+  gefunden: DevModus.istAktiv() hatte Default `?? true` — auf jedem
+  vorkonfiguriert ausgelieferten Gerät, auf dem der Schalter nie
+  manuell umgelegt wurde, war der Dev-Modus damit für alle MA aktiv.
+  Default auf `false` korrigiert (dev_modus.dart). (4) Die
+  "Weiter"-Footer-Buttons (Schritt 1/2/3, Getränke auffüllen,
+  Wechselgeld prüfen) waren weiß mit rotem Text; AppFarben.
+  footerButtonStyle-Hintergrund zentral auf das bereits vorhandene
+  Orange (fokusFarbe) umgestellt. (5) Nach Tap auf "Abrechnung an
+  Büro senden" (Schritt 3) erscheint jetzt ein grünes Häkchen-Icon
+  hinter dem Button-Text, sobald der Autosave sicher erledigt ist
+  und der Folge-Dialog geöffnet wird (neues Flag
+  _abrechnungGesendet) — unabhängig vom API-Upload-Feature-Flag.
+  Version 0.9.13+337. Dateien: startmenue_seite.dart,
+  kinoauswahl_seite.dart, tagesabschluss_schritt2_seite.dart,
+  tagesabschluss_schritt3_seite.dart, dev_modus.dart,
+  app_farben.dart, pubspec.yaml.
+
 - Run 336a4: Paco-Feedback: Eingabefelder wurden höher, sobald ein
   Wert (und damit die "+"/"X"-Buttons) drinstand — unerwünscht,
   Vorgabe: Feldhöhe soll konstant bleiben, Ränder dürfen näher an die
