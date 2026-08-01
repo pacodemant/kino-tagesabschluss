@@ -314,11 +314,20 @@ class _TagesabschlussSchritt3SeiteState
       final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
       if (!mounted) return;
       if (apiAktiv) {
-        _doApiUpload().ignore();
+        // Bewusst nicht awaited: Dialog soll sofort öffnen, ohne auf die
+        // Netzwerkantwort zu warten. Haken erscheint erst nachträglich,
+        // wenn der Upload tatsächlich erfolgreich war (nicht bei Fehler).
+        _doApiUpload().then((_) {
+          if (mounted && _apiUploadErledigt) {
+            setState(() => _abrechnungGesendet = true);
+          }
+        });
+      } else {
+        setState(() => _abrechnungGesendet = true);
       }
+    } else {
+      setState(() => _abrechnungGesendet = true);
     }
-
-    setState(() => _abrechnungGesendet = true);
 
     await showDialog<void>(
       context: context,

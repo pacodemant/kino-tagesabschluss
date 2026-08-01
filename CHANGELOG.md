@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 337a: Korrektur aus Pacos iPhone-PWA-Test von Run 337: der
+  grüne Sende-Haken (Punkt 5 aus Run 337) erschien auch dann, wenn
+  der Flurbocash-API-Upload laut SnackBar fehlgeschlagen war.
+  Ursache: `_doApiUpload().ignore()` ist bewusst fire-and-forget
+  (Dialog soll sofort öffnen, nicht auf die Netzwerkantwort
+  warten) — der Haken wurde direkt danach gesetzt, unabhängig vom
+  tatsächlichen Ergebnis. Fix: Haken wird jetzt asynchron erst
+  gesetzt, wenn `_doApiUpload()` abgeschlossen ist UND
+  `_apiUploadErledigt` tatsächlich true ist (Erfolg oder der
+  bereits bestehende CORS-Empfang-nicht-bestätigbar-Fall) — bei
+  echtem Fehler bleibt er aus. Ist die API-Upload-Funktion für ein
+  Kino gar nicht aktiv (FeatureFlags.apiUploadAktiv() == false,
+  aktuell der Regelfall), erscheint der Haken weiterhin sofort,
+  da dort lediglich die bereits erfolgte lokale Speicherung
+  gemeint ist. Dialogöffnung bleibt unverändert sofort, keine
+  zusätzliche Wartezeit. Version 0.9.13+337a. Datei:
+  tagesabschluss_schritt3_seite.dart.
+
 - Run 337: Fünf kleine Korrekturen aus Paco-Feedback, gebündelt in
   einem Run (unabhängige, risikoarme Änderungen). (1) AppBar der
   Kino-Homepage zeigt jetzt "<Kinoname> Abrechnung" statt nur den

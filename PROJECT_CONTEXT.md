@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.13+337 · Run 337
+Version: 0.9.13+337a · Run 337a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 337)
+## Laufender Entwicklungsstand (Run 337a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -462,6 +462,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   AppFarben.footerButtonStyle-Hintergrund weiß→orange (fokusFarbe);
   grünes Häkchen-Icon hinter "Abrechnung an Büro senden" sobald
   Autosave erledigt ist (neues Flag _abrechnungGesendet).
+- Run 337a ✅ Korrektur: Sende-Haken aus Run 337 erschien auch bei
+  fehlgeschlagenem API-Upload (fire-and-forget `.ignore()` setzte
+  ihn unabhängig vom Ergebnis). Haken wird jetzt erst nach
+  tatsächlichem Erfolg (oder CORS-Empfang-nicht-bestätigbar)
+  asynchron gesetzt; Dialogöffnung bleibt weiterhin sofort ohne
+  Wartezeit auf die Netzwerkantwort.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
