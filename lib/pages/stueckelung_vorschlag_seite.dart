@@ -440,6 +440,12 @@ class StueckelungVorschlagSeite extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
+          const Text(
+            'Barumsatz und Belege in den Umschlag tun.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          const SizedBox(height: 12),
           ElevatedButton(
             onPressed: () => Navigator.of(context).popUntil(
               ModalRoute.withName(StartmenueSeite.routenName),

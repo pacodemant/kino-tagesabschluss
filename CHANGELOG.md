@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 340: Zwei Paco-Wünsche aus dem Run-339-Test umgesetzt. (1) Der
+  Button "Kassenabrechnung (4 Schritte)" auf der Kino-Startseite zeigt
+  jetzt einen grünen Haken, wenn für dieses Kino heute schon
+  "Abrechnung an Büro senden" erfolgreich war. Kein neuer
+  Persistenz-Key nötig: die bereits vorhandene Sende-Bestätigung
+  (LokalerSpeicher.ladeSendeBestaetigung, JSON-Signatur aus Schritt 3
+  mit 'isoDatum'-Feld) wird ausgelesen und deren isoDatum gegen das
+  aktuelle logische Datum verglichen. (2) Auf der Stückelung-Seite
+  steht jetzt ein Hinweistext ("Barumsatz und Belege in den Umschlag
+  tun.") direkt über dem "Fertig."-Button — kein Tracking der
+  physischen Übertragung, die ergibt sich laut Paco von selbst aus dem
+  Hinweis. Version 0.9.14+340. Dateien: startmenue_seite.dart,
+  stueckelung_vorschlag_seite.dart, pubspec.yaml, kinoauswahl_seite.dart.
+
 - Run 339: Vier kleine UI-Korrekturen. (1) Die kleinen "Next"-Buttons
   (Feld-Sprung beim Tippen) hatten in drei Dateien vertauschte Farben
   (rot/weiß statt weiß/rot wie in getraenke_auffuellen_seite.dart) —

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
@@ -11,6 +13,7 @@ import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/utils/route_observer.dart';
 
 class StartmenueSeite extends StatefulWidget {
@@ -34,6 +37,7 @@ class StartmenueSeite extends StatefulWidget {
 class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
   List<TagesabschlussFinal>? _heutigeAbschluesse;
   String? _standortModus;
+  bool _abrechnungHeuteGesendet = false;
 
   Kino get kino => widget.kino;
 
@@ -67,13 +71,37 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
     final List<TagesabschlussFinal> heutige =
         await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(kino.id);
     final String? standortModus = await LokalerSpeicher.ladeStandortModus();
+    final bool abrechnungHeuteGesendet =
+        await _pruefeAbrechnungHeuteGesendet();
     if (!mounted) {
       return;
     }
     setState(() {
       _heutigeAbschluesse = heutige;
       _standortModus = standortModus;
+      _abrechnungHeuteGesendet = abrechnungHeuteGesendet;
     });
+  }
+
+  /// Die Sende-Bestätigung aus Schritt 3 speichert eine JSON-Signatur mit
+  /// 'isoDatum' des gesendeten Abschlusses (siehe _sendeSignatur() in
+  /// tagesabschluss_schritt3_seite.dart) — hier wird nur geprüft, ob diese
+  /// Signatur zum heutigen logischen Datum passt, ohne die vollen
+  /// Abschlussdaten neu laden zu müssen.
+  Future<bool> _pruefeAbrechnungHeuteGesendet() async {
+    final String? signatur = await LokalerSpeicher.ladeSendeBestaetigung(
+      kino.id,
+    );
+    if (signatur == null) {
+      return false;
+    }
+    try {
+      final Map<String, dynamic> daten =
+          jsonDecode(signatur) as Map<String, dynamic>;
+      return daten['isoDatum'] == DatumsHelper.logischesIsoDatum();
+    } catch (_) {
+      return false;
+    }
   }
 
   void _oeffneTagesabschlussSchritt1(BuildContext context) {
@@ -237,7 +265,16 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                     backgroundColor: AppFarben.fokusFarbe,
                     foregroundColor: Colors.black87,
                   ),
-                  child: const Text('Kassenabrechnung (4 Schritte)'),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Text('Kassenabrechnung (4 Schritte)'),
+                      if (_abrechnungHeuteGesendet) ...<Widget>[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.check_circle, color: Colors.green),
+                      ],
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 12),
                 ElevatedButton(
@@ -300,7 +337,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.14 · r339 @ GitHub:',
+                    'Web App 0.9.14 · r340 @ GitHub:',
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),

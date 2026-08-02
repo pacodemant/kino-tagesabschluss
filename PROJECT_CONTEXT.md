@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.14+339 · Run 339
+Version: 0.9.14+340 · Run 340
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 339)
+## Laufender Entwicklungsstand (Run 340)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -493,6 +493,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   true ist, Tap zeigt sonst orange SnackBar; Stückelung-Seite:
   Abschluss-Button heißt nur noch "Fertig." (orange), führt direkt
   zur Startseite statt erneut den Sende-Dialog auszulösen.
+- Run 340 ✅ Grüner Haken am "Kassenabrechnung (4 Schritte)"-Button auf
+  der Kino-Startseite, wenn die Sende-Bestätigung aus Schritt 3 zum
+  heutigen logischen Datum passt (kein neuer Persistenz-Key, nur die
+  bestehende JSON-Signatur ausgelesen). Zusätzlich Hinweistext
+  "Barumsatz und Belege in den Umschlag tun." über dem "Fertig."-
+  Button auf der Stückelung-Seite.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
