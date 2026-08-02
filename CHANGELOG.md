@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 338: App startete im Flugmodus (offline) nicht mehr, obwohl
+  vorher schon alles korrekt im Service-Worker-Cache lag. Ursache:
+  der Fresh-Tab-Reset aus Run 295 (`web/index.html`) löscht bei
+  jedem Kaltstart bedingungslos ALLE Caches und meldet den Service
+  Worker ab, bevor er einen `location.reload()` erzwingt — nach
+  dem Löschen existiert weder Cache noch Service Worker mehr, der
+  Reload muss also zwingend das Netzwerk erreichen. Im Flugmodus
+  schlägt das fehl, die App bleibt am Splash-Screen hängen. Fix:
+  der Reset läuft jetzt nur noch, wenn `navigator.onLine === true`
+  ist. Offline bleibt der bestehende Service-Worker-Cache erhalten,
+  die App startet normal daraus. Online-Verhalten (immer neueste
+  Version) unverändert. Voraussetzung bleibt, dass das Gerät die
+  App mindestens einmal online geladen hat (bei den vorkonfiguriert
+  ausgelieferten Geräten ohnehin gegeben). Version 0.9.14+338.
+  Datei: web/index.html, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 337a2: Zwei weitere Korrekturen aus Pacos iPhone-PWA-Test von
   337a. (1) Flugmodus-Test enthüllte Kernproblem der bisherigen
   Logik: `ApiUploadService.isCorsArtFehler()` erkennt anhand reiner

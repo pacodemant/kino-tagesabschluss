@@ -103,7 +103,10 @@
 
     // Beim ersten Öffnen eines neuen Tabs: SW-Cache leeren + SW deregistrieren + neu laden.
     // sessionStorage verhindert eine Reload-Schleife (wird beim Tab-Schließen zurückgesetzt).
-    if ('serviceWorker' in navigator && !sessionStorage.getItem('_swFreshLoaded')) {
+    // Nur online: offline gibt es nach dem Löschen weder Cache noch SW mehr,
+    // wodurch der erzwungene Reload zwingend am Netzwerk scheitert (Flugmodus-
+    // Start würde sonst nie über den Splash-Screen hinauskommen).
+    if ('serviceWorker' in navigator && !sessionStorage.getItem('_swFreshLoaded') && navigator.onLine) {
       sessionStorage.setItem('_swFreshLoaded', '1');
       _purgeCachesUndSw().then(function() {
         location.reload();

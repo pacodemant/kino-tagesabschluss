@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.13+337a2 · Run 337a2
+Version: 0.9.14+338 · Run 338
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 337a2)
+## Laufender Entwicklungsstand (Run 338)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -477,6 +477,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Signatur der Eingabedaten ohne Zeitstempel): Haken übersteht jetzt
   Navigation weg von Schritt 3 und bleibt bestehen, solange sich die
   Abrechnungsdaten seither nicht geändert haben.
+- Run 338 ✅ Offline-Start (Flugmodus) repariert: Der Fresh-Tab-Reset
+  aus Run 295 (web/index.html) löschte bei jedem Kaltstart
+  bedingungslos Cache + Service Worker vor dem erzwungenen Reload —
+  danach existierte weder Cache noch SW mehr, wodurch der Reload
+  zwingend am Netzwerk scheiterte. Fix: Reset läuft nur noch, wenn
+  `navigator.onLine === true` ist. Offline bleibt der vorhandene
+  Service-Worker-Cache erhalten, App startet daraus normal weiter.
+  Online-Verhalten unverändert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
