@@ -42,6 +42,7 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               color: AppFarben.appBarRot,
+              backgroundColor: AppFarben.fokusFarbe,
               fontSize: 10,
             ),
           ),

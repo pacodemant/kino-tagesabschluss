@@ -514,7 +514,6 @@ class _TagesabschlussSchritt3SeiteState
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
         kinoName: widget.argumente.kinoName,
-        onAbschliessen: _zeigeAbschlussDialog,
       ),
     );
   }
@@ -614,8 +613,27 @@ class _TagesabschlussSchritt3SeiteState
           children: <Widget>[
             Expanded(
               child: ElevatedButton(
-                onPressed: _navigiereZuSchritt4,
-                style: AppFarben.footerButtonStyle,
+                onPressed: () {
+                  if (!_abrechnungGesendet) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        backgroundColor: AppFarben.fokusFarbe,
+                        content: Text(
+                          'Bitte zuerst die Abrechnung senden.',
+                          style: TextStyle(color: AppFarben.appBarRot),
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  _navigiereZuSchritt4();
+                },
+                style: _abrechnungGesendet
+                    ? AppFarben.footerButtonStyle
+                    : ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.grey.shade300,
+                      ),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
@@ -763,8 +781,8 @@ class _TagesabschlussSchritt3SeiteState
                   child: ElevatedButton(
                     onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppFarben.appBarRot,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppFarben.fokusFarbe,
+                      foregroundColor: AppFarben.appBarRot,
                       minimumSize: const Size(double.infinity, 44),
                     ),
                     child: Row(

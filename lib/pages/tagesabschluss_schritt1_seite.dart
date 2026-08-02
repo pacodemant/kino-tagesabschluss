@@ -1070,8 +1070,8 @@ class _TagesabschlussSchritt1SeiteState
                     vorwaerts: true,
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppFarben.appBarRot,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppFarben.appBarRot,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 8,

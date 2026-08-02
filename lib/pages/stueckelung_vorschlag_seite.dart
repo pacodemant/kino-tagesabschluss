@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
+import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -12,14 +13,12 @@ class StueckelungVorschlagArgumente {
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.kinoName = 'Schauburg',
-    this.onAbschliessen,
   });
 
   final int barBestandAbzglWechselgeldCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final String kinoName;
-  final VoidCallback? onAbschliessen;
 }
 
 // ---------------------------------------------------------------------------
@@ -442,13 +441,15 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: argumente.onAbschliessen,
+            onPressed: () => Navigator.of(context).popUntil(
+              ModalRoute.withName(StartmenueSeite.routenName),
+            ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppFarben.appBarRot,
-              foregroundColor: Colors.white,
+              backgroundColor: AppFarben.fokusFarbe,
+              foregroundColor: AppFarben.appBarRot,
               minimumSize: const Size(double.infinity, 44),
             ),
-            child: const Text('Kassenabrechnung abschließen'),
+            child: const Text('Fertig.'),
           ),
         ],
       ),

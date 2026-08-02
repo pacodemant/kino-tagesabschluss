@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.14+338 · Run 338
+Version: 0.9.14+339 · Run 339
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 338)
+## Laufender Entwicklungsstand (Run 339)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -485,6 +485,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   `navigator.onLine === true` ist. Offline bleibt der vorhandene
   Service-Worker-Cache erhalten, App startet daraus normal weiter.
   Online-Verhalten unverändert.
+- Run 339 ✅ Vier kleine Paco-Feedback-Korrekturen gebündelt: Next-
+  Buttons (Feld-Sprung) einheitlich weiß/rot; "Anzahl"/"Cent" in den
+  Kacheltiteln zusätzlich mit orangenem Textmarker-Hintergrund;
+  "Abrechnung an Büro senden" (Schritt 3) jetzt orange;
+  "Stückelung (4/4)"-Button bleibt ausgegraut bis _abrechnungGesendet
+  true ist, Tap zeigt sonst orange SnackBar; Stückelung-Seite:
+  Abschluss-Button heißt nur noch "Fertig." (orange), führt direkt
+  zur Startseite statt erneut den Sende-Dialog auszulösen.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

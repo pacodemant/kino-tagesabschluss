@@ -1085,8 +1085,8 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
                   vorwaerts: true,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppFarben.appBarRot,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppFarben.appBarRot,
                   minimumSize: const Size(0, 36),
                 ),
                 child: const Text('Next'),
@@ -1201,6 +1201,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
                                         color: AppFarben.appBarRot,
+                                        backgroundColor: AppFarben.fokusFarbe,
                                         fontSize: 10,
                                       ),
                                     ),

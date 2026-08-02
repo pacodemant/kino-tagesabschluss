@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 339: Vier kleine UI-Korrekturen. (1) Die kleinen "Next"-Buttons
+  (Feld-Sprung beim Tippen) hatten in drei Dateien vertauschte Farben
+  (rot/weiß statt weiß/rot wie in getraenke_auffuellen_seite.dart) —
+  jetzt überall einheitlich weißer Hintergrund, rote Schrift. (2) Die
+  Wörter "Anzahl" und "Cent" in den Kacheltiteln von Schritt 1 und der
+  Wechselgeldkasse haben jetzt einen orangenen Textmarker-Hintergrund
+  (AppFarben.fokusFarbe) zusätzlich zur bisherigen roten Fettschrift.
+  (3) Auf der Seite "Übertrag auf Umschlag" (Schritt 3) ist der Button
+  "Abrechnung an Büro senden" jetzt orange statt dunkelrot. Der Button
+  "Stückelung (4/4)" bleibt ausgegraut, bis die Abrechnung gesendet
+  wurde (geprüft über das bestehende _abrechnungGesendet-Flag); ein
+  Tap im ausgegrauten Zustand zeigt eine orange SnackBar mit Hinweis
+  ("Bitte zuerst die Abrechnung senden."). (4) Auf der Stückelung-Seite
+  heißt der Abschluss-Button jetzt nur noch "Fertig." (orange/dunkelrot)
+  und führt direkt zur Startseite (Navigator.popUntil auf Startmenue),
+  statt erneut den Sende-Dialog auszulösen — beide bisherigen Wege zu
+  dieser Seite (Schritt-3-Footer, "Was möchtest du als Nächstes"-Dialog)
+  sind ohnehin nur nach erfolgreichem Senden erreichbar. Der dadurch
+  ungenutzte onAbschliessen-Callback wurde aus StueckelungVorschlag-
+  Argumente entfernt. Version 0.9.14+339. Dateien:
+  tagesabschluss_schritt1_seite.dart, tagesabschluss_schritt2_seite.dart,
+  wechselgeld_pruefen_seite.dart, schritt1_scheine_section.dart,
+  schritt1_muenzen_rollen_section.dart, schritt1_muenzen_lose_section.dart,
+  schritt1_gruppen_orchestrierung.dart, tagesabschluss_schritt3_seite.dart,
+  stueckelung_vorschlag_seite.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 338: App startete im Flugmodus (offline) nicht mehr, obwohl
   vorher schon alles korrekt im Service-Worker-Cache lag. Ursache:
   der Fresh-Tab-Reset aus Run 295 (`web/index.html`) löscht bei
