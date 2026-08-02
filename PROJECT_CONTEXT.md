@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.13+337a · Run 337a
+Version: 0.9.13+337a2 · Run 337a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -134,7 +134,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 337a)
+## Laufender Entwicklungsstand (Run 337a2)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -468,6 +468,15 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   tatsächlichem Erfolg (oder CORS-Empfang-nicht-bestätigbar)
   asynchron gesetzt; Dialogöffnung bleibt weiterhin sofort ohne
   Wartezeit auf die Netzwerkantwort.
+- Run 337a2 ✅ Zwei weitere Korrekturen: Haken stützt sich nicht mehr
+  auf den CORS-Fallback (isCorsArtFehler kann echten CORS-Block
+  nicht von komplettem Offline-Zustand unterscheiden — im Flugmodus-
+  Test zeigte "Empfang nicht bestätigbar" fälschlich Erfolg), nur
+  noch echter Upload-Erfolg zeigt den Haken. Zusätzlich Persistenz
+  (LokalerSpeicher.speichereSendeBestaetigung/ladeSendeBestaetigung,
+  Signatur der Eingabedaten ohne Zeitstempel): Haken übersteht jetzt
+  Navigation weg von Schritt 3 und bleibt bestehen, solange sich die
+  Abrechnungsdaten seither nicht geändert haben.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -9,6 +9,34 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 337a2: Zwei weitere Korrekturen aus Pacos iPhone-PWA-Test von
+  337a. (1) Flugmodus-Test enthüllte Kernproblem der bisherigen
+  Logik: `ApiUploadService.isCorsArtFehler()` erkennt anhand reiner
+  Fehlertext-Heuristiken ("Failed to fetch", "NetworkError", "Load
+  failed") — dieselben Texte liefert der Browser aber sowohl bei
+  echter CORS-Blockade (Request kam beim Server an, nur die Antwort
+  ist nicht lesbar) als auch bei komplettem Verbindungsausfall
+  (Request hat das Gerät nie verlassen, z. B. Flugmodus). Beide
+  Fälle sind aus dem Fehlertext heraus nicht zuverlässig
+  unterscheidbar. Der grüne Haken darf sich daher nicht mehr auf
+  diesen Fallback-Fall stützen — er erscheint jetzt ausschließlich
+  beim echten, eindeutigen Upload-Erfolg (kein Exception). Beim
+  CORS-Fallback bleibt weiterhin nur die SnackBar "Upload gesendet —
+  Empfang nicht bestätigbar", ohne Haken. (2) Der Haken verschwand
+  bisher beim Verlassen der Seite (reiner In-Memory-State). Neue
+  Persistenz `LokalerSpeicher.speichereSendeBestaetigung()` /
+  `ladeSendeBestaetigung()` (SharedPreferences, Key pro Kino)
+  speichert eine Signatur der gesendeten Eingabedaten (alle
+  Cent-Beträge, Stückzahlen, Labels, Anmerkung — bewusst ohne
+  Zeitstempel). Schritt 3 vergleicht beim Laden die aktuelle
+  Signatur mit der gespeicherten: stimmen sie überein, bleibt der
+  Haken sichtbar; wurde seither eine Eingabe geändert (andere
+  Signatur) oder wurde noch nie erfolgreich gesendet, bleibt er aus
+  — ohne dass eine explizite "Änderungserkennung" nötig ist. Version
+  0.9.13+337a2. Dateien: tagesabschluss_schritt3_seite.dart,
+  lokaler_speicher.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 337a: Korrektur aus Pacos iPhone-PWA-Test von Run 337: der
   grüne Sende-Haken (Punkt 5 aus Run 337) erschien auch dann, wenn
   der Flurbocash-API-Upload laut SnackBar fehlgeschlagen war.

@@ -17,6 +17,7 @@ import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
@@ -122,6 +123,44 @@ class _TagesabschlussSchritt3SeiteState
     _initialisierenAsync();
   }
 
+  /// Signatur der aktuell eingegebenen Abrechnungsdaten. Ändert sich
+  /// ausschließlich, wenn sich tatsächlich eingegebene Werte ändern
+  /// (kein Zeitstempel enthalten) — dient dem Vergleich mit der zuletzt
+  /// gespeicherten Sende-Bestätigung, um den Haken bei nachträglicher
+  /// Änderung automatisch wieder auszublenden.
+  String _sendeSignatur() {
+    final Map<String, dynamic> daten = <String, dynamic>{
+      'isoDatum': DatumsHelper.logischesIsoDatum(),
+      'scheineCent': widget.argumente.scheineCent,
+      'loseMuenzenCent': widget.argumente.loseMuenzenCent,
+      'rollenCent': widget.argumente.rollenCent,
+      'umschlaegeCent': widget.argumente.umschlaegeCent,
+      'wechselgeldSollwertCent': widget.argumente.wechselgeldSollwertCent,
+      'kinoSollCent': widget.argumente.kinoSollCent,
+      'bistroSollCent': widget.argumente.bistroSollCent,
+      'ausgabenCent': widget.argumente.ausgabenCent,
+      'ecBelegeCent': widget.argumente.ecBelegeCent,
+      'differenzAnfangsbestandCent':
+          widget.argumente.differenzAnfangsbestandCent,
+      'stueckzahlen': widget.argumente.stueckzahlen,
+      'loseMuenzenNachArtCent': widget.argumente.loseMuenzenNachArtCent,
+      'umschlaege':
+          widget.argumente.umschlaege?.map((UmschlagEintrag u) => u.toJson()).toList(),
+      'ausgabenBetraegeCent': widget.argumente.ausgabenBetraegeCent,
+      'ausgabenLabels': widget.argumente.ausgabenLabels,
+      'ecBelegeLabels': widget.argumente.ecBelegeLabels,
+      'terminalId': widget.argumente.terminalId,
+      'belegNrVon': widget.argumente.belegNrVon,
+      'belegNrBis': widget.argumente.belegNrBis,
+      'ecUhrzeit': widget.argumente.ecUhrzeit,
+      'zahlungsartenAnzahl':
+          widget.argumente.zahlungsartenAufschluesselung?.length,
+      'ecTerminalsAnzahl': widget.argumente.ecTerminals?.length,
+      'anmerkung': widget.argumente.anmerkung,
+    };
+    return jsonEncode(daten);
+  }
+
   Future<void> _initialisierenAsync() async {
     final TagesabschlussFinal abschluss = _finalisierenUsecase.finalisieren(
       eingabe: TagesabschlussFinalisierenEingabe(
@@ -160,6 +199,15 @@ class _TagesabschlussSchritt3SeiteState
     DevModus.istAktiv().then((bool aktiv) {
       if (mounted) setState(() => _devModusAktiv = aktiv);
     });
+    LokalerSpeicher.ladeSendeBestaetigung(widget.argumente.kinoId).then(
+      (String? gespeicherteSignatur) {
+        if (mounted &&
+            gespeicherteSignatur != null &&
+            gespeicherteSignatur == _sendeSignatur()) {
+          setState(() => _abrechnungGesendet = true);
+        }
+      },
+    );
   }
 
   /// Speichert den Abschluss beim Öffnen der Seite automatisch.
@@ -252,6 +300,12 @@ class _TagesabschlussSchritt3SeiteState
       await ApiUploadService.upload(_abschlussVorschau!);
       _apiUploadErledigt = true;
       if (mounted) {
+        setState(() => _abrechnungGesendet = true);
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          widget.argumente.kinoId,
+          _sendeSignatur(),
+        );
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('API Upload erfolgreich ✓')),
         );
@@ -315,18 +369,21 @@ class _TagesabschlussSchritt3SeiteState
       if (!mounted) return;
       if (apiAktiv) {
         // Bewusst nicht awaited: Dialog soll sofort öffnen, ohne auf die
-        // Netzwerkantwort zu warten. Haken erscheint erst nachträglich,
-        // wenn der Upload tatsächlich erfolgreich war (nicht bei Fehler).
-        _doApiUpload().then((_) {
-          if (mounted && _apiUploadErledigt) {
-            setState(() => _abrechnungGesendet = true);
-          }
-        });
+        // Netzwerkantwort zu warten. Haken + Persistierung passieren
+        // direkt in _doApiUpload() im echten Erfolgsfall — nicht beim
+        // CORS-Fallback, da der nicht von einem echten Offline-Fehler
+        // unterscheidbar ist.
+        _doApiUpload().ignore();
       } else {
+        // Kein Online-Versand für dieses Kino aktiv — "gesendet" meint
+        // hier nur die bereits erfolgte lokale Speicherung.
         setState(() => _abrechnungGesendet = true);
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          widget.argumente.kinoId,
+          _sendeSignatur(),
+        );
+        if (!mounted) return;
       }
-    } else {
-      setState(() => _abrechnungGesendet = true);
     }
 
     await showDialog<void>(

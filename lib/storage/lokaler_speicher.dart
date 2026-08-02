@@ -274,6 +274,27 @@ class LokalerSpeicher {
     await box.delete(schritt2EntwurfKey(kinoId));
   }
 
+  /// Speichert die Signatur der zuletzt erfolgreich an die Buchhaltung
+  /// gesendeten Abrechnung eines Kinos (für den "Gesendet"-Haken in
+  /// Schritt 3, überlebt Navigation weg von der Seite).
+  static Future<void> speichereSendeBestaetigung(
+    String kinoId,
+    String signatur,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(_sendeBestaetigungKey(kinoId), signatur);
+  }
+
+  /// Lädt die gespeicherte Sende-Signatur eines Kinos, oder null wenn
+  /// noch nie erfolgreich gesendet wurde.
+  static Future<String?> ladeSendeBestaetigung(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getString(_sendeBestaetigungKey(kinoId));
+  }
+
+  static String _sendeBestaetigungKey(String kinoId) =>
+      'sende_bestaetigung_$kinoId';
+
   static Map<String, dynamic> _schritt1StandardWerte(String kinoId) {
     switch (kinoId) {
       case 'kino_03':
