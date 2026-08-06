@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.15+341a · Run 341a
+Version: 0.9.16+342 · Run 342
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -136,7 +136,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 341a)
+## Laufender Entwicklungsstand (Run 342)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -513,6 +513,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   folgen; Schritt 3 optional danach als kleinerer Einzel-Run.
 - Run 341a ✅ Korrektur: Versionsbump zu Run 341 nachgeholt
   (0.9.15+341a), war im Run vergessen worden.
+- Run 342 ✅ Beim Testen von Run 341 entdeckt (keine eigene
+  Regression): "Differenz im Anfangsbestand" (Schritt 2) optisch an
+  Kino-SOLL/Bistro-SOLL angeglichen (Label links, 190px-Feld statt
+  148px mit abgeschnittenem Wert) und Fokus-Reihenfolge korrigiert
+  (Feld steht jetzt an erster statt letzter Stelle in
+  _fokusReihenfolgeSchritt2(), passend zu seiner visuellen Position
+  — "Weiter" sprang vorher gar nicht mehr weiter). Live per
+  Playwright gegen den Web-Build verifiziert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

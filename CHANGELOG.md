@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 342: Zwei Korrekturen am Feld "Differenz im Anfangsbestand"
+  (Schritt 2), beim Testen von Run 341 entdeckt (selbst keine
+  Regression aus Run 341, siehe Diagnose davor). (1) Optik an
+  Kino-SOLL/Bistro-SOLL angeglichen: Label links, 190px breites
+  Eingabefeld rechts (statt Label darüber + 148px schmaler Box, in
+  der der eingegebene Wert im fokussierten Zustand neben "+"/"×"
+  abgeschnitten wurde). Der "±"-Vorzeichen-Button bleibt zusätzlich
+  daneben erhalten. (2) Fokus-Reihenfolge korrigiert:
+  _fokusReihenfolgeSchritt2() führte dieses Feld bisher als LETZTES,
+  obwohl es visuell ZUERST auf dem Screen steht — "Weiter" von dort
+  aus schloss dadurch nur die Tastatur, statt zu Kino-SOLL zu
+  springen. Jetzt an erster Stelle der Liste, Fokus springt korrekt
+  weiter. Live mit Playwright gegen den gebauten Web-Build verifiziert
+  (Screenshot vor/nach, Fokuswechsel nach Enter bestätigt).
 - Run 341a: Korrektur zu Run 341 — Versionsbump vergessen. pubspec.yaml
   und der Versionsstring in startmenue_seite.dart/kinoauswahl_seite.dart
   jetzt auf 0.9.15+341a aktualisiert (Präzedenzfall Run 330 zeigt: auch

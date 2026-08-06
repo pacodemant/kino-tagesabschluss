@@ -1726,11 +1726,11 @@ class _TagesabschlussSchritt2SeiteState
       }
     }
     return <FocusNode>[
+      _differenzAnfangsbestandFocusNode,
       _kinoSollFocusNode,
       _bistroSollFocusNode,
       ...ausgabenFokus,
       ...ecBelegFokus,
-      _differenzAnfangsbestandFocusNode,
     ];
   }
 
@@ -2327,82 +2327,61 @@ class _TagesabschlussSchritt2SeiteState
                 Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
-                      child: Column(
+                      child: Row(
                         children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Differenz im Anfangsbestand',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey.shade700,
-                                ),
+                          const Expanded(
+                            child: Text(
+                              'Differenz im Anfangsbestand',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
                               ),
-                              const SizedBox(height: 6),
-                              IntrinsicHeight(
-                                child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: <Widget>[
-                                  SizedBox(
-                                    width: 148,
-                                    child: _baueEingabeZeile(
-                                      label: 'Differenz im Anfangsbestand',
-                                      controller:
-                                          _differenzAnfangsbestandController,
-                                      focusNode:
-                                          _differenzAnfangsbestandFocusNode,
-                                      zeigeLabel: false,
-                                      farbeNachWert:
-                                          _differenzAnfangsbestandCent,
-                                      onChanged: (String wert) {
-                                        setState(() {
-                                          _letzteAenderung = DateTime.now();
-                                          final int absolutWert =
-                                              _parsiereBetragCent(wert);
-                                          final bool istNegativ =
-                                              _differenzAnfangsbestandCent < 0;
-                                          _differenzAnfangsbestandCent =
-                                              istNegativ
-                                                  ? -absolutWert
-                                                  : absolutWert;
-                                        });
-                                        _speichereEntwurf();
-                                      },
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  OutlinedButton(
-                                    onPressed: _vorzeichenToggleDifferenz,
-                                    style: OutlinedButton.styleFrom(
-                                      minimumSize: const Size(48, 0),
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                      ),
-                                      side: BorderSide(
-                                        color: Colors.grey.shade400,
-                                      ),
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                          Radius.circular(8),
-                                        ),
-                                      ),
-                                    ),
-                                    child: const Text(
-                                      '±',
-                                      style: TextStyle(
-                                        fontSize: 22,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            ),
+                          ),
+                          SizedBox(
+                            width: 190,
+                            child: _baueEingabeZeile(
+                              label: 'Differenz im Anfangsbestand',
+                              controller: _differenzAnfangsbestandController,
+                              focusNode: _differenzAnfangsbestandFocusNode,
+                              zeigeLabel: false,
+                              farbeNachWert: _differenzAnfangsbestandCent,
+                              onChanged: (String wert) {
+                                setState(() {
+                                  _letzteAenderung = DateTime.now();
+                                  final int absolutWert =
+                                      _parsiereBetragCent(wert);
+                                  final bool istNegativ =
+                                      _differenzAnfangsbestandCent < 0;
+                                  _differenzAnfangsbestandCent = istNegativ
+                                      ? -absolutWert
+                                      : absolutWert;
+                                });
+                                _speichereEntwurf();
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          OutlinedButton(
+                            onPressed: _vorzeichenToggleDifferenz,
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(48, 0),
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              side: BorderSide(color: Colors.grey.shade400),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8)),
                               ),
+                            ),
+                            child: const Text(
+                              '±',
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.black87,
                               ),
-                            ],
+                            ),
                           ),
                         ],
                       ),
