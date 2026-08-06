@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 340a: Zwei Text-Links hatten keine eigene Tap-Fläche (nur so
+  groß wie der Text selbst) und lagen direkt in einem größeren,
+  konkurrierenden InkWell/GestureDetector (Kachel-Header, der beim
+  Antippen auf-/zuklappt). Bei knapp danebengesetzten Taps gewann
+  der äußere Header-Klick — bei "Aus Zählung von vorhin übernehmen"
+  (Rollen-Kachel, wechselgeld_pruefen_seite.dart) klappte dadurch
+  die Kachel zu, statt die Werte zu übernehmen. Fix: beide Links
+  ("Aus Zählung von vorhin übernehmen" / "Geldrollen löschen" in
+  wechselgeld_pruefen_seite.dart sowie "manuell eingeben" bei den
+  EC-Belegen in tagesabschluss_schritt2_seite.dart) haben jetzt
+  eigenes Padding um die Tap-Fläche, damit sie zuverlässiger treffen.
 - Run 340: Zwei Paco-Wünsche aus dem Run-339-Test umgesetzt. (1) Der
   Button "Kassenabrechnung (4 Schritte)" auf der Kino-Startseite zeigt
   jetzt einen grünen Haken, wenn für dieses Kino heute schon

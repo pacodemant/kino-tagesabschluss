@@ -3204,23 +3204,29 @@ class _TagesabschlussSchritt2SeiteState
                                       }
                                     });
                                   },
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text(
-                                        'manuell eingeben',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: AppFarben.appBarRot,
-                                          decoration:
-                                              TextDecoration.underline,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 8,
+                                      horizontal: 4,
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(
+                                          'manuell eingeben',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: AppFarben.appBarRot,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
                                         ),
-                                      ),
-                                      const Text(
-                                        ' oder: ',
-                                        style: TextStyle(fontSize: 13),
-                                      ),
-                                    ],
+                                        const Text(
+                                          ' oder: ',
+                                          style: TextStyle(fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               if (_scanLaeuft)

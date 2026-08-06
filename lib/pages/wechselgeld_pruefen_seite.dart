@@ -1257,13 +1257,19 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
                                 onTap: _rollenUebernommen
                                     ? _loescheRollen
                                     : _ladeRollenAusErsterZaehlung,
-                                child: Text(
-                                  _rollenUebernommen
-                                      ? 'Geldrollen löschen'
-                                      : 'Aus Zählung von vorhin übernehmen',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: AppFarben.appBarRot,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 4,
+                                  ),
+                                  child: Text(
+                                    _rollenUebernommen
+                                        ? 'Geldrollen löschen'
+                                        : 'Aus Zählung von vorhin übernehmen',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: AppFarben.appBarRot,
+                                    ),
                                   ),
                                 ),
                               ),
