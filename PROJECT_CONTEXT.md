@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.14+340a · Run 340a
+Version: 0.9.14+340a · Run 341
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -15,6 +15,8 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
     lib/                    → Flutter-App-Code
     lib/pages/              → Seiten (Screens)
     lib/pages/tagesabschluss_schritt1/  → Schritt-1-Untermodule (sections, ui, scroll, …)
+    lib/pages/tagesabschluss_schritt2/  → Schritt-2-Untermodule (seit Run 341,
+                                           bisher nur ui/ + models/, wächst weiter)
     lib/models/             → Datenmodelle
     lib/services/           → Services (BelegScan, API-Upload, Konfiguration, …)
     lib/storage/            → LokalerSpeicher (SharedPreferences-Wrapper)
@@ -134,7 +136,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 340)
+## Laufender Entwicklungsstand (Run 341)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -499,6 +501,16 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   bestehende JSON-Signatur ausgelesen). Zusätzlich Hinweistext
   "Barumsatz und Belege in den Umschlag tun." über dem "Fertig."-
   Button auf der Stückelung-Seite.
+- Run 341 ✅ Architektur-Run (erster Schritt einer Serie, analog zu
+  Schritt 1 Run 40–58): tagesabschluss_schritt2_seite.dart (3934
+  Zeilen) wird in Untermodule unter lib/pages/tagesabschluss_schritt2/
+  aufgeteilt. Run 341 lagert die reinen UI-Bau-Methoden nach ui/
+  schritt2_ui_builder.dart aus (9 Widgets) und verschiebt die bisher
+  private Klasse _ZahlungsartZeile (umbenannt: ZahlungsartZeile) samt
+  ZeilenZustand-Enum nach models/zahlungsart_zeile.dart. Reines
+  Verschieben ohne Verhaltensänderung; Datei dadurch auf 3381 Zeilen
+  reduziert. Weitere Runs (State/Controller, restlicher UI-Baum)
+  folgen; Schritt 3 optional danach als kleinerer Einzel-Run.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

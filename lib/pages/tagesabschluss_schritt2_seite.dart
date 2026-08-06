@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -10,6 +9,8 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
@@ -20,7 +21,6 @@ import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
-import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -88,34 +88,6 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
       _TagesabschlussSchritt2SeiteState();
 }
 
-enum ZeilenZustand { hidden, shown, editing }
-
-class _ZahlungsartZeile {
-  _ZahlungsartZeile(this.name, {this.istUnbekannt = false})
-      : betragController = TextEditingController(),
-        betragFocusNode = FocusNode();
-
-  String name;
-  final bool istUnbekannt;
-  final TextEditingController betragController;
-  final FocusNode betragFocusNode;
-  int? betragCentWert;
-  bool nichtPlausibel = false;
-  ZeilenZustand zustand = ZeilenZustand.hidden;
-
-  void dispose() {
-    betragController.dispose();
-    betragFocusNode.dispose();
-  }
-
-  void reset() {
-    betragController.clear();
-    betragCentWert = null;
-    nichtPlausibel = false;
-    zustand = ZeilenZustand.hidden;
-  }
-}
-
 class _TagesabschlussSchritt2SeiteState
     extends State<TagesabschlussSchritt2Seite>
     with ControllerDisposeMixin {
@@ -145,7 +117,7 @@ class _TagesabschlussSchritt2SeiteState
 
   // Per-Beleg: Zahlungsarten und Scan-Status
   List<String> _zahlungsartKonfigNamen = <String>[];
-  final List<List<_ZahlungsartZeile>> _zahlungsartZeilen = <List<_ZahlungsartZeile>>[];
+  final List<List<ZahlungsartZeile>> _zahlungsartZeilen = <List<ZahlungsartZeile>>[];
   final List<bool> _scanHatStattgefunden = <bool>[];
   final List<int?> _kartenartenGesamtBetragCent = <int?>[];
   final List<TextEditingController> _kartenartenGesamtBetragController = <TextEditingController>[];
@@ -236,17 +208,17 @@ class _TagesabschlussSchritt2SeiteState
       setState(() {
         // Alle bestehenden Belege (mindestens Beleg 0) mit Konfigzeilen befüllen
         for (int b = 0; b < _zahlungsartZeilen.length; b++) {
-          for (final _ZahlungsartZeile z in _zahlungsartZeilen[b]) {
+          for (final ZahlungsartZeile z in _zahlungsartZeilen[b]) {
             z.dispose();
           }
-          _zahlungsartZeilen[b] = List<_ZahlungsartZeile>.generate(
+          _zahlungsartZeilen[b] = List<ZahlungsartZeile>.generate(
             liste.length,
-            (int i) => _ZahlungsartZeile(liste[i]),
+            (int i) => ZahlungsartZeile(liste[i]),
           );
         }
       });
-      for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
-        for (final _ZahlungsartZeile zeile in belegZeilen) {
+      for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
+        for (final ZahlungsartZeile zeile in belegZeilen) {
           zeile.betragFocusNode.addListener(() { if (mounted) setState(() {}); });
         }
       }
@@ -287,8 +259,8 @@ class _TagesabschlussSchritt2SeiteState
     disposeControllers(_ausgabenLabelController);
     disposeFocusNodes(_ausgabenBetragFocusNode);
     disposeFocusNodes(_ausgabenLabelFocusNode);
-    for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
-      for (final _ZahlungsartZeile zeile in belegZeilen) {
+    for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
+      for (final ZahlungsartZeile zeile in belegZeilen) {
         zeile.dispose();
       }
     }
@@ -559,10 +531,10 @@ class _TagesabschlussSchritt2SeiteState
         'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
         'personalgetraenkeGebot': _personalgetraenkeGebot,
         'zahlungsartBetragCentWerte': <List<int?>>[
-          for (final List<_ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
+          for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
             belegZeilen
-                .where((_ZahlungsartZeile z) => !z.istUnbekannt)
-                .map((_ZahlungsartZeile z) => z.betragCentWert)
+                .where((ZahlungsartZeile z) => !z.istUnbekannt)
+                .map((ZahlungsartZeile z) => z.betragCentWert)
                 .toList(),
         ],
         if (_anmerkung.trim().isNotEmpty) 'anmerkung': _anmerkung.trim(),
@@ -698,7 +670,7 @@ class _TagesabschlussSchritt2SeiteState
           _ecUnterkachelEditModus[i] = true;
         }
         if (i < _zahlungsartZeilen.length) {
-          for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[i]) {
+          for (final ZahlungsartZeile zeile in _zahlungsartZeilen[i]) {
             zeile.zustand = ZeilenZustand.editing;
           }
         }
@@ -856,10 +828,10 @@ class _TagesabschlussSchritt2SeiteState
       // per-Beleg
       _zahlungsartZeilen.add(
         _zahlungsartKonfigNamen.isEmpty
-            ? <_ZahlungsartZeile>[]
-            : List<_ZahlungsartZeile>.generate(
+            ? <ZahlungsartZeile>[]
+            : List<ZahlungsartZeile>.generate(
                 _zahlungsartKonfigNamen.length,
-                (int i) => _ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
+                (int i) => ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
               ),
       );
       _scanHatStattgefunden.add(false);
@@ -897,7 +869,7 @@ class _TagesabschlussSchritt2SeiteState
       if (index < _ecBelegScanGescannt.length) _ecBelegScanGescannt.removeAt(index);
       // per-Beleg
       if (index < _zahlungsartZeilen.length) {
-        for (final _ZahlungsartZeile z in _zahlungsartZeilen[index]) {
+        for (final ZahlungsartZeile z in _zahlungsartZeilen[index]) {
           z.dispose();
         }
         _zahlungsartZeilen.removeAt(index);
@@ -936,7 +908,7 @@ class _TagesabschlussSchritt2SeiteState
       if (_ecBelegScanGescannt.isNotEmpty) _ecBelegScanGescannt.removeLast();
       // per-Beleg
       if (_zahlungsartZeilen.isNotEmpty) {
-        for (final _ZahlungsartZeile z in _zahlungsartZeilen.last) {
+        for (final ZahlungsartZeile z in _zahlungsartZeilen.last) {
           z.dispose();
         }
         _zahlungsartZeilen.removeLast();
@@ -967,10 +939,10 @@ class _TagesabschlussSchritt2SeiteState
       // per-Beleg
       _zahlungsartZeilen.add(
         _zahlungsartKonfigNamen.isEmpty
-            ? <_ZahlungsartZeile>[]
-            : List<_ZahlungsartZeile>.generate(
+            ? <ZahlungsartZeile>[]
+            : List<ZahlungsartZeile>.generate(
                 _zahlungsartKonfigNamen.length,
-                (int i) => _ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
+                (int i) => ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
               ),
       );
       _scanHatStattgefunden.add(false);
@@ -1140,7 +1112,7 @@ class _TagesabschlussSchritt2SeiteState
                 ? (zahlungsartenBetragCent![k] as num?)?.toInt()
                 : null;
             final int zeilenIdx =
-                _zahlungsartZeilen[0].indexWhere((_ZahlungsartZeile z) => z.name == name);
+                _zahlungsartZeilen[0].indexWhere((ZahlungsartZeile z) => z.name == name);
             if (zeilenIdx >= 0 && betrag != null) {
               _zahlungsartZeilen[0][zeilenIdx].betragCentWert = betrag;
               _zahlungsartZeilen[0][zeilenIdx].zustand = ZeilenZustand.shown;
@@ -1190,7 +1162,7 @@ class _TagesabschlussSchritt2SeiteState
       if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;
       _bereinigUnbekannteZeilen(0);
       if (_zahlungsartZeilen.isNotEmpty) {
-        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+        for (final ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
           zeile.reset();
         }
       }
@@ -1240,7 +1212,7 @@ class _TagesabschlussSchritt2SeiteState
       if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;
       _bereinigUnbekannteZeilen(0);
       if (_zahlungsartZeilen.isNotEmpty) {
-        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+        for (final ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
           zeile.reset();
         }
       }
@@ -1366,7 +1338,7 @@ class _TagesabschlussSchritt2SeiteState
           _scanHatStattgefunden[belegIndex] = true;
           _ecKachelAufgeklappt = true;
           _bereinigUnbekannteZeilen(belegIndex);
-          for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
+          for (final ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
             zeile.reset();
           }
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
@@ -1379,7 +1351,7 @@ class _TagesabschlussSchritt2SeiteState
             // Kartenart mit unlesbarem Betrag, sowie die "unbekannte
             // Kartenart"-Zeile. Kartenarten ohne Umsatz bleiben hidden
             // und weiterhin nur über den "+"-Chip erreichbar.
-            for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
+            for (final ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
               if (zeile.istUnbekannt ||
                   (zeile.zustand == ZeilenZustand.shown &&
                       _istZeileImplausibel(zeile, belegIndex))) {
@@ -1476,7 +1448,7 @@ class _TagesabschlussSchritt2SeiteState
   /// Bearbeitung, damit die manuelle Eingabe ohne Zwischenschritt möglich ist.
   void _oeffneErstenBelegZurBearbeitungFallsLeer() {
     if (_ersterBelegIstLeer() && _zahlungsartZeilen.isNotEmpty) {
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+      for (final ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
         zeile.zustand = ZeilenZustand.editing;
       }
     }
@@ -1488,7 +1460,7 @@ class _TagesabschlussSchritt2SeiteState
         _ecUnterkachelEditModus[i] = true;
       }
       if (i < _zahlungsartZeilen.length) {
-        for (final _ZahlungsartZeile z in _zahlungsartZeilen[i]) {
+        for (final ZahlungsartZeile z in _zahlungsartZeilen[i]) {
           z.zustand = ZeilenZustand.editing;
         }
       }
@@ -1512,10 +1484,10 @@ class _TagesabschlussSchritt2SeiteState
   List<BelegScanZeilenVorschau> _baueScanVorschauZeilen(
       BelegScanErgebnis ergebnis, int belegIndex) {
     final List<BelegScanZeilenVorschau> vorschau = <BelegScanZeilenVorschau>[];
-    final List<_ZahlungsartZeile> zeilen =
+    final List<ZahlungsartZeile> zeilen =
         belegIndex < _zahlungsartZeilen.length
             ? _zahlungsartZeilen[belegIndex]
-            : const <_ZahlungsartZeile>[];
+            : const <ZahlungsartZeile>[];
     for (final ZahlungsartErgebnis z in ergebnis.zahlungsarten) {
       if (z.art.trim().isEmpty) {
         vorschau.add(BelegScanZeilenVorschau(
@@ -1527,7 +1499,7 @@ class _TagesabschlussSchritt2SeiteState
         continue;
       }
       String name = z.art;
-      for (final _ZahlungsartZeile zeile in zeilen) {
+      for (final ZahlungsartZeile zeile in zeilen) {
         if (_matchKartenart(zeile.name, z.art)) {
           name = zeile.name;
           break;
@@ -1544,33 +1516,33 @@ class _TagesabschlussSchritt2SeiteState
 
   void _bereinigUnbekannteZeilen(int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return;
-    final List<_ZahlungsartZeile> zuEntfernen = _zahlungsartZeilen[belegIndex]
-        .where((_ZahlungsartZeile z) => z.istUnbekannt)
+    final List<ZahlungsartZeile> zuEntfernen = _zahlungsartZeilen[belegIndex]
+        .where((ZahlungsartZeile z) => z.istUnbekannt)
         .toList();
-    for (final _ZahlungsartZeile z in zuEntfernen) {
+    for (final ZahlungsartZeile z in zuEntfernen) {
       z.dispose();
     }
     _zahlungsartZeilen[belegIndex]
-        .removeWhere((_ZahlungsartZeile z) => z.istUnbekannt);
+        .removeWhere((ZahlungsartZeile z) => z.istUnbekannt);
   }
 
   List<String> _dropdownOptionenFuerUnbekannte(int zeileIndex, int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return <String>[];
-    final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
+    final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
     final Set<String> bereitsGewaehlt = <String>{};
     for (int i = 0; i < zeilen.length; i++) {
       if (i == zeileIndex) continue;
-      final _ZahlungsartZeile z = zeilen[i];
+      final ZahlungsartZeile z = zeilen[i];
       if (z.istUnbekannt && z.name.isNotEmpty) {
         bereitsGewaehlt.add(z.name);
       }
     }
     return zeilen
-        .where((_ZahlungsartZeile z) =>
+        .where((ZahlungsartZeile z) =>
             !z.istUnbekannt &&
             z.zustand == ZeilenZustand.hidden &&
             !bereitsGewaehlt.contains(z.name))
-        .map((_ZahlungsartZeile z) => z.name)
+        .map((ZahlungsartZeile z) => z.name)
         .toList();
   }
 
@@ -1580,23 +1552,23 @@ class _TagesabschlussSchritt2SeiteState
   bool _kartenartBereitsAlsUnbekannteZugeordnet(String name, int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return false;
     return _zahlungsartZeilen[belegIndex]
-        .any((_ZahlungsartZeile z) => z.istUnbekannt && z.name == name);
+        .any((ZahlungsartZeile z) => z.istUnbekannt && z.name == name);
   }
 
   void _sortiereZahlungsartenNachBeleg(
       List<ZahlungsartErgebnis> belegArten, int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return;
-    final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
-    final List<_ZahlungsartZeile> sortiert = <_ZahlungsartZeile>[];
+    final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
+    final List<ZahlungsartZeile> sortiert = <ZahlungsartZeile>[];
     for (final ZahlungsartErgebnis z in belegArten) {
-      for (final _ZahlungsartZeile zeile in zeilen) {
+      for (final ZahlungsartZeile zeile in zeilen) {
         if (!sortiert.contains(zeile) && _matchKartenart(zeile.name, z.art)) {
           sortiert.add(zeile);
           break;
         }
       }
     }
-    for (final _ZahlungsartZeile zeile in zeilen) {
+    for (final ZahlungsartZeile zeile in zeilen) {
       if (!sortiert.contains(zeile)) sortiert.add(zeile);
     }
     _zahlungsartZeilen[belegIndex] = sortiert;
@@ -1608,7 +1580,7 @@ class _TagesabschlussSchritt2SeiteState
     int belegIndex,
   ) {
     if (belegIndex >= _zahlungsartZeilen.length) return;
-    for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
+    for (final ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
       ZahlungsartErgebnis? matching;
       for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
         if (_matchKartenart(zeile.name, z.art)) {
@@ -1648,8 +1620,8 @@ class _TagesabschlussSchritt2SeiteState
 
     for (final ZahlungsartErgebnis z in geprueftes.zahlungsarten) {
       if (z.art.trim().isEmpty && z.betragCent != null) {
-        final _ZahlungsartZeile unbekannte =
-            _ZahlungsartZeile('', istUnbekannt: true);
+        final ZahlungsartZeile unbekannte =
+            ZahlungsartZeile('', istUnbekannt: true);
         unbekannte.betragFocusNode
             .addListener(() { if (mounted) setState(() {}); });
         unbekannte.betragCentWert = z.betragCent;
@@ -1666,7 +1638,7 @@ class _TagesabschlussSchritt2SeiteState
   /// erkannt, aber Betrag nicht lesbar) — solange noch kein Betrag nachgetragen
   /// wurde. Zeilen, die schlicht nicht auf dem Beleg stehen oder 0 enthalten,
   /// bleiben unmarkiert.
-  bool _istZeileImplausibel(_ZahlungsartZeile zeile, int belegIndex) {
+  bool _istZeileImplausibel(ZahlungsartZeile zeile, int belegIndex) {
     return zeile.nichtPlausibel && zeile.betragCentWert == null;
   }
 
@@ -1675,7 +1647,7 @@ class _TagesabschlussSchritt2SeiteState
     for (int belegIndex = 0; belegIndex < _zahlungsartZeilen.length; belegIndex++) {
       final String tid =
           belegIndex < _ecBelegLabels.length ? _ecBelegLabels[belegIndex] : '';
-      for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
+      for (final ZahlungsartZeile zeile in _zahlungsartZeilen[belegIndex]) {
         if (zeile.betragCentWert == null) continue;
         liste.add(ZahlungsartErgebnis(
           art: zeile.name,
@@ -1692,10 +1664,10 @@ class _TagesabschlussSchritt2SeiteState
     for (int i = 0; i < _zahlungsartZeilen.length; i++) {
       final String tid =
           i < _ecBelegLabels.length ? _ecBelegLabels[i] : '';
-      final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[i];
+      final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[i];
 
       int betragFuer(String art) {
-        for (final _ZahlungsartZeile z in zeilen) {
+        for (final ZahlungsartZeile z in zeilen) {
           if (z.name == art) return z.betragCentWert ?? 0;
         }
         return 0;
@@ -1736,35 +1708,6 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     await _leereAlleFelder();
-  }
-
-  Widget _baueDevToolsPanel() {
-    return Card(
-      color: const Color(0xFFFFF8E1),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: <Widget>[
-            const Expanded(
-              child: Text(
-                'DEV-Tools (nur Debug/Profile)',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-            OutlinedButton(
-              onPressed: _autoFillDev,
-              child: const Text('Auto-Fill'),
-            ),
-            const SizedBox(width: 8),
-            OutlinedButton(
-              onPressed: _leereAlleFelderDev,
-              child: const Text('Alles leeren'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt2() {
@@ -1934,7 +1877,7 @@ class _TagesabschlussSchritt2SeiteState
       if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;
       _bereinigUnbekannteZeilen(0);
       if (_zahlungsartZeilen.isNotEmpty) {
-        for (final _ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
+        for (final ZahlungsartZeile zeile in _zahlungsartZeilen[0]) {
           zeile.reset();
         }
       }
@@ -1959,57 +1902,19 @@ class _TagesabschlussSchritt2SeiteState
     int? farbeNachWert,
     bool zeigeLabel = true,
   }) {
-    // Ohne Label: nur das Eingabefeld zurückgeben (Breite kommt vom Eltern-Widget).
-    if (!zeigeLabel) {
-      return BetragCentEingabefeld(
-        textController: controller,
-        focusNode: focusNode,
-        textInputAction: _textInputActionFuerSchritt2(focusNode),
-        onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt2(focusNode),
-        onChanged: onChanged,
-        schriftgroesse: 15,
-        hinweisText: '0,00 €',
-        fehlermeldungText: fehlermeldungText,
-        farbeNachWert: farbeNachWert,
-        mitKomma: false,
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              optional ? '$label (optional)' : label,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-          ),
-          SizedBox(
-            width: 190,
-            child: BetragCentEingabefeld(
-              textController: controller,
-              focusNode: focusNode,
-              textInputAction: _textInputActionFuerSchritt2(focusNode),
-              onSubmitted: (_) => _beiEingabeAbgeschlossenSchritt2(focusNode),
-              onChanged: onChanged,
-              schriftgroesse: 15,
-              hinweisText: '0,00 €',
-              fehlermeldungText: fehlermeldungText,
-              farbeNachWert: farbeNachWert,
-              mitKomma: false,
-            ),
-          ),
-          if (zeigeLoeschen) ...<Widget>[
-            const SizedBox(width: 6),
-            IconButton(
-              onPressed: onLoeschen,
-              icon: const Icon(Icons.delete_outline),
-              tooltip: 'EC-Beleg entfernen',
-            ),
-          ],
-        ],
-      ),
+    return Schritt2EingabeZeile(
+      label: label,
+      controller: controller,
+      onChanged: onChanged,
+      focusNode: focusNode,
+      textInputActionErmitteln: _textInputActionFuerSchritt2,
+      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt2,
+      fehlermeldungText: fehlermeldungText,
+      optional: optional,
+      zeigeLoeschen: zeigeLoeschen,
+      onLoeschen: onLoeschen,
+      farbeNachWert: farbeNachWert,
+      zeigeLabel: zeigeLabel,
     );
   }
 
@@ -2058,95 +1963,6 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  Widget _baueMetadatenInfoZeile(String label, String? wert) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            width: 110,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: AppFarben.subtilerText),
-            ),
-          ),
-          Expanded(
-            child: wert != null
-                ? Text(wert, style: const TextStyle(fontSize: 13))
-                : Text(
-                    'nicht verfügbar',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.orange.shade700,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _baueMetadatenEditZeile(
-    String label,
-    TextEditingController controller,
-    FocusNode focusNode,
-    ValueChanged<String> onChanged,
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
-      child: Row(
-        children: <Widget>[
-          SizedBox(
-            width: 110,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: AppFarben.subtilerText),
-            ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: controller,
-              focusNode: focusNode,
-              style: const TextStyle(fontSize: 13),
-              decoration: InputDecoration(
-                isDense: true,
-                border: InputBorder.none,
-                filled: focusNode.hasFocus,
-                fillColor: const Color(0xFFFFF8E1),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 4,
-                  vertical: 2,
-                ),
-                suffixIconConstraints: const BoxConstraints(
-                  minWidth: 0,
-                  minHeight: 0,
-                  maxWidth: 28,
-                  maxHeight: 28,
-                ),
-                suffixIcon: controller.text.isEmpty
-                    ? null
-                    : IconButton(
-                        constraints: const BoxConstraints(),
-                        padding: EdgeInsets.zero,
-                        icon: Icon(Icons.clear,
-                            size: 16, color: clearIconFarbe(focusNode.hasFocus)),
-                        onPressed: baueClearAktion(
-                          controller: controller,
-                          onChanged: onChanged,
-                          focusNode: focusNode,
-                        ),
-                      ),
-              ),
-              onChanged: onChanged,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _baueMetadatenBlock(int belegIndex) {
     final bool aufgeklappt = belegIndex < _metadatenAufgeklappt.length
         ? _metadatenAufgeklappt[belegIndex]
@@ -2154,116 +1970,47 @@ class _TagesabschlussSchritt2SeiteState
     final bool nurAnzeige = belegIndex < _metadatenNurAnzeige.length
         ? _metadatenNurAnzeige[belegIndex]
         : false;
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => setState(() {
-              if (belegIndex < _metadatenAufgeklappt.length) {
-                _metadatenAufgeklappt[belegIndex] = !_metadatenAufgeklappt[belegIndex];
-              }
-            }),
-            child: Row(
-              children: <Widget>[
-                const Expanded(
-                  child: Text(
-                    'Scan-Metadaten',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppFarben.subtilerText,
-                    ),
-                  ),
-                ),
-                if (aufgeklappt)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        if (belegIndex < _metadatenNurAnzeige.length) {
-                          _metadatenNurAnzeige[belegIndex] = !_metadatenNurAnzeige[belegIndex];
-                        }
-                      });
-                      if (belegIndex < _metadatenNurAnzeige.length &&
-                          !_metadatenNurAnzeige[belegIndex]) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          if (mounted) _scanDatumFocusNode.requestFocus();
-                        });
-                      }
-                    },
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(0, 24),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    child: Text(
-                      nurAnzeige
-                          ? 'Metadaten bearbeiten'
-                          : 'Fertig.',
-                      style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          decoration: TextDecoration.underline),
-                    ),
-                  ),
-                Icon(
-                  aufgeklappt
-                      ? Icons.expand_less
-                      : Icons.expand_more,
-                  size: 16,
-                  color: AppFarben.subtilerText,
-                ),
-              ],
-            ),
-          ),
-          if (aufgeklappt) ...<Widget>[
-            const SizedBox(height: 4),
-            if (nurAnzeige) ...<Widget>[
-              _baueMetadatenInfoZeile('Datum', _scanDatum),
-              _baueMetadatenInfoZeile('Uhrzeit', _scanUhrzeit),
-              _baueMetadatenInfoZeile('Beleg-Nr. von', _scanBelegNrVon),
-              _baueMetadatenInfoZeile('Beleg-Nr. bis', _scanBelegNrBis),
-            ] else ...<Widget>[
-              _baueMetadatenEditZeile(
-                'Datum',
-                _scanDatumController,
-                _scanDatumFocusNode,
-                (String wert) => _scanMetadatenfeldGeaendert(
-                    wert, (String? w) => _scanDatum = w),
-              ),
-              _baueMetadatenEditZeile(
-                'Uhrzeit',
-                _scanUhrzeitController,
-                _scanUhrzeitFocusNode,
-                (String wert) => _scanMetadatenfeldGeaendert(
-                    wert, (String? w) => _scanUhrzeit = w),
-              ),
-              _baueMetadatenEditZeile(
-                'Beleg-Nr. von',
-                _scanBelegNrVonController,
-                _scanBelegNrVonFocusNode,
-                (String wert) => _scanMetadatenfeldGeaendert(
-                    wert, (String? w) => _scanBelegNrVon = w),
-              ),
-              _baueMetadatenEditZeile(
-                'Beleg-Nr. bis',
-                _scanBelegNrBisController,
-                _scanBelegNrBisFocusNode,
-                (String wert) => _scanMetadatenfeldGeaendert(
-                    wert, (String? w) => _scanBelegNrBis = w),
-              ),
-            ],
-          ],
-        ],
-      ),
+    return Schritt2MetadatenBlock(
+      aufgeklappt: aufgeklappt,
+      nurAnzeige: nurAnzeige,
+      onToggleAufgeklappt: () => setState(() {
+        if (belegIndex < _metadatenAufgeklappt.length) {
+          _metadatenAufgeklappt[belegIndex] = !_metadatenAufgeklappt[belegIndex];
+        }
+      }),
+      onToggleNurAnzeige: () {
+        setState(() {
+          if (belegIndex < _metadatenNurAnzeige.length) {
+            _metadatenNurAnzeige[belegIndex] = !_metadatenNurAnzeige[belegIndex];
+          }
+        });
+        if (belegIndex < _metadatenNurAnzeige.length &&
+            !_metadatenNurAnzeige[belegIndex]) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _scanDatumFocusNode.requestFocus();
+          });
+        }
+      },
+      scanDatum: _scanDatum,
+      scanUhrzeit: _scanUhrzeit,
+      scanBelegNrVon: _scanBelegNrVon,
+      scanBelegNrBis: _scanBelegNrBis,
+      scanDatumController: _scanDatumController,
+      scanUhrzeitController: _scanUhrzeitController,
+      scanBelegNrVonController: _scanBelegNrVonController,
+      scanBelegNrBisController: _scanBelegNrBisController,
+      scanDatumFocusNode: _scanDatumFocusNode,
+      scanUhrzeitFocusNode: _scanUhrzeitFocusNode,
+      scanBelegNrVonFocusNode: _scanBelegNrVonFocusNode,
+      scanBelegNrBisFocusNode: _scanBelegNrBisFocusNode,
+      onDatumGeaendert: (String wert) =>
+          _scanMetadatenfeldGeaendert(wert, (String? w) => _scanDatum = w),
+      onUhrzeitGeaendert: (String wert) =>
+          _scanMetadatenfeldGeaendert(wert, (String? w) => _scanUhrzeit = w),
+      onBelegNrVonGeaendert: (String wert) => _scanMetadatenfeldGeaendert(
+          wert, (String? w) => _scanBelegNrVon = w),
+      onBelegNrBisGeaendert: (String wert) => _scanMetadatenfeldGeaendert(
+          wert, (String? w) => _scanBelegNrBis = w),
     );
   }
 
@@ -2278,130 +2025,9 @@ class _TagesabschlussSchritt2SeiteState
     _speichereEntwurf();
   }
 
-  Widget _baueKartenartenZeile(int index, int belegIndex) {
-    final _ZahlungsartZeile zeile = _zahlungsartZeilen[belegIndex][index];
-    final OutlineInputBorder? roteBorder = _istZeileImplausibel(zeile, belegIndex)
-        ? OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.red.shade300),
-          )
-        : null;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: zeile.istUnbekannt
-                ? DropdownButton<String?>(
-                    value: zeile.name.isEmpty ? null : zeile.name,
-                    hint: const Text(
-                      'Kartenart?',
-                      style: TextStyle(fontSize: 12, color: Colors.red),
-                    ),
-                    isExpanded: true,
-                    isDense: true,
-                    underline: const SizedBox.shrink(),
-                    style: const TextStyle(
-                        fontSize: 13, color: Colors.black87),
-                    items: _dropdownOptionenFuerUnbekannte(index, belegIndex)
-                        .map((String n) => DropdownMenuItem<String?>(
-                              value: n,
-                              child: Text(n),
-                            ))
-                        .toList(),
-                    onChanged: (String? wert) {
-                      setState(() {
-                        zeile.name = wert ?? '';
-                        _letzteAenderung = DateTime.now();
-                      });
-                      _speichereEntwurf();
-                    },
-                  )
-                : Text(
-                    zeile.name,
-                    style: const TextStyle(fontSize: 13),
-                  ),
-          ),
-          SizedBox(
-            width: 104,
-            child: TextField(
-              controller: zeile.betragController,
-              focusNode: zeile.betragFocusNode,
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly,
-                CentWaehrungsEingabeFormatter(),
-              ],
-              textAlign: TextAlign.right,
-              cursorColor: zeile.betragFocusNode.hasFocus ? Colors.black : null,
-              style: TextStyle(
-                fontSize: 13,
-                color: zeile.betragFocusNode.hasFocus ? Colors.black : null,
-              ),
-              decoration: InputDecoration(
-                hintText: '0,00',
-                isDense: true,
-                filled: zeile.betragFocusNode.hasFocus,
-                fillColor: zeile.betragFocusNode.hasFocus
-                    ? AppFarben.fokusFarbe
-                    : null,
-                border: const OutlineInputBorder(),
-                enabledBorder: roteBorder,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
-              ),
-              onChanged: (String wert) {
-                setState(() {
-                  zeile.betragCentWert = _parsiereBetragCent(wert);
-                });
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _baueKartenartenZeileAnzeige(int index, int belegIndex) {
-    final _ZahlungsartZeile zeile = _zahlungsartZeilen[belegIndex][index];
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: zeile.istUnbekannt && zeile.name.isEmpty
-                ? const Text(
-                    '?',
-                    style: TextStyle(fontSize: 13, color: Colors.red),
-                  )
-                : Text(
-                    zeile.name,
-                    style: const TextStyle(fontSize: 13),
-                  ),
-          ),
-          SizedBox(
-            width: 104,
-            child: Text(
-              zeile.betragCentWert != null
-                  ? TagesabschlussFormatierung.formatiereEuro(
-                      zeile.betragCentWert!)
-                  : '—',
-              textAlign: TextAlign.right,
-              style: TextStyle(
-                fontSize: 13,
-                color: _istZeileImplausibel(zeile, belegIndex)
-                    ? Colors.red
-                    : null,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _kartenartenFertig(int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return;
-    for (final _ZahlungsartZeile z in _zahlungsartZeilen[belegIndex]) {
+    for (final ZahlungsartZeile z in _zahlungsartZeilen[belegIndex]) {
       if (z.zustand == ZeilenZustand.editing) {
         z.zustand = z.betragCentWert != null
             ? ZeilenZustand.shown
@@ -2410,53 +2036,17 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
-  Widget _baueKartenartenEditButton(int belegIndex) {
-    // Im 2+-Beleg-Modus übernimmt der Sub-Kachel-"Manuell bearbeiten"-Button die Steuerung
-    if (_ecBelegController.length > 1) return const SizedBox.shrink();
-    final List<_ZahlungsartZeile> zeilen = belegIndex < _zahlungsartZeilen.length
-        ? _zahlungsartZeilen[belegIndex]
-        : <_ZahlungsartZeile>[];
-    final bool editModus = zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
-    return Padding(
-      padding: const EdgeInsets.only(top: 6),
-      child: Align(
-        alignment: Alignment.centerLeft,
-        child: TextButton(
-          onPressed: editModus
-              ? () => setState(() => _kartenartenFertig(belegIndex))
-              : () => setState(() {
-                    if (belegIndex < _zahlungsartZeilen.length) {
-                      for (final _ZahlungsartZeile z in _zahlungsartZeilen[belegIndex]) {
-                        z.zustand = ZeilenZustand.editing;
-                      }
-                    }
-                  }),
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: const Size(0, 28),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
-          child: Text(
-            editModus ? 'Fertig.' : 'Belegdaten bearbeiten',
-            style: const TextStyle(
-                fontSize: 11, decoration: TextDecoration.underline),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _baueZahlungsartenTabelle(int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return const SizedBox.shrink();
-    final List<_ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
-    final bool editModus = zeilen.any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
+    final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
+    final bool editModus = zeilen.any((ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
     final bool wurdeGescannt =
         belegIndex < _scanHatStattgefunden.length && _scanHatStattgefunden[belegIndex];
     final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
         ? _kartenartenGesamtBetragCent[belegIndex]
         : null;
     int tabellenSummeCent = 0;
-    for (final _ZahlungsartZeile zeile in zeilen) {
+    for (final ZahlungsartZeile zeile in zeilen) {
       if (zeile.betragCentWert != null) tabellenSummeCent += zeile.betragCentWert!;
     }
     final int ecGesamtCent = belegIndex < _ecBelegeCent.length
@@ -2466,239 +2056,93 @@ class _TagesabschlussSchritt2SeiteState
         tabellenSummeCent > 0 && ecGesamtCent > 0 && tabellenSummeCent != ecGesamtCent;
     final bool betragMismatch = gesBetrag != null && tabellenSummeCent != gesBetrag;
     final bool kartenartenHatFokus = zeilen.any(
-      (_ZahlungsartZeile z) => z.betragFocusNode.hasFocus,
+      (ZahlungsartZeile z) => z.betragFocusNode.hasFocus,
     );
     final bool gesamtBetragHatFokus =
         belegIndex < _kartenartenGesamtBetragFocusNode.length &&
             _kartenartenGesamtBetragFocusNode[belegIndex].hasFocus;
     final bool irgendEineZeileInkonsistent = zeilen
-        .where((_ZahlungsartZeile z) => z.zustand != ZeilenZustand.hidden)
-        .any((_ZahlungsartZeile z) => _istZeileImplausibel(z, belegIndex));
+        .where((ZahlungsartZeile z) => z.zustand != ZeilenZustand.hidden)
+        .any((ZahlungsartZeile z) => _istZeileImplausibel(z, belegIndex));
+    final TextEditingController gesamtBetragController =
+        belegIndex < _kartenartenGesamtBetragController.length
+            ? _kartenartenGesamtBetragController[belegIndex]
+            : TextEditingController();
+    final FocusNode? gesamtBetragFocusNode =
+        belegIndex < _kartenartenGesamtBetragFocusNode.length
+            ? _kartenartenGesamtBetragFocusNode[belegIndex]
+            : null;
+    final String? gesamtBetragErrorText =
+        belegIndex < _kartenartenGesamtBetragController.length
+            ? _pflichtfeldFehlertext(
+                feldBeruehrt:
+                    belegIndex == 0 ? _kartenartenGesamt1Beruehrt : false,
+                controller: _kartenartenGesamtBetragController[belegIndex],
+              )
+            : null;
 
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Row(
-              children: const <Widget>[
-                Expanded(
-                  child: Text(
-                    'Kartenart',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppFarben.subtilerText,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 104,
-                  child: Text(
-                    'Betrag',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppFarben.subtilerText,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          for (int i = 0; i < zeilen.length; i++)
-            if (zeilen[i].zustand != ZeilenZustand.hidden)
-              zeilen[i].zustand == ZeilenZustand.editing
-                  ? _baueKartenartenZeile(i, belegIndex)
-                  : _baueKartenartenZeileAnzeige(i, belegIndex),
-          if (wurdeGescannt &&
-              zeilen.any((_ZahlungsartZeile z) =>
-                  z.zustand == ZeilenZustand.hidden &&
-                  !_kartenartBereitsAlsUnbekannteZugeordnet(z.name, belegIndex)))
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: <Widget>[
-                  for (final _ZahlungsartZeile zeile in zeilen)
-                    if (zeile.zustand == ZeilenZustand.hidden &&
-                        !_kartenartBereitsAlsUnbekannteZugeordnet(
-                            zeile.name, belegIndex))
-                      TextButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            zeile.zustand = ZeilenZustand.editing;
-                          });
-                        },
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 0),
-                          minimumSize: const Size(0, 24),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        icon: const Icon(Icons.add, size: 14),
-                        label: Text(
-                          zeile.name,
-                          style: const TextStyle(
-                              fontSize: 12,
-                              decoration: TextDecoration.underline),
-                        ),
-                      ),
-                ],
-              ),
-            ),
-          const Divider(height: 10),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      wurdeGescannt ? 'Gesamt (laut Beleg)' : 'Gesamt',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        tooltip: 'Hilfe',
-                        icon: Icon(Icons.help_outline,
-                            size: 16, color: Colors.grey.shade600),
-                        onPressed: () {
-                          showDialog<void>(
-                            context: context,
-                            builder: (BuildContext ctx) => AlertDialog(
-                              title: const Text('Gesamtbetrag'),
-                              content: const Text(
-                                'Die Gesamtsumme wird nicht automatisch berechnet, '
-                                'sondern muss selbst eingegeben werden. Sie dient '
-                                'der Kontrolle, ob alle Beträge korrekt erfasst '
-                                'wurden.',
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(),
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: 104,
-                child: !editModus
-                    ? Text(
-                        gesBetrag != null
-                            ? TagesabschlussFormatierung.formatiereEuro(
-                                gesBetrag)
-                            : '—',
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                        ),
-                      )
-                    : TextField(
-                        controller: belegIndex < _kartenartenGesamtBetragController.length
-                            ? _kartenartenGesamtBetragController[belegIndex]
-                            : TextEditingController(),
-                        focusNode: belegIndex < _kartenartenGesamtBetragFocusNode.length
-                            ? _kartenartenGesamtBetragFocusNode[belegIndex]
-                            : null,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly,
-                          CentWaehrungsEingabeFormatter(),
-                        ],
-                        textAlign: TextAlign.right,
-                        cursorColor: gesamtBetragHatFokus ? Colors.black : null,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
-                          color: gesamtBetragHatFokus ? Colors.black : null,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: '0,00',
-                          isDense: true,
-                          filled: gesamtBetragHatFokus,
-                          fillColor: gesamtBetragHatFokus
-                              ? AppFarben.fokusFarbe
-                              : null,
-                          border: const OutlineInputBorder(),
-                          errorBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red),
-                          ),
-                          focusedErrorBorder: const OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 5),
-                          errorText: belegIndex < _kartenartenGesamtBetragController.length
-                              ? _pflichtfeldFehlertext(
-                                  feldBeruehrt: belegIndex == 0
-                                      ? _kartenartenGesamt1Beruehrt
-                                      : false,
-                                  controller: _kartenartenGesamtBetragController[belegIndex],
-                                )
-                              : null,
-                        ),
-                        onChanged: (String wert) {
-                          setState(() {
-                            if (belegIndex < _kartenartenGesamtBetragCent.length) {
-                              _kartenartenGesamtBetragCent[belegIndex] =
-                                  wert.trim().isEmpty
-                                      ? null
-                                      : _parsiereBetragCent(wert);
-                              if (belegIndex < _ecBelegeCent.length) {
-                                _ecBelegeCent[belegIndex] =
-                                    _kartenartenGesamtBetragCent[belegIndex] ?? 0;
-                              }
-                            }
-                            if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
-                            _letzteAenderung = DateTime.now();
-                          });
-                          _speichereEntwurf();
-                        },
-                      ),
-              ),
-            ],
-          ),
-          if (betragMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'Hinweis: Summe der Beträge stimmt nicht mit der erfassten '
-                'Gesamtsumme überein.',
-                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
-              ),
-            ),
-          if (summePasstNicht && !betragMismatch && !kartenartenHatFokus && !irgendEineZeileInkonsistent)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text(
-                'Hinweis: Kartensumme stimmt nicht mit dem eingetragenen '
-                'EC-Gesamtbetrag überein.',
-                style: TextStyle(fontSize: 12, color: Colors.orange.shade700),
-              ),
-            ),
-          _baueKartenartenEditButton(belegIndex),
-        ],
-      ),
+    return Schritt2ZahlungsartenTabelle(
+      zeilen: zeilen,
+      editModus: editModus,
+      wurdeGescannt: wurdeGescannt,
+      gesamtBetragCent: gesBetrag,
+      tabellenSummeCent: tabellenSummeCent,
+      summePasstNicht: summePasstNicht,
+      betragMismatch: betragMismatch,
+      kartenartenHatFokus: kartenartenHatFokus,
+      gesamtBetragHatFokus: gesamtBetragHatFokus,
+      irgendEineZeileInkonsistent: irgendEineZeileInkonsistent,
+      gesamtBetragController: gesamtBetragController,
+      gesamtBetragFocusNode: gesamtBetragFocusNode,
+      gesamtBetragErrorText: gesamtBetragErrorText,
+      zeigeKartenartenEditButton: _ecBelegController.length <= 1,
+      istZeileImplausibel: (ZahlungsartZeile z) =>
+          _istZeileImplausibel(z, belegIndex),
+      dropdownOptionenFuerZeile: (int i) =>
+          _dropdownOptionenFuerUnbekannte(i, belegIndex),
+      istBereitsAlsUnbekannteZugeordnet: (String name) =>
+          _kartenartBereitsAlsUnbekannteZugeordnet(name, belegIndex),
+      onZeileNameGeaendert: (ZahlungsartZeile zeile, String? wert) {
+        setState(() {
+          zeile.name = wert ?? '';
+          _letzteAenderung = DateTime.now();
+        });
+        _speichereEntwurf();
+      },
+      onZeileBetragGeaendert: (ZahlungsartZeile zeile, String wert) {
+        setState(() {
+          zeile.betragCentWert = _parsiereBetragCent(wert);
+        });
+      },
+      onZeileAktivieren: (ZahlungsartZeile zeile) {
+        setState(() {
+          zeile.zustand = ZeilenZustand.editing;
+        });
+      },
+      onGesamtBetragGeaendert: (String wert) {
+        setState(() {
+          if (belegIndex < _kartenartenGesamtBetragCent.length) {
+            _kartenartenGesamtBetragCent[belegIndex] =
+                wert.trim().isEmpty ? null : _parsiereBetragCent(wert);
+            if (belegIndex < _ecBelegeCent.length) {
+              _ecBelegeCent[belegIndex] =
+                  _kartenartenGesamtBetragCent[belegIndex] ?? 0;
+            }
+          }
+          if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
+          _letzteAenderung = DateTime.now();
+        });
+        _speichereEntwurf();
+      },
+      onEditButtonToggle: editModus
+          ? () => setState(() => _kartenartenFertig(belegIndex))
+          : () => setState(() {
+                if (belegIndex < _zahlungsartZeilen.length) {
+                  for (final ZahlungsartZeile z in _zahlungsartZeilen[belegIndex]) {
+                    z.zustand = ZeilenZustand.editing;
+                  }
+                }
+              }),
     );
   }
 
@@ -2837,7 +2281,10 @@ class _TagesabschlussSchritt2SeiteState
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 140),
                       height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
-                      child: _baueDevToolsPanel(),
+                      child: Schritt2DevToolsPanel(
+                        onAutoFill: _autoFillDev,
+                        onLeeren: _leereAlleFelderDev,
+                      ),
                     ),
                   ),
                 ),
@@ -3370,7 +2817,7 @@ class _TagesabschlussSchritt2SeiteState
                                 if (_scanHatStattgefunden.isNotEmpty &&
                                     _scanHatStattgefunden[0] &&
                                     _zahlungsartZeilen.isNotEmpty &&
-                                    !_zahlungsartZeilen[0].any((_ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing) &&
+                                    !_zahlungsartZeilen[0].any((ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing) &&
                                     !_subKachelTidUnleserlich(0))
                                   // Read-Modus nach Scan
                                   Padding(

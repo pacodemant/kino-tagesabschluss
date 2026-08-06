@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 341: Architektur-Run, erster Schritt einer Serie: Schritt 2
+  (tagesabschluss_schritt2_seite.dart, zuvor 3934 Zeilen) analog zu
+  Schritt 1 (Run 40–58) in Untermodule aufgeteilt. Reine
+  Widget-Bau-Methoden ohne Logikänderung ausgelagert nach
+  lib/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart
+  (Schritt2DevToolsPanel, Schritt2EingabeZeile,
+  Schritt2MetadatenInfoZeile, Schritt2MetadatenEditZeile,
+  Schritt2MetadatenBlock, Schritt2KartenartenZeile,
+  Schritt2KartenartenZeileAnzeige, Schritt2KartenartenEditButton,
+  Schritt2ZahlungsartenTabelle). Die bisher private Klasse
+  _ZahlungsartZeile wurde dafür nach ZahlungsartZeile umbenannt und
+  zusammen mit ZeilenZustand in ein eigenes Modell
+  lib/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart
+  verschoben (verhindert einen zirkulären Import). Kein
+  UI-/Verhaltensunterschied beabsichtigt — reines Verschieben von
+  Code, nur mit expliziten Konstruktor-Parametern statt direktem
+  Zugriff auf private State-Felder. Datei dadurch von 3934 auf 3381
+  Zeilen reduziert; weitere Runs der Serie folgen (State/Controller,
+  restlicher UI-Baum). Kein Versionsbump, da reines Refactoring ohne
+  Nutzer-sichtbare Änderung (analog zu den Schritt-1-Auslager-Runs).
 - Run 340a: Zwei Text-Links hatten keine eigene Tap-Fläche (nur so
   groß wie der Text selbst) und lagen direkt in einem größeren,
   konkurrierenden InkWell/GestureDetector (Kachel-Header, der beim

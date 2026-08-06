@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 340a · wird fortlaufend ergänzt
+Stand: August 2026 · Run 341 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -195,6 +195,12 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       `AppFarben.fokusFarbe` zentralisiert statt appBarRot mitzunutzen),
       Run 331 (Footer-Deko in einstellungen_seite.dart und 10× rohes
       Colors.black54 auf bereits bestehende Theme-Konstanten umgestellt).
+      Größeres Vorhaben seit Run 341: tagesabschluss_schritt2_seite.dart
+      (3934 Zeilen) wird analog zu Schritt 1 (Run 40–58) in Untermodule
+      unter lib/pages/tagesabschluss_schritt2/ aufgeteilt — Run 341 hat
+      die reinen UI-Bau-Methoden ausgelagert (→ 3381 Zeilen), weitere
+      Runs für State/Controller und den restlichen UI-Baum folgen.
+      Schritt 3 (825 Zeilen) optional danach als kleinerer Abschluss-Run.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
