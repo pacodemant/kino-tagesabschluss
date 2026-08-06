@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.14+340a · Run 341
+Version: 0.9.15+341a · Run 341a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -136,7 +136,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 341)
+## Laufender Entwicklungsstand (Run 341a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -511,6 +511,8 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Verschieben ohne Verhaltensänderung; Datei dadurch auf 3381 Zeilen
   reduziert. Weitere Runs (State/Controller, restlicher UI-Baum)
   folgen; Schritt 3 optional danach als kleinerer Einzel-Run.
+- Run 341a ✅ Korrektur: Versionsbump zu Run 341 nachgeholt
+  (0.9.15+341a), war im Run vergessen worden.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

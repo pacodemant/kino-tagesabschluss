@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 341a: Korrektur zu Run 341 — Versionsbump vergessen. pubspec.yaml
+  und der Versionsstring in startmenue_seite.dart/kinoauswahl_seite.dart
+  jetzt auf 0.9.15+341a aktualisiert (Präzedenzfall Run 330 zeigt: auch
+  rein interne Refactoring-Runs ohne Nutzer-sichtbare Änderung bekommen
+  einen Versionsbump — die gegenteilige Annahme in Run 341 war falsch).
+  Keine weiteren Code-Änderungen.
 - Run 341: Architektur-Run, erster Schritt einer Serie: Schritt 2
   (tagesabschluss_schritt2_seite.dart, zuvor 3934 Zeilen) analog zu
   Schritt 1 (Run 40–58) in Untermodule aufgeteilt. Reine
