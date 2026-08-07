@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 343: Architektur-Refactor (Fortsetzung der Run-341-Serie):
+  Fokus-Reihenfolge/-Navigation und Scroll-zu-Feld-/Scroll-Pfeil-
+  Logik aus tagesabschluss_schritt2_seite.dart nach neuer Datei
+  lib/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart
+  ausgelagert (Klasse Schritt2FokusHelper, const, State wird per
+  Parameter injiziert — analog zu schritt1_state_controller.dart).
+  Betroffen: _fokusReihenfolgeSchritt2, _istLetztesFeldSchritt2,
+  _naechstesFeldSchritt2, _textInputActionFuerSchritt2,
+  _beiEingabeAbgeschlossenSchritt2, _fokussiereFeldSchritt2,
+  _verknuepfeFeldNavigationSchritt2, _scrolleZurMitteNachFokus,
+  _erstesLeeresFeld, _autoFokussiereNachLaden,
+  _aktualisiereScrollPfeil — alle bleiben als dünne Wrapper-
+  Methoden in der Hauptdatei erhalten, Call-Sites im build()-Baum
+  unverändert. Reines Verschieben ohne Verhaltensänderung; einzige
+  Ausnahme technischer Natur: der mounted-Check in
+  scrolleZurMitteNachFokus wird jetzt über eine Closure
+  (istMounted: () => mounted) statt eines zur Aufrufzeit
+  eingefrorenen bool-Werts geprüft, damit der Check nach dem
+  500ms-Delay weiterhin den aktuellen State liest (vorher bereits
+  so beabsichtigt, jetzt explizit gemacht). Zusätzlich gebündelt
+  (auf Paco-Wunsch mit diesem Commit statt eigenem Sub-Run):
+  Feldbreite "Differenz im Anfangsbestand" (Fortsetzung Run 342a)
+  von 160px auf 120px reduziert. Version 0.9.17+343. Dateien:
+  tagesabschluss_schritt2_seite.dart, neu:
+  tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 342a: Korrektur zu Run 342 nach Paco-Feedback — das auf
   190px verbreiterte Feld "Differenz im Anfangsbestand" wirkte zu
   groß. Neuer Parameter zeigeAdditionsButton (Default true) in

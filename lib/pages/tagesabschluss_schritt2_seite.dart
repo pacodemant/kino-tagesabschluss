@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -9,6 +8,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
@@ -93,6 +93,7 @@ class _TagesabschlussSchritt2SeiteState
     with ControllerDisposeMixin {
   static const double _devToolsPanelHoehe = 68;
   final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
+  final Schritt2FokusHelper _fokusHelper = const Schritt2FokusHelper();
 
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
@@ -1711,146 +1712,102 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt2() {
-    final List<FocusNode> ausgabenFokus = <FocusNode>[];
-    for (int i = 0; i < _ausgabenLabelFocusNode.length; i++) {
-      ausgabenFokus.add(_ausgabenLabelFocusNode[i]);
-      if (i < _ausgabenBetragFocusNode.length) {
-        ausgabenFokus.add(_ausgabenBetragFocusNode[i]);
-      }
-    }
-    final List<FocusNode> ecBelegFokus = <FocusNode>[];
-    for (int i = 0; i < _ecBelegLabelFocusNode.length; i++) {
-      ecBelegFokus.add(_ecBelegLabelFocusNode[i]);
-      if (i < _kartenartenGesamtBetragFocusNode.length) {
-        ecBelegFokus.add(_kartenartenGesamtBetragFocusNode[i]);
-      }
-    }
-    return <FocusNode>[
-      _differenzAnfangsbestandFocusNode,
-      _kinoSollFocusNode,
-      _bistroSollFocusNode,
-      ...ausgabenFokus,
-      ...ecBelegFokus,
-    ];
+    return _fokusHelper.fokusReihenfolge(
+      differenzAnfangsbestandFocusNode: _differenzAnfangsbestandFocusNode,
+      kinoSollFocusNode: _kinoSollFocusNode,
+      bistroSollFocusNode: _bistroSollFocusNode,
+      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
+      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
+      ecBelegLabelFocusNode: _ecBelegLabelFocusNode,
+      kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
+    );
   }
 
   bool _istLetztesFeldSchritt2(FocusNode focusNode) {
-    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
-    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
+    return _fokusHelper.istLetztesFeld(_fokusReihenfolgeSchritt2(), focusNode);
   }
 
   FocusNode? _naechstesFeldSchritt2(FocusNode focusNode) {
-    final List<FocusNode> reihenfolge = _fokusReihenfolgeSchritt2();
-    final int index = reihenfolge.indexWhere(
-      (FocusNode kandidat) => identical(kandidat, focusNode),
-    );
-    if (index < 0 || index >= reihenfolge.length - 1) {
-      return null;
-    }
-    return reihenfolge[index + 1];
+    return _fokusHelper.naechstesFeld(_fokusReihenfolgeSchritt2(), focusNode);
   }
 
   TextInputAction _textInputActionFuerSchritt2(FocusNode focusNode) {
-    return _istLetztesFeldSchritt2(focusNode)
-        ? TextInputAction.done
-        : TextInputAction.next;
+    return _fokusHelper.textInputActionFuer(_istLetztesFeldSchritt2(focusNode));
   }
 
   void _beiEingabeAbgeschlossenSchritt2(FocusNode focusNode) {
-    final FocusNode? naechstesFeld = _naechstesFeldSchritt2(focusNode);
-    if (naechstesFeld == null) {
-      FocusScope.of(context).unfocus();
-      return;
-    }
-    _fokussiereFeldSchritt2(naechstesFeld);
+    _fokusHelper.beiEingabeAbgeschlossen(
+      context: context,
+      naechstesFeld: _naechstesFeldSchritt2(focusNode),
+      fokussiereFeld: _fokussiereFeldSchritt2,
+    );
   }
 
   void _fokussiereFeldSchritt2(FocusNode ziel) {
-    FocusScope.of(context).requestFocus(ziel);
-    _scrolleZurMitteNachFokus(ziel);
+    _fokusHelper.fokussiereFeld(
+      context: context,
+      ziel: ziel,
+      scrolleZurMitteNachFokus: _scrolleZurMitteNachFokus,
+    );
   }
 
   void _verknuepfeFeldNavigationSchritt2(FocusNode fokusNode) {
-    fokusNode.onKeyEvent = (FocusNode node, KeyEvent event) =>
-        _navHelper.onKeyEventFuerFeld(
-          context: context,
-          event: event,
-          reihenfolge: _fokusReihenfolgeSchritt2,
-          fokussiere: _fokussiereFeldSchritt2,
-        );
+    _fokusHelper.verknuepfeFeldNavigation(
+      fokusNode: fokusNode,
+      navHelper: _navHelper,
+      context: context,
+      reihenfolge: _fokusReihenfolgeSchritt2,
+      fokussiere: _fokussiereFeldSchritt2,
+    );
   }
 
-  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted || !fn.hasFocus || !context.mounted) return;
-    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    if (!_scrollController.hasClients) return;
-    final RenderObject? ro = fn.context?.findRenderObject();
-    if (ro == null || !ro.attached) return;
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(ro);
-    if (viewport == null) return;
-    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
-    final double targetOffset = (revealOffset - _scrollController.position.viewportDimension * 0.3)
-        .clamp(0.0, _scrollController.position.maxScrollExtent);
-    await _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) {
+    return _fokusHelper.scrolleZurMitteNachFokus(
+      fn: fn,
+      istMounted: () => mounted,
+      context: context,
+      scrollController: _scrollController,
     );
   }
 
   FocusNode? _erstesLeeresFeld() {
-    final Map<FocusNode, TextEditingController> lookup =
-        <FocusNode, TextEditingController>{
-      _kinoSollFocusNode: _kinoSollController,
-      _bistroSollFocusNode: _bistroSollController,
-      _differenzAnfangsbestandFocusNode: _differenzAnfangsbestandController,
-      for (int i = 0; i < _ausgabenLabelFocusNode.length; i++)
-        _ausgabenLabelFocusNode[i]: _ausgabenLabelController[i],
-      for (int i = 0; i < _ausgabenBetragFocusNode.length; i++)
-        _ausgabenBetragFocusNode[i]: _ausgabenBetragController[i],
-      for (int i = 0; i < _ecBelegLabelFocusNode.length; i++)
-        _ecBelegLabelFocusNode[i]: _ecBelegLabelController[i],
-      for (int i = 0; i < _kartenartenGesamtBetragFocusNode.length; i++)
-        _kartenartenGesamtBetragFocusNode[i]: _kartenartenGesamtBetragController[i],
-    };
-    for (final FocusNode fn in _fokusReihenfolgeSchritt2()) {
-      if (lookup[fn]?.text.isEmpty ?? true) {
-        return fn;
-      }
-    }
-    return null;
+    return _fokusHelper.erstesLeeresFeld(
+      kinoSollFocusNode: _kinoSollFocusNode,
+      kinoSollController: _kinoSollController,
+      bistroSollFocusNode: _bistroSollFocusNode,
+      bistroSollController: _bistroSollController,
+      differenzAnfangsbestandFocusNode: _differenzAnfangsbestandFocusNode,
+      differenzAnfangsbestandController: _differenzAnfangsbestandController,
+      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
+      ausgabenLabelController: _ausgabenLabelController,
+      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
+      ausgabenBetragController: _ausgabenBetragController,
+      ecBelegLabelFocusNode: _ecBelegLabelFocusNode,
+      ecBelegLabelController: _ecBelegLabelController,
+      kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
+      kartenartenGesamtBetragController: _kartenartenGesamtBetragController,
+      fokusReihenfolge: _fokusReihenfolgeSchritt2(),
+    );
   }
 
   void _autoFokussiereNachLaden() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      final FocusNode? ziel = _erstesLeeresFeld();
-      if (ziel != null) {
-        FocusScope.of(context).requestFocus(ziel);
-      }
-    });
+    _fokusHelper.autoFokussiereNachLaden(
+      istMounted: () => mounted,
+      erstesLeeresFeld: _erstesLeeresFeld,
+      context: context,
+    );
   }
 
   void _aktualisiereScrollPfeil() {
-    if (!mounted) return;
-    if (!_ecKachelAufgeklappt) {
-      if (_ecKachelZeigeScrollPfeil) {
-        setState(() => _ecKachelZeigeScrollPfeil = false);
-      }
-      return;
-    }
-    final RenderObject? ro = _ecKachelKey.currentContext?.findRenderObject();
-    if (ro == null || !ro.attached) return;
-    final RenderAbstractViewport? vp = RenderAbstractViewport.maybeOf(ro);
-    if (vp == null || !_scrollController.hasClients) return;
-    final double scrollFuerUnten = vp.getOffsetToReveal(ro, 1.0).offset;
-    final bool zeige = scrollFuerUnten > _scrollController.offset + 1.0;
-    if (zeige != _ecKachelZeigeScrollPfeil) {
-      setState(() => _ecKachelZeigeScrollPfeil = zeige);
-    }
+    _fokusHelper.aktualisiereScrollPfeil(
+      mounted: mounted,
+      ecKachelAufgeklappt: _ecKachelAufgeklappt,
+      ecKachelZeigeScrollPfeil: _ecKachelZeigeScrollPfeil,
+      ecKachelKey: _ecKachelKey,
+      scrollController: _scrollController,
+      setzeZeigeScrollPfeil: (bool wert) =>
+          setState(() => _ecKachelZeigeScrollPfeil = wert),
+    );
   }
 
   void _loescheKartenDaten() {
@@ -2341,7 +2298,7 @@ class _TagesabschlussSchritt2SeiteState
                             ),
                           ),
                           SizedBox(
-                            width: 160,
+                            width: 120,
                             child: _baueEingabeZeile(
                               label: 'Differenz im Anfangsbestand',
                               controller: _differenzAnfangsbestandController,

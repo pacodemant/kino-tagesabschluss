@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.16+342a · Run 342a
+Version: 0.9.17+343 · Run 343
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -136,7 +136,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 342a)
+## Laufender Entwicklungsstand (Run 343)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -527,6 +527,20 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   ausgeblendet, Feldbreite auf 160px reduziert. Alle anderen
   Beträge-Felder (Kino-SOLL etc.) unverändert (Parameter-Default
   true). Live verifiziert.
+- Run 343 ✅ Architektur-Refactor, Fortsetzung der Run-341-Serie:
+  Fokus-Reihenfolge/-Navigation und Scroll-zu-Feld-/Scroll-Pfeil-
+  Logik aus tagesabschluss_schritt2_seite.dart nach neuer Datei
+  lib/pages/tagesabschluss_schritt2/controller/
+  schritt2_fokus_helper.dart ausgelagert (Klasse Schritt2FokusHelper,
+  const, State per Parameter injiziert — gleiches Muster wie
+  schritt1_state_controller.dart). 11 Methoden betroffen, alle
+  bleiben als dünne Wrapper in der Hauptdatei, Call-Sites im
+  build()-Baum unverändert. Reines Verschieben ohne
+  Verhaltensänderung. Zusätzlich gebündelt: Feldbreite "Differenz
+  im Anfangsbestand" von 160px (Run 342a) auf 120px reduziert
+  (Paco-Wunsch, mit diesem Commit statt eigenem Sub-Run). Nächster
+  geplanter Teilschritt der Serie: build()-Baum selbst (~1200
+  Zeilen) analog zu Schritt 1s sections/-Ordner zerlegen.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
