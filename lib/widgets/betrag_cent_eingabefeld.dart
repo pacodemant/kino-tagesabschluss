@@ -51,6 +51,7 @@ class BetragCentEingabefeld extends StatefulWidget {
     this.farbeNachWert,
     this.nennwertCent,
     this.mitKomma = false,
+    this.zeigeAdditionsButton = true,
   });
 
   final TextEditingController textController;
@@ -70,6 +71,7 @@ class BetragCentEingabefeld extends StatefulWidget {
   /// Nennwert teilbar ist. Bei Verstoß: rotes Feld + AlertDialog.
   final int? nennwertCent;
   final bool mitKomma;
+  final bool zeigeAdditionsButton;
 
   @override
   State<BetragCentEingabefeld> createState() => _BetragCentEingabefeldState();
@@ -367,7 +369,7 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
                 color: hatFokus ? Colors.black : null,
               ),
             ),
-            if (hatText && !widget.mitKomma) ...<Widget>[
+            if (hatText && !widget.mitKomma && widget.zeigeAdditionsButton) ...<Widget>[
               baueEingabefeldTrennlinie(),
               baueEingabefeldAktionsChip(
                 icon: Icons.add,

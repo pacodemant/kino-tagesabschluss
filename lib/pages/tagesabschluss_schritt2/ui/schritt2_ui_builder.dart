@@ -62,6 +62,7 @@ class Schritt2EingabeZeile extends StatelessWidget {
     this.onLoeschen,
     this.farbeNachWert,
     this.zeigeLabel = true,
+    this.zeigeAdditionsButton = true,
   });
 
   final String label;
@@ -76,6 +77,7 @@ class Schritt2EingabeZeile extends StatelessWidget {
   final VoidCallback? onLoeschen;
   final int? farbeNachWert;
   final bool zeigeLabel;
+  final bool zeigeAdditionsButton;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +94,7 @@ class Schritt2EingabeZeile extends StatelessWidget {
         fehlermeldungText: fehlermeldungText,
         farbeNachWert: farbeNachWert,
         mitKomma: false,
+        zeigeAdditionsButton: zeigeAdditionsButton,
       );
     }
 
@@ -118,6 +121,7 @@ class Schritt2EingabeZeile extends StatelessWidget {
               fehlermeldungText: fehlermeldungText,
               farbeNachWert: farbeNachWert,
               mitKomma: false,
+              zeigeAdditionsButton: zeigeAdditionsButton,
             ),
           ),
           if (zeigeLoeschen) ...<Widget>[

@@ -1901,6 +1901,7 @@ class _TagesabschlussSchritt2SeiteState
     VoidCallback? onLoeschen,
     int? farbeNachWert,
     bool zeigeLabel = true,
+    bool zeigeAdditionsButton = true,
   }) {
     return Schritt2EingabeZeile(
       label: label,
@@ -1915,6 +1916,7 @@ class _TagesabschlussSchritt2SeiteState
       onLoeschen: onLoeschen,
       farbeNachWert: farbeNachWert,
       zeigeLabel: zeigeLabel,
+      zeigeAdditionsButton: zeigeAdditionsButton,
     );
   }
 
@@ -2339,12 +2341,13 @@ class _TagesabschlussSchritt2SeiteState
                             ),
                           ),
                           SizedBox(
-                            width: 190,
+                            width: 160,
                             child: _baueEingabeZeile(
                               label: 'Differenz im Anfangsbestand',
                               controller: _differenzAnfangsbestandController,
                               focusNode: _differenzAnfangsbestandFocusNode,
                               zeigeLabel: false,
+                              zeigeAdditionsButton: false,
                               farbeNachWert: _differenzAnfangsbestandCent,
                               onChanged: (String wert) {
                                 setState(() {

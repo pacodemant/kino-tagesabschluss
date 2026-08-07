@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.16+342 · Run 342
+Version: 0.9.16+342a · Run 342a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -136,7 +136,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 342)
+## Laufender Entwicklungsstand (Run 342a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -521,6 +521,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   _fokusReihenfolgeSchritt2(), passend zu seiner visuellen Position
   — "Weiter" sprang vorher gar nicht mehr weiter). Live per
   Playwright gegen den Web-Build verifiziert.
+- Run 342a ✅ Korrektur: 190px-Feld aus Run 342 wirkte laut Paco zu
+  groß. "+"-Additions-Button (Summen wie "1,00+0,50" eintippen) für
+  dieses eine Feld über neuen Parameter zeigeAdditionsButton
+  ausgeblendet, Feldbreite auf 160px reduziert. Alle anderen
+  Beträge-Felder (Kino-SOLL etc.) unverändert (Parameter-Default
+  true). Live verifiziert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

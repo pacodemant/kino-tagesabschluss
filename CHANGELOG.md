@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 342a: Korrektur zu Run 342 nach Paco-Feedback — das auf
+  190px verbreiterte Feld "Differenz im Anfangsbestand" wirkte zu
+  groß. Neuer Parameter zeigeAdditionsButton (Default true) in
+  BetragCentEingabefeld, Schritt2EingabeZeile und _baueEingabeZeile
+  durchgereicht: für dieses Feld auf false gesetzt, da eine einzelne
+  Differenz ohnehin nicht wie ein Münzstapel aus mehreren addierten
+  Teilbeträgen erfasst wird. Dadurch fällt der "+"-Chip weg und das
+  Feld kann auf 160px schrumpfen, ohne dass der Wert wieder
+  abgeschnitten wird ("X"-Löschen-Chip bleibt). Alle anderen
+  BetragCentEingabefeld-Stellen (Kino-SOLL, Bistro-SOLL, Ausgaben
+  etc.) unverändert, da Default true. Live mit Playwright verifiziert
+  (Wert vollständig sichtbar, Fokussprung zu Kino-SOLL weiterhin ok).
 - Run 342: Zwei Korrekturen am Feld "Differenz im Anfangsbestand"
   (Schritt 2), beim Testen von Run 341 entdeckt (selbst keine
   Regression aus Run 341, siehe Diagnose davor). (1) Optik an
