@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_anmerkung_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_differenz_anfangsbestand_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_belege_kachel_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kino_soll_ausgaben_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kopf_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_personalgetraenke_section.dart';
@@ -71,6 +73,40 @@ class Schritt2GruppenOrchestrierung {
         focusNode: anmerkungFocusNode,
         onChanged: beiAnmerkungGeaendert,
       ),
+    );
+  }
+
+  Widget baueEcBelegeKachel({
+    required bool aufgeklappt,
+    required VoidCallback onToggleAufgeklappt,
+    required bool zeigeManuellEingebenLink,
+    required VoidCallback onManuellEingebenTap,
+    required bool scanLaeuft,
+    required bool hatEcBelege,
+    required int belegeWithData,
+    required int ecGesamtCent,
+    required VoidCallback onScanStarten,
+    required VoidCallback onKartenDatenLoeschen,
+    required TapGestureRecognizer belegdatenBearbeitenRecognizer,
+    required VoidCallback onBelegdatenBearbeitenTap,
+    required VoidCallback onEcBelegHinzufuegen,
+    required Widget belegInhalt,
+  }) {
+    return Schritt2EcBelegeKachelSection(
+      aufgeklappt: aufgeklappt,
+      onToggleAufgeklappt: onToggleAufgeklappt,
+      zeigeManuellEingebenLink: zeigeManuellEingebenLink,
+      onManuellEingebenTap: onManuellEingebenTap,
+      scanLaeuft: scanLaeuft,
+      hatEcBelege: hatEcBelege,
+      belegeWithData: belegeWithData,
+      ecGesamtCent: ecGesamtCent,
+      onScanStarten: onScanStarten,
+      onKartenDatenLoeschen: onKartenDatenLoeschen,
+      belegdatenBearbeitenRecognizer: belegdatenBearbeitenRecognizer,
+      onBelegdatenBearbeitenTap: onBelegdatenBearbeitenTap,
+      onEcBelegHinzufuegen: onEcBelegHinzufuegen,
+      belegInhalt: belegInhalt,
     );
   }
 }

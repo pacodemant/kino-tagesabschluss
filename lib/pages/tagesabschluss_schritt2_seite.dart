@@ -10,6 +10,7 @@ import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_terminal_id_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
@@ -1497,6 +1498,46 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
+  void _ecKachelToggleAufgeklappt() {
+    final bool wirdGeoeffnet = !_ecKachelAufgeklappt;
+    setState(() {
+      _ecKachelAufgeklappt = !_ecKachelAufgeklappt;
+      if (wirdGeoeffnet) {
+        _oeffneErstenBelegZurBearbeitungFallsLeer();
+      }
+    });
+  }
+
+  void _manuellEingebenTap() {
+    setState(() {
+      _ecKachelAufgeklappt = true;
+      _oeffneErstenBelegZurBearbeitungFallsLeer();
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(_ecBelegLabelFocusNode.first);
+      }
+    });
+  }
+
+  void _beiEcBelegLabel1Geaendert(String wert) {
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      _ecBelegLabels[0] = wert;
+      _ecBelegLabel1Beruehrt = true;
+    });
+    _speichereEntwurf();
+  }
+
+  void _ecBelegLabel1Loeschen() {
+    _ecBelegLabelController[0].clear();
+    setState(() {
+      _ecBelegLabels[0] = '';
+    });
+    _speichereEntwurf();
+    _ecBelegLabelFocusNode[0].requestFocus();
+  }
+
   void _manuellBearbeitenAktivieren(int i) {
     setState(() {
       if (i < _ecUnterkachelEditModus.length) {
@@ -2276,337 +2317,45 @@ class _TagesabschlussSchritt2SeiteState
       onAusgabeEntfernen: _ausgabeEntfernen,
       onAusgabeHinzufuegen: _ausgabeHinzufuegen,
     );
-    final List<Widget> ecBelegeBereich = <Widget>[
-                Stack(
-                  children: <Widget>[
-                Card(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      // Header
-                      InkWell(
-                        onTap: () {
-                          final bool wirdGeoeffnet = !_ecKachelAufgeklappt;
-                          setState(() {
-                            _ecKachelAufgeklappt = !_ecKachelAufgeklappt;
-                            if (wirdGeoeffnet) {
-                              _oeffneErstenBelegZurBearbeitungFallsLeer();
-                            }
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
-                          child: Row(
-                            children: <Widget>[
-                              const Text(
-                                'EC-Belege',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const Spacer(),
-                              if (!_ecKachelAufgeklappt && _ersterBelegIstLeer())
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _ecKachelAufgeklappt = true;
-                                      _oeffneErstenBelegZurBearbeitungFallsLeer();
-                                    });
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      if (mounted) {
-                                        FocusScope.of(context).requestFocus(
-                                          _ecBelegLabelFocusNode.first,
-                                        );
-                                      }
-                                    });
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 8,
-                                      horizontal: 4,
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text(
-                                          'manuell eingeben',
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            color: AppFarben.appBarRot,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                        ),
-                                        const Text(
-                                          ' oder: ',
-                                          style: TextStyle(fontSize: 13),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (_scanLaeuft)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 6),
-                                  child: Text(
-                                    'in Arbeit …',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                  ),
-                                ),
-                              if (hatEcBelege)
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: Text(
-                                    '${belegeWithData == 1 ? '1 Beleg' : '$belegeWithData Belege'} / ${TagesabschlussFormatierung.formatiereEuro(ecGesamtCent)}',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppFarben.appBarRot,
-                                    ),
-                                  ),
-                                ),
-                              if (!hatEcBelege)
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppFarben.appBarRot,
-                                    foregroundColor: Colors.white,
-                                    disabledBackgroundColor:
-                                        AppFarben.appBarRot,
-                                    disabledForegroundColor: Colors.white,
-                                    shape: const CircleBorder(),
-                                    padding: const EdgeInsets.all(8),
-                                    minimumSize: const Size(36, 36),
-                                    tapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                  ),
-                                  onPressed: _scanLaeuft
-                                      ? null
-                                      : () => _starteEcBelegScan(),
-                                  child: _scanLaeuft
-                                      ? const SizedBox(
-                                          width: 18,
-                                          height: 18,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : const Icon(Icons.camera_alt_outlined,
-                                          size: 20),
-                                ),
-                              if (hatEcBelege) ...<Widget>[
-                                const SizedBox(width: 2),
-                                SizedBox(
-                                  width: 36,
-                                  height: 36,
-                                  child: IconButton(
-                                    tooltip: 'Kartendaten löschen',
-                                    padding: EdgeInsets.zero,
-                                    onPressed: _loescheKartenDaten,
-                                    icon: const Icon(
-                                      Icons.delete_outline,
-                                      size: 20,
-                                      color: AppFarben.appBarRot,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(width: 4),
-                              Icon(
-                                _ecKachelAufgeklappt
-                                    ? Icons.expand_less
-                                    : Icons.expand_more,
-                              ),
-                              const SizedBox(width: 4),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (_ecKachelAufgeklappt) ...<Widget>[
-                        const Divider(height: 1),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: <Widget>[
-                              if (!hatEcBelege)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: Text.rich(
-                                    TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                      children: <InlineSpan>[
-                                        const TextSpan(
-                                          text: 'Beleg fehlt oder ist '
-                                              'unlesbar? Fehlende Felder '
-                                              'unten einfach manuell '
-                                              'eintragen. Tippe auf ',
-                                        ),
-                                        TextSpan(
-                                          text: 'Belegdaten bearbeiten',
-                                          style: const TextStyle(
-                                            color: AppFarben.appBarRot,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                          recognizer:
-                                              _belegdatenBearbeitenRecognizer
-                                                ..onTap = () =>
-                                                    FocusScope.of(context)
-                                                        .requestFocus(
-                                                            _ecBelegLabelFocusNode[
-                                                                0]),
-                                        ),
-                                        const TextSpan(text: '.'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              if (hatEcBelege)
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: OutlinedButton(
-                                    onPressed: _scanLaeuft
-                                        ? null
-                                        : _ecBelegHinzufuegen,
-                                    child: const Text(
-                                      '+ Weiteren Beleg hinzufügen',
-                                    ),
-                                  ),
-                                ),
-                              if (_ecBelegController.length == 1) ...<Widget>[
-                                // 1-Beleg-Modus: flaches Layout
-                                if (_scanHatStattgefunden.isNotEmpty &&
-                                    _scanHatStattgefunden[0] &&
-                                    _zahlungsartZeilen.isNotEmpty &&
-                                    !_zahlungsartZeilen[0].any((ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing) &&
-                                    !_subKachelTidUnleserlich(0))
-                                  // Read-Modus nach Scan
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 6),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Text(
-                                            _ecBelegLabels[0].isNotEmpty
-                                                ? 'Terminal: ${_ecBelegLabels[0]}'
-                                                : '—',
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        if (_ecBelegeCent[0] > 0)
-                                          Text(
-                                            TagesabschlussFormatierung
-                                                .formatiereEuro(_ecBelegeCent[0]),
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                      ],
-                                    ),
-                                  )
-                                else
-                                  // Edit-Modus: Terminal-ID-Eingabe
-                                  Padding(
-                                  padding: const EdgeInsets.only(bottom: 6),
-                                  child: TextField(
-                                          controller: _ecBelegLabelController[0],
-                                          focusNode: _ecBelegLabelFocusNode[0],
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: _ecBelegLabelFocusNode[0].hasFocus
-                                                ? Colors.black
-                                                : null,
-                                          ),
-                                          cursorColor: _ecBelegLabelFocusNode[0].hasFocus
-                                              ? Colors.black
-                                              : null,
-                                          textInputAction:
-                                              _textInputActionFuerSchritt2(_ecBelegLabelFocusNode[0]),
-                                          decoration: InputDecoration(
-                                            hintText: _subKachelTidUnleserlich(0)
-                                                ? 'Terminal-ID?'
-                                                : 'Terminal-ID',
-                                            hintStyle: TextStyle(
-                                              fontSize: 15,
-                                              color: _ecBelegLabelFocusNode[0].hasFocus
-                                                  ? Colors.transparent
-                                                  : (_subKachelTidUnleserlich(0)
-                                                      ? Colors.red
-                                                      : null),
-                                            ),
-                                            errorText: _pflichtfeldFehlertext(
-                                              feldBeruehrt: _ecBelegLabel1Beruehrt,
-                                              controller: _ecBelegLabelController[0],
-                                              fehlertext: 'Terminal-ID eingeben',
-                                            ),
-                                            errorBorder: const OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.red),
-                                            ),
-                                            focusedErrorBorder: const OutlineInputBorder(
-                                              borderSide: BorderSide(color: Colors.red, width: 2),
-                                            ),
-                                            border: const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot)),
-                                            isDense: true,
-                                            filled: _ecBelegLabelFocusNode[0].hasFocus,
-                                            fillColor: _ecBelegLabelFocusNode[0].hasFocus
-                                                ? AppFarben.fokusFarbe
-                                                : null,
-                                            contentPadding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 6,
-                                            ),
-                                            suffixIconConstraints: const BoxConstraints(
-                                              minWidth: 0,
-                                              minHeight: 0,
-                                              maxWidth: 32,
-                                              maxHeight: 32,
-                                            ),
-                                            suffixIcon: _ecBelegLabelController[0].text.isEmpty
-                                                ? null
-                                                : IconButton(
-                                                    constraints: const BoxConstraints(),
-                                                    padding: EdgeInsets.zero,
-                                                    icon: Icon(
-                                                      Icons.close,
-                                                      size: 18,
-                                                      color: _ecBelegLabelFocusNode[0].hasFocus
-                                                          ? Colors.black
-                                                          : null,
-                                                    ),
-                                                    onPressed: () {
-                                                      _ecBelegLabelController[0].clear();
-                                                      setState(() { _ecBelegLabels[0] = ''; });
-                                                      _speichereEntwurf();
-                                                      _ecBelegLabelFocusNode[0].requestFocus();
-                                                    },
-                                                  ),
-                                          ),
-                                          onSubmitted: (_) =>
-                                              _beiEingabeAbgeschlossenSchritt2(_ecBelegLabelFocusNode[0]),
-                                          onChanged: (String wert) {
-                                            setState(() {
-                                              _letzteAenderung = DateTime.now();
-                                              _ecBelegLabels[0] = wert;
-                                              _ecBelegLabel1Beruehrt = true;
-                                            });
-                                            _speichereEntwurf();
-                                          },
-                                        ),
-                                ),
-                                if (_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0])
-                                  _baueMetadatenBlock(0),
-                                if (_zahlungsartZeilen.isNotEmpty && _zahlungsartZeilen[0].isNotEmpty)
-                                  _baueZahlungsartenTabelle(0),
-                              ] else ...<Widget>[
+    final bool ecBeleg0ZeigeReadModus =
+        _scanHatStattgefunden.isNotEmpty &&
+        _scanHatStattgefunden[0] &&
+        _zahlungsartZeilen.isNotEmpty &&
+        !_zahlungsartZeilen[0].any(
+          (ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing,
+        ) &&
+        !_subKachelTidUnleserlich(0);
+    final Widget belegInhalt = _ecBelegController.length == 1
+        ? Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Schritt2EcBelegTerminalIdZeile(
+                zeigeReadModus: ecBeleg0ZeigeReadModus,
+                label: _ecBelegLabels[0],
+                betragCent: _ecBelegeCent[0],
+                controller: _ecBelegLabelController[0],
+                focusNode: _ecBelegLabelFocusNode[0],
+                hintUnleserlich: _subKachelTidUnleserlich(0),
+                fehlermeldungText: _pflichtfeldFehlertext(
+                  feldBeruehrt: _ecBelegLabel1Beruehrt,
+                  controller: _ecBelegLabelController[0],
+                  fehlertext: 'Terminal-ID eingeben',
+                ),
+                textInputActionErmitteln: _textInputActionFuerSchritt2,
+                beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt2,
+                onChanged: _beiEcBelegLabel1Geaendert,
+                onLoeschen: _ecBelegLabel1Loeschen,
+              ),
+              if (_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0])
+                _baueMetadatenBlock(0),
+              if (_zahlungsartZeilen.isNotEmpty &&
+                  _zahlungsartZeilen[0].isNotEmpty)
+                _baueZahlungsartenTabelle(0),
+            ],
+          )
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
                                 // 2+-Beleg-Modus: Sub-Kacheln
                                 for (int i = _ecBelegController.length - 1; i >= 0; i--)
                                   KeyedSubtree(
@@ -2930,14 +2679,31 @@ class _TagesabschlussSchritt2SeiteState
                                       ),
                                     ),
                                   ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+            ],
+          );
+    final Widget ecBelegeKachel = _gruppenOrchestrierung.baueEcBelegeKachel(
+      aufgeklappt: _ecKachelAufgeklappt,
+      onToggleAufgeklappt: _ecKachelToggleAufgeklappt,
+      zeigeManuellEingebenLink:
+          !_ecKachelAufgeklappt && _ersterBelegIstLeer(),
+      onManuellEingebenTap: _manuellEingebenTap,
+      scanLaeuft: _scanLaeuft,
+      hatEcBelege: hatEcBelege,
+      belegeWithData: belegeWithData,
+      ecGesamtCent: ecGesamtCent,
+      onScanStarten: () => _starteEcBelegScan(),
+      onKartenDatenLoeschen: _loescheKartenDaten,
+      belegdatenBearbeitenRecognizer: _belegdatenBearbeitenRecognizer,
+      onBelegdatenBearbeitenTap: () => FocusScope.of(
+        context,
+      ).requestFocus(_ecBelegLabelFocusNode[0]),
+      onEcBelegHinzufuegen: _ecBelegHinzufuegen,
+      belegInhalt: belegInhalt,
+    );
+    final List<Widget> ecBelegeBereich = <Widget>[
+                Stack(
+                  children: <Widget>[
+                ecBelegeKachel,
                   if (_scanLaeuft)
                     Positioned.fill(
                       child: Container(

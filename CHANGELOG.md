@@ -9,6 +9,34 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 348: Sub-Run 3 der build()-Zerlegungs-Serie für Schritt 2
+  (Fortsetzung von Run 345/347). Zwei neue Dateien: sections/
+  schritt2_ec_beleg_terminal_id_zeile.dart
+  (Schritt2EcBelegTerminalIdZeile — Read-Modus-Anzeige nach Scan
+  bzw. editierbares Terminal-ID-Feld, wiederverwendbar für einen
+  künftigen Sub-Run 4 an den Sub-Kacheln) und sections/
+  schritt2_ec_belege_kachel_section.dart
+  (Schritt2EcBelegeKachelSection — Card mit Header
+  [Aufklapp-Toggle, Scan-Button, Kartendaten-löschen-Button,
+  Belege-/Summe-Anzeige] und aufklappbarem Body-Rahmen
+  [Leerzustand-Hinweis bzw. "Weiteren Beleg hinzufügen"-Button]).
+  Der eigentliche Beleg-Inhalt (1-Beleg-Modus oder Sub-Kacheln im
+  2+-Beleg-Modus) wird als fertiges Widget durchgereicht
+  (belegInhalt) — die Sub-Kacheln-Schleife für den 2+-Beleg-Modus
+  bleibt unverändert und wird erst in einem künftigen Sub-Run 4
+  ausgelagert (größter/riskantester Block, enthält eine async
+  Lösch-Bestätigung mit mounted-Check). Vier neue kleine Methoden
+  in der Page (_ecKachelToggleAufgeklappt, _manuellEingebenTap,
+  _beiEcBelegLabel1Geaendert, _ecBelegLabel1Loeschen) ersetzen
+  bisherige Inline-Closures. Schritt2GruppenOrchestrierung um
+  baueEcBelegeKachel() erweitert. Reines Verschieben ohne
+  Verhaltensänderung. Version 0.9.22+348. Dateien:
+  tagesabschluss_schritt2_seite.dart, ui/
+  schritt2_gruppen_orchestrierung.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart; neu: sections/
+  schritt2_ec_beleg_terminal_id_zeile.dart, sections/
+  schritt2_ec_belege_kachel_section.dart.
+
 - Run 347: Sub-Run 2 der build()-Zerlegungs-Serie für Schritt 2
   (Fortsetzung von Run 345). Neue Datei sections/
   schritt2_kino_soll_ausgaben_section.dart: Schritt2KinoSollUnd-
