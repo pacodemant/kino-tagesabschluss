@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 
 // Zweck: Eigenstaendiger Helfer fuer Fokus-Reihenfolge, Feld-
@@ -15,6 +16,7 @@ class Schritt2FokusHelper {
     required List<FocusNode> ausgabenBetragFocusNode,
     required List<FocusNode> ecBelegLabelFocusNode,
     required List<FocusNode> kartenartenGesamtBetragFocusNode,
+    required List<List<ZahlungsartZeile>> zahlungsartZeilen,
   }) {
     final List<FocusNode> ausgabenFokus = <FocusNode>[];
     for (int i = 0; i < ausgabenLabelFocusNode.length; i++) {
@@ -26,6 +28,13 @@ class Schritt2FokusHelper {
     final List<FocusNode> ecBelegFokus = <FocusNode>[];
     for (int i = 0; i < ecBelegLabelFocusNode.length; i++) {
       ecBelegFokus.add(ecBelegLabelFocusNode[i]);
+      if (i < zahlungsartZeilen.length) {
+        for (final ZahlungsartZeile zeile in zahlungsartZeilen[i]) {
+          if (zeile.zustand == ZeilenZustand.editing) {
+            ecBelegFokus.add(zeile.betragFocusNode);
+          }
+        }
+      }
       if (i < kartenartenGesamtBetragFocusNode.length) {
         ecBelegFokus.add(kartenartenGesamtBetragFocusNode[i]);
       }
@@ -136,6 +145,7 @@ class Schritt2FokusHelper {
     required List<TextEditingController> ecBelegLabelController,
     required List<FocusNode> kartenartenGesamtBetragFocusNode,
     required List<TextEditingController> kartenartenGesamtBetragController,
+    required List<List<ZahlungsartZeile>> zahlungsartZeilen,
     required List<FocusNode> fokusReihenfolge,
   }) {
     final Map<FocusNode, TextEditingController> lookup =
@@ -152,6 +162,10 @@ class Schritt2FokusHelper {
           for (int i = 0; i < kartenartenGesamtBetragFocusNode.length; i++)
             kartenartenGesamtBetragFocusNode[i]:
                 kartenartenGesamtBetragController[i],
+          for (final List<ZahlungsartZeile> zeilen in zahlungsartZeilen)
+            for (final ZahlungsartZeile zeile in zeilen)
+              if (zeile.zustand == ZeilenZustand.editing)
+                zeile.betragFocusNode: zeile.betragController,
         };
     for (final FocusNode fn in fokusReihenfolge) {
       if (lookup[fn]?.text.isEmpty ?? true) {
@@ -175,31 +189,5 @@ class Schritt2FokusHelper {
         FocusScope.of(context).requestFocus(ziel);
       }
     });
-  }
-
-  void aktualisiereScrollPfeil({
-    required bool mounted,
-    required bool ecKachelAufgeklappt,
-    required bool ecKachelZeigeScrollPfeil,
-    required GlobalKey ecKachelKey,
-    required ScrollController scrollController,
-    required void Function(bool wert) setzeZeigeScrollPfeil,
-  }) {
-    if (!mounted) return;
-    if (!ecKachelAufgeklappt) {
-      if (ecKachelZeigeScrollPfeil) {
-        setzeZeigeScrollPfeil(false);
-      }
-      return;
-    }
-    final RenderObject? ro = ecKachelKey.currentContext?.findRenderObject();
-    if (ro == null || !ro.attached) return;
-    final RenderAbstractViewport? vp = RenderAbstractViewport.maybeOf(ro);
-    if (vp == null || !scrollController.hasClients) return;
-    final double scrollFuerUnten = vp.getOffsetToReveal(ro, 1.0).offset;
-    final bool zeige = scrollFuerUnten > scrollController.offset + 1.0;
-    if (zeige != ecKachelZeigeScrollPfeil) {
-      setzeZeigeScrollPfeil(zeige);
-    }
   }
 }

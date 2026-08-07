@@ -10,6 +10,7 @@ import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
@@ -94,6 +95,7 @@ class _TagesabschlussSchritt2SeiteState
   static const double _devToolsPanelHoehe = 68;
   final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
   final Schritt2FokusHelper _fokusHelper = const Schritt2FokusHelper();
+  final Schritt2ScrollHelper _scrollHelper = const Schritt2ScrollHelper();
 
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
@@ -175,8 +177,6 @@ class _TagesabschlussSchritt2SeiteState
 
   // EC-Kachel
   bool _ecKachelAufgeklappt = false;
-  final GlobalKey _ecKachelKey = GlobalKey();
-  bool _ecKachelZeigeScrollPfeil = false;
 
   @override
   void initState() {
@@ -191,7 +191,7 @@ class _TagesabschlussSchritt2SeiteState
         _devModusAktiv = aktiv;
       });
     });
-    _scrollController.addListener(_aktualisiereScrollPfeil);
+    _scrollController.addListener(_beiScrollAenderung);
     for (final FocusNode fn in <FocusNode>[
       _scanDatumFocusNode,
       _scanUhrzeitFocusNode,
@@ -221,14 +221,12 @@ class _TagesabschlussSchritt2SeiteState
       for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
         for (final ZahlungsartZeile zeile in belegZeilen) {
           zeile.betragFocusNode.addListener(() { if (mounted) setState(() {}); });
+          _verknuepfeFeldNavigationSchritt2(zeile.betragFocusNode);
         }
       }
       await _ladeEntwurf();
       if (!mounted) return;
       _autoFokussiereNachLaden();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _aktualisiereScrollPfeil();
-      });
     });
   }
 
@@ -832,7 +830,12 @@ class _TagesabschlussSchritt2SeiteState
             ? <ZahlungsartZeile>[]
             : List<ZahlungsartZeile>.generate(
                 _zahlungsartKonfigNamen.length,
-                (int i) => ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
+                (int i) {
+                  final ZahlungsartZeile zeile =
+                      ZahlungsartZeile(_zahlungsartKonfigNamen[i]);
+                  _verknuepfeFeldNavigationSchritt2(zeile.betragFocusNode);
+                  return zeile;
+                },
               ),
       );
       _scanHatStattgefunden.add(false);
@@ -943,7 +946,12 @@ class _TagesabschlussSchritt2SeiteState
             ? <ZahlungsartZeile>[]
             : List<ZahlungsartZeile>.generate(
                 _zahlungsartKonfigNamen.length,
-                (int i) => ZahlungsartZeile(_zahlungsartKonfigNamen[i]),
+                (int i) {
+                  final ZahlungsartZeile zeile =
+                      ZahlungsartZeile(_zahlungsartKonfigNamen[i]);
+                  _verknuepfeFeldNavigationSchritt2(zeile.betragFocusNode);
+                  return zeile;
+                },
               ),
       );
       _scanHatStattgefunden.add(false);
@@ -1373,9 +1381,6 @@ class _TagesabschlussSchritt2SeiteState
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _aktualisiereScrollPfeil();
-        });
         final String betrag = geprueftes.gesamtBetragCent != null
             ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
             : '—';
@@ -1625,6 +1630,7 @@ class _TagesabschlussSchritt2SeiteState
             ZahlungsartZeile('', istUnbekannt: true);
         unbekannte.betragFocusNode
             .addListener(() { if (mounted) setState(() {}); });
+        _verknuepfeFeldNavigationSchritt2(unbekannte.betragFocusNode);
         unbekannte.betragCentWert = z.betragCent;
         _setzeControllerText(
           unbekannte.betragController,
@@ -1720,6 +1726,7 @@ class _TagesabschlussSchritt2SeiteState
       ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
       ecBelegLabelFocusNode: _ecBelegLabelFocusNode,
       kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
+      zahlungsartZeilen: _zahlungsartZeilen,
     );
   }
 
@@ -1786,6 +1793,7 @@ class _TagesabschlussSchritt2SeiteState
       ecBelegLabelController: _ecBelegLabelController,
       kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
       kartenartenGesamtBetragController: _kartenartenGesamtBetragController,
+      zahlungsartZeilen: _zahlungsartZeilen,
       fokusReihenfolge: _fokusReihenfolgeSchritt2(),
     );
   }
@@ -1798,17 +1806,21 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  void _aktualisiereScrollPfeil() {
-    _fokusHelper.aktualisiereScrollPfeil(
-      mounted: mounted,
-      ecKachelAufgeklappt: _ecKachelAufgeklappt,
-      ecKachelZeigeScrollPfeil: _ecKachelZeigeScrollPfeil,
-      ecKachelKey: _ecKachelKey,
-      scrollController: _scrollController,
-      setzeZeigeScrollPfeil: (bool wert) =>
-          setState(() => _ecKachelZeigeScrollPfeil = wert),
-    );
+  void _beiScrollAenderung() {
+    if (!mounted) return;
+    setState(() {});
   }
+
+  void _beiScrollMetrikAenderung() {
+    if (!mounted) return;
+    setState(() {});
+  }
+
+  bool _istDownButtonSichtbar() =>
+      _scrollHelper.istDownButtonSichtbar(scrollController: _scrollController);
+
+  void _scrolleNachUnten() =>
+      _scrollHelper.scrolleNachUnten(scrollController: _scrollController);
 
   void _loescheKartenDaten() {
     setState(() {
@@ -2217,21 +2229,28 @@ class _TagesabschlussSchritt2SeiteState
           ],
         ),
       ),
-      child: Theme(
-        data: Theme.of(context).copyWith(
-          inputDecorationTheme: const InputDecorationTheme(
-            isDense: true,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 8,
-              vertical: 6,
+      child: Stack(
+        children: <Widget>[
+          Theme(
+            data: Theme.of(context).copyWith(
+              inputDecorationTheme: const InputDecorationTheme(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 6,
+                ),
+              ),
             ),
-          ),
-        ),
-        child: ListView(
-          controller: _scrollController,
-          padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          children: <Widget>[
+            child: NotificationListener<ScrollMetricsNotification>(
+              onNotification: (ScrollMetricsNotification notification) {
+                _beiScrollMetrikAenderung();
+                return false;
+              },
+              child: ListView(
+                controller: _scrollController,
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                children: <Widget>[
                 IgnorePointer(
                   ignoring: !_devModusAktiv || !_devToolsOffen,
                   child: AnimatedOpacity(
@@ -2543,7 +2562,6 @@ class _TagesabschlussSchritt2SeiteState
                 Stack(
                   children: <Widget>[
                 Card(
-                  key: _ecKachelKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
@@ -2556,9 +2574,6 @@ class _TagesabschlussSchritt2SeiteState
                             if (wirdGeoeffnet) {
                               _oeffneErstenBelegZurBearbeitungFallsLeer();
                             }
-                          });
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted) _aktualisiereScrollPfeil();
                           });
                         },
                         child: Padding(
@@ -2583,7 +2598,6 @@ class _TagesabschlussSchritt2SeiteState
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) {
                                       if (mounted) {
-                                        _aktualisiereScrollPfeil();
                                         FocusScope.of(context).requestFocus(
                                           _ecBelegLabelFocusNode.first,
                                         );
@@ -3206,34 +3220,6 @@ class _TagesabschlussSchritt2SeiteState
                     ],
                   ),
                 ),
-                    if (_ecKachelAufgeklappt && _ecKachelZeigeScrollPfeil)
-                      Positioned(
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        height: 44,
-                        child: IgnorePointer(
-                          child: Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: <Color>[
-                                  Color(0x00FFFFFF),
-                                  Color(0xD0FFFFFF),
-                                ],
-                              ),
-                            ),
-                            alignment: Alignment.bottomCenter,
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: const Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 28,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
                   if (_scanLaeuft)
                     Positioned.fill(
                       child: Container(
@@ -3313,7 +3299,28 @@ class _TagesabschlussSchritt2SeiteState
                 ),
                 const SizedBox(height: 8),
               ],
-        ),
+              ),
+            ),
+          ),
+          if (_istDownButtonSichtbar())
+            Positioned(
+              left: 12,
+              bottom: 12,
+              child: SizedBox(
+                width: 36,
+                height: 36,
+                child: FloatingActionButton(
+                  heroTag: 'step2DownFab',
+                  mini: true,
+                  elevation: 2,
+                  backgroundColor: Colors.black87,
+                  foregroundColor: Colors.white,
+                  onPressed: _scrolleNachUnten,
+                  child: const Icon(Icons.keyboard_arrow_down),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

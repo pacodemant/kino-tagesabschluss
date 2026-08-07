@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.17+343 · Run 343
+Version: 0.9.18+344 · Run 344
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -136,7 +136,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 343)
+## Laufender Entwicklungsstand (Run 344)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -541,6 +541,16 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   (Paco-Wunsch, mit diesem Commit statt eigenem Sub-Run). Nächster
   geplanter Teilschritt der Serie: build()-Baum selbst (~1200
   Zeilen) analog zu Schritt 1s sections/-Ordner zerlegen.
+- Run 344 ✅ Zwei beim Testen von Run 343 entdeckte, vorbestehende
+  Lücken behoben (keine Regression aus Run 343). (A) Kartenart-
+  Betragsfelder (Girocard usw.) waren nie Teil der Fokus-/Weiter-
+  Reihenfolge — Schritt2FokusHelper.fokusReihenfolge()/
+  .erstesLeeresFeld() um zahlungsartZeilen erweitert (nur
+  zustand==editing), _verknuepfeFeldNavigationSchritt2() an allen 4
+  Erzeugungsstellen ergänzt. (B) Auf Paco-Wunsch: seitenweiter
+  Down-Button wie in Schritt 1 übernommen (neue Datei
+  schritt2_scroll_helper.dart), dafür den alten, nicht tippbaren
+  Fade-Pfeil an der EC-Kachel (seit Run 274a) komplett entfernt.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

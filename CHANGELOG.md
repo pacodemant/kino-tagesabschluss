@@ -9,6 +9,36 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 344: Zwei beim Testen von Run 343 entdeckte Lücken behoben
+  (keine Regression aus Run 343, beide bestanden schon vorher —
+  siehe Diagnose im Chat). (A) Kartenart-Betragsfelder (Girocard
+  usw.) fehlten komplett in der Fokus-/Weiter-Reihenfolge: TID
+  sprang direkt zum Gesamtbetrag, "Weiter" aus einer Kartenart-Zeile
+  landete zufällig beim ersten Feld der Seite (Flutters Default-
+  Traversal, da kein eigenes onKeyEvent gesetzt war). Fix:
+  Schritt2FokusHelper.fokusReihenfolge() und .erstesLeeresFeld()
+  um zahlungsartZeilen-Parameter erweitert (nur Zeilen mit
+  zustand==editing zählen); _verknuepfeFeldNavigationSchritt2() wird
+  jetzt an allen 4 Erzeugungsstellen von ZahlungsartZeile aufgerufen
+  (initState-Konfigladung, _ecBelegHinzufuegen,
+  _setzeEcBelegAnzahl, _preFillZahlungsartenFromScan). (B) Auf
+  Paco-Wunsch: Seitenweiter Down-Button wie in Schritt 1 (kleiner
+  FloatingActionButton unten links, springt ans Seitenende)
+  übernommen — neue Datei tagesabschluss_schritt2/scroll/
+  schritt2_scroll_helper.dart (Schritt2ScrollHelper, analog zu
+  schritt1_scroll_helper.dart). ListView jetzt in
+  NotificationListener<ScrollMetricsNotification> + Stack gewickelt.
+  Der bisherige passive Fade-Pfeil am unteren Rand der EC-Kachel
+  (seit Run 274a, nicht tippbar, RenderObject-basiert) wurde dafür
+  komplett entfernt (Feld _ecKachelZeigeScrollPfeil, _ecKachelKey,
+  Methode _aktualisiereScrollPfeil, zugehörige Helper-Methode in
+  Schritt2FokusHelper, alle Aufrufstellen, der Positioned-Block in
+  build()) — auf Paco-Wunsch durch den neuen Button ersetzt statt
+  parallel behalten. Version 0.9.18+344. Dateien:
+  tagesabschluss_schritt2_seite.dart, schritt2_fokus_helper.dart,
+  neu: schritt2_scroll_helper.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 343: Architektur-Refactor (Fortsetzung der Run-341-Serie):
   Fokus-Reihenfolge/-Navigation und Scroll-zu-Feld-/Scroll-Pfeil-
   Logik aus tagesabschluss_schritt2_seite.dart nach neuer Datei
