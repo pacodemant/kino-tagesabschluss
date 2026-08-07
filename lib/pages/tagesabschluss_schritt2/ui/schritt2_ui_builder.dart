@@ -470,6 +470,28 @@ class Schritt2KartenartenZeile extends StatelessWidget {
                 enabledBorder: roteBorder,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                suffixIconConstraints: const BoxConstraints(
+                  minWidth: 0,
+                  minHeight: 0,
+                  maxWidth: 24,
+                  maxHeight: 24,
+                ),
+                suffixIcon: zeile.betragController.text.isEmpty
+                    ? null
+                    : IconButton(
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        icon: Icon(
+                          Icons.clear,
+                          size: 14,
+                          color: clearIconFarbe(zeile.betragFocusNode.hasFocus),
+                        ),
+                        onPressed: baueClearAktion(
+                          controller: zeile.betragController,
+                          onChanged: onBetragGeaendert,
+                          focusNode: zeile.betragFocusNode,
+                        ),
+                      ),
               ),
               onChanged: onBetragGeaendert,
             ),
@@ -792,6 +814,28 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 5),
                           errorText: gesamtBetragErrorText,
+                          suffixIconConstraints: const BoxConstraints(
+                            minWidth: 0,
+                            minHeight: 0,
+                            maxWidth: 24,
+                            maxHeight: 24,
+                          ),
+                          suffixIcon: gesamtBetragController.text.isEmpty
+                              ? null
+                              : IconButton(
+                                  constraints: const BoxConstraints(),
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    Icons.clear,
+                                    size: 14,
+                                    color: clearIconFarbe(gesamtBetragHatFokus),
+                                  ),
+                                  onPressed: baueClearAktion(
+                                    controller: gesamtBetragController,
+                                    onChanged: onGesamtBetragGeaendert,
+                                    focusNode: gesamtBetragFocusNode,
+                                  ),
+                                ),
                         ),
                         onChanged: onGesamtBetragGeaendert,
                       ),

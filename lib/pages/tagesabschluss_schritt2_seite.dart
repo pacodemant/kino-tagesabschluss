@@ -2478,7 +2478,8 @@ class _TagesabschlussSchritt2SeiteState
                                                                   overflow: TextOverflow.ellipsis,
                                                                 )),
                                                     ),
-                                                    if (_ecBelegeCent[i] > 0)
+                                                    if (_ecBelegeCent[i] > 0) ...<Widget>[
+                                                      const SizedBox(width: 8),
                                                       Padding(
                                                         padding: const EdgeInsets.only(right: 4),
                                                         child: Text(
@@ -2490,6 +2491,7 @@ class _TagesabschlussSchritt2SeiteState
                                                           ),
                                                         ),
                                                       ),
+                                                    ],
                                                     // Kamera-Button: gefüllt, Kino-Rot
                                                     SizedBox(
                                                       width: 32,

@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 349: Zwei kleine UI-Korrekturen aus dem Run-348-Test.
+  (A) Konsistenz-Wunsch: Die Wertefelder für Kartenzahlungen
+  (Kartenart-Betrag je Zeile in Schritt2KartenartenZeile sowie das
+  Gesamtbetrag-Feld in Schritt2ZahlungsartenTabelle,
+  ui/schritt2_ui_builder.dart) hatten als einzige Geldfelder der
+  App keinen "×"-Löschen-Button, da sie als rohe TextFields gebaut
+  sind statt über BetragCentEingabefeld (das serienmäßig einen
+  Clear-Chip zeigt). Jetzt beide mit suffixIcon + baueClearAktion()/
+  clearIconFarbe() aus dem bereits vorhandenen
+  eingabefeld_clear_helper.dart ergänzt — analog zum bestehenden
+  Muster in Schritt2MetadatenEditZeile. (B) In den EC-Beleg-
+  Sub-Kacheln (2+-Beleg-Modus, tagesabschluss_schritt2_seite.dart)
+  stieß das Expanded-Terminal-ID-Feld im Titel direkt an den
+  Gesamtbetrag. Neues SizedBox(width: 8) zwischen Feld und Betrag
+  sorgt für sichtbaren Abstand (Feld wird dadurch faktisch etwas
+  schmaler, da Expanded den verbleibenden Platz beansprucht).
+  Version 0.9.23+349. Dateien: ui/schritt2_ui_builder.dart,
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 348: Sub-Run 3 der build()-Zerlegungs-Serie für Schritt 2
   (Fortsetzung von Run 345/347). Zwei neue Dateien: sections/
   schritt2_ec_beleg_terminal_id_zeile.dart
