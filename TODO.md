@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 346 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 347 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -206,10 +206,11 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       hat das Grundgerüst (sections/, ui/schritt2_gruppen_
       orchestrierung.dart, ui/schritt2_body_content.dart) angelegt und
       vier einfache Abschnitte ausgelagert (Kopf, Personalgetränke-
-      gebont, Differenz-im-Anfangsbestand, Anmerkung). Offene
-      Sub-Runs: (2) Kino/Bistro-SOLL + Ausgaben inkl. neuem
-      Ausgaben-Zeile-Widget, (3) EC-Belege-Kachel Header +
-      1-Beleg-Modus inkl. neuem Terminal-ID-Zeile-Widget, (4)
+      gebont, Differenz-im-Anfangsbestand, Anmerkung). Sub-Run 2
+      (Run 347) hat Kino/Bistro-SOLL + Ausgaben ausgelagert (neues
+      Leaf-Widget für die Ausgaben-Zeile). Offene Sub-Runs: (3)
+      EC-Belege-Kachel Header + 1-Beleg-Modus inkl. neuem
+      Terminal-ID-Zeile-Widget, (4)
       EC-Belege Sub-Kacheln im 2+-Beleg-Modus (größter/riskantester
       Block, Lösch-Dialog mit mounted-Check), (5) finale Verdrahtung
       (build() auf ~150–200 Zeilen zusammenstreichen, Smoke-Test).

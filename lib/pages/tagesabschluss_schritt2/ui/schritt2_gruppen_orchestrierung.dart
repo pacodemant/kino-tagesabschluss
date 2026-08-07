@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_anmerkung_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_differenz_anfangsbestand_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kino_soll_ausgaben_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kopf_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_personalgetraenke_section.dart';
 
@@ -20,6 +21,21 @@ class Schritt2GruppenOrchestrierung {
     required TextEditingController anmerkungController,
     required FocusNode anmerkungFocusNode,
     required ValueChanged<String> beiAnmerkungGeaendert,
+    required Widget kinoSollEingabeZeile,
+    required Widget? bistroSollEingabeZeile,
+    required List<int> ausgabenIds,
+    required List<TextEditingController> ausgabenLabelController,
+    required List<FocusNode> ausgabenLabelFocusNode,
+    required List<TextEditingController> ausgabenBetragController,
+    required List<FocusNode> ausgabenBetragFocusNode,
+    required TextInputAction Function(FocusNode focusNode)
+    textInputActionFuerSchritt2,
+    required void Function(FocusNode focusNode) beiEingabeAbgeschlossen,
+    required void Function(int index, String wert) onAusgabenLabelGeaendert,
+    required void Function(int index) onAusgabenLabelGeloescht,
+    required void Function(int index, String wert) onAusgabenBetragGeaendert,
+    required void Function(int index) onAusgabeEntfernen,
+    required VoidCallback onAusgabeHinzufuegen,
   }) {
     return Schritt2SectionWidgets(
       kopf: Schritt2KopfSection(
@@ -33,6 +49,22 @@ class Schritt2GruppenOrchestrierung {
       differenzAnfangsbestand: Schritt2DifferenzAnfangsbestandSection(
         eingabeZeile: differenzAnfangsbestandEingabeZeile,
         onVorzeichenToggle: vorzeichenToggleDifferenz,
+      ),
+      kinoSollUndAusgaben: Schritt2KinoSollUndAusgabenSection(
+        kinoSollEingabeZeile: kinoSollEingabeZeile,
+        bistroSollEingabeZeile: bistroSollEingabeZeile,
+        ausgabenIds: ausgabenIds,
+        ausgabenLabelController: ausgabenLabelController,
+        ausgabenLabelFocusNode: ausgabenLabelFocusNode,
+        ausgabenBetragController: ausgabenBetragController,
+        ausgabenBetragFocusNode: ausgabenBetragFocusNode,
+        textInputActionFuerSchritt2: textInputActionFuerSchritt2,
+        beiEingabeAbgeschlossen: beiEingabeAbgeschlossen,
+        onAusgabenLabelGeaendert: onAusgabenLabelGeaendert,
+        onAusgabenLabelGeloescht: onAusgabenLabelGeloescht,
+        onAusgabenBetragGeaendert: onAusgabenBetragGeaendert,
+        onAusgabeEntfernen: onAusgabeEntfernen,
+        onAusgabeHinzufuegen: onAusgabeHinzufuegen,
       ),
       anmerkung: Schritt2AnmerkungSection(
         controller: anmerkungController,
@@ -49,11 +81,13 @@ class Schritt2SectionWidgets {
     required this.kopf,
     required this.personalgetraenke,
     required this.differenzAnfangsbestand,
+    required this.kinoSollUndAusgaben,
     required this.anmerkung,
   });
 
   final Widget kopf;
   final Widget personalgetraenke;
   final Widget differenzAnfangsbestand;
+  final Widget kinoSollUndAusgaben;
   final Widget anmerkung;
 }

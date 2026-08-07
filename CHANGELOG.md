@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 347: Sub-Run 2 der build()-Zerlegungs-Serie für Schritt 2
+  (Fortsetzung von Run 345). Neue Datei sections/
+  schritt2_kino_soll_ausgaben_section.dart: Schritt2KinoSollUnd-
+  AusgabenSection (Card mit Kino-SOLL/Bistro-SOLL + Ausgaben-Liste)
+  und neues privates Leaf-Widget _Schritt2AusgabenZeile (Bezeichnung-
+  Feld + Betrag-Feld + optionaler Löschen-Button pro Ausgabe,
+  analog zum Umschläge-Zeilen-Muster aus Schritt 1). Kino-SOLL- und
+  Bistro-SOLL-Eingabezeilen werden weiterhin per _baueEingabeZeile()
+  in der Page gebaut und als fertige Widgets übergeben (Bistro-SOLL
+  null bei kino_04, analog zum Fokus-Filter aus Run 346). Drei neue
+  kleine Callback-Methoden in der Page
+  (_beiAusgabenLabelGeaendert, _ausgabenLabelLoeschen,
+  _beiAusgabenBetragGeaendert) ersetzen die bisherigen Inline-
+  Closures. Schritt2GruppenOrchestrierung.baueSections() und
+  Schritt2SectionWidgets um kinoSollUndAusgaben erweitert. Reines
+  Verschieben ohne Verhaltensänderung. Version 0.9.21+347. Dateien:
+  tagesabschluss_schritt2_seite.dart, ui/
+  schritt2_gruppen_orchestrierung.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart; neu: sections/
+  schritt2_kino_soll_ausgaben_section.dart.
+
 - Run 346: Zwei beim Testen von Run 345 entdeckte, vorbestehende
   Next-Button-Bugs behoben (keine Regression aus Run 345, siehe
   Diagnose davor). (A) Der "Next"-Button im Footer von Schritt 1

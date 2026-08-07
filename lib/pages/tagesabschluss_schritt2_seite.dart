@@ -23,7 +23,6 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
-import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -979,6 +978,31 @@ class _TagesabschlussSchritt2SeiteState
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
     }
+  }
+
+  void _beiAusgabenLabelGeaendert(int index, String wert) {
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      _ausgabenLabels[index] = wert;
+    });
+    _speichereEntwurf();
+  }
+
+  void _ausgabenLabelLoeschen(int index) {
+    _ausgabenLabelController[index].clear();
+    setState(() {
+      _ausgabenLabels[index] = '';
+    });
+    _speichereEntwurf();
+    _ausgabenLabelFocusNode[index].requestFocus();
+  }
+
+  void _beiAusgabenBetragGeaendert(int index, String wert) {
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      _ausgabenBetrageCent[index] = _parsiereBetragCent(wert);
+    });
+    _speichereEntwurf();
   }
 
   void _ausgabeHinzufuegen() {
@@ -2203,199 +2227,55 @@ class _TagesabschlussSchritt2SeiteState
         _anmerkung = wert;
         _speichereEntwurf();
       },
+      kinoSollEingabeZeile: _baueEingabeZeile(
+        label: 'Kino SOLL',
+        controller: _kinoSollController,
+        focusNode: _kinoSollFocusNode,
+        fehlermeldungText: _pflichtfeldFehlertext(
+          feldBeruehrt: _kinoSollBeruehrt,
+          controller: _kinoSollController,
+        ),
+        onChanged: (String wert) {
+          setState(() {
+            _letzteAenderung = DateTime.now();
+            _kinoSollBeruehrt = true;
+            _kinoSollCent = _parsiereBetragCent(wert);
+          });
+          _speichereEntwurf();
+        },
+      ),
+      bistroSollEingabeZeile: widget.kinoId == 'kino_04'
+          ? null
+          : _baueEingabeZeile(
+              label: 'Bistro SOLL',
+              controller: _bistroSollController,
+              focusNode: _bistroSollFocusNode,
+              fehlermeldungText: _pflichtfeldFehlertext(
+                feldBeruehrt: _bistroSollBeruehrt,
+                controller: _bistroSollController,
+              ),
+              onChanged: (String wert) {
+                setState(() {
+                  _letzteAenderung = DateTime.now();
+                  _bistroSollBeruehrt = true;
+                  _bistroSollCent = _parsiereBetragCent(wert);
+                });
+                _speichereEntwurf();
+              },
+            ),
+      ausgabenIds: _ausgabenIds,
+      ausgabenLabelController: _ausgabenLabelController,
+      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
+      ausgabenBetragController: _ausgabenBetragController,
+      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
+      textInputActionFuerSchritt2: _textInputActionFuerSchritt2,
+      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt2,
+      onAusgabenLabelGeaendert: _beiAusgabenLabelGeaendert,
+      onAusgabenLabelGeloescht: _ausgabenLabelLoeschen,
+      onAusgabenBetragGeaendert: _beiAusgabenBetragGeaendert,
+      onAusgabeEntfernen: _ausgabeEntfernen,
+      onAusgabeHinzufuegen: _ausgabeHinzufuegen,
     );
-    final Widget kinoSollUndAusgabenBereich =
-                Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          _baueEingabeZeile(
-                            label: 'Kino SOLL',
-                            controller: _kinoSollController,
-                            focusNode: _kinoSollFocusNode,
-                            fehlermeldungText: _pflichtfeldFehlertext(
-                              feldBeruehrt: _kinoSollBeruehrt,
-                              controller: _kinoSollController,
-                            ),
-                            onChanged: (String wert) {
-                              setState(() {
-                                _letzteAenderung = DateTime.now();
-                                _kinoSollBeruehrt = true;
-                                _kinoSollCent = _parsiereBetragCent(wert);
-                              });
-                              _speichereEntwurf();
-                            },
-                          ),
-                          if (widget.kinoId != 'kino_04')
-                            _baueEingabeZeile(
-                              label: 'Bistro SOLL',
-                              controller: _bistroSollController,
-                              focusNode: _bistroSollFocusNode,
-                              fehlermeldungText: _pflichtfeldFehlertext(
-                                feldBeruehrt: _bistroSollBeruehrt,
-                                controller: _bistroSollController,
-                              ),
-                              onChanged: (String wert) {
-                                setState(() {
-                                  _letzteAenderung = DateTime.now();
-                                  _bistroSollBeruehrt = true;
-                                  _bistroSollCent = _parsiereBetragCent(wert);
-                                });
-                                _speichereEntwurf();
-                              },
-                            ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 4, bottom: 8),
-                            child: Text(
-                              'Ausgaben (optional)',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          for (int i = 0;
-                              i < _ausgabenBetragController.length;
-                              i++)
-                            KeyedSubtree(
-                              key: ValueKey<int>(_ausgabenIds[i]),
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 10),
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: TextField(
-                                        controller: _ausgabenLabelController[i],
-                                        focusNode: _ausgabenLabelFocusNode[i],
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: _ausgabenLabelFocusNode[i].hasFocus
-                                              ? Colors.black
-                                              : null,
-                                        ),
-                                        cursorColor: _ausgabenLabelFocusNode[i].hasFocus
-                                            ? Colors.black
-                                            : null,
-                                        textInputAction:
-                                            _textInputActionFuerSchritt2(
-                                          _ausgabenLabelFocusNode[i],
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: 'Bezeichnung (optional)',
-                                          hintStyle: TextStyle(
-                                            fontSize: 15,
-                                            color: _ausgabenLabelFocusNode[i].hasFocus ? Colors.transparent : null,
-                                          ),
-                                          border: const OutlineInputBorder(borderSide: BorderSide(color: AppFarben.appBarRot)),
-                                          isDense: true,
-                                          filled: _ausgabenLabelFocusNode[i].hasFocus,
-                                          fillColor: _ausgabenLabelFocusNode[i].hasFocus
-                                              ? AppFarben.fokusFarbe
-                                              : null,
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 6,
-                                          ),
-                                          suffixIconConstraints: const BoxConstraints(
-                                            minWidth: 0,
-                                            minHeight: 0,
-                                            maxWidth: 32,
-                                            maxHeight: 32,
-                                          ),
-                                          suffixIcon: _ausgabenLabelController[i].text.isEmpty
-                                              ? null
-                                              : IconButton(
-                                                  constraints: const BoxConstraints(),
-                                                  padding: EdgeInsets.zero,
-                                                  icon: Icon(
-                                                    Icons.close,
-                                                    size: 18,
-                                                    color: _ausgabenLabelFocusNode[i].hasFocus
-                                                        ? Colors.black
-                                                        : null,
-                                                  ),
-                                                  onPressed: () {
-                                                    _ausgabenLabelController[i].clear();
-                                                    setState(() {
-                                                      _ausgabenLabels[i] = '';
-                                                    });
-                                                    _speichereEntwurf();
-                                                    _ausgabenLabelFocusNode[i].requestFocus();
-                                                  },
-                                                ),
-                                        ),
-                                        onSubmitted: (_) =>
-                                            _beiEingabeAbgeschlossenSchritt2(
-                                          _ausgabenLabelFocusNode[i],
-                                        ),
-                                        onChanged: (String wert) {
-                                          setState(() {
-                                            _letzteAenderung = DateTime.now();
-                                            _ausgabenLabels[i] = wert;
-                                          });
-                                          _speichereEntwurf();
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    SizedBox(
-                                      width: 155,
-                                      child: BetragCentEingabefeld(
-                                        textController:
-                                            _ausgabenBetragController[i],
-                                        focusNode: _ausgabenBetragFocusNode[i],
-                                        textInputAction:
-                                            _textInputActionFuerSchritt2(
-                                          _ausgabenBetragFocusNode[i],
-                                        ),
-                                        onSubmitted: (_) =>
-                                            _beiEingabeAbgeschlossenSchritt2(
-                                          _ausgabenBetragFocusNode[i],
-                                        ),
-                                        onChanged: (String wert) {
-                                          setState(() {
-                                            _letzteAenderung = DateTime.now();
-                                            _ausgabenBetrageCent[i] =
-                                                _parsiereBetragCent(wert);
-                                          });
-                                          _speichereEntwurf();
-                                        },
-                                        schriftgroesse: 15,
-                                        hinweisText: '0,00 €',
-                                        mitKomma: false,
-                                      ),
-                                    ),
-                                    if (_ausgabenBetragController.length >
-                                        1) ...<Widget>[
-                                      const SizedBox(width: 6),
-                                      IconButton(
-                                        onPressed: () =>
-                                            _ausgabeEntfernen(i),
-                                        icon: const Icon(
-                                          Icons.delete_outline,
-                                        ),
-                                        tooltip: 'Ausgabe entfernen',
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: OutlinedButton.icon(
-                              onPressed: _ausgabeHinzufuegen,
-                              icon: const Icon(Icons.add),
-                              label: const Text('+ Ausgabe hinzufügen'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
     final List<Widget> ecBelegeBereich = <Widget>[
                 Stack(
                   children: <Widget>[
@@ -3198,7 +3078,7 @@ class _TagesabschlussSchritt2SeiteState
         kopfSection: sections.kopf,
         personalgetraenkeSection: sections.personalgetraenke,
         differenzAnfangsbestandSection: sections.differenzAnfangsbestand,
-        kinoSollUndAusgabenBereich: kinoSollUndAusgabenBereich,
+        kinoSollUndAusgabenBereich: sections.kinoSollUndAusgaben,
         ecBelegeBereich: ecBelegeBereich,
         anmerkungSection: sections.anmerkung,
         downButtonSichtbar: _istDownButtonSichtbar(),
