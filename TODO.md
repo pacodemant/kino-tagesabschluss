@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 349 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 350 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -212,12 +212,15 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       die EC-Belege-Kachel (Header + aufklappbarer Body-Rahmen +
       1-Beleg-Modus) ausgelagert, inkl. neuem wiederverwendbarem
       Terminal-ID-Zeile-Widget (sections/
-      schritt2_ec_beleg_terminal_id_zeile.dart). Offene Sub-Runs:
-      (4) EC-Belege Sub-Kacheln im 2+-Beleg-Modus (größter/
-      riskantester Block, Lösch-Dialog mit mounted-Check — aktuell
-      unverändert als belegInhalt-Widget durchgereicht), (5) finale
-      Verdrahtung (build() auf ~150–200 Zeilen zusammenstreichen,
-      Smoke-Test).
+      schritt2_ec_beleg_terminal_id_zeile.dart). Sub-Run 4 (Run 350)
+      hat den größten/riskantesten Block ausgelagert: die
+      EC-Belege-Sub-Kacheln im 2+-Beleg-Modus inkl. der async
+      Lösch-Bestätigung (sections/schritt2_ec_beleg_sub_kacheln.dart)
+      — damit ist die komplette EC-Belege-Kachel aus build()
+      entfernt. Offener Sub-Run: (5) finale Verdrahtung (build() auf
+      ~150–200 Zeilen zusammenstreichen, alte private
+      `_baue…`-Reste in tagesabschluss_schritt2_seite.dart prüfen
+      und ggf. entfernen, Gesamt-Smoke-Test der Seite).
       Schritt 3 (825 Zeilen) optional danach als kleinerer
       Abschluss-Run.
 

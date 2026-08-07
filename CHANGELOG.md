@@ -9,6 +9,37 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 350: Sub-Run 4 der build()-Zerlegungs-Serie für Schritt 2
+  (Fortsetzung von Run 345/347/348) — größter/riskantester Block der
+  Serie. Neue Datei sections/schritt2_ec_beleg_sub_kacheln.dart:
+  Schritt2EcBelegSubKacheln (Liste, rendert die Sub-Kacheln-Schleife
+  für den 2+-Beleg-Modus) und privates Leaf-Widget
+  _Schritt2EcBelegSubKachel (eine einzelne Sub-Kachel: Titel mit
+  Terminal-ID/Betrag/Scan-Button/Löschen-Button, aufklappbarer Body
+  mit Zahlungsarten-Tabelle/Metadaten-Block). Die async
+  Lösch-Bestätigung (showDialog + Guard gegen Verwendung nach
+  Await) lebt jetzt direkt im Leaf-Widget und nutzt dafür
+  context.mounted statt des bisherigen State.mounted der Page —
+  beides prüft dieselbe Bedingung (Element noch im Baum), nur
+  bezogen auf den jeweils eigenen BuildContext; funktional
+  gleichwertig, keine Verhaltensänderung. Zahlungsarten-Tabelle/
+  Metadaten-Block werden weiterhin als Builder-Funktionen (nicht
+  vorgebaute Widgets) durchgereicht, damit sie wie zuvor nur bei
+  aufgeklappter Kachel mit vorhandenen Zahlungsart-Zeilen tatsächlich
+  gebaut werden (keine unnötige Arbeit bei eingeklappten Kacheln).
+  Vier neue kleine Methoden in der Page
+  (_ecUnterkachelToggleAufgeklappt, _beiSubKachelTidGeaendert,
+  _hatZahlungsartZeilenFuerBeleg, _hatScanStattgefundenFuerBeleg,
+  _ecUnterkachelFertig) ersetzen bisherige Inline-Closures.
+  Schritt2GruppenOrchestrierung um baueEcBelegSubKacheln()
+  erweitert. Reines Verschieben ohne Verhaltensänderung — damit ist
+  die komplette EC-Belege-Kachel (Sub-Runs 3+4) jetzt aus der
+  Page-build()-Methode ausgelagert. Version 0.9.24+350. Dateien:
+  tagesabschluss_schritt2_seite.dart, ui/
+  schritt2_gruppen_orchestrierung.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart; neu: sections/
+  schritt2_ec_beleg_sub_kacheln.dart.
+
 - Run 349: Zwei kleine UI-Korrekturen aus dem Run-348-Test.
   (A) Konsistenz-Wunsch: Die Wertefelder für Kartenzahlungen
   (Kartenart-Betrag je Zeile in Schritt2KartenartenZeile sowie das
