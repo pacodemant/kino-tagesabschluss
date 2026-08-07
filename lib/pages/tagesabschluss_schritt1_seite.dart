@@ -159,6 +159,7 @@ class _TagesabschlussSchritt1SeiteState
     }
     _baueFocusNodeSectionMap();
     _scrollController.addListener(_beiScrollAenderung);
+    FocusManager.instance.addListener(_beiGlobalerFokusAenderung);
     DevModus.istAktiv().then((bool aktiv) {
       setState(() {
         _devModusAktiv = aktiv;
@@ -169,6 +170,13 @@ class _TagesabschlussSchritt1SeiteState
         _autoFokussiereNachLaden();
       }
     });
+  }
+
+  // Loest bei jeder Fokusaenderung im gesamten App-Baum ein setState aus,
+  // damit z.B. der Next-Button auch ohne virtuelle Tastatur (Desktop-
+  // Browser) sichtbar wird, sobald ein Feld fokussiert ist.
+  void _beiGlobalerFokusAenderung() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -182,6 +190,7 @@ class _TagesabschlussSchritt1SeiteState
     disposeFocusNodes(_umschlagBetragFocusNode);
     disposeFocusNodes(_umschlagBezeichnungFocusNode);
     _scrollController.removeListener(_beiScrollAenderung);
+    FocusManager.instance.removeListener(_beiGlobalerFokusAenderung);
     _scrollController.dispose();
     super.dispose();
   }
@@ -957,6 +966,12 @@ class _TagesabschlussSchritt1SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+    // Ohne virtuelle Tastatur (z.B. Desktop-Browser) bleibt tastaturOffen
+    // immer false -> zusaetzlich pruefen, ob ein Feld aus der Fokus-
+    // Reihenfolge aktuell fokussiert ist, damit der Next-Button auch dort
+    // erscheint.
+    final bool feldFokussiert = _fokusReihenfolgeSchritt1()
+        .any((FocusNode fn) => fn.hasFocus);
     final bool devToolsStickySichtbar = _devModusAktiv && _devToolsOffen;
     final Schritt1GruppenWidgets gruppen = _gruppenOrchestrierung.baueGruppen(
       scheine: _scheine,
@@ -1059,7 +1074,7 @@ class _TagesabschlussSchritt1SeiteState
         height: 36,
         child: Row(
           children: <Widget>[
-            if (tastaturOffen) ...<Widget>[
+            if (tastaturOffen || feldFokussiert) ...<Widget>[
               TapRegion(
                 groupId: EditableText,
                 child: ElevatedButton(

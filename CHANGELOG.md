@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 346: Zwei beim Testen von Run 345 entdeckte, vorbestehende
+  Next-Button-Bugs behoben (keine Regression aus Run 345, siehe
+  Diagnose davor). (A) Der "Next"-Button im Footer von Schritt 1
+  UND Schritt 2 wurde bisher nur angezeigt, wenn die native
+  virtuelle Tastatur eingeblendet war (`tastaturOffen`, basiert auf
+  `MediaQuery.viewInsets.bottom`) — im Desktop-Browser gibt es keine
+  virtuelle Tastatur, der Button erschien dort nie. Fix: neue
+  Bedingung `feldFokussiert` (prüft, ob ein FocusNode aus der
+  jeweiligen Fokus-Reihenfolge `hasFocus` ist) zusätzlich zu
+  `tastaturOffen` verknüpft; damit ein Fokuswechsel überhaupt einen
+  Rebuild auslöst, wurde in beiden Seiten ein globaler
+  `FocusManager.instance`-Listener (`_beiGlobalerFokusAenderung`) in
+  initState registriert und in dispose() wieder entfernt. (B) Auf
+  der Kino-SOLL-Card von Schritt 2 sprang "Weiter" beim Standort
+  Cinema Ostertor (kino_04, Kürzel "CO" — hat kein Bistro-SOLL-Feld)
+  von Kino-SOLL aus nirgendwohin: `Schritt2FokusHelper.
+  fokusReihenfolge()` nahm `bistroSollFocusNode` bedingungslos in die
+  Liste auf, obwohl das zugehörige Widget für kino_04 gar nicht
+  gebaut wird. Fix: `_fokusReihenfolgeSchritt2()` in
+  tagesabschluss_schritt2_seite.dart entfernt `_bistroSollFocusNode`
+  jetzt aus der vom Helper gelieferten Liste, wenn
+  `widget.kinoId == 'kino_04'` ist (analog zum bereits vorhandenen
+  Kupfer-Rollen-Filtermuster aus Schritt 1). Version 0.9.20+346.
+  Dateien: tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 345: Sub-Run 1 der build()-Zerlegungs-Serie für Schritt 2
   (analog zu Schritt 1s sections/-Ordner, Fortsetzung der
   Run-341–344-Serie). Neuer Ordner

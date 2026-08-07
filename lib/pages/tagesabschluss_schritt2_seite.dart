@@ -196,6 +196,7 @@ class _TagesabschlussSchritt2SeiteState
       });
     });
     _scrollController.addListener(_beiScrollAenderung);
+    FocusManager.instance.addListener(_beiGlobalerFokusAenderung);
     for (final FocusNode fn in <FocusNode>[
       _scanDatumFocusNode,
       _scanUhrzeitFocusNode,
@@ -234,8 +235,16 @@ class _TagesabschlussSchritt2SeiteState
     });
   }
 
+  // Loest bei jeder Fokusaenderung im gesamten App-Baum ein setState aus,
+  // damit z.B. der Next-Button auch ohne virtuelle Tastatur (Desktop-
+  // Browser) sichtbar wird, sobald ein Feld fokussiert ist.
+  void _beiGlobalerFokusAenderung() {
+    if (mounted) setState(() {});
+  }
+
   @override
   void dispose() {
+    FocusManager.instance.removeListener(_beiGlobalerFokusAenderung);
     _kinoSollController.dispose();
     _bistroSollController.dispose();
     _differenzAnfangsbestandController.dispose();
@@ -1722,7 +1731,7 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt2() {
-    return _fokusHelper.fokusReihenfolge(
+    final List<FocusNode> reihenfolge = _fokusHelper.fokusReihenfolge(
       differenzAnfangsbestandFocusNode: _differenzAnfangsbestandFocusNode,
       kinoSollFocusNode: _kinoSollFocusNode,
       bistroSollFocusNode: _bistroSollFocusNode,
@@ -1732,6 +1741,13 @@ class _TagesabschlussSchritt2SeiteState
       kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
       zahlungsartZeilen: _zahlungsartZeilen,
     );
+    // Kein Bistro-SOLL-Feld fuer dieses Kino gebaut (siehe Kino-SOLL-
+    // Card) -> zugehoerigen FocusNode aus der Fokus-Reihenfolge nehmen,
+    // sonst landet "Weiter" auf einem FocusNode ohne Widget im Baum.
+    if (widget.kinoId == 'kino_04') {
+      reihenfolge.remove(_bistroSollFocusNode);
+    }
+    return reihenfolge;
   }
 
   bool _istLetztesFeldSchritt2(FocusNode focusNode) {
@@ -2127,6 +2143,12 @@ class _TagesabschlussSchritt2SeiteState
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+    // Ohne virtuelle Tastatur (z.B. Desktop-Browser) bleibt tastaturOffen
+    // immer false -> zusaetzlich pruefen, ob ein Feld aus der Fokus-
+    // Reihenfolge aktuell fokussiert ist, damit der Next-Button auch dort
+    // erscheint.
+    final bool feldFokussiert = _fokusReihenfolgeSchritt2()
+        .any((FocusNode fn) => fn.hasFocus);
     final int ecGesamtCent = _ecBelegeCent.fold(0, (int a, int b) => a + b);
     final bool hatEcBelege = _scanHatStattgefunden.any((bool b) => b) || ecGesamtCent > 0;
     final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
@@ -3111,7 +3133,7 @@ class _TagesabschlussSchritt2SeiteState
         height: 36,
         child: Row(
           children: <Widget>[
-            if (tastaturOffen) ...<Widget>[
+            if (tastaturOffen || feldFokussiert) ...<Widget>[
               TapRegion(
                 groupId: EditableText,
                 child: ElevatedButton(
