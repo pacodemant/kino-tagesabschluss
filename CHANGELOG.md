@@ -9,6 +9,34 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 345: Sub-Run 1 der build()-Zerlegungs-Serie für Schritt 2
+  (analog zu Schritt 1s sections/-Ordner, Fortsetzung der
+  Run-341–344-Serie). Neuer Ordner
+  lib/pages/tagesabschluss_schritt2/sections/ mit vier eigenständigen
+  Section-Widgets: Schritt2KopfSection (Titel + Datum),
+  Schritt2PersonalgetraenkeSection, Schritt2DifferenzAnfangsbestand-
+  Section, Schritt2AnmerkungSection. Neue Datei ui/
+  schritt2_gruppen_orchestrierung.dart (Schritt2GruppenOrchestrierung,
+  const, analog zu schritt1_gruppen_orchestrierung.dart) baut diese
+  vier Sections aus State/Callbacks der Page zusammen
+  (Schritt2SectionWidgets-Bündel). Neue Datei ui/
+  schritt2_body_content.dart (Schritt2BodyContent) übernimmt den
+  äußeren Stack/Theme/NotificationListener/ListView/Down-Button-Aufbau
+  vollständig von der Page — noch nicht ausgelagerte Bereiche (Kino-/
+  Bistro-SOLL+Ausgaben-Card, EC-Belege-Kachel) werden unverändert als
+  fertige Widgets/Widget-Liste durchgereicht und in den nächsten
+  Sub-Runs schrittweise ersetzt. Reines Verschieben ohne
+  Verhaltensänderung — build() in tagesabschluss_schritt2_seite.dart
+  schrumpft dadurch nur um die vier extrahierten Abschnitte, der Rest
+  bleibt inhaltlich identisch (nur als lokale Variablen vor dem
+  return statt inline in der Widget-Liste). Version 0.9.19+345.
+  Dateien: tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart; neu: sections/
+  schritt2_kopf_section.dart, schritt2_personalgetraenke_section.dart,
+  schritt2_differenz_anfangsbestand_section.dart,
+  schritt2_anmerkung_section.dart, ui/
+  schritt2_gruppen_orchestrierung.dart, ui/schritt2_body_content.dart.
+
 - Run 344: Zwei beim Testen von Run 343 entdeckte Lücken behoben
   (keine Regression aus Run 343, beide bestanden schon vorher —
   siehe Diagnose im Chat). (A) Kartenart-Betragsfelder (Girocard

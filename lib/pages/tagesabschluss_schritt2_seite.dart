@@ -12,6 +12,8 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_f
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
@@ -96,6 +98,8 @@ class _TagesabschlussSchritt2SeiteState
   final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
   final Schritt2FokusHelper _fokusHelper = const Schritt2FokusHelper();
   final Schritt2ScrollHelper _scrollHelper = const Schritt2ScrollHelper();
+  final Schritt2GruppenOrchestrierung _gruppenOrchestrierung =
+      const Schritt2GruppenOrchestrierung();
 
   final TextEditingController _kinoSollController = TextEditingController();
   final TextEditingController _bistroSollController = TextEditingController();
@@ -2128,245 +2132,57 @@ class _TagesabschlussSchritt2SeiteState
     final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
         .where((int j) => _ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty)
         .length;
-    return TagesabschlussScaffold(
-      backgroundColor: AppFarben.seitenHintergrund,
-      appBar: TagesabschlussHeader(
-        schrittNummer: 2,
-        schrittTitel: 'Belege',
-        kinoName: widget.kinoName,
-        onTap: _zeigeSchrittSlider,
-        actions: <Widget>[
-          const HelpButton(
-            helpText:
-                'Trage alle Belege ein: Kino- und Bistro-Soll aus dem '
-                'Kassensystem, Ausgaben mit Quittung sowie EC-Belege. '
-                'Daraus errechnet sich die Differenz zum gezählten Bargeld.',
+    final Widget devToolsBereich = IgnorePointer(
+      ignoring: !_devModusAktiv || !_devToolsOffen,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 140),
+        opacity: _devModusAktiv && _devToolsOffen ? 1 : 0,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
+          child: Schritt2DevToolsPanel(
+            onAutoFill: _autoFillDev,
+            onLeeren: _leereAlleFelderDev,
           ),
-          TextButton(
-            onPressed: _bestaetigeUndLeereEingaben,
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.white70,
-              textStyle: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-            child: const Text('Clear'),
-          ),
-          if (_devModusAktiv)
-            IconButton(
-              tooltip: 'DEV-Tools',
-              onPressed: () {
-                setState(() {
-                  _devToolsOffen = !_devToolsOffen;
-                });
-              },
-              icon: Icon(
-                _devToolsOffen
-                    ? Icons.developer_mode
-                    : Icons.developer_mode_outlined,
-              ),
-            ),
-        ],
-      ),
-      footerChild: SizedBox(
-        height: 36,
-        child: Row(
-          children: <Widget>[
-            if (tastaturOffen) ...<Widget>[
-              TapRegion(
-                groupId: EditableText,
-                child: ElevatedButton(
-                  onPressed: () => _navHelper.springeZuNaechstem(
-                    context: context,
-                    reihenfolge: _fokusReihenfolgeSchritt2(),
-                    fokussiere: _fokussiereFeldSchritt2,
-                    vorwaerts: true,
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppFarben.appBarRot,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  child: const Text('Next'),
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
-            Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  if (!_personalgetraenkeGebot) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text('Personalgetränke gebont?')),
-                    );
-                    return;
-                  }
-                  _weiterZuSchritt3();
-                },
-                style: _personalgetraenkeGebot
-                    ? AppFarben.footerButtonStyle
-                    : ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade600,
-                        foregroundColor: Colors.grey.shade300,
-                      ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const <Widget>[
-                      Icon(Icons.arrow_forward),
-                      SizedBox(width: 6),
-                      Text('Übertrag auf Umschlag (3/4)'),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
-      child: Stack(
-        children: <Widget>[
-          Theme(
-            data: Theme.of(context).copyWith(
-              inputDecorationTheme: const InputDecorationTheme(
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 6,
-                ),
-              ),
-            ),
-            child: NotificationListener<ScrollMetricsNotification>(
-              onNotification: (ScrollMetricsNotification notification) {
-                _beiScrollMetrikAenderung();
-                return false;
-              },
-              child: ListView(
-                controller: _scrollController,
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                children: <Widget>[
-                IgnorePointer(
-                  ignoring: !_devModusAktiv || !_devToolsOffen,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 140),
-                    opacity: _devModusAktiv && _devToolsOffen ? 1 : 0,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 140),
-                      height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
-                      child: Schritt2DevToolsPanel(
-                        onAutoFill: _autoFillDev,
-                        onLeeren: _leereAlleFelderDev,
-                      ),
-                    ),
-                  ),
-                ),
-                Text(
-                  'Kassenabrechnung ${widget.kinoName}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 20,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _kopfDatumUhrzeit(),
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        const Text('Personalgetränke gebont?'),
-                        Checkbox(
-                          value: _personalgetraenkeGebot,
-                          onChanged: (bool? v) {
-                            setState(
-                                () => _personalgetraenkeGebot = v ?? false);
-                            _speichereEntwurf();
-                          },
-                          activeColor: Colors.green,
-                          shape: const CircleBorder(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: <Widget>[
-                          const Expanded(
-                            child: Text(
-                              'Differenz im Anfangsbestand',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 120,
-                            child: _baueEingabeZeile(
-                              label: 'Differenz im Anfangsbestand',
-                              controller: _differenzAnfangsbestandController,
-                              focusNode: _differenzAnfangsbestandFocusNode,
-                              zeigeLabel: false,
-                              zeigeAdditionsButton: false,
-                              farbeNachWert: _differenzAnfangsbestandCent,
-                              onChanged: (String wert) {
-                                setState(() {
-                                  _letzteAenderung = DateTime.now();
-                                  final int absolutWert =
-                                      _parsiereBetragCent(wert);
-                                  final bool istNegativ =
-                                      _differenzAnfangsbestandCent < 0;
-                                  _differenzAnfangsbestandCent = istNegativ
-                                      ? -absolutWert
-                                      : absolutWert;
-                                });
-                                _speichereEntwurf();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          OutlinedButton(
-                            onPressed: _vorzeichenToggleDifferenz,
-                            style: OutlinedButton.styleFrom(
-                              minimumSize: const Size(48, 0),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              side: BorderSide(color: Colors.grey.shade400),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8)),
-                              ),
-                            ),
-                            child: const Text(
-                              '±',
-                              style: TextStyle(
-                                fontSize: 22,
-                                color: Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 10),
+    );
+    final Schritt2SectionWidgets sections =
+        _gruppenOrchestrierung.baueSections(
+      kinoName: widget.kinoName,
+      kopfDatumUhrzeit: _kopfDatumUhrzeit(),
+      personalgetraenkeGebot: _personalgetraenkeGebot,
+      beiPersonalgetraenkeGeaendert: (bool? v) {
+        setState(() => _personalgetraenkeGebot = v ?? false);
+        _speichereEntwurf();
+      },
+      differenzAnfangsbestandEingabeZeile: _baueEingabeZeile(
+        label: 'Differenz im Anfangsbestand',
+        controller: _differenzAnfangsbestandController,
+        focusNode: _differenzAnfangsbestandFocusNode,
+        zeigeLabel: false,
+        zeigeAdditionsButton: false,
+        farbeNachWert: _differenzAnfangsbestandCent,
+        onChanged: (String wert) {
+          setState(() {
+            _letzteAenderung = DateTime.now();
+            final int absolutWert = _parsiereBetragCent(wert);
+            final bool istNegativ = _differenzAnfangsbestandCent < 0;
+            _differenzAnfangsbestandCent =
+                istNegativ ? -absolutWert : absolutWert;
+          });
+          _speichereEntwurf();
+        },
+      ),
+      vorzeichenToggleDifferenz: _vorzeichenToggleDifferenz,
+      anmerkungController: _anmerkungController,
+      anmerkungFocusNode: _anmerkungFocusNode,
+      beiAnmerkungGeaendert: (String wert) {
+        _anmerkung = wert;
+        _speichereEntwurf();
+      },
+    );
+    final Widget kinoSollUndAusgabenBereich =
                 Card(
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -2557,8 +2373,8 @@ class _TagesabschlussSchritt2SeiteState
                         ],
                       ),
                     ),
-                  ),
-                const SizedBox(height: 10),
+                  );
+    final List<Widget> ecBelegeBereich = <Widget>[
                 Stack(
                   children: <Widget>[
                 Card(
@@ -3252,75 +3068,120 @@ class _TagesabschlussSchritt2SeiteState
                       child: const Text('Weiteren Beleg hinzufügen'),
                     ),
                   ),
-                const SizedBox(height: 8),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Hinweis / Kommentar (optional)',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        TextField(
-                          controller: _anmerkungController,
-                          focusNode: _anmerkungFocusNode,
-                          maxLines: null,
-                          textCapitalization: TextCapitalization.sentences,
-                          cursorColor:
-                              _anmerkungFocusNode.hasFocus ? Colors.black : null,
-                          style: TextStyle(
-                            color: _anmerkungFocusNode.hasFocus
-                                ? Colors.black
-                                : null,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: 'Anmerkungen',
-                            isDense: true,
-                            filled: _anmerkungFocusNode.hasFocus,
-                            fillColor: _anmerkungFocusNode.hasFocus
-                                ? AppFarben.fokusFarbe
-                                : null,
-                            border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (String wert) {
-                            _anmerkung = wert;
-                            _speichereEntwurf();
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-              ],
-              ),
-            ),
+    ];
+    return TagesabschlussScaffold(
+      backgroundColor: AppFarben.seitenHintergrund,
+      appBar: TagesabschlussHeader(
+        schrittNummer: 2,
+        schrittTitel: 'Belege',
+        kinoName: widget.kinoName,
+        onTap: _zeigeSchrittSlider,
+        actions: <Widget>[
+          const HelpButton(
+            helpText:
+                'Trage alle Belege ein: Kino- und Bistro-Soll aus dem '
+                'Kassensystem, Ausgaben mit Quittung sowie EC-Belege. '
+                'Daraus errechnet sich die Differenz zum gezählten Bargeld.',
           ),
-          if (_istDownButtonSichtbar())
-            Positioned(
-              left: 12,
-              bottom: 12,
-              child: SizedBox(
-                width: 36,
-                height: 36,
-                child: FloatingActionButton(
-                  heroTag: 'step2DownFab',
-                  mini: true,
-                  elevation: 2,
-                  backgroundColor: Colors.black87,
-                  foregroundColor: Colors.white,
-                  onPressed: _scrolleNachUnten,
-                  child: const Icon(Icons.keyboard_arrow_down),
-                ),
+          TextButton(
+            onPressed: _bestaetigeUndLeereEingaben,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white70,
+              textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            ),
+            child: const Text('Clear'),
+          ),
+          if (_devModusAktiv)
+            IconButton(
+              tooltip: 'DEV-Tools',
+              onPressed: () {
+                setState(() {
+                  _devToolsOffen = !_devToolsOffen;
+                });
+              },
+              icon: Icon(
+                _devToolsOffen
+                    ? Icons.developer_mode
+                    : Icons.developer_mode_outlined,
               ),
             ),
         ],
+      ),
+      footerChild: SizedBox(
+        height: 36,
+        child: Row(
+          children: <Widget>[
+            if (tastaturOffen) ...<Widget>[
+              TapRegion(
+                groupId: EditableText,
+                child: ElevatedButton(
+                  onPressed: () => _navHelper.springeZuNaechstem(
+                    context: context,
+                    reihenfolge: _fokusReihenfolgeSchritt2(),
+                    fokussiere: _fokussiereFeldSchritt2,
+                    vorwaerts: true,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppFarben.appBarRot,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text('Next'),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: ElevatedButton(
+                onPressed: () {
+                  if (!_personalgetraenkeGebot) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Personalgetränke gebont?')),
+                    );
+                    return;
+                  }
+                  _weiterZuSchritt3();
+                },
+                style: _personalgetraenkeGebot
+                    ? AppFarben.footerButtonStyle
+                    : ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.grey.shade300,
+                      ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const <Widget>[
+                      Icon(Icons.arrow_forward),
+                      SizedBox(width: 6),
+                      Text('Übertrag auf Umschlag (3/4)'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      child: Schritt2BodyContent(
+        scrollController: _scrollController,
+        devToolsBereich: devToolsBereich,
+        kopfSection: sections.kopf,
+        personalgetraenkeSection: sections.personalgetraenke,
+        differenzAnfangsbestandSection: sections.differenzAnfangsbestand,
+        kinoSollUndAusgabenBereich: kinoSollUndAusgabenBereich,
+        ecBelegeBereich: ecBelegeBereich,
+        anmerkungSection: sections.anmerkung,
+        downButtonSichtbar: _istDownButtonSichtbar(),
+        scrolleNachUnten: _scrolleNachUnten,
+        beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
       ),
     );
   }

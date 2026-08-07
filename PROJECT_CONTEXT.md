@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.18+344 · Run 344
+Version: 0.9.19+345 · Run 345
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -15,8 +15,9 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
     lib/                    → Flutter-App-Code
     lib/pages/              → Seiten (Screens)
     lib/pages/tagesabschluss_schritt1/  → Schritt-1-Untermodule (sections, ui, scroll, …)
-    lib/pages/tagesabschluss_schritt2/  → Schritt-2-Untermodule (seit Run 341,
-                                           bisher nur ui/ + models/, wächst weiter)
+    lib/pages/tagesabschluss_schritt2/  → Schritt-2-Untermodule (seit Run 341;
+                                           sections/, ui/, controller/, models/,
+                                           scroll/ — wächst weiter)
     lib/models/             → Datenmodelle
     lib/services/           → Services (BelegScan, API-Upload, Konfiguration, …)
     lib/storage/            → LokalerSpeicher (SharedPreferences-Wrapper)

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 344 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 345 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -200,11 +200,21 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       unter lib/pages/tagesabschluss_schritt2/ aufgeteilt — Run 341 hat
       die reinen UI-Bau-Methoden ausgelagert (→ 3381 Zeilen), Run 343
       die Fokus-/Navigations-/Scroll-Logik (→ controller/
-      schritt2_fokus_helper.dart). Als nächster Teilschritt geplant:
-      der build()-Baum selbst (aktuell ~1200 Zeilen in einer Methode)
-      analog zu Schritt 1s sections/-Ordner in eigene Abschnitts-
-      Widgets zerlegen. Schritt 3 (825 Zeilen) optional danach als
-      kleinerer Abschluss-Run.
+      schritt2_fokus_helper.dart). Der build()-Baum selbst (>1200
+      Zeilen) wird seit Run 345 in einer eigenen Sub-Run-Serie analog
+      zu Schritt 1s sections/-Ordner zerlegt: Sub-Run 1 (Run 345)
+      hat das Grundgerüst (sections/, ui/schritt2_gruppen_
+      orchestrierung.dart, ui/schritt2_body_content.dart) angelegt und
+      vier einfache Abschnitte ausgelagert (Kopf, Personalgetränke-
+      gebont, Differenz-im-Anfangsbestand, Anmerkung). Offene
+      Sub-Runs: (2) Kino/Bistro-SOLL + Ausgaben inkl. neuem
+      Ausgaben-Zeile-Widget, (3) EC-Belege-Kachel Header +
+      1-Beleg-Modus inkl. neuem Terminal-ID-Zeile-Widget, (4)
+      EC-Belege Sub-Kacheln im 2+-Beleg-Modus (größter/riskantester
+      Block, Lösch-Dialog mit mounted-Check), (5) finale Verdrahtung
+      (build() auf ~150–200 Zeilen zusammenstreichen, Smoke-Test).
+      Schritt 3 (825 Zeilen) optional danach als kleinerer
+      Abschluss-Run.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
