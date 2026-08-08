@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/pages/einstellungen/ui/einstellungen_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
@@ -59,6 +60,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   ];
 
   static const int _umschlagSlots = 3;
+
+  final EinstellungenGruppenOrchestrierung _gruppenOrchestrierung =
+      const EinstellungenGruppenOrchestrierung();
 
   final TextEditingController _wgCtrl = TextEditingController();
   /// Bleibt über neue State-Instanzen dieser Seite hinweg erhalten
@@ -1114,6 +1118,18 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       );
     }
 
+    final EinstellungenSectionWidgets einstellungenSections =
+        _gruppenOrchestrierung.baueSections(
+      kinoKuerzel: _aktiveKinoKuerzel,
+      getraenkelisteAufgeklappt: _getraenkelisteAufgeklappt,
+      onToggleGetraenkelisteAufgeklappt: () => setState(
+        () => _getraenkelisteAufgeklappt = !_getraenkelisteAufgeklappt,
+      ),
+      getraenkelisteInhalt: _baueGetraenkelisteInhalt(),
+      pwaInstallVerfuegbar: _pwaInstallVerfuegbar,
+      onPwaInstall: _starteInstallation,
+    );
+
     return Scaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
@@ -1141,78 +1157,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Card(
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    title: Text(
-                      _aktiveKinoKuerzel.isEmpty
-                          ? 'Getränkeliste'
-                          : 'Getränkeliste $_aktiveKinoKuerzel',
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Icon(
-                      _getraenkelisteAufgeklappt
-                          ? Icons.expand_less
-                          : Icons.expand_more,
-                    ),
-                    onTap: () => setState(
-                      () => _getraenkelisteAufgeklappt =
-                          !_getraenkelisteAufgeklappt,
-                    ),
-                  ),
-                  if (_getraenkelisteAufgeklappt) ...<Widget>[
-                    const Divider(height: 1),
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: Text(
-                        'Reihenfolge = Regal-Reihenfolge',
-                        style: TextStyle(fontSize: 11),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: _baueGetraenkelisteInhalt(),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          if (_pwaInstallVerfuegbar) ...<Widget>[
+          einstellungenSections.getraenkeliste,
+          if (einstellungenSections.pwaInstall != null) ...<Widget>[
             const SizedBox(height: 4),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        'App installieren',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Füge die App zum Home-Bildschirm hinzu, um sie wie eine native App zu nutzen.',
-                        style: TextStyle(fontSize: 13),
-                      ),
-                      const SizedBox(height: 12),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _starteInstallation,
-                          child: const Text('App installieren'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            einstellungenSections.pwaInstall!,
           ],
           Card(
             child: Column(

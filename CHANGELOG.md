@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 355: Sub-Run 1 einer neuen build()-Zerlegungs-Serie für
+  einstellungen_seite.dart (build() 453 Zeilen, kein sections/-
+  Ordner bisher, größter verbleibender Kandidat nach Schritt 1-3).
+  Grundgerüst lib/pages/einstellungen/ (sections/, ui/) angelegt,
+  analog zu tagesabschluss_schritt2/. Zwei einfache, eigenständige
+  Blöcke ausgelagert: EinstellungenGetraenkelisteSection (auf-/
+  zuklappbare Card, Inhalt weiterhin über die bestehende Methode
+  _baueGetraenkelisteInhalt() im State) und
+  EinstellungenPwaInstallSection (bedingte Install-Card). Neue
+  ui/einstellungen_gruppen_orchestrierung.dart bündelt beide
+  Sections (EinstellungenGruppenOrchestrierung.baueSections(...) →
+  EinstellungenSectionWidgets), analog zu
+  Schritt2GruppenOrchestrierung. build() dadurch von 453 auf
+  397 Zeilen geschrumpft. Die große PIN-geschützte Admin-Card
+  (5 unabhängige Bänder: Standort/Admin-Status, Wechselgeldbestand,
+  Flurbocash-Anbindung, KI-Belegscan-Konfiguration, Dev-Modus/
+  Testwerte) bleibt unverändert inline — Kandidat für die nächsten
+  Sub-Runs dieser Serie, analog zur EC-Belege-Kachel bei Schritt 2.
+  Reines Verschieben, keine Verhaltensänderung. Version 0.9.29+355.
+  Dateien: einstellungen_seite.dart, sections/
+  einstellungen_getraenkeliste_section.dart, sections/
+  einstellungen_pwa_install_section.dart,
+  einstellungen_gruppen_orchestrierung.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 354a2: Zweite Info-Zeile "Umsätze abzgl. Ausgaben (Info)" unter
   die in Run 354a ergänzte "Umsätze gesamt (Info)"-Zeile in der Kino-
   SOLL/Bistro-SOLL/Ausgaben-Kachel (Schritt 2) gesetzt — zeigt

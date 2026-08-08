@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 354a2 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 355 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -233,7 +233,15 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       build() dadurch von ~246 auf ~144 Zeilen geschrumpft. Der
       Sende-Aktionen-Block (Button/Dev-JSON-Button/Fehlertext)
       bleibt bewusst inline (eng an mehrere State-Felder gekoppelt,
-      analog appBar/footerChild bei Schritt 1/2).
+      analog appBar/footerChild bei Schritt 1/2). Run 355 startet
+      eine neue Sub-Run-Serie für einstellungen_seite.dart (build()
+      453 Zeilen, größter verbleibender Kandidat): Sub-Run 1 legt
+      das Grundgerüst lib/pages/einstellungen/ an und lagert die
+      zwei einfachsten Blöcke aus (Getränkeliste-Card, PWA-Install-
+      Card) — build() dadurch auf 397 Zeilen. Die PIN-geschützte
+      Admin-Card (5 unabhängige Bänder: Standort/Admin-Status,
+      Wechselgeldbestand, Flurbocash-Anbindung, KI-Belegscan-Konfig,
+      Dev-Modus/Testwerte) ist offen für weitere Sub-Runs.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
