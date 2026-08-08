@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 356: Bugfix für den "seltsam überlagert" aussehenden Papierkorb-
+  Button in der Getränkeliste (Einstellungen). Root Cause per lokalem
+  Flutter-Web-Release-Build + Playwright isoliert verifiziert: die
+  ReorderableListView.builder in _baueGetraenkelisteInhalt() nutzte
+  die Standard-Einstellung buildDefaultDragHandles: true, wodurch
+  Flutter die komplette Zeile mit einer eigenen Drag-Gesten-Erkennung
+  umschließt — das verursacht auf Flutter Web einen Render-Fehler
+  (verdoppelte/überlagerte Darstellung) bei Icons innerhalb dieser
+  Zeile, obwohl bereits ein eigenes Drag-Handle-Icon (☰) existierte.
+  Ausgeschlossen wurden zuvor: Browser-Cache (reproduziert auch in
+  frischem Tab/Release-Build), Icon-Tree-Shaking (reproduziert auch
+  mit --no-tree-shake-icons), das Icon selbst (isoliert einwandfrei)
+  und reines Compositing (RepaintBoundary ändert nichts). Fix:
+  buildDefaultDragHandles: false gesetzt und Icons.drag_handle mit
+  ReorderableDragStartListener(index: index, ...) umschlossen —
+  dadurch zieht jetzt gezielt nur noch das Handle-Icon statt der
+  ganzen Zeile, was auch näher an der ursprünglichen Absicht liegt.
+  Reiner Bugfix, keine sonstige Verhaltensänderung. Version
+  0.9.30+356. Dateien: einstellungen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 355: Sub-Run 1 einer neuen build()-Zerlegungs-Serie für
   einstellungen_seite.dart (build() 453 Zeilen, kein sections/-
   Ordner bisher, größter verbleibender Kandidat nach Schritt 1-3).

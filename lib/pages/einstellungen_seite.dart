@@ -1062,13 +1062,17 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         ReorderableListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
+          buildDefaultDragHandles: false,
           itemCount: _getraenkeliste.length,
           onReorderItem: _onGetraenkeReorder,
           itemBuilder: (BuildContext context, int index) {
             return Row(
               key: ObjectKey(_getraenkeController[index]),
               children: <Widget>[
-                const Icon(Icons.drag_handle, color: Colors.grey),
+                ReorderableDragStartListener(
+                  index: index,
+                  child: const Icon(Icons.drag_handle, color: Colors.grey),
+                ),
                 Expanded(
                   child: TextField(
                     controller: _getraenkeController[index],
