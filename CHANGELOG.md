@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 354a2: Zweite Info-Zeile "Umsätze abzgl. Ausgaben (Info)" unter
+  die in Run 354a ergänzte "Umsätze gesamt (Info)"-Zeile in der Kino-
+  SOLL/Bistro-SOLL/Ausgaben-Kachel (Schritt 2) gesetzt — zeigt
+  Kino-SOLL + Bistro-SOLL abzüglich der Summe aller erfassten
+  Ausgaben-Beträge, live während der Eingabe. Neuer Parameter
+  gesamtNachAusgabenCent durchgereicht: tagesabschluss_schritt2_
+  seite.dart → ui/schritt2_gruppen_orchestrierung.dart → sections/
+  schritt2_kino_soll_ausgaben_section.dart. Version 0.9.28+354a2.
+  Dateien: tagesabschluss_schritt2_seite.dart,
+  schritt2_gruppen_orchestrierung.dart,
+  schritt2_kino_soll_ausgaben_section.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 354a: Auf Paco-Wunsch nach dem Run-354-Test eine reine Info-
   Zeile "Umsätze gesamt (Info)" am unteren Ende der Kino-SOLL/
   Bistro-SOLL/Ausgaben-Kachel in Schritt 2 ergänzt — zeigt Kino-SOLL

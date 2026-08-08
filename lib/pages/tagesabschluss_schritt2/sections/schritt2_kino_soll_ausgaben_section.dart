@@ -12,6 +12,7 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
     required this.kinoSollEingabeZeile,
     required this.bistroSollEingabeZeile,
     required this.gesamtUmsatzCent,
+    required this.gesamtNachAusgabenCent,
     required this.ausgabenIds,
     required this.ausgabenLabelController,
     required this.ausgabenLabelFocusNode,
@@ -30,6 +31,8 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
   final Widget? bistroSollEingabeZeile;
   // Nur informativ: Kino SOLL + Bistro SOLL, ohne Abzug der Ausgaben.
   final int gesamtUmsatzCent;
+  // Nur informativ: Kino SOLL + Bistro SOLL, abzüglich Ausgaben.
+  final int gesamtNachAusgabenCent;
   final List<int> ausgabenIds;
   final List<TextEditingController> ausgabenLabelController;
   final List<FocusNode> ausgabenLabelFocusNode;
@@ -99,6 +102,27 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
                 ),
                 Text(
                   TagesabschlussFormatierung.formatiereEuro(gesamtUmsatzCent),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppFarben.subtilerText,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 2),
+            Row(
+              children: <Widget>[
+                const Expanded(
+                  child: Text(
+                    'Umsätze abzgl. Ausgaben (Info)',
+                    style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
+                  ),
+                ),
+                Text(
+                  TagesabschlussFormatierung.formatiereEuro(
+                    gesamtNachAusgabenCent,
+                  ),
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
