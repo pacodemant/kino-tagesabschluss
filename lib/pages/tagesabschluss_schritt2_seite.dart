@@ -1540,8 +1540,14 @@ class _TagesabschlussSchritt2SeiteState
 
   void _ecUnterkachelToggleAufgeklappt(int belegIndex) {
     setState(() {
-      _ecUnterkachelAufgeklappt[belegIndex] =
-          !_ecUnterkachelAufgeklappt[belegIndex];
+      final bool wirdGeschlossen = _ecUnterkachelAufgeklappt[belegIndex];
+      _ecUnterkachelAufgeklappt[belegIndex] = !wirdGeschlossen;
+      // Beim Zuklappen der Sub-Kachel auch noch offene Scan-Metadaten
+      // wieder zuklappen, statt sie beim naechsten Aufklappen offen
+      // vorzufinden.
+      if (wirdGeschlossen && belegIndex < _metadatenAufgeklappt.length) {
+        _metadatenAufgeklappt[belegIndex] = false;
+      }
     });
   }
 

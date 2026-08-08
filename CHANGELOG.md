@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 351: Korrektur aus dem Run-350-Test. Beim Zuklappen einer
+  EC-Beleg-Sub-Kachel (2+-Beleg-Modus) blieb ein noch offener
+  Scan-Metadaten-Block (_metadatenAufgeklappt) im Hintergrund
+  aufgeklappt und war beim nächsten Aufklappen der Sub-Kachel
+  weiterhin offen. _ecUnterkachelToggleAufgeklappt() in
+  tagesabschluss_schritt2_seite.dart klappt jetzt beim Schließen der
+  Sub-Kachel den zugehörigen Metadaten-Block ebenfalls zu. Version
+  0.9.25+351. Datei: tagesabschluss_schritt2_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 350: Sub-Run 4 der build()-Zerlegungs-Serie für Schritt 2
   (Fortsetzung von Run 345/347/348) — größter/riskantester Block der
   Serie. Neue Datei sections/schritt2_ec_beleg_sub_kacheln.dart:
