@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 354: build()-Zerlegung für Schritt 3, analog zur Schritt-2-
+  Serie (Run 345/347/348/350/353), aber in einem einzigen Run —
+  Schritt 3 hat keine verschachtelten Listen oder async-Closures
+  wie die EC-Belege bei Schritt 2, sondern nur vier statische
+  Card-„Rahmen" ohne eigene Callback-Logik, daher reichte hier
+  keine Sub-Run-Serie. Neuer Ordner lib/pages/
+  tagesabschluss_schritt3/sections/ mit 5 StatelessWidgets:
+  Schritt3KopfSection (Kinoname + Datum), Schritt3
+  DifferenzAnfangsbestandSection, Schritt3SollSection (inkl.
+  bedingter Bistro-Soll-Zeile), Schritt3IstSection,
+  Schritt3DifferenzSection. build() in
+  tagesabschluss_schritt3_seite.dart ruft diese jetzt auf statt
+  die Cards inline zu bauen — dadurch von ~246 auf ~144 Zeilen
+  geschrumpft. Der Sende-Aktionen-Block (Abrechnung-senden-Button,
+  Dev-JSON-Button, Autosave-Fehlertext) bleibt bewusst inline, da
+  eng an mehrere State-Felder (_autoSaveLaeuft, _abrechnungGesendet,
+  _devModusAktiv, _autoSaveFehler) gekoppelt — Auslagerung hätte die
+  Komplexität nur verschoben, nicht gesenkt (analog dazu, dass
+  Schritt 1/2 appBar/footerChild bewusst inline lassen). Reines
+  Verschieben ohne Verhaltensänderung. Version 0.9.28+354. Dateien:
+  tagesabschluss_schritt3_seite.dart, sections/
+  schritt3_kopf_section.dart, sections/
+  schritt3_differenz_anfangsbestand_section.dart, sections/
+  schritt3_soll_section.dart, sections/schritt3_ist_section.dart,
+  sections/schritt3_differenz_section.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 353: Sub-Run 5 (Abschluss) der build()-Zerlegungs-Serie für
   Schritt 2 — finale Verdrahtung. Drei bisher inline gebliebene
   onChanged-Closures (Differenz-im-Anfangsbestand, Kino-SOLL,

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 353 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 354 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -224,8 +224,16 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       damit von ursprünglich >1200 auf ~197 Zeilen geschrumpft
       (appBar/footerChild bleiben wie bei Schritt 1 bewusst inline).
       Die Schritt-2-build()-Zerlegungs-Serie (Run 345/347/348/
-      350/353) ist damit abgeschlossen. Schritt 3 (825 Zeilen)
-      optional als nächster, kleinerer Kandidat für dasselbe Muster.
+      350/353) ist damit abgeschlossen. Run 354 hat das gleiche
+      Muster auf tagesabschluss_schritt3_seite.dart angewendet
+      (deutlich einfacher als Schritt 2, daher in einem Run statt
+      einer Sub-Run-Serie): neuer Ordner lib/pages/
+      tagesabschluss_schritt3/sections/ mit 5 StatelessWidgets
+      (Kopf, Differenz-Anfangsbestand, SOLL, IST, Differenz) —
+      build() dadurch von ~246 auf ~144 Zeilen geschrumpft. Der
+      Sende-Aktionen-Block (Button/Dev-JSON-Button/Fehlertext)
+      bleibt bewusst inline (eng an mehrere State-Felder gekoppelt,
+      analog appBar/footerChild bei Schritt 1/2).
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,

@@ -1,11 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_anfangsbestand_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_ist_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_kopf_section.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -24,7 +28,6 @@ import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
-import 'package:kino_bar_app/widgets/info_zeile.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -518,11 +521,6 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
-  String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
-
-  String _euroMitVorzeichen(int cent) =>
-      TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
-
   String _deutschesDatum(DateTime zeit) =>
       TagesabschlussFormatierung.deutschesDatum(zeit);
 
@@ -654,172 +652,71 @@ class _TagesabschlussSchritt3SeiteState
         padding: const EdgeInsets.symmetric(vertical: 8),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          widget.argumente.kinoName,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        _deutschesDatum(
-                          DatumsHelper.logischerAbrechnungsTag(),
-                        ),
-                        style: GoogleFonts.caveat(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w500,
-                          height: 1.0,
-                        ),
-                      ),
-                    ],
+          Schritt3KopfSection(
+            kinoName: widget.argumente.kinoName,
+            datum: _deutschesDatum(DatumsHelper.logischerAbrechnungsTag()),
+          ),
+          Schritt3DifferenzAnfangsbestandSection(
+            differenzAnfangsbestandCent:
+                vorschau.differenzAnfangsbestandCent,
+          ),
+          Schritt3SollSection(
+            kinoSollCent: vorschau.kinoSollCent,
+            bistroSollCent: vorschau.bistroSollCent,
+            zeigeBistroSoll: widget.argumente.kinoId != 'kino_04',
+            ausgabenCent: vorschau.ausgabenCent,
+            gesamtSollCent: vorschau.gesamtSollCent,
+          ),
+          Schritt3IstSection(
+            ecIstCent: vorschau.ecUmsatzGesamtCent,
+            barIstCent: vorschau.barBestandAbzglWechselgeldCent,
+            gesamtIstCent: vorschau.gesamtIstCent,
+          ),
+          Schritt3DifferenzSection(
+            differenzCent: differenzCent,
+            differenzFarbe: differenzFarbe,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: ElevatedButton(
+              onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppFarben.fokusFarbe,
+                foregroundColor: AppFarben.appBarRot,
+                minimumSize: const Size(double.infinity, 44),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    _autoSaveLaeuft
+                        ? 'Wird gespeichert...'
+                        : 'Abrechnung an Büro senden',
                   ),
-                ),
-                // Rahmen 1 – Differenz Anfangsbestand
-                Card(
-                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        InfoZeile(
-                          label: 'Differenz Anfangsbestand',
-                          wert: _euro(vorschau.differenzAnfangsbestandCent),
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Rahmen 2 – SOLL
-                Card(
-                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        InfoZeile(
-                          label: '+ Kino Soll',
-                          wert: _euro(vorschau.kinoSollCent),
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                        if (widget.argumente.kinoId != 'kino_04')
-                          InfoZeile(
-                            label: '+ Bistro Soll',
-                            wert: _euro(vorschau.bistroSollCent),
-                            stil: InfoZeileStil.fuehrungslinie,
-                          ),
-                        InfoZeile(
-                          label: '- Ausgaben',
-                          wert: _euro(vorschau.ausgabenCent),
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                        InfoZeile(
-                          label: '= Gesamt Soll',
-                          wert: _euro(vorschau.gesamtSollCent),
-                          fett: true,
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Rahmen 3 – IST
-                Card(
-                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        InfoZeile(
-                          label: '+ EC IST',
-                          wert: _euro(vorschau.ecUmsatzGesamtCent),
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                        InfoZeile(
-                          label: '+ bar IST',
-                          wert: _euro(vorschau.barBestandAbzglWechselgeldCent),
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                        InfoZeile(
-                          label: '= Gesamt IST',
-                          wert: _euro(vorschau.gesamtIstCent),
-                          fett: true,
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Rahmen 4 – Differenz
-                Card(
-                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: <Widget>[
-                        InfoZeile(
-                          label: 'Differenz\nKassenabrechnung',
-                          wert: _euroMitVorzeichen(differenzCent),
-                          fett: true,
-                          farbe: differenzFarbe,
-                          stil: InfoZeileStil.fuehrungslinie,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                  child: ElevatedButton(
-                    onPressed: buttonGesperrt ? null : _zeigeAbschlussDialog,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppFarben.fokusFarbe,
-                      foregroundColor: AppFarben.appBarRot,
-                      minimumSize: const Size(double.infinity, 44),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          _autoSaveLaeuft
-                              ? 'Wird gespeichert...'
-                              : 'Abrechnung an Büro senden',
-                        ),
-                        if (_abrechnungGesendet) ...<Widget>[
-                          const SizedBox(width: 8),
-                          const Icon(Icons.check_circle, color: Colors.green),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-                if (_devModusAktiv)
-                  TextButton(
-                    onPressed: _zeigeFlurbocashJson,
-                    child: const Text('JSON anzeigen'),
-                  ),
-                if (_autoSaveFehler)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                    child: Text(
-                      'Speichern fehlgeschlagen – bitte erneut versuchen.',
-                      style: TextStyle(
-                        color: Colors.red.shade700,
-                        fontSize: 13,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-              ],
+                  if (_abrechnungGesendet) ...<Widget>[
+                    const SizedBox(width: 8),
+                    const Icon(Icons.check_circle, color: Colors.green),
+                  ],
+                ],
+              ),
             ),
+          ),
+          if (_devModusAktiv)
+            TextButton(
+              onPressed: _zeigeFlurbocashJson,
+              child: const Text('JSON anzeigen'),
+            ),
+          if (_autoSaveFehler)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                'Speichern fehlgeschlagen – bitte erneut versuchen.',
+                style: TextStyle(color: Colors.red.shade700, fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
