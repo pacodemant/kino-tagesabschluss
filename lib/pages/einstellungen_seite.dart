@@ -918,10 +918,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     await GetraenkeConfigService(kinoId: _aktiveKinoId).saveLocal(_getraenkeliste);
   }
 
-  void _fuegeGetraenkHinzu() {
+  void _fuegeGetraenkNachIndexEin(int index) {
     setState(() {
-      _getraenkeliste.add('');
-      _getraenkeController.add(TextEditingController());
+      _getraenkeliste.insert(index + 1, '');
+      _getraenkeController.insert(index + 1, TextEditingController());
     });
     _speichereGetraenkeliste();
   }
@@ -1002,22 +1002,17 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   ),
                 ),
                 IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Getränk darunter einfügen',
+                  onPressed: () => _fuegeGetraenkNachIndexEin(index),
+                ),
+                IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: () => _loescheGetraenk(index),
                 ),
               ],
             );
           },
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8),
-          child: SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: _fuegeGetraenkHinzu,
-              child: const Text('+ Getränk hinzufügen'),
-            ),
-          ),
         ),
       ],
     );

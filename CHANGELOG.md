@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 356a2: "+"-Button neben dem Papierkorb in jeder Getränkeliste-
+  Zeile (Einstellungen) ergänzt. Fügt eine neue leere Zeile direkt
+  unterhalb der angeklickten Zeile ein (_fuegeGetraenkNachIndexEin(
+  index), ersetzt die alte _fuegeGetraenkHinzu(), die immer ans Ende
+  der Liste angehängt hat). Zweck (Paco): MA musste bisher zum
+  Hinzufügen ganz nach unten scrollen und das neue Getränk danach
+  manuell an die richtige Regal-Position ziehen — mit dem Button pro
+  Zeile landet die neue Zeile direkt in der Nähe der richtigen
+  Position, kein Scrollen nötig. Der alte Button "+ Getränk
+  hinzufügen" ganz unten ist damit entfallen (weggefallen statt nur
+  ausgeblendet, keine doppelte Funktion). Version 0.9.30+356a2.
+  Dateien: einstellungen_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 356a: Zwei Paco-Wünsche aus dem Run-356-Test. (A) Text-Button
   "Standard-Liste herunterladen" samt Hilfe-Icon aus der
   Getränkeliste-Kachel (Einstellungen) entfernt — beide gehörten
