@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 352 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 353 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -217,12 +217,15 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       EC-Belege-Sub-Kacheln im 2+-Beleg-Modus inkl. der async
       Lösch-Bestätigung (sections/schritt2_ec_beleg_sub_kacheln.dart)
       — damit ist die komplette EC-Belege-Kachel aus build()
-      entfernt. Offener Sub-Run: (5) finale Verdrahtung (build() auf
-      ~150–200 Zeilen zusammenstreichen, alte private
-      `_baue…`-Reste in tagesabschluss_schritt2_seite.dart prüfen
-      und ggf. entfernen, Gesamt-Smoke-Test der Seite).
-      Schritt 3 (825 Zeilen) optional danach als kleinerer
-      Abschluss-Run.
+      entfernt. Sub-Run 5 (Run 353, finale Verdrahtung) hat die
+      restlichen Inline-Closures in benannte Methoden ausgelagert
+      und die komplette EC-Belege-Bereich-Konstruktion in eine
+      eigene Methode _baueEcBelegeBereich() gebündelt — build()
+      damit von ursprünglich >1200 auf ~197 Zeilen geschrumpft
+      (appBar/footerChild bleiben wie bei Schritt 1 bewusst inline).
+      Die Schritt-2-build()-Zerlegungs-Serie (Run 345/347/348/
+      350/353) ist damit abgeschlossen. Schritt 3 (825 Zeilen)
+      optional als nächster, kleinerer Kandidat für dasselbe Muster.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,

@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 353: Sub-Run 5 (Abschluss) der build()-Zerlegungs-Serie für
+  Schritt 2 — finale Verdrahtung. Drei bisher inline gebliebene
+  onChanged-Closures (Differenz-im-Anfangsbestand, Kino-SOLL,
+  Bistro-SOLL) sowie die kleinen Personalgetränke-/Anmerkung-
+  Callbacks in benannte Methoden ausgelagert
+  (_beiDifferenzAnfangsbestandGeaendert, _beiKinoSollGeaendert,
+  _beiBistroSollGeaendert, _beiPersonalgetraenkeGeaendert,
+  _beiAnmerkungGeaendert) — analog zum bereits etablierten Muster
+  aus Run 347/348/350. Die komplette EC-Belege-Bereich-Konstruktion
+  (Read-Modus-Berechnung, belegInhalt-Ternary, Kachel- und
+  Sub-Kacheln-Aufruf, äußere Widget-Liste inkl. Scan-Overlay und
+  "Weiteren Beleg hinzufügen"-Link) wurde unverändert in eine neue
+  Methode _baueEcBelegeBereich() verschoben, die build() nur noch
+  mit einem Einzeiler aufruft. Geprüft: keine toten privaten
+  `_baue…`-Methoden mehr vorhanden, alle drei verbleibenden
+  (_baueEingabeZeile, _baueMetadatenBlock, _baueZahlungsartenTabelle)
+  werden weiterhin aktiv gebraucht. build() schrumpft dadurch von
+  ~345 auf ~197 Zeilen (Zielkorridor ~150–200 war explizit appBar/
+  footerChild-inklusive gedacht, analog zum bereits fertigen
+  Schritt-1-Vorbild, das diese beiden Blöcke ebenfalls nicht
+  auslagert). Reines Verschieben ohne Verhaltensänderung — damit ist
+  die komplette build()-Zerlegungs-Serie für Schritt 2 (Run 345,
+  347, 348, 350, 353) abgeschlossen. Version 0.9.27+353. Dateien:
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 352: Zwei Paco-Wünsche aus dem Run-351-Test. (A) Foto-Buttons
   (EC-Belege-Kachel: runder Scan-Button im Header; jede EC-Beleg-
   Sub-Kachel: Kamera-Icon im Titel) von appBarRot (Kino-Rot) auf

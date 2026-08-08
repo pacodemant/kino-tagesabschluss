@@ -574,6 +574,49 @@ class _TagesabschlussSchritt2SeiteState
     _speichereEntwurf();
   }
 
+  void _beiDifferenzAnfangsbestandGeaendert(String wert) {
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      final int absolutWert = _parsiereBetragCent(wert);
+      final bool istNegativ = _differenzAnfangsbestandCent < 0;
+      _differenzAnfangsbestandCent = istNegativ ? -absolutWert : absolutWert;
+    });
+    _speichereEntwurf();
+  }
+
+  void _beiKinoSollGeaendert(String wert) {
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      _kinoSollBeruehrt = true;
+      _kinoSollCent = _parsiereBetragCent(wert);
+    });
+    _speichereEntwurf();
+  }
+
+  void _beiBistroSollGeaendert(String wert) {
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      _bistroSollBeruehrt = true;
+      _bistroSollCent = _parsiereBetragCent(wert);
+    });
+    _speichereEntwurf();
+  }
+
+  void _weitererBelegLinkGedrueckt() {
+    setState(() => _ecKachelAufgeklappt = true);
+    _ecBelegHinzufuegen();
+  }
+
+  void _beiPersonalgetraenkeGeaendert(bool? v) {
+    setState(() => _personalgetraenkeGebot = v ?? false);
+    _speichereEntwurf();
+  }
+
+  void _beiAnmerkungGeaendert(String wert) {
+    _anmerkung = wert;
+    _speichereEntwurf();
+  }
+
   String _kopfDatumUhrzeit() {
     return DateFormat(
       "EEEE, d.M.yy, 'Stand' H:mm 'Uhr'",
@@ -2250,121 +2293,12 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_laedt) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-    final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
-    // Ohne virtuelle Tastatur (z.B. Desktop-Browser) bleibt tastaturOffen
-    // immer false -> zusaetzlich pruefen, ob ein Feld aus der Fokus-
-    // Reihenfolge aktuell fokussiert ist, damit der Next-Button auch dort
-    // erscheint.
-    final bool feldFokussiert = _fokusReihenfolgeSchritt2()
-        .any((FocusNode fn) => fn.hasFocus);
+  List<Widget> _baueEcBelegeBereich() {
     final int ecGesamtCent = _ecBelegeCent.fold(0, (int a, int b) => a + b);
     final bool hatEcBelege = _scanHatStattgefunden.any((bool b) => b) || ecGesamtCent > 0;
     final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
         .where((int j) => _ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty)
         .length;
-    final Widget devToolsBereich = IgnorePointer(
-      ignoring: !_devModusAktiv || !_devToolsOffen,
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 140),
-        opacity: _devModusAktiv && _devToolsOffen ? 1 : 0,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
-          child: Schritt2DevToolsPanel(
-            onAutoFill: _autoFillDev,
-            onLeeren: _leereAlleFelderDev,
-          ),
-        ),
-      ),
-    );
-    final Schritt2SectionWidgets sections =
-        _gruppenOrchestrierung.baueSections(
-      kinoName: widget.kinoName,
-      kopfDatumUhrzeit: _kopfDatumUhrzeit(),
-      personalgetraenkeGebot: _personalgetraenkeGebot,
-      beiPersonalgetraenkeGeaendert: (bool? v) {
-        setState(() => _personalgetraenkeGebot = v ?? false);
-        _speichereEntwurf();
-      },
-      differenzAnfangsbestandEingabeZeile: _baueEingabeZeile(
-        label: 'Differenz im Anfangsbestand',
-        controller: _differenzAnfangsbestandController,
-        focusNode: _differenzAnfangsbestandFocusNode,
-        zeigeLabel: false,
-        zeigeAdditionsButton: false,
-        farbeNachWert: _differenzAnfangsbestandCent,
-        onChanged: (String wert) {
-          setState(() {
-            _letzteAenderung = DateTime.now();
-            final int absolutWert = _parsiereBetragCent(wert);
-            final bool istNegativ = _differenzAnfangsbestandCent < 0;
-            _differenzAnfangsbestandCent =
-                istNegativ ? -absolutWert : absolutWert;
-          });
-          _speichereEntwurf();
-        },
-      ),
-      vorzeichenToggleDifferenz: _vorzeichenToggleDifferenz,
-      anmerkungController: _anmerkungController,
-      anmerkungFocusNode: _anmerkungFocusNode,
-      beiAnmerkungGeaendert: (String wert) {
-        _anmerkung = wert;
-        _speichereEntwurf();
-      },
-      kinoSollEingabeZeile: _baueEingabeZeile(
-        label: 'Kino SOLL',
-        controller: _kinoSollController,
-        focusNode: _kinoSollFocusNode,
-        fehlermeldungText: _pflichtfeldFehlertext(
-          feldBeruehrt: _kinoSollBeruehrt,
-          controller: _kinoSollController,
-        ),
-        onChanged: (String wert) {
-          setState(() {
-            _letzteAenderung = DateTime.now();
-            _kinoSollBeruehrt = true;
-            _kinoSollCent = _parsiereBetragCent(wert);
-          });
-          _speichereEntwurf();
-        },
-      ),
-      bistroSollEingabeZeile: widget.kinoId == 'kino_04'
-          ? null
-          : _baueEingabeZeile(
-              label: 'Bistro SOLL',
-              controller: _bistroSollController,
-              focusNode: _bistroSollFocusNode,
-              fehlermeldungText: _pflichtfeldFehlertext(
-                feldBeruehrt: _bistroSollBeruehrt,
-                controller: _bistroSollController,
-              ),
-              onChanged: (String wert) {
-                setState(() {
-                  _letzteAenderung = DateTime.now();
-                  _bistroSollBeruehrt = true;
-                  _bistroSollCent = _parsiereBetragCent(wert);
-                });
-                _speichereEntwurf();
-              },
-            ),
-      ausgabenIds: _ausgabenIds,
-      ausgabenLabelController: _ausgabenLabelController,
-      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
-      ausgabenBetragController: _ausgabenBetragController,
-      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
-      textInputActionFuerSchritt2: _textInputActionFuerSchritt2,
-      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt2,
-      onAusgabenLabelGeaendert: _beiAusgabenLabelGeaendert,
-      onAusgabenLabelGeloescht: _ausgabenLabelLoeschen,
-      onAusgabenBetragGeaendert: _beiAusgabenBetragGeaendert,
-      onAusgabeEntfernen: _ausgabeEntfernen,
-      onAusgabeHinzufuegen: _ausgabeHinzufuegen,
-    );
     final bool ecBeleg0ZeigeReadModus =
         _scanHatStattgefunden.isNotEmpty &&
         _scanHatStattgefunden[0] &&
@@ -2467,10 +2401,7 @@ class _TagesabschlussSchritt2SeiteState
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
-                      onPressed: () {
-                        setState(() => _ecKachelAufgeklappt = true);
-                        _ecBelegHinzufuegen();
-                      },
+                      onPressed: _weitererBelegLinkGedrueckt,
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: const Size(0, 32),
@@ -2480,6 +2411,91 @@ class _TagesabschlussSchritt2SeiteState
                     ),
                   ),
     ];
+    return ecBelegeBereich;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_laedt) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    final bool tastaturOffen = MediaQuery.of(context).viewInsets.bottom > 0;
+    // Ohne virtuelle Tastatur (z.B. Desktop-Browser) bleibt tastaturOffen
+    // immer false -> zusaetzlich pruefen, ob ein Feld aus der Fokus-
+    // Reihenfolge aktuell fokussiert ist, damit der Next-Button auch dort
+    // erscheint.
+    final bool feldFokussiert = _fokusReihenfolgeSchritt2()
+        .any((FocusNode fn) => fn.hasFocus);
+    final Widget devToolsBereich = IgnorePointer(
+      ignoring: !_devModusAktiv || !_devToolsOffen,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 140),
+        opacity: _devModusAktiv && _devToolsOffen ? 1 : 0,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
+          child: Schritt2DevToolsPanel(
+            onAutoFill: _autoFillDev,
+            onLeeren: _leereAlleFelderDev,
+          ),
+        ),
+      ),
+    );
+    final Schritt2SectionWidgets sections =
+        _gruppenOrchestrierung.baueSections(
+      kinoName: widget.kinoName,
+      kopfDatumUhrzeit: _kopfDatumUhrzeit(),
+      personalgetraenkeGebot: _personalgetraenkeGebot,
+      beiPersonalgetraenkeGeaendert: _beiPersonalgetraenkeGeaendert,
+      differenzAnfangsbestandEingabeZeile: _baueEingabeZeile(
+        label: 'Differenz im Anfangsbestand',
+        controller: _differenzAnfangsbestandController,
+        focusNode: _differenzAnfangsbestandFocusNode,
+        zeigeLabel: false,
+        zeigeAdditionsButton: false,
+        farbeNachWert: _differenzAnfangsbestandCent,
+        onChanged: _beiDifferenzAnfangsbestandGeaendert,
+      ),
+      vorzeichenToggleDifferenz: _vorzeichenToggleDifferenz,
+      anmerkungController: _anmerkungController,
+      anmerkungFocusNode: _anmerkungFocusNode,
+      beiAnmerkungGeaendert: _beiAnmerkungGeaendert,
+      kinoSollEingabeZeile: _baueEingabeZeile(
+        label: 'Kino SOLL',
+        controller: _kinoSollController,
+        focusNode: _kinoSollFocusNode,
+        fehlermeldungText: _pflichtfeldFehlertext(
+          feldBeruehrt: _kinoSollBeruehrt,
+          controller: _kinoSollController,
+        ),
+        onChanged: _beiKinoSollGeaendert,
+      ),
+      bistroSollEingabeZeile: widget.kinoId == 'kino_04'
+          ? null
+          : _baueEingabeZeile(
+              label: 'Bistro SOLL',
+              controller: _bistroSollController,
+              focusNode: _bistroSollFocusNode,
+              fehlermeldungText: _pflichtfeldFehlertext(
+                feldBeruehrt: _bistroSollBeruehrt,
+                controller: _bistroSollController,
+              ),
+              onChanged: _beiBistroSollGeaendert,
+            ),
+      ausgabenIds: _ausgabenIds,
+      ausgabenLabelController: _ausgabenLabelController,
+      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
+      ausgabenBetragController: _ausgabenBetragController,
+      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
+      textInputActionFuerSchritt2: _textInputActionFuerSchritt2,
+      beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt2,
+      onAusgabenLabelGeaendert: _beiAusgabenLabelGeaendert,
+      onAusgabenLabelGeloescht: _ausgabenLabelLoeschen,
+      onAusgabenBetragGeaendert: _beiAusgabenBetragGeaendert,
+      onAusgabeEntfernen: _ausgabeEntfernen,
+      onAusgabeHinzufuegen: _ausgabeHinzufuegen,
+    );
+    final List<Widget> ecBelegeBereich = _baueEcBelegeBereich();
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: TagesabschlussHeader(
