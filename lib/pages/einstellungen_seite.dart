@@ -926,77 +926,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _speichereGetraenkeliste();
   }
 
-  Future<void> _zeigeStandardListeHilfe() async {
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Standard-Liste herunterladen'),
-          content: const Text(
-            'Lädt die von der Kinoleitung gepflegte Getränkeliste herunter '
-            'und ersetzt deine aktuelle Liste. Eigene Anpassungen gehen '
-            'dabei verloren — du kannst sie danach hier wieder vornehmen.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _ladeStandardListe() async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Liste wirklich ersetzen?'),
-          content: const Text(
-            'Deine aktuelle Liste wird durch die Standard-Liste ersetzt. '
-            'Eigene Bezeichnungen gehen dabei verloren.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Abbrechen'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Herunterladen'),
-            ),
-          ],
-        );
-      },
-    );
-    if (bestaetigt != true || !mounted) return;
-    try {
-      await GetraenkeConfigService(kinoId: _aktiveKinoId).updateFromRemote();
-      if (!mounted) return;
-      final List<String> neueListe = await GetraenkeConfigService(kinoId: _aktiveKinoId).loadLocal();
-      if (!mounted) return;
-      for (final TextEditingController c in _getraenkeController) {
-        c.dispose();
-      }
-      _getraenkeController.clear();
-      setState(() {
-        _getraenkeliste = neueListe;
-        for (final String name in neueListe) {
-          _getraenkeController.add(TextEditingController(text: name));
-        }
-      });
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Download fehlgeschlagen. Bitte Verbindung prüfen.'),
-        ),
-      );
-    }
-  }
-
   Future<void> _starteInstallation() async {
     await pwaInstallStarten();
     if (!mounted) return;
@@ -1039,26 +968,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Widget _baueGetraenkelisteInhalt() {
     return Column(
       children: <Widget>[
-        Row(
-          children: <Widget>[
-            TextButton(
-              onPressed: _ladeStandardListe,
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                textStyle: const TextStyle(fontSize: 12),
-              ),
-              child: const Text('Standard-Liste herunterladen'),
-            ),
-            IconButton(
-              iconSize: 18,
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              onPressed: _zeigeStandardListeHilfe,
-              icon: const Icon(Icons.help_outline),
-            ),
-          ],
-        ),
         ReorderableListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),

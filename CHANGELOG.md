@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 356a: Zwei Paco-Wünsche aus dem Run-356-Test. (A) Text-Button
+  "Standard-Liste herunterladen" samt Hilfe-Icon aus der
+  Getränkeliste-Kachel (Einstellungen) entfernt — beide gehörten
+  zusammen (das Hilfe-Icon erklärte nur diesen Button), daher beide
+  entfernt statt nur eines verwaist stehen zu lassen. Die dahinter
+  liegenden, jetzt unreferenzierten Methoden _zeigeStandardListeHilfe
+  und _ladeStandardListe (inkl. GetraenkeConfigService.
+  updateFromRemote()-Aufruf) mit entfernt, kein toter Code übrig.
+  (B) Zeile "Reihenfolge = Regal-Reihenfolge" von zentriert auf
+  linksbündig umgestellt (crossAxisAlignment: CrossAxisAlignment.
+  start auf der Card-Column in EinstellungenGetraenkelisteSection —
+  betrifft dadurch auch die ReorderableListView darunter, die aber
+  ohnehin schon die volle Breite nutzt, also ohne sichtbaren
+  Unterschied dort). Version 0.9.30+356a. Dateien:
+  einstellungen_seite.dart,
+  einstellungen_getraenkeliste_section.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 356: Bugfix für den "seltsam überlagert" aussehenden Papierkorb-
   Button in der Getränkeliste (Einstellungen). Root Cause per lokalem
   Flutter-Web-Release-Build + Playwright isoliert verifiziert: die

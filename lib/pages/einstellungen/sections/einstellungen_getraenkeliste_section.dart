@@ -20,6 +20,7 @@ class EinstellungenGetraenkelisteSection extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             ListTile(
               title: Text(
