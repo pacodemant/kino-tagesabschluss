@@ -114,9 +114,9 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
                   if (!hatEcBelege)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppFarben.appBarRot,
+                        backgroundColor: AppFarben.fokusFarbe,
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor: AppFarben.appBarRot,
+                        disabledBackgroundColor: AppFarben.fokusFarbe,
                         disabledForegroundColor: Colors.white,
                         shape: const CircleBorder(),
                         padding: const EdgeInsets.all(8),

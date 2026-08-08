@@ -320,7 +320,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.arrow_back),
-                title: const Text('3/4 · Finalisieren'),
+                title: const Text('3/4 · Übertrag auf Umschlag'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   Navigator.of(context)

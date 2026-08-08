@@ -310,7 +310,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                 size: 18,
                                 color: (label.isNotEmpty || betragCent > 0)
                                     ? Colors.grey.shade400
-                                    : AppFarben.appBarRot,
+                                    : AppFarben.fokusFarbe,
                               ),
                         onPressed: scanLaeuft ? null : onScanStarten,
                       ),

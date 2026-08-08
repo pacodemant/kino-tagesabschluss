@@ -1504,6 +1504,16 @@ class _TagesabschlussSchritt2SeiteState
       _ecKachelAufgeklappt = !_ecKachelAufgeklappt;
       if (wirdGeoeffnet) {
         _oeffneErstenBelegZurBearbeitungFallsLeer();
+      } else {
+        // Beim Zuklappen der Hauptkachel auch alle Sub-Kacheln und
+        // Scan-Metadaten-Bloecke zuklappen, damit sie beim naechsten
+        // Aufklappen nicht ungewollt schon offen sind.
+        for (int i = 0; i < _ecUnterkachelAufgeklappt.length; i++) {
+          _ecUnterkachelAufgeklappt[i] = false;
+        }
+        for (int i = 0; i < _metadatenAufgeklappt.length; i++) {
+          _metadatenAufgeklappt[i] = false;
+        }
       }
     });
   }
@@ -2040,7 +2050,7 @@ class _TagesabschlussSchritt2SeiteState
               ),
               ListTile(
                 leading: const Icon(Icons.arrow_forward),
-                title: const Text('3/4 · Finalisieren'),
+                title: const Text('3/4 · Übertrag auf Umschlag'),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
                   _weiterZuSchritt3();

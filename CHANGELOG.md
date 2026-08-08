@@ -9,6 +9,28 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 352: Zwei Paco-Wünsche aus dem Run-351-Test. (A) Foto-Buttons
+  (EC-Belege-Kachel: runder Scan-Button im Header; jede EC-Beleg-
+  Sub-Kachel: Kamera-Icon im Titel) von appBarRot (Kino-Rot) auf
+  AppFarben.fokusFarbe (das bereits bestehende Orange, sonst für
+  die Fokus-Füllfarbe von Eingabefeldern genutzt) umgestellt. (B)
+  Zuklappen der EC-Belege-Hauptkachel klappt jetzt alle Sub-Kacheln
+  und offenen Scan-Metadaten-Blöcke mit zu (_ecKachelToggleAuf-
+  geklappt() in tagesabschluss_schritt2_seite.dart) — vorher blieben
+  sie im Hintergrund aufgeklappt und waren beim nächsten Öffnen der
+  Hauptkachel wieder sichtbar offen. Zusätzlich: manuelle Korrektur
+  von Paco vor diesem Run übernommen — Label "3/4 · Finalisieren" in
+  den Schritt-Wechsel-Bottom-Sheets von Schritt 1/2/3/4 auf
+  "3/4 · Übertrag auf Umschlag" vereinheitlicht (4 Dateien: stueckelung_
+  vorschlag_seite.dart, schritt1_orchestrierung_helper.dart,
+  tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart).
+  Version 0.9.26+352. Dateien: tagesabschluss_schritt2_seite.dart,
+  sections/schritt2_ec_belege_kachel_section.dart, sections/
+  schritt2_ec_beleg_sub_kacheln.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart,
+  stueckelung_vorschlag_seite.dart,
+  schritt1_orchestrierung_helper.dart, tagesabschluss_schritt3_seite.dart.
+
 - Run 351: Korrektur aus dem Run-350-Test. Beim Zuklappen einer
   EC-Beleg-Sub-Kachel (2+-Beleg-Modus) blieb ein noch offener
   Scan-Metadaten-Block (_metadatenAufgeklappt) im Hintergrund

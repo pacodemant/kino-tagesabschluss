@@ -242,7 +242,7 @@ class Schritt1OrchestrierungHelper {
                   weiterZuSchritt2();
                 },
               ),
-              const ListTile(title: Text('3/4 · Finalisieren'), enabled: false),
+              const ListTile(title: Text('3/4 · Übertrag auf Umschlag'), enabled: false),
               const ListTile(title: Text('4/4 · Schritt 4'), enabled: false),
             ],
           ),

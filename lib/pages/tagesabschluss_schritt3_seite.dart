@@ -555,7 +555,7 @@ class _TagesabschlussSchritt3SeiteState
               const ListTile(
                 leading: Icon(Icons.check_circle),
                 title: Text(
-                  '3/4 · Finalisieren',
+                  '3/4 · Übertrag auf Umschlag',
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
                 subtitle: Text('Aktueller Schritt'),
