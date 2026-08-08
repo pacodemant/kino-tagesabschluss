@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 
@@ -10,6 +11,7 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
     super.key,
     required this.kinoSollEingabeZeile,
     required this.bistroSollEingabeZeile,
+    required this.gesamtUmsatzCent,
     required this.ausgabenIds,
     required this.ausgabenLabelController,
     required this.ausgabenLabelFocusNode,
@@ -26,6 +28,8 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
 
   final Widget kinoSollEingabeZeile;
   final Widget? bistroSollEingabeZeile;
+  // Nur informativ: Kino SOLL + Bistro SOLL, ohne Abzug der Ausgaben.
+  final int gesamtUmsatzCent;
   final List<int> ausgabenIds;
   final List<TextEditingController> ausgabenLabelController;
   final List<FocusNode> ausgabenLabelFocusNode;
@@ -83,6 +87,25 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
                 icon: const Icon(Icons.add),
                 label: const Text('+ Ausgabe hinzufügen'),
               ),
+            ),
+            const Divider(height: 20),
+            Row(
+              children: <Widget>[
+                const Expanded(
+                  child: Text(
+                    'Umsätze gesamt (Info)',
+                    style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
+                  ),
+                ),
+                Text(
+                  TagesabschlussFormatierung.formatiereEuro(gesamtUmsatzCent),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppFarben.subtilerText,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

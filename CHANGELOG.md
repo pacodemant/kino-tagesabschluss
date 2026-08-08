@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 354a: Auf Paco-Wunsch nach dem Run-354-Test eine reine Info-
+  Zeile "Umsätze gesamt (Info)" am unteren Ende der Kino-SOLL/
+  Bistro-SOLL/Ausgaben-Kachel in Schritt 2 ergänzt — zeigt Kino-SOLL
+  + Bistro-SOLL (ohne Abzug der Ausgaben) als Live-Summe, während
+  eingegeben wird. Für kino_04 (kein Bistro-SOLL-Feld) entspricht
+  das schlicht dem Kino-SOLL. Neuer Parameter gesamtUmsatzCent
+  durchgereicht: tagesabschluss_schritt2_seite.dart → ui/
+  schritt2_gruppen_orchestrierung.dart → sections/
+  schritt2_kino_soll_ausgaben_section.dart. Version 0.9.28+354a.
+  Dateien: tagesabschluss_schritt2_seite.dart,
+  schritt2_gruppen_orchestrierung.dart,
+  schritt2_kino_soll_ausgaben_section.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 354: build()-Zerlegung für Schritt 3, analog zur Schritt-2-
   Serie (Run 345/347/348/350/353), aber in einem einzigen Run —
   Schritt 3 hat keine verschachtelten Listen oder async-Closures
