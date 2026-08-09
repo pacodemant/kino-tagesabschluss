@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.31+357 · Run 357
+Version: 0.9.32+358 · Run 358
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 357)
+## Laufender Entwicklungsstand (Run 358)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -569,6 +569,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   (bestehender Warnhinweis reagiert bereits live, EC-Gesamtbetrag
   bleibt bewusst unabhängig vom Scan eingelesen). Zusätzlich Button-
   Text "Neu laden" → "App neu laden" eingecheckt.
+- Run 358 ✅ Sub-Run 2 der einstellungen_seite.dart-Zerlegungs-Serie
+  (Fortsetzung Run 355): KI-Belegscan-Konfig-Band als eigenes
+  StatelessWidget EinstellungenBelegscanSection ausgelagert, über
+  EinstellungenGruppenOrchestrierung verdrahtet. Reines Verschieben,
+  Datei von 1434 auf 1399 Zeilen geschrumpft. Verbleibend: Standort/
+  Admin-Status, Wechselgeldbestand, Flurbocash-Anbindung, Dev-Modus/
+  Testwerte.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_belegscan_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_getraenkeliste_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_pwa_install_section.dart';
 
@@ -16,6 +17,10 @@ class EinstellungenGruppenOrchestrierung {
     required Widget getraenkelisteInhalt,
     required bool pwaInstallVerfuegbar,
     required VoidCallback onPwaInstall,
+    required TextEditingController belegScanUrlController,
+    required TextEditingController anthropicApiKeyController,
+    required VoidCallback onBelegScanUrlGeaendert,
+    required VoidCallback onAnthropicApiKeyGeaendert,
   }) {
     return EinstellungenSectionWidgets(
       getraenkeliste: EinstellungenGetraenkelisteSection(
@@ -27,6 +32,12 @@ class EinstellungenGruppenOrchestrierung {
       pwaInstall: pwaInstallVerfuegbar
           ? EinstellungenPwaInstallSection(onInstall: onPwaInstall)
           : null,
+      belegscan: EinstellungenBelegscanSection(
+        belegScanUrlController: belegScanUrlController,
+        anthropicApiKeyController: anthropicApiKeyController,
+        onBelegScanUrlGeaendert: onBelegScanUrlGeaendert,
+        onAnthropicApiKeyGeaendert: onAnthropicApiKeyGeaendert,
+      ),
     );
   }
 }
@@ -37,8 +48,10 @@ class EinstellungenSectionWidgets {
   const EinstellungenSectionWidgets({
     required this.getraenkeliste,
     required this.pwaInstall,
+    required this.belegscan,
   });
 
   final Widget getraenkeliste;
   final Widget? pwaInstall;
+  final Widget belegscan;
 }

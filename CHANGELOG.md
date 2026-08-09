@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 358: Sub-Run 2 der build()-Zerlegungs-Serie für
+  einstellungen_seite.dart (Fortsetzung von Run 355). Das einfachste
+  der 5 Admin-Card-Bänder ausgelagert: KI-Belegscan-Konfig
+  (Service-URL + Anthropic-API-Key-Felder) als neues eigenständiges
+  StatelessWidget EinstellungenBelegscanSection (neue Datei
+  sections/einstellungen_belegscan_section.dart), über
+  EinstellungenGruppenOrchestrierung verdrahtet. Reines Verschieben
+  ohne Verhaltensänderung — Controller, Speicher-Methoden und State
+  bleiben unverändert in einstellungen_seite.dart, nur der
+  Widget-Bau wurde ausgelagert. Datei dadurch von 1434 auf 1399
+  Zeilen geschrumpft. Verbleibend für weitere Sub-Runs: Standort/
+  Admin-Status, Wechselgeldbestand, Flurbocash-Anbindung, Dev-Modus/
+  Testwerte. Version 0.9.32+358. Dateien: einstellungen_seite.dart,
+  einstellungen_gruppen_orchestrierung.dart,
+  einstellungen_belegscan_section.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md.
+
 - Run 357: Zwei TODO.md-Punkte geklärt, ohne dass eine Code-Änderung
   nötig war. (A) "Kein Screen-Flip": Paco bestätigt, dass auf den
   eingesetzten Android-Geräten (Zielplattform) das Drehproblem nicht

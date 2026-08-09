@@ -1036,6 +1036,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       getraenkelisteInhalt: _baueGetraenkelisteInhalt(),
       pwaInstallVerfuegbar: _pwaInstallVerfuegbar,
       onPwaInstall: _starteInstallation,
+      belegScanUrlController: _belegScanUrlCtrl,
+      anthropicApiKeyController: _anthropicApiKeyCtrl,
+      onBelegScanUrlGeaendert: _speichereBelegScanUrl,
+      onAnthropicApiKeyGeaendert: _speichereAnthropicApiKey,
     );
 
     return Scaffold(
@@ -1294,46 +1298,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                       ],
                     ),
                   ),
-                  Container(
-                    color: AppFarben.gruppierungBandB,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Divider(),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16, 8, 16, 4),
-                          child: Text(
-                            'KI-Belegscan (Anthropic)',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          child: TextField(
-                            controller: _belegScanUrlCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Service-URL',
-                              hintText: 'z. B. https://…workers.dev',
-                              isDense: true,
-                            ),
-                            onChanged: (_) => _speichereBelegScanUrl(),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          child: TextField(
-                            controller: _anthropicApiKeyCtrl,
-                            decoration: const InputDecoration(
-                              labelText: 'Anthropic API-Key',
-                            ),
-                            onChanged: (_) => _speichereAnthropicApiKey(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  einstellungenSections.belegscan,
                   Container(
                     color: AppFarben.gruppierungBandA,
                     child: Column(

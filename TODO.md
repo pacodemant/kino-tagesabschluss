@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 357 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 358 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -221,7 +221,12 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Card) — build() dadurch auf 397 Zeilen. Die PIN-geschützte
       Admin-Card (5 unabhängige Bänder: Standort/Admin-Status,
       Wechselgeldbestand, Flurbocash-Anbindung, KI-Belegscan-Konfig,
-      Dev-Modus/Testwerte) ist offen für weitere Sub-Runs.
+      Dev-Modus/Testwerte) ist offen für weitere Sub-Runs. Run 358
+      (Sub-Run 2) hat das einfachste Band ausgelagert: KI-Belegscan-
+      Konfig (neue Datei sections/einstellungen_belegscan_section.
+      dart) — einstellungen_seite.dart dadurch von 1434 auf 1399
+      Zeilen geschrumpft. Verbleibend: Standort/Admin-Status,
+      Wechselgeldbestand, Flurbocash-Anbindung, Dev-Modus/Testwerte.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
