@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 359: Sub-Run 3 der build()-Zerlegungs-Serie für
+  einstellungen_seite.dart (Fortsetzung von Run 355/358). Zweites
+  Band der Admin-Card ausgelagert: Standort-Betriebsmodus-Dropdown +
+  "Admin-Status halten"-Switch als neues eigenständiges
+  StatelessWidget EinstellungenStandortAdminSection (neue Datei
+  sections/einstellungen_standort_admin_section.dart), über
+  EinstellungenGruppenOrchestrierung verdrahtet. Reines Verschieben
+  ohne Verhaltensänderung. Datei dadurch von 1399 auf 1346 Zeilen
+  geschrumpft. Verbleibend für weitere Sub-Runs: Wechselgeldbestand,
+  Flurbocash-Anbindung, Dev-Modus/Testwerte. Version 0.9.33+359.
+  Dateien: einstellungen_seite.dart,
+  einstellungen_gruppen_orchestrierung.dart,
+  einstellungen_standort_admin_section.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md.
+
 - Run 358: Sub-Run 2 der build()-Zerlegungs-Serie für
   einstellungen_seite.dart (Fortsetzung von Run 355). Das einfachste
   der 5 Admin-Card-Bänder ausgelagert: KI-Belegscan-Konfig

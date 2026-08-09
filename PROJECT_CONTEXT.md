@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.32+358 · Run 358
+Version: 0.9.33+359 · Run 359
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 358)
+## Laufender Entwicklungsstand (Run 359)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -576,6 +576,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Datei von 1434 auf 1399 Zeilen geschrumpft. Verbleibend: Standort/
   Admin-Status, Wechselgeldbestand, Flurbocash-Anbindung, Dev-Modus/
   Testwerte.
+- Run 359 ✅ Sub-Run 3 der einstellungen_seite.dart-Zerlegungs-Serie:
+  Standort/Admin-Status-Band (Standort-Dropdown + "Admin-Status
+  halten"-Switch) als eigenes StatelessWidget
+  EinstellungenStandortAdminSection ausgelagert. Reines Verschieben,
+  Datei von 1399 auf 1346 Zeilen geschrumpft. Verbleibend:
+  Wechselgeldbestand, Flurbocash-Anbindung, Dev-Modus/Testwerte.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

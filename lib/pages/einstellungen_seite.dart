@@ -1040,6 +1040,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       anthropicApiKeyController: _anthropicApiKeyCtrl,
       onBelegScanUrlGeaendert: _speichereBelegScanUrl,
       onAnthropicApiKeyGeaendert: _speichereAnthropicApiKey,
+      standortModusKinoId: _standortModusKinoId,
+      onStandortModusGeaendert: _onStandortModusGeaendert,
+      adminStatusHaltenAktiv: _adminStatusHaltenAktiv,
+      onAdminStatusHaltenGeaendert: _onAdminStatusHaltenGeaendert,
     );
 
     return Scaffold(
@@ -1099,64 +1103,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 ),
                 if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
-                  Container(
-                    color: AppFarben.gruppierungBandA,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              const Text(
-                                'Standort',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                              DropdownButton<String?>(
-                                value: _standortModusKinoId,
-                                items: <DropdownMenuItem<String?>>[
-                                  const DropdownMenuItem<String?>(
-                                    value: null,
-                                    child: Text('Alle'),
-                                  ),
-                                  for (final Kino kino in KinoRepository.kinos)
-                                    DropdownMenuItem<String?>(
-                                      value: kino.id,
-                                      child: Text(kino.name),
-                                    ),
-                                ],
-                                onChanged: _onStandortModusGeaendert,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-                          child: Text(
-                            'Bei fester Auswahl entfällt für den Mitarbeiter '
-                            'die Kinoauswahl und der Button "Kino wechseln".',
-                            style: TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                        ),
-                        SwitchListTile(
-                          title: const Text('Admin-Status halten'),
-                          value: _adminStatusHaltenAktiv,
-                          onChanged: _onAdminStatusHaltenGeaendert,
-                          activeThumbColor: AppFarben.appBarRot,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-                          child: Text(
-                            'Hält Admin-Status bis zum nächsten Laden/Öffnen '
-                            'aufrecht.',
-                            style: TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  einstellungenSections.standortAdmin,
                   Container(
                     color: AppFarben.gruppierungBandB,
                     child: Column(
