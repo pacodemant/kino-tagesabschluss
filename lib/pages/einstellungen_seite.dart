@@ -1044,6 +1044,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       onStandortModusGeaendert: _onStandortModusGeaendert,
       adminStatusHaltenAktiv: _adminStatusHaltenAktiv,
       onAdminStatusHaltenGeaendert: _onAdminStatusHaltenGeaendert,
+      wgController: _wgCtrl,
+      wechselgeldAufgeklappt: _wechselgeldAufgeklappt,
+      onToggleWechselgeldAufgeklappt: () => setState(
+        () => _wechselgeldAufgeklappt = !_wechselgeldAufgeklappt,
+      ),
+      aktiveKinoIndex: _aktiveKinoIndex,
+      aktiveKinoName: _aktiveKinoName,
+      onWgChanged: _onWgChanged,
     );
 
     return Scaffold(
@@ -1104,81 +1112,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                 if (_devAufgeklappt) ...<Widget>[
                   const Divider(height: 1),
                   einstellungenSections.standortAdmin,
-                  Container(
-                    color: AppFarben.gruppierungBandB,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        ListTile(
-                          title: const Text(
-                            'Wechselgeldbestand',
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              if (_wgCtrl.text.isNotEmpty)
-                                Text(
-                                  _wgCtrl.text,
-                                  style: const TextStyle(fontSize: 11),
-                                ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                _wechselgeldAufgeklappt
-                                    ? Icons.expand_less
-                                    : Icons.expand_more,
-                              ),
-                            ],
-                          ),
-                          onTap: () => setState(
-                            () => _wechselgeldAufgeklappt =
-                                !_wechselgeldAufgeklappt,
-                          ),
-                        ),
-                        if (_wechselgeldAufgeklappt &&
-                            _aktiveKinoIndex >= 0) ...<Widget>[
-                          const Divider(height: 1),
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  'Wechselgeld $_aktiveKinoName',
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                                const SizedBox(width: 8),
-                                SizedBox(
-                                  width: 120,
-                                  child: TextField(
-                                    controller: _wgCtrl,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      CentWaehrungsEingabeFormatter(),
-                                    ],
-                                    textAlign: TextAlign.right,
-                                    decoration: const InputDecoration(
-                                      isDense: true,
-                                      contentPadding: EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      suffixText: '€',
-                                    ),
-                                    onTap: () {
-                                      if (_wgCtrl.text == '0') _wgCtrl.clear();
-                                    },
-                                    onChanged: _onWgChanged,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                  einstellungenSections.wechselgeld,
                   Container(
                     color: AppFarben.gruppierungBandA,
                     child: Column(

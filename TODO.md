@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 359 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 360 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -228,8 +228,12 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Zeilen geschrumpft. Run 359 (Sub-Run 3) hat das Standort/
       Admin-Status-Band ausgelagert (neue Datei sections/
       einstellungen_standort_admin_section.dart) — Datei dadurch auf
-      1346 Zeilen geschrumpft. Verbleibend: Wechselgeldbestand,
-      Flurbocash-Anbindung, Dev-Modus/Testwerte.
+      1346 Zeilen geschrumpft. Run 360 (Sub-Run 4) hat das
+      Wechselgeldbestand-Band ausgelagert (neue Datei sections/
+      einstellungen_wechselgeld_section.dart) — Datei dadurch auf
+      1280 Zeilen geschrumpft. Verbleibend: Flurbocash-Anbindung,
+      Dev-Modus/Testwerte (Letzteres der größte/riskanteste
+      Rest-Block wegen _baueAutoFillInhalt()).
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,

@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 360: Sub-Run 4 der build()-Zerlegungs-Serie für
+  einstellungen_seite.dart (Fortsetzung von Run 355/358/359).
+  Wechselgeldbestand-Band ausgelagert: aufklappbare ListTile mit
+  Betrags-Vorschau + Eingabefeld für den Wechselgeld-Sollwert als
+  neues eigenständiges StatelessWidget
+  EinstellungenWechselgeldSection (neue Datei sections/
+  einstellungen_wechselgeld_section.dart), über
+  EinstellungenGruppenOrchestrierung verdrahtet. Reines Verschieben
+  ohne Verhaltensänderung — der Aufklapp-Toggle bleibt wie beim
+  Getränkeliste-Muster als Callback aus der Page injiziert. Datei
+  dadurch von 1346 auf 1280 Zeilen geschrumpft. Verbleibend für
+  weitere Sub-Runs: Flurbocash-Anbindung, Dev-Modus/Testwerte
+  (Letzteres voraussichtlich der größte/riskanteste Rest-Block wegen
+  _baueAutoFillInhalt()). Version 0.9.34+360. Dateien:
+  einstellungen_seite.dart, einstellungen_gruppen_orchestrierung.dart,
+  einstellungen_wechselgeld_section.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md.
+
 - Run 359: Sub-Run 3 der build()-Zerlegungs-Serie für
   einstellungen_seite.dart (Fortsetzung von Run 355/358). Zweites
   Band der Admin-Card ausgelagert: Standort-Betriebsmodus-Dropdown +

@@ -3,6 +3,7 @@ import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_belegsca
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_getraenkeliste_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_pwa_install_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_standort_admin_section.dart';
+import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_wechselgeld_section.dart';
 
 // Zweck: Kapselt den Gruppen-/Wrapper-Aufbau fuer die Einstellungen-Seite,
 // analog zu schritt2_gruppen_orchestrierung.dart. Wird in den naechsten
@@ -26,6 +27,12 @@ class EinstellungenGruppenOrchestrierung {
     required ValueChanged<String?> onStandortModusGeaendert,
     required bool adminStatusHaltenAktiv,
     required ValueChanged<bool> onAdminStatusHaltenGeaendert,
+    required TextEditingController wgController,
+    required bool wechselgeldAufgeklappt,
+    required VoidCallback onToggleWechselgeldAufgeklappt,
+    required int aktiveKinoIndex,
+    required String aktiveKinoName,
+    required ValueChanged<String> onWgChanged,
   }) {
     return EinstellungenSectionWidgets(
       getraenkeliste: EinstellungenGetraenkelisteSection(
@@ -49,6 +56,14 @@ class EinstellungenGruppenOrchestrierung {
         adminStatusHaltenAktiv: adminStatusHaltenAktiv,
         onAdminStatusHaltenGeaendert: onAdminStatusHaltenGeaendert,
       ),
+      wechselgeld: EinstellungenWechselgeldSection(
+        wgController: wgController,
+        aufgeklappt: wechselgeldAufgeklappt,
+        onToggleAufgeklappt: onToggleWechselgeldAufgeklappt,
+        aktiveKinoIndex: aktiveKinoIndex,
+        aktiveKinoName: aktiveKinoName,
+        onWgChanged: onWgChanged,
+      ),
     );
   }
 }
@@ -61,10 +76,12 @@ class EinstellungenSectionWidgets {
     required this.pwaInstall,
     required this.belegscan,
     required this.standortAdmin,
+    required this.wechselgeld,
   });
 
   final Widget getraenkeliste;
   final Widget? pwaInstall;
   final Widget belegscan;
   final Widget standortAdmin;
+  final Widget wechselgeld;
 }
