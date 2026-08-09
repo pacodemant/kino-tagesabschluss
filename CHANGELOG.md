@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 361: Sub-Run 5 der build()-Zerlegungs-Serie für
+  einstellungen_seite.dart (Fortsetzung von Run 355/358/359/360).
+  Flurbocash-Anbindung-Band ausgelagert: An/Aus-Switch + die drei
+  Konfigfelder (Upload-URL, location_id mit Ziffern-Formatter,
+  API-Key) inkl. FocusNodes als neues eigenständiges
+  StatelessWidget EinstellungenFlurbocashSection (neue Datei
+  sections/einstellungen_flurbocash_section.dart), über
+  EinstellungenGruppenOrchestrierung verdrahtet. Reines Verschieben
+  ohne Verhaltensänderung. Datei dadurch von 1280 auf 1225 Zeilen
+  geschrumpft. Verbleibend: nur noch Dev-Modus/Testwerte — der
+  größte/riskanteste Rest-Block wegen _baueAutoFillInhalt(), damit
+  letzter Sub-Run dieser Serie. Version 0.9.35+361. Dateien:
+  einstellungen_seite.dart, einstellungen_gruppen_orchestrierung.dart,
+  einstellungen_flurbocash_section.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md.
+
 - Run 360: Sub-Run 4 der build()-Zerlegungs-Serie für
   einstellungen_seite.dart (Fortsetzung von Run 355/358/359).
   Wechselgeldbestand-Band ausgelagert: aufklappbare ListTile mit

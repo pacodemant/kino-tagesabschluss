@@ -1052,6 +1052,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       aktiveKinoIndex: _aktiveKinoIndex,
       aktiveKinoName: _aktiveKinoName,
       onWgChanged: _onWgChanged,
+      apiUploadAktiv: _apiUploadAktiv,
+      onApiUploadGeaendert: _onApiUploadGeaendert,
+      apiUploadUrlController: _apiUploadUrlCtrl,
+      onApiUploadUrlGeaendert: _speichereApiUploadKonfig,
+      locationIdController: _locationIdCtrl,
+      locationIdFocusNode: _locationIdFocus,
+      onLocationIdGeaendert: _speichereLocationId,
+      flurbocashApiKeyController: _flurbocashApiKeyCtrl,
+      flurbocashApiKeyFocusNode: _flurbocashApiKeyFocus,
+      onFlurbocashApiKeyGeaendert: _speichereFlurbocashApiKey,
     );
 
     return Scaffold(
@@ -1113,72 +1123,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   const Divider(height: 1),
                   einstellungenSections.standortAdmin,
                   einstellungenSections.wechselgeld,
-                  Container(
-                    color: AppFarben.gruppierungBandA,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Divider(height: 1),
-                        SwitchListTile(
-                          title: const Text('Flurbocash-Anbindung'),
-                          value: _apiUploadAktiv,
-                          onChanged: _onApiUploadGeaendert,
-                          activeThumbColor: AppFarben.appBarRot,
-                        ),
-                        if (_apiUploadAktiv) ...<Widget>[
-                          const Divider(height: 1),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                TextField(
-                                  controller: _apiUploadUrlCtrl,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Upload-URL',
-                                    hintText: 'https://...',
-                                    isDense: true,
-                                  ),
-                                  onChanged: (_) =>
-                                      _speichereApiUploadKonfig(),
-                                ),
-                                const SizedBox(height: 12),
-                                TextField(
-                                  controller: _locationIdCtrl,
-                                  focusNode: _locationIdFocus,
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
-                                  decoration: const InputDecoration(
-                                    labelText: 'location_id',
-                                    isDense: true,
-                                  ),
-                                  onChanged: (_) => _speichereLocationId(),
-                                  onEditingComplete: () =>
-                                      _locationIdFocus.unfocus(),
-                                ),
-                                const SizedBox(height: 12),
-                                TextField(
-                                  controller: _flurbocashApiKeyCtrl,
-                                  focusNode: _flurbocashApiKeyFocus,
-                                  decoration: const InputDecoration(
-                                    labelText: 'API-Key',
-                                    isDense: true,
-                                  ),
-                                  onChanged: (_) =>
-                                      _speichereFlurbocashApiKey(),
-                                  onEditingComplete: () =>
-                                      _flurbocashApiKeyFocus.unfocus(),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                  einstellungenSections.flurbocash,
                   einstellungenSections.belegscan,
                   Container(
                     color: AppFarben.gruppierungBandA,

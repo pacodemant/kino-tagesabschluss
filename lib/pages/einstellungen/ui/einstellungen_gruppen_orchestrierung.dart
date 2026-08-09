@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_belegscan_section.dart';
+import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_flurbocash_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_getraenkeliste_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_pwa_install_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_standort_admin_section.dart';
@@ -33,6 +34,16 @@ class EinstellungenGruppenOrchestrierung {
     required int aktiveKinoIndex,
     required String aktiveKinoName,
     required ValueChanged<String> onWgChanged,
+    required bool apiUploadAktiv,
+    required ValueChanged<bool> onApiUploadGeaendert,
+    required TextEditingController apiUploadUrlController,
+    required VoidCallback onApiUploadUrlGeaendert,
+    required TextEditingController locationIdController,
+    required FocusNode locationIdFocusNode,
+    required VoidCallback onLocationIdGeaendert,
+    required TextEditingController flurbocashApiKeyController,
+    required FocusNode flurbocashApiKeyFocusNode,
+    required VoidCallback onFlurbocashApiKeyGeaendert,
   }) {
     return EinstellungenSectionWidgets(
       getraenkeliste: EinstellungenGetraenkelisteSection(
@@ -64,6 +75,18 @@ class EinstellungenGruppenOrchestrierung {
         aktiveKinoName: aktiveKinoName,
         onWgChanged: onWgChanged,
       ),
+      flurbocash: EinstellungenFlurbocashSection(
+        apiUploadAktiv: apiUploadAktiv,
+        onApiUploadGeaendert: onApiUploadGeaendert,
+        apiUploadUrlController: apiUploadUrlController,
+        onApiUploadUrlGeaendert: onApiUploadUrlGeaendert,
+        locationIdController: locationIdController,
+        locationIdFocusNode: locationIdFocusNode,
+        onLocationIdGeaendert: onLocationIdGeaendert,
+        flurbocashApiKeyController: flurbocashApiKeyController,
+        flurbocashApiKeyFocusNode: flurbocashApiKeyFocusNode,
+        onFlurbocashApiKeyGeaendert: onFlurbocashApiKeyGeaendert,
+      ),
     );
   }
 }
@@ -77,6 +100,7 @@ class EinstellungenSectionWidgets {
     required this.belegscan,
     required this.standortAdmin,
     required this.wechselgeld,
+    required this.flurbocash,
   });
 
   final Widget getraenkeliste;
@@ -84,4 +108,5 @@ class EinstellungenSectionWidgets {
   final Widget belegscan;
   final Widget standortAdmin;
   final Widget wechselgeld;
+  final Widget flurbocash;
 }
