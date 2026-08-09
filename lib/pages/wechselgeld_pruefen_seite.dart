@@ -15,7 +15,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart' as schritt1_ui;
+import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_rollen_section.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_zusammenfassung_section.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -1126,7 +1126,29 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         ),
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
-        rollenGruppe: _baueRollenGruppe(),
+        rollenGruppe: WechselgeldRollenSection(
+          rollenOhneKupfer: _rollenOhneKupfer,
+          kupferRollen: _kupferRollen,
+          rollenSichtbar: _rollenSichtbar,
+          kupferRollenSichtbar: _kupferRollenSichtbar,
+          rollenAufgeklappt: _rollenAufgeklappt,
+          rollenUebernommen: _rollenUebernommen,
+          stueckzahlen: _stueckzahlen,
+          stueckzahlController: _stueckzahlController,
+          stueckzahlFocusNode: _stueckzahlFocusNode,
+          summeGruppe: _summeGruppe,
+          formatiereEuro: _formatiereEuro,
+          baueFeldMitKey: _baueFeldMitKey,
+          textInputActionFuerSchritt1: _textInputAction,
+          beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
+          beiEingabeAbgeschlossen: _beiEingabeAbgeschlossen,
+          zeigeKupferRollen: _zeigeKupferRollen,
+          entferneKupferRollen: _entferneKupferRollen,
+          onToggleRollen: () => _toggleSection(_sectionRollen),
+          onLoescheRollen: _loescheRollen,
+          onLadeRollenAusErsterZaehlung: _ladeRollenAusErsterZaehlung,
+          onZeigeRollenUebernehmenHilfe: _zeigeRollenUebernehmenHilfe,
+        ),
         hinweiseSection: gruppen.hinweiseSection,
         zusammenfassung: WechselgeldZusammenfassungSection(
           gezaehlterBetragCent: _kassenbestandGesamtCent,
@@ -1138,179 +1160,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
       ),
-      ),
-    );
-  }
-
-  Widget _baueRollenGruppe() {
-    final String gesamtbetrag = schritt1_ui.schritt1FormatiereRollenAnzeige(
-      _summeGruppe(_rollenSichtbar),
-      _formatiereEuro,
-    );
-
-    Widget zeilenEintrag(Kassenzeile zeile) {
-      return schritt1_ui.Schritt1ZeilenEintrag(
-        zeile: zeile,
-        stueckzahl: _stueckzahlen[zeile.id] ?? 0,
-        controller: _stueckzahlController[zeile.id]!,
-        focusNode: _stueckzahlFocusNode[zeile.id]!,
-        baueFeldMitKey: _baueFeldMitKey,
-        textInputActionFuerSchritt1: _textInputAction,
-        beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
-        beiEingabeAbgeschlossen: _beiEingabeAbgeschlossen,
-        formatiereEuro: _formatiereEuro,
-      );
-    }
-
-    final Widget inhalt = schritt1_ui.Schritt1RollenInhalt(
-      rollenOhneKupfer: _rollenOhneKupfer,
-      kupferRollen: _kupferRollen,
-      kupferRollenSichtbar: _kupferRollenSichtbar,
-      zeilenEintragBuilder: zeilenEintrag,
-      summeGruppe: _summeGruppe,
-      formatiereRollenAnzeige: (int cent) =>
-          schritt1_ui.schritt1FormatiereRollenAnzeige(cent, _formatiereEuro),
-      zeigeKupferRollen: _zeigeKupferRollen,
-      entferneKupferRollen: _entferneKupferRollen,
-      rollenSichtbar: _rollenSichtbar,
-    );
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          InkWell(
-            onTap: () => _toggleSection(_sectionRollen),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Flexible(
-                              child: Text.rich(
-                                TextSpan(
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: 'Rollen ',
-                                      style: TextStyle(fontWeight: FontWeight.w700),
-                                    ),
-                                    TextSpan(
-                                      text: 'Anzahl',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        color: AppFarben.appBarRot,
-                                        backgroundColor: AppFarben.fokusFarbe,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: ' der Rollen',
-                                      style: TextStyle(fontSize: 10),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.help_outline),
-                              color: AppFarben.appBarRot,
-                              iconSize: 18,
-                              padding: const EdgeInsets.only(left: 4),
-                              constraints: const BoxConstraints(),
-                              onPressed: () => showDialog<void>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Rollen eingeben'),
-                                  content: const Text.rich(
-                                    TextSpan(
-                                      children: <InlineSpan>[
-                                        TextSpan(text: 'Rollen einfach zählen und '),
-                                        TextSpan(
-                                          text: 'Anzahl',
-                                          style: TextStyle(fontWeight: FontWeight.bold),
-                                        ),
-                                        TextSpan(text: ' eingeben, nicht den Betrag.\n'),
-                                        TextSpan(text: 'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'),
-                                        TextSpan(text: 'Also "2" für zwei Rollen, nicht "100".'),
-                                      ],
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(),
-                                      child: const Text('Verstanden'),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (_rollenAufgeklappt)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              InkWell(
-                                borderRadius: BorderRadius.circular(2),
-                                onTap: _rollenUebernommen
-                                    ? _loescheRollen
-                                    : _ladeRollenAusErsterZaehlung,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 4,
-                                  ),
-                                  child: Text(
-                                    _rollenUebernommen
-                                        ? 'Geldrollen löschen'
-                                        : 'Aus Zählung von vorhin übernehmen',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: AppFarben.appBarRot,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.help_outline),
-                                color: AppFarben.appBarRot,
-                                iconSize: 18,
-                                padding: const EdgeInsets.only(left: 4),
-                                constraints: const BoxConstraints(),
-                                onPressed: _zeigeRollenUebernehmenHilfe,
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    gesamtbetrag,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    _rollenAufgeklappt
-                        ? Icons.expand_less
-                        : Icons.expand_more,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (_rollenAufgeklappt) ...<Widget>[
-            const Divider(height: 1),
-            Padding(padding: const EdgeInsets.all(12), child: inhalt),
-          ],
-        ],
       ),
     );
   }

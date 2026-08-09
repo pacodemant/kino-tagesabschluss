@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 363 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 364 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -262,8 +262,13 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       abgetrennte _ZusammenfassungsZeile als neues Widget
       WechselgeldZusammenfassungSection (neuer Ordner lib/pages/
       wechselgeld_pruefen/sections/) — Datei dadurch von 1378 auf
-      1318 Zeilen geschrumpft. Verbleibend: _baueRollenGruppe()
-      (größerer/riskanterer Rest-Block für Sub-Run 2).
+      1318 Zeilen geschrumpft. Run 364 (Sub-Run 2, letzter) hat den
+      größeren/riskanteren Rest-Block ausgelagert: _baueRollenGruppe()
+      (neue Datei sections/wechselgeld_rollen_section.dart) — Datei
+      dadurch auf 1167 Zeilen geschrumpft. Damit ist auch diese
+      Serie abgeschlossen (nur 2 Sub-Runs nötig, da build() hier
+      schon kompakt war und die meisten Gruppen ohnehin über die
+      Schritt-1-Infrastruktur laufen).
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,

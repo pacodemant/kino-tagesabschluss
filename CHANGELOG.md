@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 364: Sub-Run 2 (letzter) der Zerlegungs-Serie für
+  wechselgeld_pruefen_seite.dart (Fortsetzung von Run 363). Größerer/
+  riskanterer Rest-Block ausgelagert: _baueRollenGruppe() (~170
+  Zeilen, inkl. "Rollen eingeben"-Hilfe-Dialog und "Aus Zählung von
+  vorhin übernehmen"-Logik) als neues Widget WechselgeldRollenSection
+  (neue Datei sections/wechselgeld_rollen_section.dart), am
+  Aufrufort direkt instanziiert. Reines Verschieben ohne
+  Verhaltensänderung — alle Callbacks/State-Referenzen (Stückzahlen,
+  Controller, FocusNodes, Kupfer-Sichtbarkeit) unverändert aus der
+  Page durchgereicht. Nicht mehr benötigten schritt1_ui-Import in
+  der Page entfernt (nur noch in der neuen Section-Datei gebraucht).
+  Datei dadurch von 1318 auf 1167 Zeilen geschrumpft. Damit ist auch
+  diese Zerlegungs-Serie abgeschlossen (2 Sub-Runs, da build() hier
+  schon kompakt war). Version 0.9.38+364. Dateien:
+  wechselgeld_pruefen_seite.dart, wechselgeld_rollen_section.dart
+  (neu), pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart,
+  TODO.md.
+
 - Run 363: Sub-Run 1 (Grundgerüst) einer neuen Zerlegungs-Serie für
   wechselgeld_pruefen_seite.dart (1378 Zeilen), analog zum Muster
   aus Run 355 für einstellungen_seite.dart. Anders als dort ist
