@@ -1409,7 +1409,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: reloadPage,
-              child: const Text('Neu laden'),
+              child: const Text('App neu laden'),
             ),
           ),
         ],

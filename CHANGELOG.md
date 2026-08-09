@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 357: Zwei TODO.md-Punkte geklärt, ohne dass eine Code-Änderung
+  nötig war. (A) "Kein Screen-Flip": Paco bestätigt, dass auf den
+  eingesetzten Android-Geräten (Zielplattform) das Drehproblem nicht
+  auftritt — nur Pacos private iOS-Testumgebung war betroffen
+  (bereits als iOS-spezifisch bekannt, Run 319b). Punkt als erledigt
+  nach TODO_ERLEDIGT.md verschoben. (B) "Kartensumme ↔
+  EC-Gesamtbetrag nach manuellem Nachtrag": Der bestehende
+  Warnhinweis in schritt2_ui_builder.dart (summePasstNicht) reagiert
+  bereits live auf den Vergleich zwischen Kartensumme und
+  EC-Gesamtbetrag und verschwindet automatisch, sobald ein "+
+  Kartenart"-Nachtrag beide Werte wieder angleicht. Der
+  EC-Gesamtbetrag bleibt bewusst ein unabhängig vom Scan eingelesener
+  Wert statt einer berechneten Summe, da sonst die Kreuzvalidierung
+  gegen Scan-Fehler bei einzelnen Kartenarten verloren ginge. Ebenfalls
+  geklärt, ebenfalls nach TODO_ERLEDIGT.md verschoben. Zusätzlich zwei
+  liegen gebliebene Kleinigkeiten mit eingecheckt: Button-Text "Neu
+  laden" → "App neu laden" (einstellungen_seite.dart) sowie ein
+  zusätzlicher Dummy-EC-Beleg-Scan (IMG_3714.jpeg) in der lokalen
+  HTML-Testsimulation sowie ein Tippfehler-Fix in AGENTS.md ("im im"
+  → "im"). Version 0.9.31+357. Dateien: einstellungen_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart,
+  TODO.md, TODO_ERLEDIGT.md, AGENTS.md,
+  .dev/kassenberichte dummies/html/ec_belege_scans.html,
+  .dev/kassenberichte dummies/img/IMG_3714.jpeg.
+
 - Run 356a2: "+"-Button neben dem Papierkorb in jeder Getränkeliste-
   Zeile (Einstellungen) ergänzt. Fügt eine neue leere Zeile direkt
   unterhalb der angeklickten Zeile ein (_fuegeGetraenkNachIndexEin(

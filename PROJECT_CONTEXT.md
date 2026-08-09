@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.30+356a2 · Run 356a2
+Version: 0.9.31+357 · Run 357
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 344)
+## Laufender Entwicklungsstand (Run 357)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -558,6 +558,17 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Down-Button wie in Schritt 1 übernommen (neue Datei
   schritt2_scroll_helper.dart), dafür den alten, nicht tippbaren
   Fade-Pfeil an der EC-Kachel (seit Run 274a) komplett entfernt.
+- Runs 345–356 (Details siehe CHANGELOG.md): build()-Zerlegungs-Serie
+  für tagesabschluss_schritt2_seite.dart abgeschlossen, danach analog
+  für tagesabschluss_schritt3_seite.dart (Run 354) und begonnen für
+  einstellungen_seite.dart (ab Run 355); diverse Getränkeliste-UX-
+  Fixes (Run 356/356a/356a2).
+- Run 357 ✅ Zwei TODO.md-Punkte geklärt, keine Code-Änderung nötig:
+  "Kein Screen-Flip" (Android bestätigt unproblematisch, Zielplattform)
+  und "Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag"
+  (bestehender Warnhinweis reagiert bereits live, EC-Gesamtbetrag
+  bleibt bewusst unabhängig vom Scan eingelesen). Zusätzlich Button-
+  Text "Neu laden" → "App neu laden" eingecheckt.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

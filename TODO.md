@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 356a2 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 357 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -57,26 +57,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
-
-- [ ] **Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag** Seit Run 274f4
-      gibt es in der Kartenarten-Tabelle einen "+ Kartenart"-Button zum
-      nachträglichen Einblenden nicht erkannter Kartenarten. Klären: wenn der
-      Nachtrag die Kartensumme wieder zum EC-Gesamtbetrag (Hauptfeld) passend
-      macht, soll dort etwas automatisch nachgezogen werden? Zurückgestellt,
-      da bei sauberen Scans kaum relevant.
-
-- [ ] **Kein Screen-Flip** App soll beim Drehen des Smartphones hochkant
-      bleiben. Code-seitig vorhanden: `main.dart` sperrt via
-      `SystemChrome.setPreferredOrientations` auf `portraitUp`;
-      zusätzlich `web/manifest.json` mit `"orientation":
-      "portrait-primary"`. Test (Run 319b, Pacos iPhone-PWA): Screen
-      flippt trotzdem weiterhin — die Manifest-Sperre wird von iOS/
-      WebKit bekanntermaßen unzuverlässig bis gar nicht umgesetzt,
-      auch für installierte PWAs. Da Zielplattform vorkonfigurierte
-      Android-Geräte sind (dort wird die Manifest-Sperre von Chrome/
-      Android zuverlässiger unterstützt): auf einem echten Android-Gerät
-      (als installierte PWA) testen, bevor als erledigt gilt. Bleibt bis
-      dahin offen. *(getestet Run 319b — iOS bestätigt fehlerhaft)*
 
 ---
 

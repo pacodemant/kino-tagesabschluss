@@ -74,6 +74,28 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       ist durchgängig Android, diese iOS-Safari-spezifische Leiste tritt
       dort in dieser Form i. d. R. nicht auf. *(dokumentiert Run 323b)*
 
+- [x] **Kein Screen-Flip** App soll beim Drehen des Smartphones
+      hochkant bleiben. Die Manifest-/SystemChrome-Sperre (siehe
+      `main.dart`, `web/manifest.json`) wird von iOS/Safari
+      unzuverlässig umgesetzt (bestätigt fehlerhaft, Run 319b) — auf
+      der eigentlichen Zielplattform (vorkonfigurierte Android-Geräte)
+      tritt das Problem laut Paco-Test aber nicht auf. Da iOS nur
+      Pacos private Testumgebung ist, gilt der Punkt auf der
+      Zielplattform als erledigt. *(Run 357)*
+
+- [x] **Kartensumme ↔ EC-Gesamtbetrag nach manuellem Nachtrag** Seit
+      Run 274f4 gibt es in der Kartenarten-Tabelle einen "+
+      Kartenart"-Button zum nachträglichen Einblenden nicht erkannter
+      Kartenarten. Geklärt (keine Code-Änderung nötig): Der
+      Warnhinweis "Kartensumme stimmt nicht mit dem eingetragenen
+      EC-Gesamtbetrag überein" (`schritt2_ui_builder.dart`,
+      `summePasstNicht`) reagiert bereits live auf den Vergleich und
+      verschwindet automatisch, sobald ein Nachtrag beide Werte
+      angleicht. Der EC-Gesamtbetrag bleibt bewusst ein unabhängig
+      vom Scan eingelesener Wert statt einer berechneten Summe —
+      sonst ginge die Kreuzvalidierung gegen Scan-Fehler bei
+      einzelnen Kartenarten verloren. *(Run 357)*
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)

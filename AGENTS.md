@@ -113,7 +113,7 @@ Wenn eine Anweisung ohne explizite Run-Nummer gegeben wird, gilt:
 - Geldberechnung erfolgt intern in Cent — nicht ändern.
 - Persistenz-Keys dürfen nicht verändert werden, außer der Run erlaubt es ausdrücklich.
 - Keine neuen Dependencies ohne explizite Freigabe.
-- Änderungen dürfen nur im im Run-Prompt definierten Zielbereich erfolgen.
+- Änderungen dürfen nur im Run-Prompt definierten Zielbereich erfolgen.
 
 ## Git-Sicherheitsvertrag
 
