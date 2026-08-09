@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 364a · wird fortlaufend ergänzt
+Stand: August 2026 · Run 364a2 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -64,7 +64,15 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–281)*
 
-- [ ] **Duplikat-Button** Ursprünglich zusätzlich als Dummy-Button im
+- [ ] **Duplikat-Button** KLÄRUNGSBEDÜRFTIG (Run 364a2): Ursprünglicher
+      Zweck ist nicht mehr rekonstruierbar — weder CHANGELOG.md noch
+      CHANGELOG_ARCHIV.md noch TODO_ERLEDIGT.md enthalten eine
+      funktionale Beschreibung, nur den Werdegang (siehe unten).
+      Paco selbst weiß es auf Nachfrage (Run 364a2) nicht mehr. Vor
+      einer Umsetzung erst klären, wofür der Button gedacht war/sein
+      soll — sonst bleibt offen, ob der Punkt überhaupt noch relevant
+      ist oder gestrichen werden kann.
+      Werdegang: Ursprünglich zusätzlich als Dummy-Button im
       Prüf-Popup geplant — Popup existierte zwischen Run 307 und
       Run 318 nicht. Seit Run 318 gibt es wieder ein Prüf-Popup
       (`beleg_scan_bestaetigen_dialog.dart`, anderer Zweck als vor

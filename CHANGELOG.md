@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 364a2: Direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von
+  Run 364a mit Zahlensuffix. Anlass: Paco nach dem ursprünglichen
+  Zweck des TODO-Punkts "Duplikat-Button" gefragt — in CHANGELOG.md,
+  CHANGELOG_ARCHIV.md und TODO_ERLEDIGT.md recherchiert, dort steht
+  nur der Werdegang (wo der Button mal geplant war, was daraus
+  wurde), aber keine funktionale Beschreibung; auch Paco erinnert
+  sich nicht mehr. TODO.md-Eintrag um "KLÄRUNGSBEDÜRFTIG (Run 364a2)"
+  ergänzt: vor einer Umsetzung muss erst geklärt werden, wofür der
+  Button gedacht war/sein soll, sonst bleibt offen, ob der Punkt
+  überhaupt noch relevant ist. Kein Code geändert. Datei: TODO.md.
+
 - Run 364a: TODO.md-Punkt für tagesabschluss_schritt2_seite.dart
   ergänzt und zurückgestellt. Nach Abschluss der einstellungen_
   seite.dart- und wechselgeld_pruefen_seite.dart-Serien (Run 355-364)
