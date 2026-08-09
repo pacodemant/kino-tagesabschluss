@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 364a: TODO.md-Punkt für tagesabschluss_schritt2_seite.dart
+  ergänzt und zurückgestellt. Nach Abschluss der einstellungen_
+  seite.dart- und wechselgeld_pruefen_seite.dart-Serien (Run 355-364)
+  auf Kandidatensuche gegangen: keine der übrigen unangetasteten
+  Seiten ist groß genug, um das Section-Widget-Zerlegungsmuster zu
+  rechtfertigen. tagesabschluss_schritt2_seite.dart bleibt mit 2619
+  Zeilen die einzige große Ausnahme, aber deren build() ist bereits
+  zerlegt (Runs 345-353) — der Rest ist State-/Fokus-Logik, die statt
+  eines einfachen Sub-Runs einen eigenen, größeren Architektur-Run
+  bräuchte (Logik in Services/Helper auslagern). Bisher nur implizit
+  in der Refactoring-Verlaufsnotiz enthalten, jetzt als eigener
+  Punkt dokumentiert und auf Paco-Wunsch zurückgestellt. Keine
+  App-Code-Änderung. Version 0.9.38+364a. Datei: TODO.md.
+
 - Run 364: Sub-Run 2 (letzter) der Zerlegungs-Serie für
   wechselgeld_pruefen_seite.dart (Fortsetzung von Run 363). Größerer/
   riskanterer Rest-Block ausgelagert: _baueRollenGruppe() (~170

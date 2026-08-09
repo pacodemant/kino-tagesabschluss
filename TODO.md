@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 364 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 364a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -268,7 +268,21 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       dadurch auf 1167 Zeilen geschrumpft. Damit ist auch diese
       Serie abgeschlossen (nur 2 Sub-Runs nötig, da build() hier
       schon kompakt war und die meisten Gruppen ohnehin über die
-      Schritt-1-Infrastruktur laufen).
+      Schritt-1-Infrastruktur laufen). Kandidatensuche nach Run 364
+      (Zeilenvergleich aller lib/pages/*.dart): keine der
+      verbleibenden unangetasteten Seiten (getraenke_auffuellen_
+      seite.dart 525, verlauf_detail_seite.dart 491,
+      stueckelung_vorschlag_seite.dart 464 Zeilen) ist groß genug,
+      um dieses Zerlegungsmuster zu rechtfertigen (jeweils build()
+      unter 260 Zeilen). Einzige weiterhin sehr große Datei ist
+      tagesabschluss_schritt2_seite.dart (2619 Zeilen) — deren
+      build() bereits zerlegt ist (Runs 345–353), der Rest ist
+      State/Fokus-Logik/Speicher-Code. Eine weitere Verkleinerung
+      bräuchte einen andersartigen, größeren Architektur-Run (Logik
+      in Services/Helper auslagern statt Widgets extrahieren), keinen
+      einfachen Sub-Run im bisherigen Muster. Auf Paco-Wunsch
+      zurückgestellt (Run 364a) — bei Bedarf später als eigenständiges
+      Vorhaben aufgreifen.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
