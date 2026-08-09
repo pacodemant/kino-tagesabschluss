@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 361 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 362 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -234,9 +234,19 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       1280 Zeilen geschrumpft. Run 361 (Sub-Run 5) hat das
       Flurbocash-Anbindung-Band ausgelagert (neue Datei sections/
       einstellungen_flurbocash_section.dart) — Datei dadurch auf
-      1225 Zeilen geschrumpft. Verbleibend: nur noch Dev-Modus/
-      Testwerte, der größte/riskanteste Rest-Block wegen
-      _baueAutoFillInhalt() — damit letzter Sub-Run dieser Serie.
+      1225 Zeilen geschrumpft. Run 362 (Sub-Run 6, letzter dieser
+      Serie) hat den größten/riskantesten Rest-Block ausgelagert:
+      Dev-Modus/Testwerte inkl. _baueAutoFillInhalt()-Aufruf (neue
+      Datei sections/einstellungen_dev_modus_section.dart) — Datei
+      dadurch auf 1168 Zeilen geschrumpft. Damit ist die
+      einstellungen_seite.dart-Zerlegungs-Serie (Run 355/358–362)
+      abgeschlossen: alle 5 Admin-Card-Bänder plus Getränkeliste-
+      und PWA-Install-Card sind jetzt eigene StatelessWidgets unter
+      lib/pages/einstellungen/sections/. build() selbst bleibt
+      größtenteils Struktur-Gerüst (Scaffold/AppBar/ListView), die
+      restlichen ~1168 Zeilen der Datei sind State, Speicher-Logik
+      und die Auto-Fill-Builder-Methoden — kein weiterer Kandidat
+      für dieses Zerlegungsmuster.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,

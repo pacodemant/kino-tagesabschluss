@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.35+361 · Run 361
+Version: 0.9.36+362 · Run 362
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 361)
+## Laufender Entwicklungsstand (Run 362)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -594,6 +594,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   EinstellungenFlurbocashSection ausgelagert. Reines Verschieben,
   Datei von 1280 auf 1225 Zeilen geschrumpft. Verbleibend: nur noch
   Dev-Modus/Testwerte (letzter, aufwendigster Sub-Run der Serie).
+- Run 362 ✅ Sub-Run 6 (letzter) der einstellungen_seite.dart-
+  Zerlegungs-Serie: Dev-Modus/Testwerte-Band (Switch, Aufklapp-
+  Bereich, Standard-Testwerte-Button, _baueAutoFillInhalt()) als
+  eigenes StatelessWidget EinstellungenDevModusSection ausgelagert.
+  Reines Verschieben, Datei von 1225 auf 1168 Zeilen geschrumpft.
+  Serie damit abgeschlossen — alle 5 Admin-Card-Bänder plus
+  Getränkeliste-/PWA-Install-Card sind eigene Widgets unter
+  lib/pages/einstellungen/sections/.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

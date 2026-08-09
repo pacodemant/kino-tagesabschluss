@@ -1062,6 +1062,14 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       flurbocashApiKeyController: _flurbocashApiKeyCtrl,
       flurbocashApiKeyFocusNode: _flurbocashApiKeyFocus,
       onFlurbocashApiKeyGeaendert: _speichereFlurbocashApiKey,
+      devModusAktiv: _devModusAktiv,
+      onDevModusGeaendert: _onDevModusGeaendert,
+      testwertAufgeklappt: _testwertAufgeklappt,
+      onToggleTestwertAufgeklappt: () => setState(
+        () => _testwertAufgeklappt = !_testwertAufgeklappt,
+      ),
+      onSetzeStandardTestwerte: _setzeStandardTestwerte,
+      autoFillInhalt: _baueAutoFillInhalt(),
     );
 
     return Scaffold(
@@ -1125,72 +1133,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   einstellungenSections.wechselgeld,
                   einstellungenSections.flurbocash,
                   einstellungenSections.belegscan,
-                  Container(
-                    color: AppFarben.gruppierungBandA,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Divider(height: 1),
-                        SwitchListTile(
-                          title: const Text('Dev-Modus (Auto-Fill)'),
-                          value: _devModusAktiv,
-                          onChanged: _onDevModusGeaendert,
-                          activeThumbColor: AppFarben.appBarRot,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(16, 0, 16, 8),
-                          child: Text(
-                            'Blendet die Auto-Fill-Werkzeuge auf Schritt '
-                            '1-3 ein oder aus.',
-                            style: TextStyle(fontSize: 11, color: Colors.grey),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 8, 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              const Text(
-                                'Testwerte',
-                                style: TextStyle(fontSize: 16),
-                              ),
-                              TextButton.icon(
-                                onPressed: () => setState(
-                                  () => _testwertAufgeklappt =
-                                      !_testwertAufgeklappt,
-                                ),
-                                icon: Icon(
-                                  _testwertAufgeklappt
-                                      ? Icons.expand_less
-                                      : Icons.expand_more,
-                                ),
-                                label: const Text('Werte eingeben'),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (_testwertAufgeklappt) ...<Widget>[
-                          const Divider(height: 1),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: TextButton(
-                                onPressed: _setzeStandardTestwerte,
-                                child: const Text(
-                                    'Standard-Testwerte übernehmen'),
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: _baueAutoFillInhalt(),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
+                  einstellungenSections.devModus,
                 ],
               ],
             ),

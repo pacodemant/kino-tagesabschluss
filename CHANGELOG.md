@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 362: Sub-Run 6 (letzter) der build()-Zerlegungs-Serie für
+  einstellungen_seite.dart (Fortsetzung von Run 355/358/359/360/
+  361). Größter/riskantester Rest-Block ausgelagert: Dev-Modus-
+  Switch, Testwerte-Aufklapp-Bereich, "Standard-Testwerte
+  übernehmen"-Button und der bereits vorhandene
+  _baueAutoFillInhalt()-Builder als neues eigenständiges
+  StatelessWidget EinstellungenDevModusSection (neue Datei
+  sections/einstellungen_dev_modus_section.dart), über
+  EinstellungenGruppenOrchestrierung verdrahtet. Reines Verschieben
+  ohne Verhaltensänderung — _baueAutoFillInhalt() selbst bleibt
+  unverändert in einstellungen_seite.dart, wird nur als fertiges
+  Widget durchgereicht (analog zum Getränkeliste-Muster aus Run
+  355). Datei dadurch von 1225 auf 1168 Zeilen geschrumpft. Damit
+  ist die gesamte Zerlegungs-Serie für einstellungen_seite.dart
+  abgeschlossen: alle 5 Admin-Card-Bänder (Standort/Admin-Status,
+  Wechselgeldbestand, Flurbocash-Anbindung, KI-Belegscan-Konfig,
+  Dev-Modus/Testwerte) plus Getränkeliste- und PWA-Install-Card
+  sind jetzt eigene StatelessWidgets unter lib/pages/einstellungen/
+  sections/. Version 0.9.36+362. Dateien: einstellungen_seite.dart,
+  einstellungen_gruppen_orchestrierung.dart,
+  einstellungen_dev_modus_section.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md.
+
 - Run 361: Sub-Run 5 der build()-Zerlegungs-Serie für
   einstellungen_seite.dart (Fortsetzung von Run 355/358/359/360).
   Flurbocash-Anbindung-Band ausgelagert: An/Aus-Switch + die drei

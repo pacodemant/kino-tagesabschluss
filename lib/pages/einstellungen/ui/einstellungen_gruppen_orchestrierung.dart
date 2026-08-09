@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_belegscan_section.dart';
+import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_dev_modus_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_flurbocash_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_getraenkeliste_section.dart';
 import 'package:kino_bar_app/pages/einstellungen/sections/einstellungen_pwa_install_section.dart';
@@ -44,6 +45,12 @@ class EinstellungenGruppenOrchestrierung {
     required TextEditingController flurbocashApiKeyController,
     required FocusNode flurbocashApiKeyFocusNode,
     required VoidCallback onFlurbocashApiKeyGeaendert,
+    required bool devModusAktiv,
+    required ValueChanged<bool> onDevModusGeaendert,
+    required bool testwertAufgeklappt,
+    required VoidCallback onToggleTestwertAufgeklappt,
+    required VoidCallback onSetzeStandardTestwerte,
+    required Widget autoFillInhalt,
   }) {
     return EinstellungenSectionWidgets(
       getraenkeliste: EinstellungenGetraenkelisteSection(
@@ -87,6 +94,14 @@ class EinstellungenGruppenOrchestrierung {
         flurbocashApiKeyFocusNode: flurbocashApiKeyFocusNode,
         onFlurbocashApiKeyGeaendert: onFlurbocashApiKeyGeaendert,
       ),
+      devModus: EinstellungenDevModusSection(
+        devModusAktiv: devModusAktiv,
+        onDevModusGeaendert: onDevModusGeaendert,
+        testwertAufgeklappt: testwertAufgeklappt,
+        onToggleTestwertAufgeklappt: onToggleTestwertAufgeklappt,
+        onSetzeStandardTestwerte: onSetzeStandardTestwerte,
+        autoFillInhalt: autoFillInhalt,
+      ),
     );
   }
 }
@@ -101,6 +116,7 @@ class EinstellungenSectionWidgets {
     required this.standortAdmin,
     required this.wechselgeld,
     required this.flurbocash,
+    required this.devModus,
   });
 
   final Widget getraenkeliste;
@@ -109,4 +125,5 @@ class EinstellungenSectionWidgets {
   final Widget standortAdmin;
   final Widget wechselgeld;
   final Widget flurbocash;
+  final Widget devModus;
 }
