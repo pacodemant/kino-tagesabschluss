@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.36+362 · Run 362
+Version: 0.9.37+363 · Run 363
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 362)
+## Laufender Entwicklungsstand (Run 363)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -602,6 +602,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Serie damit abgeschlossen — alle 5 Admin-Card-Bänder plus
   Getränkeliste-/PWA-Install-Card sind eigene Widgets unter
   lib/pages/einstellungen/sections/.
+- Run 363 ✅ Sub-Run 1 (Grundgerüst) einer neuen Zerlegungs-Serie
+  für wechselgeld_pruefen_seite.dart (1378 Zeilen). Zusammenfassungs-
+  Karte (_baueZusammenfassung() + _ZusammenfassungsZeile) als
+  eigenes Widget WechselgeldZusammenfassungSection ausgelagert
+  (neuer Ordner lib/pages/wechselgeld_pruefen/sections/, direkt
+  instanziiert ohne Orchestrierungs-Layer). Datei von 1378 auf
+  1318 Zeilen geschrumpft. Verbleibend: _baueRollenGruppe()
+  (~170 Zeilen, für Sub-Run 2).
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

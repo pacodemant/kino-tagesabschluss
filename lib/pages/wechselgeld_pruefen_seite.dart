@@ -16,6 +16,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initia
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart' as schritt1_ui;
+import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_zusammenfassung_section.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
@@ -1127,7 +1128,12 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
         rollenGruppe: _baueRollenGruppe(),
         hinweiseSection: gruppen.hinweiseSection,
-        zusammenfassung: _baueZusammenfassung(differenzCent),
+        zusammenfassung: WechselgeldZusammenfassungSection(
+          gezaehlterBetragCent: _kassenbestandGesamtCent,
+          wechselgeldSollwertCent: _wechselgeldSollwertCent,
+          differenzCent: differenzCent,
+          formatiereEuro: _formatiereEuro,
+        ),
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
@@ -1309,70 +1315,4 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     );
   }
 
-  Widget _baueZusammenfassung(int differenzCent) {
-    final bool differenzNull = differenzCent == 0;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            const Text(
-              'Zusammenfassung',
-              style: TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            _ZusammenfassungsZeile(
-              label: 'Gezählter Betrag',
-              wert: _formatiereEuro(_kassenbestandGesamtCent),
-            ),
-            _ZusammenfassungsZeile(
-              label: 'Wechselgeld',
-              wert: '− ${_formatiereEuro(_wechselgeldSollwertCent)}',
-            ),
-            _ZusammenfassungsZeile(
-              label: 'Differenz',
-              wert: TagesabschlussFormatierung.formatiereEuroMitVorzeichen(
-                  differenzCent),
-              hervorheben: true,
-              farbe: differenzNull ? Colors.green.shade700 : Colors.red,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ZusammenfassungsZeile extends StatelessWidget {
-  const _ZusammenfassungsZeile({
-    required this.label,
-    required this.wert,
-    this.hervorheben = false,
-    this.farbe,
-  });
-
-  final String label;
-  final String wert;
-  final bool hervorheben;
-  final Color? farbe;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 6),
-      child: Row(
-        children: <Widget>[
-          Expanded(child: Text(label)),
-          Text(
-            wert,
-            style: TextStyle(
-              fontWeight: hervorheben ? FontWeight.w700 : FontWeight.w500,
-              color: farbe,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

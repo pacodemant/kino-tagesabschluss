@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 362 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 363 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -246,7 +246,24 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       größtenteils Struktur-Gerüst (Scaffold/AppBar/ListView), die
       restlichen ~1168 Zeilen der Datei sind State, Speicher-Logik
       und die Auto-Fill-Builder-Methoden — kein weiterer Kandidat
-      für dieses Zerlegungsmuster.
+      für dieses Zerlegungsmuster. Run 363 startet eine neue Serie
+      für wechselgeld_pruefen_seite.dart (1378 Zeilen). Anders als
+      bei Einstellungen/Schritt 1-3 ist hier build() selbst schon
+      kompakt (~183 Zeilen), da die Seite die meisten Gruppen
+      (Scheine, lose Münzen, Umschläge) über die bestehende
+      Schritt-1-Infrastruktur (Schritt1GruppenOrchestrierung,
+      Schritt1BodyContent) bezieht — die Datei ist im Kern eine
+      abgespeckte Wiederverwendung von Schritt 1. Die Größe kommt
+      von zwei seiteneigenen Blöcken außerhalb dieser Infrastruktur:
+      _baueRollenGruppe() (~170 Zeilen, eigene "Aus Zählung von
+      vorhin übernehmen"-Logik) und der Zusammenfassungs-Karte.
+      Sub-Run 1 (Run 363) hat den einfacheren Block ausgelagert:
+      _baueZusammenfassung() + die bereits als eigene Klasse
+      abgetrennte _ZusammenfassungsZeile als neues Widget
+      WechselgeldZusammenfassungSection (neuer Ordner lib/pages/
+      wechselgeld_pruefen/sections/) — Datei dadurch von 1378 auf
+      1318 Zeilen geschrumpft. Verbleibend: _baueRollenGruppe()
+      (größerer/riskanterer Rest-Block für Sub-Run 2).
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,

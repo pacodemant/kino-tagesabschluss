@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 363: Sub-Run 1 (Grundgerüst) einer neuen Zerlegungs-Serie für
+  wechselgeld_pruefen_seite.dart (1378 Zeilen), analog zum Muster
+  aus Run 355 für einstellungen_seite.dart. Anders als dort ist
+  build() hier schon kompakt (~183 Zeilen), da die Seite die
+  meisten Gruppen über die bestehende Schritt-1-Infrastruktur
+  (Schritt1GruppenOrchestrierung, Schritt1BodyContent) bezieht —
+  Ziel ist hier, die zwei seiteneigenen Blöcke außerhalb dieser
+  Infrastruktur auszulagern. Sub-Run 1 lagert den einfacheren Block
+  aus: _baueZusammenfassung() + die bereits als eigene Klasse
+  abgetrennte _ZusammenfassungsZeile als neues Widget
+  WechselgeldZusammenfassungSection (neuer Ordner lib/pages/
+  wechselgeld_pruefen/sections/), am Aufrufort direkt instanziiert
+  (kein Orchestrierungs-Layer, analog zum schlankeren Schritt-3-
+  Muster aus Run 354, da hier nur ein Widget). Reines Verschieben
+  ohne Verhaltensänderung. Datei dadurch von 1378 auf 1318 Zeilen
+  geschrumpft. Verbleibend: _baueRollenGruppe() (~170 Zeilen,
+  größerer/riskanterer Rest-Block für Sub-Run 2). Version
+  0.9.37+363. Dateien: wechselgeld_pruefen_seite.dart,
+  wechselgeld_zusammenfassung_section.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart, TODO.md.
+
 - Run 362: Sub-Run 6 (letzter) der build()-Zerlegungs-Serie für
   einstellungen_seite.dart (Fortsetzung von Run 355/358/359/360/
   361). Größter/riskantester Rest-Block ausgelagert: Dev-Modus-
