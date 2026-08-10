@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 367: "Heute"-Badge-Duplikat zusammengeführt. Anlass:
+  Code-Review ergab, dass verlauf_seite.dart und
+  verlauf_detail_seite.dart das identische "Heute"-Badge (roter
+  Hintergrund, weißer fetter Text) separat als Container/BoxDecoration
+  gebaut hatten. Neues gemeinsames Widget lib/widgets/heute_badge.dart
+  (HeuteBadge), genutzt an beiden Stellen. Keine sichtbare
+  Verhaltensänderung. Version 0.9.41+367. Dateien: heute_badge.dart
+  (neu), verlauf_seite.dart, verlauf_detail_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 366: DEV-Tools-Panel-Duplikat zusammengeführt. Anlass:
   Code-Review ergab, dass Schritt 1
   (schritt1_orchestrierung_helper.dart) und Schritt 2

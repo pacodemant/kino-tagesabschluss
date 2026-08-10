@@ -8,6 +8,7 @@ import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
+import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
@@ -260,21 +261,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
             ),
             if (istHeute) ...<Widget>[
               const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppFarben.heuteBadgeHintergrund,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  'Heute',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+              const HeuteBadge(),
             ],
           ],
         ),
