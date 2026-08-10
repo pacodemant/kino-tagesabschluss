@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/collapsible_card_section.dart';
 
 class Schritt1MuenzenRollenSection extends StatelessWidget {
@@ -30,11 +29,11 @@ class Schritt1MuenzenRollenSection extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.w700),
           ),
           TextSpan(
-            text: 'Anzahl',
+            text: ' Anzahl ',
             style: TextStyle(
               fontWeight: FontWeight.w700,
-              color: AppFarben.appBarRot,
-              backgroundColor: AppFarben.fokusFarbe,
+              color: Colors.white,
+              backgroundColor: Colors.black,
               fontSize: 10,
             ),
           ),

@@ -239,12 +239,11 @@ class Schritt1GruppenOrchestrierung {
                                             style: TextStyle(fontSize: 10),
                                           ),
                                           TextSpan(
-                                            text: 'Cent',
+                                            text: ' Cent ',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
-                                              color: AppFarben.appBarRot,
-                                              backgroundColor:
-                                                  AppFarben.fokusFarbe,
+                                              color: Colors.white,
+                                              backgroundColor: Colors.black,
                                               fontSize: 10,
                                             ),
                                           ),

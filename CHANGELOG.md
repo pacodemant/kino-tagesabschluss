@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 364a3: Direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von
+  Run 364a mit Zahlensuffix. Anlass: Auf der Bargeld-Seite (Schritt 1)
+  waren die Hervorhebungen "Anzahl" (Rollen/Scheine) und "Cent" (lose
+  Münzen, Umschlag-Betrag) schwarz/fett auf orangem Hintergrund
+  (AppFarben.fokusFarbe + appBarRot) — Paco wollte stattdessen
+  schwarzen Hintergrund mit weißer Schrift und je einem Leerzeichen
+  vor/nach dem Wort. In 4 Section-Widgets geändert:
+  Schritt1MuenzenRollenSection, Schritt1ScheineSection,
+  Schritt1MuenzenLoseSection und die "Betrag in Cent"-Beschriftung in
+  schritt1_gruppen_orchestrierung.dart (Umschlag-Gruppen). Jeweils
+  Colors.black/Colors.white statt AppFarben.fokusFarbe/appBarRot,
+  Text um ein führendes/folgendes Leerzeichen ergänzt. Nicht
+  angetastet: die gleichartige "Anzahl"-Hervorhebung in
+  wechselgeld_pruefen_seite.dart (Wechselgeld-Seite) — Paco bezog
+  sich ausdrücklich auf die Bargeld-Seite. Version 0.9.38+364a3.
+  Dateien: schritt1_muenzen_rollen_section.dart,
+  schritt1_scheine_section.dart, schritt1_muenzen_lose_section.dart,
+  schritt1_gruppen_orchestrierung.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 364a2: Direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von
   Run 364a mit Zahlensuffix. Anlass: Paco nach dem ursprünglichen
   Zweck des TODO-Punkts "Duplikat-Button" gefragt — in CHANGELOG.md,
