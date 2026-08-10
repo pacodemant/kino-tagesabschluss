@@ -239,7 +239,14 @@ class Schritt1GruppenOrchestrierung {
                                             style: TextStyle(fontSize: 10),
                                           ),
                                           TextSpan(
-                                            text: ' Cent ',
+                                            // Zero-Width-Space (\u200B)
+                                            // nach dem Leerzeichen: sonst
+                                            // malt Flutter den
+                                            // Hintergrund nicht bis zu
+                                            // einem Leerzeichen, das
+                                            // exakt am Ende des Text-
+                                            // abschnitts steht.
+                                            text: ' Cent \u200B',
                                             style: TextStyle(
                                               fontWeight: FontWeight.w700,
                                               color: Colors.white,

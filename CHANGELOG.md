@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 364a4: Direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von
+  Run 364a3 mit Zahlensuffix. Anlass: Paco meldete nach dem Test von
+  364a3, dass hinter "Cent" am Satzende jeweils ein schwarz
+  hinterlegtes Leerzeichen fehlt. Ursache: bekannte Flutter-Engine-
+  Einschränkung — die Hintergrundfarbe eines TextSpans wird nicht bis
+  zu einem Leerzeichen gemalt, das exakt das letzte Zeichen eines
+  Textabschnitts ist. Betraf nur die beiden "Cent"-Stellen (dort ist
+  "Cent" jeweils der letzte TextSpan der Kopfzeile), nicht "Anzahl"
+  (dort folgt noch " der Rollen"/" der Scheine", also kein
+  Zeilenende). Fix: unsichtbares Zero-Width-Space (\u200B) direkt
+  nach dem trailing-Leerzeichen ergänzt, damit dieses nicht mehr das
+  letzte Zeichen ist und Flutter den Hintergrund korrekt bis zum
+  Ende malt. Version 0.9.38+364a4. Dateien:
+  schritt1_muenzen_lose_section.dart,
+  schritt1_gruppen_orchestrierung.dart, startmenue_seite.dart,
+  kinoauswahl_seite.dart, pubspec.yaml.
+
 - Run 364a3: Direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von
   Run 364a mit Zahlensuffix. Anlass: Auf der Bargeld-Seite (Schritt 1)
   waren die Hervorhebungen "Anzahl" (Rollen/Scheine) und "Cent" (lose

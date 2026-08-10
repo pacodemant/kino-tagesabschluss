@@ -37,7 +37,11 @@ class Schritt1MuenzenLoseSection extends StatelessWidget {
             style: TextStyle(fontSize: 10),
           ),
           TextSpan(
-            text: ' Cent ',
+            // Zero-Width-Space (\u200B) nach dem Leerzeichen: sonst
+            // malt Flutter den Hintergrund eines TextSpans nicht bis
+            // zu einem Leerzeichen, das exakt am Ende des
+            // Textabschnitts steht (bekannte Engine-Einschränkung).
+            text: ' Cent \u200B',
             style: TextStyle(
               fontWeight: FontWeight.w700,
               color: Colors.white,
