@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 368: Manuelle Cent-Summierungen in
+  tagesabschluss_schritt2_seite.dart durch
+  TagesabschlussBerechnung.summeCentBetraege() ersetzt. Anlass:
+  Code-Review ergab, dass an 5 Stellen (_ausgabenBetrageCent 3x,
+  _ecBelegeCent 2x) die Summierung manuell per
+  `.fold(0, (int a, int b) => a + b)` nachgebaut wurde, obwohl
+  TagesabschlussBerechnung.summeCentBetraege() im selben File bereits
+  importiert und an anderer Stelle genutzt wird. Rein rechnerisch
+  identisches Ergebnis, keine funktionale Änderung. Version
+  0.9.42+368. Dateien: tagesabschluss_schritt2_seite.dart,
+  pubspec.yaml, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 367: "Heute"-Badge-Duplikat zusammengeführt. Anlass:
   Code-Review ergab, dass verlauf_seite.dart und
   verlauf_detail_seite.dart das identische "Heute"-Badge (roter

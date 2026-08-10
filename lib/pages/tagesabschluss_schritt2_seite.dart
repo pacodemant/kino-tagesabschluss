@@ -530,7 +530,7 @@ class _TagesabschlussSchritt2SeiteState
         'isoDatum': DatumsHelper.logischesIsoDatum(),
         'kinoSollCent': _kinoSollCent,
         'bistroSollCent': _bistroSollCent,
-        'ausgabenCent': _ausgabenBetrageCent.fold(0, (int a, int b) => a + b),
+        'ausgabenCent': TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
         'ausgabenBetraegeCent': List<int>.from(_ausgabenBetrageCent),
         'ausgabenLabels': List<String>.from(_ausgabenLabels),
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
@@ -695,7 +695,7 @@ class _TagesabschlussSchritt2SeiteState
         wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
         kinoSollCent: _kinoSollCent,
         bistroSollCent: _bistroSollCent,
-        ausgabenCent: _ausgabenBetrageCent.fold(0, (int a, int b) => a + b),
+        ausgabenCent: TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
         ecBelegeCent: List<int>.from(_ecBelegeCent),
         differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
         stueckzahlen: widget.stueckzahlen,
@@ -1530,7 +1530,7 @@ class _TagesabschlussSchritt2SeiteState
   bool _ersterBelegIstLeer() {
     return !_scanHatStattgefunden.any((bool b) => b) &&
         !_scanLaeuft &&
-        _ecBelegeCent.fold(0, (int a, int b) => a + b) == 0;
+        TagesabschlussBerechnung.summeCentBetraege(_ecBelegeCent) == 0;
   }
 
   /// Öffnet beim ersten (noch leeren) Beleg direkt alle Kartenart-Zeilen zur
@@ -2284,7 +2284,7 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   List<Widget> _baueEcBelegeBereich() {
-    final int ecGesamtCent = _ecBelegeCent.fold(0, (int a, int b) => a + b);
+    final int ecGesamtCent = TagesabschlussBerechnung.summeCentBetraege(_ecBelegeCent);
     final bool hatEcBelege = _scanHatStattgefunden.any((bool b) => b) || ecGesamtCent > 0;
     final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
         .where((int j) => _ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty)
@@ -2475,7 +2475,7 @@ class _TagesabschlussSchritt2SeiteState
       gesamtUmsatzCent: _kinoSollCent + _bistroSollCent,
       gesamtNachAusgabenCent: _kinoSollCent +
           _bistroSollCent -
-          _ausgabenBetrageCent.fold(0, (int a, int b) => a + b),
+          TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
       ausgabenIds: _ausgabenIds,
       ausgabenLabelController: _ausgabenLabelController,
       ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
