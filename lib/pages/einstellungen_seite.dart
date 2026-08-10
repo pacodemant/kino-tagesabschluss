@@ -8,6 +8,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
@@ -236,7 +237,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _getraenkeController.add(TextEditingController(text: name));
     }
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String apiUploadUrl = speicher.getString('api_upload_url') ?? '';
+    final String apiUploadUrl =
+        speicher.getString(ApiUploadService.apiUploadUrlPrefKey) ?? '';
     final String belegScanUrl =
         speicher.getString(BelegScanService.belegScanUrlPrefKey) ?? '';
     final String anthropicApiKey =
@@ -360,7 +362,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   Future<void> _speichereApiUploadKonfig() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setString('api_upload_url', _apiUploadUrlCtrl.text.trim());
+    await speicher.setString(
+      ApiUploadService.apiUploadUrlPrefKey,
+      _apiUploadUrlCtrl.text.trim(),
+    );
   }
 
   Future<void> _speichereBelegScanUrl() async {

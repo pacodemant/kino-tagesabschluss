@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 369: SharedPreferences-Key 'api_upload_url' zentralisiert.
+  Anlass: Code-Review ergab, dass der Key als rohes String-Literal
+  an 3 Stellen in 2 Dateien dupliziert war (einstellungen_seite.dart
+  2x, api_upload_service.dart 1x) — Tippfehlerrisiko bei künftigen
+  Änderungen. Neue Konstante ApiUploadService.apiUploadUrlPrefKey
+  (Wert unverändert: 'api_upload_url'), nach dem bereits etablierten
+  Vorbild BelegScanService.belegScanUrlPrefKey. Bewusst NICHT
+  angetastet: die übrigen ca. 20 SharedPreferences-/Hive-Box-Keys in
+  lokaler_speicher.dart — die sind nur innerhalb dieser einen Datei
+  dupliziert (kein Cross-File-Risiko) und eine vollständige
+  Zentralisierung wäre ein eigener Architektur-Run, kein Teil dieses
+  fokussierten Fixes. Keine funktionale Änderung, Key-Wert identisch.
+  Version 0.9.43+369. Dateien: api_upload_service.dart,
+  einstellungen_seite.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart.
+
 - Run 368: Manuelle Cent-Summierungen in
   tagesabschluss_schritt2_seite.dart durch
   TagesabschlussBerechnung.summeCentBetraege() ersetzt. Anlass:

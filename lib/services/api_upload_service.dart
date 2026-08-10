@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiUploadService {
   ApiUploadService._();
 
+  static const String apiUploadUrlPrefKey = 'api_upload_url';
+
   static const Map<String, String> _kartenartMapping = <String, String>{
     'Girocard': 'girocard',
     'girocard': 'girocard',
@@ -43,7 +45,7 @@ class ApiUploadService {
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
 
-    final String baseUrl = speicher.getString('api_upload_url') ?? '';
+    final String baseUrl = speicher.getString(apiUploadUrlPrefKey) ?? '';
     if (baseUrl.isEmpty) {
       throw Exception(
         'Keine Flurbocash-URL konfiguriert. Bitte Upload-URL in den Einstellungen eintragen.',
