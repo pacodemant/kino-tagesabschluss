@@ -18,6 +18,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_gruppen_o
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -1863,22 +1864,10 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Future<void> _bestaetigeUndLeereEingaben() async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Eingaben löschen?'),
-        content: const Text('Alle Felder in Schritt 2 werden zurückgesetzt.'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('Löschen'),
-          ),
-        ],
-      ),
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Eingaben löschen?',
+      inhalt: 'Alle Felder in Schritt 2 werden zurückgesetzt.',
     );
     if (bestaetigt != true || !mounted) {
       return;

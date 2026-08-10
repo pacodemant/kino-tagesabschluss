@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
 // Zweck: Bündelt Orchestrierungs-, Navigations- und DevTools-Helfer für Schritt 1.
 class Schritt1OrchestrierungHelper {
@@ -142,26 +143,10 @@ class Schritt1OrchestrierungHelper {
     required VoidCallback resetStateData,
     required Future<void> Function() speichereEntwurf,
   }) async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogKontext) {
-        return AlertDialog(
-          title: const Text('Eingaben wirklich löschen?'),
-          content: const Text(
-            'Alle Eingaben in Schritt 1 werden zurückgesetzt.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(false),
-              child: const Text('Abbrechen'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(true),
-              child: const Text('Löschen'),
-            ),
-          ],
-        );
-      },
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Eingaben wirklich löschen?',
+      inhalt: 'Alle Eingaben in Schritt 1 werden zurückgesetzt.',
     );
 
     if (bestaetigt != true || !isMounted()) {

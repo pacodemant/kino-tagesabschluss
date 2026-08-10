@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 365: Duplizierten Löschen-Bestätigungsdialog zusammengeführt.
+  Anlass: Code-Review ergab, dass lib/widgets/loeschen_dialog.dart
+  (Eintrag aus Verlauf löschen), der Eingaben-Reset in Schritt 1
+  (schritt1_orchestrierung_helper.dart) und der Felder-Reset in
+  Schritt 2 (tagesabschluss_schritt2_seite.dart) drei strukturell
+  identische AlertDialog-Implementierungen pflegten — dabei
+  inkonsistent: Schritt 2 nutzte TextButton statt ElevatedButton für
+  "Löschen". Neue zentrale Funktion zeigeBestaetigungsDialog(context,
+  {titel, inhalt, bestaetigenText}) in loeschen_dialog.dart;
+  zeigeLoeschenDialog() delegiert jetzt darauf. Schritt 1 und
+  Schritt 2 rufen dieselbe Funktion mit ihrem jeweiligen
+  unveränderten Original-Wortlaut auf. Einzige sichtbare Änderung:
+  einheitlicher ElevatedButton-Stil für "Löschen" in Schritt 2
+  (vorher TextButton). Version 0.9.39+365. Dateien:
+  loeschen_dialog.dart, schritt1_orchestrierung_helper.dart,
+  tagesabschluss_schritt2_seite.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 364a4: Direkte Anweisung ohne eigene Run-Nummer, Fortsetzung von
   Run 364a3 mit Zahlensuffix. Anlass: Paco meldete nach dem Test von
   364a3, dass hinter "Cent" am Satzende jeweils ein schwarz
