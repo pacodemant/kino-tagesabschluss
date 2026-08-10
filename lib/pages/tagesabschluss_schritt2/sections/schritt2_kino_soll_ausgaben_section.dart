@@ -56,7 +56,7 @@ class Schritt2KinoSollUndAusgabenSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             kinoSollEingabeZeile,
-            if (bistroSollEingabeZeile != null) bistroSollEingabeZeile!,
+            ?bistroSollEingabeZeile,
             const Padding(
               padding: EdgeInsets.only(top: 4, bottom: 8),
               child: Text(

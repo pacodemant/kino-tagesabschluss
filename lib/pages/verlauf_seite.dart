@@ -108,7 +108,7 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                 )
               : ListView.separated(
                   itemCount: _abschluesse.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (BuildContext itemContext, int j) {
                     final TagesabschlussFinal eintrag = _abschluesse[j];
                     final int differenz = eintrag.differenzGesamtCent;

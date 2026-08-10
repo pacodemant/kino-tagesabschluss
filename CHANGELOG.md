@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 370: Dependencies google_fonts (6.2.1 → 8.2.1) und
+  flutter_lints (5.0.0 → 6.0.0) aktualisiert. Anlass: Code-Review
+  hatte diese als einzige Direktabhängigkeiten mit Major-Versions-
+  Sprung markiert. google_fonts wird im Projekt nur schmal genutzt
+  (GoogleFonts.caveat() an 3 Stellen), kein API-Bruch. Das neue
+  flutter_lints-Regelwerk brachte 2 neue Info-Findings
+  (use_null_aware_elements, unnecessary_underscores), direkt mit
+  behoben: bistroSollEingabeZeile per Null-aware-Element (?x) statt
+  if/!, ListView.separated-Callback (_, _) statt (_, __). Konnte
+  mangels lokalem Tester in dieser Run-Serie nicht auf einem
+  Gerät geprüft werden — zusätzlich zu analyze/test daher ein
+  `flutter build web` als Kompilier-Smoketest ausgeführt (erfolgreich).
+  Bitte bei Gelegenheit besonders die Caveat-Schrift-Stellen
+  (Übertrag-Umschlag-Seite, Schritt-3-Kopf, info_zeile) optisch
+  gegenprüfen. Version 0.9.44+370. Dateien: pubspec.yaml,
+  pubspec.lock, schritt2_kino_soll_ausgaben_section.dart,
+  verlauf_seite.dart, startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 369: SharedPreferences-Key 'api_upload_url' zentralisiert.
   Anlass: Code-Review ergab, dass der Key als rohes String-Literal
   an 3 Stellen in 2 Dateien dupliziert war (einstellungen_seite.dart
