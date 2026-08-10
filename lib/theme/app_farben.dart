@@ -15,6 +15,9 @@ class AppFarben {
   // "Heute"-Badge (Verlauf)
   static const Color heuteBadgeHintergrund = Color(0xFFE53935);  // red.shade600
 
+  // DEV-Tools-Panel-Hintergrund (Schritt 1 + Schritt 2)
+  static const Color devToolsHintergrund = Color(0xFFFFF8E1);
+
   // Validierungs-Hintergründe (Eingabefelder)
   static const Color validierungFehlerHintergrund = Color(0xFFFFEBEE);  // red.shade50
   static const Color validierungErfolgsHintergrund = Color(0xFFF1F8E9); // green.shade50

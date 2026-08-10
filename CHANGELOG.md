@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 366: DEV-Tools-Panel-Duplikat zusammengeführt. Anlass:
+  Code-Review ergab, dass Schritt 1
+  (schritt1_orchestrierung_helper.dart) und Schritt 2
+  (schritt2_ui_builder.dart, Klasse Schritt2DevToolsPanel) das
+  identische DEV-Tools-Panel (Card mit "DEV-Tools (nur
+  Debug/Profile)", Auto-Fill-/Alles-leeren-Buttons) separat gebaut
+  hatten, inkl. dreifach hartcodierter Hintergrundfarbe
+  Color(0xFFFFF8E1). Neues gemeinsames Widget
+  lib/widgets/dev_tools_panel.dart (DevToolsPanel), Farbe als
+  AppFarben.devToolsHintergrund zentralisiert. Schritt1Orchestrierung
+  Helper.baueDevToolsPanel() und die Schritt-2-Seite nutzen jetzt
+  beide DevToolsPanel; Schritt2DevToolsPanel entfernt. Keine
+  sichtbare Verhaltensänderung. Version 0.9.40+366. Dateien:
+  app_farben.dart, dev_tools_panel.dart (neu), schritt2_ui_builder.dart,
+  tagesabschluss_schritt2_seite.dart,
+  schritt1_orchestrierung_helper.dart, pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 365: Duplizierten Löschen-Bestätigungsdialog zusammengeführt.
   Anlass: Code-Review ergab, dass lib/widgets/loeschen_dialog.dart
   (Eintrag aus Verlauf löschen), der Eingaben-Reset in Schritt 1

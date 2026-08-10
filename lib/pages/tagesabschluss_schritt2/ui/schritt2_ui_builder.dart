@@ -6,47 +6,6 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 
-class Schritt2DevToolsPanel extends StatelessWidget {
-  const Schritt2DevToolsPanel({
-    super.key,
-    required this.onAutoFill,
-    required this.onLeeren,
-  });
-
-  final VoidCallback onAutoFill;
-  final VoidCallback onLeeren;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: const Color(0xFFFFF8E1),
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: <Widget>[
-            const Expanded(
-              child: Text(
-                'DEV-Tools (nur Debug/Profile)',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
-            OutlinedButton(
-              onPressed: onAutoFill,
-              child: const Text('Auto-Fill'),
-            ),
-            const SizedBox(width: 8),
-            OutlinedButton(
-              onPressed: onLeeren,
-              child: const Text('Alles leeren'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class Schritt2EingabeZeile extends StatelessWidget {
   const Schritt2EingabeZeile({
     super.key,

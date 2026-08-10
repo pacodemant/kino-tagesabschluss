@@ -19,6 +19,7 @@ import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -2423,7 +2424,7 @@ class _TagesabschlussSchritt2SeiteState
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
           height: _devModusAktiv && _devToolsOffen ? _devToolsPanelHoehe : 0,
-          child: Schritt2DevToolsPanel(
+          child: DevToolsPanel(
             onAutoFill: _autoFillDev,
             onLeeren: _leereAlleFelderDev,
           ),
