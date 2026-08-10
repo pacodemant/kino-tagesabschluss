@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 371: Unit-Tests für TagesabschlussFinalisierenUsecase ergänzt
+  (Typ: tests). Anlass: Code-Review ergab, dass der Usecase, der das
+  finale Abrechnungsobjekt inkl. aller Summen und Validierungsfehler
+  baut, komplett ungetestet war — der Teil mit dem höchsten
+  Schadenspotenzial bei einem Rechenfehler. Neue Datei
+  test/domain/tagesabschluss_finalisieren_usecase_test.dart, 9 Tests:
+  korrekte Verdrahtung aller Summenberechnungen, alle 5
+  Validierungsfehler (leere kinoId, negative Soll-/Ausgaben-/EC-
+  Werte), Ableitung Scheine-/Rollen-Stückzahlen aus der
+  stueckzahlen-Map (inkl. Ignorieren von Werten ≤ 0 und unbekannten
+  Präfixen), Silber-/Kupfermünzen-Trennung, Normalisierung leerer
+  optionaler Listen/Strings zu null. Keine App-Verhaltensänderung.
+  Bewusst zurückgestellt: Tests für den Persistenz-Layer
+  (lokaler_speicher.dart) — brauchen eigenes Hive-Test-Setup
+  (Init mit Temp-Verzeichnis), als möglicher Run 372 vorgeschlagen,
+  nicht Teil dieses Runs. Version 0.9.45+371. Dateien:
+  tagesabschluss_finalisieren_usecase_test.dart (neu), pubspec.yaml,
+  startmenue_seite.dart, kinoauswahl_seite.dart.
+
 - Run 370: Dependencies google_fonts (6.2.1 → 8.2.1) und
   flutter_lints (5.0.0 → 6.0.0) aktualisiert. Anlass: Code-Review
   hatte diese als einzige Direktabhängigkeiten mit Major-Versions-
