@@ -142,6 +142,16 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
+- [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
+      für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
+      Ist ein einzelner Standort gewählt, entfällt für MA die Kinoauswahl
+      UND der Textbutton "Kino wechseln" auf der Startseite wird
+      ausgeblendet — er erscheint nur, wenn "Alle" eingestellt ist. Wie
+      geplant umgesetzt. Speicherung lokal auf dem Gerät (SharedPreferences,
+      kein Backend). Datenschutzhinweise-Link ist seit Run 321 bereits
+      zusätzlich auf startmenue_seite.dart vorhanden, bleibt also auch bei
+      entfallender Kinoauswahl erreichbar. *(Run 325)*
+
 - [x] **BelegScan-Service-URL editierbar** Neues TextField "Service-URL"
       im Admin-Bereich (Abschnitt "KI-Belegscan (Anthropic)"), über dem
       Anthropic-API-Key-Feld — analog zu Upload-URL/location_id/API-Key.

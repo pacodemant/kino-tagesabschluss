@@ -110,16 +110,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
-- [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
-      für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
-      Ist ein einzelner Standort gewählt, entfällt für MA die Kinoauswahl
-      UND der Textbutton "Kino wechseln" auf der Startseite wird
-      ausgeblendet — er erscheint nur, wenn "Alle" eingestellt ist. Wie
-      geplant umgesetzt. Speicherung lokal auf dem Gerät (SharedPreferences,
-      kein Backend). Datenschutzhinweise-Link ist seit Run 321 bereits
-      zusätzlich auf startmenue_seite.dart vorhanden, bleibt also auch bei
-      entfallender Kinoauswahl erreichbar. *(Run 325)*
-
 - [ ] **TID-Whitelist konfigurierbar** Pro Standort in Einstellungen
       editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
 
