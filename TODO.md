@@ -58,6 +58,18 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [ ] **Standort-Wechsel schließt offene Kino-Seite nicht** Ist man auf
+      einer Kino-spezifischen Seite (z. B. Atlantis-Startseite) und
+      wechselt in den Einstellungen den Standort (z. B. auf Schauburg)
+      und geht dann zurück, bleibt die alte Kino-Seite (Atlantis)
+      offen, statt zur neu gewählten Standort-Seite (SB) zu wechseln.
+      Erwartung: Zurück-Navigation soll auf die Seite des aktuell
+      gewählten Standorts führen.
+
+- [ ] **Alle SnackBars auf Orange umstellen** Aktuell uneinheitliche
+      Farben je nach Kontext. Einheitlich auf Orange
+      (App-Akzentfarbe) umstellen.
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
@@ -119,6 +131,15 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
+- [ ] **Schutz vor doppeltem Versand derselben Abrechnung** Klären: Wie
+      verhindern, dass eine Abrechnung mit exakt denselben Werten
+      zweimal an Flurbocash gesendet wird (z. B. Doppel-Tap auf
+      Senden-Button, oder erneuter Versand nach unklarem
+      Netzwerk-Ergebnis)? Einfachster Ansatz vermutlich rein
+      client-seitig (Button nach erstem Tap sperren bzw.
+      Idempotenz-Check vor dem Call) — kein Backend-/IT-Klärungsbedarf
+      vorausgesetzt, vor Umsetzung aber gegenprüfen.
+
 - [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 
 - [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung**
@@ -152,6 +173,26 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 - [ ] **Stapel-Scanner: echter Versand** Dummy-Button durch echten
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
+
+### Verlauf
+
+- [ ] **Übertragungs-Flag je Verlaufseintrag** Jeder Verlaufseintrag
+      soll erkennbar machen, ob die zugehörige Abrechnung erfolgreich
+      an Flurbocash übertragen wurde oder nicht — damit im Verlauf
+      sichtbar ist, welche Einträge ggf. erneut gesendet werden
+      müssen. Betrifft vermutlich `lokaler_speicher.dart`
+      (Verlauf-Modell) und `verlauf_detail_seite.dart` (Anzeige).
+
+### App-Update / PWA
+
+- [ ] **Fallback auf letzte Version bei fehlgeschlagenem Update-Check**
+      Kann die App die aktuelle Version nicht laden (z. B. weil kein
+      WLAN verfügbar ist), soll sie stillschweigend die zuletzt
+      geladene Version weiterverwenden, statt dass der MA davon etwas
+      merkt. Prüfen, wie sich das aktuelle Service-Worker-/
+      PWA-Verhalten (`sw_update_service_web.dart`, `web/`) dazu
+      verhält — Standard-Service-Worker-Caching sollte das eigentlich
+      schon so handhaben, ggf. reicht eine Bestätigung statt Umbau.
 
 ### Weitere Features
 
