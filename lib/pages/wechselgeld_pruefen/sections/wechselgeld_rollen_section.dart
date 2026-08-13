@@ -117,11 +117,11 @@ class WechselgeldRollenSection extends StatelessWidget {
                                           TextStyle(fontWeight: FontWeight.w700),
                                     ),
                                     TextSpan(
-                                      text: 'Anzahl',
+                                      text: ' Anzahl ',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
-                                        color: AppFarben.appBarRot,
-                                        backgroundColor: AppFarben.fokusFarbe,
+                                        color: Colors.white,
+                                        backgroundColor: Colors.black,
                                         fontSize: 10,
                                       ),
                                     ),
