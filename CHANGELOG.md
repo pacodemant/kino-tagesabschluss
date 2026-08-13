@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 372: QR-Code entfernt (Typ: standard). Anlass: Paco-Wunsch —
+  QR-Code (zeigte auf das GitHub-Repo der Web-App) wird nicht mehr
+  gebraucht. Entfernt aus kinoauswahl_seite.dart und
+  startmenue_seite.dart (Image.asset + zugehöriger SizedBox, Text
+  von "Web App X.X.X · rNNN @ GitHub:" auf "Web App X.X.X · rNNN"
+  gekürzt), Asset-Datei assets/images/qr_webapp_github.png sowie
+  der zugehörige Eintrag in pubspec.yaml (`assets:`) gelöscht.
+  Version 0.9.45+372. Dateien: kinoauswahl_seite.dart,
+  startmenue_seite.dart, pubspec.yaml, assets/images/
+  qr_webapp_github.png (gelöscht).
+
 - Run 371: Unit-Tests für TagesabschlussFinalisierenUsecase ergänzt
   (Typ: tests). Anlass: Code-Review ergab, dass der Usecase, der das
   finale Abrechnungsobjekt inkl. aller Summen und Validierungsfehler
