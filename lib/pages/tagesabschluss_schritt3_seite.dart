@@ -310,7 +310,13 @@ class _TagesabschlussSchritt3SeiteState
         );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('API Upload erfolgreich ✓')),
+          const SnackBar(
+            backgroundColor: AppFarben.fokusFarbe,
+            content: Text(
+              'API Upload erfolgreich ✓',
+              style: TextStyle(color: AppFarben.appBarRot),
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -319,7 +325,11 @@ class _TagesabschlussSchritt3SeiteState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Upload gesendet — Empfang nicht bestätigbar'),
+              backgroundColor: AppFarben.fokusFarbe,
+              content: Text(
+                'Upload gesendet — Empfang nicht bestätigbar',
+                style: TextStyle(color: AppFarben.appBarRot),
+              ),
             ),
           );
         }
@@ -330,8 +340,10 @@ class _TagesabschlussSchritt3SeiteState
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              backgroundColor: AppFarben.fokusFarbe,
               content: Text(
                 'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
+                style: const TextStyle(color: AppFarben.appBarRot),
               ),
               duration: const Duration(seconds: 8),
             ),
@@ -356,7 +368,11 @@ class _TagesabschlussSchritt3SeiteState
       if (!_autoSaveErledigt) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Speichern fehlgeschlagen. Bitte erneut versuchen.'),
+            backgroundColor: AppFarben.fokusFarbe,
+            content: Text(
+              'Speichern fehlgeschlagen. Bitte erneut versuchen.',
+              style: TextStyle(color: AppFarben.appBarRot),
+            ),
           ),
         );
         return;

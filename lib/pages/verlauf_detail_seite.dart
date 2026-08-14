@@ -50,7 +50,13 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('API Upload erfolgreich ✓')),
+          const SnackBar(
+            backgroundColor: AppFarben.fokusFarbe,
+            content: Text(
+              'API Upload erfolgreich ✓',
+              style: TextStyle(color: AppFarben.appBarRot),
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -58,7 +64,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         if (ApiUploadService.isCorsArtFehler(e)) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Upload gesendet — Empfang nicht bestätigbar'),
+              backgroundColor: AppFarben.fokusFarbe,
+              content: Text(
+                'Upload gesendet — Empfang nicht bestätigbar',
+                style: TextStyle(color: AppFarben.appBarRot),
+              ),
             ),
           );
         } else {
@@ -67,7 +77,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('API Upload fehlgeschlagen\n$anzeige'),
+              backgroundColor: AppFarben.fokusFarbe,
+              content: Text(
+                'API Upload fehlgeschlagen\n$anzeige',
+                style: const TextStyle(color: AppFarben.appBarRot),
+              ),
               duration: const Duration(seconds: 8),
             ),
           );
@@ -170,7 +184,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       if (zeile == null) {
         return const SizedBox.shrink();
       }
-      // Bezeichnung kürzen: "Rolle 2 € (50,00 €)" → "Rolle 2 €"
+      // Bezeichnung kürzen: "2 € (50,00 €)" → "2 €"
       final String kurzLabel = zeile.bezeichnung.split(' (').first;
       return _unterzeile(
         '$kurzLabel  ×  ${e.value}',

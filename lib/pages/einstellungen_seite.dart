@@ -454,7 +454,13 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       setState(() => _devAufgeklappt = true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Falscher PIN')),
+        const SnackBar(
+          backgroundColor: AppFarben.fokusFarbe,
+          content: Text(
+            'Falscher PIN',
+            style: TextStyle(color: AppFarben.appBarRot),
+          ),
+        ),
       );
     }
   }
@@ -701,7 +707,13 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     }
     setState(() {});
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Standardwerte gesetzt.')),
+      const SnackBar(
+        backgroundColor: AppFarben.fokusFarbe,
+        content: Text(
+          'Standardwerte gesetzt.',
+          style: TextStyle(color: AppFarben.appBarRot),
+        ),
+      ),
     );
   }
 

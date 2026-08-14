@@ -90,7 +90,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
             style: const TextStyle(fontSize: 13),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 6),
         SizedBox(
           width: 140,
           child: baueFeldMitKey(
@@ -107,9 +107,9 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 6),
         SizedBox(
-          width: 95,
+          width: 85,
           child: Text(
             formatiereEuro(zwischensumme),
             textAlign: TextAlign.right,

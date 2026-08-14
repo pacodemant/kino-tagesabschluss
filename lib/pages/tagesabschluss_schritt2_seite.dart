@@ -1322,7 +1322,13 @@ class _TagesabschlussSchritt2SeiteState
     if (verbindung.contains(ConnectivityResult.none)) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kein Internet – Scan nicht möglich.')),
+        const SnackBar(
+          backgroundColor: AppFarben.fokusFarbe,
+          content: Text(
+            'Kein Internet – Scan nicht möglich.',
+            style: TextStyle(color: AppFarben.appBarRot),
+          ),
+        ),
       );
       return;
     }
@@ -1468,7 +1474,13 @@ class _TagesabschlussSchritt2SeiteState
             ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
             : '—';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Scan bestätigt · Gesamt: $betrag')),
+          SnackBar(
+            backgroundColor: AppFarben.fokusFarbe,
+            content: Text(
+              'Scan bestätigt · Gesamt: $betrag',
+              style: const TextStyle(color: AppFarben.appBarRot),
+            ),
+          ),
         );
       } on BelegScanException catch (e) {
         if (!mounted) return;
@@ -1478,9 +1490,11 @@ class _TagesabschlussSchritt2SeiteState
             e.message.startsWith('Service-URL nicht konfiguriert');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            backgroundColor: AppFarben.fokusFarbe,
             content: (istNetzwerkFehler || istKonfigurationsFehler)
                 ? Text.rich(
                     TextSpan(
+                      style: const TextStyle(color: AppFarben.appBarRot),
                       children: <TextSpan>[
                         TextSpan(text: '${e.message}\n'),
                         const TextSpan(
@@ -1494,6 +1508,7 @@ class _TagesabschlussSchritt2SeiteState
                     'Scan nicht lesbar – bitte erneut versuchen\n'
                     '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
                     'manuell eingeben.',
+                    style: TextStyle(color: AppFarben.appBarRot),
                   ),
           ),
         );
@@ -1501,10 +1516,12 @@ class _TagesabschlussSchritt2SeiteState
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
+            backgroundColor: AppFarben.fokusFarbe,
             content: Text(
               'Scan nicht lesbar – bitte erneut versuchen\n'
               '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
               'manuell eingeben.',
+              style: TextStyle(color: AppFarben.appBarRot),
             ),
           ),
         );
@@ -2451,7 +2468,7 @@ class _TagesabschlussSchritt2SeiteState
       anmerkungFocusNode: _anmerkungFocusNode,
       beiAnmerkungGeaendert: _beiAnmerkungGeaendert,
       kinoSollEingabeZeile: _baueEingabeZeile(
-        label: 'Kino SOLL',
+        label: widget.kinoId == 'kino_04' ? 'Gesamt SOLL' : 'Kino SOLL',
         controller: _kinoSollController,
         focusNode: _kinoSollFocusNode,
         fehlermeldungText: _pflichtfeldFehlertext(
@@ -2560,16 +2577,21 @@ class _TagesabschlussSchritt2SeiteState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  if (!_personalgetraenkeGebot) {
+                  if (widget.kinoId != 'kino_04' && !_personalgetraenkeGebot) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Personalgetränke gebont?')),
+                        backgroundColor: AppFarben.fokusFarbe,
+                        content: Text(
+                          'Personalgetränke gebont?',
+                          style: TextStyle(color: AppFarben.appBarRot),
+                        ),
+                      ),
                     );
                     return;
                   }
                   _weiterZuSchritt3();
                 },
-                style: _personalgetraenkeGebot
+                style: (widget.kinoId == 'kino_04' || _personalgetraenkeGebot)
                     ? AppFarben.footerButtonStyle
                     : ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey.shade600,
@@ -2595,7 +2617,9 @@ class _TagesabschlussSchritt2SeiteState
         scrollController: _scrollController,
         devToolsBereich: devToolsBereich,
         kopfSection: sections.kopf,
-        personalgetraenkeSection: sections.personalgetraenke,
+        personalgetraenkeSection: widget.kinoId == 'kino_04'
+            ? const SizedBox.shrink()
+            : sections.personalgetraenke,
         differenzAnfangsbestandSection: sections.differenzAnfangsbestand,
         kinoSollUndAusgabenBereich: sections.kinoSollUndAusgaben,
         ecBelegeBereich: ecBelegeBereich,

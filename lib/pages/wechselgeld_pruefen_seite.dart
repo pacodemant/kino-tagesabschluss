@@ -897,7 +897,13 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(
-          const SnackBar(content: Text('Keine Zählung für heute gefunden.')),
+          const SnackBar(
+            backgroundColor: AppFarben.fokusFarbe,
+            content: Text(
+              'Keine Zählung für heute gefunden.',
+              style: TextStyle(color: AppFarben.appBarRot),
+            ),
+          ),
         );
       return;
     }

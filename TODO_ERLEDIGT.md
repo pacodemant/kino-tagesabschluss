@@ -37,6 +37,19 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Alle SnackBars auf Orange umstellen** Aktuell uneinheitliche
+      Farben je nach Kontext. Einheitlich auf Orange
+      (App-Akzentfarbe) umstellen.
+      *(Run 372a)* Umgesetzt wie beschrieben: alle 16 SnackBar-Aufrufe
+      app-weit auf `AppFarben.fokusFarbe` (Hintergrund) +
+      `AppFarben.appBarRot` (Text) vereinheitlicht — bewusst auch die
+      bisher neutralen Fehler-/Rand-Meldungen (z. B. "Falscher PIN",
+      "API Upload fehlgeschlagen"), nicht nur die "führenden"
+      Hinweise. Grund (Paco): SnackBars wurden oft übersehen, weil sie
+      zu unauffällig waren oder beim Bedienen vom Daumen verdeckt
+      wurden — Sichtbarkeit geht hier vor der bisherigen Farbkonvention
+      "Orange nur für den glatten Ablauf".
+
 - [x] **Schwarze Hervorhebungen → Kino-Rot** Sämtliche schwarze Feld-Hervorhebungen auf `AppFarben.appBarRot` umstellen. *(Run 302–302d)*
 
 - [x] **Textbutton "zuklappen"** Die Seite soll einen Textlink "alle zuklappen"

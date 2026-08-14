@@ -17,42 +17,42 @@ class StueckelungKonfiguration {
   static const List<Kassenzeile> rollen = <Kassenzeile>[
     Kassenzeile(
       id: 'roll_2e',
-      bezeichnung: 'Rolle 2 € (50,00 €)',
+      bezeichnung: '2 € (50,00 €)',
       einzelwertCent: 5000,
     ),
     Kassenzeile(
       id: 'roll_1e',
-      bezeichnung: 'Rolle 1 € (25,00 €)',
+      bezeichnung: '1 € (25,00 €)',
       einzelwertCent: 2500,
     ),
     Kassenzeile(
       id: 'roll_50c',
-      bezeichnung: 'Rolle 50 ct (20,00 €)',
+      bezeichnung: '50 ct (20,00 €)',
       einzelwertCent: 2000,
     ),
     Kassenzeile(
       id: 'roll_20c',
-      bezeichnung: 'Rolle 20 ct (8,00 €)',
+      bezeichnung: '20 ct (8,00 €)',
       einzelwertCent: 800,
     ),
     Kassenzeile(
       id: 'roll_10c',
-      bezeichnung: 'Rolle 10 ct (4,00 €)',
+      bezeichnung: '10 ct (4,00 €)',
       einzelwertCent: 400,
     ),
     Kassenzeile(
       id: 'roll_5c',
-      bezeichnung: 'Rolle 5 ct (2,00 €)',
+      bezeichnung: '5 ct (2,00 €)',
       einzelwertCent: 200,
     ),
     Kassenzeile(
       id: 'roll_2c',
-      bezeichnung: 'Rolle 2 ct (1,00 €)',
+      bezeichnung: '2 ct (1,00 €)',
       einzelwertCent: 100,
     ),
     Kassenzeile(
       id: 'roll_1c',
-      bezeichnung: 'Rolle 1 ct (0,50 €)',
+      bezeichnung: '1 ct (0,50 €)',
       einzelwertCent: 50,
     ),
   ];

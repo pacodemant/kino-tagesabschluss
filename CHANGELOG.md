@@ -9,6 +9,36 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 372a: Direkte Anweisung ohne eigene Run-Nummer, vier kleine
+  Korrekturen in einem Rutsch (Paco-Wunsch). (1) Belege-Seite: Label
+  "Kino SOLL" heißt für CO (kino_04) jetzt "Gesamt SOLL" — dort gibt
+  es kein separates Bistro-SOLL, das Feld ist für CO ohnehin die
+  Gesamtsumme; andere Kinos zeigen weiterhin "Kino SOLL". (2)
+  Perso-Getränke-Kachel + die davon abhängige Weitermachen-Blockade
+  (Footer-Button + SnackBar) nur für CO ausgeblendet/übersprungen —
+  auf Nachfrage bestätigt: nur CO, alle anderen Standorte bleiben
+  unverändert. (3) TODO-Punkt "Alle SnackBars auf Orange umstellen"
+  umgesetzt: alle 16 SnackBar-Aufrufe app-weit einheitlich auf
+  AppFarben.fokusFarbe (Hintergrund) + AppFarben.appBarRot (Text)
+  umgestellt, bewusst auch die bisher neutralen Fehlermeldungen (z. B.
+  "Falscher PIN", "API Upload fehlgeschlagen") — auf Nachfrage
+  bestätigt: Sichtbarkeit geht vor der bisherigen Konvention "Orange
+  nur für den glatten Ablauf", da SnackBars oft übersehen wurden
+  (unauffällig oder vom Daumen verdeckt). Siehe TODO_ERLEDIGT.md für
+  die Begründung. (4) Bargeld-zählen (Schritt 1): "Rolle "-Präfix aus
+  allen 8 Rollen-Bezeichnungen entfernt (StueckelungKonfiguration.
+  rollen, z. B. "Rolle 2 € (50,00 €)" → "2 € (50,00 €)"; auf Nachfrage
+  bestätigt: nur das Wort entfernen, Betragsformat unverändert
+  lassen), dazu in Schritt1ZeilenEintrag die Abstände/Zwischensumme
+  leicht verschmälert (Gaps 10→6px, Zwischensumme-Spalte 95→85px),
+  damit die Bezeichnung davor nicht mehr abgeschnitten wird — ggf.
+  weitere Anpassung nach Pacos Gerätetest nötig. Version 0.9.45+372a.
+  Dateien: tagesabschluss_schritt2_seite.dart, einstellungen_seite.
+  dart, verlauf_detail_seite.dart, wechselgeld_pruefen_seite.dart,
+  tagesabschluss_schritt3_seite.dart, stueckelung_konfiguration.dart,
+  schritt1_ui_builder.dart, pubspec.yaml, startmenue_seite.dart,
+  kinoauswahl_seite.dart, TODO.md, TODO_ERLEDIGT.md.
+
 - Run 372: QR-Code entfernt (Typ: standard). Anlass: Paco-Wunsch —
   QR-Code (zeigte auf das GitHub-Repo der Web-App) wird nicht mehr
   gebraucht. Entfernt aus kinoauswahl_seite.dart und
