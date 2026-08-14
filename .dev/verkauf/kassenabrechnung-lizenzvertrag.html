@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kassenabrechnung – Lizenz- und Supportvertrag</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1a18;
+    --paper: #f5f2eb;
+    --accent: #c8501a;
+    --rule: #d4cfc3;
+    --muted: #7a7568;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 60px 48px 80px;
+  }
+
+  .header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  .header-meta {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 38px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .header h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .header-h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .header-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 520px;
+  }
+
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* Paragraph block */
+  .para-block {
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 20px;
+    margin-bottom: 10px;
+  }
+
+  .para-nr {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .para-title {
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .para-body {
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.65;
+  }
+
+  .para-body p {
+    margin-bottom: 8px;
+  }
+
+  .para-body p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* Option blocks (Einmalzahlung vs. Lizenz) */
+  .option-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .option-block {
+    padding: 14px 16px;
+    border-radius: 4px;
+    border: 1px solid var(--rule);
+    font-size: 13px;
+  }
+
+  .option-block.option-a {
+    background: #f0f5f0;
+    border-color: #c0d4c0;
+  }
+
+  .option-block.option-b {
+    background: #f0f0f8;
+    border-color: #c0c0d8;
+  }
+
+  .option-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--muted);
+  }
+
+  .option-block.option-a .option-label { color: #3a6b2a; }
+  .option-block.option-b .option-label { color: #3a3a8a; }
+
+  /* Note / Hinweis */
+  .note {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 10px 14px;
+    border-left: 2px solid var(--rule);
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+
+  /* Signature block */
+  .sig-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 10px;
+  }
+
+  .sig-block {
+    padding: 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  .sig-name {
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+
+  .sig-role {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .sig-line {
+    border-top: 1px solid var(--ink);
+    padding-top: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+
+  /* Parties table */
+  .parties {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .party-block {
+    padding: 14px 16px;
+    background: white;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-size: 13px;
+  }
+
+  .party-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .party-name {
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .party-detail {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--rule);
+    margin-top: 56px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .footer-left strong {
+    display: block;
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .footer-right {
+    font-size: 11px;
+    color: var(--rule);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Warning / bracket note */
+  .bracket-note {
+    display: inline;
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  @media print {
+    body { background: white; }
+    .page { padding: 32px 40px 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <div class="header-meta">Entwurf · Stand Juni 2026 · nicht rechtsverbindlich geprüft</div>
+    <h1>Lizenz- und <em>Supportvertrag</em></h1>
+    <div class="header-h2">Kassenabrechnung</div>
+    <p class="header-sub">Dieser Vertrag regelt die Nutzung, die Übergabe und die Betreuung der Software „Kassenabrechnung" zwischen Auftragnehmer und Auftraggeber. Er enthält zwei alternative Vergütungsmodelle; vor Unterzeichnung ist eines davon zu streichen.</p>
+  </header>
+
+  <!-- Vertragsparteien -->
+  <section class="section">
+    <div class="section-label">Vertragsparteien</div>
+    <div class="parties">
+      <div class="party-block">
+        <div class="party-label">Auftragnehmer (Lizenzgeber)</div>
+        <div class="party-name">Paco Demant</div>
+        <div class="party-detail">
+          Einzelunternehmer • Kleinstgewerbe<br>
+          <span class="bracket-note">[Anschrift]</span><br>
+          <span class="bracket-note">[PLZ, Ort]</span><br>
+          <span class="bracket-note">[E-Mail]</span>
+        </div>
+      </div>
+      <div class="party-block">
+        <div class="party-label">Auftraggeber (Lizenznehmer)</div>
+        <div class="party-name">Schauburg GmbH</div>
+        <div class="party-detail">
+          vertreten durch die Geschäftsführung<br>
+          <span class="bracket-note">[Anschrift]</span><br>
+          28203 Bremen
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §1 Gegenstand -->
+  <section class="section">
+    <div class="section-label">§ 1 · Vertragsgegenstand</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 1.1</div>
+      <div class="para-body">
+        <p>Gegenstand dieses Vertrags ist die Einräumung eines Nutzungsrechts an der Software „Kassenabrechnung" (nachfolgend „Software") sowie die Übergabe eines lauffähigen Web Builds und eine vereinbarte Betreuungsleistung.</p>
+        <p>Die Software ist eine webbasierte Progressive Web App zur digitalen Erfassung und Übertragung von Tagesabrechnungen in Kinobetrieben, entwickelt in Flutter/Dart.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 1.2 — Übergabegegenstand</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer übergibt ausschließlich den <strong>kompilierten Web Build</strong> der Software — bestehend aus den zur Ausführung im Browser notwendigen Dateien (HTML, JavaScript, Assets). Der Quellcode ist nicht Gegenstand der Übergabe und verbleibt ausschließlich beim Auftragnehmer.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 1.3 — Verhältnis zum Anstellungsverhältnis</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer steht daneben in einem Anstellungsverhältnis mit dem Auftraggeber (Teilzeitbeschäftigung). Dieser Vertrag betrifft ausschließlich die Einräumung des Nutzungsrechts an der eigenständig und auf eigenes unternehmerisches Risiko entwickelten Software „Kassenabrechnung" sowie die zugehörige Betreuungsleistung.</p>
+        <p>Die Rechte und Pflichten aus diesem Vertrag sind vom bestehenden Anstellungsverhältnis unabhängig und berühren dieses nicht. Die im Rahmen dieses Vertrags erbrachten Leistungen erfolgen nicht im Rahmen der Anstellung, sondern im Rahmen der selbstständigen gewerblichen Tätigkeit des Auftragnehmers als Einzelunternehmer.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §2 Nutzungsrecht -->
+  <section class="section">
+    <div class="section-label">§ 2 · Nutzungsrecht</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 2.1 — Eingeräumtes Recht</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer räumt dem Auftraggeber ein <strong>nicht-exklusives, nicht übertragbares, nicht unterlizenzierbares</strong> Recht ein, den überlassenen Web Build im eigenen Betrieb zu nutzen und auf eigener Infrastruktur (Webserver) bereitzustellen.</p>
+        <p>Die Nutzung ist auf den Betrieb der Schauburg GmbH beschränkt, umfasst aber alle Standorte innerhalb dieses Unternehmens.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 2.2 — Ausgeschlossene Handlungen</div>
+      <div class="para-body">
+        <p>Dem Auftraggeber ist es untersagt:</p>
+        <p>a) den Web Build oder Teile davon an Dritte weiterzugeben, zu verkaufen, zu vermieten oder in anderer Form zu lizenzieren;</p>
+        <p>b) die Software im Auftrag Dritter zu betreiben (Betrieb als Dienstleistung für andere Unternehmen);</p>
+        <p>c) Schutzvermerke, Urheberrechtshinweise oder Herkunftsangaben zu entfernen oder zu verändern.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 2.3 — Recht des Auftragnehmers zur Weiterverwertung</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer behält das ausdrückliche Recht, die Software — einschließlich gleichartiger oder weiterentwickelter Versionen — anderen Auftraggebern anzubieten, zu lizenzieren und zu vertreiben. Die Einräumung des Nutzungsrechts an den Auftraggeber begründet keine Exklusivität.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §3 Vergütung -->
+  <section class="section">
+    <div class="section-label">§ 3 · Vergütung</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 3 — Vergütungsmodell</div>
+      <div class="para-body">
+        <p>Es gilt <strong>eines</strong> der folgenden Modelle. Das nicht zutreffende Modell ist vor Unterzeichnung zu streichen.</p>
+      </div>
+      <div class="option-grid">
+        <div class="option-block option-a">
+          <div class="option-label">Modell A — Einmalzahlung</div>
+          <p>Einmalige Vergütung in Höhe von <strong><span class="bracket-note">[Betrag, z.&nbsp;B. 6.500&nbsp;€]</span></strong> netto zzgl. gesetzlicher Umsatzsteuer, fällig innerhalb von 14 Tagen nach Übergabe des Web Builds und Abnahme durch den Auftraggeber.</p>
+        </div>
+        <div class="option-block option-b">
+          <div class="option-label">Modell B — Monatliche Lizenz</div>
+          <p>Monatliche Lizenzgebühr in Höhe von <strong><span class="bracket-note">[Betrag, z.&nbsp;B. 379&nbsp;€]</span></strong> netto zzgl. gesetzlicher Umsatzsteuer, jeweils zum Monatsersten im Voraus, erstmals zum Zeitpunkt der Übergabe. Mindestlaufzeit: 12 Monate.</p>
+        </div>
+      </div>
+      <div class="note">Hinweis: Bei Modell A endet die Supportverpflichtung nach Ablauf des vereinbarten Supportzeitraums (§&nbsp;5). Folgearbeiten werden separat beauftragt und vergütet.</div>
+    </div>
+  </section>
+
+  <!-- §4 Übergabe und Abnahme -->
+  <section class="section">
+    <div class="section-label">§ 4 · Übergabe und Abnahme</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 4.1</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer übergibt den Web Build in einem lauffähigen Zustand. Die Übergabe gilt als vollzogen, wenn dem Auftraggeber die Dateien zugänglich gemacht wurden und der Auftraggeber deren Empfang bestätigt hat.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 4.2 — Abnahme</div>
+      <div class="para-body">
+        <p>Der Auftraggeber prüft die Software innerhalb von <strong>10 Werktagen</strong> nach Übergabe auf vertragsgemäße Funktion. Wesentliche Mängel sind innerhalb dieser Frist schriftlich zu melden. Erfolgt keine Mängelanzeige, gilt die Software als abgenommen.</p>
+        <p>Als wesentlicher Mangel gilt ausschließlich eine Fehlfunktion, die den bestimmungsgemäßen Betrieb der Kernanwendung (Kassenabrechnung) verhindert.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §5 Support und Betreuung -->
+  <section class="section">
+    <div class="section-label">§ 5 · Support und Betreuung</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 5.1 — Umfang</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer erbringt für die Dauer des vereinbarten Supportzeitraums (§&nbsp;5.4) folgende Leistungen:</p>
+        <p>a) Behebung von Fehlfunktionen, die den bestimmungsgemäßen Betrieb der Software beeinträchtigen;</p>
+        <p>b) Anpassungen an geänderte Browser- oder Systemumgebungen, sofern diese den Betrieb des Web Builds beeinträchtigen;</p>
+        <p>c) Beantwortung von Rückfragen zur Bedienung und Konfiguration per E-Mail.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 5.2 — Reaktionszeit</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer beantwortet Supportanfragen innerhalb von <strong>3 Werktagen</strong>. Kritische Fehlfunktionen (Betrieb vollständig nicht möglich) werden vorrangig behandelt.</p>
+        <p>Support wird ausschließlich remote erbracht — per E-Mail, Telefon oder Bildschirmübertragung. Vor-Ort-Einsätze sind nicht Bestandteil dieses Vertrags.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 5.3 — Nicht enthaltene Leistungen</div>
+      <div class="para-body">
+        <p>Nicht Bestandteil des Supports sind:</p>
+        <p>a) Neue Funktionen oder inhaltliche Erweiterungen der Software;</p>
+        <p>b) Änderungen an der IT-Infrastruktur des Auftraggebers (Server, Netzwerk, Betriebssysteme);</p>
+        <p>c) Schulungen oder Einweisungen über das vereinbarte Maß hinaus;</p>
+        <p>d) Fehlfunktionen, die durch unsachgemäße Nutzung oder Eingriffe des Auftraggebers in den Web Build entstanden sind.</p>
+        <p>Erweiterungen und Anpassungen werden auf Anfrage separat beauftragt und vergütet.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 5.4 — Supportzeitraum</div>
+      <div class="para-body">
+        <p><strong>Bei Modell A (Einmalzahlung):</strong> Der Supportzeitraum beträgt <strong><span class="bracket-note">[z.&nbsp;B. 12 Monate]</span></strong> ab Abnahme. Danach kann ein Folge-Supportvertrag separat vereinbart werden.</p>
+        <p><strong>Bei Modell B (Monatliche Lizenz):</strong> Support ist für die Dauer des Lizenzvertrags inklusive.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §6 Urheberrecht -->
+  <section class="section">
+    <div class="section-label">§ 6 · Urheberrecht und geistiges Eigentum</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 6.1</div>
+      <div class="para-body">
+        <p>Alle Rechte an der Software — einschließlich Quellcode, Konzept, Design und Dokumentation — verbleiben ausschließlich beim Auftragnehmer. Dieser Vertrag überträgt kein Eigentum an der Software, sondern räumt ausschließlich das in § 2 beschriebene Nutzungsrecht ein.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 6.2 — Weiterentwicklungen durch den Auftraggeber</div>
+      <div class="para-body">
+        <p>Da dem Auftraggeber kein Quellcode überlassen wird (§&nbsp;1.2), ist eine technische Weiterentwicklung durch den Auftraggeber nicht vorgesehen. Sollte der Auftraggeber dennoch — etwa durch Beauftragung Dritter — auf Basis des überlassenen Web Builds eine weiterentwickelte Version der Software erstellen oder betreiben lassen, so gilt für diese Version § 2.2 entsprechend: eine Weitergabe oder Lizenzierung an Dritte ist auch in diesem Fall nicht gestattet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §7 Gewährleistung und Haftung -->
+  <section class="section">
+    <div class="section-label">§ 7 · Gewährleistung und Haftung</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 7.1 — Gewährleistung</div>
+      <div class="para-body">
+        <p>Der Auftragnehmer gewährleistet, dass die Software zum Zeitpunkt der Übergabe die in der Feature-Übersicht beschriebenen Funktionen erfüllt. Eine Garantie für den ununterbrochenen Betrieb oder die vollständige Freiheit von Fehlern wird nicht übernommen.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 7.2 — Haftungsbeschränkung</div>
+      <div class="para-body">
+        <p>Die Haftung des Auftragnehmers ist auf Vorsatz und grobe Fahrlässigkeit beschränkt. Eine Haftung für mittelbare Schäden, entgangenen Gewinn oder Datenverlust ist ausgeschlossen, soweit gesetzlich zulässig.</p>
+        <p>Der Auftraggeber ist für die Sicherheit seiner eigenen IT-Infrastruktur sowie für die ordnungsgemäße Datensicherung verantwortlich.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §8 Vertragsdauer und Kündigung -->
+  <section class="section">
+    <div class="section-label">§ 8 · Vertragsdauer und Kündigung</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 8 — Laufzeit</div>
+      <div class="para-body">
+        <p><strong>Bei Modell A:</strong> Der Vertrag endet mit Ablauf des Supportzeitraums (§&nbsp;5.4), sofern kein Folgevertrag vereinbart wird. Das Nutzungsrecht erlischt nicht mit Ende des Supports — der Auftraggeber darf den überlassenen Web Build weiterhin nutzen.</p>
+        <p><strong>Bei Modell B:</strong> Der Vertrag läuft auf unbestimmte Zeit nach Ende der Mindestlaufzeit (12 Monate) und kann von beiden Seiten mit einer Frist von <strong>3 Monaten</strong> zum Monatsende gekündigt werden. Mit Beendigung des Vertrags erlischt das Nutzungsrecht.</p>
+        <p>Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §9 Vertraulichkeit -->
+  <section class="section">
+    <div class="section-label">§ 9 · Vertraulichkeit</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 9</div>
+      <div class="para-body">
+        <p>Beide Parteien verpflichten sich, vertrauliche Informationen der jeweils anderen Partei — insbesondere technische Details, Geschäftsdaten und Konditionen dieses Vertrags — nicht an Dritte weiterzugeben.</p>
+        <p>Ausgenommen sind Informationen, die bereits öffentlich bekannt sind oder werden, ohne dass eine Partei dagegen verstoßen hat.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- §10 Sonstiges -->
+  <section class="section">
+    <div class="section-label">§ 10 · Sonstiges</div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 10.1 — Anwendbares Recht</div>
+      <div class="para-body">
+        <p>Es gilt das Recht der Bundesrepublik Deutschland. Erfüllungsort und Gerichtsstand ist Bremen.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 10.2 — Schriftform</div>
+      <div class="para-body">
+        <p>Änderungen und Ergänzungen dieses Vertrags bedürfen der Schriftform. Dies gilt auch für die Aufhebung dieses Schriftformerfordernisses.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 10.3 — Salvatorische Klausel</div>
+      <div class="para-body">
+        <p>Sollten einzelne Bestimmungen dieses Vertrags unwirksam oder undurchführbar sein, so bleibt die Wirksamkeit der übrigen Bestimmungen unberührt. Die unwirksame Bestimmung ist durch eine wirksame Regelung zu ersetzen, die dem wirtschaftlichen Zweck der unwirksamen Bestimmung möglichst nahekommt.</p>
+      </div>
+    </div>
+
+    <div class="para-block">
+      <div class="para-nr">§ 10.4 — Hinweis zur Nebentätigkeit</div>
+      <div class="para-body">
+        <p>Den Parteien ist bekannt, dass der Auftragnehmer neben seiner selbstständigen gewerblichen Tätigkeit in einem Anstellungsverhältnis mit dem Auftraggeber steht. Der Auftragnehmer bestätigt, dass er eine hierfür ggf. erforderliche Zustimmung oder Anzeige der Nebentätigkeit gegenüber dem Auftraggeber als Arbeitgeber eigenverantwortlich eingeholt bzw. vorgenommen hat.</p>
+        <p>Diese Bestätigung berührt die Wirksamkeit der übrigen Bestimmungen dieses Vertrags nicht.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Unterschriften -->
+  <section class="section">
+    <div class="section-label">Unterschriften</div>
+    <div class="para-body" style="font-size:13px; margin-bottom: 16px; color: var(--muted);">
+      Dieser Vertrag wird in zwei gleichlautenden Ausfertigungen unterzeichnet. Je eine Ausfertigung verbleibt bei jeder Partei.
+    </div>
+    <div class="sig-grid">
+      <div class="sig-block">
+        <div class="sig-name">Paco Demant</div>
+        <div class="sig-role">Auftragnehmer · Lizenzgeber</div>
+        <div class="sig-line">Ort, Datum · Unterschrift</div>
+      </div>
+      <div class="sig-block">
+        <div class="sig-name">Schauburg GmbH</div>
+        <div class="sig-role">Auftraggeber · Lizenznehmer</div>
+        <div class="sig-line">Ort, Datum · Unterschrift · Stempel</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <strong>Entwurf — nicht rechtsverbindlich geprüft</strong>
+      Zur rechtlichen Prüfung einem Anwalt für IT-/Urheberrecht vorlegen.
+    </div>
+    <div class="footer-right">Juni 2026</div>
+  </footer>
+
+</div>
+</body>
+</html>
