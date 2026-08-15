@@ -252,9 +252,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     final Color differenzFarbe =
         a.differenzGesamtCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
-    final String isoDatum =
-        '${a.datum.year}-${a.datum.month.toString().padLeft(2, '0')}-'
-        '${a.datum.day.toString().padLeft(2, '0')}';
+    final String isoDatum = DatumsHelper.isoDatum(a.datum);
     final bool istHeute = isoDatum == DatumsHelper.logischesIsoDatum();
 
     final double bottomPadding = MediaQuery.of(context).padding.bottom;

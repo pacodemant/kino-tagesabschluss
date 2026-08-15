@@ -21,6 +21,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
+import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -383,9 +384,9 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
-  Widget _baueDevToolsPanel() => _orchestrierungHelper.baueDevToolsPanel(
-    autoFillDev: _autoFillDev,
-    leereAlleFelderDev: _leereAlleFelderDev,
+  Widget _baueDevToolsPanel() => DevToolsPanel(
+    onAutoFill: _autoFillDev,
+    onLeeren: _leereAlleFelderDev,
   );
 
   Future<void> _speichereEntwurf() async {
@@ -401,7 +402,7 @@ class _TagesabschlussSchritt1SeiteState
 
   // Delegiert State-/Controller-Logik in eine ausgelagerte Helper-Datei.
   Future<void> _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) async {
-    final int geparsterWert = _stateController.parseGanzzahl(wert);
+    final int geparsterWert = TagesabschlussBerechnung.parseGanzzahlSumme(wert);
     setState(() {
       _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
       if (wert.isNotEmpty) {
@@ -517,7 +518,7 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   int _parseCentZiffern(String wert) =>
-      _stateController.parseCentZiffern(wert);
+      TagesabschlussBerechnung.parseCentZiffern(wert);
 
   List<FocusNode> _fokusReihenfolgeSchritt1() =>
       _stateController.fokusReihenfolge(
@@ -749,7 +750,10 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) =>
-      _stateController.summeGruppe(_stueckzahlen, zeilen);
+      TagesabschlussBerechnung.summeStueckzahlGruppeCent(
+        zeilen: zeilen,
+        stueckzahlen: _stueckzahlen,
+      );
 
   int get _umschlagSummeCent {
     return TagesabschlussBerechnung.summeUmschlaegeCent(_umschlaege);
@@ -776,10 +780,11 @@ class _TagesabschlussSchritt1SeiteState
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
       );
 
-  String _formatiereEuro(int cent) => _stateController.formatiereEuro(cent);
+  String _formatiereEuro(int cent) =>
+      TagesabschlussFormatierung.formatiereEuro(cent);
 
   String _formatiereEuroEingabe(int cent) =>
-      _stateController.formatiereEuroEingabe(cent);
+      TagesabschlussFormatierung.formatiereEuroEingabe(cent);
 
   Future<void> _bestaetigeUndLeereEingaben() async {
     await _orchestrierungHelper.bestaetigeUndLeereEingaben(

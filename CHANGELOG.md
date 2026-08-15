@@ -9,6 +9,49 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 373: Kleinkram-Aufräumbatch — toter Code entfernt, unnötige
+  Pass-Through-Wrapper entfernt, Versionsstring zentralisiert (Typ:
+  architecture). Anlass: umfassendes Duplikat-/Abstraktions-Audit auf
+  Paco-Wunsch (Ziel: Code soll selbst durchsteigbar bleiben), Ergebnis
+  in eine Run-Serie aufgeteilt, dies ist Run 1 von ~11. (1)
+  Schritt1StateController: 5 reine Pass-Through-Methoden entfernt
+  (parseGanzzahl, parseCentZiffern, summeGruppe, formatiereEuro,
+  formatiereEuroEingabe), die nur an TagesabschlussBerechnung/
+  TagesabschlussFormatierung weiterleiteten. Aufrufstellen (in
+  tagesabschluss_schritt1_seite.dart UND wechselgeld_pruefen_seite.dart
+  — Letztere nutzt denselben Controller, war beim ursprünglichen Audit
+  übersehen worden, per flutter analyze nachträglich gefunden) direkt
+  auf die Zielklassen umgestellt. (2) Zwei reine 1:1-Weiterleitungs-
+  Methoden ohne Aufrufer-Mehrwert entfernt: Schritt1OrchestrierungHelper.
+  baueDevToolsPanel() und Schritt2GruppenOrchestrierung.
+  baueEcBelegeKachel()/baueEcBelegSubKacheln() — Aufrufstellen nutzen
+  jetzt direkt DevToolsPanel/Schritt2EcBelegeKachelSection/
+  Schritt2EcBelegSubKacheln. (3) KinoWaehlenUsecase (11-Zeilen-Wrapper
+  ohne eigene Logik, 1 Aufrufer) gelöscht, kinoauswahl_seite.dart ruft
+  jetzt direkt LokalerSpeicher.speichereAktiveKinoId() auf. (4)
+  ISO-Datumsformatierung vereinheitlicht: totes
+  TagesabschlussFormatierung.heutigesIsoDatum() entfernt (zugehöriger
+  Unit-Test angepasst), api_upload_service.dart und lokaler_speicher.dart
+  (2 Stellen) bauten das Format manuell nach, nutzen jetzt
+  DatumsHelper.isoDatum() — rechnerisch identisches Ergebnis. (5)
+  verlauf_detail_seite.dart baute DatumsHelper.isoDatum() Zeichen für
+  Zeichen manuell nach, jetzt direkter Aufruf. (6) Versionsstring
+  zentralisiert: neue Konstante AppVersion.text (lib/config/
+  app_version.dart) statt String-Literal 'Web App X.X.X · rNNN' in
+  startmenue_seite.dart UND kinoauswahl_seite.dart separat — behebt die
+  bekannte Fehlerquelle, dass eine der beiden Stellen bei einem Run
+  vergessen wird zu aktualisieren. Keine funktionale Änderung, keine
+  UI-Änderung. 132 Netto-Zeilen eingespart (172 gelöscht, 40
+  hinzugefügt, plus 9 Zeilen neue Datei app_version.dart). Version
+  0.9.46+373. Dateien: tagesabschluss_berechnung.dart,
+  kino_waehlen_usecase.dart (gelöscht), kinoauswahl_seite.dart,
+  startmenue_seite.dart, schritt1_state_controller.dart,
+  schritt1_orchestrierung_helper.dart, tagesabschluss_schritt1_seite.dart,
+  schritt2_gruppen_orchestrierung.dart, tagesabschluss_schritt2_seite.dart,
+  verlauf_detail_seite.dart, wechselgeld_pruefen_seite.dart,
+  api_upload_service.dart, lokaler_speicher.dart, app_version.dart (neu),
+  tagesabschluss_berechnung_test.dart, pubspec.yaml.
+
 - Run 372a: Direkte Anweisung ohne eigene Run-Nummer, vier kleine
   Korrekturen in einem Rutsch (Paco-Wunsch). (1) Belege-Seite: Label
   "Kino SOLL" heißt für CO (kino_04) jetzt "Gesamt SOLL" — dort gibt

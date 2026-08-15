@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUploadService {
@@ -74,7 +75,7 @@ class ApiUploadService {
   ) {
     return <String, dynamic>{
       'location_id': locationId,
-      'date': _datumIso(abrechnung.datum),
+      'date': DatumsHelper.isoDatum(abrechnung.datum),
     };
   }
 
@@ -222,12 +223,6 @@ class ApiUploadService {
       'flurbocash_report_id_${kinoId}_${_datumKey(datum)}',
       reportId,
     );
-  }
-
-  static String _datumIso(DateTime datum) {
-    final String monat = datum.month.toString().padLeft(2, '0');
-    final String tag = datum.day.toString().padLeft(2, '0');
-    return '${datum.year}-$monat-$tag';
   }
 
   static String _datumKey(DateTime datum) {

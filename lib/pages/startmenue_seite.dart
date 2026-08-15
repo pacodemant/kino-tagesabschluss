@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/config/app_version.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
@@ -337,7 +338,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const Spacer(),
                 const Center(
                   child: Text(
-                    'Web App 0.9.45 · r372a',
+                    AppVersion.text,
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),

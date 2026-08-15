@@ -189,10 +189,9 @@ void main() {
       expect(TagesabschlussFormatierung.formatiereEuroMitVorzeichen(-250), '-2,50 €');
     });
 
-    test('heutigesIsoDatum und deutschesDatum formatieren Datum erwartungsgemaess', () {
+    test('deutschesDatum formatiert Datum erwartungsgemaess', () {
       final DateTime datum = DateTime(2026, 2, 3);
 
-      expect(TagesabschlussFormatierung.heutigesIsoDatum(datum), '2026-02-03');
       expect(TagesabschlussFormatierung.deutschesDatum(datum), '03.02.2026');
     });
   });

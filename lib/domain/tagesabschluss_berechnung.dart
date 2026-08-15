@@ -172,13 +172,6 @@ class TagesabschlussFormatierung {
     return formatiereEuro(cent);
   }
 
-  static String heutigesIsoDatum(DateTime jetzt) {
-    final String jahr = jetzt.year.toString().padLeft(4, '0');
-    final String monat = jetzt.month.toString().padLeft(2, '0');
-    final String tag = jetzt.day.toString().padLeft(2, '0');
-    return '$jahr-$monat-$tag';
-  }
-
   static String deutschesDatum(DateTime jetzt) {
     final String tag = jetzt.day.toString().padLeft(2, '0');
     final String monat = jetzt.month.toString().padLeft(2, '0');

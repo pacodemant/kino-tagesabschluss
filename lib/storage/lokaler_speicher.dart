@@ -548,13 +548,13 @@ class LokalerSpeicher {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? gespeichert =
         speicher.getString('schritt1_letztesOeffnen_$kinoId');
-    final String heute = DateTime.now().toIso8601String().substring(0, 10);
+    final String heute = DatumsHelper.isoDatum(DateTime.now());
     return gespeichert != heute;
   }
 
   static Future<void> speichereSchritt1OeffnungsDatum(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String heute = DateTime.now().toIso8601String().substring(0, 10);
+    final String heute = DatumsHelper.isoDatum(DateTime.now());
     await speicher.setString('schritt1_letztesOeffnen_$kinoId', heute);
   }
 

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
-import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 
 // Zweck: Bündelt Orchestrierungs-, Navigations- und DevTools-Helfer für Schritt 1.
 class Schritt1OrchestrierungHelper {
@@ -102,16 +101,6 @@ class Schritt1OrchestrierungHelper {
     leereUmschlagFelder();
     sichereMindestensEinenUmschlag();
     synchronisiereControllerAusState();
-  }
-
-  Widget baueDevToolsPanel({
-    required VoidCallback autoFillDev,
-    required VoidCallback leereAlleFelderDev,
-  }) {
-    return DevToolsPanel(
-      onAutoFill: autoFillDev,
-      onLeeren: leereAlleFelderDev,
-    );
   }
 
   Future<void> bestaetigeUndLeereEingaben({

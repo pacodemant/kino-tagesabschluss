@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 
 // Zweck: Eigenstaendiger Controller fuer State-/Fokus-Helfer in Schritt 1.
 class Schritt1StateController {
   const Schritt1StateController();
-
-  int parseGanzzahl(String wert) {
-    return TagesabschlussBerechnung.parseGanzzahlSumme(wert);
-  }
 
   void setzeStueckzahl(
     Map<String, int> stueckzahlen,
@@ -81,10 +76,6 @@ class Schritt1StateController {
       bezeichnung: umschlaege[index].bezeichnung,
       betragCent: betragCent,
     );
-  }
-
-  int parseCentZiffern(String wert) {
-    return TagesabschlussBerechnung.parseCentZiffern(wert);
   }
 
   List<FocusNode> fokusReihenfolge({
@@ -200,18 +191,4 @@ class Schritt1StateController {
     FocusScope.of(context).requestFocus(fokusNode);
   }
 
-  int summeGruppe(Map<String, int> stueckzahlen, List<Kassenzeile> zeilen) {
-    return TagesabschlussBerechnung.summeStueckzahlGruppeCent(
-      zeilen: zeilen,
-      stueckzahlen: stueckzahlen,
-    );
-  }
-
-  String formatiereEuro(int cent) {
-    return TagesabschlussFormatierung.formatiereEuro(cent);
-  }
-
-  String formatiereEuroEingabe(int cent) {
-    return TagesabschlussFormatierung.formatiereEuroEingabe(cent);
-  }
 }

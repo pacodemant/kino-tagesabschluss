@@ -10,7 +10,9 @@ import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_sub_kacheln.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_terminal_id_zeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_belege_kachel_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
@@ -2342,7 +2344,7 @@ class _TagesabschlussSchritt2SeiteState
                 _baueZahlungsartenTabelle(0),
             ],
           )
-        : _gruppenOrchestrierung.baueEcBelegSubKacheln(
+        : Schritt2EcBelegSubKacheln(
             belegAnzahl: _ecBelegController.length,
             belegIds: _ecBelegIds,
             aufgeklapptListe: _ecUnterkachelAufgeklappt,
@@ -2365,7 +2367,7 @@ class _TagesabschlussSchritt2SeiteState
             onManuellBearbeitenAktivieren: _manuellBearbeitenAktivieren,
             onFertig: _ecUnterkachelFertig,
           );
-    final Widget ecBelegeKachel = _gruppenOrchestrierung.baueEcBelegeKachel(
+    final Widget ecBelegeKachel = Schritt2EcBelegeKachelSection(
       aufgeklappt: _ecKachelAufgeklappt,
       onToggleAufgeklappt: _ecKachelToggleAufgeklappt,
       zeigeManuellEingebenLink:

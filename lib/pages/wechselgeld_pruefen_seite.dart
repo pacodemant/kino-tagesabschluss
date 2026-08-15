@@ -458,7 +458,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   }
 
   void _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) {
-    final int geparsterWert = _stateController.parseGanzzahl(wert);
+    final int geparsterWert = TagesabschlussBerechnung.parseGanzzahlSumme(wert);
     setState(() {
       _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
     });
@@ -563,7 +563,8 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     });
   }
 
-  int _parseCentZiffern(String wert) => _stateController.parseCentZiffern(wert);
+  int _parseCentZiffern(String wert) =>
+      TagesabschlussBerechnung.parseCentZiffern(wert);
 
   List<FocusNode> _fokusReihenfolge() => _stateController.fokusReihenfolge(
     scheine: _scheine,
@@ -820,7 +821,10 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   }
 
   int _summeGruppe(List<Kassenzeile> zeilen) =>
-      _stateController.summeGruppe(_stueckzahlen, zeilen);
+      TagesabschlussBerechnung.summeStueckzahlGruppeCent(
+        zeilen: zeilen,
+        stueckzahlen: _stueckzahlen,
+      );
 
   int get _umschlagSummeCent =>
       TagesabschlussBerechnung.summeUmschlaegeCent(_umschlaege);
@@ -838,10 +842,11 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         umschlaegeCent: _umschlagSummeCent,
       );
 
-  String _formatiereEuro(int cent) => _stateController.formatiereEuro(cent);
+  String _formatiereEuro(int cent) =>
+      TagesabschlussFormatierung.formatiereEuro(cent);
 
   String _formatiereEuroEingabe(int cent) =>
-      _stateController.formatiereEuroEingabe(cent);
+      TagesabschlussFormatierung.formatiereEuroEingabe(cent);
 
   Future<void> _bestaetigeUndLeere() async {
     final bool? bestaetigt = await showDialog<bool>(

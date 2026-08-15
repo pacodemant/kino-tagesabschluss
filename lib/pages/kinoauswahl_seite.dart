@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/domain/usecases/kino_waehlen_usecase.dart';
+import 'package:kino_bar_app/config/app_version.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
+import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 class KinoauswahlSeite extends StatefulWidget {
@@ -16,10 +17,8 @@ class KinoauswahlSeite extends StatefulWidget {
 }
 
 class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
-  final KinoWaehlenUsecase _kinoWaehlenUsecase = const KinoWaehlenUsecase();
-
   Future<void> _waehleKino(String kinoId) async {
-    await _kinoWaehlenUsecase.speichereAktivesKino(kinoId);
+    await LokalerSpeicher.speichereAktiveKinoId(kinoId);
     if (!mounted) {
       return;
     }
@@ -65,7 +64,7 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   const Text(
-                    'Web App 0.9.45 · r372a',
+                    AppVersion.text,
                     style: TextStyle(
                       fontSize: 13,
                       color: AppFarben.subtilerText,
