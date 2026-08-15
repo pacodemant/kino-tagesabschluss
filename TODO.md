@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 378a2 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 379 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -57,14 +57,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
-
-- [ ] **Standort-Wechsel schließt offene Kino-Seite nicht** Ist man auf
-      einer Kino-spezifischen Seite (z. B. Atlantis-Startseite) und
-      wechselt in den Einstellungen den Standort (z. B. auf Schauburg)
-      und geht dann zurück, bleibt die alte Kino-Seite (Atlantis)
-      offen, statt zur neu gewählten Standort-Seite (SB) zu wechseln.
-      Erwartung: Zurück-Navigation soll auf die Seite des aktuell
-      gewählten Standorts führen.
 
 ---
 

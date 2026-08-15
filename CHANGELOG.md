@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 379: Standort-Wechsel leitet jetzt auf die aktuell
+  gewählte Kino-Startseite um (Typ: standard, TODO-Punkt aus
+  "Kleine Fixes"). Bisher blieb beim Wechsel des Standorts in
+  den Einstellungen (z. B. von Atlantis auf Schauburg) die
+  bereits geöffnete Kino-Startseite (StartmenueSeite) auf dem
+  alten Standort stehen, weil sie ihr Kino einmalig als
+  unveränderliches Konstruktor-Feld erhält und der
+  Standort-Wechsel selbst keinen Navigator-Aufruf auslöst —
+  beim Zurücknavigieren erschien wieder die alte Seite, und
+  da "Kino wechseln" bei gesetztem Standort-Modus ausgeblendet
+  ist, gab es keinen Ausweg mehr daraus. Fix in _ladeDaten()
+  (startmenue_seite.dart), das ohnehin bei jedem initState()
+  und didPopNext() läuft: weicht der geladene Standort-Modus
+  von der Kino-ID der aktuellen Seite ab, wird per
+  pushReplacementNamed sofort auf StartmenueSeite mit dem
+  jetzt aktiven Standort umgeleitet — greift für jeden
+  Rückkehrpfad zur Startseite, nicht nur von den
+  Einstellungen. Version 0.9.51+379. Dateien:
+  startmenue_seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 378a2: Direkte Anweisung ohne eigene Run-Nummer, Bugfix aus
   Pacos Test von Run 378a (Paco-Wunsch/Fehlerbericht). Beim Öffnen
   des Admin-PIN-Dialogs in den Einstellungen (nötig, um den Dev-Modus

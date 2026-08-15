@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.50+378a2 · Run 378a2
+Version: 0.9.51+379 · Run 379
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 364a)
+## Laufender Entwicklungsstand (Run 379)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -620,6 +620,15 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   (2619 Zeilen, build() bereits zerlegt) als eigener, größerer
   Architektur-Run in TODO.md dokumentiert und zurückgestellt. Keine
   App-Code-Änderung.
+- Runs 365–378a2 (Details siehe CHANGELOG.md): u. a. Duplikat-Audit-
+  Serie (Schritt-Auswahl-BottomSheet in Run 378 zusammengeführt),
+  Dev-Modus-Bypass für Stückelung-Button (Run 378a), Absturzfix im
+  Admin-PIN-Dialog (Run 378a2).
+- Run 379 ✅ Standort-Wechsel in den Einstellungen leitet eine bereits
+  offene Kino-Startseite (StartmenueSeite) jetzt automatisch auf den
+  aktuell aktiven Standort um (_ladeDaten() prüft Standort-Modus
+  gegen kino.id, pushReplacementNamed bei Abweichung), statt dass die
+  alte Standort-Seite ohne Ausweg stehen blieb.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

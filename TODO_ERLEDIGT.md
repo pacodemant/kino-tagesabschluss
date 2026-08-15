@@ -37,6 +37,17 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Standort-Wechsel schließt offene Kino-Seite nicht** Ist man auf
+      einer Kino-spezifischen Seite (z. B. Atlantis-Startseite) und
+      wechselt in den Einstellungen den Standort (z. B. auf Schauburg)
+      und geht dann zurück, bleibt die alte Kino-Seite (Atlantis)
+      offen, statt zur neu gewählten Standort-Seite (SB) zu wechseln.
+      *(Run 379)* Umgesetzt wie beschrieben: _ladeDaten() in
+      startmenue_seite.dart (läuft bei initState() und didPopNext())
+      leitet jetzt per pushReplacementNamed auf die StartmenueSeite des
+      aktuell aktiven Standorts um, sobald der geladene Standort-Modus
+      von der Kino-ID der aktuellen Seite abweicht.
+
 - [x] **Alle SnackBars auf Orange umstellen** Aktuell uneinheitliche
       Farben je nach Kontext. Einheitlich auf Orange
       (App-Akzentfarbe) umstellen.

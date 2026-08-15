@@ -77,6 +77,17 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
     if (!mounted) {
       return;
     }
+    // Standort wurde in den Einstellungen gewechselt, während diese Seite
+    // im Navigator-Stack lag (z. B. per Zurück-Navigation erreicht) — die
+    // Widget-Instanz zeigt noch den alten Standort, also auf die Seite
+    // des jetzt aktiven Standorts umleiten statt die veraltete zu zeigen.
+    if (standortModus != null && standortModus != kino.id) {
+      Navigator.of(context).pushReplacementNamed(
+        StartmenueSeite.routenName,
+        arguments: standortModus,
+      );
+      return;
+    }
     setState(() {
       _heutigeAbschluesse = heutige;
       _standortModus = standortModus;
