@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 376: Additions-Logik der Eingabefelder als gemeinsames Mixin
+  (Typ: architecture, Teil der Duplikat-Audit-Serie). _fuegeAdditionHinzu()
+  (hängt "+" an den Text an, damit ein weiterer Betrag/Wert addiert werden
+  kann, z. B. beim Nachzählen) war 1:1 dupliziert zwischen
+  betrag_cent_eingabefeld.dart und ganzzahl_eingabefeld.dart. Jetzt
+  zentral in neuer Datei lib/widgets/eingabefeld_additions_mixin.dart als
+  EingabefeldAdditionsMixin<T extends StatefulWidget> on State<T>, Methode
+  fuegeAdditionHinzu(controller, onChanged, focusNode). Bewusst als Mixin
+  statt Top-Level-Funktion (wie eingabefeld_clear_helper.dart), weil der
+  Cursor-Reset im addPostFrameCallback nach dem Antippen den mounted-Check
+  der jeweiligen State-Klasse braucht — der bleibt dadurch unverändert
+  erhalten. Beide State-Klassen nutzen jetzt
+  "with EingabefeldAdditionsMixin<...>", lokale
+  _fuegeAdditionHinzu()-Methoden entfernt. Keine funktionale Änderung
+  beabsichtigt, reine Code-Verschiebung. Version 0.9.49+376. Dateien:
+  eingabefeld_additions_mixin.dart (neu), betrag_cent_eingabefeld.dart,
+  ganzzahl_eingabefeld.dart, app_version.dart, pubspec.yaml.
+
 - Run 375: Fokus-/Scroll-Navigation Schritt1+2 in FeldNavigationHelper
   zusammengeführt (Typ: architecture, Teil der Duplikat-Audit-Serie).
   scrolleZurMitteNachFokus() war 1:1 dreifach dupliziert (Schritt1,

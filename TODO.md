@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 375 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 376 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -348,12 +348,18 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       zusammengeführt: erstesLeeresFeld()/autoFokussiereNachLaden()
       (strukturell unterschiedliche Lösung je Seite) und
       beiEingabeAbgeschlossen() (unterschiedliches Verhalten, keine
-      reine Dopplung) — bei Bedarf eigener späterer Run).
+      reine Dopplung) — bei Bedarf eigener späterer Run). Run 376
+      (Additions-Logik der Eingabefelder als gemeinsames Mixin:
+      _fuegeAdditionHinzu() war 1:1 dupliziert zwischen
+      betrag_cent_eingabefeld.dart und ganzzahl_eingabefeld.dart,
+      jetzt zentral in neuer lib/widgets/eingabefeld_additions_
+      mixin.dart, EingabefeldAdditionsMixin<T>. Bewusst Mixin statt
+      Top-Level-Funktion wie beim Clear-Helper, da der Cursor-Reset
+      im addPostFrameCallback den mounted-Check der jeweiligen
+      State-Klasse braucht).
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      376 Additions-Logik der Eingabefelder als
-      gemeinsames Mixin (betrag_cent_eingabefeld.dart/
-      ganzzahl_eingabefeld.dart) · 377 Config-Service-Basisklasse für
+      377 Config-Service-Basisklasse für
       Getränke-/Wechselgeld-Remote-Config · 378 Schritt-Auswahl-
       BottomSheet (Schritt1/2/3) zusammenführen · 379 Body-Content-
       Wrapper Schritt1+2 zusammenführen · 380 lokaler_speicher.dart

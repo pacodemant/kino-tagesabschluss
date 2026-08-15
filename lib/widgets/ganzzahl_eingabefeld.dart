@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/eingabefeld_additions_mixin.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
 
 // Begrenzt jedes "+"-getrennte Segment einzeln auf maxLaenge, statt (wie
@@ -68,7 +69,8 @@ class GanzzahlEingabefeld extends StatefulWidget {
   State<GanzzahlEingabefeld> createState() => _GanzzahlEingabefeldState();
 }
 
-class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
+class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld>
+    with EingabefeldAdditionsMixin<GanzzahlEingabefeld> {
   @override
   void initState() {
     super.initState();
@@ -116,40 +118,6 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
       );
       widget.onChanged(formatiert);
     }
-  }
-
-  // Hängt "+" an, damit ein weiterer Wert addiert werden kann (z.B. beim
-  // Nachzählen weiterer Scheine). Funktioniert unabhängig davon, ob die
-  // Tastatur ein "+"-Zeichen anbietet.
-  void _fuegeAdditionHinzu() {
-    final String aktuellerText = widget.textController.text;
-    if (aktuellerText.isEmpty || aktuellerText.endsWith('+')) {
-      widget.focusNode?.requestFocus();
-      return;
-    }
-    final bool hatteBereitsFokus = widget.focusNode?.hasFocus ?? false;
-    final String neuerText = '$aktuellerText+';
-    widget.textController.value = TextEditingValue(
-      text: neuerText,
-      selection: TextSelection.collapsed(offset: neuerText.length),
-    );
-    // War das Feld schon fokussiert, würde ein erneuter requestFocus()-Aufruf
-    // die Text-Input-Verbindung neu aufbauen — das lässt auf iOS Safari die
-    // virtuelle Tastatur verschwinden. Nur bei fehlendem Fokus nötig.
-    if (!hatteBereitsFokus) {
-      widget.focusNode?.requestFocus();
-    }
-    widget.onChanged(neuerText);
-    // Fokuswechsel setzt die Selektion browserseitig teils auf "alles
-    // markiert" zurück; Cursor nach dem Frame erneut ans Ende setzen,
-    // damit direkt weitergetippt werden kann statt den Betrag zu ersetzen.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        widget.textController.selection = TextSelection.collapsed(
-          offset: widget.textController.text.length,
-        );
-      }
-    });
   }
 
   void _beiTextAenderung() {
@@ -224,7 +192,11 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld> {
                 children: <Widget>[
                   baueEingabefeldAktionsChip(
                     icon: Icons.add,
-                    onTap: _fuegeAdditionHinzu,
+                    onTap: () => fuegeAdditionHinzu(
+                      controller: widget.textController,
+                      onChanged: widget.onChanged,
+                      focusNode: widget.focusNode,
+                    ),
                     hatFokus: hatFokus,
                   ),
                   baueEingabefeldTrennlinie(),
