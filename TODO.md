@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 376 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 377 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -357,10 +357,17 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Top-Level-Funktion wie beim Clear-Helper, da der Cursor-Reset
       im addPostFrameCallback den mounted-Check der jeweiligen
       State-Klasse braucht).
+      Run 377 (Config-Service-Basisklasse: initOnAppStart()/
+      Update-Check/HTTP-Fetch waren zwischen GetraenkeConfigService
+      und WechselgeldConfigService 1:1 dupliziert, jetzt zentral in
+      neuer lib/services/remote_config_service_basis.dart,
+      abstrakte Basisklasse RemoteConfigServiceBasis<T>
+      (Template-Method-Muster) — Unterklassen liefern nur noch
+      Parsing/Kodierung/Schlüssel sowie optional den Asset-Fallback,
+      den nur Getränke hat).
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      377 Config-Service-Basisklasse für
-      Getränke-/Wechselgeld-Remote-Config · 378 Schritt-Auswahl-
+      378 Schritt-Auswahl-
       BottomSheet (Schritt1/2/3) zusammenführen · 379 Body-Content-
       Wrapper Schritt1+2 zusammenführen · 380 lokaler_speicher.dart
       JSON-Lade/Speicher-Helper · 381 TagesabschlussScaffold

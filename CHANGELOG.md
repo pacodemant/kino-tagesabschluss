@@ -9,6 +9,41 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 377: Config-Service-Basisklasse für Getränke-/
+  Wechselgeld-Remote-Config (Typ: architecture, Teil der
+  Duplikat-Audit-Serie). GetraenkeConfigService und
+  WechselgeldConfigService hatten identischen Kontrollfluss für
+  "Remote-Config mit Datums-basiertem Update-Check" 1:1 dupliziert:
+  initOnAppStart() (leerer lokaler Stand → Remote holen + speichern,
+  sonst Remote-Datum vs. lokales Datum vergleichen und Update-Flag
+  setzen), HTTP-Fetch mit Statuscode-Prüfung, updateFromRemote(),
+  isUpdateAvailable(), remoteLastUpdated(). Jetzt zentral in neuer
+  Datei lib/services/remote_config_service_basis.dart als abstrakte
+  Basisklasse RemoteConfigServiceBasis<T> (Template-Method-Muster) —
+  Unterklassen liefern nur noch die datentyp-spezifischen Teile:
+  remoteUrl/localKey/localDateKey/updateAvailableKey/logTag,
+  parseInhalt(), kodiere()/dekodiere(), leererWert/datenSindLeer()
+  sowie optional assetFallback() (Default: kein Fallback). Nur
+  GetraenkeConfigService überschreibt assetFallback() (lädt bei
+  leerem Stand + fehlgeschlagenem Remote-Fetch die mitgelieferte
+  Asset-Datei als Rückfalloption) — WechselgeldConfigService hatte
+  das nie und bleibt unverändert ohne Fallback. Öffentliche API
+  beider Services unverändert: GetraenkeConfigService.loadLocal()/
+  saveLocal() und WechselgeldConfigService.getWechselgeldBetrag()
+  delegieren jetzt an die neuen Basis-Methoden ladeGespeichertenWert()/
+  speichereWert(). Alle Aufrufer (main.dart, einstellungen_seite.dart,
+  wechselgeld_pruefen_seite.dart, tagesabschluss_schritt1_seite.dart,
+  getraenke_auffuellen_seite.dart) unverändert. Bewusste minimale
+  Abweichung (kein Funktionsverhalten betroffen, nur Konsolen-Logging):
+  das Getränke-spezifische Debug-Log "Lokale Liste geladen, X
+  Getränke" nach dem Leer-Zweig entfällt, ebenso der Textzusatz
+  "— Asset-Fallback" in der Fehlermeldung — beides reines
+  Debug-Logging ohne Sichtbarkeit für Paco (Web-App, kein
+  Dart-DevTools-Log). Version 0.9.49+377. Dateien:
+  remote_config_service_basis.dart (neu),
+  getraenke_config_service.dart, wechselgeld_config_service.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 376: Additions-Logik der Eingabefelder als gemeinsames Mixin
   (Typ: architecture, Teil der Duplikat-Audit-Serie). _fuegeAdditionHinzu()
   (hängt "+" an den Text an, damit ein weiterer Betrag/Wert addiert werden
