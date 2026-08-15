@@ -319,6 +319,61 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       zurückgestellt (Run 364a) — bei Bedarf später als eigenständiges
       Vorhaben aufgreifen.
 
+- [ ] **Duplikat-/Abstraktions-Audit** (Run 373 gestartet, Serie läuft).
+      Umfassende Analyse auf Duplikate/Teilduplikate und unnötige
+      Abstraktionen quer durch lib/ (26 Funde in 3 Teilbereichen:
+      Schritt1/2/3-Seiten, gemeinsamer Widget-/Service-/Domain-Code,
+      restliche Einzelseiten). Ziel: Code bleibt für Paco selbst
+      durchsteigbar, möglichst wenig Redundanz/Drift-Risiko (siehe
+      z. B. Run 366–369).
+      Erledigt: Run 373 (tote Pass-Throughs/Wrapper entfernt — u. a.
+      Schritt1StateController, KinoWaehlenUsecase —, ISO-Datum
+      vereinheitlicht, Versionsstring zentralisiert in neuer
+      lib/config/app_version.dart, AppVersion.text). Run 374/374a/
+      374a2 (Dialog-/Snackbar-Helfer vereinheitlicht: neues
+      zeigeInfoDialog() + zeigeHinweisSnackBar(), zeigeBestaetigungs
+      Dialog() um abbrechenText erweitert; dabei zusätzlich beim
+      Testen gefundene Bugs/Wünsche miterledigt: doppeltes
+      Wechselgeld-"Was jetzt?"-Popup entfernt, "Clear"-Buttons
+      app-weit auf "Löschen" umbenannt, "Wechselgeld stimmt"-Prüfung
+      läuft jetzt erst bei Feld-Verlassen/Bestätigung statt bei jedem
+      Tastendruck, "Rollen übernehmen" erkennt genullte Zählungen
+      jetzt korrekt als "keine Daten vorhanden").
+      Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
+      nach Impact/Risiko):
+      375 Fokus-/Scroll-Navigation Schritt1+2 in FeldNavigationHelper
+      zusammenführen · 376 Additions-Logik der Eingabefelder als
+      gemeinsames Mixin (betrag_cent_eingabefeld.dart/
+      ganzzahl_eingabefeld.dart) · 377 Config-Service-Basisklasse für
+      Getränke-/Wechselgeld-Remote-Config · 378 Schritt-Auswahl-
+      BottomSheet (Schritt1/2/3) zusammenführen · 379 Body-Content-
+      Wrapper Schritt1+2 zusammenführen · 380 lokaler_speicher.dart
+      JSON-Lade/Speicher-Helper · 381 TagesabschlussScaffold
+      konsequent nutzen (4 Seiten bauen Footer aktuell von Hand) ·
+      382 Stückelungs-Konfiguration zentralisieren (aktuell 3x
+      dupliziert) · 383 WechselgeldRollenSection auf
+      CollapsibleCardSection umstellen + Schritt3-Card-Wrapper +
+      restliche kleine lokale Widget-Extraktionen (Kupfer-Buttons,
+      Einstellungen-Zeilen-Builder).
+      Zusätzlich entdeckt, noch nicht eingeplant: ca. 11 weitere
+      SnackBar-Aufrufe in tagesabschluss_schritt2_seite.dart (5x) und
+      tagesabschluss_schritt3_seite.dart (6x), die ebenfalls
+      zeigeHinweisSnackBar() nutzen könnten (siehe CHANGELOG Run 374,
+      Abschnitt "Neuer Fund beim Umsetzen") — bewusst nicht
+      mitgezogen, da außerhalb des kommunizierten Zielbereichs von
+      Run 374.
+      Bewusst zurückgestellt: paralleles Listen-Resize-Muster in
+      tagesabschluss_schritt2_seite.dart (EC-Beleg-/Ausgaben-Familie)
+      — nur bei größerem Schritt-2-Umbau sinnvoll, nicht isoliert.
+      FeatureFlags/DevModus-Boilerplate — niedrige Priorität, nur bei
+      weiteren Flags relevant.
+      Offene Abwägungsfrage (Paco-Entscheidung nötig): soll
+      einstellungen_gruppen_orchestrierung.dart als reine
+      Durchreiche-Schicht bleiben (Konsistenz mit Schritt1/2/3-
+      Mustern) oder zurückgebaut werden (mehr Einfachheit, da hier —
+      anders als bei Schritt1/2/3 — keine eigene Logik/Verzweigung
+      drinsteckt)?
+
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
       API-Key, BelegScan-Service-URL, Getränkeliste-Verwaltung,
