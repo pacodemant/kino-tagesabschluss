@@ -589,7 +589,7 @@ class _TagesabschlussSchritt3SeiteState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  if (!_abrechnungGesendet) {
+                  if (!_abrechnungGesendet && !_devModusAktiv) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         backgroundColor: AppFarben.fokusFarbe,
@@ -605,10 +605,12 @@ class _TagesabschlussSchritt3SeiteState
                 },
                 style: _abrechnungGesendet
                     ? AppFarben.footerButtonStyle
-                    : ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade600,
-                        foregroundColor: Colors.grey.shade300,
-                      ),
+                    : (_devModusAktiv
+                        ? AppFarben.devBypassButtonStyle
+                        : ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey.shade600,
+                            foregroundColor: Colors.grey.shade300,
+                          )),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(

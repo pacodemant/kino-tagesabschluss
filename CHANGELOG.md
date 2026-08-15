@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 378a: Direkte Anweisung ohne eigene Run-Nummer, Ergänzung aus
+  Pacos Test von Run 378 (Paco-Wunsch). t4 (Schritt 4 der Schritt-
+  Auswahl) ließ sich beim Testen nicht durchführen, weil der Button
+  "Stückelung (4/4)" in Schritt 3 erst nach echt gesendeter Abrechnung
+  antippbar ist — ein echter Versand während der Flurbocash-Testphase
+  soll aber vermieden werden, da dort nur reale Abrechnungen ankommen
+  sollen. Jetzt ist der Button auch im Dev-Modus (unabhängig vom
+  Sende-Status) antippbar, damit sich Schritt 4 ohne echten Versand
+  erreichen lässt. Zur Unterscheidung: Ist der Button nur wegen des
+  Dev-Modus-Bypasses aktiv (noch nicht wirklich gesendet), wird er
+  lila statt der sonstigen Farben (grau = gesperrt, orange = nach
+  echtem Versand) angezeigt — neue Farbe AppFarben.devBypassLila samt
+  AppFarben.devBypassButtonStyle, bewusst eine bisher ungenutzte
+  Farbe, damit ein Dev-Bypass immer eindeutig erkennbar bleibt. Ist
+  im Dev-Modus zusätzlich bereits real gesendet worden, bleibt der
+  Button orange (kein Bypass mehr nötig). Version 0.9.50+378a.
+  Dateien: tagesabschluss_schritt3_seite.dart, app_farben.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 378: Schritt-Auswahl-BottomSheet (Schritt 1-4) zusammengeführt
   (Typ: architecture, Teil der Duplikat-Audit-Serie). Das BottomSheet
   "1/4 · Bargeld zählen ... 4/4 · ..." (aktueller Schritt fett/

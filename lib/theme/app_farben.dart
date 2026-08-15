@@ -36,9 +36,20 @@ class AppFarben {
   static const Color gruppierungBandA = Colors.white;
   static const Color gruppierungBandB = Color(0xFFF6EFEF);
 
+  // Kennzeichnet Dev-Modus-Bypässe (z. B. Weiter-Buttons, die normalerweise
+  // eine echte Aktion voraussetzen, im Dev-Modus aber ohne diese
+  // freigeschaltet sind) — bewusst eine Farbe, die sonst nirgends
+  // vorkommt, damit ein Bypass immer eindeutig erkennbar ist.
+  static const Color devBypassLila = Color(0xFF8E24AA); // purple.shade600
+
   static final ButtonStyle footerButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: AppFarben.fokusFarbe,
     foregroundColor: AppFarben.appBarRot,
+  );
+
+  static final ButtonStyle devBypassButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: AppFarben.devBypassLila,
+    foregroundColor: Colors.white,
   );
 
   static const BoxDecoration footerDecoration = BoxDecoration(
