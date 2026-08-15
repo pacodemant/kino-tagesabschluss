@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
 class HelpButton extends StatelessWidget {
   const HelpButton({super.key, required this.helpText});
@@ -11,21 +12,12 @@ class HelpButton extends StatelessWidget {
       icon: const Icon(Icons.help_outline, color: Colors.white),
       iconSize: 22,
       tooltip: 'Hilfe',
-      onPressed: () {
-        showDialog<void>(
-          context: context,
-          builder: (BuildContext ctx) => AlertDialog(
-            title: const Text('Hilfe'),
-            content: Text(helpText),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
-        );
-      },
+      onPressed: () => zeigeInfoDialog(
+        context,
+        titel: 'Hilfe',
+        inhalt: Text(helpText),
+        buttonText: 'OK',
+      ),
     );
   }
 }

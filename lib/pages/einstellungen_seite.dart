@@ -15,6 +15,7 @@ import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
+import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EinstellungenSeite extends StatefulWidget {
@@ -453,15 +454,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _adminSessionEntsperrt = true;
       setState(() => _devAufgeklappt = true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: AppFarben.fokusFarbe,
-          content: Text(
-            'Falscher PIN',
-            style: TextStyle(color: AppFarben.appBarRot),
-          ),
-        ),
-      );
+      zeigeHinweisSnackBar(context, 'Falscher PIN');
     }
   }
 
@@ -706,15 +699,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       return;
     }
     setState(() {});
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        backgroundColor: AppFarben.fokusFarbe,
-        content: Text(
-          'Standardwerte gesetzt.',
-          style: TextStyle(color: AppFarben.appBarRot),
-        ),
-      ),
-    );
+    zeigeHinweisSnackBar(context, 'Standardwerte gesetzt.');
   }
 
   static const InputDecoration _zeilenDeko = InputDecoration(

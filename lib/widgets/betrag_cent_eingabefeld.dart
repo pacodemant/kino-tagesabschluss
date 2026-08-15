@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/eingabefeld_clear_helper.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
 class CentWaehrungsEingabeFormatter extends TextInputFormatter {
   static final RegExp _nichtZiffern = RegExp(r'[^0-9]');
@@ -118,19 +119,11 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
       setState(() => _nennwertFehler = true);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          showDialog<void>(
-            context: context,
-            builder: (BuildContext dialogCtx) => AlertDialog(
-              title: const Text('Ooops!'),
-              content: const Text(
-                'Der eingegebene Betrag ergibt 0 – bitte prüfen.',
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(dialogCtx).pop(),
-                  child: const Text('Verstanden'),
-                ),
-              ],
+          zeigeInfoDialog(
+            context,
+            titel: 'Ooops!',
+            inhalt: const Text(
+              'Der eingegebene Betrag ergibt 0 – bitte prüfen.',
             ),
           );
         }
@@ -177,21 +170,13 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld> {
     if (fehler) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          showDialog<void>(
-            context: context,
-            builder: (BuildContext dialogCtx) => AlertDialog(
-              title: const Text('Ooops!'),
-              content: Text(
-                'Dieser Betrag lässt sich nicht durch '
-                '${_formatiereNennwert(widget.nennwertCent!)} teilen – '
-                'hast du dich vielleicht vertippt?',
-              ),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () => Navigator.of(dialogCtx).pop(),
-                  child: const Text('Verstanden'),
-                ),
-              ],
+          zeigeInfoDialog(
+            context,
+            titel: 'Ooops!',
+            inhalt: Text(
+              'Dieser Betrag lässt sich nicht durch '
+              '${_formatiereNennwert(widget.nennwertCent!)} teilen – '
+              'hast du dich vielleicht vertippt?',
             ),
           );
         }

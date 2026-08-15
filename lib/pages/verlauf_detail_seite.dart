@@ -9,6 +9,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
+import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
@@ -49,41 +50,23 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       await ApiUploadService.upload(widget.abschluss);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: Text(
-              'API Upload erfolgreich ✓',
-              style: TextStyle(color: AppFarben.appBarRot),
-            ),
-          ),
-        );
+        zeigeHinweisSnackBar(context, 'API Upload erfolgreich ✓');
       }
     } catch (e) {
       if (mounted) {
         if (ApiUploadService.isCorsArtFehler(e)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: AppFarben.fokusFarbe,
-              content: Text(
-                'Upload gesendet — Empfang nicht bestätigbar',
-                style: TextStyle(color: AppFarben.appBarRot),
-              ),
-            ),
+          zeigeHinweisSnackBar(
+            context,
+            'Upload gesendet — Empfang nicht bestätigbar',
           );
         } else {
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppFarben.fokusFarbe,
-              content: Text(
-                'API Upload fehlgeschlagen\n$anzeige',
-                style: const TextStyle(color: AppFarben.appBarRot),
-              ),
-              duration: const Duration(seconds: 8),
-            ),
+          zeigeHinweisSnackBar(
+            context,
+            'API Upload fehlgeschlagen\n$anzeige',
+            duration: const Duration(seconds: 8),
           );
         }
       }

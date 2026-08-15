@@ -9,6 +9,50 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 374: Dialog- und Hinweis-Helper vereinheitlicht (Typ:
+  architecture). Anlass: Run 2 der Duplikat-Audit-Serie (Fund #11,
+  #17, #21, #22). (1) Neuer generischer Ein-Button-Hinweisdialog
+  zeigeInfoDialog() in loeschen_dialog.dart ergänzt, ersetzt 5 (statt
+  der ursprünglich vermuteten 4 — beim Umsetzen wurde eine fünfte,
+  strukturell identische Stelle gefunden) separat gebaute
+  AlertDialog-mit-einem-Button-Konstruktionen: help_button.dart,
+  collapsible_card_section.dart, betrag_cent_eingabefeld.dart (2x),
+  wechselgeld_pruefen_seite.dart (_zeigeRollenUebernehmenHilfe).
+  zeigeBestaetigungsDialog() um optionalen abbrechenText-Parameter
+  erweitert (Default weiterhin 'Abbrechen'), damit auch abweichende
+  Abbrechen-Beschriftungen ('Zurück zum Zählen') ohne Verhaltensbruch
+  über den gemeinsamen Helfer laufen. (2) Neue Datei
+  hinweis_snackbar.dart mit zeigeHinweisSnackBar(), ersetzt 6 separat
+  gebaute SnackBar-Konstruktionen (mit identischem Orange/Rot-Styling
+  aus Run 372a) in wechselgeld_pruefen_seite.dart,
+  einstellungen_seite.dart (2x) und verlauf_detail_seite.dart (3x) —
+  Sonderfälle (clearSnackBars() vorher, 8-Sekunden-Dauer bei einer
+  Fehlermeldung) über optionale Parameter erhalten. Ein vierter,
+  im ursprünglichen Audit vermuteter Fundort (startmenue_seite.dart)
+  existierte nicht, wurde ignoriert. (3) In
+  wechselgeld_pruefen_seite.dart zwei bestehende, noch nicht per
+  Helfer laufende Bestätigungsdialoge auf zeigeBestaetigungsDialog()
+  umgestellt (_bestaetigeUndLeere, _pruefeDifferenzUndBestaetigeVerlassen).
+  (4) Die zwei fast identischen "Was möchtest du als nächstes tun?"-
+  Dialoge in derselben Datei (_zeigeUebereinstimmungsDialog,
+  _zeigeAbschlussDialog) zu einer gemeinsamen privaten Methode
+  _zeigeWasJetztDialog() zusammengeführt (Titel/Inhalt/
+  barrierDismissible als Parameter). Keine funktionale/UI-Änderung —
+  alle Button-Texte, Styles und Sonderverhalten 1:1 erhalten. 74
+  Netto-Zeilen eingespart (212 gelöscht, 116 hinzugefügt, plus 22
+  Zeilen neue Datei hinweis_snackbar.dart). Bekannte, nicht in diesem
+  Run behobene Erweiterung: beim Umsetzen wurden ca. 11 weitere
+  SnackBar-Aufrufe in tagesabschluss_schritt2_seite.dart (5x) und
+  tagesabschluss_schritt3_seite.dart (6x) entdeckt, die denselben
+  Helfer nutzen könnten — bewusst nicht Teil dieses Runs, da diese
+  zwei Dateien nicht im ursprünglich kommunizierten Zielbereich
+  lagen; als möglicher Run 374b vorgeschlagen. Version 0.9.47+374.
+  Dateien: loeschen_dialog.dart, hinweis_snackbar.dart (neu),
+  help_button.dart, collapsible_card_section.dart,
+  betrag_cent_eingabefeld.dart, wechselgeld_pruefen_seite.dart,
+  einstellungen_seite.dart, verlauf_detail_seite.dart, app_version.dart,
+  pubspec.yaml.
+
 - Run 373: Kleinkram-Aufräumbatch — toter Code entfernt, unnötige
   Pass-Through-Wrapper entfernt, Versionsstring zentralisiert (Typ:
   architecture). Anlass: umfassendes Duplikat-/Abstraktions-Audit auf

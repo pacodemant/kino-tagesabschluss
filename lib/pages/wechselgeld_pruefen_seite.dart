@@ -20,6 +20,8 @@ import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_zusa
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
+import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -292,15 +294,30 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     }
   }
 
-  Future<void> _zeigeUebereinstimmungsDialog() async {
+  Future<void> _zeigeUebereinstimmungsDialog() => _zeigeWasJetztDialog(
+    titel: 'Wechselgeld stimmt!',
+    inhalt: 'Passt.',
+    barrierDismissible: false,
+  );
+
+  /// Gemeinsamer "Was möchtest du als nächstes tun?"-Dialog (Weiter
+  /// zählen / Getränke auffüllen / Fertig), genutzt sowohl beim
+  /// direkten Treffer (_zeigeUebereinstimmungsDialog) als auch nach
+  /// Bestätigung einer Differenz (_zeigeAbschlussDialog) — Titel/
+  /// Inhalt/Dismissible unterscheiden sich je Aufrufstelle.
+  Future<void> _zeigeWasJetztDialog({
+    required String titel,
+    String? inhalt,
+    required bool barrierDismissible,
+  }) async {
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
     await showDialog<void>(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: barrierDismissible,
       builder: (BuildContext dialogKontext) {
         return AlertDialog(
-          title: const Text('Wechselgeld stimmt!'),
-          content: const Text('Passt.'),
+          title: Text(titel),
+          content: inhalt == null ? null : Text(inhalt),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(dialogKontext).pop(),
@@ -346,28 +363,15 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     if (differenzCent == 0) {
       return true;
     }
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogKontext) {
-        return AlertDialog(
-          title: const Text('Wechselgeld stimmt nicht'),
-          content: Text(
-            'Differenz zum Sollwert: '
-            '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
-            'Trotzdem fortfahren?',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(false),
-              child: const Text('Zurück zum Zählen'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(true),
-              child: const Text('Ja, trotzdem weiter'),
-            ),
-          ],
-        );
-      },
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Wechselgeld stimmt nicht',
+      inhalt:
+          'Differenz zum Sollwert: '
+          '${TagesabschlussFormatierung.formatiereEuroMitVorzeichen(differenzCent)}.\n'
+          'Trotzdem fortfahren?',
+      abbrechenText: 'Zurück zum Zählen',
+      bestaetigenText: 'Ja, trotzdem weiter',
     );
     return bestaetigt == true;
   }
@@ -379,42 +383,10 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     await _zeigeAbschlussDialog();
   }
 
-  Future<void> _zeigeAbschlussDialog() async {
-    final Kino? kino = KinoRepository.nachId(widget.kinoId);
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext dialogKontext) {
-        return AlertDialog(
-          title: const Text('Was möchtest du als nächstes tun?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(),
-              child: const Text('Weiter zählen'),
-            ),
-            if (kino?.hatGetraenke == true)
-              TextButton(
-                onPressed: () {
-                  Navigator.of(dialogKontext).pop();
-                  Navigator.of(context).pushNamed(
-                    GetraenkeAuffuellenSeite.routenName,
-                    arguments: widget.kinoId,
-                  );
-                },
-                child: const Text('Getränke auffüllen'),
-              ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(dialogKontext).pop();
-                _zurueckZurStartseite();
-              },
-              child: const Text('Fertig / Startseite'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  Future<void> _zeigeAbschlussDialog() => _zeigeWasJetztDialog(
+    titel: 'Was möchtest du als nächstes tun?',
+    barrierDismissible: true,
+  );
 
   void _leereUmschlagFelder() => _initialisierungHelper.leereUmschlagFelder();
 
@@ -849,24 +821,10 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       TagesabschlussFormatierung.formatiereEuroEingabe(cent);
 
   Future<void> _bestaetigeUndLeere() async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogKontext) {
-        return AlertDialog(
-          title: const Text('Eingaben wirklich löschen?'),
-          content: const Text('Alle Eingaben werden zurückgesetzt.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(false),
-              child: const Text('Abbrechen'),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(dialogKontext).pop(true),
-              child: const Text('Löschen'),
-            ),
-          ],
-        );
-      },
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Eingaben wirklich löschen?',
+      inhalt: 'Alle Eingaben werden zurückgesetzt.',
     );
 
     if (bestaetigt != true || !mounted) {
@@ -899,17 +857,11 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         stueckzahlenRoh is Map<String, dynamic> ? stueckzahlenRoh : null;
     if (stueckzahlMap == null || stueckzahlMap.isEmpty) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(
-          const SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: Text(
-              'Keine Zählung für heute gefunden.',
-              style: TextStyle(color: AppFarben.appBarRot),
-            ),
-          ),
-        );
+      zeigeHinweisSnackBar(
+        context,
+        'Keine Zählung für heute gefunden.',
+        vorherigeLoeschen: true,
+      );
       return;
     }
     setState(() {
@@ -927,27 +879,16 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     _planePruefung();
   }
 
-  Future<void> _zeigeRollenUebernehmenHilfe() async {
-    await showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Geldrollenanzahl übernehmen'),
-          content: const Text(
-            'Übernimmt die Anzahl der Münzrollen aus der heutigen '
-            'Bargeldzählung (Schritt 1). Sinnvoll wenn die Rollenanzahl '
-            'seit der ersten Zählung unverändert ist.',
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  Future<void> _zeigeRollenUebernehmenHilfe() => zeigeInfoDialog(
+    context,
+    titel: 'Geldrollenanzahl übernehmen',
+    inhalt: const Text(
+      'Übernimmt die Anzahl der Münzrollen aus der heutigen '
+      'Bargeldzählung (Schritt 1). Sinnvoll wenn die Rollenanzahl '
+      'seit der ersten Zählung unverändert ist.',
+    ),
+    buttonText: 'OK',
+  );
 
   void _loescheRollen() {
     setState(() {

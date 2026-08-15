@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
 class CollapsibleCardSection extends StatelessWidget {
   const CollapsibleCardSection({
@@ -47,18 +48,10 @@ class CollapsibleCardSection extends StatelessWidget {
                           iconSize: 18,
                           padding: const EdgeInsets.only(left: 4),
                           constraints: const BoxConstraints(),
-                          onPressed: () => showDialog<void>(
-                            context: context,
-                            builder: (BuildContext ctx) => AlertDialog(
-                              title: Text(hilfeDialogTitel),
-                              content: hilfeDialogInhalt,
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.of(ctx).pop(),
-                                  child: const Text('Verstanden'),
-                                ),
-                              ],
-                            ),
+                          onPressed: () => zeigeInfoDialog(
+                            context,
+                            titel: hilfeDialogTitel,
+                            inhalt: hilfeDialogInhalt,
                           ),
                         ),
                       ],
