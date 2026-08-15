@@ -3,6 +3,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -293,53 +294,9 @@ class StueckelungVorschlagSeite extends StatelessWidget {
   }
 
   void _zeigeSchrittSlider(BuildContext context) {
-    showModalBottomSheet<void>(
+    const SchrittAuswahlBottomSheetHelper().zeigeSchrittAuswahlBottomSheet(
       context: context,
-      builder: (BuildContext sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.arrow_back),
-                title: const Text('1/4 · Bargeld zählen'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context)
-                      .popUntil(ModalRoute.withName('/closure-step-1'));
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.arrow_back),
-                title: const Text('2/4 · Belege'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context)
-                      .popUntil(ModalRoute.withName('/closure-step-2'));
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.arrow_back),
-                title: const Text('3/4 · Übertrag auf Umschlag'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context)
-                      .popUntil(ModalRoute.withName('/closure-step-3'));
-                },
-              ),
-              const ListTile(
-                leading: Icon(Icons.check_circle),
-                title: Text(
-                  '4/4 · Stückelung Barumsatz',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                subtitle: Text('Aktueller Schritt'),
-                enabled: false,
-              ),
-            ],
-          ),
-        );
-      },
+      aktuellerSchritt: 4,
     );
   }
 

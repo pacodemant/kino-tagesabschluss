@@ -20,6 +20,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
+import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -65,6 +66,8 @@ class _TagesabschlussSchritt1SeiteState
   final FeldNavigationHelper _navHelper = const FeldNavigationHelper();
   final Schritt1OrchestrierungHelper _orchestrierungHelper =
       const Schritt1OrchestrierungHelper();
+  final SchrittAuswahlBottomSheetHelper _schrittAuswahlHelper =
+      const SchrittAuswahlBottomSheetHelper();
   final Schritt1GruppenOrchestrierung _gruppenOrchestrierung =
       const Schritt1GruppenOrchestrierung();
   late final Schritt1InitialisierungHelper _initialisierungHelper;
@@ -948,9 +951,10 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _zeigeSchrittAuswahlBottomSheet() async {
-    await _orchestrierungHelper.zeigeSchrittAuswahlBottomSheet(
+    await _schrittAuswahlHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
-      weiterZuSchritt2: _weiterZuSchritt2,
+      aktuellerSchritt: 1,
+      weiterZumNaechstenSchritt: _weiterZuSchritt2,
     );
   }
 

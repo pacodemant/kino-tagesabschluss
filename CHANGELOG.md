@@ -9,6 +9,41 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 378: Schritt-Auswahl-BottomSheet (Schritt 1-4) zusammengeführt
+  (Typ: architecture, Teil der Duplikat-Audit-Serie). Das BottomSheet
+  "1/4 · Bargeld zählen ... 4/4 · ..." (aktueller Schritt fett/
+  deaktiviert mit Häkchen-Icon, frühere Schritte per Zurück-Pfeil
+  über Navigator.popUntil(routenName) erreichbar, direkt folgender
+  Schritt per Pfeil-vorwärts-Callback, weitere Schritte deaktiviert)
+  war praktisch 1:1 vierfach dupliziert: in
+  Schritt1OrchestrierungHelper.zeigeSchrittAuswahlBottomSheet()
+  sowie je einmal inline als _zeigeSchrittSlider() in
+  tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_
+  seite.dart und stueckelung_vorschlag_seite.dart (Schritt 4). Jetzt
+  zentral in neuer Datei lib/utils/schritt_auswahl_bottom_sheet_
+  helper.dart, Klasse SchrittAuswahlBottomSheetHelper (analog
+  FeldNavigationHelper) mit Methode zeigeSchrittAuswahlBottomSheet
+  ({context, aktuellerSchritt, weiterZumNaechstenSchritt}) — baut
+  die 4 ListTiles positionsbezogen zu aktuellerSchritt, Routennamen/
+  Labels als interne Konstanten. Alle 4 Aufrufer umgestellt; die
+  Wrapper-Methode in Schritt1OrchestrierungHelper entfällt (reiner
+  Pass-Through, analog Run-373-Muster). Bewusste Nebenkorrektur:
+  Schritt 1 zeigte für Schritt 4 bisher den Platzhaltertext
+  "4/4 · Schritt 4" statt "4/4 · Stückelung Barumsatz" wie die
+  anderen drei Seiten — durch die gemeinsame Label-Liste jetzt
+  überall einheitlich "4/4 · Stückelung Barumsatz". TODO.md nannte
+  für diesen Run nur Schritt 1-3 als Ziel; stueckelung_vorschlag_
+  seite.dart (Schritt 4) hatte aber exakt dasselbe Duplikat-Muster
+  und wurde bewusst mit vereinheitlicht, sonst wäre eine vierte
+  Kopie übrig geblieben. Ansonsten keine funktionale Änderung
+  beabsichtigt (Navigationsziele, Icons, restliche Label-Texte
+  identisch zu vorher). Version 0.9.50+378. Dateien:
+  schritt_auswahl_bottom_sheet_helper.dart (neu),
+  schritt1_orchestrierung_helper.dart, tagesabschluss_schritt1_
+  seite.dart, tagesabschluss_schritt2_seite.dart,
+  tagesabschluss_schritt3_seite.dart, stueckelung_vorschlag_seite.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 377: Config-Service-Basisklasse für Getränke-/
   Wechselgeld-Remote-Config (Typ: architecture, Teil der
   Duplikat-Audit-Serie). GetraenkeConfigService und

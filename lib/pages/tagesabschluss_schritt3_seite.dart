@@ -28,6 +28,7 @@ import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -108,6 +109,8 @@ class _TagesabschlussSchritt3SeiteState
       const TagesabschlussFinalisierenUsecase();
   final SpeichereTagesabschlussUsecase _speichereUsecase =
       const SpeichereTagesabschlussUsecase();
+  final SchrittAuswahlBottomSheetHelper _schrittAuswahlHelper =
+      const SchrittAuswahlBottomSheetHelper();
 
   // null solange die async-Initialisierung noch läuft
   TagesabschlussFinal? _abschlussVorschau;
@@ -541,52 +544,10 @@ class _TagesabschlussSchritt3SeiteState
       TagesabschlussFormatierung.deutschesDatum(zeit);
 
   void _zeigeSchrittSlider() {
-    showModalBottomSheet<void>(
+    _schrittAuswahlHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
-      builder: (BuildContext sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.arrow_back),
-                title: const Text('1/4 · Bargeld zählen'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context)
-                      .popUntil(ModalRoute.withName('/closure-step-1'));
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.arrow_back),
-                title: const Text('2/4 · Belege'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context)
-                      .popUntil(ModalRoute.withName('/closure-step-2'));
-                },
-              ),
-              const ListTile(
-                leading: Icon(Icons.check_circle),
-                title: Text(
-                  '3/4 · Übertrag auf Umschlag',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                subtitle: Text('Aktueller Schritt'),
-                enabled: false,
-              ),
-              ListTile(
-                leading: const Icon(Icons.arrow_forward),
-                title: const Text('4/4 · Stückelung Barumsatz'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  _navigiereZuSchritt4();
-                },
-              ),
-            ],
-          ),
-        );
-      },
+      aktuellerSchritt: 3,
+      weiterZumNaechstenSchritt: _navigiereZuSchritt4,
     );
   }
 

@@ -166,41 +166,4 @@ class Schritt1OrchestrierungHelper {
     }
     navigiereZuSchritt2();
   }
-
-  Future<void> zeigeSchrittAuswahlBottomSheet({
-    required BuildContext context,
-    required Future<void> Function() weiterZuSchritt2,
-  }) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.check_circle),
-                title: const Text(
-                  '1/4 · Bargeld zählen',
-                  style: TextStyle(fontWeight: FontWeight.w700),
-                ),
-                subtitle: const Text('Aktueller Schritt'),
-                enabled: false,
-              ),
-              ListTile(
-                leading: const Icon(Icons.arrow_forward),
-                title: const Text('2/4 · Belege'),
-                onTap: () {
-                  Navigator.of(sheetContext).pop();
-                  weiterZuSchritt2();
-                },
-              ),
-              const ListTile(title: Text('3/4 · Übertrag auf Umschlag'), enabled: false),
-              const ListTile(title: Text('4/4 · Schritt 4'), enabled: false),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

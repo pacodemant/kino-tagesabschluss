@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 377 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 378 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -365,10 +365,21 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       (Template-Method-Muster) — Unterklassen liefern nur noch
       Parsing/Kodierung/Schlüssel sowie optional den Asset-Fallback,
       den nur Getränke hat).
+      Run 378 (Schritt-Auswahl-BottomSheet zusammengeführt:
+      Schritt1OrchestrierungHelper.zeigeSchrittAuswahlBottomSheet()
+      und die inline _zeigeSchrittSlider()-Methoden in Schritt2,
+      Schritt3 und stueckelung_vorschlag_seite.dart/Schritt4 waren
+      praktisch 1:1 vierfach dupliziert, jetzt zentral in neuer
+      lib/utils/schritt_auswahl_bottom_sheet_helper.dart,
+      SchrittAuswahlBottomSheetHelper.zeigeSchrittAuswahlBottomSheet().
+      Bewusst über die ursprünglich geplanten Schritte 1-3 hinaus auch
+      Schritt 4 einbezogen, da identisches Muster — sonst wäre eine
+      vierte Kopie übrig geblieben. Nebenkorrektur dabei: Schritt 1
+      zeigte für Schritt 4 bisher "4/4 · Schritt 4" statt
+      "4/4 · Stückelung Barumsatz", jetzt einheitlich).
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      378 Schritt-Auswahl-
-      BottomSheet (Schritt1/2/3) zusammenführen · 379 Body-Content-
+      379 Body-Content-
       Wrapper Schritt1+2 zusammenführen · 380 lokaler_speicher.dart
       JSON-Lade/Speicher-Helper · 381 TagesabschlussScaffold
       konsequent nutzen (4 Seiten bauen Footer aktuell von Hand) ·
