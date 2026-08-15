@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 379 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 380 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -369,14 +369,31 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       vierte Kopie übrig geblieben. Nebenkorrektur dabei: Schritt 1
       zeigte für Schritt 4 bisher "4/4 · Schritt 4" statt
       "4/4 · Stückelung Barumsatz", jetzt einheitlich).
+      Run 380 (Body-Content-Wrapper Schritt1+2 zusammengeführt:
+      schritt1_body_content.dart und schritt2_body_content.dart
+      hatten eine 1:1 identische äußere Hülle — Theme-Override für
+      dichte Eingabefelder, NotificationListener für Scroll-Metrik,
+      Stack mit Scroll-nach-unten-FAB (nur heroTag unterschiedlich)
+      —, jetzt zentral in neuer lib/widgets/
+      tagesabschluss_body_wrapper.dart, TagesabschlussBodyWrapper.
+      Der eigentliche scrollbare Inhalt (CustomScrollView mit
+      Slivern bei Schritt 1 vs. ListView bei Schritt 2) unterscheidet
+      sich zu Recht und bleibt bei den jeweiligen BodyContent-
+      Widgets. Öffentliche Konstruktoren unverändert, keine
+      Aufrufstelle musste angepasst werden — betrifft auch
+      wechselgeld_pruefen_seite.dart, das Schritt1BodyContent
+      mitbenutzt).
+      Ursprünglich als Run 379 geplant — die reale Run-379-Nummer
+      wurde stattdessen für einen ungeplanten Bugfix
+      (Standort-Wechsel) verbraucht, diese Serie ist dadurch um
+      einen Run nach hinten verschoben.
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      379 Body-Content-
-      Wrapper Schritt1+2 zusammenführen · 380 lokaler_speicher.dart
-      JSON-Lade/Speicher-Helper · 381 TagesabschlussScaffold
+      381 lokaler_speicher.dart
+      JSON-Lade/Speicher-Helper · 382 TagesabschlussScaffold
       konsequent nutzen (4 Seiten bauen Footer aktuell von Hand) ·
-      382 Stückelungs-Konfiguration zentralisieren (aktuell 3x
-      dupliziert) · 383 WechselgeldRollenSection auf
+      383 Stückelungs-Konfiguration zentralisieren (aktuell 3x
+      dupliziert) · 384 WechselgeldRollenSection auf
       CollapsibleCardSection umstellen + Schritt3-Card-Wrapper +
       restliche kleine lokale Widget-Extraktionen (Kupfer-Buttons,
       Einstellungen-Zeilen-Builder).

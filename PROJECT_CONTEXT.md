@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.51+379 · Run 379
+Version: 0.9.52+380 · Run 380
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -143,7 +143,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 379)
+## Laufender Entwicklungsstand (Run 380)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -629,6 +629,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   aktuell aktiven Standort um (_ladeDaten() prüft Standort-Modus
   gegen kino.id, pushReplacementNamed bei Abweichung), statt dass die
   alte Standort-Seite ohne Ausweg stehen blieb.
+- Run 380 ✅ Duplikat-Audit-Serie: Body-Content-Wrapper Schritt1+2
+  zusammengeführt. Neue lib/widgets/tagesabschluss_body_wrapper.dart
+  (TagesabschlussBodyWrapper) kapselt die bisher 1:1 duplizierte
+  äußere Hülle (Theme-Override, Scroll-Metrik-Listener, Down-Scroll-
+  FAB) von schritt1_body_content.dart und schritt2_body_content.dart;
+  der jeweils unterschiedliche scrollbare Inhalt (Slivers vs.
+  ListView) bleibt getrennt. Öffentliche Konstruktoren unverändert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

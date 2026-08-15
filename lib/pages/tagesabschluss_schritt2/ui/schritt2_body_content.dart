@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
-// Zweck: Kapselt den aeusseren Body-Aufbau von Schritt 2 (Theme/Scroll-
-// Benachrichtigung/ListView/Down-Button), analog zu schritt1_body_content.dart.
-// Abschnitte, die noch nicht in eigene Sections ausgelagert sind, werden als
-// fertige Widgets/Widget-Listen durchgereicht und in kommenden Sub-Runs der
+import '../../../widgets/tagesabschluss_body_wrapper.dart';
+
+// Zweck: Baut den ListView-Inhalt von Schritt 2 und reicht ihn an die
+// gemeinsame TagesabschlussBodyWrapper (Theme/Scroll-Benachrichtigung/
+// Down-Button), analog zu schritt1_body_content.dart. Abschnitte, die noch
+// nicht in eigene Sections ausgelagert sind, werden als fertige Widgets/
+// Widget-Listen durchgereicht und in kommenden Sub-Runs der
 // build()-Zerlegungs-Serie schrittweise ersetzt.
 class Schritt2BodyContent extends StatelessWidget {
   const Schritt2BodyContent({
@@ -35,61 +38,31 @@ class Schritt2BodyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Theme(
-          data: Theme.of(context).copyWith(
-            inputDecorationTheme: const InputDecorationTheme(
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            ),
-          ),
-          child: NotificationListener<ScrollMetricsNotification>(
-            onNotification: (ScrollMetricsNotification notification) {
-              beiScrollMetrikAenderung();
-              return false;
-            },
-            child: ListView(
-              controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              children: <Widget>[
-                devToolsBereich,
-                kopfSection,
-                const SizedBox(height: 12),
-                personalgetraenkeSection,
-                const SizedBox(height: 12),
-                differenzAnfangsbestandSection,
-                const SizedBox(height: 10),
-                kinoSollUndAusgabenBereich,
-                const SizedBox(height: 10),
-                ...ecBelegeBereich,
-                const SizedBox(height: 8),
-                anmerkungSection,
-                const SizedBox(height: 8),
-              ],
-            ),
-          ),
-        ),
-        if (downButtonSichtbar)
-          Positioned(
-            left: 12,
-            bottom: 12,
-            child: SizedBox(
-              width: 36,
-              height: 36,
-              child: FloatingActionButton(
-                heroTag: 'step2DownFab',
-                mini: true,
-                elevation: 2,
-                backgroundColor: Colors.black87,
-                foregroundColor: Colors.white,
-                onPressed: scrolleNachUnten,
-                child: const Icon(Icons.keyboard_arrow_down),
-              ),
-            ),
-          ),
-      ],
+    return TagesabschlussBodyWrapper(
+      downButtonSichtbar: downButtonSichtbar,
+      downButtonHeroTag: 'step2DownFab',
+      scrolleNachUnten: scrolleNachUnten,
+      beiScrollMetrikAenderung: beiScrollMetrikAenderung,
+      scrollable: ListView(
+        controller: scrollController,
+        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        children: <Widget>[
+          devToolsBereich,
+          kopfSection,
+          const SizedBox(height: 12),
+          personalgetraenkeSection,
+          const SizedBox(height: 12),
+          differenzAnfangsbestandSection,
+          const SizedBox(height: 10),
+          kinoSollUndAusgabenBereich,
+          const SizedBox(height: 10),
+          ...ecBelegeBereich,
+          const SizedBox(height: 8),
+          anmerkungSection,
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 }

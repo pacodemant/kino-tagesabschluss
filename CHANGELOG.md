@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 380: Body-Content-Wrapper von Schritt 1 und Schritt 2
+  zusammengeführt (Duplikat-Audit-Serie, ursprünglich als
+  "379" geplant — die reale Run-379-Nummer ging stattdessen an
+  den ungeplanten Standort-Wechsel-Bugfix). schritt1_body_
+  content.dart und schritt2_body_content.dart enthielten eine
+  1:1 identische äußere Hülle: Theme-Override für dichte
+  Eingabefelder, NotificationListener für Scroll-Metrik, Stack
+  mit Scroll-nach-unten-FAB (gleiches Styling, nur heroTag
+  unterschiedlich: step1DownFab vs. step2DownFab). Jetzt
+  zentral in neuer lib/widgets/tagesabschluss_body_wrapper.dart,
+  TagesabschlussBodyWrapper. Der eigentliche scrollbare Inhalt
+  bleibt bewusst getrennt, da er sich zu Recht unterscheidet
+  (Schritt 1: CustomScrollView mit Slivern + Sticky-Dev-Tools-
+  Header; Schritt 2: einfache ListView) — Schritt1BodyContent
+  und Schritt2BodyContent bauen nur noch ihren jeweiligen
+  scrollbaren Inhalt und reichen ihn als `scrollable` an den
+  neuen Wrapper durch. Öffentliche Konstruktoren beider Klassen
+  unverändert, keine der 3 Aufrufstellen (tagesabschluss_
+  schritt1_seite.dart, tagesabschluss_schritt2_seite.dart,
+  wechselgeld_pruefen_seite.dart, das Schritt1BodyContent
+  mitbenutzt) musste angepasst werden. Version 0.9.52+380.
+  Dateien: neue lib/widgets/tagesabschluss_body_wrapper.dart,
+  schritt1_body_content.dart, schritt2_body_content.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 379: Standort-Wechsel leitet jetzt auf die aktuell
   gewählte Kino-Startseite um (Typ: standard, TODO-Punkt aus
   "Kleine Fixes"). Bisher blieb beim Wechsel des Standorts in
