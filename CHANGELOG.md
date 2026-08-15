@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 378a2: Direkte Anweisung ohne eigene Run-Nummer, Bugfix aus
+  Pacos Test von Run 378a (Paco-Wunsch/Fehlerbericht). Beim Öffnen
+  des Admin-PIN-Dialogs in den Einstellungen (nötig, um den Dev-Modus
+  für Run 378a zu aktivieren) erschien nach PIN-Eingabe ein roter
+  Fehler-Screen: "Failed assertion: '_dependents.isEmpty': is not
+  true." Ursache gefunden und mit einem isolierten Flutter-Test-
+  Repro bestätigt: _zeigePinDialog() erzeugte einen lokalen
+  TextEditingController und rief pinCtrl.dispose() direkt im
+  nächsten Statement nach "await showDialog(...)" auf — showDialog()
+  liefert seinen Rückgabewert aber bereits mit Navigator.pop(),
+  bevor die Schließen-Animation des Dialogs abgeschlossen ist und
+  das TextField-Element wirklich aus dem Baum entfernt wird. Der
+  noch aktive TextField griff dadurch kurzzeitig auf den bereits
+  entsorgten Controller zu ("TextEditingController was used after
+  being disposed"), was den Folgeabsturz auslöste. Fix: PIN-Dialog-
+  Inhalt in eigenes StatefulWidget _PinDialog ausgelagert, das
+  seinen TextEditingController selbst hält und in seinem eigenen
+  dispose() entsorgt — Flutter ruft das garantiert erst auf, wenn
+  das Element tatsächlich (nach der Animation) entfernt wird, keine
+  Race-Condition mehr möglich. Sichtbares Verhalten unverändert
+  (gleicher Titel, gleiche Felder, gleiche PIN-Prüfung 1929,
+  gleiche "Falscher PIN"-Meldung). Root-Cause-Diagnose per
+  isoliertem, temporärem Flutter-Widget-Test verifiziert (Test lokal
+  entfernt, nicht Teil des Repos). Version 0.9.50+378a2. Dateien:
+  einstellungen_seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 378a: Direkte Anweisung ohne eigene Run-Nummer, Ergänzung aus
   Pacos Test von Run 378 (Paco-Wunsch). t4 (Schritt 4 der Schritt-
   Auswahl) ließ sich beim Testen nicht durchführen, weil der Button

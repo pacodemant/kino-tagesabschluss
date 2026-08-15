@@ -402,52 +402,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _zeigePinDialog() async {
-    final TextEditingController pinCtrl = TextEditingController();
-    String? eingegebenerPin;
-
-    await showDialog<void>(
+    final String? eingegebenerPin = await showDialog<String>(
       context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Admin'),
-          content: TextField(
-            controller: pinCtrl,
-            obscureText: true,
-            keyboardType: TextInputType.number,
-            maxLength: 4,
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'PIN',
-              counterText: '',
-            ),
-            onChanged: (String value) {
-              if (value.length == 4) {
-                eingegebenerPin = value;
-                Navigator.of(dialogContext).pop();
-              }
-            },
-            onSubmitted: (String value) {
-              eingegebenerPin = value;
-              Navigator.of(dialogContext).pop();
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Abbrechen'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                eingegebenerPin = pinCtrl.text;
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+      builder: (BuildContext dialogContext) => const _PinDialog(),
     );
-    pinCtrl.dispose();
     if (!mounted) return;
     if (eingegebenerPin == null) return;
     if (eingegebenerPin == '1929') {
@@ -1165,6 +1123,62 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           child: HausButton(),
         ),
       ),
+    );
+  }
+}
+
+// Eigenes StatefulWidget statt lokaler TextEditingController in
+// _zeigePinDialog(): der Controller muss in genau dem Element-Dispose
+// entsorgt werden, das auch das Feld erzeugt hat. showDialog() liefert
+// seinen Rückgabewert bereits mit Navigator.pop() zurück, bevor die
+// Schließen-Animation des Dialogs fertig ist — ein sofortiges
+// pinCtrl.dispose() direkt nach dem await lief dem noch aktiven
+// TextField hinterher und führte zu "TextEditingController was used
+// after being disposed" mit Folgeabsturz ('_dependents.isEmpty').
+class _PinDialog extends StatefulWidget {
+  const _PinDialog();
+
+  @override
+  State<_PinDialog> createState() => _PinDialogState();
+}
+
+class _PinDialogState extends State<_PinDialog> {
+  final TextEditingController _pinCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _pinCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Admin'),
+      content: TextField(
+        controller: _pinCtrl,
+        obscureText: true,
+        keyboardType: TextInputType.number,
+        maxLength: 4,
+        autofocus: true,
+        decoration: const InputDecoration(hintText: 'PIN', counterText: ''),
+        onChanged: (String value) {
+          if (value.length == 4) {
+            Navigator.of(context).pop(value);
+          }
+        },
+        onSubmitted: (String value) => Navigator.of(context).pop(value),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Abbrechen'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(_pinCtrl.text),
+          child: const Text('OK'),
+        ),
+      ],
     );
   }
 }
