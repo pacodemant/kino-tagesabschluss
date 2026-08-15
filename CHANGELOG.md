@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 374a: Direkte Anweisung ohne eigene Run-Nummer, drei Korrekturen
+  aus Pacos lokalem Test von Run 374 (Paco-Wunsch). (1) Wechselgeld
+  prüfen: das zweite Popup ("Was möchtest du als nächstes tun?") nach
+  Bestätigung einer Differenz war unnötig — auf Nachfrage bestätigt,
+  bei "Ja, trotzdem weiter" soll direkt zur Startseite navigiert
+  werden, analog zu Haus-Button/Zurück-Pfeil. _versucheAbschlussDialog
+  ZuOeffnen() und _zeigeAbschlussDialog() entfernt, neue gemeinsame
+  Methode _pruefeDifferenzUndGeheZurStartseite() ersetzt sowohl den
+  Footer-Button "Fertig / Startseite" als auch den bisher inline
+  duplizierten Haus-Button-Handler. _zeigeWasJetztDialog() (Run 374)
+  hatte dadurch nur noch einen Aufrufer und wurde wieder in
+  _zeigeUebereinstimmungsDialog() zurückgeführt — die Abstraktion
+  hatte sich mit dieser Änderung erledigt. (2) Kopfzeilen-Button zum
+  Leeren der Eingaben hieß "Clear" (Englisch), jetzt "Löschen"
+  (Bestätigungsdialog dahinter war bereits korrekt Deutsch). (3)
+  Bugfix: "Rollen übernehmen" prüfte nur ob überhaupt ein Schritt-1-
+  Entwurf gespeichert ist, nicht ob darin tatsächlich Rollen-Werte
+  &gt;0 stehen — nach "Eingaben löschen" in Schritt 1 bleibt ein
+  Entwurf mit allen Rollen-Keys, aber Wert 0 gespeichert, wodurch der
+  "Keine Zählung für heute gefunden"-Hinweis fälschlich ausblieb und
+  die Felder still auf 0 gesetzt wurden. Prüfung umgestellt auf
+  "mindestens ein roll_-Wert ungleich 0". Keine Persistenz-
+  Strukturänderung. Version 0.9.47+374a. Dateien:
+  wechselgeld_pruefen_seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 374: Dialog- und Hinweis-Helper vereinheitlicht (Typ:
   architecture). Anlass: Run 2 der Duplikat-Audit-Serie (Fund #11,
   #17, #21, #22). (1) Neuer generischer Ein-Button-Hinweisdialog

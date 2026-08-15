@@ -294,30 +294,15 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     }
   }
 
-  Future<void> _zeigeUebereinstimmungsDialog() => _zeigeWasJetztDialog(
-    titel: 'Wechselgeld stimmt!',
-    inhalt: 'Passt.',
-    barrierDismissible: false,
-  );
-
-  /// Gemeinsamer "Was möchtest du als nächstes tun?"-Dialog (Weiter
-  /// zählen / Getränke auffüllen / Fertig), genutzt sowohl beim
-  /// direkten Treffer (_zeigeUebereinstimmungsDialog) als auch nach
-  /// Bestätigung einer Differenz (_zeigeAbschlussDialog) — Titel/
-  /// Inhalt/Dismissible unterscheiden sich je Aufrufstelle.
-  Future<void> _zeigeWasJetztDialog({
-    required String titel,
-    String? inhalt,
-    required bool barrierDismissible,
-  }) async {
+  Future<void> _zeigeUebereinstimmungsDialog() async {
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
     await showDialog<void>(
       context: context,
-      barrierDismissible: barrierDismissible,
+      barrierDismissible: false,
       builder: (BuildContext dialogKontext) {
         return AlertDialog(
-          title: Text(titel),
-          content: inhalt == null ? null : Text(inhalt),
+          title: const Text('Wechselgeld stimmt!'),
+          content: const Text('Passt.'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(dialogKontext).pop(),
@@ -376,17 +361,16 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     return bestaetigt == true;
   }
 
-  Future<void> _versucheAbschlussDialogZuOeffnen() async {
-    if (!await _pruefeDifferenzUndBestaetigeVerlassen()) {
-      return;
+  /// Prueft die Differenz (siehe _pruefeDifferenzUndBestaetigeVerlassen)
+  /// und navigiert bei Freigabe direkt zur Startseite — genutzt vom
+  /// Haus-Button und vom Footer-Button "Fertig / Startseite". Kein
+  /// zusaetzlicher Zwischendialog: wer bei einer Differenz explizit
+  /// "Ja, trotzdem weiter" waehlt, moechte direkt fertig sein.
+  Future<void> _pruefeDifferenzUndGeheZurStartseite() async {
+    if (await _pruefeDifferenzUndBestaetigeVerlassen()) {
+      _zurueckZurStartseite();
     }
-    await _zeigeAbschlussDialog();
   }
-
-  Future<void> _zeigeAbschlussDialog() => _zeigeWasJetztDialog(
-    titel: 'Was möchtest du als nächstes tun?',
-    barrierDismissible: true,
-  );
 
   void _leereUmschlagFelder() => _initialisierungHelper.leereUmschlagFelder();
 
@@ -855,7 +839,17 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     final Object? stueckzahlenRoh = daten?['stueckzahlen'];
     final Map<String, dynamic>? stueckzahlMap =
         stueckzahlenRoh is Map<String, dynamic> ? stueckzahlenRoh : null;
-    if (stueckzahlMap == null || stueckzahlMap.isEmpty) {
+    // Nicht nur auf "Map vorhanden" pruefen: nach "Eingaben loeschen" in
+    // Schritt 1 bleibt ein Entwurf mit allen Rollen-Keys, aber Werten von
+    // 0, gespeichert — das zaehlt fachlich als "keine Zaehlung vorhanden".
+    final bool hatRollenDaten =
+        stueckzahlMap != null &&
+        stueckzahlMap.entries.any(
+          (MapEntry<String, dynamic> e) =>
+              e.key.startsWith('roll_') &&
+              ((e.value as num?)?.toInt() ?? 0) != 0,
+        );
+    if (!hatRollenDaten) {
       if (!mounted) return;
       zeigeHinweisSnackBar(
         context,
@@ -992,7 +986,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               foregroundColor: Colors.white70,
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            child: const Text('Clear'),
+            child: const Text('Löschen'),
           ),
           const HelpButton(
             helpText:
@@ -1011,11 +1005,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
               width: 36,
               height: 36,
               child: ElevatedButton(
-                onPressed: () async {
-                  if (await _pruefeDifferenzUndBestaetigeVerlassen()) {
-                    _zurueckZurStartseite();
-                  }
-                },
+                onPressed: _pruefeDifferenzUndGeheZurStartseite,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppFarben.appBarRot,
                   foregroundColor: Colors.white,
@@ -1048,7 +1038,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
             const SizedBox(width: 8),
             Expanded(
               child: ElevatedButton(
-                onPressed: _versucheAbschlussDialogZuOeffnen,
+                onPressed: _pruefeDifferenzUndGeheZurStartseite,
                 style: AppFarben.footerButtonStyle,
                 child: const Text('Fertig / Startseite'),
               ),
