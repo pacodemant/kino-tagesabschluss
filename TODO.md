@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 374a2 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 375 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -338,11 +338,20 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       app-weit auf "Löschen" umbenannt, "Wechselgeld stimmt"-Prüfung
       läuft jetzt erst bei Feld-Verlassen/Bestätigung statt bei jedem
       Tastendruck, "Rollen übernehmen" erkennt genullte Zählungen
-      jetzt korrekt als "keine Daten vorhanden").
+      jetzt korrekt als "keine Daten vorhanden"). Run 375
+      (Fokus-/Scroll-Navigation Schritt1+2 in FeldNavigationHelper
+      zusammengeführt: scrolleZurMitteNachFokus(), istLetztesFeld(),
+      textInputActionFuer() und die Nutzung von aktivesFeld()/
+      feldNachVorne() waren zwischen Schritt1StateController und
+      Schritt2FokusHelper 1:1 dupliziert, jetzt zentral in
+      lib/utils/feld_navigation_helper.dart. Bewusst nicht
+      zusammengeführt: erstesLeeresFeld()/autoFokussiereNachLaden()
+      (strukturell unterschiedliche Lösung je Seite) und
+      beiEingabeAbgeschlossen() (unterschiedliches Verhalten, keine
+      reine Dopplung) — bei Bedarf eigener späterer Run).
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      375 Fokus-/Scroll-Navigation Schritt1+2 in FeldNavigationHelper
-      zusammenführen · 376 Additions-Logik der Eingabefelder als
+      376 Additions-Logik der Eingabefelder als
       gemeinsames Mixin (betrag_cent_eingabefeld.dart/
       ganzzahl_eingabefeld.dart) · 377 Config-Service-Basisklasse für
       Getränke-/Wechselgeld-Remote-Config · 378 Schritt-Auswahl-

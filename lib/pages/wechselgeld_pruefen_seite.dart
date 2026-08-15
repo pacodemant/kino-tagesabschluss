@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
@@ -541,13 +540,13 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   );
 
   bool _istLetztesFeld(FocusNode focusNode) =>
-      _stateController.istLetztesFeld(_fokusReihenfolge(), focusNode);
+      _navHelper.istLetztesFeld(_fokusReihenfolge(), focusNode);
 
   FocusNode? _naechstesFeld(FocusNode focusNode) =>
-      _stateController.naechstesFeld(_fokusReihenfolge(), focusNode);
+      _navHelper.feldNachVorne(_fokusReihenfolge(), focusNode);
 
   TextInputAction _textInputAction(FocusNode focusNode) =>
-      _stateController.textInputActionFuerSchritt1(_istLetztesFeld(focusNode));
+      _navHelper.textInputActionFuer(_istLetztesFeld(focusNode));
 
   void _beiEingabeAbgeschlossen(FocusNode focusNode) =>
       _stateController.beiEingabeAbgeschlossen(
@@ -559,7 +558,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     _stateController.fokussiereTextfeld(
       context: context,
       fokusNode: fokusNode,
-      aktivesFeld: () => _stateController.aktivesFeld(_fokusReihenfolge()),
+      aktivesFeld: () => _navHelper.aktivesFeld(_fokusReihenfolge()),
       oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
       fokussiereTextfeldRekursiv: _fokussiereTextfeld,
       mounted: mounted,
@@ -577,22 +576,14 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         );
   }
 
-  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted || !fn.hasFocus || !context.mounted) return;
-    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    if (!_scrollController.hasClients) return;
-    final RenderObject? ro = _holeFeldKey(fn).currentContext?.findRenderObject();
-    if (ro == null || !ro.attached) return;
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(ro);
-    if (viewport == null) return;
-    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
-    final double targetOffset = (revealOffset - _scrollController.position.viewportDimension * 0.3)
-        .clamp(0.0, _scrollController.position.maxScrollExtent);
-    await _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) {
+    return _navHelper.scrolleZurMitteNachFokus(
+      fn: fn,
+      istMounted: () => mounted,
+      context: context,
+      scrollController: _scrollController,
+      findRenderObject: (FocusNode fokusNode) =>
+          _holeFeldKey(fokusNode).currentContext?.findRenderObject(),
     );
   }
 

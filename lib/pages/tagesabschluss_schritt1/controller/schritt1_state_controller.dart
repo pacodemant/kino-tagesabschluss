@@ -105,39 +105,12 @@ class Schritt1StateController {
     return reihenfolge;
   }
 
-  bool istLetztesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
-    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
-  }
-
-  FocusNode? naechstesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
-    final int index = reihenfolge.indexWhere(
-      (FocusNode kandidat) => identical(kandidat, focusNode),
-    );
-    if (index < 0 || index >= reihenfolge.length - 1) {
-      return null;
-    }
-    return reihenfolge[index + 1];
-  }
-
-  TextInputAction textInputActionFuerSchritt1(bool istLetztesFeld) {
-    return istLetztesFeld ? TextInputAction.done : TextInputAction.next;
-  }
-
   void beiEingabeAbgeschlossen(BuildContext context, FocusNode? naechstesFeld) {
     if (naechstesFeld == null) {
       FocusScope.of(context).unfocus();
       return;
     }
     FocusScope.of(context).requestFocus(naechstesFeld);
-  }
-
-  FocusNode? aktivesFeld(List<FocusNode> reihenfolge) {
-    for (final FocusNode focusNode in reihenfolge) {
-      if (focusNode.hasFocus) {
-        return focusNode;
-      }
-    }
-    return null;
   }
 
   void weiterZumNaechstenFeld({

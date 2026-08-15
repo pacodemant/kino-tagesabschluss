@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 /// Gemeinsamer Mechanismus für "zum logisch nächsten/vorherigen Feld
@@ -26,6 +27,46 @@ class FeldNavigationHelper {
       return null;
     }
     return reihenfolge[index + 1];
+  }
+
+  bool istLetztesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
+    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
+  }
+
+  TextInputAction textInputActionFuer(bool istLetztesFeld) {
+    return istLetztesFeld ? TextInputAction.done : TextInputAction.next;
+  }
+
+  /// Scrollt nach einer Fokusänderung so, dass das Feld nicht von der
+  /// virtuellen Tastatur verdeckt wird. findRenderObject liefert das
+  /// RenderObject des fokussierten Feldes — je nach Seite entweder über
+  /// FocusNode.context oder über einen seiteneigenen GlobalKey.
+  Future<void> scrolleZurMitteNachFokus({
+    required FocusNode fn,
+    required bool Function() istMounted,
+    required BuildContext context,
+    required ScrollController scrollController,
+    required RenderObject? Function(FocusNode fokusNode) findRenderObject,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (!istMounted() || !fn.hasFocus || !context.mounted) return;
+    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
+    if (!scrollController.hasClients) return;
+    final RenderObject? ro = findRenderObject(fn);
+    if (ro == null || !ro.attached) return;
+    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(
+      ro,
+    );
+    if (viewport == null) return;
+    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
+    final double targetOffset =
+        (revealOffset - scrollController.position.viewportDimension * 0.3)
+            .clamp(0.0, scrollController.position.maxScrollExtent);
+    await scrollController.animateTo(
+      targetOffset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
   FocusNode? feldNachHinten(List<FocusNode> reihenfolge, FocusNode aktuell) {

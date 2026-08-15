@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -534,15 +533,13 @@ class _TagesabschlussSchritt1SeiteState
       );
 
   bool _istLetztesFeldSchritt1(FocusNode focusNode) =>
-      _stateController.istLetztesFeld(_fokusReihenfolgeSchritt1(), focusNode);
+      _navHelper.istLetztesFeld(_fokusReihenfolgeSchritt1(), focusNode);
 
   FocusNode? _naechstesFeldSchritt1(FocusNode focusNode) =>
-      _stateController.naechstesFeld(_fokusReihenfolgeSchritt1(), focusNode);
+      _navHelper.feldNachVorne(_fokusReihenfolgeSchritt1(), focusNode);
 
   TextInputAction _textInputActionFuerSchritt1(FocusNode focusNode) =>
-      _stateController.textInputActionFuerSchritt1(
-        _istLetztesFeldSchritt1(focusNode),
-      );
+      _navHelper.textInputActionFuer(_istLetztesFeldSchritt1(focusNode));
 
   void _beiEingabeAbgeschlossenSchritt1(FocusNode focusNode) => _stateController
       .beiEingabeAbgeschlossen(context, _naechstesFeldSchritt1(focusNode));
@@ -551,7 +548,7 @@ class _TagesabschlussSchritt1SeiteState
     _stateController.fokussiereTextfeld(
       context: context,
       fokusNode: fokusNode,
-      aktivesFeld: () => _stateController.aktivesFeld(_fokusReihenfolgeSchritt1()),
+      aktivesFeld: () => _navHelper.aktivesFeld(_fokusReihenfolgeSchritt1()),
       oeffneSectionFuerFokusfeld: _oeffneSectionFuerFokusfeld,
       fokussiereTextfeldRekursiv: _fokussiereTextfeld,
       mounted: mounted,
@@ -569,22 +566,14 @@ class _TagesabschlussSchritt1SeiteState
         );
   }
 
-  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!mounted || !fn.hasFocus || !context.mounted) return;
-    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    if (!_scrollController.hasClients) return;
-    final RenderObject? ro = _holeFeldKey(fn).currentContext?.findRenderObject();
-    if (ro == null || !ro.attached) return;
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(ro);
-    if (viewport == null) return;
-    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
-    final double targetOffset = (revealOffset - _scrollController.position.viewportDimension * 0.3)
-        .clamp(0.0, _scrollController.position.maxScrollExtent);
-    await _scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
+  Future<void> _scrolleZurMitteNachFokus(FocusNode fn) {
+    return _navHelper.scrolleZurMitteNachFokus(
+      fn: fn,
+      istMounted: () => mounted,
+      context: context,
+      scrollController: _scrollController,
+      findRenderObject: (FocusNode fokusNode) =>
+          _holeFeldKey(fokusNode).currentContext?.findRenderObject(),
     );
   }
 

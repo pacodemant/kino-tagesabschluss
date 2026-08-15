@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 
@@ -48,24 +47,6 @@ class Schritt2FokusHelper {
     ];
   }
 
-  bool istLetztesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
-    return reihenfolge.isNotEmpty && identical(reihenfolge.last, focusNode);
-  }
-
-  FocusNode? naechstesFeld(List<FocusNode> reihenfolge, FocusNode focusNode) {
-    final int index = reihenfolge.indexWhere(
-      (FocusNode kandidat) => identical(kandidat, focusNode),
-    );
-    if (index < 0 || index >= reihenfolge.length - 1) {
-      return null;
-    }
-    return reihenfolge[index + 1];
-  }
-
-  TextInputAction textInputActionFuer(bool istLetztesFeld) {
-    return istLetztesFeld ? TextInputAction.done : TextInputAction.next;
-  }
-
   void beiEingabeAbgeschlossen({
     required BuildContext context,
     required FocusNode? naechstesFeld,
@@ -101,33 +82,6 @@ class Schritt2FokusHelper {
           reihenfolge: reihenfolge,
           fokussiere: fokussiere,
         );
-  }
-
-  Future<void> scrolleZurMitteNachFokus({
-    required FocusNode fn,
-    required bool Function() istMounted,
-    required BuildContext context,
-    required ScrollController scrollController,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (!istMounted() || !fn.hasFocus || !context.mounted) return;
-    if (MediaQuery.of(context).viewInsets.bottom <= 0) return;
-    if (!scrollController.hasClients) return;
-    final RenderObject? ro = fn.context?.findRenderObject();
-    if (ro == null || !ro.attached) return;
-    final RenderAbstractViewport? viewport = RenderAbstractViewport.maybeOf(
-      ro,
-    );
-    if (viewport == null) return;
-    final double revealOffset = viewport.getOffsetToReveal(ro, 0.0).offset;
-    final double targetOffset =
-        (revealOffset - scrollController.position.viewportDimension * 0.3)
-            .clamp(0.0, scrollController.position.maxScrollExtent);
-    await scrollController.animateTo(
-      targetOffset,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
   }
 
   FocusNode? erstesLeeresFeld({

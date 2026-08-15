@@ -9,6 +9,37 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 375: Fokus-/Scroll-Navigation Schritt1+2 in FeldNavigationHelper
+  zusammengeführt (Typ: architecture, Teil der Duplikat-Audit-Serie).
+  scrolleZurMitteNachFokus() war 1:1 dreifach dupliziert (Schritt1,
+  wechselgeld_pruefen_seite.dart, Schritt2FokusHelper) — einziger
+  Unterschied war die Ermittlung des RenderObject fürs Scroll-Ziel
+  (Schritt1/wechselgeld_pruefen über eigenen GlobalKey pro Feld,
+  Schritt2 über FocusNode.context). Methode nach
+  lib/utils/feld_navigation_helper.dart verschoben, mit injizierbarem
+  findRenderObject-Callback — beide Varianten bleiben dadurch exakt so
+  wie vorher, nur nicht mehr dupliziert. Ebenso zusammengeführt:
+  istLetztesFeld(), textInputActionFuer() (in Schritt1StateController
+  und Schritt2FokusHelper identisch implementiert) sowie die
+  Verwendung von aktivesFeld() — Schritt1StateController hatte eine
+  exakte Kopie von FeldNavigationHelper.aktivesFeld(), obwohl beide
+  Seiten den FeldNavigationHelper ohnehin schon als _navHelper
+  instanziiert hatten. naechstesFeld() entfernt zugunsten des
+  bereits vorhandenen, identischen FeldNavigationHelper.feldNachVorne().
+  Bewusst nicht angefasst: erstesLeeresFeld()/autoFokussiereNachLaden()
+  (Schritt1 und Schritt2 lösen das strukturell unterschiedlich —
+  Schritt1 über eine Kette von Feldtyp-Prüfungen, Schritt2 über eine
+  generische FocusNode→Controller-Lookup-Map — Vereinheitlichung wäre
+  ein eigener, riskanterer Run) sowie beiEingabeAbgeschlossen()
+  (Schritt1 ruft FocusScope direkt auf, Schritt2 geht über den
+  scroll-fähigen fokussiereFeld()-Callback — unterschiedliches
+  Verhalten, keine reine Dopplung). Keine funktionale Änderung
+  beabsichtigt, reine Code-Verschiebung. Version 0.9.48+375. Dateien:
+  feld_navigation_helper.dart, schritt1_state_controller.dart,
+  schritt2_fokus_helper.dart, tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, wechselgeld_pruefen_seite.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 374a2: Direkte Anweisung ohne eigene Run-Nummer, zwei weitere
   Korrekturen aus Pacos Test von Run 374a (Paco-Wunsch). (1) Der
   "Clear"-Button existierte identisch (gleicher Code, gleiche

@@ -1916,15 +1916,15 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   bool _istLetztesFeldSchritt2(FocusNode focusNode) {
-    return _fokusHelper.istLetztesFeld(_fokusReihenfolgeSchritt2(), focusNode);
+    return _navHelper.istLetztesFeld(_fokusReihenfolgeSchritt2(), focusNode);
   }
 
   FocusNode? _naechstesFeldSchritt2(FocusNode focusNode) {
-    return _fokusHelper.naechstesFeld(_fokusReihenfolgeSchritt2(), focusNode);
+    return _navHelper.feldNachVorne(_fokusReihenfolgeSchritt2(), focusNode);
   }
 
   TextInputAction _textInputActionFuerSchritt2(FocusNode focusNode) {
-    return _fokusHelper.textInputActionFuer(_istLetztesFeldSchritt2(focusNode));
+    return _navHelper.textInputActionFuer(_istLetztesFeldSchritt2(focusNode));
   }
 
   void _beiEingabeAbgeschlossenSchritt2(FocusNode focusNode) {
@@ -1954,11 +1954,13 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Future<void> _scrolleZurMitteNachFokus(FocusNode fn) {
-    return _fokusHelper.scrolleZurMitteNachFokus(
+    return _navHelper.scrolleZurMitteNachFokus(
       fn: fn,
       istMounted: () => mounted,
       context: context,
       scrollController: _scrollController,
+      findRenderObject: (FocusNode fokusNode) =>
+          fokusNode.context?.findRenderObject(),
     );
   }
 
