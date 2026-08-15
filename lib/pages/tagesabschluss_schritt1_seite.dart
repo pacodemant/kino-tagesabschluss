@@ -1064,7 +1064,7 @@ class _TagesabschlussSchritt1SeiteState
               foregroundColor: Colors.white70,
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            child: const Text('Clear'),
+            child: const Text('Löschen'),
           ),
           const HelpButton(
             helpText:

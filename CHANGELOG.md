@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 374a2: Direkte Anweisung ohne eigene Run-Nummer, zwei weitere
+  Korrekturen aus Pacos Test von Run 374a (Paco-Wunsch). (1) Der
+  "Clear"-Button existierte identisch (gleicher Code, gleiche
+  Beschriftung) noch an drei weiteren Stellen, die im vorherigen
+  Korrektur-Schritt nicht mit umgesehen wurden — auf Nachfrage
+  bestätigt: überall, wo der Button "Clear" heißt, soll er "Löschen"
+  heißen. Umbenannt in tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart und
+  getraenke_auffuellen_seite.dart. (2) Wechselgeld prüfen: der
+  "Wechselgeld stimmt!"-Dialog prüfte bislang bei jedem Tastendruck
+  (_planePruefung() in den onChanged-Handlern für Stückzahl, lose
+  Münzen, Umschlag-Betrag) — konnte also mitten in der Eingabe
+  aufploppen, sobald eine Zwischensumme zufällig zum Sollwert passte.
+  Auf Nachfrage bestätigt: die Prüfung soll erst laufen, wenn das
+  aktuell fokussierte Feld verlassen bzw. die Eingabe bestätigt wird.
+  Die drei _planePruefung()-Aufrufe in den onChanged-Handlern entfernt,
+  stattdessen ein FocusManager.instance-Listener in initState/dispose,
+  der bei jedem Fokuswechsel prüft. Button-getriggerte Aktionen (Rollen
+  übernehmen/löschen, Umschlag entfernen) lösen weiterhin sofort aus,
+  da das bereits bestätigte Einzelaktionen sind, kein fortlaufendes
+  Tippen. Keine Persistenz-/Rechenlogik geändert. Version 0.9.47+374a2.
+  Dateien: wechselgeld_pruefen_seite.dart, tagesabschluss_schritt1_
+  seite.dart, tagesabschluss_schritt2_seite.dart, getraenke_auffuellen_
+  seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 374a: Direkte Anweisung ohne eigene Run-Nummer, drei Korrekturen
   aus Pacos lokalem Test von Run 374 (Paco-Wunsch). (1) Wechselgeld
   prüfen: das zweite Popup ("Was möchtest du als nächstes tun?") nach

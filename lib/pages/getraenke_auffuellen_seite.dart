@@ -411,7 +411,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               foregroundColor: Colors.white70,
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            child: const Text('Clear'),
+            child: const Text('Löschen'),
           ),
           const HelpButton(
             helpText:

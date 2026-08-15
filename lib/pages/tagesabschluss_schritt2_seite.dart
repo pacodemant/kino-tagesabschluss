@@ -2529,7 +2529,7 @@ class _TagesabschlussSchritt2SeiteState
               foregroundColor: Colors.white70,
               textStyle: const TextStyle(fontWeight: FontWeight.w700),
             ),
-            child: const Text('Clear'),
+            child: const Text('Löschen'),
           ),
           if (_devModusAktiv)
             IconButton(

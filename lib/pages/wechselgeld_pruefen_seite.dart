@@ -140,6 +140,11 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       _verknuepfeFeldNavigation(_loseMuenzenFocusNode[zeile.id]!);
     }
     _scrollController.addListener(_beiScrollAenderung);
+    // Prueft "Wechselgeld stimmt!" bei jedem Fokuswechsel (Feld
+    // verlassen/bestaetigt) statt bei jedem Tastendruck — siehe die
+    // dazu entfernten _planePruefung()-Aufrufe in den onChanged-
+    // Handlern weiter unten.
+    FocusManager.instance.addListener(_planePruefung);
     _ladeInitialeDaten().then((_) {
       if (mounted) {
         _autoFokussiereNachLaden();
@@ -149,6 +154,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
 
   @override
   void dispose() {
+    FocusManager.instance.removeListener(_planePruefung);
     for (final TextEditingController controller
         in _stueckzahlController.values) {
       controller.dispose();
@@ -413,13 +419,15 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     return KeyedSubtree(key: _holeFeldKey(focusNode), child: child);
   }
 
+  // _planePruefung() laeuft hier bewusst NICHT mit (siehe FocusManager-
+  // Listener in initState): der "Wechselgeld stimmt!"-Dialog soll erst
+  // beim Verlassen des Feldes erscheinen, nicht bei jedem Tastendruck.
   void _beiStueckzahlGeaendert(Kassenzeile zeile, String wert) {
     final int geparsterWert = TagesabschlussBerechnung.parseGanzzahlSumme(wert);
     setState(() {
       _stateController.setzeStueckzahl(_stueckzahlen, zeile.id, geparsterWert);
     });
     _speichereEntwurf();
-    _planePruefung();
   }
 
   void _beiLoseMuenzartBetragGeaendert(String muenzartId, String wert) {
@@ -431,7 +439,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       );
     });
     _speichereEntwurf();
-    _planePruefung();
   }
 
   void _umschlagHinzufuegen() {
@@ -484,7 +491,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       _stateController.setzeUmschlagBetrag(_umschlaege, index, betragCent);
     });
     _speichereEntwurf();
-    _planePruefung();
   }
 
   void _zeigeKupferLose() {
