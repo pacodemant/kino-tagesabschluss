@@ -238,15 +238,17 @@ Inhalt:
 Am Ende jedes Runs die Versionsnummer in `pubspec.yaml` unter `version:` aktualisieren.
 Die neue Nummer wird im Run-Prompt vorgegeben.
 
-Zusätzlich denselben Versionswert und die Run-Nummer in BEIDEN folgenden Dateien
-in den Versionsstring eintragen, sodass er lautet:
-`'Web App X.X.X · rNNN @ GitHub:'`
+Zusätzlich denselben Versionswert und die Run-Nummer in
+`lib/config/app_version.dart` (`AppVersion.text`, einzige Quelle seit
+Run 373) eintragen, sodass er lautet:
+`'Web App X.X.X · rNNN'`
 
-- `lib/pages/startmenue_seite.dart`
-- `lib/pages/kinoauswahl_seite.dart`
+`startmenue_seite.dart` und `kinoauswahl_seite.dart` zeigen diesen
+Wert nur noch über `AppVersion.text` an — keine eigenen
+String-Literale mehr, dort ist nichts zu ändern.
 
 Bei Sub-Runs (z. B. 275a) den Buchstaben ebenfalls eintragen: `r275a`, nicht `r275`.
-Beide Dateien bei jedem Commit (auch Sub-Runs und Korrekturen) aktualisieren.
+`app_version.dart` bei jedem Commit (auch Sub-Runs und Korrekturen) aktualisieren.
 
 ## Antwortverhalten beim Laden dieser Datei
 
