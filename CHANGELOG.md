@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 382a2: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
+  Run 382a. AppBar-Titel der Verlauf-Detail-Seite auf zweizeiliges
+  Layout umgestellt, analog zum Header der Bargeldzählen-Seite
+  (Schritt 1, TagesabschlussHeader/Schritt1HeaderSection): obere
+  Zeile klein ("Verlauf (SB)" — Wort "Verlauf" + Kino-Kürzel in
+  Klammern), untere Zeile größer (nur das Datum, weiterhin mit
+  Heute-Badge daneben bei heutigen Einträgen). Ersetzt die einzeilige
+  382a-Variante ("Abrechnung {Datum} · {Kürzel}"). Version
+  0.9.54+382a2. Dateien: verlauf_detail_seite.dart, app_version.dart,
+  pubspec.yaml.
+
 - Run 382a: Direkte Anweisung ohne eigene Run-Nummer, Ergänzung aus
   Pacos Test von Run 382. Der AppBar-Titel der Verlauf-Detail-Seite
   (verlauf_detail_seite.dart) zeigte bisher Datum + vollen Kino-Namen

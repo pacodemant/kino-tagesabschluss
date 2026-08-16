@@ -246,20 +246,33 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         centerTitle: false,
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
-        title: Row(
-          children: <Widget>[
-            Flexible(
-              child: Text(
-                'Abrechnung ${_deutschesDatum(a.datum)} · $kuerzel',
-                style: const TextStyle(fontWeight: FontWeight.normal),
-                overflow: TextOverflow.ellipsis,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Verlauf ($kuerzel)',
+                style: const TextStyle(fontSize: 14),
               ),
-            ),
-            if (istHeute) ...<Widget>[
-              const SizedBox(width: 8),
-              const HeuteBadge(),
+              Row(
+                children: <Widget>[
+                  Flexible(
+                    child: Text(
+                      _deutschesDatum(a.datum),
+                      style: const TextStyle(fontWeight: FontWeight.normal),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (istHeute) ...<Widget>[
+                    const SizedBox(width: 8),
+                    const HeuteBadge(),
+                  ],
+                ],
+              ),
             ],
-          ],
+          ),
         ),
       ),
       child: Column(
