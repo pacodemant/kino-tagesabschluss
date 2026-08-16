@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
@@ -237,6 +238,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     final String isoDatum = DatumsHelper.isoDatum(a.datum);
     final bool istHeute = isoDatum == DatumsHelper.logischesIsoDatum();
+    final String kuerzel = KinoRepository.nachId(a.kinoId)?.kuerzel ?? a.kinoName;
 
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
@@ -248,7 +250,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
           children: <Widget>[
             Flexible(
               child: Text(
-                '${_deutschesDatum(a.datum)} – ${a.kinoName}',
+                'Abrechnung ${_deutschesDatum(a.datum)} · $kuerzel',
                 style: const TextStyle(fontWeight: FontWeight.normal),
                 overflow: TextOverflow.ellipsis,
               ),

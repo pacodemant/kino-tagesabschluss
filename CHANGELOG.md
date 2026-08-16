@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 382a: Direkte Anweisung ohne eigene Run-Nummer, Ergänzung aus
+  Pacos Test von Run 382. Der AppBar-Titel der Verlauf-Detail-Seite
+  (verlauf_detail_seite.dart) zeigte bisher Datum + vollen Kino-Namen
+  ("12.08.2026 – Schauburg"). Auf Pacos Wunsch jetzt "Abrechnung
+  {Datum} · {Kino-Kürzel}" (z. B. "Abrechnung 12.08.2026 · SB") —
+  Kürzel kommt über KinoRepository.nachId(a.kinoId)?.kuerzel, analog
+  zur bereits bestehenden Kürzel-Logik in TagesabschlussHeader.
+  Heute-Badge daneben unverändert. Version 0.9.54+382a. Dateien:
+  verlauf_detail_seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 382: TagesabschlussScaffold konsequent genutzt
   (Duplikat-Audit-Serie, geplant laut TODO.md). Vier Seiten bauten
   Scaffold + Footer noch von Hand statt das bestehende
