@@ -50,53 +50,77 @@ class LokalerSpeicher {
     await speicher.setInt('change_target_cents_$kinoId', cent);
   }
 
-  static Future<Map<String, dynamic>?> ladeGetraenkeMengen(
-    String kinoId,
+  /// Lädt einen JSON-kodierten String aus der Hive-Box [boxName] unter
+  /// [key] und dekodiert ihn per [parse]. Liefert null wenn kein Wert
+  /// vorhanden oder der Inhalt nicht dekodierbar ist.
+  static Future<T?> _ladeJson<T>(
+    String boxName,
+    String key,
+    T Function(dynamic rohJson) parse,
   ) async {
-    final Box<dynamic> box = Hive.box('box_getraenke_mengen');
-    final String key =
-        'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
+    final Box<dynamic> box = Hive.box(boxName);
     final String? rohwert = box.get(key) as String?;
     if (rohwert == null) {
       return null;
     }
     try {
-      return jsonDecode(rohwert) as Map<String, dynamic>;
+      return parse(jsonDecode(rohwert));
     } catch (_) {
       return null;
     }
+  }
+
+  /// Kodiert [daten] als JSON und speichert es in der Hive-Box [boxName]
+  /// unter [key].
+  static Future<void> _speichereJson(
+    String boxName,
+    String key,
+    Object daten,
+  ) async {
+    final Box<dynamic> box = Hive.box(boxName);
+    await box.put(key, jsonEncode(daten));
+  }
+
+  static Future<Map<String, dynamic>?> ladeGetraenkeMengen(
+    String kinoId,
+  ) async {
+    final String key =
+        'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
+    return _ladeJson(
+      'box_getraenke_mengen',
+      key,
+      (dynamic v) => v as Map<String, dynamic>,
+    );
   }
 
   static Future<void> speichereGetraenkeMengen(
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final Box<dynamic> box = Hive.box('box_getraenke_mengen');
     final String key =
         'getraenke_mengen_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
-    await box.put(key, jsonEncode(daten));
+    await _speichereJson('box_getraenke_mengen', key, daten);
   }
 
   static Future<List<String>> ladeGetraenkeliste(String kinoId) async {
-    final Box<dynamic> box = Hive.box('box_getraenkeliste');
-    final String? rohwert = box.get('getraenkeliste_$kinoId') as String?;
-    if (rohwert == null) {
-      return <String>[];
-    }
-    try {
-      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
-      return geparst.map((dynamic e) => e as String).toList();
-    } catch (_) {
-      return <String>[];
-    }
+    final List<String>? geparst = await _ladeJson(
+      'box_getraenkeliste',
+      'getraenkeliste_$kinoId',
+      (dynamic v) =>
+          (v as List<dynamic>).map((dynamic e) => e as String).toList(),
+    );
+    return geparst ?? <String>[];
   }
 
   static Future<void> speichereGetraenkeliste(
     String kinoId,
     List<String> liste,
   ) async {
-    final Box<dynamic> box = Hive.box('box_getraenkeliste');
-    await box.put('getraenkeliste_$kinoId', jsonEncode(liste));
+    await _speichereJson(
+      'box_getraenkeliste',
+      'getraenkeliste_$kinoId',
+      liste,
+    );
   }
 
   /// Speichert eine finale Tagesabrechnung im eigenen Key-Namespace je Kino.
@@ -245,24 +269,22 @@ class LokalerSpeicher {
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final Box<dynamic> box = Hive.box('box_schritt2_entwuerfe');
-    await box.put(schritt2EntwurfKey(kinoId), jsonEncode(daten));
+    await _speichereJson(
+      'box_schritt2_entwuerfe',
+      schritt2EntwurfKey(kinoId),
+      daten,
+    );
   }
 
   /// Laedt den Schritt-2-Entwurf fuer ein Kino, oder null wenn keiner vorhanden.
   static Future<Map<String, dynamic>?> ladeSchritt2Entwurf(
     String kinoId,
   ) async {
-    final Box<dynamic> box = Hive.box('box_schritt2_entwuerfe');
-    final String? rohwert = box.get(schritt2EntwurfKey(kinoId)) as String?;
-    if (rohwert == null) {
-      return null;
-    }
-    try {
-      return jsonDecode(rohwert) as Map<String, dynamic>;
-    } catch (_) {
-      return null;
-    }
+    return _ladeJson(
+      'box_schritt2_entwuerfe',
+      schritt2EntwurfKey(kinoId),
+      (dynamic v) => v as Map<String, dynamic>,
+    );
   }
 
   static String schritt2EntwurfKey(String kinoId) =>
@@ -437,27 +459,21 @@ class LokalerSpeicher {
   static Future<Map<String, dynamic>?> ladeWechselgeldZaehlEntwurf(
     String kinoId,
   ) async {
-    final Box<dynamic> box = Hive.box('box_wechselgeld_entwuerfe');
-    final String? rohwert =
-        box.get(_wechselgeldZaehlEntwurfKey(kinoId)) as String?;
-    if (rohwert == null) {
-      return null;
-    }
-    try {
-      return jsonDecode(rohwert) as Map<String, dynamic>;
-    } catch (_) {
-      return null;
-    }
+    return _ladeJson(
+      'box_wechselgeld_entwuerfe',
+      _wechselgeldZaehlEntwurfKey(kinoId),
+      (dynamic v) => v as Map<String, dynamic>,
+    );
   }
 
   static Future<void> speichereWechselgeldZaehlEntwurf(
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
-    final Box<dynamic> box = Hive.box('box_wechselgeld_entwuerfe');
-    await box.put(
+    await _speichereJson(
+      'box_wechselgeld_entwuerfe',
       _wechselgeldZaehlEntwurfKey(kinoId),
-      jsonEncode(daten),
+      daten,
     );
   }
 

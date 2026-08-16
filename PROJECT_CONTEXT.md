@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.52+380 · Run 380
+Version: 0.9.53+381 · Run 381
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -145,7 +145,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 380)
+## Laufender Entwicklungsstand (Run 381)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -638,6 +638,17 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   FAB) von schritt1_body_content.dart und schritt2_body_content.dart;
   der jeweils unterschiedliche scrollbare Inhalt (Slivers vs.
   ListView) bleibt getrennt. Öffentliche Konstruktoren unverändert.
+- Run 381 ✅ Duplikat-Audit-Serie: JSON-Lade/Speicher-Helfer in
+  lokaler_speicher.dart. Neue private generische Helfer _ladeJson()/
+  _speichereJson() lösen das 4× 1:1 duplizierte Muster "Hive-Box:
+  String holen → jsonDecode mit try/catch → Map/Liste oder null" ab
+  (ladeGetraenkeMengen/speichereGetraenkeMengen, ladeGetraenkeliste/
+  speichereGetraenkeliste, ladeSchritt2Entwurf/speichereSchritt2Entwurf,
+  ladeWechselgeldZaehlEntwurf/speichereWechselgeldZaehlEntwurf).
+  Bewusst nicht angefasst: die TagesabschlussFinal-Familie (eigene
+  Filter-/Sortier-/Dedupe-Logik, keine reine Dopplung) und
+  ladeAutoFillSchritt1/2 (SharedPreferences + Default-Werte-Fallback,
+  anderes Muster). Persistenz-Keys/Boxen unverändert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

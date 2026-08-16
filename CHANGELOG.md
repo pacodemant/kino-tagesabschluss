@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 381: JSON-Lade/Speicher-Helfer in lokaler_speicher.dart
+  (Duplikat-Audit-Serie, geplant laut TODO.md). Vier Paare aus
+  Laden/Speichern hatten exakt dasselbe Muster: Hive-Box, rohen
+  String per Key holen, jsonDecode mit try/catch (Fehler → null),
+  bzw. spiegelbildlich jsonEncode → box.put. Jetzt über zwei neue
+  private generische Helfer _ladeJson<T>(boxName, key, parse) und
+  _speichereJson(boxName, key, daten) abgedeckt. Betroffen:
+  ladeGetraenkeMengen/speichereGetraenkeMengen (box_getraenke_mengen),
+  ladeGetraenkeliste/speichereGetraenkeliste (box_getraenkeliste,
+  List<String> statt Map — nutzt denselben Helfer über den parse-
+  Callback), ladeSchritt2Entwurf/speichereSchritt2Entwurf
+  (box_schritt2_entwuerfe), ladeWechselgeldZaehlEntwurf/
+  speichereWechselgeldZaehlEntwurf (box_wechselgeld_entwuerfe).
+  Bewusst nicht angefasst: die TagesabschlussFinal-Funktionsfamilie
+  (speichereFinalenTagesabschluss, ersetzeFinalenTagesabschluss,
+  ladeFinaleTagesabschluesse, loescheFinalenTagesabschluss,
+  bereinigeAlteTagesabschluesse) — verarbeitet Listen mit eigener
+  Tages-/Alters-Filterung und Sortierung, keine reine Dopplung.
+  Ebenfalls nicht angefasst: ladeAutoFillSchritt1/ladeAutoFillSchritt2
+  — nutzen SharedPreferences statt Hive plus Default-Werte-Fallback,
+  ein anderes Muster. Reine Struktur-Änderung, Persistenz-Keys/Boxen
+  und öffentliche Methodensignaturen unverändert. Version 0.9.53+381.
+  Dateien: lokaler_speicher.dart, app_version.dart, pubspec.yaml.
+
 - Run 380: Body-Content-Wrapper von Schritt 1 und Schritt 2
   zusammengeführt (Duplikat-Audit-Serie, ursprünglich als
   "379" geplant — die reale Run-379-Nummer ging stattdessen an
