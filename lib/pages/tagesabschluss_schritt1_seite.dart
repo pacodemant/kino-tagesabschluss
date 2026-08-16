@@ -493,7 +493,7 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
-  void _entferneKupferLose() {
+  Future<void> _entferneKupferLose() async {
     setState(() {
       _kupferLoseSichtbar = false;
       for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
@@ -501,6 +501,7 @@ class _TagesabschlussSchritt1SeiteState
         _loseMuenzenController[id]?.clear();
       }
     });
+    await _speichereEntwurf();
   }
 
   void _zeigeKupferRollen() {
@@ -509,7 +510,7 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
-  void _entferneKupferRollen() {
+  Future<void> _entferneKupferRollen() async {
     setState(() {
       _kupferRollenSichtbar = false;
       for (final String id in StueckelungKonfiguration.kupferRollenIds) {
@@ -517,6 +518,7 @@ class _TagesabschlussSchritt1SeiteState
         _stueckzahlController[id]?.clear();
       }
     });
+    await _speichereEntwurf();
   }
 
   int _parseCentZiffern(String wert) =>

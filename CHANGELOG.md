@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 385: Fehlendes Auto-Save nachgezogen. Codebasis-Analyse
+  (2026-08-16) fand drei Stellen, an denen State geändert wird, ohne
+  danach `_speichereEntwurf()` aufzurufen — eingegebene Werte gingen
+  dort bei App-Neustart verloren. (1) Schritt 1:
+  `_entferneKupferLose()` und `_entferneKupferRollen()` setzten die
+  Kupfer-Werte auf 0 zurück und leerten die Controller, speicherten
+  den Entwurf aber nicht — jetzt `await _speichereEntwurf()` am Ende,
+  beide Methoden dafür von `void` auf `Future<void> async`
+  umgestellt (bleiben als VoidCallback verwendbar). (2) Schritt 2:
+  `onZeileBetragGeaendert` (Kartenart-Einzelbetrag-Feld in der
+  aufgeklappten Kartenarten-Tabelle) aktualisierte nur den State —
+  jetzt zusätzlicher `_speichereEntwurf();`-Aufruf (Fire-and-forget,
+  analog zu `onZeileNameGeaendert`/`onGesamtBetragGeaendert` direkt
+  daneben). Kein Verhalten außerhalb des Speicherns geändert.
+  Version 0.9.57+385. Dateien: tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 384: Duplikat-/Abstraktions-Audit-Serie fortgesetzt — vier
   kleine lokale Widget-Extraktionen, kein funktionales Verhalten
   geändert. (1) wechselgeld_rollen_section.dart: eigene Card/InkWell/

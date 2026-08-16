@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.56+384 · Run 384
+Version: 0.9.57+385 · Run 385
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -145,7 +145,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 384)
+## Laufender Entwicklungsstand (Run 385)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -683,6 +683,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   _baueStueckzahlZeile/_baueCentZeile auf gemeinsame
   _baueZahlenZeile() zurückgeführt. Alle öffentlichen Konstruktoren
   unverändert.
+- Run 385 ✅ Fehlendes Auto-Save nachgezogen: drei Stellen ohne
+  _speichereEntwurf()-Aufruf ergänzt (Codebasis-Analyse 2026-08-16).
+  Schritt 1: _entferneKupferLose()/_entferneKupferRollen() speichern
+  jetzt (await _speichereEntwurf(), Methoden dafür async). Schritt 2:
+  onZeileBetragGeaendert (Kartenart-Einzelbetrag-Feld) speichert jetzt
+  (Fire-and-forget, analog zu den benachbarten Zeilen-Callbacks).
+  Vorher gingen dort eingegebene Werte bei App-Neustart verloren.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

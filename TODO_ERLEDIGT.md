@@ -231,6 +231,18 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🔴 Größere Umbauten
 
+- [x] **Fehlendes Auto-Save nachziehen** Codebasis-Analyse (2026-08-16)
+      fand drei Stellen ohne `_speichereEntwurf()`-Aufruf — eingegebene
+      Werte gingen dort bei App-Neustart verloren: Schritt 1
+      `_entferneKupferLose()`/`_entferneKupferRollen()` (setzten
+      Kupfer-Werte auf 0 zurück, ohne den Entwurf zu speichern) und
+      Schritt 2 `onZeileBetragGeaendert` (Kartenart-Einzelbetrag-Feld
+      in der aufgeklappten Kartenarten-Tabelle). Alle drei ergänzt —
+      Schritt 1 analog zum bestehenden Muster als `await
+      _speichereEntwurf()` in den jetzt async Methoden, Schritt 2
+      analog zu den benachbarten Zeilen-Callbacks als
+      Fire-and-forget-Aufruf ohne await. *(Run 385)*
+
 ---
 
 ## ✅ Validierungen & Plausibilitätsprüfungen

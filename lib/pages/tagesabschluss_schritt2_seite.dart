@@ -2237,6 +2237,7 @@ class _TagesabschlussSchritt2SeiteState
         setState(() {
           zeile.betragCentWert = _parsiereBetragCent(wert);
         });
+        _speichereEntwurf();
       },
       onZeileAktivieren: (ZahlungsartZeile zeile) {
         setState(() {
