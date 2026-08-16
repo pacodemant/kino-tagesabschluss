@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 385a: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
+  Run 385 aus Pacos Test. Die beiden "… entfernen"-Textbuttons für
+  Kupfermünzen/Kupfer-Rollen in Schritt 1
+  (tagesabschluss_schritt1/ui/schritt1_ui_builder.dart,
+  _KupferEntfernenButton) bekommen jetzt wie die zugehörigen
+  "… hinzufügen"-Buttons ein Icon (Icons.remove statt Icons.add) —
+  vorher reiner Text ohne Icon. Außerdem neuer `label`-Parameter
+  statt fest verdrahtetem "Kupfergeld entfernen": Lose-Münzen-Button
+  heißt jetzt "Kupfermünzen entfernen", Rollen-Button "Kupfer-Rollen
+  entfernen" — passend zu den jeweiligen "hinzufügen"-Gegenstücken
+  ("Kupfermünzen hinzufügen"/"Kupfer-Rollen hinzufügen"), statt für
+  beide denselben Text zu verwenden. Version 0.9.57+385a. Dateien:
+  schritt1_ui_builder.dart, app_version.dart, pubspec.yaml.
+
 - Run 385: Fehlendes Auto-Save nachgezogen. Codebasis-Analyse
   (2026-08-16) fand drei Stellen, an denen State geändert wird, ohne
   danach `_speichereEntwurf()` aufzurufen — eingegebene Werte gingen

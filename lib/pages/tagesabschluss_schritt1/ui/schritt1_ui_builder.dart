@@ -213,7 +213,10 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
           ),
         if (kupferLoseSichtbar) ...<Widget>[
           const SizedBox(height: 8),
-          _KupferEntfernenButton(onPressed: entferneKupferLose),
+          _KupferEntfernenButton(
+            label: 'Kupfermünzen entfernen',
+            onPressed: entferneKupferLose,
+          ),
           const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
             Builder(
@@ -273,7 +276,10 @@ class Schritt1RollenInhalt extends StatelessWidget {
           ),
         if (kupferRollenSichtbar) ...<Widget>[
           const SizedBox(height: 8),
-          _KupferEntfernenButton(onPressed: entferneKupferRollen),
+          _KupferEntfernenButton(
+            label: 'Kupfer-Rollen entfernen',
+            onPressed: entferneKupferRollen,
+          ),
           const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
             zeilenEintragBuilder(zeile),
@@ -321,15 +327,19 @@ class _KupferHinzufuegenButton extends StatelessWidget {
 }
 
 class _KupferEntfernenButton extends StatelessWidget {
-  const _KupferEntfernenButton({required this.onPressed});
+  const _KupferEntfernenButton({
+    required this.label,
+    required this.onPressed,
+  });
 
+  final String label;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: TextButton(
+      child: TextButton.icon(
         style: TextButton.styleFrom(
           foregroundColor: AppFarben.appBarRot,
           padding: EdgeInsets.zero,
@@ -338,7 +348,8 @@ class _KupferEntfernenButton extends StatelessWidget {
           textStyle: const TextStyle(fontSize: 11),
         ),
         onPressed: onPressed,
-        child: const Text('Kupfergeld entfernen'),
+        icon: const Icon(Icons.remove, size: 14),
+        label: Text(label),
       ),
     );
   }
