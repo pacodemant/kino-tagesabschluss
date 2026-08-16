@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 385b: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
+  Run 385 aus Pacos Test. Nach dem Wiederherstellen eines
+  Schritt-2-Entwurfs (_ladeEntwurf()) setzte der Code jede
+  Zahlungsart-Zeile mit einem gespeicherten Betrag unbedingt auf
+  ZeilenZustand.shown (Zusammenfassungs-Darstellung) — auch wenn die
+  Daten unvollständig waren (z. B. eine Kartenart manuell erfasst,
+  aber das Pflichtfeld "Gesamt (laut Beleg)" noch leer). Die
+  Kartenarten-Tabelle wirkte dadurch nach einem Neuladen fälschlich
+  fertig/geschlossen, obwohl noch ein Wert fehlte — das Gesamt-Feld
+  zeigte dann nur "—" als reinen Text statt als editierbares
+  Pflichtfeld. Neue Methode _wendeZahlungsartZustandNachLadenAn():
+  vergleicht Summe der Zeilen mit dem Gesamtbetrag; stimmen beide
+  überein, bleibt es wie bisher bei shown; bei Abweichung (und
+  mindestens einer bereits erfassten Kartenart) werden alle Zeilen
+  des Belegs auf ZeilenZustand.editing gesetzt und die Kachel
+  (_ecKachelAufgeklappt, ggf. _ecUnterkachelAufgeklappt/
+  _ecUnterkachelEditModus) aufgeklappt — analog zum bereits
+  bestehenden Muster in _manuellBearbeitenAktivieren() und
+  _pruefePflichtfelderVorSchritt3(). Der reine "Gesamt"-ohne-
+  Aufschlüsselung-Fall (keine einzelne Kartenart erfasst) bleibt
+  unverändert unauffällig, da dort keine Zeilensumme > 0 vorliegt.
+  Version 0.9.57+385b. Dateien: tagesabschluss_schritt2_seite.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 385a: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
   Run 385 aus Pacos Test. Die beiden "… entfernen"-Textbuttons für
   Kupfermünzen/Kupfer-Rollen in Schritt 1

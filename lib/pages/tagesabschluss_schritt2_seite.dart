@@ -288,6 +288,47 @@ class _TagesabschlussSchritt2SeiteState
     super.dispose();
   }
 
+  /// Setzt nach dem Wiederherstellen eines Entwurfs den Zustand der
+  /// Zahlungsart-Zeilen eines Belegs. Bei vollständigen/konsistenten Daten
+  /// (Summe der Zeilen == Gesamtbetrag) bleibt die Tabelle als
+  /// Zusammenfassung (shown). Bei unvollständigen Daten (z. B. bereits eine
+  /// Kartenart erfasst, aber der Gesamtbetrag noch leer) wird der Beleg
+  /// direkt aufgeklappt zur Bearbeitung angezeigt, analog zu
+  /// _manuellBearbeitenAktivieren()/_pruefePflichtfelderVorSchritt3() —
+  /// sonst wirkt die Kachel nach dem Neuladen fälschlich vollständig,
+  /// obwohl z. B. das Pflichtfeld "Gesamt (laut Beleg)" noch leer ist.
+  void _wendeZahlungsartZustandNachLadenAn(int belegIndex) {
+    if (belegIndex >= _zahlungsartZeilen.length) return;
+    final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
+    final int summeCent = zeilen.fold<int>(
+      0,
+      (int summe, ZahlungsartZeile z) => summe + (z.betragCentWert ?? 0),
+    );
+    final int? gesBetrag = belegIndex < _kartenartenGesamtBetragCent.length
+        ? _kartenartenGesamtBetragCent[belegIndex]
+        : null;
+    final bool vollstaendig = gesBetrag != null && summeCent == gesBetrag;
+    if (vollstaendig) {
+      for (final ZahlungsartZeile zeile in zeilen) {
+        if (zeile.betragCentWert != null) {
+          zeile.zustand = ZeilenZustand.shown;
+        }
+      }
+      return;
+    }
+    if (summeCent == 0) return;
+    for (final ZahlungsartZeile zeile in zeilen) {
+      zeile.zustand = ZeilenZustand.editing;
+    }
+    _ecKachelAufgeklappt = true;
+    if (belegIndex < _ecUnterkachelAufgeklappt.length) {
+      _ecUnterkachelAufgeklappt[belegIndex] = true;
+    }
+    if (belegIndex < _ecUnterkachelEditModus.length) {
+      _ecUnterkachelEditModus[belegIndex] = true;
+    }
+  }
+
   Future<void> _ladeEntwurf() async {
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeSchritt2Entwurf(widget.kinoId);
@@ -478,10 +519,8 @@ class _TagesabschlussSchritt2SeiteState
                 i < _zahlungsartZeilen[b].length && i < bBetrag.length;
                 i++) {
               _zahlungsartZeilen[b][i].betragCentWert = (bBetrag[i] as num?)?.toInt();
-              if (_zahlungsartZeilen[b][i].betragCentWert != null) {
-                _zahlungsartZeilen[b][i].zustand = ZeilenZustand.shown;
-              }
             }
+            _wendeZahlungsartZustandNachLadenAn(b);
           }
         });
         for (int b = 0; b < _zahlungsartZeilen.length && b < betragRoh.length; b++) {
@@ -506,10 +545,8 @@ class _TagesabschlussSchritt2SeiteState
                 i < _zahlungsartZeilen[0].length && i < betragRoh.length;
                 i++) {
               _zahlungsartZeilen[0][i].betragCentWert = (betragRoh[i] as num?)?.toInt();
-              if (_zahlungsartZeilen[0][i].betragCentWert != null) {
-                _zahlungsartZeilen[0][i].zustand = ZeilenZustand.shown;
-              }
             }
+            _wendeZahlungsartZustandNachLadenAn(0);
           });
           for (int i = 0;
               i < _zahlungsartZeilen[0].length && i < betragRoh.length;
