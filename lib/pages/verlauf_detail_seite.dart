@@ -7,11 +7,11 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
-import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -238,8 +238,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     final String isoDatum = DatumsHelper.isoDatum(a.datum);
     final bool istHeute = isoDatum == DatumsHelper.logischesIsoDatum();
 
-    final double bottomPadding = MediaQuery.of(context).padding.bottom;
-    return Scaffold(
+    return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
         centerTitle: false,
@@ -261,18 +260,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        decoration: AppFarben.footerDecoration,
-        padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
-        child: const SizedBox(
-          height: 36,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: HausButton(),
-          ),
-        ),
-      ),
-      body: Column(
+      child: Column(
         children: <Widget>[
           Expanded(
             child: ListView(

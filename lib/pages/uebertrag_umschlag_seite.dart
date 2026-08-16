@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
-import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 /// Zeigt die "Übertrag auf Umschlag"-Werte eines bereits abgeschlossenen
 /// Tagesabschlusses nachträglich an — gleiches Karten-Layout wie
@@ -28,34 +28,14 @@ class UebertragUmschlagSeite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double bottomPadding = MediaQuery.of(context).padding.bottom;
     final int differenzCent = abschluss.differenzGesamtCent;
     final Color differenzFarbe =
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
-    return Scaffold(
+    return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
-      appBar: AppBar(
-        centerTitle: false,
-        backgroundColor: AppFarben.appBarRot,
-        foregroundColor: Colors.white,
-        title: const Text(
-          'Übertrag auf Umschlag',
-          style: TextStyle(fontWeight: FontWeight.normal),
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: AppFarben.footerDecoration,
-        padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
-        child: const SizedBox(
-          height: 36,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: HausButton(),
-          ),
-        ),
-      ),
-      body: ListView(
+      title: 'Übertrag auf Umschlag',
+      child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: <Widget>[
           Padding(

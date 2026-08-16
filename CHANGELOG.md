@@ -9,6 +9,28 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 382: TagesabschlussScaffold konsequent genutzt
+  (Duplikat-Audit-Serie, geplant laut TODO.md). Vier Seiten bauten
+  Scaffold + Footer noch von Hand statt das bestehende
+  TagesabschlussScaffold-Widget zu nutzen — identisches Muster
+  (Container mit AppFarben.footerDecoration + HausButton() als
+  bottomNavigationBar) 3× wortwörtlich dupliziert, 1× als eigene
+  _hausFooter()-Methode. Jetzt umgestellt: einstellungen_seite.dart
+  (eigener AppBar mit Kinoname+Titel bleibt erhalten, läuft über den
+  appBar-Parameter, _hausFooter()-Methode entfernt), verlauf_seite.dart
+  (einfacher String-Titel, läuft über title-Parameter),
+  verlauf_detail_seite.dart (eigener AppBar mit Datum+Kinoname+
+  HeuteBadge bleibt erhalten, läuft über appBar-Parameter),
+  uebertrag_umschlag_seite.dart (einfacher String-Titel, läuft über
+  title-Parameter). Jeweils body: → child:, der manuell gebaute
+  Footer-Container entfällt, TagesabschlussScaffold liefert per
+  Default (zeigeHausButton: true) denselben Footer. Reine
+  Struktur-Änderung, keine Persistenz-Keys oder öffentlichen
+  Konstruktoren betroffen. Version 0.9.54+382. Dateien:
+  einstellungen_seite.dart, verlauf_seite.dart,
+  verlauf_detail_seite.dart, uebertrag_umschlag_seite.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 381: JSON-Lade/Speicher-Helfer in lokaler_speicher.dart
   (Duplikat-Audit-Serie, geplant laut TODO.md). Vier Paare aus
   Laden/Speichern hatten exakt dasselbe Muster: Hive-Box, rohen

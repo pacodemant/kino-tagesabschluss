@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.53+381 · Run 381
+Version: 0.9.54+382 · Run 382
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -145,7 +145,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 381)
+## Laufender Entwicklungsstand (Run 382)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -649,6 +649,17 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Filter-/Sortier-/Dedupe-Logik, keine reine Dopplung) und
   ladeAutoFillSchritt1/2 (SharedPreferences + Default-Werte-Fallback,
   anderes Muster). Persistenz-Keys/Boxen unverändert.
+- Run 382 ✅ Duplikat-Audit-Serie: TagesabschlussScaffold konsequent
+  genutzt. Vier Seiten (einstellungen_seite.dart, verlauf_seite.dart,
+  verlauf_detail_seite.dart, uebertrag_umschlag_seite.dart) bauten
+  Scaffold + Footer noch von Hand (Container mit
+  AppFarben.footerDecoration + HausButton() als bottomNavigationBar,
+  1:1 dupliziert bzw. als eigene _hausFooter()-Methode) statt das
+  bestehende TagesabschlussScaffold-Widget zu nutzen. Jetzt
+  umgestellt: eigene AppBars (Kinoname+Titel bzw. Datum+Kinoname+
+  HeuteBadge) laufen über den appBar-Parameter, einfache String-Titel
+  über den title-Parameter, der manuelle Footer-Container entfällt.
+  Öffentliche Konstruktoren unverändert.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

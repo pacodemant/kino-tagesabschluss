@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 381 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 382 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -388,11 +388,11 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       (Standort-Wechsel) verbraucht, diese Serie ist dadurch um
       einen Run nach hinten verschoben.
       Erledigt: Run 381 (JSON-Lade/Speicher-Helfer in
-      lokaler_speicher.dart — Details siehe CHANGELOG.md).
+      lokaler_speicher.dart — Details siehe CHANGELOG.md). Run 382
+      (TagesabschlussScaffold konsequent genutzt — Details siehe
+      CHANGELOG.md).
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      382 TagesabschlussScaffold
-      konsequent nutzen (4 Seiten bauen Footer aktuell von Hand) ·
       383 Stückelungs-Konfiguration zentralisieren (aktuell 3x
       dupliziert) · 384 WechselgeldRollenSection auf
       CollapsibleCardSection umstellen + Schritt3-Card-Wrapper +

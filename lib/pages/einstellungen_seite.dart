@@ -14,8 +14,8 @@ import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
-import 'package:kino_bar_app/widgets/haus_button.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EinstellungenSeite extends StatefulWidget {
@@ -1032,7 +1032,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       autoFillInhalt: _baueAutoFillInhalt(),
     );
 
-    return Scaffold(
+    return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
       appBar: AppBar(
         centerTitle: false,
@@ -1054,8 +1054,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           ],
         ),
       ),
-      bottomNavigationBar: _hausFooter(context),
-      body: ListView(
+      child: ListView(
         padding: const EdgeInsets.all(16),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: <Widget>[
@@ -1107,21 +1106,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _hausFooter(BuildContext context) {
-    final double bottomPadding = MediaQuery.of(context).padding.bottom;
-    return Container(
-      decoration: AppFarben.footerDecoration,
-      padding: EdgeInsets.fromLTRB(12, 4, 12, 4 + bottomPadding),
-      child: const SizedBox(
-        height: 36,
-        child: Align(
-          alignment: Alignment.centerLeft,
-          child: HausButton(),
-        ),
       ),
     );
   }
