@@ -9,6 +9,8 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 386: api_upload_service.dart – _terminalsListe() wirft jetzt eine Exception statt stillschweigend einen 0-EUR-Terminal-Eintrag hochzuladen, wenn zahlungsartenAufschluesselung leer ist aber ecUmsatzGesamtCent > 0 (Fehlertext mit formatiertem Betrag über TagesabschlussFormatierung.formatiereEuro(), läuft über den bereits vorhandenen Catch-Block in tagesabschluss_schritt3_seite.dart als SnackBar). Bundle-Fix im selben Codepfad: reine Bargeldtage (ecUmsatzGesamtCent == 0, keine Aufschlüsselung) senden jetzt ein leeres terminals-Array statt eines Phantom-Eintrags mit leerer Terminal-ID (laut EXTERNAL_API_Schauburg_de.md für reine Bargeldabrechnungen explizit erlaubt; der bisherige leere-tid-Eintrag hätte dort vermutlich zu einem 400-Fehler geführt). Neuer Unit-Test test/services/api_upload_service_test.dart (3 Fälle: kein EC-Umsatz, EC-Umsatz ohne Aufschlüsselung wirft Exception, EC-Umsatz mit Aufschlüsselung unverändertes Mapping). Version 0.9.58+386. Dateien: api_upload_service.dart, test/services/api_upload_service_test.dart (neu), pubspec.yaml, app_version.dart.
+
 - Run 385b: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
   Run 385 aus Pacos Test. Nach dem Wiederherstellen eines
   Schritt-2-Entwurfs (_ladeEntwurf()) setzte der Code jede

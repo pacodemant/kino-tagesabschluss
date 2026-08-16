@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
@@ -146,9 +147,15 @@ class ApiUploadService {
     final List<ZahlungsartErgebnis>? liste =
         abrechnung.zahlungsartenAufschluesselung;
     if (liste == null || liste.isEmpty) {
-      return <Map<String, dynamic>>[
-        _terminalEintrag(abrechnung.terminalId ?? '', <String, int>{}),
-      ];
+      if (abrechnung.ecUmsatzGesamtCent > 0) {
+        throw Exception(
+          'EC-Umsatz '
+          '${TagesabschlussFormatierung.formatiereEuro(abrechnung.ecUmsatzGesamtCent)} '
+          'erfasst, aber keine Kartenart-Aufschlüsselung vorhanden. Bitte in '
+          'Schritt 2 mindestens eine Kartenart mit Betrag eintragen.',
+        );
+      }
+      return <Map<String, dynamic>>[];
     }
 
     final Map<String, Map<String, int>> proTid = <String, Map<String, int>>{};

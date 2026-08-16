@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.57+385 · Run 385
+Version: 0.9.58+386 · Run 386
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -145,7 +145,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 385)
+## Laufender Entwicklungsstand (Run 386)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -690,6 +690,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   onZeileBetragGeaendert (Kartenart-Einzelbetrag-Feld) speichert jetzt
   (Fire-and-forget, analog zu den benachbarten Zeilen-Callbacks).
   Vorher gingen dort eingegebene Werte bei App-Neustart verloren.
+- Run 386 ✅ api_upload_service.dart: _terminalsListe() wirft jetzt
+  eine Exception statt einen 0-EUR-Terminal-Eintrag hochzuladen,
+  wenn EC-Umsatz > 0 aber zahlungsartenAufschluesselung leer ist
+  (harter Fehler, läuft über den bestehenden Catch/SnackBar in
+  Schritt 3). Bundle-Fix: reine Bargeldtage (kein EC-Umsatz) senden
+  jetzt ein leeres terminals-Array statt eines Phantom-Eintrags mit
+  leerer Terminal-ID. Neuer Unit-Test test/services/
+  api_upload_service_test.dart deckt alle drei Fälle ab.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

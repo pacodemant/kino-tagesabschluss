@@ -205,6 +205,22 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
+- [x] **0-EUR-Terminal-Upload ohne Fehlermeldung** In
+      `api_upload_service.dart` (`_terminalsListe()`) wurde bei
+      leerer `zahlungsartenAufschluesselung` bisher immer ein
+      Terminal-Eintrag mit lauter 0-Beträgen hochgeladen — auch
+      wenn `ecUmsatzGesamtCent > 0` war (z. B. MA trägt beim
+      EC-Beleg nur den Gesamtbetrag ein, ohne je eine
+      Kartenart-Zeile auszufüllen). Jetzt harter Fehler: Exception
+      mit Betrag in der Meldung, läuft über den bestehenden
+      Catch-Block in Schritt 3 als SnackBar. Bundle-Fix im selben
+      Codepfad: reine Bargeldtage senden jetzt ein leeres
+      terminals-Array statt eines Phantom-Eintrags mit leerer
+      Terminal-ID. Kein Fallback auf ein geschätztes Kartenfeld
+      (bewusst verworfen — die API hat kein "unbekannt"-Feld,
+      eine feste Kartenart zu raten wäre falsche Buchhaltungsdaten).
+      *(Run 386; entdeckt bei Codebasis-Analyse 2026-08-16.)*
+
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
 ### Weitere Features
