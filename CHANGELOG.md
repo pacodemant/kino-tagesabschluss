@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 383: Duplikat-/Abstraktions-Audit-Serie fortgesetzt —
+  Stückelungs-Konfiguration zentralisiert (war 3x dupliziert).
+  stueckelung_vorschlag_seite.dart: private _ScheinDef-Klasse +
+  _scheinDefinitionen-Konstante entfernt, Greedy-Schleife nutzt
+  jetzt direkt StueckelungKonfiguration.scheine (Kassenzeile).
+  einstellungen_seite.dart: die drei Record-Listen
+  _s1ScheineFelder/_s1RollenFelder/_s1LoseMuenzFelder (id +
+  bezeichnung + Dev-Default) durch Zugriff auf
+  StueckelungKonfiguration.scheine/rollen/loseMuenzarten/
+  alleStueckzahlZeilen ersetzt; nur die Dev-Autofill-Default-Werte
+  bleiben als zwei kleine lokale Maps (_s1StueckzahlAutoFillDefault,
+  _s1LoseMuenzAutoFillDefault), da sie keine Stückelungs-Konfiguration
+  sind, sondern reine Testdaten-Vorbelegung. Keine funktionale
+  Änderung außer einem kleinen Label-Nebeneffekt im PIN-geschützten
+  Dev-Autofill-Panel: Rollen zeigen dort jetzt wie überall sonst in
+  der App den vollen Rollenwert (z. B. "2 € (50,00 €)" statt
+  vorher verkürzt "2 €"). Version 0.9.55+383. Dateien:
+  stueckelung_vorschlag_seite.dart, einstellungen_seite.dart,
+  app_version.dart, pubspec.yaml.
+
 - Run 382a3: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
   Run 382a2 (von Paco manuell in verlauf_detail_seite.dart
   vorgenommen). Kleine Textzeile der Verlauf-Detail-AppBar von

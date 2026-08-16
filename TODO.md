@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 382 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 383 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -390,14 +390,26 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Erledigt: Run 381 (JSON-Lade/Speicher-Helfer in
       lokaler_speicher.dart — Details siehe CHANGELOG.md). Run 382
       (TagesabschlussScaffold konsequent genutzt — Details siehe
-      CHANGELOG.md).
+      CHANGELOG.md). Run 383 (Stückelungs-Konfiguration
+      zentralisiert: stueckelung_vorschlag_seite.dart nutzte eine
+      eigene private _ScheinDef-Klasse für die 5 Scheine statt der
+      bereits vorhandenen zentralen StueckelungKonfiguration.scheine
+      — entfernt, Schleife greift jetzt direkt auf die zentrale
+      Liste zu. einstellungen_seite.dart definierte id+bezeichnung
+      für Scheine/Rollen/lose Münzen (Dev-Autofill-Panel) nochmal
+      als eigene Record-Listen — jetzt bezieht sie id+bezeichnung
+      aus StueckelungKonfiguration, nur die Dev-Test-Default-Werte
+      bleiben als eigene kleine Maps lokal. Nebeneffekt: Die
+      Rollen-Labels im Dev-Autofill-Panel zeigen jetzt wie überall
+      sonst in der App den vollen Rollenwert an (z. B. "2 €
+      (50,00 €)" statt vorher verkürzt "2 €") — betrifft nur das
+      PIN-geschützte Dev-Panel, keine Endnutzer-Ansicht).
       Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
       nach Impact/Risiko):
-      383 Stückelungs-Konfiguration zentralisieren (aktuell 3x
-      dupliziert) · 384 WechselgeldRollenSection auf
-      CollapsibleCardSection umstellen + Schritt3-Card-Wrapper +
-      restliche kleine lokale Widget-Extraktionen (Kupfer-Buttons,
-      Einstellungen-Zeilen-Builder).
+      384 WechselgeldRollenSection auf CollapsibleCardSection
+      umstellen + Schritt3-Card-Wrapper + restliche kleine lokale
+      Widget-Extraktionen (Kupfer-Buttons, Einstellungen-Zeilen-
+      Builder).
       Weitere geplante Runs aus Codebasis-Analyse (2026-08-16, reiner
       Befundbericht ohne eigenen Run): 385 Fehlendes Auto-Save
       nachziehen — drei Stellen ohne _speichereEntwurf()-Aufruf

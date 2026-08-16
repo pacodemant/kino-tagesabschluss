@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.54+382a3 · Run 382a3
+Version: 0.9.55+383 · Run 383
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -145,7 +145,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 382)
+## Laufender Entwicklungsstand (Run 383)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -660,6 +660,15 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   HeuteBadge) laufen über den appBar-Parameter, einfache String-Titel
   über den title-Parameter, der manuelle Footer-Container entfällt.
   Öffentliche Konstruktoren unverändert.
+- Run 383 ✅ Duplikat-Audit-Serie: Stückelungs-Konfiguration
+  zentralisiert (war 3x dupliziert). stueckelung_vorschlag_seite.dart
+  nutzt jetzt StueckelungKonfiguration.scheine statt eigener privater
+  _ScheinDef-Klasse; einstellungen_seite.dart bezieht id+bezeichnung
+  für Scheine/Rollen/lose Münzen (Dev-Autofill-Panel) ebenfalls aus
+  StueckelungKonfiguration statt eigener Record-Listen — nur die
+  Dev-Test-Default-Werte bleiben als zwei kleine lokale Maps.
+  Nebeneffekt: Rollen-Labels im Dev-Panel zeigen jetzt den vollen
+  Rollenwert wie überall sonst in der App (z. B. "2 € (50,00 €)").
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

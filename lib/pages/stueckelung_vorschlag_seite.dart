@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
@@ -25,21 +26,6 @@ class StueckelungVorschlagArgumente {
 // ---------------------------------------------------------------------------
 
 enum _ZeilenArt { stueckzahl, betragzeile, restbetrag, trennlinie }
-
-class _ScheinDef {
-  const _ScheinDef(this.id, this.bezeichnung, this.einzelwertCent);
-  final String id;
-  final String bezeichnung;
-  final int einzelwertCent;
-}
-
-const List<_ScheinDef> _scheinDefinitionen = <_ScheinDef>[
-  _ScheinDef('note_100', '100 €', 10000),
-  _ScheinDef('note_50', '50 €', 5000),
-  _ScheinDef('note_20', '20 €', 2000),
-  _ScheinDef('note_10', '10 €', 1000),
-  _ScheinDef('note_5', '5 €', 500),
-];
 
 class _ErgebnisZeile {
   const _ErgebnisZeile._({
@@ -113,7 +99,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
     final List<_ErgebnisZeile> zeilen = <_ErgebnisZeile>[];
 
     // Scheine greedy, absteigend
-    for (final _ScheinDef schein in _scheinDefinitionen) {
+    for (final Kassenzeile schein in StueckelungKonfiguration.scheine) {
       final int vorhanden = argumente.stueckzahlen[schein.id] ?? 0;
       int genommen = 0;
       if (restCent > 0 && vorhanden > 0) {

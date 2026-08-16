@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/pages/einstellungen/ui/einstellungen_gruppen_orchestrierung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
@@ -28,38 +30,28 @@ class EinstellungenSeite extends StatefulWidget {
 }
 
 class _EinstellungenSeiteState extends State<EinstellungenSeite> {
-  static const List<(String, String, int)> _s1ScheineFelder =
-      <(String, String, int)>[
-    ('note_100', '100 €', 1),
-    ('note_50', '50 €', 13),
-    ('note_20', '20 €', 17),
-    ('note_10', '10 €', 65),
-    ('note_5', '5 €', 20),
-  ];
+  /// Vorbelegung fürs Dev-Autofill (Schritt 1, Scheine + Rollen).
+  /// Reine Testdaten — id/bezeichnung kommen zentral aus
+  /// StueckelungKonfiguration, nur diese Default-Stückzahlen sind
+  /// hier lokal (kein Teil der eigentlichen Stückelungs-Konfiguration).
+  static const Map<String, int> _s1StueckzahlAutoFillDefault = <String, int>{
+    'note_100': 1,
+    'note_50': 13,
+    'note_20': 17,
+    'note_10': 65,
+    'note_5': 20,
+    'roll_2e': 5,
+    'roll_1e': 8,
+  };
 
-  static const List<(String, String, int)> _s1RollenFelder =
-      <(String, String, int)>[
-    ('roll_2e', '2 €', 5),
-    ('roll_1e', '1 €', 8),
-    ('roll_50c', '50 ct', 0),
-    ('roll_20c', '20 ct', 0),
-    ('roll_10c', '10 ct', 0),
-    ('roll_5c', '5 ct', 0),
-    ('roll_2c', '2 ct', 0),
-    ('roll_1c', '1 ct', 0),
-  ];
-
-  static const List<(String, String, int)> _s1LoseMuenzFelder =
-      <(String, String, int)>[
-    ('coin_2e', '2 €', 6400),
-    ('coin_1e', '1 €', 5400),
-    ('coin_50c', '50 ct', 1900),
-    ('coin_20c', '20 ct', 1340),
-    ('coin_10c', '10 ct', 390),
-    ('coin_5c', '5 ct', 0),
-    ('coin_2c', '2 ct', 0),
-    ('coin_1c', '1 ct', 0),
-  ];
+  /// Vorbelegung fürs Dev-Autofill (Schritt 1, lose Münzen in Cent).
+  static const Map<String, int> _s1LoseMuenzAutoFillDefault = <String, int>{
+    'coin_2e': 6400,
+    'coin_1e': 5400,
+    'coin_50c': 1900,
+    'coin_20c': 1340,
+    'coin_10c': 390,
+  };
 
   static const int _umschlagSlots = 3;
 
@@ -127,14 +119,11 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   @override
   void initState() {
     super.initState();
-    for (final (String id, _, _) in [
-      ..._s1ScheineFelder,
-      ..._s1RollenFelder,
-    ]) {
-      _s1StueckzahlCtrl[id] = TextEditingController();
+    for (final Kassenzeile z in StueckelungKonfiguration.alleStueckzahlZeilen) {
+      _s1StueckzahlCtrl[z.id] = TextEditingController();
     }
-    for (final (String id, _, _) in _s1LoseMuenzFelder) {
-      _s1LoseMuenzCtrl[id] = TextEditingController();
+    for (final Kassenzeile z in StueckelungKonfiguration.loseMuenzarten) {
+      _s1LoseMuenzCtrl[z.id] = TextEditingController();
     }
     _neuesGetraenkFocus = FocusNode();
     _neuesGetraenkFocus.addListener(() {
@@ -296,17 +285,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final Map<String, dynamic>? lmMap =
         daten?['loseMuenzenNachArtCent'] as Map<String, dynamic>?;
 
-    for (final (String id, _, int def) in [
-      ..._s1ScheineFelder,
-      ..._s1RollenFelder,
-    ]) {
-      final int wert = (stMap?[id] as num?)?.toInt() ?? def;
-      _s1StueckzahlCtrl[id]!.text = wert != 0 ? wert.toString() : '';
+    for (final Kassenzeile z in StueckelungKonfiguration.alleStueckzahlZeilen) {
+      final int def = _s1StueckzahlAutoFillDefault[z.id] ?? 0;
+      final int wert = (stMap?[z.id] as num?)?.toInt() ?? def;
+      _s1StueckzahlCtrl[z.id]!.text = wert != 0 ? wert.toString() : '';
     }
 
-    for (final (String id, _, int def) in _s1LoseMuenzFelder) {
-      final int cent = (lmMap?[id] as num?)?.toInt() ?? def;
-      _s1LoseMuenzCtrl[id]!.text = cent != 0
+    for (final Kassenzeile z in StueckelungKonfiguration.loseMuenzarten) {
+      final int def = _s1LoseMuenzAutoFillDefault[z.id] ?? 0;
+      final int cent = (lmMap?[z.id] as num?)?.toInt() ?? def;
+      _s1LoseMuenzCtrl[z.id]!.text = cent != 0
           ? TagesabschlussFormatierung.formatiereEuroEingabe(cent)
           : '';
     }
@@ -796,10 +784,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
-            for (final (String id, String label, _) in _s1ScheineFelder)
+            for (final Kassenzeile z in StueckelungKonfiguration.scheine)
               _baueStueckzahlZeile(
-                label: label,
-                controller: _s1StueckzahlCtrl[id]!,
+                label: z.bezeichnung,
+                controller: _s1StueckzahlCtrl[z.id]!,
                 onChanged: _speichereAutoFillSchritt1,
               ),
             const Divider(height: 16),
@@ -808,10 +796,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
-            for (final (String id, String label, _) in _s1RollenFelder)
+            for (final Kassenzeile z in StueckelungKonfiguration.rollen)
               _baueStueckzahlZeile(
-                label: label,
-                controller: _s1StueckzahlCtrl[id]!,
+                label: z.bezeichnung,
+                controller: _s1StueckzahlCtrl[z.id]!,
                 onChanged: _speichereAutoFillSchritt1,
               ),
             const Divider(height: 16),
@@ -820,10 +808,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 4),
-            for (final (String id, String label, _) in _s1LoseMuenzFelder)
+            for (final Kassenzeile z in StueckelungKonfiguration.loseMuenzarten)
               _baueCentZeile(
-                label: label,
-                controller: _s1LoseMuenzCtrl[id]!,
+                label: z.bezeichnung,
+                controller: _s1LoseMuenzCtrl[z.id]!,
                 onChanged: _speichereAutoFillSchritt1,
               ),
             const Divider(height: 16),
