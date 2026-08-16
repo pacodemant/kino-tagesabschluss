@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 380 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 380d · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -397,6 +397,37 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       CollapsibleCardSection umstellen + Schritt3-Card-Wrapper +
       restliche kleine lokale Widget-Extraktionen (Kupfer-Buttons,
       Einstellungen-Zeilen-Builder).
+      Weitere geplante Runs aus Codebasis-Analyse (2026-08-16, reiner
+      Befundbericht ohne eigenen Run): 385 Fehlendes Auto-Save
+      nachziehen — drei Stellen ohne _speichereEntwurf()-Aufruf
+      (Schritt 1: Kupfer-Lose/-Rollen entfernen; Schritt 2:
+      Kartenart-Einzelbetrag) — eingegebene Werte gehen bei
+      App-Neustart verloren. · 386 api_upload_service.dart: Fallback
+      auf ecUmsatzGesamtCent ergänzen, wenn
+      zahlungsartenAufschluesselung leer ist — sonst wird ein
+      0-EUR-Terminal-Eintrag ohne Fehlermeldung an Flurbocash
+      hochgeladen. · 387 main.dart: globale Fehlerbehandlung
+      ergänzen (runZonedGuarded/FlutterError.onError fehlen
+      komplett) — App bleibt bei einem Init-Fehler (z. B. Hive.
+      openBox) aktuell ohne Diagnose oder Nutzer-Feedback stehen.
+      Klärungsbedürftig vor Run-Vergabe (ebenfalls aus der Analyse):
+      6-Uhr-Knick beim Finalisieren — tagesabschluss_finalisieren_
+      usecase.dart setzt das gespeicherte Abschluss-Datum aus
+      DateTime.now() ohne den 6-Uhr-Knick, während Schritt 3 die
+      Anzeige korrekt über logischerAbrechnungsTag() bildet
+      (Abweichung möglich bei Abschluss zwischen 00:00 und 05:59
+      Uhr); soll finalisieren() exakt wie die Anzeige umgestellt
+      werden? — lokaler_speicher.dart Datenverlust bei Schreibfehler
+      — schlägt das Schreiben der Tagesabschluss-Historie fehl
+      (catch(_)), wird die komplette bisherige Historie eines Kinos
+      aktuell stillschweigend durch nur den neuen Eintrag ersetzt;
+      welches Verhalten ist im Fehlerfall gewünscht (z. B. alten
+      Stand behalten + Fehler anzeigen statt überschreiben)? —
+      Anthropic-API-Key totes Feld — wird in den Einstellungen
+      gespeichert, aber nirgends gelesen (beleg_scan_service.dart
+      sendet den Scan-Request ohne API-Key-Header); Feld entfernen
+      (da nie genutzt) oder Scan-Request tatsächlich mit API-Key
+      versehen?
       Zusätzlich entdeckt, noch nicht eingeplant: ca. 11 weitere
       SnackBar-Aufrufe in tagesabschluss_schritt2_seite.dart (5x) und
       tagesabschluss_schritt3_seite.dart (6x), die ebenfalls
@@ -406,7 +437,9 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Run 374.
       Bewusst zurückgestellt: paralleles Listen-Resize-Muster in
       tagesabschluss_schritt2_seite.dart (EC-Beleg-/Ausgaben-Familie)
-      — nur bei größerem Schritt-2-Umbau sinnvoll, nicht isoliert.
+      — nur bei größerem Schritt-2-Umbau sinnvoll, nicht isoliert
+      (bestätigt durch Codebasis-Analyse 2026-08-16, dort als
+      "Parallel-Array-Antipattern" beschrieben).
       FeatureFlags/DevModus-Boilerplate — niedrige Priorität, nur bei
       weiteren Flags relevant.
       Offene Abwägungsfrage (Paco-Entscheidung nötig): soll
