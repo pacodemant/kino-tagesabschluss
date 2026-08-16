@@ -253,7 +253,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Verlauf ($kuerzel)',
+                'Abrechnungs-Verlauf $kuerzel',
                 style: const TextStyle(fontSize: 14),
               ),
               Row(

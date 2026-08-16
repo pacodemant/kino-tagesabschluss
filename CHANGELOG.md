@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 382a3: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
+  Run 382a2 (von Paco manuell in verlauf_detail_seite.dart
+  vorgenommen). Kleine Textzeile der Verlauf-Detail-AppBar von
+  "Verlauf ($kuerzel)" auf "Abrechnungs-Verlauf $kuerzel" geändert
+  (Klammern entfernt, Wortwahl angepasst). Version 0.9.54+382a3.
+  Dateien: verlauf_detail_seite.dart, app_version.dart, pubspec.yaml.
+
 - Run 382a2: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
   Run 382a. AppBar-Titel der Verlauf-Detail-Seite auf zweizeiliges
   Layout umgestellt, analog zum Header der Bargeldzählen-Seite
