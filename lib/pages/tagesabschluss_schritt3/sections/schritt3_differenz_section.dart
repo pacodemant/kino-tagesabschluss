@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_info_card.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 
 class Schritt3DifferenzSection extends StatelessWidget {
@@ -14,24 +15,18 @@ class Schritt3DifferenzSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: <Widget>[
-            InfoZeile(
-              label: 'Differenz\nKassenabrechnung',
-              wert: TagesabschlussFormatierung.formatiereEuroMitVorzeichen(
-                differenzCent,
-              ),
-              fett: true,
-              farbe: differenzFarbe,
-              stil: InfoZeileStil.fuehrungslinie,
-            ),
-          ],
+    return Schritt3InfoCard(
+      zeilen: <Widget>[
+        InfoZeile(
+          label: 'Differenz\nKassenabrechnung',
+          wert: TagesabschlussFormatierung.formatiereEuroMitVorzeichen(
+            differenzCent,
+          ),
+          fett: true,
+          farbe: differenzFarbe,
+          stil: InfoZeileStil.fuehrungslinie,
         ),
-      ),
+      ],
     );
   }
 }

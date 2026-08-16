@@ -207,37 +207,13 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         if (!kupferLoseSichtbar)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: AppFarben.appBarRot,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                textStyle: const TextStyle(fontSize: 11),
-              ),
-              onPressed: zeigeKupferLose,
-              icon: const Icon(Icons.add, size: 14),
-              label: const Text('Kupfermünzen hinzufügen'),
-            ),
+          _KupferHinzufuegenButton(
+            label: 'Kupfermünzen hinzufügen',
+            onPressed: zeigeKupferLose,
           ),
         if (kupferLoseSichtbar) ...<Widget>[
           const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: AppFarben.appBarRot,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                textStyle: const TextStyle(fontSize: 11),
-              ),
-              onPressed: entferneKupferLose,
-              child: const Text('Kupfergeld entfernen'),
-            ),
-          ),
+          _KupferEntfernenButton(onPressed: entferneKupferLose),
           const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
             Builder(
@@ -291,37 +267,13 @@ class Schritt1RollenInhalt extends StatelessWidget {
           const SizedBox(height: 8),
         ],
         if (!kupferRollenSichtbar)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                foregroundColor: AppFarben.appBarRot,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                textStyle: const TextStyle(fontSize: 11),
-              ),
-              onPressed: zeigeKupferRollen,
-              icon: const Icon(Icons.add, size: 14),
-              label: const Text('Kupfer-Rollen hinzufügen'),
-            ),
+          _KupferHinzufuegenButton(
+            label: 'Kupfer-Rollen hinzufügen',
+            onPressed: zeigeKupferRollen,
           ),
         if (kupferRollenSichtbar) ...<Widget>[
           const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              style: TextButton.styleFrom(
-                foregroundColor: AppFarben.appBarRot,
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                textStyle: const TextStyle(fontSize: 11),
-              ),
-              onPressed: entferneKupferRollen,
-              child: const Text('Kupfergeld entfernen'),
-            ),
-          ),
+          _KupferEntfernenButton(onPressed: entferneKupferRollen),
           const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
             zeilenEintragBuilder(zeile),
@@ -339,3 +291,55 @@ class Schritt1RollenInhalt extends StatelessWidget {
   }
 }
 
+class _KupferHinzufuegenButton extends StatelessWidget {
+  const _KupferHinzufuegenButton({
+    required this.label,
+    required this.onPressed,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton.icon(
+        style: TextButton.styleFrom(
+          foregroundColor: AppFarben.appBarRot,
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: const TextStyle(fontSize: 11),
+        ),
+        onPressed: onPressed,
+        icon: const Icon(Icons.add, size: 14),
+        label: Text(label),
+      ),
+    );
+  }
+}
+
+class _KupferEntfernenButton extends StatelessWidget {
+  const _KupferEntfernenButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          foregroundColor: AppFarben.appBarRot,
+          padding: EdgeInsets.zero,
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textStyle: const TextStyle(fontSize: 11),
+        ),
+        onPressed: onPressed,
+        child: const Text('Kupfergeld entfernen'),
+      ),
+    );
+  }
+}

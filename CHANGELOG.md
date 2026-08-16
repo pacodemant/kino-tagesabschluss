@@ -9,6 +9,39 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 384: Duplikat-/Abstraktions-Audit-Serie fortgesetzt — vier
+  kleine lokale Widget-Extraktionen, kein funktionales Verhalten
+  geändert. (1) wechselgeld_rollen_section.dart: eigene Card/InkWell/
+  Row-Header-Struktur entfernt, nutzt jetzt die zentrale
+  CollapsibleCardSection (bisher nur von den Schritt-1-Münz-/
+  Scheine-Sections genutzt) — dafür neuer optionaler Parameter
+  `zusatzZeile` in collapsible_card_section.dart, damit die
+  Wechselgeld-spezifische Zeile "Aus Zählung von vorhin übernehmen" /
+  "Geldrollen löschen" weiterhin nur im aufgeklappten Zustand
+  erscheint. (2) tagesabschluss_schritt3/sections/: neue
+  Schritt3InfoCard (Card+Padding+Column-Hülle) ersetzt die 4x
+  identisch dupliziert Card-Hülle in schritt3_soll_section.dart,
+  schritt3_ist_section.dart, schritt3_differenz_section.dart,
+  schritt3_differenz_anfangsbestand_section.dart (Kopf-Section
+  ausgenommen, hat keine Card). (3) schritt1_ui_builder.dart: die
+  "Kupfer hinzufügen"/"Kupfergeld entfernen"-TextButton-Paare waren
+  zwischen Schritt1LoseMuenzenInhalt und Schritt1RollenInhalt 1:1
+  dupliziert (nur das Hinzufügen-Label unterschiedlich) — jetzt in
+  zwei neuen privaten Widgets _KupferHinzufuegenButton/
+  _KupferEntfernenButton. (4) einstellungen_seite.dart:
+  _baueStueckzahlZeile/_baueCentZeile hatten identischen Row/Focus/
+  TextField-Aufbau, nur Feldbreite (60/80) und Formatter
+  (mit/ohne CentWaehrungsEingabeFormatter) unterschieden sich — beide
+  jetzt dünne Wrapper um neue gemeinsame _baueZahlenZeile(), alle 9
+  Aufrufstellen unverändert. Version 0.9.56+384. Dateien:
+  collapsible_card_section.dart, wechselgeld_rollen_section.dart,
+  tagesabschluss_schritt3/sections/schritt3_info_card.dart (neu),
+  schritt3_soll_section.dart, schritt3_ist_section.dart,
+  schritt3_differenz_section.dart,
+  schritt3_differenz_anfangsbestand_section.dart,
+  schritt1_ui_builder.dart, einstellungen_seite.dart, app_version.dart,
+  pubspec.yaml.
+
 - Run 383: Duplikat-/Abstraktions-Audit-Serie fortgesetzt —
   Stückelungs-Konfiguration zentralisiert (war 3x dupliziert).
   stueckelung_vorschlag_seite.dart: private _ScheinDef-Klasse +

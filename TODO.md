@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 383 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 384 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -403,13 +403,21 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Rollen-Labels im Dev-Autofill-Panel zeigen jetzt wie überall
       sonst in der App den vollen Rollenwert an (z. B. "2 €
       (50,00 €)" statt vorher verkürzt "2 €") — betrifft nur das
-      PIN-geschützte Dev-Panel, keine Endnutzer-Ansicht).
-      Geplante nächste Runs (jeweils 1 Fokus pro Run, Reihenfolge
-      nach Impact/Risiko):
-      384 WechselgeldRollenSection auf CollapsibleCardSection
-      umstellen + Schritt3-Card-Wrapper + restliche kleine lokale
-      Widget-Extraktionen (Kupfer-Buttons, Einstellungen-Zeilen-
-      Builder).
+      PIN-geschützte Dev-Panel, keine Endnutzer-Ansicht). Run 384
+      (vier kleine lokale Widget-Extraktionen: wechselgeld_rollen_
+      section.dart nutzt jetzt die zentrale CollapsibleCardSection
+      statt eigener Card/InkWell-Header-Struktur, dafür neuer
+      optionaler Parameter `zusatzZeile`; tagesabschluss_schritt3/
+      sections/ bekam eine gemeinsame Schritt3InfoCard statt 4x
+      identisch dupliziertem Card-Wrapper; schritt1_ui_builder.dart:
+      Kupfer-Hinzufügen/Entfernen-Buttons aus Schritt1LoseMuenzenInhalt
+      und Schritt1RollenInhalt in zwei private Widgets zusammengeführt;
+      einstellungen_seite.dart: _baueStueckzahlZeile/_baueCentZeile
+      auf gemeinsame _baueZahlenZeile() zurückgeführt — Details siehe
+      CHANGELOG.md).
+      Kandidatensuche nach Run 384 für weitere Runs dieser Serie noch
+      offen — nächster Fokus bei Bedarf über eine neue
+      Codebasis-Analyse ermitteln.
       Weitere geplante Runs aus Codebasis-Analyse (2026-08-16, reiner
       Befundbericht ohne eigenen Run): 385 Fehlendes Auto-Save
       nachziehen — drei Stellen ohne _speichereEntwurf()-Aufruf

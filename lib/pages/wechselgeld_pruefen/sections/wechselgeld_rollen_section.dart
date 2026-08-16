@@ -3,6 +3,7 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_ui_builder.dart'
     as schritt1_ui;
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/collapsible_card_section.dart';
 
 class WechselgeldRollenSection extends StatelessWidget {
   const WechselgeldRollenSection({
@@ -88,152 +89,84 @@ class WechselgeldRollenSection extends StatelessWidget {
       rollenSichtbar: rollenSichtbar,
     );
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          InkWell(
-            onTap: onToggleRollen,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Flexible(
-                              child: Text.rich(
-                                TextSpan(
-                                  children: <TextSpan>[
-                                    TextSpan(
-                                      text: 'Rollen ',
-                                      style:
-                                          TextStyle(fontWeight: FontWeight.w700),
-                                    ),
-                                    TextSpan(
-                                      text: ' Anzahl ',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                        backgroundColor: Colors.black,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: ' der Rollen',
-                                      style: TextStyle(fontSize: 10),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.help_outline),
-                              color: AppFarben.appBarRot,
-                              iconSize: 18,
-                              padding: const EdgeInsets.only(left: 4),
-                              constraints: const BoxConstraints(),
-                              onPressed: () => showDialog<void>(
-                                context: context,
-                                builder: (ctx) => AlertDialog(
-                                  title: const Text('Rollen eingeben'),
-                                  content: const Text.rich(
-                                    TextSpan(
-                                      children: <InlineSpan>[
-                                        TextSpan(
-                                            text:
-                                                'Rollen einfach zählen und '),
-                                        TextSpan(
-                                          text: 'Anzahl',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        TextSpan(
-                                            text:
-                                                ' eingeben, nicht den Betrag.\n'),
-                                        TextSpan(
-                                            text:
-                                                'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'),
-                                        TextSpan(
-                                            text:
-                                                'Also "2" für zwei Rollen, nicht "100".'),
-                                      ],
-                                    ),
-                                  ),
-                                  actions: <Widget>[
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(),
-                                      child: const Text('Verstanden'),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (rollenAufgeklappt)
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              InkWell(
-                                borderRadius: BorderRadius.circular(2),
-                                onTap: rollenUebernommen
-                                    ? onLoescheRollen
-                                    : onLadeRollenAusErsterZaehlung,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                    horizontal: 4,
-                                  ),
-                                  child: Text(
-                                    rollenUebernommen
-                                        ? 'Geldrollen löschen'
-                                        : 'Aus Zählung von vorhin übernehmen',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: AppFarben.appBarRot,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.help_outline),
-                                color: AppFarben.appBarRot,
-                                iconSize: 18,
-                                padding: const EdgeInsets.only(left: 4),
-                                constraints: const BoxConstraints(),
-                                onPressed: onZeigeRollenUebernehmenHilfe,
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    gesamtbetrag,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 8),
-                  Icon(
-                    rollenAufgeklappt
-                        ? Icons.expand_less
-                        : Icons.expand_more,
-                  ),
-                ],
+    final Widget zusatzZeile = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        InkWell(
+          borderRadius: BorderRadius.circular(2),
+          onTap: rollenUebernommen
+              ? onLoescheRollen
+              : onLadeRollenAusErsterZaehlung,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8,
+              horizontal: 4,
+            ),
+            child: Text(
+              rollenUebernommen
+                  ? 'Geldrollen löschen'
+                  : 'Aus Zählung von vorhin übernehmen',
+              style: TextStyle(
+                fontSize: 10,
+                color: AppFarben.appBarRot,
               ),
             ),
           ),
-          if (rollenAufgeklappt) ...<Widget>[
-            const Divider(height: 1),
-            Padding(padding: const EdgeInsets.all(12), child: inhalt),
-          ],
+        ),
+        IconButton(
+          icon: const Icon(Icons.help_outline),
+          color: AppFarben.appBarRot,
+          iconSize: 18,
+          padding: const EdgeInsets.only(left: 4),
+          constraints: const BoxConstraints(),
+          onPressed: onZeigeRollenUebernehmenHilfe,
+        ),
+      ],
+    );
+
+    return CollapsibleCardSection(
+      gesamtbetrag: gesamtbetrag,
+      aufgeklappt: rollenAufgeklappt,
+      beimUmschalten: onToggleRollen,
+      inhalt: inhalt,
+      zusatzZeile: zusatzZeile,
+      headerText: const TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+            text: 'Rollen ',
+            style: TextStyle(fontWeight: FontWeight.w700),
+          ),
+          TextSpan(
+            text: ' Anzahl ',
+            style: TextStyle(
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              backgroundColor: Colors.black,
+              fontSize: 10,
+            ),
+          ),
+          TextSpan(
+            text: ' der Rollen',
+            style: TextStyle(fontSize: 10),
+          ),
         ],
+      ),
+      hilfeDialogTitel: 'Rollen eingeben',
+      hilfeDialogInhalt: const Text.rich(
+        TextSpan(
+          children: <InlineSpan>[
+            TextSpan(text: 'Rollen einfach zählen und '),
+            TextSpan(
+              text: 'Anzahl',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: ' eingeben, nicht den Betrag.\n'),
+            TextSpan(
+                text:
+                    'Eine Rolle 2-Euro-Münzen hat z.B. einen Wert von 50 €.\n'),
+            TextSpan(text: 'Also "2" für zwei Rollen, nicht "100".'),
+          ],
+        ),
       ),
     );
   }

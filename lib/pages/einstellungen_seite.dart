@@ -653,10 +653,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     contentPadding: EdgeInsets.only(bottom: 4),
   );
 
-  Widget _baueStueckzahlZeile({
+  Widget _baueZahlenZeile({
     required String label,
     required TextEditingController controller,
     required VoidCallback onChanged,
+    required double feldBreite,
+    required List<TextInputFormatter> inputFormatters,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -666,7 +668,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
           Text(label, style: const TextStyle(fontSize: 14)),
           const SizedBox(width: 8),
           SizedBox(
-            width: 60,
+            width: feldBreite,
             child: Focus(
               onFocusChange: (bool hasFocus) {
                 if (hasFocus) controller.clear();
@@ -674,9 +676,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               child: TextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: inputFormatters,
                 textAlign: TextAlign.right,
                 decoration: _zeilenDeko,
                 onChanged: (_) => onChanged(),
@@ -688,39 +688,36 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     );
   }
 
+  Widget _baueStueckzahlZeile({
+    required String label,
+    required TextEditingController controller,
+    required VoidCallback onChanged,
+  }) {
+    return _baueZahlenZeile(
+      label: label,
+      controller: controller,
+      onChanged: onChanged,
+      feldBreite: 60,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+    );
+  }
+
   Widget _baueCentZeile({
     required String label,
     required TextEditingController controller,
     required VoidCallback onChanged,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Text(label, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 8),
-          SizedBox(
-            width: 80,
-            child: Focus(
-              onFocusChange: (bool hasFocus) {
-                if (hasFocus) controller.clear();
-              },
-              child: TextField(
-                controller: controller,
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.digitsOnly,
-                  CentWaehrungsEingabeFormatter(),
-                ],
-                textAlign: TextAlign.right,
-                decoration: _zeilenDeko,
-                onChanged: (_) => onChanged(),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return _baueZahlenZeile(
+      label: label,
+      controller: controller,
+      onChanged: onChanged,
+      feldBreite: 80,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+        CentWaehrungsEingabeFormatter(),
+      ],
     );
   }
 

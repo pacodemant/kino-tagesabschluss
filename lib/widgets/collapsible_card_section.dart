@@ -12,6 +12,7 @@ class CollapsibleCardSection extends StatelessWidget {
     required this.headerText,
     required this.hilfeDialogTitel,
     required this.hilfeDialogInhalt,
+    this.zusatzZeile,
   });
 
   final String gesamtbetrag;
@@ -21,6 +22,7 @@ class CollapsibleCardSection extends StatelessWidget {
   final TextSpan headerText;
   final String hilfeDialogTitel;
   final Widget hilfeDialogInhalt;
+  final Widget? zusatzZeile;
 
   @override
   Widget build(BuildContext context) {
@@ -36,24 +38,31 @@ class CollapsibleCardSection extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   Expanded(
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Flexible(
-                          child: Text.rich(headerText),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Flexible(
+                              child: Text.rich(headerText),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.help_outline),
+                              color: AppFarben.appBarRot,
+                              iconSize: 18,
+                              padding: const EdgeInsets.only(left: 4),
+                              constraints: const BoxConstraints(),
+                              onPressed: () => zeigeInfoDialog(
+                                context,
+                                titel: hilfeDialogTitel,
+                                inhalt: hilfeDialogInhalt,
+                              ),
+                            ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.help_outline),
-                          color: AppFarben.appBarRot,
-                          iconSize: 18,
-                          padding: const EdgeInsets.only(left: 4),
-                          constraints: const BoxConstraints(),
-                          onPressed: () => zeigeInfoDialog(
-                            context,
-                            titel: hilfeDialogTitel,
-                            inhalt: hilfeDialogInhalt,
-                          ),
-                        ),
+                        if (aufgeklappt && zusatzZeile != null) zusatzZeile!,
                       ],
                     ),
                   ),
