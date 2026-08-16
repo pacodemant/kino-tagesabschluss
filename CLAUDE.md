@@ -4,7 +4,7 @@
 
 Vollständiger Arbeitsvertrag (Run-Workflow, Standard-Lock,
 Git-Sicherheitsvertrag, Bericht-Format, Versionierung usw.):
-siehe AGENTS.md — das ist ab Run 323 die einzige Quelle dafür,
+siehe AGENTS.md — das ist ab Run 327 die einzige Quelle dafür,
 hier nicht mehr dupliziert. Grund: beide Dateien wurden bisher von
 Hand synchron gehalten, was Wartungsaufwand und das Risiko von
 Abweichungen erzeugte, ohne einen Vorteil zu bringen.

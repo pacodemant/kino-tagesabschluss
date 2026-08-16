@@ -12,7 +12,7 @@ Projekt:
 - Stack: Flutter / Dart
 - Repository: kino_bar_app
 - Hauptbranch: master
-- Persistenz: SharedPreferences (kein Backend)
+- Persistenz: SharedPreferences + Hive (lokal, kein Backend)
 - Geldberechnung: intern in Cent
 
 ## Arbeitsmodus
