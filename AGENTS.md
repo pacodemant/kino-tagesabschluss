@@ -34,6 +34,15 @@ Vor jedem Run-Vorschlag prüfen:
 Bei Zweifeln: die einfachere Alternative zuerst nennen,
 bevor der ursprünglich beschriebene Weg umgesetzt wird.
 
+## Verifikationspflicht
+
+Aussagen über Code- oder Framework-Verhalten (Styling-Defaults,
+Einführungszeitpunkte, Funktionsweise) nie aus dem Gedächtnis
+behaupten. Vor der Aussage im tatsächlichen Code, Git-Log
+(`git log -S`, `git blame`) oder offizieller Doku verifizieren.
+Ist eine Verifikation nicht möglich: explizit als Vermutung
+kennzeichnen, nicht als Fakt formulieren.
+
 ## Standard-Lock
 Ohne einen expliziten Run-Prompt darf der Agent NICHT:
 
