@@ -311,6 +311,11 @@ class _TagesabschlussSchritt3SeiteState
           widget.argumente.kinoId,
           _sendeSignatur(),
         );
+        await LokalerSpeicher.markiereAlsGesendet(
+          _abschlussVorschau!.kinoId,
+          _abschlussVorschau!.createdAt,
+          DateTime.now(),
+        );
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -325,6 +330,11 @@ class _TagesabschlussSchritt3SeiteState
     } catch (e) {
       if (ApiUploadService.isCorsArtFehler(e)) {
         _apiUploadErledigt = true;
+        await LokalerSpeicher.markiereAlsGesendet(
+          _abschlussVorschau!.kinoId,
+          _abschlussVorschau!.createdAt,
+          DateTime.now(),
+        );
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

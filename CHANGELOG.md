@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 387: Verlauf markiert Einträge, deren Abrechnung noch nicht
+  erfolgreich an Flurbocash übertragen wurde, mit einem "Noch nicht
+  gesendet"-Badge (verlauf_seite.dart Liste, verlauf_detail_seite.dart
+  Detail-Titel). Neues nullable Feld `gesendetAm` (DateTime?) in
+  TagesabschlussFinal (tagesabschluss_final.dart) inkl. toJson/fromJson
+  und neuer Methode `mitGesendetAm()`. Neue Methode
+  LokalerSpeicher.markiereAlsGesendet(kinoId, createdAt, zeitpunkt)
+  sucht den passenden Verlaufseintrag über createdAt (nicht nur Datum,
+  wegen Kinos mit mehreren Abrechnungen/Tag wie Bar Tabak) und setzt
+  gesendetAm. Aufgerufen nach erfolgreichem Upload in
+  tagesabschluss_schritt3_seite.dart (_doApiUpload, inkl. CORS-
+  Sonderfall) und in verlauf_detail_seite.dart (_erneuthSenden, inkl.
+  CORS-Sonderfall, dort zusätzlich lokaler State `_gesendetAm` für
+  sofortige Badge-Aktualisierung ohne Seitenwechsel). Neues Widget
+  NichtGesendetBadge (nicht_gesendet_badge.dart) + neue Farbkonstante
+  AppFarben.nichtGesendetBadgeHintergrund (neutrales Grau statt Orange,
+  da Orange als Führungsfarbe reserviert ist). Alte, vor diesem Run
+  gespeicherte Verlaufseinträge haben gesendetAm == null und werden
+  daher pauschal als "noch nicht gesendet" angezeigt, unabhängig vom
+  tatsächlichen früheren Sende-Erfolg — rückwirkend nicht
+  rekonstruierbar. Version 0.9.59+387. Dateien:
+  tagesabschluss_final.dart, lokaler_speicher.dart,
+  tagesabschluss_schritt3_seite.dart, verlauf_seite.dart,
+  verlauf_detail_seite.dart, nicht_gesendet_badge.dart (neu),
+  app_farben.dart, pubspec.yaml, app_version.dart.
+
 - Run 386: api_upload_service.dart – _terminalsListe() wirft jetzt eine Exception statt stillschweigend einen 0-EUR-Terminal-Eintrag hochzuladen, wenn zahlungsartenAufschluesselung leer ist aber ecUmsatzGesamtCent > 0 (Fehlertext mit formatiertem Betrag über TagesabschlussFormatierung.formatiereEuro(), läuft über den bereits vorhandenen Catch-Block in tagesabschluss_schritt3_seite.dart als SnackBar). Bundle-Fix im selben Codepfad: reine Bargeldtage (ecUmsatzGesamtCent == 0, keine Aufschlüsselung) senden jetzt ein leeres terminals-Array statt eines Phantom-Eintrags mit leerer Terminal-ID (laut EXTERNAL_API_Schauburg_de.md für reine Bargeldabrechnungen explizit erlaubt; der bisherige leere-tid-Eintrag hätte dort vermutlich zu einem 400-Fehler geführt). Neuer Unit-Test test/services/api_upload_service_test.dart (3 Fälle: kein EC-Umsatz, EC-Umsatz ohne Aufschlüsselung wirft Exception, EC-Umsatz mit Aufschlüsselung unverändertes Mapping). Version 0.9.58+386. Dateien: api_upload_service.dart, test/services/api_upload_service_test.dart (neu), pubspec.yaml, app_version.dart.
 
 - Run 385b: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an

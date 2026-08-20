@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 386 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 387 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -151,15 +151,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 - [ ] **Stapel-Scanner: echter Versand** Dummy-Button durch echten
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
-
-### Verlauf
-
-- [ ] **Übertragungs-Flag je Verlaufseintrag** Jeder Verlaufseintrag
-      soll erkennbar machen, ob die zugehörige Abrechnung erfolgreich
-      an Flurbocash übertragen wurde oder nicht — damit im Verlauf
-      sichtbar ist, welche Einträge ggf. erneut gesendet werden
-      müssen. Betrifft vermutlich `lokaler_speicher.dart`
-      (Verlauf-Modell) und `verlauf_detail_seite.dart` (Anzeige).
 
 ### App-Update / PWA
 

@@ -15,6 +15,11 @@ class AppFarben {
   // "Heute"-Badge (Verlauf)
   static const Color heuteBadgeHintergrund = Color(0xFFE53935);  // red.shade600
 
+  // "Noch nicht gesendet"-Badge (Verlauf) – bewusst nicht Orange
+  // (fokusFarbe ist Führungsfarbe für Bedienelemente), neutrales Grau
+  // für einen Warnhinweis statt einer Handlungsaufforderung.
+  static const Color nichtGesendetBadgeHintergrund = Color(0xFF757575); // grey.shade600
+
   // DEV-Tools-Panel-Hintergrund (Schritt 1 + Schritt 2)
   static const Color devToolsHintergrund = Color(0xFFFFF8E1);
 

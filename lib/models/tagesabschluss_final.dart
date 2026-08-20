@@ -38,6 +38,8 @@ class TagesabschlussFinal {
     this.belegNrBis,
     this.ecUhrzeit,
     this.zahlungsartenAufschluesselung,
+    // Sende-Status – seit Run 387, für ältere gespeicherte Einträge null
+    this.gesendetAm,
   });
 
   final String kinoId;
@@ -84,6 +86,53 @@ class TagesabschlussFinal {
   final String? belegNrBis;
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
+
+  // Zeitpunkt des erfolgreichen Uploads an Flurbocash, oder null wenn
+  // noch nicht gesendet – seit Run 387.
+  final DateTime? gesendetAm;
+
+  /// Liefert eine Kopie mit gesetztem [gesendetAm]. Alle anderen Felder
+  /// bleiben unverändert.
+  TagesabschlussFinal mitGesendetAm(DateTime zeitpunkt) {
+    return TagesabschlussFinal(
+      kinoId: kinoId,
+      kinoName: kinoName,
+      datum: datum,
+      createdAt: createdAt,
+      scheineCent: scheineCent,
+      loseMuenzenCent: loseMuenzenCent,
+      rollenCent: rollenCent,
+      umschlaegeCent: umschlaegeCent,
+      kassenbestandGesamtCent: kassenbestandGesamtCent,
+      wechselgeldSollwertCent: wechselgeldSollwertCent,
+      barBestandAbzglWechselgeldCent: barBestandAbzglWechselgeldCent,
+      kinoSollCent: kinoSollCent,
+      bistroSollCent: bistroSollCent,
+      ausgabenCent: ausgabenCent,
+      ecBelegeCent: ecBelegeCent,
+      ecUmsatzGesamtCent: ecUmsatzGesamtCent,
+      gesamtSollCent: gesamtSollCent,
+      gesamtIstCent: gesamtIstCent,
+      differenzGesamtCent: differenzGesamtCent,
+      differenzAnfangsbestandCent: differenzAnfangsbestandCent,
+      scheineStueckzahlen: scheineStueckzahlen,
+      rollenStueckzahlen: rollenStueckzahlen,
+      silberMuenzenCent: silberMuenzenCent,
+      kupferMuenzenCent: kupferMuenzenCent,
+      umschlagBetraegeCent: umschlagBetraegeCent,
+      ausgabenBetraegeCent: ausgabenBetraegeCent,
+      ausgabenLabels: ausgabenLabels,
+      ecBelegeLabels: ecBelegeLabels,
+      mitarbeiterName: mitarbeiterName,
+      anmerkung: anmerkung,
+      terminalId: terminalId,
+      belegNrVon: belegNrVon,
+      belegNrBis: belegNrBis,
+      ecUhrzeit: ecUhrzeit,
+      zahlungsartenAufschluesselung: zahlungsartenAufschluesselung,
+      gesendetAm: zeitpunkt,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -133,6 +182,7 @@ class TagesabschlussFinal {
                   if (z.tid != null) 'tid': z.tid,
                 })
             .toList(),
+      if (gesendetAm != null) 'gesendetAmIso': gesendetAm!.toIso8601String(),
     };
   }
 
@@ -241,6 +291,9 @@ class TagesabschlussFinal {
             .map(ZahlungsartErgebnis.fromJson)
             .toList();
       }(),
+      gesendetAm: DateTime.tryParse(
+        (json['gesendetAmIso'] as String?) ?? '',
+      ),
     );
   }
 }

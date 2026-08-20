@@ -12,6 +12,7 @@ import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
@@ -28,6 +29,7 @@ class VerlaufDetailSeite extends StatefulWidget {
 class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   bool _loescht = false;
   bool _sendet = false;
+  late DateTime? _gesendetAm = widget.abschluss.gesendetAm;
 
   // Lookup-Maps aus StueckelungKonfiguration, einmalig gebaut
   static final Map<String, Kassenzeile> _scheineLookup = <String, Kassenzeile>{
@@ -49,18 +51,32 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     try {
       await ApiUploadService.upload(widget.abschluss);
+      await LokalerSpeicher.markiereAlsGesendet(
+        widget.abschluss.kinoId,
+        widget.abschluss.createdAt,
+        DateTime.now(),
+      );
 
       if (mounted) {
+        setState(() => _gesendetAm = DateTime.now());
         zeigeHinweisSnackBar(context, 'API Upload erfolgreich ✓');
       }
     } catch (e) {
-      if (mounted) {
-        if (ApiUploadService.isCorsArtFehler(e)) {
+      if (ApiUploadService.isCorsArtFehler(e)) {
+        await LokalerSpeicher.markiereAlsGesendet(
+          widget.abschluss.kinoId,
+          widget.abschluss.createdAt,
+          DateTime.now(),
+        );
+        if (mounted) {
+          setState(() => _gesendetAm = DateTime.now());
           zeigeHinweisSnackBar(
             context,
             'Upload gesendet — Empfang nicht bestätigbar',
           );
-        } else {
+        }
+      } else {
+        if (mounted) {
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
@@ -268,6 +284,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                   if (istHeute) ...<Widget>[
                     const SizedBox(width: 8),
                     const HeuteBadge(),
+                  ],
+                  if (_gesendetAm == null) ...<Widget>[
+                    const SizedBox(width: 8),
+                    const NichtGesendetBadge(),
                   ],
                 ],
               ),

@@ -8,6 +8,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 class VerlaufSeite extends StatefulWidget {
@@ -111,6 +112,10 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                           if (istHeute) ...<Widget>[
                             const SizedBox(width: 8),
                             const HeuteBadge(),
+                          ],
+                          if (eintrag.gesendetAm == null) ...<Widget>[
+                            const SizedBox(width: 8),
+                            const NichtGesendetBadge(),
                           ],
                         ],
                       ),

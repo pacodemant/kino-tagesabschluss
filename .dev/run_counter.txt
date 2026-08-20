@@ -1,3 +1,3 @@
-last_run: 386
-next_run: 387
-last_run_title: Run 386: EC-Umsatz ohne Kartenaufschlüsselung – harter Fehler statt 0-EUR-Silent-Upload
+last_run: 387
+next_run: 388
+last_run_title: Run 387: Verlauf – "Noch nicht gesendet"-Badge für unübertragene Abrechnungen

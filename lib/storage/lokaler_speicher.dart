@@ -485,6 +485,42 @@ class LokalerSpeicher {
   static String _wechselgeldZaehlEntwurfKey(String kinoId) =>
       'wechselgeld_zaehlen_entwurf_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
 
+  /// Markiert den Verlaufseintrag mit passendem [createdAt] (identifiziert
+  /// die konkrete Abrechnung, auch wenn mehrere desselben Kalendertags
+  /// existieren) als erfolgreich an Flurbocash gesendet.
+  static Future<void> markiereAlsGesendet(
+    String kinoId,
+    DateTime createdAt,
+    DateTime zeitpunkt,
+  ) async {
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
+    final String key = finaleTagesabschluesseKey(kinoId);
+    final String? rohwert = box.get(key) as String?;
+    if (rohwert == null) {
+      return;
+    }
+
+    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
+    try {
+      final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
+      for (final dynamic eintrag in geparst) {
+        if (eintrag is Map<String, dynamic>) {
+          final TagesabschlussFinal bestehend =
+              TagesabschlussFinal.fromJson(eintrag);
+          if (bestehend.createdAt.isAtSameMomentAs(createdAt)) {
+            aktualisiert.add(bestehend.mitGesendetAm(zeitpunkt).toJson());
+          } else {
+            aktualisiert.add(eintrag);
+          }
+        }
+      }
+    } catch (_) {
+      return;
+    }
+
+    await box.put(key, jsonEncode(aktualisiert));
+  }
+
   /// Löscht die finale Tagesabrechnung eines bestimmten Kalendertags.
   static Future<void> loescheFinalenTagesabschluss(
     String kinoId,

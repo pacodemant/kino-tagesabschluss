@@ -223,6 +223,24 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
+### Verlauf
+
+- [x] **Übertragungs-Flag je Verlaufseintrag** Neues Feld `gesendetAm`
+      (DateTime?, nullable) in `TagesabschlussFinal`. Wird nach
+      erfolgreichem Upload (inkl. CORS-Sonderfall, der schon vorher
+      als "gesendet" galt) über die neue Methode
+      `LokalerSpeicher.markiereAlsGesendet(kinoId, createdAt,
+      zeitpunkt)` am gespeicherten Eintrag gesetzt — Abgleich über
+      `createdAt`, damit Kinos mit mehreren Abrechnungen/Tag (z. B.
+      Bar Tabak) den richtigen Eintrag treffen. Neues Badge
+      "Noch nicht gesendet" (`nicht_gesendet_badge.dart`, neutrales
+      Grau statt Orange, da Orange als Führungsfarbe reserviert ist)
+      in `verlauf_seite.dart` (Liste) und `verlauf_detail_seite.dart`
+      (Detail-Titel). Alte, vor diesem Run gespeicherte Einträge
+      haben `gesendetAm == null` und erscheinen daher pauschal als
+      "noch nicht gesendet", unabhängig vom tatsächlichen früheren
+      Sende-Erfolg — rückwirkend nicht rekonstruierbar. *(Run 387)*
+
 ### Weitere Features
 
 - [x] **Automatisches Geräte-Backup beim Senden** Abrechnung wird

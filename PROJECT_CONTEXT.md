@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.58+386 · Run 386
+Version: 0.9.59+387 · Run 387
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -130,6 +130,8 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
   — Bestätigungs-Popup nach EC-Beleg-Scan ("nochmal"/"übernehmen"),
   seit Run 318. Ersetzt NICHT das gleichnamig klingende, in Run 307
   entfernte `BelegScanGegenpruefDialog` (anderer Zweck).
+- `HeuteBadge` / `NichtGesendetBadge` — Verlauf-Badges (heutiger Tag
+  bzw. noch nicht an Flurbocash gesendet, seit Run 387)
 
 ---
 
@@ -145,7 +147,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 386)
+## Laufender Entwicklungsstand (Run 387)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -698,6 +700,17 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   jetzt ein leeres terminals-Array statt eines Phantom-Eintrags mit
   leerer Terminal-ID. Neuer Unit-Test test/services/
   api_upload_service_test.dart deckt alle drei Fälle ab.
+- Run 387 ✅ Verlauf zeigt "Noch nicht gesendet"-Badge für Einträge,
+  deren Abrechnung noch nicht erfolgreich an Flurbocash übertragen
+  wurde. Neues Feld `gesendetAm` (DateTime?) in TagesabschlussFinal;
+  neue Methode LokalerSpeicher.markiereAlsGesendet(kinoId, createdAt,
+  zeitpunkt) setzt es am gespeicherten Eintrag (Abgleich über
+  createdAt, wegen Kinos mit mehreren Abrechnungen/Tag). Wird sowohl
+  nach dem Senden in Schritt 3 als auch nach "Erneut senden" im
+  Verlauf-Detail aufgerufen (inkl. CORS-Sonderfall). Neues Widget
+  NichtGesendetBadge (nicht_gesendet_badge.dart). Alte Einträge vor
+  diesem Run haben gesendetAm == null und gelten daher pauschal als
+  "noch nicht gesendet" — rückwirkend nicht rekonstruierbar.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
