@@ -23,6 +23,7 @@ import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
+import 'package:kino_bar_app/widgets/seitenwechsel_warnung_helper.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -774,6 +775,16 @@ class _TagesabschlussSchritt1SeiteState
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
       );
 
+  /// Für die Seitenwechsel-Rückfrage: true, sobald irgendein Betrag auf
+  /// dieser Seite ungleich 0 ist oder eine Umschlag-Bezeichnung eingetragen
+  /// wurde (auch bei noch 0€ Umschlag-Betrag).
+  bool get _hatAusgefuellteFelder {
+    if (_kassenbestandGesamtCent != 0) return true;
+    return _umschlaege.any(
+      (UmschlagEintrag u) => u.bezeichnung.trim().isNotEmpty,
+    );
+  }
+
   String _formatiereEuro(int cent) =>
       TagesabschlussFormatierung.formatiereEuro(cent);
 
@@ -984,6 +995,10 @@ class _TagesabschlussSchritt1SeiteState
       context: context,
       aktuellerSchritt: 1,
       springeZuSchritt: _springeZuSchritt,
+      bestaetigeVerlassen: () => bestaetigeSeitenwechselFallsNoetig(
+        context,
+        hatAusgefuellteFelder: _hatAusgefuellteFelder,
+      ),
     );
   }
 
@@ -1058,8 +1073,24 @@ class _TagesabschlussSchritt1SeiteState
       mitKomma: false,
     );
 
-    return TagesabschlussScaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+        final bool verlassen = await bestaetigeSeitenwechselFallsNoetig(
+          context,
+          hatAusgefuellteFelder: _hatAusgefuellteFelder,
+        );
+        if (verlassen && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
+      hausButtonBestaetigung: () => bestaetigeSeitenwechselFallsNoetig(
+        context,
+        hatAusgefuellteFelder: _hatAusgefuellteFelder,
+      ),
       appBar: TagesabschlussHeader(
         schrittNummer: 1,
         schrittTitel: 'Bargeld zählen',
@@ -1179,6 +1210,7 @@ class _TagesabschlussSchritt1SeiteState
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
+      ),
       ),
     );
   }
