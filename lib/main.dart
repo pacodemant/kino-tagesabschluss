@@ -22,6 +22,7 @@ import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
+import 'package:kino_bar_app/pages/kurzeinstieg_seite.dart';
 import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
@@ -284,6 +285,13 @@ class MeineApp extends StatelessWidget {
         if (settings.name == DatenschutzSeite.routenName) {
           return MaterialPageRoute<void>(
             builder: (_) => const DatenschutzSeite(),
+            settings: settings,
+          );
+        }
+
+        if (settings.name == KurzeinstiegSeite.routenName) {
+          return MaterialPageRoute<void>(
+            builder: (_) => const KurzeinstiegSeite(),
             settings: settings,
           );
         }

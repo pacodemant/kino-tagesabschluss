@@ -8,6 +8,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/kinoauswahl_seite.dart';
 import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/einstellungen_seite.dart';
+import 'package:kino_bar_app/pages/kurzeinstieg_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1_seite.dart';
 import 'package:kino_bar_app/pages/uebertrag_umschlag_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
@@ -206,6 +207,10 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
     Navigator.of(context).pushNamed(VerlaufSeite.routenName, arguments: kino.id);
   }
 
+  void _oeffneKurzeinstieg(BuildContext context) {
+    Navigator.of(context).pushNamed(KurzeinstiegSeite.routenName);
+  }
+
   void _oeffneWechselgeldPruefen(BuildContext context) {
     Navigator.of(context).pushNamed(
       WechselgeldPruefenSeite.routenName,
@@ -328,6 +333,14 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                     backgroundColor: AppFarben.appBarRotGedaempft,
                   ),
                   child: const Text('Verlauf'),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () => _oeffneKurzeinstieg(context),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppFarben.appBarRotGedaempft,
+                  ),
+                  child: const Text('Hilfe'),
                 ),
                 const SizedBox(height: 12),
                 Center(

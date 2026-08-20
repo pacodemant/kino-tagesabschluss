@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 389: Neue Seite `kurzeinstieg_seite.dart` mit Kurzerklärung des
+  4-Schritte-Ablaufs der Kassenabrechnung (Bargeld zählen, Belege,
+  Übertrag auf Umschlag, Stückelung Barumsatz). Beschreibungstexte
+  wörtlich aus den bestehenden HelpButton-Texten der jeweiligen
+  Schritt-Seiten übernommen, keine neue Formulierung. Route in
+  main.dart registriert (parameterlos, analog DatenschutzSeite).
+  Auf der Kino-Home-Seite (startmenue_seite.dart) neuer Button
+  "Hilfe" nach dem Verlauf-Button ergänzt (Stil wie
+  Einstellungen/Verlauf, AppFarben.appBarRotGedaempft), öffnet die
+  neue Seite. Dateien: lib/pages/kurzeinstieg_seite.dart (neu),
+  lib/main.dart, lib/pages/startmenue_seite.dart, pubspec.yaml,
+  lib/config/app_version.dart.
+
 - Run 388d: Direkte Anweisung ohne eigene Run-Nummer, reine
   Dokumentations-Ergänzung in CLAUDE.md. Auslöser: Überprüfung aller
   gespeicherten Anweisungen (CLAUDE.md, AGENTS.md, Skills, Memory) im

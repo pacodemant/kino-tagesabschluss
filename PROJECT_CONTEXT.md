@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.60+388c · Run 388c
+Version: 0.9.61+389 · Run 389
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 388c)
+## Laufender Entwicklungsstand (Run 389)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -735,6 +735,12 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   (SharedPreferences.setMockInitialValues statt echtem I/O).
   AbrechnungSpeicher.abrechnungsDatumKey() bekommt optionalen
   jetzt-Parameter fuer Testbarkeit.
+- Run 389 ✅ Neue Seite kurzeinstieg_seite.dart: Kurzerklärung des
+  4-Schritte-Ablaufs (Bargeld zählen, Belege, Übertrag auf
+  Umschlag, Stückelung Barumsatz), Texte wörtlich aus den
+  bestehenden HelpButton-Texten der Schritt-Seiten übernommen.
+  Auf der Kino-Home-Seite neuer Button "Hilfe" nach dem
+  Verlauf-Button, öffnet die neue Seite.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
