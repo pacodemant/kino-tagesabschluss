@@ -9,6 +9,46 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 394a: Direkte Anweisung ohne eigene Run-Nummer — zwei
+  Korrekturen zu Run 390 und Run 393, in derselben Paco-Nachricht
+  gegeben:
+  - Korrektur zu Run 390 (AppBar-Schritt-Sprung): "Die Dialoge sollen
+    auch beim Slidersprung greifen." Der AppBar-Sprung überspringt
+    seit Run 390 pauschal alle Bestätigungs-/Pflichtfeld-Dialoge
+    (0€-Rückfragen, Kino-Soll/EC=0-Rückfragen, Pflichtfeld-Prüfung) —
+    das war zu weitgehend. Jetzt ruft der Sprung bei jedem
+    Zwischenschritt exakt denselben Übergang wie der reguläre
+    "Weiter"-Button auf (inkl. aller Dialoge dort); bricht der MA
+    einen Dialog ab, bleibt er auf der jeweiligen echten, ausfüllbaren
+    Seite stehen statt automatisch weitergeschoben zu werden.
+    Technisch: neues Feld `zielSchrittBeimSprung` auf
+    TagesabschlussSchritt2Argumente und TagesabschlussSchritt3Argumente
+    — sobald eine Seite damit aufgebaut wird, löst sie nach dem
+    eigenen Laden automatisch ihren eigenen regulären
+    "Weiter"-Übergang aus und reicht das Ziel bei Bedarf weiter. Die
+    Factory TagesabschlussSchritt3Argumente.ausUebersprungenemSchritt2()
+    aus Run 390 entfällt dadurch wieder (nicht mehr gebraucht —
+    Zwischenschritte bekommen jetzt immer echte, durchlaufene Daten
+    statt vorab synthetisch befüllter). Dateien:
+    lib/pages/tagesabschluss_schritt1_seite.dart,
+    lib/pages/tagesabschluss_schritt2_seite.dart,
+    lib/pages/tagesabschluss_schritt3_seite.dart.
+  - Korrektur zu Run 393 (Wechselgeld-Altdaten leeren): "Beim
+    Wechselgeld soll der noch nicht fertige [eigene] Check bestehen
+    bleiben. Es soll nur ein gegebenenfalls vorhandener
+    Wechselgeldcheck zu Schichtbeginn geleert werden." Run 393 hat
+    beim Öffnen aus der Kassenabrechnung (abends) jeden vorhandenen
+    Entwurf gelöscht — auch den eigenen, noch nicht fertigen
+    Abend-Entwurf, falls die Seite innerhalb derselben Abend-Prüfung
+    erneut geöffnet wurde. Neues Feld `herkunft` ('morgen'/'abend') im
+    gespeicherten Entwurf
+    (LokalerSpeicher.speichereWechselgeldZaehlEntwurf) — beim Öffnen
+    aus der Kassenabrechnung wird ein vorhandener Entwurf nur noch
+    gelöscht, wenn er NICHT als 'abend' markiert ist (also von der
+    Morgen-Prüfung stammt oder aus einer älteren Version ohne
+    Markierung); ein bereits als 'abend' markierter Entwurf bleibt
+    erhalten. Datei: lib/pages/wechselgeld_pruefen_seite.dart.
+
 - Run 390–394: 5 kleinere Fixes in einem Rutsch (Paco war bis zum Folgetag
   nicht erreichbar, daher alle in einer Session ohne Zwischen-"go"
   umgesetzt und in einem gemeinsamen Commit — Details siehe Bericht im

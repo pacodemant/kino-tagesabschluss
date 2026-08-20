@@ -17,7 +17,6 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_gruppen_orchestrierung.dart';
-import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
@@ -47,6 +46,7 @@ class TagesabschlussSchritt2Argumente {
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.umschlaege,
+    this.zielSchrittBeimSprung,
   });
 
   final String kinoId;
@@ -60,6 +60,11 @@ class TagesabschlussSchritt2Argumente {
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final List<UmschlagEintrag>? umschlaege;
+  /// Nur beim AppBar-Schritt-Sprung gesetzt (z.B. 3 oder 4): sobald diese
+  /// Seite aufgebaut ist, wird automatisch weitergesprungen — mit den
+  /// gleichen Bestätigungs-/Pflichtfeld-Dialogen wie beim regulären
+  /// "Weiter"-Button. Bleibt null bei normaler Navigation.
+  final int? zielSchrittBeimSprung;
 }
 
 class TagesabschlussSchritt2Seite extends StatefulWidget {
@@ -76,6 +81,7 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.umschlaege,
+    this.zielSchrittBeimSprung,
   });
 
   static const String routenName = '/closure-step-2';
@@ -91,6 +97,7 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final List<UmschlagEintrag>? umschlaege;
+  final int? zielSchrittBeimSprung;
 
   @override
   State<TagesabschlussSchritt2Seite> createState() =>
@@ -240,6 +247,9 @@ class _TagesabschlussSchritt2SeiteState
       await _ladeEntwurf();
       if (!mounted) return;
       _autoFokussiereNachLaden();
+      if (widget.zielSchrittBeimSprung != null) {
+        _weiterZuSchritt3(zielSchrittBeimSprung: widget.zielSchrittBeimSprung);
+      }
     });
   }
 
@@ -669,7 +679,13 @@ class _TagesabschlussSchritt2SeiteState
     ).format(_letzteAenderung);
   }
 
-  Future<void> _weiterZuSchritt3() async {
+  /// zielSchrittBeimSprung: nur beim AppBar-Schritt-Sprung von Schritt 1
+  /// oder 2 aus zu Schritt 4 gesetzt — wird 1:1 an Schritt 3 weitergereicht,
+  /// damit diese sich nach dem Aufbau automatisch weiter zu Schritt 4
+  /// bewegt. Die Pflichtfeld-/Bestätigungs-Dialoge unten greifen dabei
+  /// unverändert, auch beim Sprung — bricht der MA einen Dialog ab, bleibt
+  /// er auf dieser (echten, ausfüllbaren) Seite stehen.
+  Future<void> _weiterZuSchritt3({int? zielSchrittBeimSprung}) async {
     if (!await _pruefePflichtfelderVorSchritt3()) {
       return;
     }
@@ -728,11 +744,15 @@ class _TagesabschlussSchritt2SeiteState
 
     Navigator.of(context).pushNamed(
       TagesabschlussSchritt3Seite.routenName,
-      arguments: _baueSchritt3Argumente(),
+      arguments: _baueSchritt3Argumente(
+        zielSchrittBeimSprung: zielSchrittBeimSprung,
+      ),
     );
   }
 
-  TagesabschlussSchritt3Argumente _baueSchritt3Argumente() {
+  TagesabschlussSchritt3Argumente _baueSchritt3Argumente({
+    int? zielSchrittBeimSprung,
+  }) {
     return TagesabschlussSchritt3Argumente(
       kinoId: widget.kinoId,
       kinoName: widget.kinoName,
@@ -759,35 +779,16 @@ class _TagesabschlussSchritt2SeiteState
       zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
       ecTerminals: _baueEcTerminals(),
       anmerkung: _anmerkung.trim().isNotEmpty ? _anmerkung.trim() : null,
+      zielSchrittBeimSprung: zielSchrittBeimSprung,
     );
   }
 
-  /// AppBar-Schritt-Sprung: navigiert direkt zum Zielschritt, ohne die
-  /// Pflichtfeld-/Bestätigungs-Dialoge von _weiterZuSchritt3() (die bleiben
-  /// dem regulären "Weiter"-Button unten auf der Seite vorbehalten). Beim
-  /// Sprung zu Schritt 4 wird Schritt 3 mit den bereits erfassten
-  /// Schritt-2-Daten trotzdem real durchgeschoben (nicht übersprungen),
-  /// damit "Zurück" aus Schritt 4 weiterhin zu einem funktionierenden
-  /// Schritt 3 führt.
+  /// AppBar-Schritt-Sprung: ruft exakt den regulären "Weiter"-Übergang auf
+  /// (inkl. Pflichtfeld-/Bestätigungs-Dialoge) — bei Sprung zu Schritt 4
+  /// bekommt Schritt 3 das Ziel mit, damit sie sich nach dem Aufbau
+  /// selbst automatisch weiterbewegt (siehe zielSchrittBeimSprung).
   void _springeZuSchritt(int zielSchrittNr) {
-    _speichereEntwurf();
-    final TagesabschlussSchritt3Argumente schritt3Argumente =
-        _baueSchritt3Argumente();
-    Navigator.of(context).pushNamed(
-      TagesabschlussSchritt3Seite.routenName,
-      arguments: schritt3Argumente,
-    );
-    if (zielSchrittNr == 4) {
-      Navigator.of(context).pushNamed(
-        StueckelungVorschlagSeite.routenName,
-        arguments: StueckelungVorschlagArgumente(
-          barBestandAbzglWechselgeldCent: widget.barBestandAbzglWechselgeldCent,
-          stueckzahlen: widget.stueckzahlen,
-          loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
-          kinoName: widget.kinoName,
-        ),
-      );
-    }
+    _weiterZuSchritt3(zielSchrittBeimSprung: zielSchrittNr == 4 ? 4 : null);
   }
 
   Future<bool> _pruefePflichtfelderVorSchritt3() async {
