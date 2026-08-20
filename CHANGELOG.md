@@ -9,6 +9,41 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 395: Seitenwechsel-Warnung bei ausgefüllten Feldern. Schritt 1
+  (Bargeld zählen) und Schritt 2 (Belege) fragen jetzt "Seite
+  verlassen?" nach, sobald beim Verlassen der Seite mindestens ein
+  Feld einen Wert ungleich 0/leer hat — unabhängig vom Weg (Zurück-
+  Geste/-Button, Haus-Button, AppBar-Schritt-Slider vor UND zurück).
+  Ist nichts ausgefüllt, keine Rückfrage. Bewusst ausgenommen: der
+  reguläre "Weiter"-Button unten auf der Seite (hat schon eigene,
+  spezifischere Bestätigungs-/Pflichtfeld-Dialoge — eine zusätzliche
+  generische Warnung dort wäre bei jedem normalen Ausfüllen+Weiter
+  unnötig störend gewesen). Schritt 3 (Übertrag auf Umschlag) und
+  Schritt 4 (Stückelung Barumsatz) haben keine eigenen Eingabefelder
+  (reine Zusammenfassung/Berechnung aus den Vorschritten) und
+  bekamen die Prüfung daher bewusst nicht — dort gäbe es nie etwas
+  zu warnen.
+  Technisch: neue zentrale Funktion
+  bestaetigeSeitenwechselFallsNoetig() (neue Datei
+  lib/widgets/seitenwechsel_warnung_helper.dart, nutzt den
+  bestehenden zeigeBestaetigungsDialog()). Physischer Zurück wird
+  über PopScope (canPop: false) auf beiden Seiten abgefangen.
+  Haus-Button bekam einen neuen optionalen Parameter
+  vorNavigationBestaetigen (nur auf Schritt 1/2 gesetzt, alle
+  anderen Aufrufstellen unverändert ungefragt). AppBar-Schritt-Slider
+  (SchrittAuswahlBottomSheetHelper) bekam einen neuen optionalen
+  Parameter bestaetigeVerlassen, der vor JEDEM Sprung (vor UND
+  zurück) geprüft wird. hatAusgefuellteFelder je Seite: Schritt 1
+  prüft Kassenbestand-Gesamtsumme (Scheine/lose Münzen/Rollen/
+  Umschläge) plus Umschlag-Bezeichnungen; Schritt 2 prüft Kino-/
+  Bistro-Soll, Differenz-Anfangsbestand, EC-Belegbeträge/-Terminal-
+  IDs, Ausgabenbeträge/-Labels und die Anmerkung. Dateien:
+  lib/widgets/seitenwechsel_warnung_helper.dart (neu),
+  lib/widgets/haus_button.dart, lib/widgets/tagesabschluss_scaffold.dart,
+  lib/utils/schritt_auswahl_bottom_sheet_helper.dart,
+  lib/pages/tagesabschluss_schritt1_seite.dart,
+  lib/pages/tagesabschluss_schritt2_seite.dart.
+
 - Run 394a: Direkte Anweisung ohne eigene Run-Nummer — zwei
   Korrekturen zu Run 390 und Run 393, in derselben Paco-Nachricht
   gegeben:

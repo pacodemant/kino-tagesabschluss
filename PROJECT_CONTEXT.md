@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.66+394a · Run 394a
+Version: 0.9.67+395 · Run 395
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 394)
+## Laufender Entwicklungsstand (Run 395)
+
+- Run 395 ✅ Seitenwechsel-Warnung: Schritt 1 und Schritt 2 fragen jetzt
+  nach ("Seite verlassen?"), wenn beim Verlassen der Seite (Zurück-Geste,
+  Haus-Button oder AppBar-Schritt-Slider — nicht aber der reguläre
+  "Weiter"-Button) bereits mindestens ein Feld ungleich 0/leer ist.
+  Schritt 3 und Schritt 4 haben keine eigenen Eingabefelder (reine
+  Zusammenfassung/Berechnung) und bekamen die Prüfung daher bewusst
+  nicht. Details siehe CHANGELOG.md.
 
 - Run 390–394 ✅ 5 kleinere Fixes in einem Rutsch: AppBar-Schritt-Sprung zu
   allen 4 Schritten (auch unausgefüllt), Ladebalken beim Flurbocash-Versand,

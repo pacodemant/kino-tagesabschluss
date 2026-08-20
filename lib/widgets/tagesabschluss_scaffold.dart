@@ -13,6 +13,7 @@ class TagesabschlussScaffold extends StatelessWidget {
     this.appBar,
     this.zeigeHausButton = true,
     this.zeigeLadebalken = false,
+    this.hausButtonBestaetigung,
   });
 
   final String title;
@@ -27,6 +28,8 @@ class TagesabschlussScaffold extends StatelessWidget {
   /// dauern können (z.B. Versand an Flurbocash), damit erkennbar bleibt,
   /// dass die App noch arbeitet.
   final bool zeigeLadebalken;
+  /// Wird an HausButton.vorNavigationBestaetigen durchgereicht (siehe dort).
+  final Future<bool> Function()? hausButtonBestaetigung;
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +69,9 @@ class TagesabschlussScaffold extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     if (zeigeHausButton) ...<Widget>[
-                      const HausButton(),
+                      HausButton(
+                        vorNavigationBestaetigen: hausButtonBestaetigung,
+                      ),
                       const SizedBox(width: 8),
                     ],
                     if (footerChild != null)

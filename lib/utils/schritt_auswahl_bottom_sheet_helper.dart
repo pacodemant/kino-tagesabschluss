@@ -28,6 +28,10 @@ class SchrittAuswahlBottomSheetHelper {
     required BuildContext context,
     required int aktuellerSchritt,
     void Function(int zielSchrittNr)? springeZuSchritt,
+    /// Optionale Rückfrage vor dem eigentlichen Sprung (vor/zurück) — z.B.
+    /// wenn die aktuelle Seite bereits ausgefüllte Felder hat. Liefert
+    /// false, wird nicht navigiert.
+    Future<bool> Function()? bestaetigeVerlassen,
   }) async {
     await showModalBottomSheet<void>(
       context: context,
@@ -52,8 +56,13 @@ class SchrittAuswahlBottomSheetHelper {
                 return ListTile(
                   leading: const Icon(Icons.arrow_back),
                   title: Text(_labels[index]),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.of(sheetContext).pop();
+                    if (bestaetigeVerlassen != null &&
+                        !await bestaetigeVerlassen()) {
+                      return;
+                    }
+                    if (!context.mounted) return;
                     Navigator.of(
                       context,
                     ).popUntil(ModalRoute.withName(_routenNamen[index]));
@@ -64,8 +73,13 @@ class SchrittAuswahlBottomSheetHelper {
                 return ListTile(
                   leading: const Icon(Icons.arrow_forward),
                   title: Text(_labels[index]),
-                  onTap: () {
+                  onTap: () async {
                     Navigator.of(sheetContext).pop();
+                    if (bestaetigeVerlassen != null &&
+                        !await bestaetigeVerlassen()) {
+                      return;
+                    }
+                    if (!context.mounted) return;
                     springeZuSchritt(schrittNr);
                   },
                 );

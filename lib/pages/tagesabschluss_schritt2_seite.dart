@@ -30,6 +30,7 @@ import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
+import 'package:kino_bar_app/widgets/seitenwechsel_warnung_helper.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -2155,7 +2156,26 @@ class _TagesabschlussSchritt2SeiteState
       context: context,
       aktuellerSchritt: 2,
       springeZuSchritt: _springeZuSchritt,
+      bestaetigeVerlassen: () => bestaetigeSeitenwechselFallsNoetig(
+        context,
+        hatAusgefuellteFelder: _hatAusgefuellteFelder,
+      ),
     );
+  }
+
+  /// Für die Seitenwechsel-Rückfrage: true, sobald irgendein Betrag/Text
+  /// auf dieser Seite ungleich 0/leer ist.
+  bool get _hatAusgefuellteFelder {
+    if (_kinoSollCent != 0 ||
+        _bistroSollCent != 0 ||
+        _differenzAnfangsbestandCent != 0) {
+      return true;
+    }
+    if (_ecBelegeCent.any((int c) => c != 0)) return true;
+    if (_ausgabenBetrageCent.any((int c) => c != 0)) return true;
+    if (_ecBelegLabels.any((String s) => s.trim().isNotEmpty)) return true;
+    if (_ausgabenLabels.any((String s) => s.trim().isNotEmpty)) return true;
+    return _anmerkung.trim().isNotEmpty;
   }
 
   Widget _baueMetadatenBlock(int belegIndex) {
@@ -2549,8 +2569,24 @@ class _TagesabschlussSchritt2SeiteState
       onAusgabeHinzufuegen: _ausgabeHinzufuegen,
     );
     final List<Widget> ecBelegeBereich = _baueEcBelegeBereich();
-    return TagesabschlussScaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) return;
+        final bool verlassen = await bestaetigeSeitenwechselFallsNoetig(
+          context,
+          hatAusgefuellteFelder: _hatAusgefuellteFelder,
+        );
+        if (verlassen && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
+      child: TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
+      hausButtonBestaetigung: () => bestaetigeSeitenwechselFallsNoetig(
+        context,
+        hatAusgefuellteFelder: _hatAusgefuellteFelder,
+      ),
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
         schrittTitel: 'Belege',
@@ -2669,6 +2705,7 @@ class _TagesabschlussSchritt2SeiteState
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,
+      ),
       ),
     );
   }
