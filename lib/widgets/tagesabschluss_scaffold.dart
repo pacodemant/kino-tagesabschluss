@@ -12,6 +12,7 @@ class TagesabschlussScaffold extends StatelessWidget {
     this.backgroundColor,
     this.appBar,
     this.zeigeHausButton = true,
+    this.zeigeLadebalken = false,
   });
 
   final String title;
@@ -22,6 +23,10 @@ class TagesabschlussScaffold extends StatelessWidget {
   // Optionaler Custom-AppBar; wenn gesetzt, wird der Default-AppBar nicht gebaut.
   final PreferredSizeWidget? appBar;
   final bool zeigeHausButton;
+  /// Dünner Ladebalken direkt unter der AppBar — für Aktionen, die länger
+  /// dauern können (z.B. Versand an Flurbocash), damit erkennbar bleibt,
+  /// dass die App noch arbeitet.
+  final bool zeigeLadebalken;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +55,7 @@ class TagesabschlussScaffold extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          if (zeigeLadebalken) const LinearProgressIndicator(minHeight: 3),
           Expanded(child: child),
           if (zeigeFooter)
             Container(

@@ -108,6 +108,10 @@ class _BetragCentEingabefeldState extends State<BetragCentEingabefeld>
     if (!mounted) return;
     final bool hatFokusJetzt = widget.focusNode?.hasFocus ?? false;
     if (hatFokusJetzt) {
+      leereNullBeiFokuserhalt(
+        controller: widget.textController,
+        onChanged: widget.onChanged,
+      );
       setState(() => _nennwertFehler = false);
       return;
     }

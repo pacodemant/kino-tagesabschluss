@@ -24,12 +24,36 @@ import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
+/// Typisierte Routen-Argumente für den Aufruf aus der Kassenabrechnung
+/// (Schritt 3 · "Wechselgeldkasse prüfen"), damit dort zusätzlich zur
+/// kinoId markiert werden kann, dass es sich um die Abend-Prüfung handelt.
+/// Der Aufruf aus dem Startmenü (Geschäftsbeginn) übergibt weiterhin nur
+/// die kinoId als String — main.dart unterstützt beide Formen.
+class WechselgeldPruefenArgumente {
+  const WechselgeldPruefenArgumente({
+    required this.kinoId,
+    this.ausTagesabrechnung = false,
+  });
+
+  final String kinoId;
+  final bool ausTagesabrechnung;
+}
+
 class WechselgeldPruefenSeite extends StatefulWidget {
-  const WechselgeldPruefenSeite({super.key, required this.kinoId});
+  const WechselgeldPruefenSeite({
+    super.key,
+    required this.kinoId,
+    this.ausTagesabrechnung = false,
+  });
 
   static const String routenName = '/wechselgeld-pruefen';
 
   final String kinoId;
+  /// true, wenn die Seite aus der Kassenabrechnung (Schritt 3, abends)
+  /// aufgerufen wurde statt vom Startmenü (Geschäftsbeginn, morgens) —
+  /// dann wird ein evtl. noch vorhandener, unvollendeter Entwurf von der
+  /// Morgen-Prüfung vor dem Laden verworfen, statt ihn anzuzeigen.
+  final bool ausTagesabrechnung;
 
   @override
   State<WechselgeldPruefenSeite> createState() =>
@@ -187,6 +211,12 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   }
 
   Future<void> _ladeInitialeDaten() async {
+    if (widget.ausTagesabrechnung) {
+      // Abend-Prüfung im Rahmen der Kassenabrechnung: ein evtl. noch
+      // vorhandener, unvollendeter Entwurf von der Morgen-Prüfung darf
+      // hier nicht auftauchen — verwerfen, bevor geladen wird.
+      await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
+    }
     int geladenerSollwert =
         await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
     if (geladenerSollwert == 0) {

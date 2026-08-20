@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 /// Gemeinsames BottomSheet "Schritt X/4 · ..." — genutzt von allen vier
 /// Tagesabschluss-Seiten (Bargeld zählen, Belege, Übertrag auf Umschlag,
-/// Stückelung Barumsatz). Frühere Schritte sind per Zurück-Navigation
-/// erreichbar, der aktuelle Schritt ist fett/deaktiviert markiert, der
-/// direkt folgende Schritt ist per Callback erreichbar (falls vorhanden),
-/// alle weiteren Schritte sind deaktiviert.
+/// Stückelung Barumsatz). Frühere Schritte sind per Zurück-Navigation immer
+/// erreichbar, der aktuelle Schritt ist fett/deaktiviert markiert, alle
+/// weiter vorne liegenden Schritte sind per springeZuSchritt-Callback
+/// direkt ansteuerbar (auch unausgefüllt) — falls kein Callback übergeben
+/// wurde (z.B. Schritt 4, letzter Schritt), bleiben sie deaktiviert.
 class SchrittAuswahlBottomSheetHelper {
   const SchrittAuswahlBottomSheetHelper();
 
@@ -26,7 +27,7 @@ class SchrittAuswahlBottomSheetHelper {
   Future<void> zeigeSchrittAuswahlBottomSheet({
     required BuildContext context,
     required int aktuellerSchritt,
-    VoidCallback? weiterZumNaechstenSchritt,
+    void Function(int zielSchrittNr)? springeZuSchritt,
   }) async {
     await showModalBottomSheet<void>(
       context: context,
@@ -59,14 +60,13 @@ class SchrittAuswahlBottomSheetHelper {
                   },
                 );
               }
-              if (schrittNr == aktuellerSchritt + 1 &&
-                  weiterZumNaechstenSchritt != null) {
+              if (springeZuSchritt != null) {
                 return ListTile(
                   leading: const Icon(Icons.arrow_forward),
                   title: Text(_labels[index]),
                   onTap: () {
                     Navigator.of(sheetContext).pop();
-                    weiterZumNaechstenSchritt();
+                    springeZuSchritt(schrittNr);
                   },
                 );
               }
