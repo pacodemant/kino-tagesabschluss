@@ -9,6 +9,74 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 390–394: 5 kleinere Fixes in einem Rutsch (Paco war bis zum Folgetag
+  nicht erreichbar, daher alle in einer Session ohne Zwischen-"go"
+  umgesetzt und in einem gemeinsamen Commit — Details siehe Bericht im
+  Chat-Verlauf).
+  - Run 390 (AppBar-Schritt-Sprung): Der Schritt-Auswahl-Slider in der
+    AppBar (`schritt_auswahl_bottom_sheet_helper.dart`) erlaubt jetzt das
+    direkte Ansteuern JEDES der 4 Schritte, unabhängig vom aktuellen
+    Schritt und unabhängig davon, ob der Zielschritt schon befüllt ist —
+    vorher waren nur bereits besuchte frühere Schritte sowie der direkt
+    folgende Schritt erreichbar. Übersprungene Zwischenschritte werden
+    beim Sprung real mit durchgeschoben (nicht nur simuliert), mit 0/leer
+    für dort noch nicht erfasste Felder — dadurch bleibt "Zurück" aus
+    einem weiter entfernten Schritt weiterhin zu einem funktionierenden
+    Zwischenschritt navigierbar (Navigator-Stack bleibt vollständig).
+    Der AppBar-Sprung überspringt dabei bewusst alle Bestätigungs-/
+    Pflichtfeld-Dialoge (z.B. "0€ übernehmen?", "Kino-Soll ist 0€ —
+    korrekt?") — die bleiben unverändert dem regulären "Weiter"-Button
+    unten auf der Seite vorbehalten, nur der AppBar-Slider wird zum
+    ungehinderten Direktsprung. TagesabschlussSchritt3Argumente bekam
+    dafür einen neuen Factory-Konstruktor
+    `ausUebersprungenemSchritt2()`. Dateien:
+    lib/utils/schritt_auswahl_bottom_sheet_helper.dart,
+    lib/pages/tagesabschluss_schritt1_seite.dart,
+    lib/pages/tagesabschluss_schritt2_seite.dart,
+    lib/pages/tagesabschluss_schritt3_seite.dart.
+  - Run 391 (Ladebalken beim Flurbocash-Versand): TagesabschlussScaffold
+    bekam einen neuen optionalen Parameter `zeigeLadebalken` (dünner
+    LinearProgressIndicator direkt unter der AppBar). Schritt 3 setzt ihn
+    über den neuen State `_apiUploadLaeuft`, der beim Start von
+    `_doApiUpload()` auf true und in einem `finally`-Block (deckt
+    Erfolg/CORS-Fallback/Fehler gleichermaßen ab) wieder auf false
+    gesetzt wird. Dateien: lib/widgets/tagesabschluss_scaffold.dart,
+    lib/pages/tagesabschluss_schritt3_seite.dart.
+  - Run 392 ("0" verschwindet bei Fokus): Neue zentrale Methode
+    `leereNullBeiFokuserhalt()` in EingabefeldAdditionsMixin (bereits
+    gemeinsam von BetragCentEingabefeld und GanzzahlEingabefeld genutzt)
+    — steht bei Fokuserhalt nur "0" bzw. "0,00" im Feld, wird es
+    geleert; alle anderen Werte (auch 0-Cent-Teilbeträge o.ä., solange
+    der Text nicht exakt "0"/"0,00" ist) bleiben unangetastet stehen.
+    Dateien: lib/widgets/eingabefeld_additions_mixin.dart,
+    lib/widgets/betrag_cent_eingabefeld.dart,
+    lib/widgets/ganzzahl_eingabefeld.dart.
+  - Run 393 (Wechselgeld-Altdaten bei Abend-Prüfung leeren): Neue
+    typisierte Routen-Argumente `WechselgeldPruefenArgumente` (kinoId +
+    neues Flag `ausTagesabrechnung`). Ruft Schritt 3 die Seite über
+    "Wechselgeldkasse prüfen" auf, setzt es das Flag — WechselgeldPruefen
+    Seite verwirft dann vor dem Laden einen evtl. noch vorhandenen,
+    unvollendeten Entwurf von der Morgen-Prüfung
+    (`LokalerSpeicher.loescheWechselgeldZaehlEntwurf()`), statt ihn
+    anzuzeigen. Der Aufruf vom Startmenü (Geschäftsbeginn, morgens)
+    bleibt unverändert (kein Flag gesetzt, kein Löschen). main.dart
+    unterstützt beide Argument-Formen (String weiterhin abwärtskompatibel
+    für andere Aufrufer). Bekannte Einschränkung: Wird die Seite
+    innerhalb derselben Abend-Prüfung mehrfach über Schritt 3 erneut
+    geöffnet (z.B. nach Zurück-Navigation), wird auch der eigene,
+    noch nicht abgeschlossene Abend-Entwurf beim erneuten Öffnen
+    verworfen — im Alltag ein seltener Fall, bei Bedarf später mit
+    einem Zeitstempel/Session-Marker statt der reinen Herkunfts-
+    Kennzeichnung verfeinerbar. Dateien:
+    lib/pages/wechselgeld_pruefen_seite.dart, lib/main.dart,
+    lib/pages/tagesabschluss_schritt3_seite.dart.
+  - Run 394 (grauer Haken vor Abschluss): Der "Abrechnung an Büro
+    senden"-Button auf Schritt 3 zeigt das Haken-Icon jetzt immer an
+    (vorher nur nach erfolgreichem Versand) — grau vor Abschluss, grün
+    nach erfolgreichem Versand — damit auf einen Blick erkennbar ist, ob
+    der Versand bereits bestätigt wurde. Datei:
+    lib/pages/tagesabschluss_schritt3_seite.dart.
+
 - Run 389: Neue Seite `kurzeinstieg_seite.dart` mit Kurzerklärung des
   4-Schritte-Ablaufs der Kassenabrechnung (Bargeld zählen, Belege,
   Übertrag auf Umschlag, Stückelung Barumsatz). Beschreibungstexte

@@ -267,9 +267,19 @@ class MeineApp extends StatelessWidget {
         }
 
         if (settings.name == WechselgeldPruefenSeite.routenName) {
-          final String kinoId = (settings.arguments as String?) ?? '';
+          final Object? argument = settings.arguments;
+          final String kinoId = argument is WechselgeldPruefenArgumente
+              ? argument.kinoId
+              : (argument as String?) ?? '';
+          final bool ausTagesabrechnung =
+              argument is WechselgeldPruefenArgumente
+                  ? argument.ausTagesabrechnung
+                  : false;
           return MaterialPageRoute<void>(
-            builder: (_) => WechselgeldPruefenSeite(kinoId: kinoId),
+            builder: (_) => WechselgeldPruefenSeite(
+              kinoId: kinoId,
+              ausTagesabrechnung: ausTagesabrechnung,
+            ),
             settings: settings,
           );
         }

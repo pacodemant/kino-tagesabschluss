@@ -9,6 +9,20 @@ import 'package:flutter/material.dart';
 // weil der Cursor-Reset im addPostFrameCallback den mounted-Check der
 // jeweiligen State-Klasse braucht.
 mixin EingabefeldAdditionsMixin<T extends StatefulWidget> on State<T> {
+  // Bei Fokuserhalt: steht im Feld nur eine "0" (bzw. "0,00" im Komma-
+  // Modus), verschwindet sie, damit direkt weitergetippt werden kann statt
+  // die 0 erst manuell löschen zu müssen. Andere Werte (auch != 0) bleiben
+  // unangetastet stehen.
+  void leereNullBeiFokuserhalt({
+    required TextEditingController controller,
+    required ValueChanged<String> onChanged,
+  }) {
+    if (controller.text == '0' || controller.text == '0,00') {
+      controller.clear();
+      onChanged('');
+    }
+  }
+
   void fuegeAdditionHinzu({
     required TextEditingController controller,
     required ValueChanged<String> onChanged,

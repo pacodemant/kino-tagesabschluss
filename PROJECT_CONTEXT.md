@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.61+389 · Run 389
+Version: 0.9.66+394 · Run 394
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 389)
+## Laufender Entwicklungsstand (Run 394)
+
+- Run 390–394 ✅ 5 kleinere Fixes in einem Rutsch: AppBar-Schritt-Sprung zu
+  allen 4 Schritten (auch unausgefüllt), Ladebalken beim Flurbocash-Versand,
+  "0" verschwindet bei Fokus in Eingabefeldern, Wechselgeld-prüfen-Altdaten
+  vom Morgen-Check werden bei Abend-Prüfung geleert, Kassenabrechnung-Button
+  zeigt grauen statt fehlenden Haken vor erfolgreichem Versand. Details
+  siehe CHANGELOG.md.
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 

@@ -96,7 +96,12 @@ class _GanzzahlEingabefeldState extends State<GanzzahlEingabefeld>
       return;
     }
     final bool hatFokusJetzt = widget.focusNode?.hasFocus ?? false;
-    if (!hatFokusJetzt) {
+    if (hatFokusJetzt) {
+      leereNullBeiFokuserhalt(
+        controller: widget.textController,
+        onChanged: widget.onChanged,
+      );
+    } else {
       _sammleAdditionBeiFokusverlust();
     }
     setState(() {});

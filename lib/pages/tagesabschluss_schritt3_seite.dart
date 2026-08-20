@@ -25,6 +25,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
@@ -58,6 +59,33 @@ class TagesabschlussSchritt3Argumente {
     this.ecTerminals,
     this.anmerkung,
   });
+
+  /// Für den AppBar-Schritt-Sprung: baut die Schritt-3-Argumente direkt aus
+  /// Schritt 2, ohne dass Schritt 2 tatsächlich ausgefüllt wurde — alle nur
+  /// in Schritt 2 erfassten Felder (Soll-Werte, Ausgaben, EC-Belege,
+  /// Anmerkung) werden mit 0/leer vorbelegt, exakt wie bei einem regulär
+  /// unausgefüllt durchgeklickten Schritt 2.
+  factory TagesabschlussSchritt3Argumente.ausUebersprungenemSchritt2(
+    TagesabschlussSchritt2Argumente schritt2,
+  ) {
+    return TagesabschlussSchritt3Argumente(
+      kinoId: schritt2.kinoId,
+      kinoName: schritt2.kinoName,
+      scheineCent: schritt2.scheineCent,
+      loseMuenzenCent: schritt2.loseMuenzenCent,
+      rollenCent: schritt2.rollenCent,
+      umschlaegeCent: schritt2.umschlaegeCent,
+      wechselgeldSollwertCent: schritt2.wechselgeldSollwertCent,
+      kinoSollCent: 0,
+      bistroSollCent: 0,
+      ausgabenCent: 0,
+      ecBelegeCent: const <int>[],
+      differenzAnfangsbestandCent: 0,
+      stueckzahlen: schritt2.stueckzahlen,
+      loseMuenzenNachArtCent: schritt2.loseMuenzenNachArtCent,
+      umschlaege: schritt2.umschlaege,
+    );
+  }
 
   final String kinoId;
   final String kinoName;
@@ -120,6 +148,7 @@ class _TagesabschlussSchritt3SeiteState
   bool _autoSaveLaeuft = false;
   bool _autoSaveFehler = false;
   bool _apiUploadErledigt = false;
+  bool _apiUploadLaeuft = false;
   bool _devModusAktiv = false;
   bool _abrechnungGesendet = false;
 
@@ -302,6 +331,9 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   Future<void> _doApiUpload() async {
+    if (mounted) {
+      setState(() => _apiUploadLaeuft = true);
+    }
     try {
       await ApiUploadService.upload(_abschlussVorschau!);
       _apiUploadErledigt = true;
@@ -362,6 +394,10 @@ class _TagesabschlussSchritt3SeiteState
             ),
           );
         }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _apiUploadLaeuft = false);
       }
     }
   }
@@ -432,7 +468,10 @@ class _TagesabschlussSchritt3SeiteState
                   Navigator.of(dialogContext).pop();
                   Navigator.of(context).pushNamed(
                     WechselgeldPruefenSeite.routenName,
-                    arguments: widget.argumente.kinoId,
+                    arguments: WechselgeldPruefenArgumente(
+                      kinoId: widget.argumente.kinoId,
+                      ausTagesabrechnung: true,
+                    ),
                   );
                 },
                 child: const Text('Wechselgeldkasse prüfen'),
@@ -557,7 +596,7 @@ class _TagesabschlussSchritt3SeiteState
     _schrittAuswahlHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
       aktuellerSchritt: 3,
-      weiterZumNaechstenSchritt: _navigiereZuSchritt4,
+      springeZuSchritt: (int _) => _navigiereZuSchritt4(),
     );
   }
 
@@ -578,6 +617,7 @@ class _TagesabschlussSchritt3SeiteState
 
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
+      zeigeLadebalken: _apiUploadLaeuft,
       appBar: TagesabschlussHeader(
         schrittNummer: 3,
         schrittTitel: 'Übertrag auf Umschlag',
@@ -682,10 +722,13 @@ class _TagesabschlussSchritt3SeiteState
                         ? 'Wird gespeichert...'
                         : 'Abrechnung an Büro senden',
                   ),
-                  if (_abrechnungGesendet) ...<Widget>[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.check_circle, color: Colors.green),
-                  ],
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.check_circle,
+                    color: _abrechnungGesendet
+                        ? Colors.green
+                        : Colors.grey.shade400,
+                  ),
                 ],
               ),
             ),

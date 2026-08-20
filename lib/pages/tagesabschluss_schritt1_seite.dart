@@ -7,6 +7,8 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
@@ -810,22 +812,67 @@ class _TagesabschlussSchritt1SeiteState
       navigiereZuSchritt2: () {
         Navigator.of(context).pushNamed(
           TagesabschlussSchritt2Seite.routenName,
-          arguments: TagesabschlussSchritt2Argumente(
-            kinoId: widget.kinoId,
-            kinoName: widget.kinoName,
-            scheineCent: _summeGruppe(_scheine),
-            loseMuenzenCent: _loseMuenzenGesamtCent,
-            rollenCent: _summeGruppe(_rollenSichtbar),
-            umschlaegeCent: _umschlagSummeCent,
-            wechselgeldSollwertCent: _wechselgeldSollwertCent,
-            barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
-            stueckzahlen: Map<String, int>.from(_stueckzahlen),
-            loseMuenzenNachArtCent:
-                Map<String, int>.from(_loseMuenzenNachArtCent),
-            umschlaege: List<UmschlagEintrag>.from(_umschlaege),
-          ),
+          arguments: _baueSchritt2Argumente(),
         );
       },
+    );
+  }
+
+  TagesabschlussSchritt2Argumente _baueSchritt2Argumente() {
+    return TagesabschlussSchritt2Argumente(
+      kinoId: widget.kinoId,
+      kinoName: widget.kinoName,
+      scheineCent: _summeGruppe(_scheine),
+      loseMuenzenCent: _loseMuenzenGesamtCent,
+      rollenCent: _summeGruppe(_rollenSichtbar),
+      umschlaegeCent: _umschlagSummeCent,
+      wechselgeldSollwertCent: _wechselgeldSollwertCent,
+      barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
+      stueckzahlen: Map<String, int>.from(_stueckzahlen),
+      loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
+      umschlaege: List<UmschlagEintrag>.from(_umschlaege),
+    );
+  }
+
+  /// AppBar-Schritt-Sprung: navigiert direkt zum Zielschritt, ohne die
+  /// "0€ übernehmen?"-Rückfrage von _weiterZuSchritt2() (die bleibt dem
+  /// regulären "Weiter"-Button unten auf der Seite vorbehalten). Schritt 2
+  /// (und bei Sprung zu 4 zusätzlich Schritt 3) wird dabei real
+  /// durchgeschoben statt übersprungen — mit 0/leer für die dort noch
+  /// nicht erfassten Felder —, damit "Zurück" aus einem weiter entfernten
+  /// Schritt weiterhin zu einem funktionierenden Zwischenschritt führt.
+  void _springeZuSchritt(int zielSchrittNr) {
+    _speichereEntwurf();
+    final TagesabschlussSchritt2Argumente schritt2Argumente =
+        _baueSchritt2Argumente();
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt2Seite.routenName,
+      arguments: schritt2Argumente,
+    );
+    if (zielSchrittNr == 2) {
+      return;
+    }
+
+    final TagesabschlussSchritt3Argumente schritt3Argumente =
+        TagesabschlussSchritt3Argumente.ausUebersprungenemSchritt2(
+      schritt2Argumente,
+    );
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt3Seite.routenName,
+      arguments: schritt3Argumente,
+    );
+    if (zielSchrittNr == 3) {
+      return;
+    }
+
+    Navigator.of(context).pushNamed(
+      StueckelungVorschlagSeite.routenName,
+      arguments: StueckelungVorschlagArgumente(
+        barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
+        stueckzahlen: Map<String, int>.from(_stueckzahlen),
+        loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
+        kinoName: widget.kinoName,
+      ),
     );
   }
 
@@ -956,7 +1003,7 @@ class _TagesabschlussSchritt1SeiteState
     await _schrittAuswahlHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
       aktuellerSchritt: 1,
-      weiterZumNaechstenSchritt: _weiterZuSchritt2,
+      springeZuSchritt: _springeZuSchritt,
     );
   }
 

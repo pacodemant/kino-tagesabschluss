@@ -17,6 +17,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
@@ -727,34 +728,66 @@ class _TagesabschlussSchritt2SeiteState
 
     Navigator.of(context).pushNamed(
       TagesabschlussSchritt3Seite.routenName,
-      arguments: TagesabschlussSchritt3Argumente(
-        kinoId: widget.kinoId,
-        kinoName: widget.kinoName,
-        scheineCent: widget.scheineCent,
-        loseMuenzenCent: widget.loseMuenzenCent,
-        rollenCent: widget.rollenCent,
-        umschlaegeCent: widget.umschlaegeCent,
-        wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
-        kinoSollCent: _kinoSollCent,
-        bistroSollCent: _bistroSollCent,
-        ausgabenCent: TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
-        ecBelegeCent: List<int>.from(_ecBelegeCent),
-        differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
-        stueckzahlen: widget.stueckzahlen,
-        loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
-        umschlaege: widget.umschlaege,
-        ausgabenBetraegeCent: List<int>.from(_ausgabenBetrageCent),
-        ausgabenLabels: List<String>.from(_ausgabenLabels),
-        ecBelegeLabels: List<String>.from(_ecBelegLabels),
-        terminalId: _scanTerminalId,
-        belegNrVon: _scanBelegNrVon,
-        belegNrBis: _scanBelegNrBis,
-        ecUhrzeit: _scanUhrzeit,
-        zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
-        ecTerminals: _baueEcTerminals(),
-        anmerkung: _anmerkung.trim().isNotEmpty ? _anmerkung.trim() : null,
-      ),
+      arguments: _baueSchritt3Argumente(),
     );
+  }
+
+  TagesabschlussSchritt3Argumente _baueSchritt3Argumente() {
+    return TagesabschlussSchritt3Argumente(
+      kinoId: widget.kinoId,
+      kinoName: widget.kinoName,
+      scheineCent: widget.scheineCent,
+      loseMuenzenCent: widget.loseMuenzenCent,
+      rollenCent: widget.rollenCent,
+      umschlaegeCent: widget.umschlaegeCent,
+      wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
+      kinoSollCent: _kinoSollCent,
+      bistroSollCent: _bistroSollCent,
+      ausgabenCent: TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
+      ecBelegeCent: List<int>.from(_ecBelegeCent),
+      differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
+      stueckzahlen: widget.stueckzahlen,
+      loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
+      umschlaege: widget.umschlaege,
+      ausgabenBetraegeCent: List<int>.from(_ausgabenBetrageCent),
+      ausgabenLabels: List<String>.from(_ausgabenLabels),
+      ecBelegeLabels: List<String>.from(_ecBelegLabels),
+      terminalId: _scanTerminalId,
+      belegNrVon: _scanBelegNrVon,
+      belegNrBis: _scanBelegNrBis,
+      ecUhrzeit: _scanUhrzeit,
+      zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
+      ecTerminals: _baueEcTerminals(),
+      anmerkung: _anmerkung.trim().isNotEmpty ? _anmerkung.trim() : null,
+    );
+  }
+
+  /// AppBar-Schritt-Sprung: navigiert direkt zum Zielschritt, ohne die
+  /// Pflichtfeld-/Bestätigungs-Dialoge von _weiterZuSchritt3() (die bleiben
+  /// dem regulären "Weiter"-Button unten auf der Seite vorbehalten). Beim
+  /// Sprung zu Schritt 4 wird Schritt 3 mit den bereits erfassten
+  /// Schritt-2-Daten trotzdem real durchgeschoben (nicht übersprungen),
+  /// damit "Zurück" aus Schritt 4 weiterhin zu einem funktionierenden
+  /// Schritt 3 führt.
+  void _springeZuSchritt(int zielSchrittNr) {
+    _speichereEntwurf();
+    final TagesabschlussSchritt3Argumente schritt3Argumente =
+        _baueSchritt3Argumente();
+    Navigator.of(context).pushNamed(
+      TagesabschlussSchritt3Seite.routenName,
+      arguments: schritt3Argumente,
+    );
+    if (zielSchrittNr == 4) {
+      Navigator.of(context).pushNamed(
+        StueckelungVorschlagSeite.routenName,
+        arguments: StueckelungVorschlagArgumente(
+          barBestandAbzglWechselgeldCent: widget.barBestandAbzglWechselgeldCent,
+          stueckzahlen: widget.stueckzahlen,
+          loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
+          kinoName: widget.kinoName,
+        ),
+      );
+    }
   }
 
   Future<bool> _pruefePflichtfelderVorSchritt3() async {
@@ -2120,7 +2153,7 @@ class _TagesabschlussSchritt2SeiteState
     _schrittAuswahlHelper.zeigeSchrittAuswahlBottomSheet(
       context: context,
       aktuellerSchritt: 2,
-      weiterZumNaechstenSchritt: _weiterZuSchritt3,
+      springeZuSchritt: _springeZuSchritt,
     );
   }
 
