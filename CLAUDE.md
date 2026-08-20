@@ -21,6 +21,7 @@ Auch alle Ausgaben, Kommentare und Thinking-Texte auf Deutsch.
 
 Diagnosen, Analysen und Berichte immer in einem einzigen Codeblock ausgeben — zum einfachen Kopieren per Klick.
 Zeilen innerhalb dieser Codeblöcke auf max. 80 Zeichen umbrechen (auch Fließtext, nicht nur Listen).
+Dateiverweise darin als Klartext `datei.dart:zeile` (kein Markdown-Link — in Codeblöcken ohnehin nicht klickbar).
 
 ## Session-Start
 

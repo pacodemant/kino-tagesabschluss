@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 388d: Direkte Anweisung ohne eigene Run-Nummer, reine
+  Dokumentations-Ergänzung in CLAUDE.md. Auslöser: Überprüfung aller
+  gespeicherten Anweisungen (CLAUDE.md, AGENTS.md, Skills, Memory) im
+  Chat deckte einen Konflikt auf — die Ausgabeformat-Regel "Berichte
+  immer in einem Codeblock" kollidiert mit der VSCode-Extension-
+  Vorgabe, Dateiverweise als klickbare Markdown-Links zu formatieren,
+  da Links in Codeblöcken nicht klickbar gerendert werden. Ergänzung
+  im Abschnitt "Ausgabeformat": Dateiverweise darin künftig als
+  Klartext `datei.dart:zeile`. Kein App-Code/Test betroffen, kein
+  Versionsbump (reine Doku-Korrektur, analog Run 388b/380c/380d).
+  Begleitend (ausserhalb des Git-Repos, in der ~/.claude-Memory)
+  mehrere Memory-Dateien bereinigt: falsche MEMORY.md-Kopfzeile
+  korrigiert, zwei veraltete/erledigte Projekt-Memories gelöscht
+  (iOS-Web-Next-Button Run 215, PWA-Install), zwei redundante
+  Versionsstring-Memories zu einer zusammengelegt,
+  feedback_niemals_raten.md gekürzt. Dateien: CLAUDE.md.
+
 - Run 388c: Direkte Anweisung ohne eigene Run-Nummer, weitere
   empfohlene Unit-Tests ergänzt (Fortsetzung von Run 388a; "388b"
   war zwischenzeitlich von einer parallelen Session für eine
