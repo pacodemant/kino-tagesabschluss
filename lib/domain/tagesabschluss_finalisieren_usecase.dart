@@ -90,6 +90,10 @@ class TagesabschlussFinalisierenUsecase {
     'coin_5c',
   };
 
+  /// Abschluss vor dieser Uhrzeit zaehlt noch als Vortag (Spaetvorstellungen
+  /// enden teils nach Mitternacht, der Geschaeftstag laeuft aber weiter).
+  static const int _geschaeftstagCutoffStunde = 6;
+
   /// Finalisiert die Tagesabrechnung und berechnet alle Summen zentral.
   TagesabschlussFinal finalisieren({
     required TagesabschlussFinalisierenEingabe eingabe,
@@ -167,11 +171,17 @@ class TagesabschlussFinalisierenUsecase {
     }
 
     final DateTime zeitstempel = jetzt ?? DateTime.now();
+    final DateTime kalendertag =
+        DateTime(zeitstempel.year, zeitstempel.month, zeitstempel.day);
+    final DateTime geschaeftstag =
+        zeitstempel.hour < _geschaeftstagCutoffStunde
+            ? kalendertag.subtract(const Duration(days: 1))
+            : kalendertag;
 
     return TagesabschlussFinal(
       kinoId: eingabe.kinoId,
       kinoName: eingabe.kinoName,
-      datum: DateTime(zeitstempel.year, zeitstempel.month, zeitstempel.day),
+      datum: geschaeftstag,
       createdAt: zeitstempel,
       scheineCent: eingabe.scheineCent,
       loseMuenzenCent: eingabe.loseMuenzenCent,

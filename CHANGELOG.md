@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 388: Geschäftstag-Cutoff für Abschluss nach Mitternacht.
+  TagesabschlussFinalisierenUsecase.finalisieren()
+  (tagesabschluss_finalisieren_usecase.dart) zählt einen Abschluss
+  zwischen 00:00 und 05:59 Uhr jetzt automatisch als Vortag (neue
+  Konstante `_geschaeftstagCutoffStunde = 6`), statt wie bisher
+  den reinen Kalendertag von DateTime.now() zu verwenden. Hintergrund:
+  Spätvorstellungen enden teils nach Mitternacht, der Abschluss
+  wurde bislang fälschlich dem Folgetag zugeordnet — auch im an
+  Flurbocash übertragenen JSON-Feld `date`
+  (api_upload_service.dart:79, liest unverändert `abrechnung.datum`).
+  Betrifft nur `datum`, `createdAt` bleibt der echte Zeitstempel
+  (wird für den Verlauf-Abgleich per createdAt gebraucht, siehe
+  Run 387). Keine UI-Änderung, kein manuelles Override — rein
+  automatischer Cutoff laut Entscheidung. Neue Testfälle in
+  test/domain/tagesabschluss_finalisieren_usecase_test.dart
+  (00:01/05:59 → Vortag, 06:00/23:50 → aktueller Tag,
+  Jahreswechsel-Fall 1.1. 00:01 → 31.12. Vorjahr). Version
+  0.9.60+388. Dateien: tagesabschluss_finalisieren_usecase.dart,
+  test/domain/tagesabschluss_finalisieren_usecase_test.dart,
+  pubspec.yaml, app_version.dart.
+
 - Run 387: Verlauf markiert Einträge, deren Abrechnung noch nicht
   erfolgreich an Flurbocash übertragen wurde, mit einem "Noch nicht
   gesendet"-Badge (verlauf_seite.dart Liste, verlauf_detail_seite.dart

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.59+387 · Run 387
+Version: 0.9.60+388 · Run 388
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 387)
+## Laufender Entwicklungsstand (Run 388)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -711,6 +711,13 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   NichtGesendetBadge (nicht_gesendet_badge.dart). Alte Einträge vor
   diesem Run haben gesendetAm == null und gelten daher pauschal als
   "noch nicht gesendet" — rückwirkend nicht rekonstruierbar.
+- Run 388 ✅ Geschäftstag-Cutoff: Abschluss zwischen 00:00 und
+  05:59 Uhr zählt automatisch als Vortag (Spätvorstellungen enden
+  teils nach Mitternacht). Neue Konstante
+  _geschaeftstagCutoffStunde (6) in
+  TagesabschlussFinalisierenUsecase.finalisieren(); betrifft nur
+  `datum`, nicht `createdAt`. Damit auch das an Flurbocash
+  übertragene JSON-Feld `date` korrekt.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -79,6 +79,59 @@ void main() {
       expect(ergebnis.anmerkung, 'Testlauf');
     });
 
+    test(
+      'finalisieren zaehlt Abschluss vor 6 Uhr noch als Vortag '
+      '(Cutoff fuer Spaetvorstellungen nach Mitternacht)',
+      () {
+        final TagesabschlussFinal ergebnis = usecase.finalisieren(
+          eingabe: eingabe(),
+          jetzt: DateTime(2026, 3, 16, 0, 1),
+        );
+
+        expect(ergebnis.datum, DateTime(2026, 3, 15));
+        expect(ergebnis.createdAt, DateTime(2026, 3, 16, 0, 1));
+      },
+    );
+
+    test('finalisieren zaehlt Abschluss um 5:59 Uhr noch als Vortag', () {
+      final TagesabschlussFinal ergebnis = usecase.finalisieren(
+        eingabe: eingabe(),
+        jetzt: DateTime(2026, 3, 16, 5, 59),
+      );
+
+      expect(ergebnis.datum, DateTime(2026, 3, 15));
+    });
+
+    test('finalisieren zaehlt Abschluss ab 6 Uhr als aktuellen Tag', () {
+      final TagesabschlussFinal ergebnis = usecase.finalisieren(
+        eingabe: eingabe(),
+        jetzt: DateTime(2026, 3, 16, 6, 0),
+      );
+
+      expect(ergebnis.datum, DateTime(2026, 3, 16));
+    });
+
+    test('finalisieren zaehlt Abschluss um 23:50 Uhr als aktuellen Tag', () {
+      final TagesabschlussFinal ergebnis = usecase.finalisieren(
+        eingabe: eingabe(),
+        jetzt: DateTime(2026, 3, 15, 23, 50),
+      );
+
+      expect(ergebnis.datum, DateTime(2026, 3, 15));
+    });
+
+    test(
+      'finalisieren behandelt Cutoff korrekt ueber einen Jahreswechsel',
+      () {
+        final TagesabschlussFinal ergebnis = usecase.finalisieren(
+          eingabe: eingabe(),
+          jetzt: DateTime(2026, 1, 1, 0, 1),
+        );
+
+        expect(ergebnis.datum, DateTime(2025, 12, 31));
+      },
+    );
+
     test('finalisieren wirft bei leerer kinoId', () {
       expect(
         () => usecase.finalisieren(eingabe: eingabe(kinoId: '  ')),
