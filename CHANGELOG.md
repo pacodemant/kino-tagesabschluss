@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 388c: Direkte Anweisung ohne eigene Run-Nummer, weitere
+  empfohlene Unit-Tests ergänzt (Fortsetzung von Run 388a; "388b"
+  war zwischenzeitlich von einer parallelen Session für eine
+  unabhängige Kommentar-Korrektur belegt worden, siehe Eintrag
+  darunter — daher 388c statt des ursprünglich geplanten 388b).
+  Neue Tests: test/services/wechselgeld_config_service_test.dart
+  und test/services/getraenke_config_service_test.dart (jeweils
+  parseInhalt() — reine Text-Parser für die von GitHub geladenen
+  Konfigurationsdateien, inkl. Kommentar-/Leerzeilen-Behandlung,
+  fehlerhafte Werte, leerer Inhalt); test/services/
+  abrechnung_speicher_test.dart (abrechnungsDatumKey(), inkl.
+  Cutoff-Fall); test/domain/usecases/
+  startziel_bestimmen_usecase_test.dart (Standort-Modus-Vorrang,
+  Fallback auf zuletzt gewähltes Kino, ungültige IDs — mit
+  SharedPreferences.setMockInitialValues() statt echtem I/O).
+  Kleine Begleit-Änderung für Testbarkeit:
+  AbrechnungSpeicher.abrechnungsDatumKey() bekommt einen
+  optionalen `jetzt`-Parameter (Default weiterhin DateTime.now(),
+  rückwirkend kompatibel), analog zu Run 388a. Version
+  0.9.60+388c. Dateien: lib/services/abrechnung_speicher.dart,
+  test/services/wechselgeld_config_service_test.dart (neu),
+  test/services/getraenke_config_service_test.dart (neu),
+  test/services/abrechnung_speicher_test.dart (neu),
+  test/domain/usecases/startziel_bestimmen_usecase_test.dart
+  (neu), pubspec.yaml, app_version.dart.
+
 - Run 388b: Direkte Anweisung ohne eigene Run-Nummer, reine
   Kommentar-Korrektur in
   test/domain/tagesabschluss_berechnung_test.dart. Der Testkommentar

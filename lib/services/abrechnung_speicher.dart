@@ -10,8 +10,8 @@ import 'package:kino_bar_app/utils/datums_helper.dart';
 class AbrechnungSpeicher {
   const AbrechnungSpeicher._();
 
-  static String abrechnungsDatumKey(String kinoId) {
-    return 'abrechnung_${kinoId}_${DatumsHelper.logischesIsoDatum()}';
+  static String abrechnungsDatumKey(String kinoId, {DateTime? jetzt}) {
+    return 'abrechnung_${kinoId}_${DatumsHelper.logischesIsoDatum(jetzt: jetzt)}';
   }
 
   static Future<void> speichern(

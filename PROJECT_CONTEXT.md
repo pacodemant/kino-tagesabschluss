@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.60+388a · Run 388a
+Version: 0.9.60+388c · Run 388c
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 388a)
+## Laufender Entwicklungsstand (Run 388c)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -727,6 +727,14 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   stueckelung_konfiguration_test.dart,
   speichere_tagesabschluss_usecase_test.dart (echte Hive-Box im
   Temp-Verzeichnis).
+- Run 388c ✅ Weitere empfohlene Unit-Tests (Fortsetzung 388a;
+  "388b" zwischenzeitlich von paralleler Session belegt, siehe
+  CHANGELOG.md): wechselgeld_config_service_test.dart +
+  getraenke_config_service_test.dart (parseInhalt-Parser),
+  abrechnung_speicher_test.dart, startziel_bestimmen_usecase_test.dart
+  (SharedPreferences.setMockInitialValues statt echtem I/O).
+  AbrechnungSpeicher.abrechnungsDatumKey() bekommt optionalen
+  jetzt-Parameter fuer Testbarkeit.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
