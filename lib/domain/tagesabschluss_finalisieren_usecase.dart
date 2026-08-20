@@ -2,6 +2,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 
 /// Eingabedaten aus Schritt 1 und 2 fuer den finalen Abschluss.
 class TagesabschlussFinalisierenEingabe {
@@ -90,10 +91,6 @@ class TagesabschlussFinalisierenUsecase {
     'coin_5c',
   };
 
-  /// Abschluss vor dieser Uhrzeit zaehlt noch als Vortag (Spaetvorstellungen
-  /// enden teils nach Mitternacht, der Geschaeftstag laeuft aber weiter).
-  static const int _geschaeftstagCutoffStunde = 6;
-
   /// Finalisiert die Tagesabrechnung und berechnet alle Summen zentral.
   TagesabschlussFinal finalisieren({
     required TagesabschlussFinalisierenEingabe eingabe,
@@ -171,12 +168,8 @@ class TagesabschlussFinalisierenUsecase {
     }
 
     final DateTime zeitstempel = jetzt ?? DateTime.now();
-    final DateTime kalendertag =
-        DateTime(zeitstempel.year, zeitstempel.month, zeitstempel.day);
     final DateTime geschaeftstag =
-        zeitstempel.hour < _geschaeftstagCutoffStunde
-            ? kalendertag.subtract(const Duration(days: 1))
-            : kalendertag;
+        DatumsHelper.logischerAbrechnungsTag(jetzt: zeitstempel);
 
     return TagesabschlussFinal(
       kinoId: eingabe.kinoId,

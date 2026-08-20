@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.60+388 · Run 388
+Version: 0.9.60+388a · Run 388a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 388)
+## Laufender Entwicklungsstand (Run 388a)
 
 Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-Integration**
 
@@ -718,6 +718,15 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   TagesabschlussFinalisierenUsecase.finalisieren(); betrifft nur
   `datum`, nicht `createdAt`. Damit auch das an Flurbocash
   übertragene JSON-Feld `date` korrekt.
+- Run 388a ✅ Korrektur an Run 388: Cutoff-Regel war doppelt
+  implementiert (bereits vorher in DatumsHelper.
+  logischerAbrechnungsTag() vorhanden, an 12 Stellen genutzt).
+  Jetzt einzige Quelle in DatumsHelper (neuer optionaler
+  jetzt-Parameter fuer Testbarkeit), Usecase ruft sie nur noch
+  auf. Neue Unit-Tests: datums_helper_test.dart,
+  stueckelung_konfiguration_test.dart,
+  speichere_tagesabschluss_usecase_test.dart (echte Hive-Box im
+  Temp-Verzeichnis).
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
 Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.

@@ -9,6 +9,35 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 388a: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
+  Run 388. Fund: lib/utils/datums_helper.dart enthielt bereits vor
+  Run 388 dieselbe 6:00-Uhr-Cutoff-Regel
+  (logischerAbrechnungsTag(), seit längerem an 12 Stellen im Code
+  verwendet — Persistenz-Keys, "ist heute"-Vergleiche im Verlauf,
+  Entwurfs-Abgleich in Schritt 2, Anzeige in Schritt 3). Run 388
+  hatte diese Regel unabhängig erneut in
+  TagesabschlussFinalisierenUsecase implementiert statt sie
+  wiederzuverwenden — zwei getrennte Implementierungen derselben
+  Regel, Risiko: künftige Cutoff-Änderung an nur einer Stelle
+  hätte Anzeige/Entwürfe und das an Flurbocash gesendete Datum
+  auseinanderlaufen lassen. Korrektur: logischerAbrechnungsTag()
+  bekommt einen optionalen `jetzt`-Parameter (Default weiterhin
+  DateTime.now(), rückwirkend kompatibel für alle 12 bestehenden
+  Aufrufer) und ist jetzt die einzige Quelle für Cutoff-Regel +
+  -Stunde; TagesabschlussFinalisierenUsecase.finalisieren() ruft
+  sie nur noch auf, eigene Konstante entfernt. Zusätzlich neue
+  Unit-Tests wie empfohlen: test/utils/datums_helper_test.dart
+  (neu), test/domain/stueckelung_konfiguration_test.dart (neu),
+  test/domain/usecases/speichere_tagesabschluss_usecase_test.dart
+  (neu, mit echter Hive-Box in temporärem Testverzeichnis statt
+  Mocking). Version 0.9.60+388a. Dateien:
+  lib/utils/datums_helper.dart,
+  lib/domain/tagesabschluss_finalisieren_usecase.dart,
+  test/utils/datums_helper_test.dart (neu),
+  test/domain/stueckelung_konfiguration_test.dart (neu),
+  test/domain/usecases/speichere_tagesabschluss_usecase_test.dart
+  (neu), pubspec.yaml, app_version.dart.
+
 - Run 388: Geschäftstag-Cutoff für Abschluss nach Mitternacht.
   TagesabschlussFinalisierenUsecase.finalisieren()
   (tagesabschluss_finalisieren_usecase.dart) zählt einen Abschluss

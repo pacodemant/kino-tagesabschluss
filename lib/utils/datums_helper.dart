@@ -1,20 +1,28 @@
 class DatumsHelper {
   const DatumsHelper._();
 
-  static DateTime logischerAbrechnungsTag() {
-    final DateTime now = DateTime.now();
-    if (now.hour < 6) {
-      return now.subtract(const Duration(days: 1));
+  /// Abschluss vor dieser Uhrzeit zaehlt noch als Vortag (Spaetvorstellungen
+  /// enden teils nach Mitternacht, der Geschaeftstag laeuft aber weiter).
+  /// Einzige Quelle fuer diese Regel — auch fuer
+  /// TagesabschlussFinalisierenUsecase.finalisieren().
+  static const int _geschaeftstagCutoffStunde = 6;
+
+  /// [jetzt] optional fuer deterministische Tests, sonst DateTime.now().
+  static DateTime logischerAbrechnungsTag({DateTime? jetzt}) {
+    final DateTime now = jetzt ?? DateTime.now();
+    final DateTime kalendertag = DateTime(now.year, now.month, now.day);
+    if (now.hour < _geschaeftstagCutoffStunde) {
+      return kalendertag.subtract(const Duration(days: 1));
     }
-    return now;
+    return kalendertag;
   }
 
   static String isoDatum(DateTime datum) =>
       '${datum.year}-${datum.month.toString().padLeft(2, '0')}-'
       '${datum.day.toString().padLeft(2, '0')}';
 
-  static String logischesIsoDatum() {
-    final DateTime tag = logischerAbrechnungsTag();
+  static String logischesIsoDatum({DateTime? jetzt}) {
+    final DateTime tag = logischerAbrechnungsTag(jetzt: jetzt);
     return isoDatum(tag);
   }
 }
