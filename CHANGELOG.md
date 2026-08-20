@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 388b: Direkte Anweisung ohne eigene Run-Nummer, reine
+  Kommentar-Korrektur in
+  test/domain/tagesabschluss_berechnung_test.dart. Der Testkommentar
+  zum bekannten toten Pfad in parseCentKomma() (Tausenderpunkt ohne
+  Komma, z. B. "1.400") verwies auf einen TODO.md-Abschnitt
+  "Eingabe mit Komma", der in TODO.md nicht mehr existiert.
+  Verifiziert (grep über lib/ und TODO.md): mitKomma ist app-weit
+  weiterhin fest auf false, der relevante TODO-Punkt heißt
+  "Gondel-Abrechnung (kino_02)" (Wechselgeld 1.400 €). Kommentar
+  entsprechend korrigiert, keine Testlogik/kein App-Verhalten
+  geändert. Kein Versionsbump (reine Doku-Korrektur, analog Run
+  380c/380d).
+
 - Run 388a: Direkte Anweisung ohne eigene Run-Nummer, Korrektur an
   Run 388. Fund: lib/utils/datums_helper.dart enthielt bereits vor
   Run 388 dieselbe 6:00-Uhr-Cutoff-Regel

@@ -55,14 +55,14 @@ void main() {
     test(
         'parseCentKomma: bekannte Einschraenkung bei reinem Tausenderpunkt '
         'ohne Komma', () {
-      // "1.400" (z. B. Wechselgeld-Sollwert Gondel, siehe TODO.md) wird
-      // hier als Dezimaltrenner interpretiert, nicht als Tausenderpunkt:
-      // Ergebnis ist 1,40 EUR statt der vermutlich gemeinten 1.400,00 EUR.
+      // "1.400" (z. B. Wechselgeld-Sollwert Gondel, siehe TODO.md
+      // "Gondel-Abrechnung (kino_02)") wird hier als Dezimaltrenner
+      // interpretiert, nicht als Tausenderpunkt: Ergebnis ist 1,40 EUR
+      // statt der vermutlich gemeinten 1.400,00 EUR.
       // Dieser Pfad ist seit Run 317 nirgends mehr aktiv (mitKomma ist
-      // app-weit fest auf false, siehe TODO.md "Eingabe mit Komma"), daher
-      // kein akutes Risiko - der Test dokumentiert nur das bestehende
-      // Verhalten, damit eine künftige Reaktivierung nicht stillschweigend
-      // in diese Falle läuft.
+      // app-weit fest auf false), daher kein akutes Risiko - der Test
+      // dokumentiert nur das bestehende Verhalten, damit eine künftige
+      // Reaktivierung nicht stillschweigend in diese Falle läuft.
       expect(TagesabschlussBerechnung.parseCentKomma('1.400'), 140);
     });
 
