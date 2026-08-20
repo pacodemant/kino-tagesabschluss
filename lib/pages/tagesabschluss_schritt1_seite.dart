@@ -7,8 +7,6 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/controller/schritt1_state_controller.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/orchestrierung/schritt1_orchestrierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
-import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scroll_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
@@ -803,7 +801,13 @@ class _TagesabschlussSchritt1SeiteState
     );
   }
 
-  Future<void> _weiterZuSchritt2() async {
+  /// zielSchrittBeimSprung: nur beim AppBar-Schritt-Sprung zu Schritt 3
+  /// oder 4 gesetzt — wird an Schritt 2 weitergereicht, damit diese sich
+  /// nach dem Aufbau automatisch weiter Richtung Ziel bewegt (siehe
+  /// TagesabschlussSchritt2Seite.zielSchrittBeimSprung). Die "0€
+  /// übernehmen?"-Rückfrage unten greift dabei unverändert, auch beim
+  /// Sprung.
+  Future<void> _weiterZuSchritt2({int? zielSchrittBeimSprung}) async {
     await _orchestrierungHelper.weiterZuSchritt2(
       context: context,
       kassenbestandGesamtCent: _kassenbestandGesamtCent,
@@ -812,13 +816,17 @@ class _TagesabschlussSchritt1SeiteState
       navigiereZuSchritt2: () {
         Navigator.of(context).pushNamed(
           TagesabschlussSchritt2Seite.routenName,
-          arguments: _baueSchritt2Argumente(),
+          arguments: _baueSchritt2Argumente(
+            zielSchrittBeimSprung: zielSchrittBeimSprung,
+          ),
         );
       },
     );
   }
 
-  TagesabschlussSchritt2Argumente _baueSchritt2Argumente() {
+  TagesabschlussSchritt2Argumente _baueSchritt2Argumente({
+    int? zielSchrittBeimSprung,
+  }) {
     return TagesabschlussSchritt2Argumente(
       kinoId: widget.kinoId,
       kinoName: widget.kinoName,
@@ -831,48 +839,20 @@ class _TagesabschlussSchritt1SeiteState
       stueckzahlen: Map<String, int>.from(_stueckzahlen),
       loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
       umschlaege: List<UmschlagEintrag>.from(_umschlaege),
+      zielSchrittBeimSprung: zielSchrittBeimSprung,
     );
   }
 
-  /// AppBar-Schritt-Sprung: navigiert direkt zum Zielschritt, ohne die
-  /// "0€ übernehmen?"-Rückfrage von _weiterZuSchritt2() (die bleibt dem
-  /// regulären "Weiter"-Button unten auf der Seite vorbehalten). Schritt 2
-  /// (und bei Sprung zu 4 zusätzlich Schritt 3) wird dabei real
-  /// durchgeschoben statt übersprungen — mit 0/leer für die dort noch
-  /// nicht erfassten Felder —, damit "Zurück" aus einem weiter entfernten
-  /// Schritt weiterhin zu einem funktionierenden Zwischenschritt führt.
+  /// AppBar-Schritt-Sprung: ruft exakt den regulären Übergang zu Schritt 2
+  /// auf (inkl. "0€ übernehmen?"-Rückfrage) und reicht bei einem weiter
+  /// entfernten Ziel (3 oder 4) das Ziel an Schritt 2 weiter, damit diese
+  /// (und ggf. Schritt 3) sich nach dem eigenen Aufbau automatisch mit
+  /// ihren eigenen Bestätigungs-/Pflichtfeld-Dialogen weiterbewegen. Bricht
+  /// der MA einen dieser Dialoge ab, bleibt er auf der jeweiligen, echten
+  /// Seite stehen statt weitergeschoben zu werden.
   void _springeZuSchritt(int zielSchrittNr) {
-    _speichereEntwurf();
-    final TagesabschlussSchritt2Argumente schritt2Argumente =
-        _baueSchritt2Argumente();
-    Navigator.of(context).pushNamed(
-      TagesabschlussSchritt2Seite.routenName,
-      arguments: schritt2Argumente,
-    );
-    if (zielSchrittNr == 2) {
-      return;
-    }
-
-    final TagesabschlussSchritt3Argumente schritt3Argumente =
-        TagesabschlussSchritt3Argumente.ausUebersprungenemSchritt2(
-      schritt2Argumente,
-    );
-    Navigator.of(context).pushNamed(
-      TagesabschlussSchritt3Seite.routenName,
-      arguments: schritt3Argumente,
-    );
-    if (zielSchrittNr == 3) {
-      return;
-    }
-
-    Navigator.of(context).pushNamed(
-      StueckelungVorschlagSeite.routenName,
-      arguments: StueckelungVorschlagArgumente(
-        barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
-        stueckzahlen: Map<String, int>.from(_stueckzahlen),
-        loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
-        kinoName: widget.kinoName,
-      ),
+    _weiterZuSchritt2(
+      zielSchrittBeimSprung: zielSchrittNr > 2 ? zielSchrittNr : null,
     );
   }
 

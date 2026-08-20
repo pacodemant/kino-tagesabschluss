@@ -25,7 +25,6 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt2_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
@@ -58,34 +57,8 @@ class TagesabschlussSchritt3Argumente {
     this.zahlungsartenAufschluesselung,
     this.ecTerminals,
     this.anmerkung,
+    this.zielSchrittBeimSprung,
   });
-
-  /// Für den AppBar-Schritt-Sprung: baut die Schritt-3-Argumente direkt aus
-  /// Schritt 2, ohne dass Schritt 2 tatsächlich ausgefüllt wurde — alle nur
-  /// in Schritt 2 erfassten Felder (Soll-Werte, Ausgaben, EC-Belege,
-  /// Anmerkung) werden mit 0/leer vorbelegt, exakt wie bei einem regulär
-  /// unausgefüllt durchgeklickten Schritt 2.
-  factory TagesabschlussSchritt3Argumente.ausUebersprungenemSchritt2(
-    TagesabschlussSchritt2Argumente schritt2,
-  ) {
-    return TagesabschlussSchritt3Argumente(
-      kinoId: schritt2.kinoId,
-      kinoName: schritt2.kinoName,
-      scheineCent: schritt2.scheineCent,
-      loseMuenzenCent: schritt2.loseMuenzenCent,
-      rollenCent: schritt2.rollenCent,
-      umschlaegeCent: schritt2.umschlaegeCent,
-      wechselgeldSollwertCent: schritt2.wechselgeldSollwertCent,
-      kinoSollCent: 0,
-      bistroSollCent: 0,
-      ausgabenCent: 0,
-      ecBelegeCent: const <int>[],
-      differenzAnfangsbestandCent: 0,
-      stueckzahlen: schritt2.stueckzahlen,
-      loseMuenzenNachArtCent: schritt2.loseMuenzenNachArtCent,
-      umschlaege: schritt2.umschlaege,
-    );
-  }
 
   final String kinoId;
   final String kinoName;
@@ -114,6 +87,11 @@ class TagesabschlussSchritt3Argumente {
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
   final List<EcTerminalErgebnis>? ecTerminals;
   final String? anmerkung;
+  /// Nur beim AppBar-Schritt-Sprung von Schritt 1/2 zu Schritt 4 gesetzt
+  /// (Wert 4): sobald diese Seite aufgebaut ist, springt sie automatisch
+  /// weiter zu Schritt 4 — ohne eigenes Gate, da "Barumsatz f. Umschlag
+  /// stückeln" schon beim regulären Übergang 3→4 ungefragt navigiert.
+  final int? zielSchrittBeimSprung;
 }
 
 class TagesabschlussSchritt3Seite extends StatefulWidget {
@@ -230,6 +208,9 @@ class _TagesabschlussSchritt3SeiteState
     );
     if (!mounted) return;
     setState(() => _abschlussVorschau = abschluss);
+    if (widget.argumente.zielSchrittBeimSprung == 4) {
+      _navigiereZuSchritt4();
+    }
     _autoSaveImHintergrund();
     DevModus.istAktiv().then((bool aktiv) {
       if (mounted) setState(() => _devModusAktiv = aktiv);

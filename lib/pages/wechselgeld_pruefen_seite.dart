@@ -211,11 +211,17 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   }
 
   Future<void> _ladeInitialeDaten() async {
-    if (widget.ausTagesabrechnung) {
-      // Abend-Prüfung im Rahmen der Kassenabrechnung: ein evtl. noch
-      // vorhandener, unvollendeter Entwurf von der Morgen-Prüfung darf
-      // hier nicht auftauchen — verwerfen, bevor geladen wird.
+    Map<String, dynamic>? entwurf =
+        await LokalerSpeicher.ladeWechselgeldZaehlEntwurf(widget.kinoId);
+    if (widget.ausTagesabrechnung && entwurf != null && entwurf['herkunft'] != 'abend') {
+      // Abend-Prüfung im Rahmen der Kassenabrechnung: ein vorhandener
+      // Entwurf ohne "abend"-Markierung stammt von der Morgen-Prüfung
+      // (oder aus einer Version vor dieser Markierung) — der darf hier
+      // nicht auftauchen. Ein bereits mit "abend" markierter Entwurf ist
+      // dagegen der eigene, noch nicht fertige Stand dieser Abend-Prüfung
+      // und bleibt erhalten.
       await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
+      entwurf = null;
     }
     int geladenerSollwert =
         await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
@@ -225,8 +231,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       geladenerSollwert =
           await WechselgeldConfigService().getWechselgeldBetrag(kinoName);
     }
-    final Map<String, dynamic>? entwurf =
-        await LokalerSpeicher.ladeWechselgeldZaehlEntwurf(widget.kinoId);
 
     if (!mounted) {
       return;
@@ -287,6 +291,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         'umschlaege': _umschlaege
             .map((UmschlagEintrag e) => e.toJson())
             .toList(),
+        'herkunft': widget.ausTagesabrechnung ? 'abend' : 'morgen',
       },
     );
   }
