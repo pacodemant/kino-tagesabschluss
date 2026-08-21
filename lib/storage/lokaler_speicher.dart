@@ -317,6 +317,14 @@ class LokalerSpeicher {
   static String _sendeBestaetigungKey(String kinoId) =>
       'sende_bestaetigung_$kinoId';
 
+  /// Löscht die gespeicherte Sende-Signatur eines Kinos (z. B. wenn die
+  /// zugehörige Abrechnung wieder gelöscht wird — siehe
+  /// [loescheFinalenTagesabschluss]).
+  static Future<void> loescheSendeBestaetigung(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.remove(_sendeBestaetigungKey(kinoId));
+  }
+
   static Map<String, dynamic> _schritt1StandardWerte(String kinoId) {
     switch (kinoId) {
       case 'kino_03':
@@ -554,6 +562,14 @@ class LokalerSpeicher {
     }
 
     await box.put(key, jsonEncode(aktualisiert));
+
+    // Wird die heutige Abrechnung gelöscht, muss auch der grüne
+    // "gesendet"-Haken (Startmenü-Buttons) wieder verschwinden — dessen
+    // Signatur ist pro Kino in SharedPreferences gespeichert und überlebt
+    // sonst unabhängig von der gerade gelöschten Abrechnung.
+    if (DatumsHelper.isoDatum(datum) == DatumsHelper.logischesIsoDatum()) {
+      await loescheSendeBestaetigung(kinoId);
+    }
   }
 
   /// Entfernt abgeschlossene Tagesabrechnungen, deren Kalendertag mehr als

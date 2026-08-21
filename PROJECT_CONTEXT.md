@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.68+396 · Run 396
+Version: 0.9.68+396a · Run 396a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 396)
+## Laufender Entwicklungsstand (Run 396a)
+
+- Run 396a ✅ Ergänzung zu Run 396: Löschen der heutigen Abrechnung im
+  Verlauf entfernt jetzt auch den grünen "gesendet"-Haken auf dem
+  Kassenabrechnung-Button im Startmenü (Sende-Signatur wurde beim
+  Löschen bisher nicht mitgelöscht). Details siehe CHANGELOG.md.
 
 - Run 396 ✅ Sende-Status im Verlauf: gesendetAm wurde im Erfolgsfall des
   automatischen Uploads (Schritt 3) nicht persistiert, wenn die Seite vor

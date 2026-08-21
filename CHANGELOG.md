@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 396a: Direkte Anweisung ohne eigene Run-Nummer, Ergänzung zu
+  Run 396. Wird die heutige Abrechnung im Verlauf gelöscht, blieb der
+  grüne "gesendet"-Haken auf dem Kassenabrechnung-Button im Startmenü
+  fälschlich stehen — die zugehörige Sende-Signatur
+  (speichereSendeBestaetigung, pro Kino in SharedPreferences) ist
+  unabhängig von der gelöschten Abrechnung und wurde beim Löschen
+  nicht mit entfernt. Fix: LokalerSpeicher.loescheFinalenTagesabschluss()
+  löscht jetzt zusätzlich die Sende-Signatur des Kinos, wenn der
+  gelöschte Kalendertag dem heutigen logischen Datum entspricht (neue
+  Methode LokalerSpeicher.loescheSendeBestaetigung()). Betrifft beide
+  Löschwege (Verlauf-Liste und Verlauf-Detail), da beide dieselbe
+  zentrale Funktion nutzen. Datei: lib/storage/lokaler_speicher.dart.
+
 - Run 396: Sende-Status im Verlauf wurde trotz erfolgreichem
   Flurbocash-Upload dauerhaft als "Noch nicht gesendet" angezeigt.
   Ursache 1 (Hauptursache, betraf praktisch alle Abrechnungen):
