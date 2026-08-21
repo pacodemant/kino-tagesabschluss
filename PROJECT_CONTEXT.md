@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.67+395 · Run 395
+Version: 0.9.68+396 · Run 396
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 395)
+## Laufender Entwicklungsstand (Run 396)
+
+- Run 396 ✅ Sende-Status im Verlauf: gesendetAm wurde im Erfolgsfall des
+  automatischen Uploads (Schritt 3) nicht persistiert, wenn die Seite vor
+  Upload-Ende verlassen wurde (v. a. über "Zurück zur Startseite") —
+  markiereAlsGesendet() stand fälschlich in einem if(mounted)-Block.
+  Betraf praktisch alle Abrechnungen, obwohl der Upload selbst erfolgreich
+  war. Zusätzlich: Verlauf-Liste lud nach Rückkehr aus der Detailseite nur
+  bei Löschung neu, nicht nach "Erneut senden". Details siehe CHANGELOG.md.
 
 - Run 395 ✅ Seitenwechsel-Warnung: Schritt 1 und Schritt 2 fragen jetzt
   nach ("Seite verlassen?"), wenn beim Verlassen der Seite (Zurück-Geste,

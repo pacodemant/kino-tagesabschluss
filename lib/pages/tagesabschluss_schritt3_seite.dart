@@ -318,18 +318,22 @@ class _TagesabschlussSchritt3SeiteState
     try {
       await ApiUploadService.upload(_abschlussVorschau!);
       _apiUploadErledigt = true;
+      // Bewusst nicht mounted-gated: diese beiden Aufrufe persistieren
+      // den Sende-Status lokal und müssen auch dann laufen, wenn die
+      // Seite (z. B. via "Zurück zur Startseite") schon verlassen wurde,
+      // bevor der Upload zurückkam — sonst bleibt gesendetAm dauerhaft
+      // null, obwohl der Upload erfolgreich war (Run 396).
+      await LokalerSpeicher.speichereSendeBestaetigung(
+        widget.argumente.kinoId,
+        _sendeSignatur(),
+      );
+      await LokalerSpeicher.markiereAlsGesendet(
+        _abschlussVorschau!.kinoId,
+        _abschlussVorschau!.createdAt,
+        DateTime.now(),
+      );
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
-        await LokalerSpeicher.speichereSendeBestaetigung(
-          widget.argumente.kinoId,
-          _sendeSignatur(),
-        );
-        await LokalerSpeicher.markiereAlsGesendet(
-          _abschlussVorschau!.kinoId,
-          _abschlussVorschau!.createdAt,
-          DateTime.now(),
-        );
-        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: AppFarben.fokusFarbe,

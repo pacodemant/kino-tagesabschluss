@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 396: Sende-Status im Verlauf wurde trotz erfolgreichem
+  Flurbocash-Upload dauerhaft als "Noch nicht gesendet" angezeigt.
+  Ursache 1 (Hauptursache, betraf praktisch alle Abrechnungen):
+  tagesabschluss_schritt3_seite.dart, Erfolgsfall von
+  _doApiUpload() — markiereAlsGesendet() (persistiert gesendetAm
+  lokal) stand im selben if(mounted)-Block wie reine UI-Aufrufe
+  (setState, SnackBar). Der Upload läuft "fire and forget"
+  (_doApiUpload().ignore()), der Folgedialog öffnet sofort. Wählt
+  der Mitarbeiter dort "Zurück zur Startseite" (häufigster Weg,
+  pushNamedAndRemoveUntil entfernt die Schritt-3-Seite aus dem
+  Stack), bevor der Upload zurückkommt, wird die Seite disposed →
+  mounted wird false → markiereAlsGesendet() wird übersprungen,
+  obwohl der Upload selbst (unabhängig vom Widget-Lifecycle)
+  bereits erfolgreich bei Flurbocash angekommen ist. Fix: Aufruf
+  aus dem if(mounted)-Block gelöst, läuft jetzt unconditional nach
+  dem Upload (nur setState/SnackBar bleiben mounted-gated) —
+  analog zum bereits korrekten CORS-Fallback-Zweig direkt darunter
+  und zu verlauf_detail_seite.dart ("Erneut senden").
+  Ursache 2 (Folgefehler, betraf frisch gesendete Einzeleinträge):
+  verlauf_seite.dart — die Liste wurde nach Rückkehr aus der
+  Detailseite nur bei Löschung neu geladen (geloescht == true),
+  nicht wenn dort stattdessen erneut gesendet wurde. Fix: Liste
+  wird nach jeder Rückkehr aus der Detailseite neu geladen, nicht
+  nur bei Löschung. Dateien: tagesabschluss_schritt3_seite.dart,
+  verlauf_seite.dart.
+
 - Run 395: Seitenwechsel-Warnung bei ausgefüllten Feldern. Schritt 1
   (Bargeld zählen) und Schritt 2 (Belege) fragen jetzt "Seite
   verlassen?" nach, sobald beim Verlassen der Seite mindestens ein

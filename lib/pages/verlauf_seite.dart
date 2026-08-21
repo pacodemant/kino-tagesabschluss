@@ -141,12 +141,15 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                       ),
                       onTap: () async {
                         final NavigatorState navigator = Navigator.of(context);
-                        final bool? geloescht =
-                            await navigator.pushNamed<bool>(
+                        await navigator.pushNamed<bool>(
                           VerlaufDetailSeite.routenName,
                           arguments: eintrag,
                         );
-                        if (geloescht == true && mounted) {
+                        // Immer neu laden, nicht nur bei Löschung: der
+                        // Sende-Status kann sich in der Detailseite
+                        // geändert haben ("Erneut senden"), ohne dass
+                        // das über den Rückgabewert signalisiert wird.
+                        if (mounted) {
                           setState(() {
                             _geladen = false;
                             _abschluesse = <TagesabschlussFinal>[];
