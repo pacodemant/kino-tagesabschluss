@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 398: QR-Code wieder eingebaut (Typ: standard). Anlass:
+  Paco-Wunsch — für die Neuinstallation der PWA auf dem SB-Device
+  (nach der Umstellung von display "standalone" auf "fullscreen"
+  in web/manifest.json) wird der QR-Code wieder gebraucht, der auf
+  https://pacodemant.github.io/kino-tagesabschluss/ zeigt (Live-
+  URL der Web-App, in Run 372 als "wird nicht mehr gebraucht"
+  entfernt). Asset assets/images/qr_webapp_github.png unverändert
+  aus der Git-Historie (Commit vor ac14c5f) wiederhergestellt,
+  Eintrag in pubspec.yaml (`assets:`) sowie Image.asset + SizedBox
+  in kinoauswahl_seite.dart und startmenue_seite.dart wieder
+  eingefügt (direkt unter AppVersion.text, wie vor der Entfernung).
+  Version 0.9.70+398. Dateien: kinoauswahl_seite.dart,
+  startmenue_seite.dart, pubspec.yaml, app_version.dart,
+  assets/images/qr_webapp_github.png (wiederhergestellt).
+  Zusätzlich eine bereits von Paco manuell vorbereitete, noch
+  uncommittete Textänderung in kurzeinstieg_seite.dart
+  mitcommittet: In Zeile 54 den ungültigen Zeilenumbruch "\br"
+  (kein gültiges Dart-Escape) auf "\n" korrigiert, Rest der
+  Zeile ("(Vorläufiger Hilfetext)") unverändert von Paco
+  übernommen.
+
 - Run 397a: Direkte Anweisung ohne eigene Run-Nummer. Manuell von
   Paco vorbereitete Textänderung nachträglich mitcommittet: Titel
   eines ExpansionTile in der Verlauf-Detailansicht von

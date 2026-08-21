@@ -51,7 +51,7 @@ class KurzeinstiegSeite extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             const Text(
-              'Die Kassenabrechnung läuft in 4 Schritten ab:',
+              'Die Kassenabrechnung läuft in 4 Schritten ab:\n(Vorläufiger Hilfetext)',
               style: TextStyle(fontSize: 15, height: 1.5),
             ),
             const SizedBox(height: 20),

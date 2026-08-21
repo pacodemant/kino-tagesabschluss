@@ -366,6 +366,13 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                     style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
                   ),
                 ),
+                const SizedBox(height: 4),
+                Center(
+                  child: Image.asset(
+                    'assets/images/qr_webapp_github.png',
+                    width: 100,
+                  ),
+                ),
                 const SizedBox(height: 8),
               ],
             ),

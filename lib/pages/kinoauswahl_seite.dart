@@ -70,6 +70,11 @@ class _KinoauswahlSeiteState extends State<KinoauswahlSeite> {
                       color: AppFarben.subtilerText,
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  Image.asset(
+                    'assets/images/qr_webapp_github.png',
+                    width: 100,
+                  ),
                   const SizedBox(height: 12),
                   GestureDetector(
                     onTap: () => Navigator.of(context)
