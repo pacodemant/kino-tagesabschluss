@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 397a: Direkte Anweisung ohne eigene Run-Nummer. Manuell von
+  Paco vorbereitete Textänderung nachträglich mitcommittet: Titel
+  eines ExpansionTile in der Verlauf-Detailansicht von
+  "Geldzählung" auf "Bargeld" geändert. Datei:
+  lib/pages/verlauf_detail_seite.dart. Zusätzlich zwei bisher
+  untracked Dev-Notizen aufgenommen: .dev/finale_codeueberpruefung.md
+  (Checkliste für eine künftige Codeüberprüfung),
+  .dev/hilfetexte.md (Entwurf eines Hilfetexts "App scheint nicht
+  zu starten").
+
 - Run 397: Neuer Button "Heutige Abrechnung zurücksetzen (Test)" in
   den Einstellungen, direkt unter "App neu laden" — löscht für den
   aktuell gewählten Standort den Schritt-1-Entwurf

@@ -1,0 +1,3 @@
+- allzu verschachtelte Layouts
+- was ist im Code redundant? Finde und eliminiere doppelte Implementierungen.
+- was könnte Probleme, welcher Art auch immer, machen?

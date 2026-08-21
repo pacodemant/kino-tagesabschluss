@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.69+397 · Run 397
+Version: 0.9.69+397a · Run 397a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 397)
+## Laufender Entwicklungsstand (Run 397a)
+
+- Run 397a ✅ Ergänzung zu Run 397: manuell von Paco vorbereitete
+  Textänderung nachträglich mitcommittet (ExpansionTile-Titel in
+  der Verlauf-Detailansicht: "Geldzählung" → "Bargeld") sowie zwei
+  Dev-Notizen (.dev/finale_codeueberpruefung.md, .dev/hilfetexte.md).
+  Details siehe CHANGELOG.md.
 
 - Run 397 ✅ Neuer Button "Heutige Abrechnung zurücksetzen (Test)" in
   den Einstellungen (unter "App neu laden", bewusst außerhalb des
