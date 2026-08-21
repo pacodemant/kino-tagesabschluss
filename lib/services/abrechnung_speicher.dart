@@ -34,4 +34,9 @@ class AbrechnungSpeicher {
       return null;
     }
   }
+
+  static Future<void> loesche(String kinoId) async {
+    final Box<dynamic> box = Hive.box('box_abrechnung_entwuerfe');
+    await box.delete(abrechnungsDatumKey(kinoId));
+  }
 }

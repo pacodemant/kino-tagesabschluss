@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 397: Neuer Button "Heutige Abrechnung zurücksetzen (Test)" in
+  den Einstellungen, direkt unter "App neu laden" — löscht für den
+  aktuell gewählten Standort den Schritt-1-Entwurf
+  (AbrechnungSpeicher.loesche(), neu), den Schritt-2-Entwurf, den
+  Wechselgeld-Zähl-Entwurf sowie eine bereits finalisierte heutige
+  Abrechnung inkl. Gesendet-Status (LokalerSpeicher.
+  loescheSendeBestaetigung() zusätzlich explizit aufgerufen, statt
+  sich nur auf den Nebeneffekt von loescheFinalenTagesabschluss() zu
+  verlassen). Mit Bestätigungsdialog (zeigeBestaetigungsDialog,
+  wiederverwendet) und roter Button-Farbe (AppFarben.differenzNegativ),
+  da der Button bewusst außerhalb des PIN-Admin-Bereichs liegt und
+  unwiderruflich Daten löscht. Nur für die Testphase gedacht.
+  Dateien: lib/pages/einstellungen_seite.dart,
+  lib/services/abrechnung_speicher.dart.
+
 - Run 396a: Direkte Anweisung ohne eigene Run-Nummer, Ergänzung zu
   Run 396. Wird die heutige Abrechnung im Verlauf gelöscht, blieb der
   grüne "gesendet"-Haken auf dem Kassenabrechnung-Button im Startmenü

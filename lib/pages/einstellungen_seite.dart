@@ -7,6 +7,7 @@ import 'package:kino_bar_app/pages/einstellungen/ui/einstellungen_gruppen_orches
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
@@ -15,8 +16,10 @@ import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1090,9 +1093,53 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               child: const Text('App neu laden'),
             ),
           ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppFarben.differenzNegativ,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: _resetHeutigeAbrechnung,
+              child: const Text('Heutige Abrechnung zurücksetzen (Test)'),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  /// Testphase: löscht alle heutigen Abrechnungsdaten (alle drei Schritte
+  /// sowie eine bereits finalisierte Abrechnung) des aktuell gewählten
+  /// Standorts, inklusive Gesendet-Status. Absichtlich ungeschützt neben
+  /// "App neu laden" statt im PIN-Admin-Bereich, siehe Run-397-Absprache.
+  Future<void> _resetHeutigeAbrechnung() async {
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Heutige Abrechnung zurücksetzen?',
+      inhalt:
+          'Löscht unwiderruflich alle heutigen Abrechnungsdaten '
+          '(Schritt 1–3) sowie den Gesendet-Status für '
+          '$_aktiveKinoKuerzel. Nur für die Testphase gedacht.',
+      bestaetigenText: 'Zurücksetzen',
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
+    final String kinoId = _aktiveKinoId;
+    await AbrechnungSpeicher.loesche(kinoId);
+    await LokalerSpeicher.loescheSchritt2Entwurf(kinoId);
+    await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(kinoId);
+    await LokalerSpeicher.loescheFinalenTagesabschluss(
+      kinoId,
+      DatumsHelper.logischerAbrechnungsTag(),
+    );
+    await LokalerSpeicher.loescheSendeBestaetigung(kinoId);
+    if (!mounted) {
+      return;
+    }
+    zeigeHinweisSnackBar(context, 'Heutige Abrechnung zurückgesetzt.');
   }
 }
 

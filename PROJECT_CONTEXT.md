@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.68+396a · Run 396a
+Version: 0.9.69+397 · Run 397
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 396a)
+## Laufender Entwicklungsstand (Run 397)
+
+- Run 397 ✅ Neuer Button "Heutige Abrechnung zurücksetzen (Test)" in
+  den Einstellungen (unter "App neu laden", bewusst außerhalb des
+  PIN-Admin-Bereichs, rote Button-Farbe + Bestätigungsdialog). Löscht
+  für den aktuell gewählten Standort Schritt-1/2-Entwurf,
+  Wechselgeld-Zähl-Entwurf und eine finalisierte heutige Abrechnung
+  inkl. Gesendet-Status. Nur für die Testphase. Details siehe
+  CHANGELOG.md.
 
 - Run 396a ✅ Ergänzung zu Run 396: Löschen der heutigen Abrechnung im
   Verlauf entfernt jetzt auch den grünen "gesendet"-Haken auf dem
