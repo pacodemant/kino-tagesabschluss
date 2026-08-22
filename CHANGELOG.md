@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 398a2: Direkte Anweisung ohne eigene Run-Nummer, Korrektur zu
+  Run 398a Punkt 8 (Typ: documentation, reine TODO.md-Pflege, kein
+  App-Code geändert). Paco wies zurück: Die Prämisse "iOS wird nicht
+  gebraucht" in "CocoaPods entfernen" war falsch — er nutzt die
+  native iOS-App aktiv zum schnellen Design-Testen. Zusätzlich bat
+  er, zu recherchieren, was Apple/Flutter bei CocoaPods geändert
+  haben ("irgendwas mit Swift"). Recherche (WebSearch/WebFetch,
+  offizielle Flutter-Doku): Flutter ersetzt CocoaPods durch Swift
+  Package Manager (SPM) als Standard-Abhängigkeitsverwaltung für
+  iOS/macOS, seit Flutter 3.44 (Projekt: 3.44.5) bereits aktiv;
+  CocoaPods-Registry wird am 2. Dezember 2026 read-only. Migration
+  läuft laut Flutter-Team automatisch über die CLI beim
+  iOS-Run/-Build, Podfile bleibt als Fallback für Plugins ohne
+  SPM-Support bestehen. Code-Check bestätigt, dass die Migration in
+  diesem Projekt bereits (automatisch) stattgefunden hat:
+  FlutterGeneratedPluginSwiftPackage ist schon mehrfach in
+  ios/Runner.xcodeproj/project.pbxproj verankert, und
+  ios/Podfile.lock enthält nur noch den internen "Flutter"-Pod ohne
+  echte Plugin-Pods — CocoaPods läuft aktuell faktisch leer mit.
+  TODO.md-Punkt entsprechend korrigiert: kein "einfach löschen"
+  mehr, sondern erst ein realer `flutter build ios`/Xcode-Testlauf
+  ohne Podfile zur Absicherung, dann Entfernen von ios/Podfile,
+  ios/Podfile.lock, ios/Pods/. Datei: TODO.md.
+
 - Run 398a: Direkte Anweisung ohne eigene Run-Nummer (Typ:
   documentation, reine TODO.md-Pflege, kein App-Code geändert). Paco
   hat 9 neue Punkte zum Einordnen genannt; vor dem Eintragen jeweils

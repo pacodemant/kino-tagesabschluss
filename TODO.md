@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 398a · wird fortlaufend ergänzt
+Stand: August 2026 · Run 398a2 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -91,16 +91,36 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       das erneute Prüfen beim Resume, nicht das Löschen der
       Sende-Signatur.
 
-- [ ] **CocoaPods entfernen (ios/)** `ios/Podfile` und
-      `ios/Podfile.lock` sind eingecheckt, obwohl die App laut
-      Zielplattform-Festlegung als Web-PWA auf Android-Smartphones
-      läuft (Kunde) bzw. für Paco privat nur über Safari/Web getestet
-      wird (siehe Memory "Zielplattform Android") — ein natives
-      iOS-Build scheint nicht genutzt zu werden. Vor dem Entfernen
-      kurz mit Paco gegenprüfen, ob `flutter run`/`build` für iOS
-      (Simulator o. Ä.) doch irgendwo gebraucht wird, sonst
-      `ios/Podfile`, `ios/Podfile.lock` und lokale `ios/Pods/`
-      entfernen.
+- [ ] **CocoaPods → Swift Package Manager migrieren (ios/)**
+      KORRIGIERT (Run 398a2): Ursprüngliche Annahme "iOS wird nicht
+      gebraucht" war falsch — Paco nutzt die native iOS-App aktiv
+      zum schnellen Design-Testen, ein natives iOS-Build bleibt also
+      Pflicht. Tatsächlicher Hintergrund des Punkts: Apple/Flutter
+      ersetzen CocoaPods durch Swift Package Manager (SPM) als
+      Standard-Abhängigkeitsverwaltung für iOS/macOS — ab Flutter
+      3.44 (Projekt nutzt 3.44.5) ist SPM bereits Standard, die
+      CocoaPods-Registry wird laut Flutter-Team am 2. Dezember 2026
+      dauerhaft read-only (Quelle:
+      flutter.dev/blog/saying-goodbye-to-cocoapods-swift-package-manager-is-soon-the-default-in-flutter,
+      docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers).
+      Stand in diesem Projekt (geprüft 2026-08-22): Die
+      SPM-Integration ist im Xcode-Projekt bereits vorhanden
+      (`FlutterGeneratedPluginSwiftPackage` mehrfach in
+      ios/Runner.xcodeproj/project.pbxproj) — vermutlich automatisch
+      durch die Flutter-CLI beim letzten `flutter run`/`build` fürs
+      iOS-Target ergänzt. `ios/Podfile.lock` listet aktuell nur noch
+      den internen "Flutter"-Pod, keinen einzigen echten Plugin-Pod
+      mehr — alle aktuellen Dependencies (hive_ce,
+      shared_preferences, http, image_picker, connectivity_plus,
+      google_fonts) laufen bereits über SPM, CocoaPods läuft
+      praktisch leer mit.
+      Nächster Schritt: Vor dem Entfernen von `ios/Podfile`,
+      `ios/Podfile.lock` und `ios/Pods/` einmal einen echten
+      `flutter build ios` (oder App-Start über Xcode, auf echtem
+      Gerät/Simulator) durchführen und bestätigen, dass der native
+      Build auch ohne Podfile weiterhin sauber läuft — erst danach
+      die CocoaPods-Dateien entfernen. Kein Zeitdruck vor Dezember
+      2026, aber unkritisch früh erledigbar.
 
 ---
 
