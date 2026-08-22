@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 397a · wird fortlaufend ergänzt
+Stand: August 2026 · Run 398a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -19,6 +19,9 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       für welchen Standort hinterlegt?
       Für SB steht aktuell "54017635" in config/terminal_ids.json — bisher
       nur Annahme, von Yannik noch nicht bestätigt (Stand 2026-07-12).
+      Siehe auch "TID-Whitelist konfigurierbar + Abgleich beim Scannen"
+      weiter unten (UI/Prüf-Logik dafür, unabhängig von dieser
+      Datenklärung).
 
 - [ ] **Terminals bei doppelter TID am selben Tag** Wenn dieselbe
       physische Terminal-ID an einem Tag zweimal abgerechnet wird
@@ -57,6 +60,47 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Offline-Hinweis bei BelegScan konkretisieren** Die
+      Verbindungsprüfung beim Tap aufs Foto-Icon existiert bereits
+      (`_starteEcBelegScan()` in tagesabschluss_schritt2_seite.dart,
+      `Connectivity().checkConnectivity()`), zeigt aber nur die
+      generische SnackBar "Kein Internet – Scan nicht möglich."
+      Ergänzen: Hinweis, dass die Kartenzahlungsdaten stattdessen
+      manuell eingegeben werden können/müssen (analog zum
+      bestehenden Hinweistext bei unscharfem Foto/Netzwerkfehler,
+      Run 329/329a). Siehe auch Roadmap-Punkt "Offline-Hinweis"
+      weiter unten (allgemeiner Banner app-weit, anderer Ort/Umfang).
+
+- [ ] **Gesendet-Haken verschwindet nicht über den 6-Uhr-Knick, wenn
+      App im Hintergrund bleibt** Der grüne Haken auf dem
+      "Kassenabrechnung"-Button im Startmenü wird nur bei
+      `initState()` und `didPopNext()` (Rückkehr von einer anderen
+      Seite) neu geprüft (`_pruefeAbrechnungHeuteGesendet()` in
+      startmenue_seite.dart) — es gibt keinen
+      AppLifecycleState-Listener für den Fall, dass die App nur in
+      den Hintergrund geschickt ("weggewischt", nicht beendet) und
+      über den 6-Uhr-Knick hinweg wieder in den Vordergrund geholt
+      wird, ohne dass zwischendurch navigiert wurde. Die Prüfung
+      selbst berücksichtigt den logischen Tag korrekt
+      (`DatumsHelper.logischesIsoDatum()`), sie wird in diesem Fall
+      nur nicht erneut ausgeführt. Beobachtet von Paco: App um 10:45
+      geöffnet, grüner Haken noch vom Vortag sichtbar. Nicht zu
+      verwechseln mit dem bereits in Run 396a behobenen Fall (Haken
+      blieb nach Löschen der heutigen Abrechnung stehen) — hier fehlt
+      das erneute Prüfen beim Resume, nicht das Löschen der
+      Sende-Signatur.
+
+- [ ] **CocoaPods entfernen (ios/)** `ios/Podfile` und
+      `ios/Podfile.lock` sind eingecheckt, obwohl die App laut
+      Zielplattform-Festlegung als Web-PWA auf Android-Smartphones
+      läuft (Kunde) bzw. für Paco privat nur über Safari/Web getestet
+      wird (siehe Memory "Zielplattform Android") — ein natives
+      iOS-Build scheint nicht genutzt zu werden. Vor dem Entfernen
+      kurz mit Paco gegenprüfen, ob `flutter run`/`build` für iOS
+      (Simulator o. Ä.) doch irgendwo gebraucht wird, sonst
+      `ios/Podfile`, `ios/Podfile.lock` und lokale `ios/Pods/`
+      entfernen.
 
 ---
 
@@ -98,8 +142,14 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
-- [ ] **TID-Whitelist konfigurierbar** Pro Standort in Einstellungen
-      editierbar. Prüfung nach BelegScan — Warnung bei unbekannter TID.
+- [ ] **TID-Whitelist konfigurierbar + Abgleich beim Scannen** Die
+      TID-Vorgaben je Standort liegen aktuell nur statisch in
+      `config/terminal_ids.json` (siehe auch blockierten Punkt
+      "Registrierte TIDs pro Standort" oben — Werte bis auf SB von
+      Yannik noch nicht bestätigt). Gewünscht: eigene Felder pro
+      Standort in den Einstellungen, dort editierbar; beim
+      BelegScan wird die eingelesene TID gegen diese Vorgaben
+      geprüft, Warnung bei unbekannter TID.
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
@@ -162,6 +212,35 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       PWA-Verhalten (`sw_update_service_web.dart`, `web/`) dazu
       verhält — Standard-Service-Worker-Caching sollte das eigentlich
       schon so handhaben, ggf. reicht eine Bestätigung statt Umbau.
+
+### Verlauf
+
+- [ ] **Bargeld-/Kartenzahlungen-Kachel: Unterkategorien einzeln
+      klappbar** In der Verlauf-Detailansicht sind "Bargeld" und die
+      EC-Aufschlüsselung innerhalb von "Belege" bereits als
+      ExpansionTile aufklappbar, aber alle Unterzeilen (Scheine,
+      Münzrollen, Lose Münzen, Umschläge bzw. die einzelnen
+      Terminal-Zeilen) werden beim Aufklappen komplett auf einmal
+      angezeigt statt selbst wieder ein-/ausklappbar zu sein
+      (`verlauf_detail_seite.dart`, Abschnitt "Bargeld" mit
+      `_scheinUnterzeilen()`/`_rollenUnterzeilen()`/
+      `_loseMuenzenUnterzeilen()`/`_umschlagUnterzeilen()`; Abschnitt
+      "Belege" mit `_ecBelegUnterzeilen()`).
+
+- [ ] **Grünes "gesendet"-Badge im Verlauf** Aktuell gibt es nur ein
+      negatives `NichtGesendetBadge` (angezeigt wenn
+      `eintrag.gesendetAm == null`), aber kein positives Badge für
+      erfolgreich gesendete Einträge — der Zustand "gesendet" ist nur
+      am Fehlen des roten Badges erkennbar. Neues grünes Badge analog
+      zu `NichtGesendetBadge`/`HeuteBadge` ergänzen
+      (`verlauf_seite.dart`, `verlauf_detail_seite.dart`).
+      Zur Klarstellung (Prüfung 2026-08-22): Der frühere Bug
+      "erfolgreich gesendete Einträge zeigen weiterhin 'noch nicht
+      gesendet'" ist NICHT mehr offen — bereits in Run 396
+      vollständig behoben (beide Ursachen: markiereAlsGesendet() im
+      falschen mounted-Block + Verlauf-Liste lud nach "Erneut
+      senden" nicht neu). Dieser Punkt hier ist rein additiv (neues
+      positives Badge), kein Bugfix.
 
 ### Weitere Features
 

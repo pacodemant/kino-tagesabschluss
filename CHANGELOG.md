@@ -9,6 +9,54 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 398a: Direkte Anweisung ohne eigene Run-Nummer (Typ:
+  documentation, reine TODO.md-Pflege, kein App-Code geändert). Paco
+  hat 9 neue Punkte zum Einordnen genannt; vor dem Eintragen jeweils
+  geprüft, ob bereits erledigt oder mit bestehenden Punkten
+  überschneidend:
+  1) Offline-Hinweis bei BelegScan → neuer Punkt in "Kleine Fixes":
+     Verbindungsprüfung beim Foto-Icon-Tap existiert bereits
+     (`_starteEcBelegScan()`, tagesabschluss_schritt2_seite.dart),
+     zeigt aber nur generische Meldung statt Hinweis auf manuelle
+     Eingabe — Text ergänzen, keine neue Logik nötig.
+  2) "Finde doppelte Implementierungen" → bereits als laufende Serie
+     "Duplikat-/Abstraktions-Audit" in TODO.md vorhanden (Run 373 ff.,
+     Kandidatensuche ausdrücklich als offen markiert) — keine
+     Dopplung angelegt.
+  3) TID-Vorgaben/Einstellungen-Felder → deckt sich mit bereits
+     vorhandenem Punkt "TID-Whitelist konfigurierbar" (Einstellungen
+     & Konfiguration) — Punkt umbenannt/präzisiert zu "TID-Whitelist
+     konfigurierbar + Abgleich beim Scannen" mit Verweis auf
+     config/terminal_ids.json und Querverweis zum blockierten Punkt
+     "Registrierte TIDs pro Standort".
+  4) Grüner Haken übersteht 6-Uhr-Knick bei App im Hintergrund →
+     neuer Punkt in "Kleine Fixes". Code-Analyse ergab konkrete
+     Ursache: `_pruefeAbrechnungHeuteGesendet()` in
+     startmenue_seite.dart läuft nur bei initState()/didPopNext(),
+     es fehlt ein AppLifecycleState-Listener für Resume aus dem
+     Hintergrund. Ausdrücklich nicht zu verwechseln mit dem bereits
+     in Run 396a behobenen Löschen-Fall.
+  5) Verlauf: Bargeld-/Kartenzahlungen-Unterkategorien einzeln
+     klappbar → neuer Punkt in neuer Unterrubrik "Verlauf" unter
+     Mittlere Features, mit Methodenverweisen in
+     verlauf_detail_seite.dart.
+  6) Grünes "gesendet"-Badge im Verlauf → neuer Punkt in derselben
+     neuen Unterrubrik; aktuell existiert nur das negative
+     NichtGesendetBadge.
+  7) Nachfrage, ob der Bug "gesendete Einträge zeigen weiterhin
+     'noch nicht gesendet'" schon dokumentiert ist → geprüft: ja,
+     bereits vollständig in Run 396 behoben (beide Ursachen). Kein
+     neuer TODO-Punkt, stattdessen Klarstellung direkt beim neuen
+     Badge-Punkt ergänzt, damit die beiden Themen nicht verwechselt
+     werden.
+  8) CocoaPods entfernen → neuer Punkt in "Kleine Fixes"
+     (ios/Podfile, ios/Podfile.lock), mit Hinweis, vor dem Löschen
+     gegenzuprüfen ob natives iOS-Build noch gebraucht wird.
+  9) Redundanzen in TODO.md konsolidieren → als Teil dieses Runs
+     erledigt (siehe Punkte 2/3/7 oben plus Kopfzeile aktualisiert).
+  Keine sonstigen TODO.md-Inhalte umformuliert oder verschoben.
+  Datei: TODO.md.
+
 - Run 398: QR-Code wieder eingebaut (Typ: standard). Anlass:
   Paco-Wunsch — für die Neuinstallation der PWA auf dem SB-Device
   (nach der Umstellung von display "standalone" auf "fullscreen"
