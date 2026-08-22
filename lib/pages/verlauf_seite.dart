@@ -4,6 +4,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
+import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
@@ -132,11 +133,12 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                                   color: farbe,
                                 ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            color: Colors.red.shade400,
-                            onPressed: () => _loescheEintrag(eintrag),
-                          ),
+                          if (AdminSession.entsperrt)
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline),
+                              color: Colors.red.shade400,
+                              onPressed: () => _loescheEintrag(eintrag),
+                            ),
                         ],
                       ),
                       onTap: () async {

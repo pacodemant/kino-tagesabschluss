@@ -5,6 +5,7 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
@@ -471,21 +472,23 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                         : const Text('Erneut senden'),
                   ),
                 ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  height: 44,
-                  width: double.infinity,
-                  child: OutlinedButton(
-                    onPressed: _loescht ? null : _loescheEintrag,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.red.shade700,
-                      side: BorderSide(color: Colors.red.shade300),
-                    ),
-                    child: Text(
-                      _loescht ? 'Wird gelöscht...' : 'Eintrag löschen',
+                if (AdminSession.entsperrt) ...<Widget>[
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    height: 44,
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: _loescht ? null : _loescheEintrag,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red.shade700,
+                        side: BorderSide(color: Colors.red.shade300),
+                      ),
+                      child: Text(
+                        _loescht ? 'Wird gelöscht...' : 'Eintrag löschen',
+                      ),
                     ),
                   ),
-                ),
+                ],
               ],
             ),
           ),

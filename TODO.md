@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 398a2 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 398b · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -195,6 +195,19 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       verständliche Meldung + Textbutton "Info an Buchhaltung senden".
       Nach Tap: Mail an konfigurierte Adresse, Bestätigung "Buchhaltung ist
       informiert — Abrechnung beendet." Setzt CORS-Freigabe voraus.
+      Ergänzung Paco-Idee (2026-08-22): lokale Verlauf-Seite soll bei
+      einer Korrektur nicht nur `gesendetAm` am bestehenden Eintrag
+      aktualisieren, sondern einen zusätzlichen, eigenen
+      Verlaufseintrag anlegen — mit "Heute"-Badge (falls zutreffend)
+      UND einem neuen "Korr."-Badge, damit der ursprüngliche und der
+      Korrektur-Versand beide sichtbar und unterscheidbar bleiben.
+      Betrifft primär die lokale Datenhaltung/UI (verlauf_seite.dart,
+      verlauf_detail_seite.dart, TagesabschlussFinal), weitgehend
+      unabhängig von der offenen `settlement_number`-Frage oben — aber
+      inhaltlich verwandt, da beides denselben "Erneut senden"-Vorgang
+      betrifft. Vor Umsetzung klären, ob/wie sich das mit der
+      Mehrfach-Abrechnung-Logik für Kinos mit `maxAbrechnungenProTag`
+      > 1 (aktuell nur Bar Tabak) verträgt.
 
 - [ ] **Buchhaltungs-E-Mail konfigurierbar** Empfängeradresse in Einstellungen.
       Mailmethode abhängig von Yannik-Antwort.

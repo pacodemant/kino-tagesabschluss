@@ -9,6 +9,55 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 398b: Direkte Anweisung ohne eigene Run-Nummer, drei Punkte aus
+  Pacos Feedback zu Run 396a, alle in derselben Nachricht:
+  1) Revert Run 396a: Paco erkannte beim Testen selbst, dass die
+     Logik keinen Sinn ergibt — "Wenn der Verlauf-Eintrag nach dem
+     Senden gelöscht wird, wurden die Daten ja trotzdem gesendet."
+     Der grüne "gesendet"-Haken im Startmenü soll widerspiegeln, ob
+     heute erfolgreich an Flurbocash gesendet wurde, nicht ob noch
+     ein lokaler Verlaufseintrag existiert. Der in Run 396a
+     ergänzte Aufruf von loescheSendeBestaetigung() innerhalb von
+     LokalerSpeicher.loescheFinalenTagesabschluss() wurde entfernt
+     (Datei: lib/storage/lokaler_speicher.dart). Geprüft: Run 397s
+     "Heutige Abrechnung zurücksetzen (Test)"-Button ruft
+     loescheSendeBestaetigung() bereits selbst explizit auf, ist von
+     diesem Revert also nicht betroffen.
+  2) Verlauf-Löschen nur noch als Admin: Paco fand, Verlauf-Einträge
+     sollten nicht frei löschbar sein, nur als Admin. Es existiert
+     bereits ein PIN-geschützter Admin-Bereich in den Einstellungen
+     (PIN-Abfrage, Session hält für die App-Laufzeit). Das bisher
+     private Session-Flag `_adminSessionEntsperrt` aus
+     einstellungen_seite.dart wurde in eine neue, kleine Klasse
+     `AdminSession` ausgelagert (lib/services/admin_session.dart),
+     damit auch andere Seiten darauf zugreifen können. Der
+     Löschen-Button in der Verlauf-Liste (verlauf_seite.dart) und
+     der "Eintrag löschen"-Button in der Verlauf-Detailseite
+     (verlauf_detail_seite.dart) sind jetzt nur sichtbar, wenn
+     `AdminSession.entsperrt == true` — d. h. die Admin-Session wurde
+     in dieser App-Session bereits über die Einstellungen (PIN)
+     entsperrt. Kein PIN-Prompt direkt aus dem Verlauf heraus (bewusst
+     einfachste Umsetzung); MA ohne entsperrte Admin-Session sehen
+     keinen Löschen-Button mehr, weder in der Liste noch in der
+     Detailseite.
+  3) TODO.md präzisiert (nur Dokumentation): Pacos Idee, dass eine
+     Korrektur-Sendung einen zusätzlichen Verlaufseintrag mit
+     "Heute"- und neuem "Korr."-Badge anlegen soll (statt nur
+     gesendetAm am bestehenden Eintrag zu aktualisieren), wurde als
+     Ergänzung beim bestehenden Punkt "'Erneut senden' →
+     Korrektur-Call + Max-4-Fehlermeldung" (Flurbocash
+     API-Integration) eingetragen — keine Umsetzung, da inhaltlich an
+     die noch offene settlement_number-Klärung mit Yannik/IT
+     gekoppelt.
+  Zusätzlich: Paco bat allgemein darum, künftige Anweisungen vor der
+  Umsetzung stärker auf fachliche Logik/Praktikabilität zu prüfen und
+  bei Unstimmigkeiten aktiv zu warnen statt blind umzusetzen — als
+  Feedback-Memory gespeichert, kein Code-Effekt in diesem Run.
+  Dateien: lib/storage/lokaler_speicher.dart,
+  lib/services/admin_session.dart (neu),
+  lib/pages/einstellungen_seite.dart, lib/pages/verlauf_seite.dart,
+  lib/pages/verlauf_detail_seite.dart, TODO.md.
+
 - Run 398a2: Direkte Anweisung ohne eigene Run-Nummer, Korrektur zu
   Run 398a Punkt 8 (Typ: documentation, reine TODO.md-Pflege, kein
   App-Code geändert). Paco wies zurück: Die Prämisse "iOS wird nicht

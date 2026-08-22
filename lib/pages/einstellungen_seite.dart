@@ -8,6 +8,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
+import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/getraenke_config_service.dart';
@@ -62,10 +63,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       const EinstellungenGruppenOrchestrierung();
 
   final TextEditingController _wgCtrl = TextEditingController();
-  /// Bleibt über neue State-Instanzen dieser Seite hinweg erhalten
-  /// (im selben App-Lauf), verfällt aber bei echtem Neuladen der App —
-  /// Grundlage für "Admin-Status halten".
-  static bool _adminSessionEntsperrt = false;
 
   int _aktiveKinoIndex = -1;
   String _aktiveKinoName = '';
@@ -257,7 +254,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _geladen = true;
       _standortModusKinoId = standortModus;
       _adminStatusHaltenAktiv = adminStatusHaltenAktiv;
-      if (adminStatusHaltenAktiv && _adminSessionEntsperrt) {
+      if (adminStatusHaltenAktiv && AdminSession.entsperrt) {
         _devAufgeklappt = true;
       }
     });
@@ -400,7 +397,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     if (!mounted) return;
     if (eingegebenerPin == null) return;
     if (eingegebenerPin == '1929') {
-      _adminSessionEntsperrt = true;
+      AdminSession.entsperrt = true;
       setState(() => _devAufgeklappt = true);
     } else {
       zeigeHinweisSnackBar(context, 'Falscher PIN');

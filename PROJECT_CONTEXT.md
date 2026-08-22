@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.70+398a2 · Run 398a2
+Version: 0.9.70+398b · Run 398b
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -147,7 +147,21 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 397a)
+## Laufender Entwicklungsstand (Run 398b)
+
+- Run 398b ✅ Direkte Anweisung ohne eigene Run-Nummer, drei Punkte aus
+  Pacos Feedback zu Run 396a: (1) Revert — Löschen der heutigen
+  Verlauf-Abrechnung setzt den grünen "gesendet"-Haken im Startmenü
+  NICHT mehr zurück (Paco: die Daten wurden ja trotzdem gesendet,
+  Run 396a war fachlich falsch gedacht). (2) Verlauf-Löschen (Liste +
+  Detailseite) ist jetzt an die bestehende PIN-Admin-Session gekoppelt
+  — Löschen-Button nur sichtbar, wenn die Admin-Session (Einstellungen,
+  PIN) in dieser App-Session bereits entsperrt wurde. Dafür Admin-
+  Session-Flag aus einstellungen_seite.dart in neue Klasse
+  AdminSession (lib/services/admin_session.dart) ausgelagert. (3)
+  TODO.md um Pacos Idee "Korrektur legt zusätzlichen Verlaufseintrag
+  mit Heute+Korr.-Badge an" präzisiert (nur Dokumentation, keine
+  Umsetzung). Details siehe CHANGELOG.md.
 
 - Run 397a ✅ Ergänzung zu Run 397: manuell von Paco vorbereitete
   Textänderung nachträglich mitcommittet (ExpansionTile-Titel in

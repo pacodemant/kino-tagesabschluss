@@ -562,14 +562,6 @@ class LokalerSpeicher {
     }
 
     await box.put(key, jsonEncode(aktualisiert));
-
-    // Wird die heutige Abrechnung gelöscht, muss auch der grüne
-    // "gesendet"-Haken (Startmenü-Buttons) wieder verschwinden — dessen
-    // Signatur ist pro Kino in SharedPreferences gespeichert und überlebt
-    // sonst unabhängig von der gerade gelöschten Abrechnung.
-    if (DatumsHelper.isoDatum(datum) == DatumsHelper.logischesIsoDatum()) {
-      await loescheSendeBestaetigung(kinoId);
-    }
   }
 
   /// Entfernt abgeschlossene Tagesabrechnungen, deren Kalendertag mehr als
