@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.70+398b · Run 398b
+Version: 0.9.71+399 · Run 399
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -113,6 +113,8 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 - `AbrechnungSpeicher` — Entwürfe mit 4-Uhr-Datum-Logik persistieren
 - `GetraenkeConfigService` / `WechselgeldConfigService` — Asset-Konfig laden & cachen
 - `ZahlungsartenConfigService` — Kartenarten aus `config/zahlungsarten.txt`
+- `TerminalIdsConfigService` — TIDs pro Standort aus `config/terminal_ids.json`
+  (seit Run 399, Warnungs-Abgleich in `ApiUploadService.upload()`)
 - `DevModus` — Dev-Modus (SharedPreferences-Key `dev_modus_aktiv`)
 - `PwaInstallService` / `StoragePersistService` — Web-spezifisch (Stub für andere Plattformen)
 
@@ -147,7 +149,21 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 398b)
+## Laufender Entwicklungsstand (Run 399)
+
+- Run 399 ✅ Diagnose zu falsch/als 0€ ankommenden Flurbocash-Beträgen.
+  Zwei Bugs in `ApiUploadService._terminalsListe()` behoben (Kartenart-
+  Mapping ohne Normalisierung verlor Beträge stillschweigend; keine
+  Konsistenzprüfung EC-Umsatz vs. Kartenart-Aufschlüsselung). Neu:
+  TID-Abgleich gegen `config/terminal_ids.json` als nicht-blockierende
+  Warnung (`TerminalIdsConfigService`, `upload()` liefert jetzt
+  `Future<List<String>>`). Details siehe CHANGELOG.md und
+  TODO_ERLEDIGT.md. Offene Anschlussfragen (nicht in diesem Run
+  behoben): `isCorsArtFehler()`-Fallback markiert Uploads bei jedem
+  generischen Netzwerkfehler als erfolgreich; `settlement_number` wird
+  nirgends gesetzt, jeder erneute Sendeversuch legt eine neue statt
+  einer korrigierten Abrechnung an (siehe TODO.md "Erneut senden →
+  Korrektur-Call + Max-4-Fehlermeldung").
 
 - Run 398b ✅ Direkte Anweisung ohne eigene Run-Nummer, drei Punkte aus
   Pacos Feedback zu Run 396a: (1) Revert — Löschen der heutigen

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 
@@ -89,6 +90,285 @@ void main() {
       expect(terminal['girocard'], 2000);
       expect(terminal['visa'], 1000);
       expect(terminal['mastercard'], 0);
+    });
+
+    int summeAllerKartenfelderCent(Map<String, dynamic> body) {
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final List<dynamic> terminals =
+          settlement['terminals'] as List<dynamic>;
+      int summe = 0;
+      for (final dynamic t in terminals) {
+        final Map<String, dynamic> terminal = t as Map<String, dynamic>;
+        for (final String feld in <String>[
+          'girocard',
+          'lastschrift',
+          'mastercard',
+          'visa',
+          'maestro',
+          'vpay',
+        ]) {
+          summe += terminal[feld] as int;
+        }
+      }
+      return summe;
+    }
+
+    test(
+        'Fix Bug 1: Kartenart in Großschreibung (z.B. KI-Scan liefert '
+        '"MASTERCARD") wird jetzt trotzdem erkannt', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 3000,
+          terminalId: '12345',
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(art: 'MASTERCARD', betragCent: 3000),
+          ],
+        ),
+      );
+
+      expect(summeAllerKartenfelderCent(body), 3000);
+    });
+
+    test(
+        'Fix Bug 1: Kartenart mit umgebendem Leerzeichen (z.B. " Girocard" '
+        'aus KI-Scan) wird jetzt trotzdem erkannt', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 2000,
+          terminalId: '12345',
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(art: ' Girocard', betragCent: 2000),
+          ],
+        ),
+      );
+
+      expect(summeAllerKartenfelderCent(body), 2000);
+    });
+
+    test(
+        'Fix Bug 1: Echte unbekannte Kartenart (z.B. "Amex") wirft jetzt '
+        'eine Exception statt den Betrag stillschweigend zu verlieren', () {
+      expect(
+        () => ApiUploadService.settlementsBody(
+          abrechnung(
+            ecUmsatzGesamtCent: 3000,
+            terminalId: '12345',
+            zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+              ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000),
+              // "Amex" ist keine im Kino akzeptierte Kartenart, ergo
+              // nicht im Mapping — realistisch, falls die Beleg-Scan-KI
+              // trotzdem eine Zeile dafür erkennt.
+              ZahlungsartErgebnis(art: 'Amex', betragCent: 1000),
+            ],
+          ),
+        ),
+        throwsA(
+          predicate(
+            (Object e) => e is Exception && e.toString().contains('Amex'),
+          ),
+        ),
+      );
+    });
+
+    test(
+        'Fix Bug 2: Summe der Kartenart-Aufschlüsselung weicht von '
+        'ecUmsatzGesamtCent ab → wirft jetzt eine Exception', () {
+      // ecUmsatzGesamtCent kommt aus der Summe der Beleg-Gesamtbeträge
+      // (ecBelegeCent), zahlungsartenAufschluesselung ist eine davon
+      // unabhängige zweite Datenquelle (siehe
+      // tagesabschluss_finalisieren_usecase.dart). Beide können
+      // auseinanderlaufen, z.B. wenn ein Beleg-Betrag nachträglich in
+      // Schritt 2 manuell korrigiert wird, ohne die Kartenart-Zeilen
+      // anzupassen.
+      expect(
+        () => ApiUploadService.settlementsBody(
+          abrechnung(
+            ecUmsatzGesamtCent: 5000,
+            terminalId: '12345',
+            zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+              ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000),
+            ],
+          ),
+        ),
+        throwsA(
+          predicate(
+            (Object e) =>
+                e is Exception &&
+                e.toString().contains('50,00 €') &&
+                e.toString().contains('20,00 €'),
+          ),
+        ),
+      );
+    });
+
+    test('Kontrolltest: mehrere Terminals (TIDs) werden korrekt getrennt',
+        () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 4000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000, tid: 'A'),
+            ZahlungsartErgebnis(art: 'Visa', betragCent: 2000, tid: 'B'),
+          ],
+        ),
+      );
+
+      final List<dynamic> settlements =
+          body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final List<dynamic> terminals =
+          settlement['terminals'] as List<dynamic>;
+
+      expect(terminals.length, 2);
+      final Map<String, dynamic> terminalA = terminals.firstWhere(
+        (dynamic t) => (t as Map<String, dynamic>)['tid'] == 'A',
+      ) as Map<String, dynamic>;
+      final Map<String, dynamic> terminalB = terminals.firstWhere(
+        (dynamic t) => (t as Map<String, dynamic>)['tid'] == 'B',
+      ) as Map<String, dynamic>;
+      expect(terminalA['girocard'], 2000);
+      expect(terminalB['visa'], 2000);
+    });
+
+    test('Kontrolltest: cash_total entspricht 1:1 '
+        'barBestandAbzglWechselgeldCent', () {
+      final TagesabschlussFinal a = abrechnung();
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(a);
+      final List<dynamic> settlements =
+          body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      expect(settlement['cash_total'], a.barBestandAbzglWechselgeldCent);
+    });
+  });
+
+  group('ApiUploadService.ensureBody', () {
+    test('location_id und Datum werden unverändert/korrekt übernommen', () {
+      final TagesabschlussFinal a = TagesabschlussFinal(
+        kinoId: 'kino_01',
+        kinoName: 'Schauburg',
+        datum: DateTime(2026, 8, 22),
+        createdAt: DateTime(2026, 8, 22, 23, 0),
+        scheineCent: 0,
+        loseMuenzenCent: 0,
+        rollenCent: 0,
+        umschlaegeCent: 0,
+        kassenbestandGesamtCent: 0,
+        wechselgeldSollwertCent: 0,
+        barBestandAbzglWechselgeldCent: 0,
+        kinoSollCent: 0,
+        bistroSollCent: 0,
+        ausgabenCent: 0,
+        ecBelegeCent: const <int>[],
+        ecUmsatzGesamtCent: 0,
+        gesamtSollCent: 0,
+        gesamtIstCent: 0,
+        differenzGesamtCent: 0,
+        differenzAnfangsbestandCent: 0,
+      );
+
+      final Map<String, dynamic> body = ApiUploadService.ensureBody(a, 9);
+
+      expect(body['location_id'], 9);
+      expect(body['date'], '2026-08-22');
+    });
+  });
+
+  group('ApiUploadService.pruefeTerminalIdsGegenKonfiguration', () {
+    const Kino schauburg = Kino(id: 'kino_01', name: 'Schauburg', kuerzel: 'SB');
+    const Map<String, List<String>> konfiguration = <String, List<String>>{
+      'SB': <String>['54017635'],
+      'CO': <String>['54017639'],
+    };
+
+    test('bekannte, registrierte TID → keine Warnung', () {
+      expect(
+        ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+          <String>['54017635'],
+          schauburg,
+          konfiguration,
+        ),
+        isEmpty,
+      );
+    });
+
+    test(
+        'TID eines anderen Standorts (z.B. Beleg von Cinema Ostertor unter '
+        'Schauburg gesendet) → Warnung mit Kino-Name und erwarteten TIDs, '
+        'aber KEINE Exception (Referenzliste ist laut TODO.md unbestätigt)',
+        () {
+      final List<String> warnungen =
+          ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+        <String>['54017639'],
+        schauburg,
+        konfiguration,
+      );
+
+      expect(warnungen, hasLength(1));
+      expect(warnungen.single, contains('54017639'));
+      expect(warnungen.single, contains('Schauburg'));
+      expect(warnungen.single, contains('54017635'));
+    });
+
+    test('leere TID trotz EC-Umsatz → Warnung', () {
+      final List<String> warnungen =
+          ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+        <String>[''],
+        schauburg,
+        konfiguration,
+      );
+
+      expect(warnungen, hasLength(1));
+    });
+
+    test('Kino ohne hinterlegte TIDs (z.B. Platzhalter "XXXX") → Warnung',
+        () {
+      const Kino gondel = Kino(id: 'kino_02', name: 'Gondel', kuerzel: 'GO');
+      final List<String> warnungen =
+          ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+        <String>['12345'],
+        gondel,
+        konfiguration,
+      );
+
+      expect(warnungen, hasLength(1));
+      expect(warnungen.single, contains('keine TID'));
+    });
+
+    test('unbekanntes Kino (kino == null) → keine Warnung statt Absturz',
+        () {
+      expect(
+        ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+          <String>['54017635'],
+          null,
+          konfiguration,
+        ),
+        isEmpty,
+      );
+    });
+  });
+
+  group('ApiUploadService.tidsAusSettlementsBody', () {
+    test('extrahiert alle TIDs aus einem gebauten settlementsBody()', () {
+      final Map<String, dynamic> body = <String, dynamic>{
+        'settlements': <Map<String, dynamic>>[
+          <String, dynamic>{
+            'cash_total': 0,
+            'terminals': <Map<String, dynamic>>[
+              <String, dynamic>{'tid': 'A'},
+              <String, dynamic>{'tid': 'B'},
+            ],
+          },
+        ],
+      };
+
+      expect(
+        ApiUploadService.tidsAusSettlementsBody(body),
+        <String>['A', 'B'],
+      );
     });
   });
 }

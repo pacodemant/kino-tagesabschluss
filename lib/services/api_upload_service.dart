@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,24 +14,39 @@ class ApiUploadService {
 
   static const String apiUploadUrlPrefKey = 'api_upload_url';
 
+  // Schluessel normalisiert (getrimmt + kleingeschrieben) — der Lookup in
+  // _terminalsListe() normalisiert z.art genauso, damit vom Beleg-Scan
+  // gelieferte Varianten wie "MASTERCARD" oder " Girocard" nicht am reinen
+  // String-Vergleich scheitern und den Betrag stillschweigend verlieren.
   static const Map<String, String> _kartenartMapping = <String, String>{
-    'Girocard': 'girocard',
     'girocard': 'girocard',
-    'SEPA Lastschrift': 'lastschrift',
+    'sepa lastschrift': 'lastschrift',
     'lastschrift': 'lastschrift',
-    'MasterCard': 'mastercard',
     'mastercard': 'mastercard',
-    'Visa': 'visa',
     'visa': 'visa',
-    'Maestro': 'maestro',
     'maestro': 'maestro',
-    'V Pay': 'vpay',
+    'v pay': 'vpay',
     'vpay': 'vpay',
   };
 
-  static Future<void> upload(TagesabschlussFinal abrechnung) async {
+  static const List<String> _kartenfelder = <String>[
+    'girocard',
+    'lastschrift',
+    'mastercard',
+    'visa',
+    'maestro',
+    'vpay',
+  ];
+
+  /// Liefert Warnungen zu nicht erkannten TIDs zusaetzlich zum normalen
+  /// Erfolg — siehe [_pruefeTerminalIds]: die Referenzliste in
+  /// config/terminal_ids.json ist laut TODO.md fuer alle Standorte noch
+  /// nicht von Yannik bestaetigt, ein harter Block waere daher riskant.
+  static Future<List<String>> upload(TagesabschlussFinal abrechnung) async {
     final ({String url, int locationId, String apiKey}) konfig =
         await _ladeKonfigWerte(abrechnung.kinoId);
+
+    final List<String> warnungen = await _pruefeTerminalIds(abrechnung);
 
     final int reportId = await _ensure(
       konfig.url,
@@ -40,6 +57,71 @@ class ApiUploadService {
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
     await _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
+    return warnungen;
+  }
+
+  /// Gleicht die tatsächlich zu sendenden TIDs gegen config/terminal_ids.json
+  /// ab. Bewusst NICHT blockierend (siehe pruefeTerminalIdsGegenKonfiguration):
+  /// solange Yannik die TIDs nicht bestaetigt hat, darf eine falsche
+  /// Referenzliste keine echten Abrechnungen verhindern.
+  static Future<List<String>> _pruefeTerminalIds(
+    TagesabschlussFinal abrechnung,
+  ) async {
+    final List<String> tids =
+        tidsAusSettlementsBody(settlementsBody(abrechnung));
+    if (tids.isEmpty) return const <String>[];
+
+    final Kino? kino = KinoRepository.nachId(abrechnung.kinoId);
+    final Map<String, List<String>> konfiguration =
+        await TerminalIdsConfigService.laden();
+    return pruefeTerminalIdsGegenKonfiguration(tids, kino, konfiguration);
+  }
+
+  /// Extrahiert alle TIDs aus einem bereits gebauten settlementsBody().
+  static List<String> tidsAusSettlementsBody(Map<String, dynamic> body) {
+    final List<String> tids = <String>[];
+    for (final dynamic settlement in body['settlements'] as List<dynamic>) {
+      final List<dynamic> terminals =
+          (settlement as Map<String, dynamic>)['terminals'] as List<dynamic>;
+      for (final dynamic terminal in terminals) {
+        tids.add((terminal as Map<String, dynamic>)['tid'] as String);
+      }
+    }
+    return tids;
+  }
+
+  /// Reine, testbare Pruefung ohne Asset-Zugriff: liefert eine Warnmeldung
+  /// pro TID, die leer ist oder nicht zu den fuer [kino] registrierten TIDs
+  /// aus config/terminal_ids.json passt. Wirft bewusst NICHT — die
+  /// Referenzliste ist laut TODO.md noch unbestaetigt, ein Fehlalarm darf
+  /// den Versand nicht verhindern.
+  static List<String> pruefeTerminalIdsGegenKonfiguration(
+    List<String> verwendeteTids,
+    Kino? kino,
+    Map<String, List<String>> konfiguration,
+  ) {
+    if (kino == null) return const <String>[];
+    final List<String> erlaubte =
+        konfiguration[kino.kuerzel] ?? const <String>[];
+    final List<String> warnungen = <String>[];
+    for (final String tid in verwendeteTids) {
+      if (tid.isEmpty) {
+        warnungen.add(
+          'Keine Terminal-ID (TID) angegeben, obwohl EC-Umsatz erfasst '
+          'wurde.',
+        );
+        continue;
+      }
+      if (!erlaubte.contains(tid)) {
+        final String erwartetText =
+            erlaubte.isEmpty ? 'keine TID hinterlegt' : erlaubte.join(', ');
+        warnungen.add(
+          'TID "$tid" ist fuer ${kino.name} nicht als Terminal hinterlegt '
+          '(erwartet: $erwartetText). Bitte pruefen.',
+        );
+      }
+    }
+    return warnungen;
   }
 
   static Future<({String url, int locationId, String apiKey})> _ladeKonfigWerte(
@@ -160,18 +242,51 @@ class ApiUploadService {
 
     final Map<String, Map<String, int>> proTid = <String, Map<String, int>>{};
     for (final ZahlungsartErgebnis z in liste) {
-      final String? feldname = _kartenartMapping[z.art];
-      if (feldname == null || z.betragCent == null) continue;
+      if (z.betragCent == null) continue;
+      final String? feldname = _kartenartMapping[z.art.trim().toLowerCase()];
+      if (feldname == null) {
+        throw Exception(
+          'Unbekannte Kartenart "${z.art}" '
+          '(${TagesabschlussFormatierung.formatiereEuro(z.betragCent!)}) in '
+          'der EC-Aufschlüsselung. Bitte in Schritt 2 korrigieren oder IT '
+          'kontaktieren.',
+        );
+      }
       final String tid = z.tid ?? abrechnung.terminalId ?? '';
       final Map<String, int> betraege =
           proTid.putIfAbsent(tid, () => <String, int>{});
       betraege[feldname] = (betraege[feldname] ?? 0) + z.betragCent!;
     }
 
-    return proTid.entries
+    final List<Map<String, dynamic>> terminals = proTid.entries
         .map((MapEntry<String, Map<String, int>> e) =>
             _terminalEintrag(e.key, e.value))
         .toList();
+
+    // ecUmsatzGesamtCent (Summe der Beleg-Gesamtbeträge) und
+    // zahlungsartenAufschluesselung sind zwei unabhängige Datenquellen
+    // (siehe tagesabschluss_finalisieren_usecase.dart) und können
+    // auseinanderlaufen, z.B. wenn ein Beleg-Betrag nachträglich manuell
+    // korrigiert wird, ohne die Kartenart-Zeilen anzupassen.
+    final int summeTerminals = terminals.fold<int>(
+      0,
+      (int summe, Map<String, dynamic> t) => summe +
+          _kartenfelder.fold<int>(
+            0,
+            (int s, String feld) => s + (t[feld] as int),
+          ),
+    );
+    if (summeTerminals != abrechnung.ecUmsatzGesamtCent) {
+      throw Exception(
+        'Summe der Kartenart-Aufschlüsselung '
+        '(${TagesabschlussFormatierung.formatiereEuro(summeTerminals)}) '
+        'stimmt nicht mit dem erfassten EC-Umsatz '
+        '(${TagesabschlussFormatierung.formatiereEuro(abrechnung.ecUmsatzGesamtCent)}) '
+        'überein. Bitte Belege in Schritt 2 prüfen.',
+      );
+    }
+
+    return terminals;
   }
 
   static Map<String, dynamic> _terminalEintrag(

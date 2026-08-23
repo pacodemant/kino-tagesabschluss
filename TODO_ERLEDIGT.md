@@ -203,6 +203,23 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       Bedarf sinnvoll (z. B. Weitergabe an Buchhaltung bei Langzeitausfall
       des Uploads).
 
+- [x] **TID-Abgleich gegen config/terminal_ids.json (Warnung)** Ausgelöst
+      durch Diagnose zu falsch ankommenden Flurbocash-Beträgen. Neuer
+      `TerminalIdsConfigService` lädt config/terminal_ids.json (jetzt als
+      Asset gelistet); `ApiUploadService.pruefeTerminalIdsGegenKonfiguration()`
+      vergleicht die zu sendenden TIDs damit und liefert Warnungen statt
+      zu blockieren — die Referenzliste ist laut Punkt "Registrierte TIDs
+      pro Standort" oben noch nicht von Yannik bestätigt, ein harter Block
+      hätte also potenziell korrekte Abrechnungen verhindern können.
+      `ApiUploadService.upload()` liefert jetzt `Future<List<String>>`
+      (Warnungen), Schritt 3 hängt sie an die Erfolgs-SnackBar an, ohne den
+      Versand zu stoppen. Abweichung vom ursprünglich geplanten Punkt
+      "TID-Whitelist konfigurierbar + Abgleich beim Scannen": Prüfung
+      liegt jetzt beim Upload (Schritt 3), nicht beim Scannen (Schritt 2),
+      und die TIDs kommen weiterhin aus der statischen JSON-Datei, nicht
+      aus editierbaren Einstellungen-Feldern. Diese zwei Teilaspekte
+      bleiben als eigener, kleinerer Punkt in TODO.md offen. *(Run 399)*
+
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
 - [x] **0-EUR-Terminal-Upload ohne Fehlermeldung** In

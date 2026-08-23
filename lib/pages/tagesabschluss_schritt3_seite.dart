@@ -316,7 +316,8 @@ class _TagesabschlussSchritt3SeiteState
       setState(() => _apiUploadLaeuft = true);
     }
     try {
-      await ApiUploadService.upload(_abschlussVorschau!);
+      final List<String> tidWarnungen =
+          await ApiUploadService.upload(_abschlussVorschau!);
       _apiUploadErledigt = true;
       // Bewusst nicht mounted-gated: diese beiden Aufrufe persistieren
       // den Sende-Status lokal und müssen auch dann laufen, wenn die
@@ -334,12 +335,15 @@ class _TagesabschlussSchritt3SeiteState
       );
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
+        final String nachricht = tidWarnungen.isEmpty
+            ? 'API Upload erfolgreich ✓'
+            : 'API Upload gesendet — Achtung: ${tidWarnungen.join(' ')}';
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: AppFarben.fokusFarbe,
             content: Text(
-              'API Upload erfolgreich ✓',
-              style: TextStyle(color: AppFarben.appBarRot),
+              nachricht,
+              style: const TextStyle(color: AppFarben.appBarRot),
             ),
           ),
         );

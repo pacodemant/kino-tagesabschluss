@@ -9,6 +9,60 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399: Diagnose zu falsch/als 0€ ankommenden Flurbocash-Beträgen
+  (Meldung: MA-Abrechnung kam mit 0€ an, Pacos eigene Abrechnung mit
+  falschen Beträgen). Diagnose per neuer/erweiterter Unit-Tests in
+  test/services/api_upload_service_test.dart aufgedeckte und behobene
+  Bugs in api_upload_service.dart:
+  1) _kartenartMapping war ein exaktes String-Lookup ohne .trim()/
+     Normalisierung — vom Beleg-Scan gelieferte Varianten wie
+     "MASTERCARD" (Großschreibung) oder " Girocard" (Leerzeichen)
+     matchten nicht und der Betrag wurde in _terminalsListe()
+     kommentarlos übersprungen (`continue`), ohne Fehlermeldung.
+     Fix: Mapping-Keys normalisiert (kleingeschrieben), Lookup macht
+     jetzt `z.art.trim().toLowerCase()`. Für eine danach immer noch
+     unbekannte Kartenart (z. B. eine nicht unterstützte Kartenmarke)
+     wirft die Funktion jetzt eine Exception statt den Betrag still
+     zu verwerfen.
+  2) Keine Konsistenzprüfung zwischen ecUmsatzGesamtCent (Summe der
+     Beleg-Gesamtbeträge, siehe tagesabschluss_finalisieren_usecase.dart)
+     und der Summe der zahlungsartenAufschluesselung — beides sind
+     unabhängige Datenquellen, die auseinanderlaufen können (z. B.
+     Beleg-Betrag in Schritt 2 nachträglich manuell korrigiert, ohne
+     die Kartenart-Zeilen anzupassen). Fix: _terminalsListe() prüft
+     nach dem Aufbau der Terminal-Liste, ob deren Summe zu
+     ecUmsatzGesamtCent passt, und wirft sonst eine Exception mit
+     beiden Beträgen in der Meldung.
+  Zusätzlich neue, von Paco angeforderte Maßnahme (deckt sich mit dem
+  bereits vorhandenen TODO-Punkt "TID-Whitelist konfigurierbar +
+  Abgleich beim Scannen"): Abgleich der zu sendenden TIDs gegen
+  config/terminal_ids.json, neuer Service
+  lib/services/terminal_ids_config_service.dart (Datei jetzt auch als
+  Asset in pubspec.yaml gelistet). Geprüft wird direkt vor dem
+  Flurbocash-Call in ApiUploadService.upload() (nicht beim Scannen wie
+  im TODO-Punkt skizziert — siehe Bericht/Rückfrage im Chat, Ort war
+  Paco zur Entscheidung freigestellt). Bewusst NICHT als Exception:
+  TODO.md dokumentiert, dass die TIDs in terminal_ids.json für alle
+  Standorte noch nicht von Yannik bestätigt sind (Gondel hat nur den
+  Platzhalter "XXXX") — ein harter Block hätte also potenziell
+  korrekte Abrechnungen verhindern können. Stattdessen liefert
+  upload() jetzt `Future<List<String>>` (Warnungen statt `void`);
+  tagesabschluss_schritt3_seite.dart hängt vorhandene Warnungen an die
+  Erfolgs-SnackBar an ("API Upload gesendet — Achtung: ..."), blockiert
+  den Versand aber nicht.
+  Weitere Diagnose-Funde (nicht in diesem Run behoben, siehe Chat-
+  Bericht): isCorsArtFehler()-Fallback markiert Upload bei jedem
+  generischen Netzwerkfehler als erfolgreich, nicht nur bei echtem
+  CORS — Risiko in Kombination mit dem bekannten Gäste-WLAN-Port-Block.
+  Sowie: settlement_number wird nirgends gesetzt, jeder Upload-Versuch
+  legt laut EXTERNAL_API_Schauburg_de.md eine neue statt eine
+  korrigierte Abrechnung an — deckt sich mit dem bereits vorhandenen
+  TODO-Punkt "Erneut senden → Korrektur-Call + Max-4-Fehlermeldung".
+  9 neue/geänderte Testfälle, `flutter analyze` sauber, `flutter test`
+  85/85 grün. Version 0.9.71+399. Dateien: api_upload_service.dart,
+  terminal_ids_config_service.dart (neu), tagesabschluss_schritt3_seite.dart,
+  pubspec.yaml, app_version.dart, test/services/api_upload_service_test.dart.
+
 - Run 398b: Direkte Anweisung ohne eigene Run-Nummer, drei Punkte aus
   Pacos Feedback zu Run 396a, alle in derselben Nachricht:
   1) Revert Run 396a: Paco erkannte beim Testen selbst, dass die
