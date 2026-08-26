@@ -57,6 +57,8 @@ class TagesabschlussSchritt3Argumente {
     this.zahlungsartenAufschluesselung,
     this.ecTerminals,
     this.anmerkung,
+    this.ecBelegeFotosBase64,
+    this.ecBelegeFotosMediaTypen,
     this.zielSchrittBeimSprung,
   });
 
@@ -87,6 +89,8 @@ class TagesabschlussSchritt3Argumente {
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
   final List<EcTerminalErgebnis>? ecTerminals;
   final String? anmerkung;
+  final List<String>? ecBelegeFotosBase64;
+  final List<String>? ecBelegeFotosMediaTypen;
   /// Nur beim AppBar-Schritt-Sprung von Schritt 1/2 zu Schritt 4 gesetzt
   /// (Wert 4): sobald diese Seite aufgebaut ist, springt sie automatisch
   /// weiter zu Schritt 4 — ohne eigenes Gate, da "Barumsatz f. Umschlag
@@ -203,6 +207,8 @@ class _TagesabschlussSchritt3SeiteState
         zahlungsartenAufschluesselung:
             widget.argumente.zahlungsartenAufschluesselung,
         anmerkung: widget.argumente.anmerkung,
+        ecBelegeFotosBase64: widget.argumente.ecBelegeFotosBase64,
+        ecBelegeFotosMediaTypen: widget.argumente.ecBelegeFotosMediaTypen,
       ),
       jetzt: DateTime.now(),
     );

@@ -18,6 +18,8 @@ void main() {
       List<int>? ausgabenBetraegeCent,
       List<String>? ausgabenLabels,
       List<String>? ecBelegeLabels,
+      List<String>? ecBelegeFotosBase64,
+      List<String>? ecBelegeFotosMediaTypen,
       String? mitarbeiterName,
       String? anmerkung,
     }) {
@@ -39,6 +41,8 @@ void main() {
         ausgabenBetraegeCent: ausgabenBetraegeCent,
         ausgabenLabels: ausgabenLabels,
         ecBelegeLabels: ecBelegeLabels,
+        ecBelegeFotosBase64: ecBelegeFotosBase64,
+        ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
         mitarbeiterName: mitarbeiterName,
         anmerkung: anmerkung,
       );
@@ -214,6 +218,8 @@ void main() {
           ausgabenBetraegeCent: <int>[],
           ausgabenLabels: <String>[],
           ecBelegeLabels: <String>[],
+          ecBelegeFotosBase64: <String>[],
+          ecBelegeFotosMediaTypen: <String>[],
           mitarbeiterName: '',
           anmerkung: '',
         ),
@@ -222,8 +228,23 @@ void main() {
       expect(ergebnis.ausgabenBetraegeCent, isNull);
       expect(ergebnis.ausgabenLabels, isNull);
       expect(ergebnis.ecBelegeLabels, isNull);
+      expect(ergebnis.ecBelegeFotosBase64, isNull);
+      expect(ergebnis.ecBelegeFotosMediaTypen, isNull);
       expect(ergebnis.mitarbeiterName, isNull);
       expect(ergebnis.anmerkung, isNull);
+    });
+
+    test('finalisieren reicht Beleg-Fotos (base64 + media_type) durch', () {
+      final TagesabschlussFinal ergebnis = usecase.finalisieren(
+        eingabe: eingabe(
+          ecBelegeLabels: <String>['12345'],
+          ecBelegeFotosBase64: <String>['/9j/4AAQSkZJRg=='],
+          ecBelegeFotosMediaTypen: <String>['image/jpeg'],
+        ),
+      );
+
+      expect(ergebnis.ecBelegeFotosBase64, <String>['/9j/4AAQSkZJRg==']);
+      expect(ergebnis.ecBelegeFotosMediaTypen, <String>['image/jpeg']);
     });
   });
 }

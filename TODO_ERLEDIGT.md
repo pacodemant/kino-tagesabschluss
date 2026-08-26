@@ -238,6 +238,30 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       eine feste Kartenart zu raten wäre falsche Buchhaltungsdaten).
       *(Run 386; entdeckt bei Codebasis-Analyse 2026-08-16.)*
 
+- [x] **Belegfoto als base64 an Flurbocash** Yannik hat den Vertrag per
+      Beispiel-PUT geliefert (2026-08-26): `terminals[].receipt_photo`
+      (base64, unveränderte JPEG-Rohbytes vom Kamera-Foto) +
+      `terminals[].receipt_media_type`. `BelegScanService.scan()` gibt
+      das beim KI-Call bereits kodierte Foto jetzt mit zurück (Record
+      statt nur `BelegScanErgebnis`), Schritt 2 hält es pro Beleg-Index
+      parallel zu `_ecBelegLabels` (TID) vor, `TagesabschlussFinal` trägt
+      es dauerhaft (auch für Verlauf/Wiederversand). In
+      `api_upload_service.dart` wird das Foto pro TID zugeordnet
+      (`_fotoProTid()`) und nur mitgeschickt, wenn eins vorliegt; bei
+      zwei Beleg-Scans derselben TID gewinnt der zuletzt gescannte
+      (nicht summierbar wie die Kartenbeträge). Zusätzlich im selben Run
+      ergänzt, weil fachlich zusammengehörig: `note` (Kommentarfeld,
+      im Dev-Modus automatisch um "testdaten" ergänzt, damit
+      Auto-Fill-Testabrechnungen für Yannik erkennbar bleiben) und
+      `sent_at` (ISO-Zeitstempel des Sendevorgangs, laut Yannik
+      serverseitig ignoriert falls FC das Feld nicht braucht).
+      `EXTERNAL_API_Schauburg_de.md` entsprechend aktualisiert. Verlauf
+      zeigt gescannte Belege zusätzlich als antippbare Miniaturansicht
+      mit Vollbild-Zoom (`verlauf_detail_seite.dart`); ein Export/Teilen-
+      Button dafür ist noch offen — siehe TODO.md, wartet auf Freigabe
+      für ein Umsetzungsdetail (neue Dependency vs. Web-Download).
+      *(Run 399a)*
+
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
 ### Verlauf

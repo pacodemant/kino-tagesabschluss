@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399 · Run 399
+Version: 0.9.71+399a · Run 399a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -149,7 +149,24 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399)
+## Laufender Entwicklungsstand (Run 399a)
+
+- Run 399a ✅ Direkte Anweisung ohne eigene Run-Nummer, Ergänzung zu
+  Run 399: Yannik hat den Vertrag für Beleg-Fotos in der
+  Flurbocash-Übertragung geliefert. `settlementsBody()` schickt jetzt
+  zusätzlich `note` (Kommentar aus Schritt 2, im Dev-Modus automatisch
+  mit "testdaten" markiert), `sent_at` (Sende-Zeitstempel) und pro
+  Terminal `receipt_photo`/`receipt_media_type` (der beim KI-Beleg-Scan
+  bereits kodierte Foto-Base64, bisher nach der KI-Auswertung
+  verworfen). `BelegScanService.scan()` gibt dafür ein Record mit
+  Ergebnis + Foto zurück; Schritt 2 hält Foto+Media-Type pro
+  Beleg-Index parallel zu `_ecBelegLabels`; `TagesabschlussFinal` trägt
+  beide neuen Listen dauerhaft. Verlauf-Detailseite zeigt gescannte
+  Belege zusätzlich als antippbare Miniatur mit Vollbild-Zoom (reine
+  Flutter-Bordmittel, keine neue Dependency). Export/Teilen des Fotos
+  bewusst noch nicht umgesetzt — braucht laut Standard-Lock erst Pacos
+  Freigabe für eine neue Dependency oder eine Web-Build-Änderung,
+  siehe TODO.md. Details siehe CHANGELOG.md und TODO_ERLEDIGT.md.
 
 - Run 399 ✅ Diagnose zu falsch/als 0€ ankommenden Flurbocash-Beträgen.
   Zwei Bugs in `ApiUploadService._terminalsListe()` behoben (Kartenart-

@@ -10,6 +10,10 @@ void main() {
       int ecUmsatzGesamtCent = 0,
       List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung,
       String? terminalId,
+      String? anmerkung,
+      List<String>? ecBelegeLabels,
+      List<String>? ecBelegeFotosBase64,
+      List<String>? ecBelegeFotosMediaTypen,
     }) {
       return TagesabschlussFinal(
         kinoId: 'kino_01',
@@ -34,6 +38,10 @@ void main() {
         differenzAnfangsbestandCent: 0,
         terminalId: terminalId,
         zahlungsartenAufschluesselung: zahlungsartenAufschluesselung,
+        anmerkung: anmerkung,
+        ecBelegeLabels: ecBelegeLabels,
+        ecBelegeFotosBase64: ecBelegeFotosBase64,
+        ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       );
     }
 
@@ -242,6 +250,83 @@ void main() {
       final Map<String, dynamic> settlement =
           settlements.single as Map<String, dynamic>;
       expect(settlement['cash_total'], a.barBestandAbzglWechselgeldCent);
+    });
+
+    test('anmerkung vorhanden → "note" wird 1:1 mitgeschickt', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(anmerkung: 'Anfangsbestand krumm'),
+      );
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      expect(settlement['note'], 'Anfangsbestand krumm');
+    });
+
+    test('keine anmerkung → "note" fehlt im settlement (kein leerer String)',
+        () {
+      final Map<String, dynamic> body =
+          ApiUploadService.settlementsBody(abrechnung());
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      expect(settlement.containsKey('note'), isFalse);
+    });
+
+    test('sent_at entspricht dem übergebenen Zeitpunkt als ISO8601', () {
+      final DateTime jetzt = DateTime(2026, 8, 26, 14, 30);
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(),
+        jetzt: jetzt,
+      );
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      expect(settlement['sent_at'], jetzt.toIso8601String());
+    });
+
+    test(
+        'receipt_photo/receipt_media_type werden dem Terminal mit '
+        'passender TID zugeordnet', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 2000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000, tid: '12345'),
+          ],
+          ecBelegeLabels: <String>['12345'],
+          ecBelegeFotosBase64: <String>['/9j/4AAQSkZJRg=='],
+          ecBelegeFotosMediaTypen: <String>['image/png'],
+        ),
+      );
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final Map<String, dynamic> terminal =
+          (settlement['terminals'] as List<dynamic>).single
+              as Map<String, dynamic>;
+      expect(terminal['receipt_photo'], '/9j/4AAQSkZJRg==');
+      expect(terminal['receipt_media_type'], 'image/png');
+    });
+
+    test(
+        'kein Beleg-Foto für die TID → receipt_photo/receipt_media_type '
+        'fehlen im Terminal', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 2000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000, tid: '12345'),
+          ],
+        ),
+      );
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final Map<String, dynamic> terminal =
+          (settlement['terminals'] as List<dynamic>).single
+              as Map<String, dynamic>;
+      expect(terminal.containsKey('receipt_photo'), isFalse);
+      expect(terminal.containsKey('receipt_media_type'), isFalse);
     });
   });
 

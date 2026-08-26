@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 399 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 399a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -23,29 +23,37 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       weiter unten (UI/Prüf-Logik dafür, unabhängig von dieser
       Datenklärung).
 
-- [ ] **Terminals bei doppelter TID am selben Tag** Wenn dieselbe
-      physische Terminal-ID an einem Tag zweimal abgerechnet wird
-      (z. B. zwei EC-Belege desselben Terminals zu unterschiedlichen
-      Zeiten), aktuell werden die Kartenbeträge in der App
-      stillschweigend zu einer Terminal-Zeile summiert
-      (`ApiUploadService._terminalsListe()`). Laut
-      `EXTERNAL_API_Schauburg_de.md` scheint die TID der eindeutige
-      Schlüssel je Abrechnung zu sein (Korrektur-Calls "upserten"
-      Terminals über die TID) — zwei Terminal-Zeilen mit derselben TID
-      innerhalb einer Abrechnung würden bei Flurbocash vermutlich
-      ohnehin zusammenfallen. Klären: Sollen zwei Vorgänge derselben
-      TID am selben Tag (a) weiterhin zu einer Terminal-Zeile summiert
-      werden, oder (b) als zwei separate `settlements[]`-Einträge
-      übertragen werden (das Format erlaubt bis zu 4 Abrechnungen/Tag,
-      siehe auch "Bar Tabak: 2-Settlement-Logik" unten)?
+- [ ] **Terminals bei doppelter TID am selben Tag → Code-Fix ausstehend**
+      Von Yannik beantwortet (siehe `.dev/flurbocash stuff/
+      fragen_yannik.md`, Frage 2.1, Stand 2026-08-26): Zwei EC-Belege
+      derselben TID sollen als **zwei separate `terminals[]`-Einträge
+      mit identischer TID** innerhalb desselben settlements-Eintrags
+      übertragen werden (nicht zu einer Zeile summiert), und Flurbocash
+      verarbeitet mehrere `terminals[]`-Einträge mit derselben TID in
+      einem Aufruf korrekt (beide Beträge werden erfasst). Die App
+      macht aktuell noch das Gegenteil: `ApiUploadService.
+      _terminalsListe()` gruppiert `zahlungsartenAufschluesselung`
+      über eine `Map<String, ...> proTid` und summiert alle Beträge
+      gleicher TID zu einer einzigen Terminal-Zeile. Code-Fix noch
+      offen: pro Beleg-Index (nicht pro TID) einen eigenen
+      `terminals[]`-Eintrag bauen. Betrifft direkt auch die seit
+      Run 399a mitgeschickten `receipt_photo`/`receipt_media_type`
+      (siehe TODO_ERLEDIGT.md, Run 399a): deren TID-basierte Zuordnung
+      (`_fotoProTid()`, "bei gleicher TID gewinnt das zuletzt
+      gescannte Foto") ist ein Provisorium unter der noch-alten
+      Aggregations-Logik — nach diesem Fix entfällt die
+      "letztes-Foto-gewinnt"-Regel von selbst, weil jeder Beleg dann
+      ohnehin sein eigenes `terminals[]`-Element mit seinem eigenen
+      Foto bekommt.
 
-- [ ] **6-Uhr-Knick abstimmen** Welches Datum erwartet Flurbocash für
-      Nachtabrechnungen (z. B. 1 Uhr nachts) — Kalendertag oder logischer
-      Abrechnungstag (= Vortag)?
-
-- [ ] **Weitere Abrechnungsfelder** Sollen Kino-Soll, Bistro-Soll, Ausgaben,
-      Mitarbeitername, Differenz an Flurbocash übermittelt werden — oder holt das
-      System sie selbst aus dem Kassensystem?
+- [ ] **Weitere Abrechnungsfelder** Kino-Soll, Bistro-Soll, Ausgaben,
+      Differenz werden laut Yannik NICHT benötigt (Flurbocash zieht
+      sich `system_total_cents` selbst aus dem Kassensystem; siehe
+      `.dev/flurbocash stuff/fragen_yannik.md`, Frage 2.2, beantwortet).
+      Offen bleibt nur noch: Mitarbeitername — laut Frage 2.3 war das
+      als zusätzliches freies JSON-Feld mitgeplant (analog zu `note`/
+      `sent_at`, seit Run 399a umgesetzt), aber bisher nicht in
+      `settlementsBody()` ergänzt.
 
 - [ ] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT oder MA?
       Wer pflegt Änderungen (neuer API-Key, neue TID)?
@@ -60,6 +68,20 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Geschäftstag-Cutoff von 6 auf 5 Uhr umstellen** Yannik hat
+      bestätigt (siehe .dev/flurbocash stuff/fragen_yannik.md, Frage
+      2.6): Flurbocash erwartet den logischen Geschäftstag, aber mit
+      Knick um 5 Uhr, nicht um 6 Uhr wie aktuell in der App
+      (`DatumsHelper._geschaeftstagCutoffStunde = 6`,
+      lib/utils/datums_helper.dart:8). Datei ist laut eigenem
+      Docstring "einzige Quelle für diese Regel" — Konstante auf 5
+      ändern sollte als reiner Wertewechsel ausreichen. Betrifft auch
+      TagesabschlussFinalisierenUsecase.finalisieren() (nutzt
+      dieselbe Methode). Vor Umsetzung: bestehende Tests/Verlaufsdaten
+      auf Annahmen zum 6-Uhr-Cutoff prüfen (z. B. Abschlüsse zwischen
+      5:00 und 5:59 Uhr, die bisher als Vortag galten und nach der
+      Änderung als aktueller Tag zählen).
 
 - [ ] **Offline-Hinweis bei BelegScan konkretisieren** Die
       Verbindungsprüfung beim Tap aufs Foto-Icon existiert bereits
@@ -218,15 +240,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
       Erst relevant wenn BT implementiert wird.
 
-- [ ] **Belegfoto als base64 an Flurbocash** Yannik übernimmt die
-      PDF-Wandlung serverseitig, App muss nur base64 mitschicken
-      (Konvertierung bereits vorhanden in `BelegScanService.scan()`,
-      muss aber bis zum Upload durchgereicht werden — aktuell wird
-      das Foto nach der KI-Auswertung verworfen). API-Vertrag
-      (Feld/Endpunkt) noch nicht in `EXTERNAL_API_Schauburg_de.md`
-      definiert — wartet auf Yannik. Datenschutzhinweise dafür
-      bereits vorgezogen angepasst *(Run 319)*.
-
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
 - [ ] **Stapel-Scanner: Seite & Grundstruktur** Eigene Seite im
@@ -276,6 +289,19 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       falschen mounted-Block + Verlauf-Liste lud nach "Erneut
       senden" nicht neu). Dieser Punkt hier ist rein additiv (neues
       positives Badge), kein Bugfix.
+
+- [ ] **Beleg-Foto im Verlauf exportieren/teilen** Miniaturansicht +
+      Vollbild-Zoom ist seit Run 399a da (`verlauf_detail_seite.dart`,
+      `_belegFotoZeilen()`/`_zeigeBelegFotoVollbild()`), ein expliziter
+      Export-/Teilen-Button fehlt noch. Reine Flutter-Bordmittel
+      reichen dafür nicht plattformübergreifend — Standard-Lock
+      verlangt vorher Pacos Freigabe für eine von:
+      a) neue Dependency `share_plus` (Web + iOS + Android, native
+         Share-Sheets), oder
+      b) dependency-freier Web-Download über `dart:js_interop`
+         (Muster wie `pwa_install_service_web.dart`/
+         `sw_update_service_web.dart`), dafür kein Export auf
+         nativem iOS/Android (nur PWA-Zielplattform bedient).
 
 ### Weitere Features
 

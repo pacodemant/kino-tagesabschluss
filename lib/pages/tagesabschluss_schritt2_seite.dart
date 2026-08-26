@@ -134,6 +134,11 @@ class _TagesabschlussSchritt2SeiteState
   final List<int> _ecBelegIds = <int>[];
   int _naechsteEcBelegId = 1;
   final List<String> _ecBelegLabels = <String>[];
+  // Beleg-Foto (base64 + media_type) je Beleg-Index, parallel zu
+  // _ecBelegLabels — '' = kein Foto (z. B. TID manuell statt gescannt
+  // eingetragen).
+  final List<String> _ecBelegFotosBase64 = <String>[];
+  final List<String> _ecBelegFotosMediaTypen = <String>[];
   final List<bool> _ecUnterkachelAufgeklappt = <bool>[];
   final List<bool> _ecUnterkachelEditModus = <bool>[];
   final List<bool> _ecBelegScanGescannt = <bool>[];
@@ -381,6 +386,28 @@ class _TagesabschlussSchritt2SeiteState
       ecBelegeLabelsListe.add('');
     }
 
+    final List<String> ecBelegeFotosBase64Liste = <String>[];
+    final Object? ecFotosBase64Roh = daten['ecBelegeFotosBase64'];
+    if (ecFotosBase64Roh is List<dynamic>) {
+      for (final dynamic wert in ecFotosBase64Roh) {
+        ecBelegeFotosBase64Liste.add(wert?.toString() ?? '');
+      }
+    }
+    while (ecBelegeFotosBase64Liste.length < ecBelege.length) {
+      ecBelegeFotosBase64Liste.add('');
+    }
+
+    final List<String> ecBelegeFotosMediaTypenListe = <String>[];
+    final Object? ecFotosMediaTypenRoh = daten['ecBelegeFotosMediaTypen'];
+    if (ecFotosMediaTypenRoh is List<dynamic>) {
+      for (final dynamic wert in ecFotosMediaTypenRoh) {
+        ecBelegeFotosMediaTypenListe.add(wert?.toString() ?? '');
+      }
+    }
+    while (ecBelegeFotosMediaTypenListe.length < ecBelege.length) {
+      ecBelegeFotosMediaTypenListe.add('');
+    }
+
     // Ausgaben-Einzelposten laden; Fallback auf altes ausgabenCent-Feld
     List<int> ausgabenBetraege = <int>[];
     List<String> ausgabenLabelListe = <String>[];
@@ -415,6 +442,8 @@ class _TagesabschlussSchritt2SeiteState
       for (int i = 0; i < ecBelege.length; i++) {
         _ecBelegeCent[i] = ecBelege[i];
         _ecBelegLabels[i] = ecBelegeLabelsListe[i];
+        _ecBelegFotosBase64[i] = ecBelegeFotosBase64Liste[i];
+        _ecBelegFotosMediaTypen[i] = ecBelegeFotosMediaTypenListe[i];
       }
       for (int i = 0; i < ausgabenBetraege.length; i++) {
         _ausgabenBetrageCent[i] = ausgabenBetraege[i];
@@ -590,6 +619,8 @@ class _TagesabschlussSchritt2SeiteState
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
         'ecBelegeCent': List<int>.from(_ecBelegeCent),
         'ecBelegeLabels': List<String>.from(_ecBelegLabels),
+        'ecBelegeFotosBase64': List<String>.from(_ecBelegFotosBase64),
+        'ecBelegeFotosMediaTypen': List<String>.from(_ecBelegFotosMediaTypen),
         'scanHatStattgefunden': List<bool>.from(_scanHatStattgefunden),
         'scanTerminalId': _scanTerminalId,
         'scanDatum': _scanDatum,
@@ -779,9 +810,28 @@ class _TagesabschlussSchritt2SeiteState
       ecUhrzeit: _scanUhrzeit,
       zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
       ecTerminals: _baueEcTerminals(),
-      anmerkung: _anmerkung.trim().isNotEmpty ? _anmerkung.trim() : null,
+      anmerkung: _anmerkungFuerUebertragung(),
+      ecBelegeFotosBase64: List<String>.from(_ecBelegFotosBase64),
+      ecBelegeFotosMediaTypen: List<String>.from(_ecBelegFotosMediaTypen),
       zielSchrittBeimSprung: zielSchrittBeimSprung,
     );
+  }
+
+  /// Anmerkung für Flurbocash/lokale Anzeige: im Dev-Modus (Auto-Fill,
+  /// siehe Einstellungen) wird das Kennzeichen "testdaten" ergänzt, damit
+  /// mit Dev-Modus erzeugte Abrechnungen (z. B. Auto-Fill-Dummy-Zahlen)
+  /// dort erkennbar bleiben, auch wenn der Dev-Modus bis zum tatsächlichen
+  /// Versand wieder ausgeschaltet wird.
+  String? _anmerkungFuerUebertragung() {
+    final String basis = _anmerkung.trim();
+    if (!_devModusAktiv) {
+      return basis.isNotEmpty ? basis : null;
+    }
+    const String kennzeichen = 'testdaten';
+    if (basis.toLowerCase().contains(kennzeichen)) {
+      return basis;
+    }
+    return basis.isEmpty ? kennzeichen : '$basis · $kennzeichen';
   }
 
   /// AppBar-Schritt-Sprung: ruft exakt den regulären "Weiter"-Übergang auf
@@ -954,6 +1004,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabelFocusNode.add(neueEcBelegLabelFn);
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
+      _ecBelegFotosBase64.add('');
+      _ecBelegFotosMediaTypen.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
       _ecUnterkachelAufgeklappt.add(true);
       // Neuer Beleg startet im Mehrbeleg-Modus sofort editierbar (TID direkt eingebbar).
@@ -1002,6 +1054,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabelFocusNode.removeAt(index).dispose();
       _ecBelegeCent.removeAt(index);
       _ecBelegLabels.removeAt(index);
+      if (index < _ecBelegFotosBase64.length) _ecBelegFotosBase64.removeAt(index);
+      if (index < _ecBelegFotosMediaTypen.length) _ecBelegFotosMediaTypen.removeAt(index);
       _ecBelegIds.removeAt(index);
       if (index < _ecUnterkachelAufgeklappt.length) _ecUnterkachelAufgeklappt.removeAt(index);
       if (index < _ecUnterkachelEditModus.length) _ecUnterkachelEditModus.removeAt(index);
@@ -1041,6 +1095,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabelFocusNode.removeLast().dispose();
       _ecBelegeCent.removeLast();
       _ecBelegLabels.removeLast();
+      if (_ecBelegFotosBase64.isNotEmpty) _ecBelegFotosBase64.removeLast();
+      if (_ecBelegFotosMediaTypen.isNotEmpty) _ecBelegFotosMediaTypen.removeLast();
       _ecBelegIds.removeLast();
       if (_ecUnterkachelAufgeklappt.isNotEmpty) _ecUnterkachelAufgeklappt.removeLast();
       if (_ecUnterkachelEditModus.isNotEmpty) _ecUnterkachelEditModus.removeLast();
@@ -1071,6 +1127,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabelFocusNode.add(ecBelegLabelFn);
       _ecBelegeCent.add(0);
       _ecBelegLabels.add('');
+      _ecBelegFotosBase64.add('');
+      _ecBelegFotosMediaTypen.add('');
       _ecBelegIds.add(_naechsteEcBelegId++);
       _ecUnterkachelAufgeklappt.add(true);
       _ecUnterkachelEditModus.add(false);
@@ -1307,6 +1365,8 @@ class _TagesabschlussSchritt2SeiteState
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = 0;
       _ecBelegLabels[0] = '';
+      if (_ecBelegFotosBase64.isNotEmpty) _ecBelegFotosBase64[0] = '';
+      if (_ecBelegFotosMediaTypen.isNotEmpty) _ecBelegFotosMediaTypen[0] = '';
 
       _setzeAusgabenAnzahl(1);
       _ausgabenBetrageCent[0] = 0;
@@ -1357,6 +1417,8 @@ class _TagesabschlussSchritt2SeiteState
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = 0;
       _ecBelegLabels[0] = '';
+      if (_ecBelegFotosBase64.isNotEmpty) _ecBelegFotosBase64[0] = '';
+      if (_ecBelegFotosMediaTypen.isNotEmpty) _ecBelegFotosMediaTypen[0] = '';
 
       _setzeAusgabenAnzahl(1);
       _ausgabenBetrageCent[0] = 0;
@@ -1418,7 +1480,12 @@ class _TagesabschlussSchritt2SeiteState
       setState(() => _scanBelegIndex = belegIndex);
       BelegScanErgebnis? originalErgebnis;
       try {
-        final BelegScanErgebnis ergebnis = await BelegScanService.scan(bild);
+        final ({
+          BelegScanErgebnis ergebnis,
+          String fotoBase64,
+          String fotoMediaType,
+        }) scanResultat = await BelegScanService.scan(bild);
+        final BelegScanErgebnis ergebnis = scanResultat.ergebnis;
         originalErgebnis = ergebnis;
         if (!mounted) return;
         setState(() => _scanBelegIndex = null);
@@ -1483,6 +1550,12 @@ class _TagesabschlussSchritt2SeiteState
                   geprueftes.gesamtBetragCent!),
             );
             if (belegIndex == 0) _kartenartenGesamt1Beruehrt = true;
+          }
+          if (belegIndex < _ecBelegFotosBase64.length) {
+            _ecBelegFotosBase64[belegIndex] = scanResultat.fotoBase64;
+          }
+          if (belegIndex < _ecBelegFotosMediaTypen.length) {
+            _ecBelegFotosMediaTypen[belegIndex] = scanResultat.fotoMediaType;
           }
           _scanTerminalId = _feldWertOderNull(geprueftes.terminalId);
           if (_scanTerminalId != null) {
@@ -2103,6 +2176,8 @@ class _TagesabschlussSchritt2SeiteState
       _setzeControllerText(_ecBelegController[0], '');
       _kartenartenGesamt1Beruehrt = false;
       _ecBelegLabels[0] = '';
+      if (_ecBelegFotosBase64.isNotEmpty) _ecBelegFotosBase64[0] = '';
+      if (_ecBelegFotosMediaTypen.isNotEmpty) _ecBelegFotosMediaTypen[0] = '';
       _setzeControllerText(_ecBelegLabelController[0], '');
       _ecBelegLabel1Beruehrt = false;
       if (_scanHatStattgefunden.isNotEmpty) _scanHatStattgefunden[0] = false;

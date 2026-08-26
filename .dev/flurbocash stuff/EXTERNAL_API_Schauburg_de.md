@@ -75,6 +75,8 @@ Siehe [Korrekturen](#korrekturen) unten.
   "settlements": [
     {
       "cash_total": 123456,
+      "note": "Anfangsbestand krumm",
+      "sent_at": "2026-08-26T14:30:00.000",
       "terminals": [
         {
           "tid": "TID-ALPHA",
@@ -83,7 +85,9 @@ Siehe [Korrekturen](#korrekturen) unten.
           "mastercard": 5000,
           "visa": 0,
           "maestro": 0,
-          "vpay": 0
+          "vpay": 0,
+          "receipt_photo": "/9j/4AAQSkZJRg...",
+          "receipt_media_type": "image/jpeg"
         }
       ]
     }
@@ -93,19 +97,27 @@ Siehe [Korrekturen](#korrekturen) unten.
 
 Feldreferenz (alle Beträge in Cent):
 
-| Feld                      | Typ    | Hinweise                                                              |
-|---------------------------|--------|-----------------------------------------------------------------------|
-| `settlement_number`       | int    | Optional. Weglassen = neue Abrechnung; `1`–`4` = diese überschreiben |
-| `cash_total`              | int    | Gezählter Kassenbestand dieser Abrechnung                             |
-| `terminals[].tid`         | string | Terminal-ID, muss für den Standort registriert sein                   |
-| `terminals[].girocard`    | int    | EC-Karte: Girocard                                                    |
-| `terminals[].lastschrift` | int    | EC-Karte: Lastschrift                                                 |
-| `terminals[].mastercard`  | int    | Kreditkarte: Mastercard                                               |
-| `terminals[].visa`        | int    | Kreditkarte: Visa                                                     |
-| `terminals[].maestro`     | int    | Kreditkarte: Maestro                                                  |
-| `terminals[].vpay`        | int    | Kreditkarte: V-Pay                                                    |
+| Feld                              | Typ    | Hinweise                                                              |
+|------------------------------------|--------|-----------------------------------------------------------------------|
+| `settlement_number`                | int    | Optional. Weglassen = neue Abrechnung; `1`–`4` = diese überschreiben |
+| `cash_total`                       | int    | Gezählter Kassenbestand dieser Abrechnung                             |
+| `note`                             | string | Optional. Freitext-Kommentar zur Abrechnung (fehlt im JSON, wenn leer) |
+| `sent_at`                          | string | Optional, ISO-8601. Zeitpunkt des tatsächlichen Sendevorgangs (App-seitig erzeugt, nicht der Zähl-/Erstellzeitpunkt). Laut Yannik (Stand 2026-08-26): unbekannte/ungenutzte Felder werden serverseitig ignoriert, kein Vertragsbruch falls FC das Feld (noch) nicht auswertet — siehe auch `terminals[].receipt_photo` unten |
+| `terminals[].tid`                  | string | Terminal-ID, muss für den Standort registriert sein                   |
+| `terminals[].girocard`             | int    | EC-Karte: Girocard                                                    |
+| `terminals[].lastschrift`          | int    | EC-Karte: Lastschrift                                                 |
+| `terminals[].mastercard`           | int    | Kreditkarte: Mastercard                                               |
+| `terminals[].visa`                 | int    | Kreditkarte: Visa                                                     |
+| `terminals[].maestro`              | int    | Kreditkarte: Maestro                                                  |
+| `terminals[].vpay`                 | int    | Kreditkarte: V-Pay                                                    |
+| `terminals[].receipt_photo`        | string | Optional. Foto des EC-Terminal-Belegs dieser TID, base64-kodiert (JPEG-Rohbytes, unverändert vom Kamera-Foto — keine Kompression/Resize). Fehlt, wenn zu dieser TID kein Beleg-Scan vorliegt |
+| `terminals[].receipt_media_type`   | string | Optional, nur zusammen mit `receipt_photo`. MIME-Type des Fotos, i. d. R. `image/jpeg` |
 
 Nicht angegebene Kartenfelder werden als `0` interpretiert. Das `terminals`-Array darf für eine reine Bargeldabrechnung leer sein. In der Regel wird pro Aufruf eine Abrechnung übermittelt.
+
+Teilen sich zwei Beleg-Scans derselben Abrechnung dieselbe TID (z. B.
+Korrektur-Rescan), wird nur das zuletzt gescannte Foto mitgeschickt —
+Fotos werden anders als die Kartenbeträge nicht summiert/kombiniert.
 
 **Antwort** `200 OK`
 

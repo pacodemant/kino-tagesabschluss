@@ -162,11 +162,22 @@ class ApiUploadService {
     };
   }
 
-  static Map<String, dynamic> settlementsBody(TagesabschlussFinal abrechnung) {
+  /// [jetzt] optional für Tests (sonst DateTime.now()) — bestimmt nur den
+  /// mitgeschickten Sende-Zeitpunkt, keine fachliche Logik.
+  static Map<String, dynamic> settlementsBody(
+    TagesabschlussFinal abrechnung, {
+    DateTime? jetzt,
+  }) {
     return <String, dynamic>{
       'settlements': <Map<String, dynamic>>[
         <String, dynamic>{
           'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
+          if (abrechnung.anmerkung != null && abrechnung.anmerkung!.isNotEmpty)
+            'note': abrechnung.anmerkung,
+          // Yannik: unbekannte/nicht benötigte Felder werden serverseitig
+          // ignoriert, kein Vertragsbruch falls FC "sent_at" (noch) nicht
+          // auswertet.
+          'sent_at': (jetzt ?? DateTime.now()).toIso8601String(),
           'terminals': _terminalsListe(abrechnung),
         },
       ],
@@ -258,9 +269,11 @@ class ApiUploadService {
       betraege[feldname] = (betraege[feldname] ?? 0) + z.betragCent!;
     }
 
+    final Map<String, ({String base64, String mediaType})> fotoProTid =
+        _fotoProTid(abrechnung);
     final List<Map<String, dynamic>> terminals = proTid.entries
         .map((MapEntry<String, Map<String, int>> e) =>
-            _terminalEintrag(e.key, e.value))
+            _terminalEintrag(e.key, e.value, fotoProTid[e.key]))
         .toList();
 
     // ecUmsatzGesamtCent (Summe der Beleg-Gesamtbeträge) und
@@ -289,9 +302,39 @@ class ApiUploadService {
     return terminals;
   }
 
+  /// Ordnet jeder TID das zugehörige Beleg-Foto zu (base64 + media_type),
+  /// analog zur Kartenart-Zuordnung oben — beide lesen dieselbe
+  /// Index-Zuordnung (Beleg-Index → TID) aus ecBelegeLabels. Teilen sich
+  /// zwei Beleg-Indizes dieselbe TID (z. B. Korrektur-Rescan), gewinnt das
+  /// zuletzt gescannte Foto — dieselbe "letzter Wert gewinnt"-Regel wie bei
+  /// den Kartenart-Beträgen (dort per Summe statt Überschreiben, hier ist
+  /// ein Foto nicht summierbar).
+  static Map<String, ({String base64, String mediaType})> _fotoProTid(
+    TagesabschlussFinal abrechnung,
+  ) {
+    final List<String>? tids = abrechnung.ecBelegeLabels;
+    final List<String>? fotos = abrechnung.ecBelegeFotosBase64;
+    final List<String>? mediaTypen = abrechnung.ecBelegeFotosMediaTypen;
+    final Map<String, ({String base64, String mediaType})> ergebnis =
+        <String, ({String base64, String mediaType})>{};
+    if (tids == null || fotos == null) return ergebnis;
+    for (int i = 0; i < tids.length && i < fotos.length; i++) {
+      final String tid = tids[i];
+      final String foto = fotos[i];
+      if (tid.isEmpty || foto.isEmpty) continue;
+      final String mediaType =
+          (mediaTypen != null && i < mediaTypen.length && mediaTypen[i].isNotEmpty)
+              ? mediaTypen[i]
+              : 'image/jpeg';
+      ergebnis[tid] = (base64: foto, mediaType: mediaType);
+    }
+    return ergebnis;
+  }
+
   static Map<String, dynamic> _terminalEintrag(
     String tid,
     Map<String, int> karten,
+    ({String base64, String mediaType})? foto,
   ) {
     return <String, dynamic>{
       'tid': tid,
@@ -300,6 +343,8 @@ class ApiUploadService {
       'mastercard': karten['mastercard'] ?? 0,
       'visa': karten['visa'] ?? 0,
       'maestro': karten['maestro'] ?? 0,
+      if (foto != null) 'receipt_photo': foto.base64,
+      if (foto != null) 'receipt_media_type': foto.mediaType,
       'vpay': karten['vpay'] ?? 0,
     };
   }

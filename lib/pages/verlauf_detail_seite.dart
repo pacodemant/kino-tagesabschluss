@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
@@ -230,6 +233,87 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     });
   }
 
+  /// Beleg-Foto-Miniaturen (falls beim Beleg-Scan vorhanden) — antippbar
+  /// für die Vollbild-Ansicht. Unabhängig von der Beleg-Anzahl, im
+  /// Gegensatz zu [_ecBelegUnterzeilen] (die nur ab 2 Belegen greift).
+  Widget _belegFotoZeilen(TagesabschlussFinal a) {
+    final List<String>? fotos = a.ecBelegeFotosBase64;
+    if (fotos == null || fotos.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    final List<String>? mediaTypen = a.ecBelegeFotosMediaTypen;
+    final List<Widget> thumbnails = <Widget>[];
+    for (int i = 0; i < fotos.length; i++) {
+      if (fotos[i].isEmpty) continue;
+      final String mediaType =
+          (mediaTypen != null && i < mediaTypen.length && mediaTypen[i].isNotEmpty)
+              ? mediaTypen[i]
+              : 'image/jpeg';
+      final String label =
+          a.ecBelegeLabels != null &&
+                  i < a.ecBelegeLabels!.length &&
+                  a.ecBelegeLabels![i].isNotEmpty
+              ? a.ecBelegeLabels![i]
+              : 'Beleg ${i + 1}';
+      thumbnails.add(_belegFotoThumbnail(fotos[i], mediaType, label));
+    }
+    if (thumbnails.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 4, 0, 8),
+      child: Wrap(spacing: 8, runSpacing: 8, children: thumbnails),
+    );
+  }
+
+  Widget _belegFotoThumbnail(String base64Foto, String mediaType, String label) {
+    final Uint8List bytes = base64Decode(base64Foto);
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => _zeigeBelegFotoVollbild(bytes, label),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.memory(
+              bytes,
+              width: 64,
+              height: 64,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _zeigeBelegFotoVollbild(Uint8List bytes, String titel) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            title: Text(titel),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              maxScale: 5,
+              child: Image.memory(bytes),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   List<Widget> _ausgabenUnterzeilen(TagesabschlussFinal a) {
     final List<int>? betraege = a.ausgabenBetraegeCent;
     if (betraege != null && betraege.isNotEmpty) {
@@ -397,6 +481,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       ..._ausgabenUnterzeilen(a),
                       InfoZeile(label: 'EC-Umsatz gesamt', wert: _euro(a.ecUmsatzGesamtCent)),
                       ..._ecBelegUnterzeilen(a),
+                      _belegFotoZeilen(a),
                     ],
                   ),
                 ),

@@ -78,7 +78,16 @@ class BelegScanService {
       '  deutschen Satz (max. 8 Wörter, keine Zahlen). In ALLEN anderen Fällen: null.\n'
       '  Keine visuellen Einschätzungen, keine Warnungen, kein Freitext in hinweis.';
 
-  static Future<BelegScanErgebnis> scan(XFile bild) async {
+  /// Scannt [bild] per KI. Liefert neben dem geparsten [BelegScanErgebnis]
+  /// auch das bereits für den KI-Call kodierte Foto (base64 + media_type)
+  /// zurück, damit es ohne erneutes Einlesen an Flurbocash mitgeschickt
+  /// werden kann (siehe ApiUploadService).
+  static Future<
+      ({
+        BelegScanErgebnis ergebnis,
+        String fotoBase64,
+        String fotoMediaType,
+      })> scan(XFile bild) async {
     final List<int> bytes = await bild.readAsBytes();
     final String base64Bild = base64Encode(bytes);
     final String mimeType = bild.mimeType ?? 'image/jpeg';
@@ -145,7 +154,11 @@ class BelegScanService {
       }
       final Map<String, dynamic> ergebnisJson =
           jsonDecode(text) as Map<String, dynamic>;
-      return BelegScanErgebnis.fromJson(ergebnisJson);
+      return (
+        ergebnis: BelegScanErgebnis.fromJson(ergebnisJson),
+        fotoBase64: base64Bild,
+        fotoMediaType: mimeType,
+      );
     } on BelegScanException {
       rethrow;
     } on FormatException {

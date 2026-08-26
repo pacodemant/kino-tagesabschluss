@@ -9,6 +9,71 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
+  Run 399). Yannik hat den Vertrag für Beleg-Fotos in der
+  Flurbocash-Übertragung per Beispiel-PUT geliefert. Umgesetzt:
+  1) `note` (Kommentarfeld aus Schritt 2) wird jetzt im settlement
+     mitgeschickt, sofern nicht leer. Im Dev-Modus (Auto-Fill) wird
+     automatisch das Kennzeichen "testdaten" ergänzt
+     (`_anmerkungFuerUebertragung()` in
+     tagesabschluss_schritt2_seite.dart), damit mit Dummy-Zahlen
+     erzeugte Testabrechnungen für Yannik/Buchhaltung erkennbar
+     bleiben, auch wenn der Dev-Modus bis zum tatsächlichen Versand
+     wieder ausgeschaltet wird.
+  2) `sent_at` (ISO-Zeitstempel des Sendevorgangs) neu im settlement,
+     `settlementsBody()` bekommt dafür einen optionalen `jetzt`-
+     Parameter für Tests. Laut Yannik werden unbekannte/ungenutzte
+     Felder serverseitig ignoriert.
+  3) `terminals[].receipt_photo` (base64) + `receipt_media_type`:
+     Der bereits für den KI-Call kodierte Beleg-Scan wird jetzt bis
+     zum Flurbocash-Upload durchgereicht statt nach der KI-Auswertung
+     verworfen zu werden. `BelegScanService.scan()` gibt dafür ein
+     Record mit `ergebnis`/`fotoBase64`/`fotoMediaType` zurück statt
+     nur `BelegScanErgebnis`. Schritt 2 hält Foto + Media-Type pro
+     Beleg-Index in zwei neuen Listen (`_ecBelegFotosBase64`,
+     `_ecBelegFotosMediaTypen`), parallel zu `_ecBelegLabels` (TID) —
+     an allen Stellen mitgeführt, an denen auch `_ecBelegLabels`
+     wächst/schrumpft/zurückgesetzt wird. `TagesabschlussFinal` trägt
+     beide Listen dauerhaft (auch für Verlauf/Wiederversand).
+     `api_upload_service.dart` ordnet das Foto in `_fotoProTid()` der
+     passenden TID zu und hängt es nur an, wenn eins vorliegt; teilen
+     sich zwei Beleg-Scans dieselbe TID, gewinnt der zuletzt
+     gescannte (Fotos sind anders als Kartenbeträge nicht
+     summierbar). Kein Resize/Kompression (unverändert wie beim
+     KI-Call).
+  Zusätzlich (Paco-Wunsch, selber Run): Verlauf-Detailseite zeigt
+  gescannte Belege als antippbare Miniaturansicht im Abschnitt
+  "Belege", Antippen öffnet eine Vollbild-Ansicht mit Pinch-Zoom
+  (`_belegFotoZeilen()`/`_belegFotoThumbnail()`/
+  `_zeigeBelegFotoVollbild()` in verlauf_detail_seite.dart) — rein
+  mit Flutter-Bordmitteln (`Image.memory` + `InteractiveViewer`),
+  keine neue Dependency. Ein Export-/Teilen-Button ist NICHT
+  enthalten: Standard-Lock verlangt für neue Dependencies
+  (`share_plus`) bzw. Build-/Tooling-Änderungen (dependency-freier
+  Web-Download über `dart:js_interop`) Pacos explizite Freigabe —
+  siehe neuer TODO-Punkt unter "Verlauf".
+  `EXTERNAL_API_Schauburg_de.md` entsprechend um die vier neuen
+  Felder ergänzt. Tests ergänzt in
+  test/services/api_upload_service_test.dart (note/sent_at/
+  receipt_photo-Zuordnung/kein-Foto-Fall) und
+  test/domain/tagesabschluss_finalisieren_usecase_test.dart
+  (Foto-Listen-Durchreichung + Leer-zu-null-Normalisierung).
+  Beim Gegenlesen von `.dev/flurbocash stuff/fragen_yannik.md`
+  (Pacos eigene, im Arbeitsverzeichnis offene Notizen, nicht Teil
+  dieses Runs, aber mitcommittet) aufgefallen und in TODO.md
+  nachgezogen: (a) Yannik hat die bestehende offene Frage "Terminals
+  bei doppelter TID" bereits beantwortet — zwei EC-Belege derselben
+  TID sollen als zwei separate `terminals[]`-Einträge mit identischer
+  TID übertragen werden, nicht wie aktuell im Code zu einer Zeile
+  summiert (`_terminalsListe()`/`proTid`). Das betrifft direkt die
+  neue Foto-Zuordnung: `_fotoProTid()`s "letztes Foto gewinnt"-Regel
+  ist nur ein Provisorium unter der noch-alten
+  Summier-Logik und sollte mit diesem Code-Fix zusammen angegangen
+  werden (siehe TODO.md/TODO_ERLEDIGT.md). (b) Mitarbeitername war
+  laut Frage 2.3 mitgeplant, aber nicht Teil des heutigen Auftrags —
+  in TODO.md als offener Punkt ergänzt statt eigenmächtig mit
+  umgesetzt.
+
 - Run 399: Diagnose zu falsch/als 0€ ankommenden Flurbocash-Beträgen
   (Meldung: MA-Abrechnung kam mit 0€ an, Pacos eigene Abrechnung mit
   falschen Beträgen). Diagnose per neuer/erweiterter Unit-Tests in

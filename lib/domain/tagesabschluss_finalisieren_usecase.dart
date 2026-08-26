@@ -36,6 +36,8 @@ class TagesabschlussFinalisierenEingabe {
     this.belegNrBis,
     this.ecUhrzeit,
     this.zahlungsartenAufschluesselung,
+    this.ecBelegeFotosBase64,
+    this.ecBelegeFotosMediaTypen,
   });
 
   final String kinoId;
@@ -69,6 +71,9 @@ class TagesabschlussFinalisierenEingabe {
   final String? belegNrBis;
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
+  // EC-Belegfotos (base64 + media_type) je Beleg-Index aus Schritt 2
+  final List<String>? ecBelegeFotosBase64;
+  final List<String>? ecBelegeFotosMediaTypen;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -224,6 +229,14 @@ class TagesabschlussFinalisierenUsecase {
       belegNrBis: eingabe.belegNrBis,
       ecUhrzeit: eingabe.ecUhrzeit,
       zahlungsartenAufschluesselung: eingabe.zahlungsartenAufschluesselung,
+      ecBelegeFotosBase64: eingabe.ecBelegeFotosBase64 != null &&
+              eingabe.ecBelegeFotosBase64!.isNotEmpty
+          ? List<String>.from(eingabe.ecBelegeFotosBase64!)
+          : null,
+      ecBelegeFotosMediaTypen: eingabe.ecBelegeFotosMediaTypen != null &&
+              eingabe.ecBelegeFotosMediaTypen!.isNotEmpty
+          ? List<String>.from(eingabe.ecBelegeFotosMediaTypen!)
+          : null,
     );
   }
 

@@ -40,6 +40,10 @@ class TagesabschlussFinal {
     this.zahlungsartenAufschluesselung,
     // Sende-Status – seit Run 387, für ältere gespeicherte Einträge null
     this.gesendetAm,
+    // EC-Belegfotos (base64) je Beleg-Index, parallel zu ecBelegeLabels –
+    // seit Run 399a, für ältere gespeicherte Einträge null
+    this.ecBelegeFotosBase64,
+    this.ecBelegeFotosMediaTypen,
   });
 
   final String kinoId;
@@ -87,6 +91,11 @@ class TagesabschlussFinal {
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
 
+  // EC-Belegfotos (base64 + media_type) je Beleg-Index, parallel zu
+  // ecBelegeLabels (gleicher Index = gleicher Beleg/TID) – seit Run 399a.
+  final List<String>? ecBelegeFotosBase64;
+  final List<String>? ecBelegeFotosMediaTypen;
+
   // Zeitpunkt des erfolgreichen Uploads an Flurbocash, oder null wenn
   // noch nicht gesendet – seit Run 387.
   final DateTime? gesendetAm;
@@ -131,6 +140,8 @@ class TagesabschlussFinal {
       ecUhrzeit: ecUhrzeit,
       zahlungsartenAufschluesselung: zahlungsartenAufschluesselung,
       gesendetAm: zeitpunkt,
+      ecBelegeFotosBase64: ecBelegeFotosBase64,
+      ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
     );
   }
 
@@ -183,6 +194,10 @@ class TagesabschlussFinal {
                 })
             .toList(),
       if (gesendetAm != null) 'gesendetAmIso': gesendetAm!.toIso8601String(),
+      if (ecBelegeFotosBase64 != null)
+        'ecBelegeFotosBase64': ecBelegeFotosBase64,
+      if (ecBelegeFotosMediaTypen != null)
+        'ecBelegeFotosMediaTypen': ecBelegeFotosMediaTypen,
     };
   }
 
@@ -242,6 +257,20 @@ class TagesabschlussFinal {
       ecBelegeLabels = ecBelegeLabelsRoh.whereType<String>().toList();
     }
 
+    List<String>? ecBelegeFotosBase64;
+    final Object? ecBelegeFotosBase64Roh = json['ecBelegeFotosBase64'];
+    if (ecBelegeFotosBase64Roh is List) {
+      ecBelegeFotosBase64 = ecBelegeFotosBase64Roh.whereType<String>().toList();
+    }
+
+    List<String>? ecBelegeFotosMediaTypen;
+    final Object? ecBelegeFotosMediaTypenRoh =
+        json['ecBelegeFotosMediaTypen'];
+    if (ecBelegeFotosMediaTypenRoh is List) {
+      ecBelegeFotosMediaTypen =
+          ecBelegeFotosMediaTypenRoh.whereType<String>().toList();
+    }
+
     return TagesabschlussFinal(
       kinoId: (json['kinoId'] as String?) ?? '',
       kinoName: (json['kinoName'] as String?) ?? '',
@@ -294,6 +323,8 @@ class TagesabschlussFinal {
       gesendetAm: DateTime.tryParse(
         (json['gesendetAmIso'] as String?) ?? '',
       ),
+      ecBelegeFotosBase64: ecBelegeFotosBase64,
+      ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
     );
   }
 }
