@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a · Run 399a
+Version: 0.9.71+399a2 · Run 399a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -149,7 +149,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399a)
+## Laufender Entwicklungsstand (Run 399a2)
+
+- Run 399a2 ✅ Widget-Test für die neue Verlauf-Beleg-Foto-Miniatur
+  ergänzt (test/pages/verlauf_detail_seite_test.dart), nachdem Paco
+  nach dem tatsächlichen Testnachweis für Run 399a fragte. Kein
+  Produktivcode geändert. Details siehe CHANGELOG.md.
 
 - Run 399a ✅ Direkte Anweisung ohne eigene Run-Nummer, Ergänzung zu
   Run 399: Yannik hat den Vertrag für Beleg-Fotos in der

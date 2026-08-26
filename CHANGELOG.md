@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a2: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
+  Run 399a). Paco fragte nach, ob die neuen Änderungen tatsächlich
+  getestet wurden — bis dahin gab es nur flutter analyze + die reinen
+  Unit-Tests, keine Widget-Ebene für die neue Verlauf-Miniatur. Neuer
+  Test test/pages/verlauf_detail_seite_test.dart deckt jetzt genau
+  das ab: (1) kein Beleg-Foto → keine Miniatur, Seite rendert fehlerfrei,
+  (2) Beleg-Foto vorhanden → Miniatur mit TID-Label erscheint, Antippen
+  öffnet die Vollbild-Ansicht mit InteractiveViewer. Dabei echten Bug in
+  der TEST-Hilfsfunktion gefunden und behoben (keine Produktivcode-
+  Änderung): Die zur Laufzeit per dart:ui (Canvas → Image → toByteData)
+  erzeugten PNG-Testbytes hingen ohne `tester.runAsync()` 10 Minuten im
+  Timeout, weil dieser Rasterizer-Roundtrip ein echter Async-Vorgang ist,
+  den die Fake-Uhr von flutter_test nicht von selbst vorantreibt — nach
+  dem Fix läuft der Test in <1s durch. Keine Produktivcode-Änderung,
+  nur der neue Test + Versionsbump. Ungetestet bleibt weiterhin: der
+  echte Kamera-Scan-Flow (Schritt 2) und ein echter Versand gegen die
+  Flurbocash-Sandbox mit den neuen Feldern — das kann nur Paco am
+  Gerät/Browser verifizieren (siehe Run-Ablauf-Regel "Run gilt erst als
+  abgeschlossen, wenn Paco lokal getestet hat").
+
 - Run 399a: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
   Run 399). Yannik hat den Vertrag für Beleg-Fotos in der
   Flurbocash-Übertragung per Beispiel-PUT geliefert. Umgesetzt:
