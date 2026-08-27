@@ -6,11 +6,16 @@
   },
   "SB": {
     "name": "Schauburg",
-    "terminal_ids": ["54017635"]
+    "terminal_ids": [
+      "54017635",
+      "60561994",
+      "60561996",
+      "60561997"
+    ]
   },
   "CO": {
     "name": "Cinema Ostertor",
-    "terminal_ids": ["54017639"]
+    "terminal_ids": ["54017639", "60561995"]
   },
   "GO": {
     "name": "Gondel",
@@ -18,6 +23,6 @@
   },
   "BT": {
     "name": "Bar Tabak",
-    "terminal_ids": ["54069493", "54017664"]
+    "terminal_ids": ["54069493", "54017664", "60561992", "60561993"]
   }
 }

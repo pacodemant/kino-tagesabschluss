@@ -36,6 +36,7 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
   BuildContext context, {
   required BelegScanErgebnis ergebnis,
   required List<BelegScanZeilenVorschau> zeilen,
+  String? tidKonfigWarnung,
 }) async {
   final bool? uebernehmen = await showDialog<bool>(
     context: context,
@@ -49,6 +50,24 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
           children: <Widget>[
             if (ergebnis.datum != null) _metaZeile('Datum', ergebnis.datum!),
             _metaZeileTid(ergebnis.terminalId),
+            if (tidKonfigWarnung != null) ...<Widget>[
+              const SizedBox(height: 4),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Icon(Icons.warning_amber_rounded,
+                      size: 16, color: Colors.red),
+                  const SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      '$tidKonfigWarnung TID falsch? Nochmals scannen '
+                      'oder nach dem „Übernehmen" manuell korrigieren.',
+                      style: const TextStyle(fontSize: 12, color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ],
             const Divider(height: 20),
             if (zeilen.isEmpty)
               const Padding(

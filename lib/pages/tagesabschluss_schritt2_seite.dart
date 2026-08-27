@@ -8,6 +8,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_sub_kacheln.dart';
@@ -17,7 +18,9 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
@@ -1553,10 +1556,14 @@ class _TagesabschlussSchritt2SeiteState
         final BelegScanErgebnis geprueftes = ergebnis;
         final List<BelegScanZeilenVorschau> vorschauZeilen =
             _baueScanVorschauZeilen(geprueftes, belegIndex);
+        final String? tidKonfigWarnung =
+            await _pruefeTidKonfigWarnung(geprueftes.terminalId);
+        if (!mounted) return;
         final bool uebernehmen = await zeigeBelegScanBestaetigenDialog(
           context,
           ergebnis: geprueftes,
           zeilen: vorschauZeilen,
+          tidKonfigWarnung: tidKonfigWarnung,
         );
         if (!mounted) return;
         if (!uebernehmen) {
@@ -1708,6 +1715,34 @@ class _TagesabschlussSchritt2SeiteState
   String? _feldWertOderNull(String? value) {
     if (value == null || value.trim().isEmpty) return null;
     return value.trim();
+  }
+
+  /// Gleicht eine gescannte TID gegen config/terminal_ids.json ab — dieselbe,
+  /// bewusst nicht blockierende Prüf-Logik wie beim Upload in Schritt 3
+  /// (ApiUploadService.pruefeTerminalIdsGegenKonfiguration).
+  Future<List<String>> _pruefeTidGegenKonfiguration(String tid) async {
+    final Kino? kino = KinoRepository.nachId(widget.kinoId);
+    final Map<String, List<String>> konfiguration =
+        await TerminalIdsConfigService.laden();
+    return ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+      <String>[tid],
+      kino,
+      konfiguration,
+    );
+  }
+
+  /// Prüft die vom Scan erkannte TID noch VOR dem Bestätigungs-Popup gegen
+  /// config/terminal_ids.json, damit der MA eine Abweichung schon dort
+  /// sieht (siehe TODO.md "TID-Whitelist editierbar + Prüfung beim
+  /// Scannen") statt erst am Ende der Abrechnung. Liefert null, wenn die
+  /// TID nicht lesbar war (dafür markiert das Popup die TID bereits eigen-
+  /// ständig rot) oder wenn sie zu den erlaubten TIDs des Standorts passt.
+  Future<String?> _pruefeTidKonfigWarnung(String? tid) async {
+    final String? bereinigt = _feldWertOderNull(tid);
+    if (bereinigt == null) return null;
+    final List<String> warnungen =
+        await _pruefeTidGegenKonfiguration(bereinigt);
+    return warnungen.isEmpty ? null : warnungen.first;
   }
 
   bool _subKachelTidUnleserlich(int i) {

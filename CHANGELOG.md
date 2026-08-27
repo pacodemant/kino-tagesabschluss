@@ -9,6 +9,46 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a6: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
+  Run 399a5). Paco wollte den TID-Hinweis nicht erst als SnackBar
+  nach dem Bestätigen, sondern schon im Bestätigungs-Popup selbst.
+  `beleg_scan_bestaetigen_dialog.dart`: neuer optionaler Parameter
+  `tidKonfigWarnung` an `zeigeBelegScanBestaetigenDialog()` — zeigt
+  bei Abweichung eine rote Warnzeile direkt unter der TID-Anzeige
+  ("<Warntext aus ApiUploadService.pruefeTerminalIdsGegenKonfiguration>
+  TID falsch? Nochmals scannen oder nach dem „Übernehmen" manuell
+  korrigieren."). `tagesabschluss_schritt2_seite.dart`: neue Methode
+  `_pruefeTidKonfigWarnung()` prüft die erkannte TID VOR dem Öffnen
+  des Popups (statt danach); die SnackBar-Ergänzung aus Run 399a5
+  wieder entfernt ("Scan bestätigt"-SnackBar zeigt wieder nur den
+  Betrag, ohne TID-Warnung — die steht jetzt im Popup). Der Check
+  beim Upload in Schritt 3 bleibt unverändert als zusätzliches
+  Sicherheitsnetz bestehen (z. B. bei manuell nachgetragener TID
+  ohne erneuten Scan).
+
+- Run 399a5: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
+  Run 399a4). Zwei Teile:
+  1) `config/terminal_ids.json`: neue Terminal-IDs von Paco ergänzt —
+     BT (Bar Tabak): 60561992, 60561993; SB (Schauburg): 60561994,
+     60561996, 60561997; CO (Cinema Ostertor): 60561995. Bestehende
+     TIDs unverändert.
+  2) TODO.md-Punkt "TID-Whitelist editierbar + Prüfung beim Scannen",
+     Teilpunkt (a) umgesetzt: die TID wird jetzt direkt nach dem
+     BelegScan in Schritt 2 gegen `config/terminal_ids.json` geprüft,
+     nicht mehr erst beim Upload in Schritt 3. Neue Methode
+     `_pruefeTidGegenKonfiguration()` (tagesabschluss_schritt2_seite.dart)
+     ruft dieselbe, bereits bestehende Prüf-Logik
+     `ApiUploadService.pruefeTerminalIdsGegenKonfiguration()` auf (keine
+     Duplikation) und hängt eine eventuelle Warnung an die
+     "Scan bestätigt"-SnackBar an (Format wie in Schritt 3: "— Achtung:
+     ..."). Bewusst weiterhin nicht blockierend — siehe TODO.md,
+     Referenzliste für einige Standorte laut Yannik noch unbestätigt.
+     Der bestehende Check beim Upload in Schritt 3 bleibt zusätzlich
+     bestehen (Sicherheitsnetz, z. B. bei manuell nachgetragener TID
+     ohne erneuten Scan). Teilpunkt (b) (editierbare Felder in den
+     Einstellungen statt statischer JSON-Datei) bleibt offen in
+     TODO.md.
+
 - Run 399a4: Direkte Anweisungen ohne eigene Run-Nummer (Ergänzung zu
   Run 399a3), zwei Fixes rund um das Dev-Modus-Kennzeichen "testdaten"
   im Kommentarfeld (Anmerkung):
