@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 399a2 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 399a3 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -22,29 +22,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Siehe auch "TID-Whitelist konfigurierbar + Abgleich beim Scannen"
       weiter unten (UI/Prüf-Logik dafür, unabhängig von dieser
       Datenklärung).
-
-- [ ] **Terminals bei doppelter TID am selben Tag → Code-Fix ausstehend**
-      Von Yannik beantwortet (siehe `.dev/flurbocash stuff/
-      fragen_yannik.md`, Frage 2.1, Stand 2026-08-26): Zwei EC-Belege
-      derselben TID sollen als **zwei separate `terminals[]`-Einträge
-      mit identischer TID** innerhalb desselben settlements-Eintrags
-      übertragen werden (nicht zu einer Zeile summiert), und Flurbocash
-      verarbeitet mehrere `terminals[]`-Einträge mit derselben TID in
-      einem Aufruf korrekt (beide Beträge werden erfasst). Die App
-      macht aktuell noch das Gegenteil: `ApiUploadService.
-      _terminalsListe()` gruppiert `zahlungsartenAufschluesselung`
-      über eine `Map<String, ...> proTid` und summiert alle Beträge
-      gleicher TID zu einer einzigen Terminal-Zeile. Code-Fix noch
-      offen: pro Beleg-Index (nicht pro TID) einen eigenen
-      `terminals[]`-Eintrag bauen. Betrifft direkt auch die seit
-      Run 399a mitgeschickten `receipt_photo`/`receipt_media_type`
-      (siehe TODO_ERLEDIGT.md, Run 399a): deren TID-basierte Zuordnung
-      (`_fotoProTid()`, "bei gleicher TID gewinnt das zuletzt
-      gescannte Foto") ist ein Provisorium unter der noch-alten
-      Aggregations-Logik — nach diesem Fix entfällt die
-      "letztes-Foto-gewinnt"-Regel von selbst, weil jeder Beleg dann
-      ohnehin sein eigenes `terminals[]`-Element mit seinem eigenen
-      Foto bekommt.
 
 - [ ] **Weitere Abrechnungsfelder** Kino-Soll, Bistro-Soll, Ausgaben,
       Differenz werden laut Yannik NICHT benötigt (Flurbocash zieht
@@ -260,6 +237,26 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       PWA-Verhalten (`sw_update_service_web.dart`, `web/`) dazu
       verhält — Standard-Service-Worker-Caching sollte das eigentlich
       schon so handhaben, ggf. reicht eine Bestätigung statt Umbau.
+
+- [ ] **Update-Reload nicht mitten in der Abrechnung** Aktuell
+      (`main.dart:72-74`, `sw_update_service_web.dart`) prüft die App
+      alle 20s lokal, ob ein neuer Service Worker bereit ist (der
+      eigentliche Versions-Check läuft browserseitig beim Laden,
+      stündlich und beim Zurückkehren aus dem Hintergrund, siehe
+      `web/index.html:126-162`) und lädt bei Erkennung SOFORT und
+      ungefragt die Seite neu (`reloadPage()`) — auch mitten in einer
+      offenen Abrechnung/einem offenen Dialog. Bei Pacos Test
+      (2026-08-27) hat das versehentlich mitten im Testen der Beleg-
+      Foto-Funktion die Seite neu geladen. Paco: "das ist doof",
+      Update soll nicht mehrfach täglich/sofort, sondern kontrolliert
+      angewendet werden. Vorschlag (noch nicht umgesetzt, Paco muss
+      zwischen den Optionen entscheiden): statt fester Uhrzeit lieber
+      gar nicht reloaden, während eine Tagesabschluss-Seite
+      (Schritt 1/2/3) offen ist — nur auf der Kino-Auswahl-/
+      Startseite anwenden. Ergänzend: `web/index.html:104-114` holt
+      bei jedem neuen Tab/Fresh-Load ohnehin schon automatisch die
+      aktuellste Version — die Lücke betrifft nur einen über mehrere
+      Abrechnungen hinweg offen bleibenden Tab.
 
 ### Verlauf
 

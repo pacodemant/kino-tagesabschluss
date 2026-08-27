@@ -251,7 +251,16 @@ class ApiUploadService {
       return <Map<String, dynamic>>[];
     }
 
-    final Map<String, Map<String, int>> proTid = <String, Map<String, int>>{};
+    // Gruppierung primär nach Beleg-Index: jeder erfasste Beleg wird ein
+    // eigener terminals[]-Eintrag, AUCH wenn zwei Belege dieselbe TID
+    // tragen (z. B. zwei Abrechnungen desselben Terminals am selben Tag).
+    // Laut Yannik (.dev/flurbocash stuff/fragen_yannik.md, Frage 2.1,
+    // 2026-08-26) will Flurbocash genau das: zwei separate Einträge
+    // gleicher TID statt einem summierten. Für Alt-Daten ohne belegIndex
+    // (gespeichert vor Run 399a3, z. B. erneuter Versand aus dem
+    // Verlauf) Fallback auf die alte Gruppierung nach TID.
+    final Map<String, Map<String, int>> gruppen = <String, Map<String, int>>{};
+    final Map<String, String> tidProGruppe = <String, String>{};
     for (final ZahlungsartErgebnis z in liste) {
       if (z.betragCent == null) continue;
       final String? feldname = _kartenartMapping[z.art.trim().toLowerCase()];
@@ -264,16 +273,22 @@ class ApiUploadService {
         );
       }
       final String tid = z.tid ?? abrechnung.terminalId ?? '';
+      final String gruppenSchluessel =
+          z.belegIndex != null ? 'i${z.belegIndex}' : 't$tid';
       final Map<String, int> betraege =
-          proTid.putIfAbsent(tid, () => <String, int>{});
+          gruppen.putIfAbsent(gruppenSchluessel, () => <String, int>{});
       betraege[feldname] = (betraege[feldname] ?? 0) + z.betragCent!;
+      tidProGruppe[gruppenSchluessel] = tid;
     }
 
-    final Map<String, ({String base64, String mediaType})> fotoProTid =
-        _fotoProTid(abrechnung);
-    final List<Map<String, dynamic>> terminals = proTid.entries
-        .map((MapEntry<String, Map<String, int>> e) =>
-            _terminalEintrag(e.key, e.value, fotoProTid[e.key]))
+    final Map<String, ({String base64, String mediaType})> fotoProGruppe =
+        _fotoProGruppe(abrechnung);
+    final List<Map<String, dynamic>> terminals = gruppen.entries
+        .map((MapEntry<String, Map<String, int>> e) => _terminalEintrag(
+              tidProGruppe[e.key]!,
+              e.value,
+              fotoProGruppe[e.key],
+            ))
         .toList();
 
     // ecUmsatzGesamtCent (Summe der Beleg-Gesamtbeträge) und
@@ -302,14 +317,15 @@ class ApiUploadService {
     return terminals;
   }
 
-  /// Ordnet jeder TID das zugehörige Beleg-Foto zu (base64 + media_type),
-  /// analog zur Kartenart-Zuordnung oben — beide lesen dieselbe
-  /// Index-Zuordnung (Beleg-Index → TID) aus ecBelegeLabels. Teilen sich
-  /// zwei Beleg-Indizes dieselbe TID (z. B. Korrektur-Rescan), gewinnt das
-  /// zuletzt gescannte Foto — dieselbe "letzter Wert gewinnt"-Regel wie bei
-  /// den Kartenart-Beträgen (dort per Summe statt Überschreiben, hier ist
-  /// ein Foto nicht summierbar).
-  static Map<String, ({String base64, String mediaType})> _fotoProTid(
+  /// Ordnet jedem Gruppenschlüssel aus _terminalsListe() (Beleg-Index
+  /// "i0", "i1", ... bzw. TID-Fallback `t<tid>` für Alt-Daten) das
+  /// zugehörige Beleg-Foto zu (base64 + media_type). Ein Beleg-Index
+  /// zählt nur dann als "hat belegIndex", wenn mindestens eine
+  /// Kartenart-Zeile aus zahlungsartenAufschluesselung ihn trägt — sonst
+  /// (Alt-Daten vor Run 399a3) Fallback auf TID, mit derselben
+  /// "letzter Wert gewinnt"-Regel wie zuvor, falls zwei TID-lose Belege
+  /// dieselbe TID teilen (ein Foto ist nicht summierbar wie ein Betrag).
+  static Map<String, ({String base64, String mediaType})> _fotoProGruppe(
     TagesabschlussFinal abrechnung,
   ) {
     final List<String>? tids = abrechnung.ecBelegeLabels;
@@ -318,15 +334,27 @@ class ApiUploadService {
     final Map<String, ({String base64, String mediaType})> ergebnis =
         <String, ({String base64, String mediaType})>{};
     if (tids == null || fotos == null) return ergebnis;
+
+    final Set<int> belegIndizesMitZeile = (abrechnung.zahlungsartenAufschluesselung ??
+            const <ZahlungsartErgebnis>[])
+        .map((ZahlungsartErgebnis z) => z.belegIndex)
+        .whereType<int>()
+        .toSet();
+
     for (int i = 0; i < tids.length && i < fotos.length; i++) {
-      final String tid = tids[i];
       final String foto = fotos[i];
-      if (tid.isEmpty || foto.isEmpty) continue;
+      if (foto.isEmpty) continue;
       final String mediaType =
           (mediaTypen != null && i < mediaTypen.length && mediaTypen[i].isNotEmpty)
               ? mediaTypen[i]
               : 'image/jpeg';
-      ergebnis[tid] = (base64: foto, mediaType: mediaType);
+      if (belegIndizesMitZeile.contains(i)) {
+        ergebnis['i$i'] = (base64: foto, mediaType: mediaType);
+      } else {
+        final String tid = tids[i];
+        if (tid.isEmpty) continue;
+        ergebnis['t$tid'] = (base64: foto, mediaType: mediaType);
+      }
     }
     return ergebnis;
   }

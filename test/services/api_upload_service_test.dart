@@ -241,6 +241,77 @@ void main() {
       expect(terminalB['visa'], 2000);
     });
 
+    test(
+        'Bug (gefunden beim Testen, 2026-08-27): zwei Belege MIT '
+        'identischer TID werden NICHT mehr zu einer Zeile summiert, '
+        'sondern als zwei separate terminals[]-Einträge übertragen '
+        '(Yannik-Antwort, fragen_yannik.md Frage 2.1) — jeder Beleg '
+        'behält dabei sein eigenes Foto', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 4000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(
+                art: 'Girocard', betragCent: 2000, tid: '54017635', belegIndex: 0),
+            ZahlungsartErgebnis(
+                art: 'Girocard', betragCent: 2000, tid: '54017635', belegIndex: 1),
+          ],
+          ecBelegeLabels: <String>['54017635', '54017635'],
+          ecBelegeFotosBase64: <String>['', '/9j/4AAQSkZJRg=='],
+          ecBelegeFotosMediaTypen: <String>['', 'image/jpeg'],
+        ),
+      );
+
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final List<dynamic> terminals =
+          settlement['terminals'] as List<dynamic>;
+
+      expect(terminals.length, 2);
+      for (final dynamic t in terminals) {
+        expect((t as Map<String, dynamic>)['tid'], '54017635');
+      }
+      final Map<String, dynamic> mitFoto = terminals.firstWhere(
+        (dynamic t) =>
+            (t as Map<String, dynamic>).containsKey('receipt_photo'),
+      ) as Map<String, dynamic>;
+      final Map<String, dynamic> ohneFoto = terminals.firstWhere(
+        (dynamic t) =>
+            !(t as Map<String, dynamic>).containsKey('receipt_photo'),
+      ) as Map<String, dynamic>;
+      expect(mitFoto['receipt_photo'], '/9j/4AAQSkZJRg==');
+      expect(mitFoto['girocard'], 2000);
+      expect(ohneFoto['girocard'], 2000);
+    });
+
+    test(
+        'Alt-Daten ohne belegIndex (vor Run 399a3 gespeichert, z. B. '
+        'erneuter Versand aus dem Verlauf): Fallback-Gruppierung nach '
+        'TID bleibt wie zuvor erhalten (summiert zu einer Zeile)', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 4000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000, tid: '54017635'),
+            ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000, tid: '54017635'),
+          ],
+        ),
+      );
+
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final List<dynamic> terminals =
+          settlement['terminals'] as List<dynamic>;
+
+      expect(terminals.length, 1);
+      expect(
+        (terminals.single as Map<String, dynamic>)['girocard'],
+        4000,
+      );
+    });
+
     test('Kontrolltest: cash_total entspricht 1:1 '
         'barBestandAbzglWechselgeldCent', () {
       final TagesabschlussFinal a = abrechnung();

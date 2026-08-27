@@ -3,6 +3,7 @@ class ZahlungsartErgebnis {
     required this.art,
     required this.betragCent,
     this.tid,
+    this.belegIndex,
   });
 
   factory ZahlungsartErgebnis.fromJson(Map<String, dynamic> json) {
@@ -10,12 +11,23 @@ class ZahlungsartErgebnis {
       art: json['art'] as String? ?? '',
       betragCent: (json['betrag_cent'] as num?)?.toInt(),
       tid: json['tid'] as String?,
+      belegIndex: (json['belegIndex'] as num?)?.toInt(),
     );
   }
 
   final String art;
   final int? betragCent;
   final String? tid;
+
+  /// Index des Belegs (EC-Kachel) in Schritt 2, aus dem diese Zeile
+  /// stammt — seit Run 399a3. Getrennt von [tid], weil zwei Belege
+  /// dieselbe TID tragen können (z. B. zwei Abrechnungen desselben
+  /// Terminals am selben Tag) und trotzdem als eigenständige
+  /// terminals[]-Einträge an Flurbocash gehen sollen, siehe
+  /// ApiUploadService._terminalsListe(). Für vor Run 399a3 gespeicherte
+  /// Abrechnungen (z. B. erneuter Versand aus dem Verlauf) null — dort
+  /// greift weiterhin die alte Gruppierung nach TID als Fallback.
+  final int? belegIndex;
 }
 
 class BelegScanErgebnis {

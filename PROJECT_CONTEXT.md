@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a2 · Run 399a2
+Version: 0.9.71+399a3 · Run 399a3
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -149,7 +149,21 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399a2)
+## Laufender Entwicklungsstand (Run 399a3)
+
+- Run 399a3 ✅ Drei Bugs behoben, die Paco beim Live-Test von Run 399a2
+  gefunden hat: (1) zwei EC-Belege mit identischer TID wurden zu einer
+  `terminals[]`-Zeile summiert statt als zwei separate Einträge
+  gesendet (Yannik-Antwort dazu bereits am 2026-08-26 vorgelegen,
+  Code-Fix jetzt umgesetzt: `ZahlungsartErgebnis.belegIndex`,
+  `ApiUploadService._terminalsListe()`/`_fotoProGruppe()` gruppieren
+  jetzt primär nach Beleg statt nach TID, Fallback für Alt-Daten
+  erhalten). (2) Debug-Dialog "JSON anzeigen" stürzte ab, weil das
+  komplette Beleg-Foto als ein einziger, sehr langer Base64-String in
+  einem SelectableText landete — jetzt für die Anzeige gekürzt, echter
+  Versand unverändert. (3) Sichtbares Kommentarfeld blieb trotz
+  Dev-Modus leer — jetzt automatisch mit "testdaten" vorbefüllt.
+  Details siehe CHANGELOG.md und TODO_ERLEDIGT.md.
 
 - Run 399a2 ✅ Widget-Test für die neue Verlauf-Beleg-Foto-Miniatur
   ergänzt (test/pages/verlauf_detail_seite_test.dart), nachdem Paco

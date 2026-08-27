@@ -262,6 +262,24 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       für ein Umsetzungsdetail (neue Dependency vs. Web-Download).
       *(Run 399a)*
 
+- [x] **Terminals bei doppelter TID am selben Tag** Von Yannik
+      beantwortet (`.dev/flurbocash stuff/fragen_yannik.md`, Frage 2.1,
+      2026-08-26): zwei EC-Belege derselben TID sollen als zwei
+      separate `terminals[]`-Einträge übertragen werden, nicht zu
+      einer Zeile summiert. Beim Live-Test von Run 399a durch Paco
+      (zwei Belege TID 54017635, SB) tatsächlich als Bug aufgefallen:
+      `_terminalsListe()` summierte beide Belege in eine Zeile. Fix:
+      `ZahlungsartErgebnis` bekommt ein neues `belegIndex`-Feld
+      (gesetzt in `_baueZahlungsartenListe()`), `_terminalsListe()`
+      gruppiert primär danach statt nach TID-Text — jeder Beleg wird
+      ein eigener Eintrag, auch bei gleicher TID. `_fotoProTid()` zu
+      `_fotoProGruppe()` erweitert (gleiches Schema), wodurch auch die
+      "letztes Foto gewinnt bei gleicher TID"-Unschärfe aus Run 399a
+      für neue Daten entfällt — jeder Beleg hat jetzt ohnehin nur sein
+      eigenes Foto. Für vor diesem Fix gespeicherte Abrechnungen ohne
+      `belegIndex` (z. B. "Erneut senden" aus dem Verlauf) bleibt die
+      alte TID-Gruppierung als Fallback erhalten. *(Run 399a3)*
+
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
 ### Verlauf

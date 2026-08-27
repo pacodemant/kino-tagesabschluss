@@ -506,6 +506,31 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
+  /// Ersetzt receipt_photo-Werte im settlements-Body durch einen kurzen
+  /// Platzhalter — nur für die Debug-JSON-Anzeige, siehe
+  /// _zeigeFlurbocashJson().
+  Map<String, dynamic> _fuerAnzeigeGekuerzt(Map<String, dynamic> call2) {
+    final List<dynamic> settlements =
+        (call2['settlements'] as List<dynamic>? ?? <dynamic>[])
+            .map((dynamic settlement) {
+      final Map<String, dynamic> s =
+          Map<String, dynamic>.from(settlement as Map<String, dynamic>);
+      s['terminals'] =
+          (s['terminals'] as List<dynamic>? ?? <dynamic>[])
+              .map((dynamic terminal) {
+        final Map<String, dynamic> t =
+            Map<String, dynamic>.from(terminal as Map<String, dynamic>);
+        final Object? foto = t['receipt_photo'];
+        if (foto is String) {
+          t['receipt_photo'] = '<base64, ${foto.length} Zeichen>';
+        }
+        return t;
+      }).toList();
+      return s;
+    }).toList();
+    return <String, dynamic>{...call2, 'settlements': settlements};
+  }
+
   Future<void> _zeigeFlurbocashJson() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? locationIdStr =
@@ -519,14 +544,36 @@ class _TagesabschlussSchritt3SeiteState
       return;
     }
 
-    final Map<String, dynamic> call1 =
-        ApiUploadService.ensureBody(_abschlussVorschau!, locationId);
-    final Map<String, dynamic> call2 =
-        ApiUploadService.settlementsBody(_abschlussVorschau!);
-
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
-    final String call1Json = encoder.convert(call1);
-    final String call2Json = encoder.convert(call2);
+    final String call1Json;
+    final String call2Json;
+    try {
+      final Map<String, dynamic> call1 =
+          ApiUploadService.ensureBody(_abschlussVorschau!, locationId);
+      final Map<String, dynamic> call2 =
+          ApiUploadService.settlementsBody(_abschlussVorschau!);
+      call1Json = encoder.convert(call1);
+      // Beleg-Fotos NUR für diese Debug-Anzeige gekürzt — der reale
+      // Request (settlementsBody() beim tatsächlichen Senden) schickt
+      // weiterhin das volle Foto. Ein rohes, hunderte KB bis mehrere MB
+      // langes base64-Foto ohne einen einzigen Umbruch als SelectableText
+      // darzustellen, hat die App beim Testen zuverlässig zum Absturz
+      // gebracht (Layout eines pathologisch langen einzelnen "Worts").
+      call2Json = encoder.convert(_fuerAnzeigeGekuerzt(call2));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppFarben.fokusFarbe,
+          content: Text(
+            'JSON-Vorschau fehlgeschlagen: $e',
+            style: const TextStyle(color: AppFarben.appBarRot),
+          ),
+          duration: const Duration(seconds: 8),
+        ),
+      );
+      return;
+    }
 
     showDialog<void>(
       context: context,

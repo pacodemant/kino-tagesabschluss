@@ -9,6 +9,64 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a3: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
+  Run 399a2). Paco hat Run 399a2 live getestet (SB, zwei EC-Belege mit
+  identischer TID 54017635 — einer per Dev-Tools-Auto-Fill, einer
+  echt gescannt) und drei echte Bugs gefunden:
+  1) `_terminalsListe()` (api_upload_service.dart) gruppierte
+     `zahlungsartenAufschluesselung` per TID-Text und summierte
+     Beträge zweier Belege mit gleicher TID zu EINER `terminals[]`-
+     Zeile statt zwei separate Einträge zu senden. Bereits vorher in
+     TODO.md offen dokumentiert ("Terminals bei doppelter TID am
+     selben Tag") und von Yannik am 2026-08-26 beantwortet (siehe
+     `.dev/flurbocash stuff/fragen_yannik.md`, Frage 2.1): zwei
+     separate `terminals[]`-Einträge mit identischer TID gewünscht,
+     Flurbocash verarbeitet das korrekt. Fix: `ZahlungsartErgebnis`
+     bekommt ein neues `belegIndex`-Feld (gesetzt in
+     `_baueZahlungsartenListe()`, tagesabschluss_schritt2_seite.dart),
+     `_terminalsListe()` gruppiert jetzt primär danach statt nach TID
+     — jeder Beleg wird ein eigener Eintrag, auch bei gleicher TID.
+     Für ältere, vor diesem Fix gespeicherte Abrechnungen ohne
+     `belegIndex` (z. B. "Erneut senden" aus dem Verlauf) bleibt die
+     alte TID-Gruppierung als Fallback erhalten — kein Bruch bei
+     bereits gespeicherten Abschlüssen. `_fotoProTid()` entsprechend
+     zu `_fotoProGruppe()` erweitert (gleiches Gruppierungsschema),
+     wodurch die bisherige "letztes Foto gewinnt bei gleicher TID"-
+     Unschärfe für neue Daten komplett entfällt: jeder Beleg hat nun
+     ohnehin nur sein eigenes Foto.
+  2) `_zeigeFlurbocashJson()` (tagesabschluss_schritt3_seite.dart)
+     stellte das komplette Beleg-Foto als einen einzigen, hunderte KB
+     langen Base64-String ohne Umbruch in einem `SelectableText`
+     dar — das hat Flutters Text-Layout beim Testen zuverlässig zum
+     Absturz gebracht ("kurz JSON sichtbar, dann Absturz zurück zur
+     Kino-Auswahl-Seite", reproduzierbar nur beim Antippen von
+     "JSON anzeigen"). Fix: neue Hilfsfunktion
+     `_fuerAnzeigeGekuerzt()` ersetzt `receipt_photo` in der
+     Debug-Anzeige durch `<base64, N Zeichen>` — der tatsächlich
+     gesendete Request (`ApiUploadService.settlementsBody()`) bleibt
+     unverändert vollständig, betrifft nur die lokale Anzeige.
+     Zusätzlich `_zeigeFlurbocashJson()` jetzt mit try/catch statt
+     einer ungefangenen Exception bei Berechnungsfehlern.
+  3) Sichtbares Kommentarfeld in Schritt 2 blieb trotz aktivem
+     Dev-Modus leer — die "testdaten"-Ergänzung aus Run 399a griff
+     bisher nur beim unsichtbaren Übergang zu Schritt 3
+     (`_anmerkungFuerUebertragung()`), nicht im tatsächlich
+     angezeigten Textfeld. Neue Methode
+     `_wendeDevModusKommentarAn()` (tagesabschluss_schritt2_seite.dart)
+     füllt das sichtbare Feld nach dem Laden des Entwurfs automatisch
+     mit "testdaten", sofern noch kein eigener Kommentar vorhanden ist.
+  Verworfen als Ursache (Paco-Feedback): PWA-Auto-Reload
+  (`main.dart:72-74`) — trat bei Paco reproduzierbar NUR beim
+  JSON-Debug-Button auf, nicht zufällig verteilt, passt also nicht als
+  Erklärung. Dieser Mechanismus ("reloadPage() ungefragt bei jeder neu
+  erkannten Version, alle 20s geprüft") bleibt trotzdem ein
+  eigenständig gefundenes Verbesserungspotential (Paco: "das ist doof",
+  wünscht sich Update-Anwendung nur 1x täglich bzw. außerhalb der
+  Abrechnungszeit) — als eigener Punkt in TODO.md aufgenommen, in
+  diesem Run NICHT umgesetzt.
+  2 neue Tests in test/services/api_upload_service_test.dart (TID-Fix
+  + Alt-Daten-Fallback). Alle 95 Tests grün, flutter analyze sauber.
+
 - Run 399a2: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
   Run 399a). Paco fragte nach, ob die neuen Änderungen tatsächlich
   getestet wurden — bis dahin gab es nur flutter analyze + die reinen

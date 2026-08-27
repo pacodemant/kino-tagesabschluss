@@ -191,6 +191,7 @@ class TagesabschlussFinal {
                   'art': z.art,
                   if (z.betragCent != null) 'betrag_cent': z.betragCent,
                   if (z.tid != null) 'tid': z.tid,
+                  if (z.belegIndex != null) 'belegIndex': z.belegIndex,
                 })
             .toList(),
       if (gesendetAm != null) 'gesendetAmIso': gesendetAm!.toIso8601String(),

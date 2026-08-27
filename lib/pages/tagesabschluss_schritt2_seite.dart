@@ -252,6 +252,8 @@ class _TagesabschlussSchritt2SeiteState
       }
       await _ladeEntwurf();
       if (!mounted) return;
+      await _wendeDevModusKommentarAn();
+      if (!mounted) return;
       _autoFokussiereNachLaden();
       if (widget.zielSchrittBeimSprung != null) {
         _weiterZuSchritt3(zielSchrittBeimSprung: widget.zielSchrittBeimSprung);
@@ -832,6 +834,25 @@ class _TagesabschlussSchritt2SeiteState
       return basis;
     }
     return basis.isEmpty ? kennzeichen : '$basis · $kennzeichen';
+  }
+
+  /// Befüllt das sichtbare Kommentarfeld im Dev-Modus automatisch mit
+  /// "testdaten", sofern noch kein eigener/geladener Kommentar vorhanden
+  /// ist — macht Dev-Modus-Testabrechnungen schon beim Ausfüllen sichtbar
+  /// erkennbar, nicht erst beim Versand (siehe _anmerkungFuerUebertragung,
+  /// die als zusätzliche Absicherung beim Übergang zu Schritt 3 greift,
+  /// falls das Feld nachträglich geleert oder ohne das Kennzeichen
+  /// überschrieben wurde). Läuft erst NACH _ladeEntwurf(), damit ein
+  /// echter gespeicherter Kommentar nicht überschrieben wird.
+  Future<void> _wendeDevModusKommentarAn() async {
+    final bool devModusAktiv = await DevModus.istAktiv();
+    if (!mounted || !devModusAktiv || _anmerkung.trim().isNotEmpty) {
+      return;
+    }
+    setState(() {
+      _anmerkung = 'testdaten';
+    });
+    _anmerkungController.text = _anmerkung;
   }
 
   /// AppBar-Schritt-Sprung: ruft exakt den regulären "Weiter"-Übergang auf
@@ -1998,6 +2019,7 @@ class _TagesabschlussSchritt2SeiteState
           art: zeile.name,
           betragCent: zeile.betragCentWert,
           tid: tid.isEmpty ? null : tid,
+          belegIndex: belegIndex,
         ));
       }
     }
