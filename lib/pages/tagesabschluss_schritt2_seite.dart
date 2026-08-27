@@ -822,12 +822,25 @@ class _TagesabschlussSchritt2SeiteState
     );
   }
 
+  /// Baut das Dev-Modus-Kennzeichen "testdaten" inkl. aktuellem Datum/
+  /// Uhrzeit, z. B. "testdaten 26.9. Mo 12:34" — gemeinsam genutzt von
+  /// _wendeDevModusKommentarAn() (Vorbefüllung des sichtbaren Felds) und
+  /// _anmerkungFuerUebertragung() (Absicherung beim Übergang zu Schritt 3).
+  static String _testdatenKennzeichenMitZeitstempel() {
+    return 'testdaten '
+        '${DateFormat("d.M. EEE HH:mm", 'de_DE').format(DateTime.now())}';
+  }
+
   /// Anmerkung für Flurbocash/lokale Anzeige: im Dev-Modus (Auto-Fill,
   /// siehe Einstellungen) wird das Kennzeichen "testdaten" inkl. Sende-
   /// Datum/-Uhrzeit (z. B. "testdaten 26.9. Mo 12:34") ergänzt, damit
   /// mit Dev-Modus erzeugte Abrechnungen (z. B. Auto-Fill-Dummy-Zahlen)
   /// dort erkennbar bleiben, auch wenn der Dev-Modus bis zum tatsächlichen
-  /// Versand wieder ausgeschaltet wird.
+  /// Versand wieder ausgeschaltet wird. In der Praxis trägt bereits
+  /// _wendeDevModusKommentarAn() das Kennzeichen samt Zeitstempel ein,
+  /// bevor dieser Übergang läuft — der Duplikat-Check hier greift daher
+  /// nur noch, falls das Feld manuell auf das nackte Wort "testdaten"
+  /// ohne Zeitstempel gesetzt wurde.
   String? _anmerkungFuerUebertragung() {
     final String basis = _anmerkung.trim();
     if (!_devModusAktiv) {
@@ -837,26 +850,27 @@ class _TagesabschlussSchritt2SeiteState
     if (basis.toLowerCase().contains(marker)) {
       return basis;
     }
-    final String kennzeichen =
-        '$marker ${DateFormat("d.M. EEE HH:mm", 'de_DE').format(DateTime.now())}';
-    return basis.isEmpty ? kennzeichen : '$basis · $kennzeichen';
+    return basis.isEmpty
+        ? _testdatenKennzeichenMitZeitstempel()
+        : '$basis · ${_testdatenKennzeichenMitZeitstempel()}';
   }
 
   /// Befüllt das sichtbare Kommentarfeld im Dev-Modus automatisch mit
-  /// "testdaten", sofern noch kein eigener/geladener Kommentar vorhanden
-  /// ist — macht Dev-Modus-Testabrechnungen schon beim Ausfüllen sichtbar
-  /// erkennbar, nicht erst beim Versand (siehe _anmerkungFuerUebertragung,
-  /// die als zusätzliche Absicherung beim Übergang zu Schritt 3 greift,
-  /// falls das Feld nachträglich geleert oder ohne das Kennzeichen
-  /// überschrieben wurde). Läuft erst NACH _ladeEntwurf(), damit ein
-  /// echter gespeicherter Kommentar nicht überschrieben wird.
+  /// "testdaten" inkl. Datum/Uhrzeit, sofern noch kein eigener/geladener
+  /// Kommentar vorhanden ist — macht Dev-Modus-Testabrechnungen schon
+  /// beim Ausfüllen sichtbar und zeitlich zuordenbar erkennbar, nicht
+  /// erst beim Versand (siehe _anmerkungFuerUebertragung, die als
+  /// zusätzliche Absicherung beim Übergang zu Schritt 3 greift, falls das
+  /// Feld nachträglich geleert oder ohne das Kennzeichen überschrieben
+  /// wurde). Läuft erst NACH _ladeEntwurf(), damit ein echter
+  /// gespeicherter Kommentar nicht überschrieben wird.
   Future<void> _wendeDevModusKommentarAn() async {
     final bool devModusAktiv = await DevModus.istAktiv();
     if (!mounted || !devModusAktiv || _anmerkung.trim().isNotEmpty) {
       return;
     }
     setState(() {
-      _anmerkung = 'testdaten';
+      _anmerkung = _testdatenKennzeichenMitZeitstempel();
     });
     _anmerkungController.text = _anmerkung;
   }

@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a7: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
+  Run 399a4). Paco hat 399a4 live getestet: im sichtbaren
+  Kommentarfeld stand nur das nackte Wort "testdaten", ohne den in
+  399a4 eingeführten Zeitstempel. Ursache: `_wendeDevModusKommentarAn()`
+  (seit Run 399a3, Vorbefüllung des sichtbaren Felds nach dem Laden
+  des Entwurfs) trug weiterhin nur das nackte Wort ein. Dadurch fand
+  `_anmerkungFuerUebertragung()` beim Übergang zu Schritt 3 das Wort
+  "testdaten" schon vor und übersprang wegen des Duplikat-Checks das
+  Anhängen des Zeitstempels — der 399a4-Fix griff dadurch faktisch nie.
+  Fix (`tagesabschluss_schritt2_seite.dart`): neue gemeinsame Helfer-
+  Methode `_testdatenKennzeichenMitZeitstempel()`, von beiden Stellen
+  genutzt. `_wendeDevModusKommentarAn()` trägt jetzt direkt
+  "testdaten TT.M. Wochentag HH:mm" ins sichtbare Feld ein;
+  `_anmerkungFuerUebertragung()` bleibt als Absicherung bestehen,
+  greift aber nur noch, falls das Feld manuell auf das nackte Wort
+  ohne Zeitstempel gesetzt wurde. Kein neuer Unit-Test (private
+  Methoden einer StatefulWidget-State-Klasse, kein bestehender
+  Test-Zugriffspunkt für dieses Widget) — Verifikation über Pacos
+  manuellen Test.
+
 - Run 399a6: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
   Run 399a5). Paco wollte den TID-Hinweis nicht erst als SnackBar
   nach dem Bestätigen, sondern schon im Bestätigungs-Popup selbst.
