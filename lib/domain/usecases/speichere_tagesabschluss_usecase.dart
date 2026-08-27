@@ -12,6 +12,10 @@ class SpeichereTagesabschlussUsecase {
   /// Bar Tabak) und das Tageslimit noch nicht erreicht, kann ein weiterer
   /// Abschluss statt eines Ueberschreibens explizit als zusaetzliche
   /// Abrechnung gespeichert werden (alsZusaetzlicheAbrechnung).
+  ///
+  /// Vorhandene Abschluesse mit dem Dev-Modus-Kennzeichen "testdaten" in
+  /// der Anmerkung zaehlen nicht mit: Testdaten sollen die Duplikat-
+  /// Pruefung fuer echte Abrechnungen nicht blockieren.
   Future<SpeichereTagesabschlussErgebnis> ausfuehren(
     TagesabschlussFinal abschluss, {
     bool ueberschreiben = false,
@@ -22,10 +26,9 @@ class SpeichereTagesabschlussUsecase {
 
     final int anzahlHeute = vorhandeneAbschluesse
         .where(
-          (TagesabschlussFinal eintrag) => _istGleicherKalendertag(
-            eintrag.datum,
-            abschluss.datum,
-          ),
+          (TagesabschlussFinal eintrag) =>
+              _istGleicherKalendertag(eintrag.datum, abschluss.datum) &&
+              !_istTestdatenEintrag(eintrag),
         )
         .length;
 
@@ -52,6 +55,10 @@ class SpeichereTagesabschlussUsecase {
     return links.year == rechts.year &&
         links.month == rechts.month &&
         links.day == rechts.day;
+  }
+
+  bool _istTestdatenEintrag(TagesabschlussFinal eintrag) {
+    return eintrag.anmerkung?.toLowerCase().contains('testdaten') ?? false;
   }
 }
 
