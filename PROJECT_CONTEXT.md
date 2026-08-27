@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a3 · Run 399a3
+Version: 0.9.71+399a4 · Run 399a4
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -149,8 +149,19 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399a3)
+## Laufender Entwicklungsstand (Run 399a4)
 
+- Run 399a4 ✅ Direkte Anweisungen ohne eigene Run-Nummer (Ergänzung zu
+  Run 399a3), zwei Fixes rund um das Dev-Modus-Kennzeichen "testdaten":
+  (1) `_anmerkungFuerUebertragung()` (tagesabschluss_schritt2_seite.dart)
+  hängt an das Kennzeichen jetzt Sende-Datum/-Uhrzeit an (Format
+  "testdaten 26.9. Mo 12:34"), damit Testabrechnungen auch zeitlich
+  zuordenbar sind. (2) `SpeichereTagesabschlussUsecase` zählt
+  vorhandene Abschlüsse mit "testdaten" in der Anmerkung nicht mehr
+  für die Duplikat-Prüfung pro Kino/Tag mit — Testläufe blockieren
+  damit nicht mehr die Duplikat-Prüfung für echte Abrechnungen
+  desselben Tages. Kommentarfeld war bereits vom Auto-Fill
+  ausgenommen (keine Code-Änderung nötig). Details siehe CHANGELOG.md.
 - Run 399a3 ✅ Drei Bugs behoben, die Paco beim Live-Test von Run 399a2
   gefunden hat: (1) zwei EC-Belege mit identischer TID wurden zu einer
   `terminals[]`-Zeile summiert statt als zwei separate Einträge

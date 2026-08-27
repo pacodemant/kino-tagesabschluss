@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a4: Direkte Anweisungen ohne eigene Run-Nummer (Ergänzung zu
+  Run 399a3), zwei Fixes rund um das Dev-Modus-Kennzeichen "testdaten"
+  im Kommentarfeld (Anmerkung):
+  1) `_anmerkungFuerUebertragung()` (tagesabschluss_schritt2_seite.dart)
+     hängte bisher nur das nackte Wort "testdaten" an die Anmerkung an,
+     wenn Dev-Modus aktiv ist. Jetzt zusätzlich Sende-Datum und
+     -Uhrzeit im Format `d.M. EEE HH:mm` (z. B. "testdaten 26.9. Mo
+     12:34"), damit im Dev-Modus erzeugte Testabrechnungen auch
+     zeitlich zuordenbar bleiben. Der Duplikat-Check, der ein erneutes
+     Anhängen verhindert, prüft weiterhin nur auf das Wort "testdaten"
+     (nicht auf den Zeitstempel), sonst würde bei jedem Aufruf ein
+     neuer Zeitstempel angehängt.
+  2) `SpeichereTagesabschlussUsecase.ausfuehren()`
+     (speichere_tagesabschluss_usecase.dart): die Duplikat-Prüfung pro
+     Kino und Kalendertag (max. `Kino.maxAbrechnungenProTag`) zählte
+     bisher jeden vorhandenen Abschluss mit, auch reine Dev-Modus-
+     Testläufe. Neue Helfermethode `_istTestdatenEintrag()` klammert
+     vorhandene Abschlüsse mit "testdaten" in der Anmerkung jetzt aus
+     der Zählung aus — Testläufe blockieren damit nicht mehr die
+     Duplikat-Prüfung für eine echte Abrechnung desselben Tages.
+  Zusätzlich geprüft (keine Änderung nötig): das sichtbare
+  Kommentarfeld war bereits vom Dev-Modus-Auto-Fill ausgenommen —
+  `_autoFillDev()` und `_leereAlleFelder(Dev)` fassen
+  `_anmerkung`/`_anmerkungController` an keiner Stelle an, das
+  Vorbefüllen mit "testdaten" läuft ausschließlich über die
+  dedizierte `_wendeDevModusKommentarAn()`.
+
 - Run 399a3: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
   Run 399a2). Paco hat Run 399a2 live getestet (SB, zwei EC-Belege mit
   identischer TID 54017635 — einer per Dev-Tools-Auto-Fill, einer
