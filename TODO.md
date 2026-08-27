@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 399a5 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 399a6 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -163,14 +163,18 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 - [ ] **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
       `config/terminal_ids.json`, Warnung bei Unstimmigkeit statt
-      Blockade) ist seit Run 399 umgesetzt, seit Run 399a5 zusätzlich
-      direkt nach dem BelegScan in Schritt 2 (nicht mehr nur beim
-      Upload in Schritt 3) — der MA sieht eine Abweichung damit sofort
-      statt erst am Ende der Abrechnung. Weiterhin offen: eigene,
-      editierbare Felder pro Standort in den Einstellungen statt der
-      statischen JSON-Datei (siehe auch blockierten Punkt "Registrierte
-      TIDs pro Standort" oben — Werte bis auf SB von Yannik noch nicht
-      bestätigt).
+      Blockade) ist seit Run 399 umgesetzt, seit Run 399a6 direkt im
+      Bestätigungs-Popup nach dem BelegScan in Schritt 2 sichtbar
+      (rote Warnzeile bei der TID: "... TID falsch? Nochmals scannen
+      oder nach dem 'Übernehmen' manuell korrigieren.") statt erst
+      beim Upload in Schritt 3 — der MA sieht eine Abweichung damit
+      sofort, bevor der Beleg übernommen wird. Der Check beim Upload
+      in Schritt 3 bleibt zusätzlich als Sicherheitsnetz bestehen
+      (z. B. bei manuell nachgetragener TID ohne erneuten Scan).
+      Weiterhin offen: eigene, editierbare Felder pro Standort in den
+      Einstellungen statt der statischen JSON-Datei (siehe auch
+      blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte
+      bis auf SB von Yannik noch nicht bestätigt).
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder

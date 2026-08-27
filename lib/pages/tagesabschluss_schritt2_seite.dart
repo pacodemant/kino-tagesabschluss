@@ -1556,10 +1556,14 @@ class _TagesabschlussSchritt2SeiteState
         final BelegScanErgebnis geprueftes = ergebnis;
         final List<BelegScanZeilenVorschau> vorschauZeilen =
             _baueScanVorschauZeilen(geprueftes, belegIndex);
+        final String? tidKonfigWarnung =
+            await _pruefeTidKonfigWarnung(geprueftes.terminalId);
+        if (!mounted) return;
         final bool uebernehmen = await zeigeBelegScanBestaetigenDialog(
           context,
           ergebnis: geprueftes,
           zeilen: vorschauZeilen,
+          tidKonfigWarnung: tidKonfigWarnung,
         );
         if (!mounted) return;
         if (!uebernehmen) {
@@ -1650,20 +1654,11 @@ class _TagesabschlussSchritt2SeiteState
         final String betrag = geprueftes.gesamtBetragCent != null
             ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
             : '—';
-        final String tidFuerPruefung = _ecBelegLabels[belegIndex];
-        final List<String> tidWarnungen = tidFuerPruefung.isEmpty
-            ? const <String>[]
-            : await _pruefeTidGegenKonfiguration(tidFuerPruefung);
-        if (!mounted) return;
-        final String nachricht = tidWarnungen.isEmpty
-            ? 'Scan bestätigt · Gesamt: $betrag'
-            : 'Scan bestätigt · Gesamt: $betrag — Achtung: '
-                '${tidWarnungen.join(' ')}';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppFarben.fokusFarbe,
             content: Text(
-              nachricht,
+              'Scan bestätigt · Gesamt: $betrag',
               style: const TextStyle(color: AppFarben.appBarRot),
             ),
           ),
@@ -1722,13 +1717,9 @@ class _TagesabschlussSchritt2SeiteState
     return value.trim();
   }
 
-  /// Gleicht die gescannte TID sofort nach dem Scan gegen
-  /// config/terminal_ids.json ab — dieselbe, bewusst nicht blockierende
-  /// Prüf-Logik wie beim Upload in Schritt 3
-  /// (ApiUploadService.pruefeTerminalIdsGegenKonfiguration), nur schon
-  /// hier, damit der MA eine Abweichung sofort sieht statt erst am Ende
-  /// der Abrechnung (siehe TODO.md "TID-Whitelist editierbar + Prüfung
-  /// beim Scannen", Punkt a).
+  /// Gleicht eine gescannte TID gegen config/terminal_ids.json ab — dieselbe,
+  /// bewusst nicht blockierende Prüf-Logik wie beim Upload in Schritt 3
+  /// (ApiUploadService.pruefeTerminalIdsGegenKonfiguration).
   Future<List<String>> _pruefeTidGegenKonfiguration(String tid) async {
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
     final Map<String, List<String>> konfiguration =
@@ -1738,6 +1729,20 @@ class _TagesabschlussSchritt2SeiteState
       kino,
       konfiguration,
     );
+  }
+
+  /// Prüft die vom Scan erkannte TID noch VOR dem Bestätigungs-Popup gegen
+  /// config/terminal_ids.json, damit der MA eine Abweichung schon dort
+  /// sieht (siehe TODO.md "TID-Whitelist editierbar + Prüfung beim
+  /// Scannen") statt erst am Ende der Abrechnung. Liefert null, wenn die
+  /// TID nicht lesbar war (dafür markiert das Popup die TID bereits eigen-
+  /// ständig rot) oder wenn sie zu den erlaubten TIDs des Standorts passt.
+  Future<String?> _pruefeTidKonfigWarnung(String? tid) async {
+    final String? bereinigt = _feldWertOderNull(tid);
+    if (bereinigt == null) return null;
+    final List<String> warnungen =
+        await _pruefeTidGegenKonfiguration(bereinigt);
+    return warnungen.isEmpty ? null : warnungen.first;
   }
 
   bool _subKachelTidUnleserlich(int i) {

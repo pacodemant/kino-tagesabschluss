@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a6: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
+  Run 399a5). Paco wollte den TID-Hinweis nicht erst als SnackBar
+  nach dem Bestätigen, sondern schon im Bestätigungs-Popup selbst.
+  `beleg_scan_bestaetigen_dialog.dart`: neuer optionaler Parameter
+  `tidKonfigWarnung` an `zeigeBelegScanBestaetigenDialog()` — zeigt
+  bei Abweichung eine rote Warnzeile direkt unter der TID-Anzeige
+  ("<Warntext aus ApiUploadService.pruefeTerminalIdsGegenKonfiguration>
+  TID falsch? Nochmals scannen oder nach dem „Übernehmen" manuell
+  korrigieren."). `tagesabschluss_schritt2_seite.dart`: neue Methode
+  `_pruefeTidKonfigWarnung()` prüft die erkannte TID VOR dem Öffnen
+  des Popups (statt danach); die SnackBar-Ergänzung aus Run 399a5
+  wieder entfernt ("Scan bestätigt"-SnackBar zeigt wieder nur den
+  Betrag, ohne TID-Warnung — die steht jetzt im Popup). Der Check
+  beim Upload in Schritt 3 bleibt unverändert als zusätzliches
+  Sicherheitsnetz bestehen (z. B. bei manuell nachgetragener TID
+  ohne erneuten Scan).
+
 - Run 399a5: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
   Run 399a4). Zwei Teile:
   1) `config/terminal_ids.json`: neue Terminal-IDs von Paco ergänzt —

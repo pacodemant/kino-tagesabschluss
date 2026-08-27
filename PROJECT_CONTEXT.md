@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a5 · Run 399a5
+Version: 0.9.71+399a6 · Run 399a6
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -115,7 +115,8 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 - `ZahlungsartenConfigService` — Kartenarten aus `config/zahlungsarten.txt`
 - `TerminalIdsConfigService` — TIDs pro Standort aus `config/terminal_ids.json`
   (seit Run 399, Warnungs-Abgleich in `ApiUploadService.upload()`;
-  seit Run 399a5 zusätzlich direkt nach dem BelegScan in Schritt 2)
+  seit Run 399a6 zusätzlich im Bestätigungs-Popup direkt nach dem
+  BelegScan in Schritt 2, siehe `beleg_scan_bestaetigen_dialog.dart`)
 - `DevModus` — Dev-Modus (SharedPreferences-Key `dev_modus_aktiv`)
 - `PwaInstallService` / `StoragePersistService` — Web-spezifisch (Stub für andere Plattformen)
 
@@ -132,7 +133,10 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 - `zeigeBelegScanBestaetigenDialog` (`beleg_scan_bestaetigen_dialog.dart`)
   — Bestätigungs-Popup nach EC-Beleg-Scan ("nochmal"/"übernehmen"),
   seit Run 318. Ersetzt NICHT das gleichnamig klingende, in Run 307
-  entfernte `BelegScanGegenpruefDialog` (anderer Zweck).
+  entfernte `BelegScanGegenpruefDialog` (anderer Zweck). Seit Run
+  399a6 optionaler Parameter `tidKonfigWarnung`: zeigt eine rote
+  Warnzeile bei der TID, wenn diese laut
+  `config/terminal_ids.json` für den Standort nicht erwartet wird.
 - `HeuteBadge` / `NichtGesendetBadge` — Verlauf-Badges (heutiger Tag
   bzw. noch nicht an Flurbocash gesendet, seit Run 387)
 
