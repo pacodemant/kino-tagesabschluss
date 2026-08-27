@@ -820,7 +820,8 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   /// Anmerkung für Flurbocash/lokale Anzeige: im Dev-Modus (Auto-Fill,
-  /// siehe Einstellungen) wird das Kennzeichen "testdaten" ergänzt, damit
+  /// siehe Einstellungen) wird das Kennzeichen "testdaten" inkl. Sende-
+  /// Datum/-Uhrzeit (z. B. "testdaten 26.9. Mo 12:34") ergänzt, damit
   /// mit Dev-Modus erzeugte Abrechnungen (z. B. Auto-Fill-Dummy-Zahlen)
   /// dort erkennbar bleiben, auch wenn der Dev-Modus bis zum tatsächlichen
   /// Versand wieder ausgeschaltet wird.
@@ -829,10 +830,12 @@ class _TagesabschlussSchritt2SeiteState
     if (!_devModusAktiv) {
       return basis.isNotEmpty ? basis : null;
     }
-    const String kennzeichen = 'testdaten';
-    if (basis.toLowerCase().contains(kennzeichen)) {
+    const String marker = 'testdaten';
+    if (basis.toLowerCase().contains(marker)) {
       return basis;
     }
+    final String kennzeichen =
+        '$marker ${DateFormat("d.M. EEE HH:mm", 'de_DE').format(DateTime.now())}';
     return basis.isEmpty ? kennzeichen : '$basis · $kennzeichen';
   }
 
