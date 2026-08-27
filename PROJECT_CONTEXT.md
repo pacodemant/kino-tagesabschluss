@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a4 · Run 399a4
+Version: 0.9.71+399a5 · Run 399a5
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -114,7 +114,8 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 - `GetraenkeConfigService` / `WechselgeldConfigService` — Asset-Konfig laden & cachen
 - `ZahlungsartenConfigService` — Kartenarten aus `config/zahlungsarten.txt`
 - `TerminalIdsConfigService` — TIDs pro Standort aus `config/terminal_ids.json`
-  (seit Run 399, Warnungs-Abgleich in `ApiUploadService.upload()`)
+  (seit Run 399, Warnungs-Abgleich in `ApiUploadService.upload()`;
+  seit Run 399a5 zusätzlich direkt nach dem BelegScan in Schritt 2)
 - `DevModus` — Dev-Modus (SharedPreferences-Key `dev_modus_aktiv`)
 - `PwaInstallService` / `StoragePersistService` — Web-spezifisch (Stub für andere Plattformen)
 

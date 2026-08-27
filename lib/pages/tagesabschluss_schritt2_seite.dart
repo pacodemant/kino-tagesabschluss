@@ -8,6 +8,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_sub_kacheln.dart';
@@ -17,7 +18,9 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/scroll/schritt2_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_ui_builder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/ui/schritt2_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
@@ -1647,11 +1650,20 @@ class _TagesabschlussSchritt2SeiteState
         final String betrag = geprueftes.gesamtBetragCent != null
             ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
             : '—';
+        final String tidFuerPruefung = _ecBelegLabels[belegIndex];
+        final List<String> tidWarnungen = tidFuerPruefung.isEmpty
+            ? const <String>[]
+            : await _pruefeTidGegenKonfiguration(tidFuerPruefung);
+        if (!mounted) return;
+        final String nachricht = tidWarnungen.isEmpty
+            ? 'Scan bestätigt · Gesamt: $betrag'
+            : 'Scan bestätigt · Gesamt: $betrag — Achtung: '
+                '${tidWarnungen.join(' ')}';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: AppFarben.fokusFarbe,
             content: Text(
-              'Scan bestätigt · Gesamt: $betrag',
+              nachricht,
               style: const TextStyle(color: AppFarben.appBarRot),
             ),
           ),
@@ -1708,6 +1720,24 @@ class _TagesabschlussSchritt2SeiteState
   String? _feldWertOderNull(String? value) {
     if (value == null || value.trim().isEmpty) return null;
     return value.trim();
+  }
+
+  /// Gleicht die gescannte TID sofort nach dem Scan gegen
+  /// config/terminal_ids.json ab — dieselbe, bewusst nicht blockierende
+  /// Prüf-Logik wie beim Upload in Schritt 3
+  /// (ApiUploadService.pruefeTerminalIdsGegenKonfiguration), nur schon
+  /// hier, damit der MA eine Abweichung sofort sieht statt erst am Ende
+  /// der Abrechnung (siehe TODO.md "TID-Whitelist editierbar + Prüfung
+  /// beim Scannen", Punkt a).
+  Future<List<String>> _pruefeTidGegenKonfiguration(String tid) async {
+    final Kino? kino = KinoRepository.nachId(widget.kinoId);
+    final Map<String, List<String>> konfiguration =
+        await TerminalIdsConfigService.laden();
+    return ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+      <String>[tid],
+      kino,
+      konfiguration,
+    );
   }
 
   bool _subKachelTidUnleserlich(int i) {

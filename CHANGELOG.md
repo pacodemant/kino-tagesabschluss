@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a5: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
+  Run 399a4). Zwei Teile:
+  1) `config/terminal_ids.json`: neue Terminal-IDs von Paco ergänzt —
+     BT (Bar Tabak): 60561992, 60561993; SB (Schauburg): 60561994,
+     60561996, 60561997; CO (Cinema Ostertor): 60561995. Bestehende
+     TIDs unverändert.
+  2) TODO.md-Punkt "TID-Whitelist editierbar + Prüfung beim Scannen",
+     Teilpunkt (a) umgesetzt: die TID wird jetzt direkt nach dem
+     BelegScan in Schritt 2 gegen `config/terminal_ids.json` geprüft,
+     nicht mehr erst beim Upload in Schritt 3. Neue Methode
+     `_pruefeTidGegenKonfiguration()` (tagesabschluss_schritt2_seite.dart)
+     ruft dieselbe, bereits bestehende Prüf-Logik
+     `ApiUploadService.pruefeTerminalIdsGegenKonfiguration()` auf (keine
+     Duplikation) und hängt eine eventuelle Warnung an die
+     "Scan bestätigt"-SnackBar an (Format wie in Schritt 3: "— Achtung:
+     ..."). Bewusst weiterhin nicht blockierend — siehe TODO.md,
+     Referenzliste für einige Standorte laut Yannik noch unbestätigt.
+     Der bestehende Check beim Upload in Schritt 3 bleibt zusätzlich
+     bestehen (Sicherheitsnetz, z. B. bei manuell nachgetragener TID
+     ohne erneuten Scan). Teilpunkt (b) (editierbare Felder in den
+     Einstellungen statt statischer JSON-Datei) bleibt offen in
+     TODO.md.
+
 - Run 399a4: Direkte Anweisungen ohne eigene Run-Nummer (Ergänzung zu
   Run 399a3), zwei Fixes rund um das Dev-Modus-Kennzeichen "testdaten"
   im Kommentarfeld (Anmerkung):
