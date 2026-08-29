@@ -147,55 +147,14 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
       return;
     }
 
-    if (heutige.length == 1) {
-      Navigator.of(context).pushNamed(
-        UebertragUmschlagSeite.routenName,
-        arguments: heutige.first,
-      );
-      return;
-    }
-
-    final TagesabschlussFinal? ausgewaehlt =
-        await showModalBottomSheet<TagesabschlussFinal>(
-      context: context,
-      builder: (BuildContext sheetContext) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 12, 16, 4),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Welche Abrechnung von heute?',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-              for (final TagesabschlussFinal eintrag in heutige)
-                ListTile(
-                  title: Text(
-                    '${eintrag.createdAt.hour.toString().padLeft(2, '0')}:'
-                    '${eintrag.createdAt.minute.toString().padLeft(2, '0')} Uhr',
-                  ),
-                  subtitle: (eintrag.mitarbeiterName != null &&
-                          eintrag.mitarbeiterName!.isNotEmpty)
-                      ? Text(eintrag.mitarbeiterName!)
-                      : null,
-                  onTap: () => Navigator.of(sheetContext).pop(eintrag),
-                ),
-            ],
-          ),
-        );
-      },
-    );
-    if (ausgewaehlt == null || !context.mounted) {
-      return;
-    }
+    // `heutige` kommt aus LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(),
+    // die pro Kalendertag nur noch den zuletzt erstellten Eintrag liefert
+    // (siehe ladeFinaleTagesabschluesseNeuesteProTag()) — fuer "heute" kann
+    // die Liste also nie mehr als einen Eintrag enthalten, eine Auswahl
+    // zwischen mehreren Abrechnungen ist damit nicht mehr noetig.
     Navigator.of(context).pushNamed(
       UebertragUmschlagSeite.routenName,
-      arguments: ausgewaehlt,
+      arguments: heutige.first,
     );
   }
 

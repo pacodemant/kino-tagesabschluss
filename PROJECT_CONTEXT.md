@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a7 · Run 399a7
+Version: 0.9.71+399b · Run 399b
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,22 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399a4)
+## Laufender Entwicklungsstand (Run 399b)
+
+- Run 399b ✅ Direkte Anweisung ohne eigene Run-Nummer (neues Thema,
+  daher "b" statt Fortsetzung der "a"-Kette). Paco fand im Verlauf
+  zwei Abrechnungen für "heute", "Übertrag auf Umschlag" fragte
+  deshalb nach der richtigen. Neue Methode
+  `LokalerSpeicher.ladeFinaleTagesabschluesseNeuesteProTag()` zeigt
+  in Verlauf und auf der Startseite pro Kalendertag nur noch den
+  zuletzt erstellten Eintrag; die dadurch unerreichbare Auswahl-
+  BottomSheet-Logik in `startmenue_seite.dart` wurde entfernt.
+  `SpeichereTagesabschlussUsecase` bleibt unverändert auf der
+  ungefilterten Rohliste. Bewusste Einschränkung (Paco-Entscheidung
+  nach Rückfrage): betrifft auch die Bar-Tabak-2-Abrechnungen/Tag-
+  Regel und die geplante Korrektur-Badge-Idee — beide noch nicht
+  umgesetzt, TODO.md an beiden Stellen um einen Hinweis ergänzt.
+  Details siehe CHANGELOG.md.
 
 - Run 399a4 ✅ Direkte Anweisungen ohne eigene Run-Nummer (Ergänzung zu
   Run 399a3), zwei Fixes rund um das Dev-Modus-Kennzeichen "testdaten":

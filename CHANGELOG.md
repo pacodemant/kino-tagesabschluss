@@ -9,6 +9,43 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399b: Direkte Anweisung ohne eigene Run-Nummer (neues Thema,
+  daher Buchstabe "b" statt Fortsetzung der "a"-Kette). Paco meldete:
+  im Verlauf tauchten für heute zwei Abrechnungen auf, und "Übertrag
+  auf Umschlag" auf der Startseite fragte deshalb nach, welche
+  gemeint sei. Ursache laut Paco: er ist beim Testen mehrfach von
+  Schritt 3 ("Übertrag") zurück zu Schritt 2 ("Bargeld zählen")
+  gegangen, um zu korrigieren. Rückfrage vor der Umsetzung: pauschal
+  immer nur den neuesten Eintrag pro Tag anzuzeigen widerspricht der
+  Bar-Tabak-Regel (`Kino.maxAbrechnungenProTag`, aktuell 2, siehe
+  `speichere_tagesabschluss_usecase.dart`) und der in TODO.md
+  notierten künftigen "Korrektur"-Badge-Idee (2026-08-22) — beide
+  sind aber laut TODO.md noch nicht umgesetzt, Paco hat sich nach
+  dieser Rückfrage bewusst für "immer nur der neueste Eintrag pro
+  Tag" entschieden.
+  Fix: neue Methode
+  `LokalerSpeicher.ladeFinaleTagesabschluesseNeuesteProTag()`
+  (lokaler_speicher.dart) gruppiert die geladenen Abschlüsse nach
+  Kalendertag (`DatumsHelper.isoDatum(datum)`) und behält pro Tag nur
+  den Eintrag mit dem spätesten `createdAt`. `verlauf_seite.dart`
+  nutzt diese Methode jetzt statt der ungefilterten
+  `ladeFinaleTagesabschluesse()`. `ladeHeutigeFinaleTagesabschluesse()`
+  baut jetzt ebenfalls auf der neuen Methode auf, wodurch die Liste
+  `_heutigeAbschluesse` in `startmenue_seite.dart` nie mehr als einen
+  Eintrag enthalten kann — die dortige Auswahl-BottomSheet-Logik
+  ("Welche Abrechnung von heute?") war damit unerreichbarer Code und
+  wurde entfernt, `_oeffneUebertragUmschlag()` navigiert jetzt direkt
+  mit `heutige.first`. `SpeichereTagesabschlussUsecase` verwendet
+  weiterhin bewusst die ungefilterte `ladeFinaleTagesabschluesse()`,
+  da die Duplikat-/Ersetzen-Logik dort alle Rohdaten sehen muss.
+  Neuer Unit-Test `test/storage/lokaler_speicher_test.dart` (zwei
+  Fälle: mehrere Einträge desselben Tages → nur der neueste bleibt;
+  Einträge verschiedener Tage bleiben alle erhalten, neuester Tag
+  zuerst). TODO.md an den zwei betroffenen Stellen (Bar Tabak,
+  Korrektur-Badge-Idee) um einen Hinweis auf diese neue
+  Anzeige-Regel ergänzt, damit beide künftigen Features das bei der
+  Umsetzung berücksichtigen.
+
 - Run 399a7: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
   Run 399a4). Paco hat 399a4 live getestet: im sichtbaren
   Kommentarfeld stand nur das nackte Wort "testdaten", ohne den in

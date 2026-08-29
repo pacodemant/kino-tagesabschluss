@@ -43,7 +43,9 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
 
   Future<void> _ladeAbschluesse() async {
     final List<TagesabschlussFinal> abschluesse =
-        await LokalerSpeicher.ladeFinaleTagesabschluesse(widget.kinoId);
+        await LokalerSpeicher.ladeFinaleTagesabschluesseNeuesteProTag(
+      widget.kinoId,
+    );
     if (!mounted) {
       return;
     }

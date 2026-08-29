@@ -234,13 +234,45 @@ class LokalerSpeicher {
     }
   }
 
+  /// Laedt die finalen Tagesabschluesse eines Kinos fuer die Anzeige
+  /// (Verlauf, Startseite): pro Kalendertag bleibt nur der zuletzt erstellte
+  /// Eintrag (per createdAt) uebrig, aeltere Eintraege desselben Tages
+  /// (z.B. liegengebliebene Testdaten-Laeufe oder mehrfach korrigierte
+  /// Abrechnungen) werden ausgeblendet. Fuer die Duplikat-/Ueberschreib-
+  /// Logik beim Speichern selbst weiterhin die ungefilterte
+  /// `ladeFinaleTagesabschluesse()` verwenden, nicht diese Methode.
+  static Future<List<TagesabschlussFinal>>
+      ladeFinaleTagesabschluesseNeuesteProTag(String kinoId) async {
+    final List<TagesabschlussFinal> alle =
+        await ladeFinaleTagesabschluesse(kinoId);
+    final Map<String, TagesabschlussFinal> neuesterProTag =
+        <String, TagesabschlussFinal>{};
+    for (final TagesabschlussFinal eintrag in alle) {
+      final String tag = DatumsHelper.isoDatum(eintrag.datum);
+      final TagesabschlussFinal? bisheriger = neuesterProTag[tag];
+      if (bisheriger == null ||
+          eintrag.createdAt.isAfter(bisheriger.createdAt)) {
+        neuesterProTag[tag] = eintrag;
+      }
+    }
+    final List<TagesabschlussFinal> gefiltert =
+        neuesterProTag.values.toList();
+    gefiltert.sort(
+      (TagesabschlussFinal a, TagesabschlussFinal b) =>
+          b.createdAt.compareTo(a.createdAt),
+    );
+    return gefiltert;
+  }
+
   /// Laedt die finalen Tagesabschluesse eines Kinos, die dem aktuellen
-  /// logischen Tag (6-Uhr-Knick) zugeordnet sind (neueste zuerst).
+  /// logischen Tag (6-Uhr-Knick) zugeordnet sind (neueste zuerst) — pro
+  /// Kalendertag maximal ein Eintrag, siehe
+  /// `ladeFinaleTagesabschluesseNeuesteProTag()`.
   static Future<List<TagesabschlussFinal>> ladeHeutigeFinaleTagesabschluesse(
     String kinoId,
   ) async {
     final List<TagesabschlussFinal> alle =
-        await ladeFinaleTagesabschluesse(kinoId);
+        await ladeFinaleTagesabschluesseNeuesteProTag(kinoId);
     return alle
         .where(
           (TagesabschlussFinal a) =>

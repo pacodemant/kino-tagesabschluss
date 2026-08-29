@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 399a7 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 399b · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -34,9 +34,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 - [ ] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT oder MA?
       Wer pflegt Änderungen (neuer API-Key, neue TID)?
-
-- [ ] **Mailversand** Gibt es einen Mailserver/-dienst für die App, oder soll
-      die Mail-App des Geräts geöffnet werden (mailto:)?
 
 - [ ] **Stapel-Scanner: Übertragungsformat** Wie sollen gesammelte EC-Belege
       an Flurbocash gehen — einzeln (je ein 2-Call-Flow) oder als Batch?
@@ -89,6 +86,35 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       blieb nach Löschen der heutigen Abrechnung stehen) — hier fehlt
       das erneute Prüfen beim Resume, nicht das Löschen der
       Sende-Signatur.
+
+- [ ] **Sendebestätigung nach Flurbocash-Versand als Popup statt Snackbar**
+      Nach erfolgreichem Versand (`_doApiUpload()` in
+      tagesabschluss_schritt3_seite.dart:344-355, analog
+      `_erneutSenden()` in verlauf_detail_seite.dart) erscheint die
+      Bestätigung ("API Upload erfolgreich ✓" bzw. mit TID-Warnungen)
+      nur als SnackBar — kann übersehen/weggewischt werden, gerade bei
+      TID-Warnungen relevant. Gewünscht: eigenes Popup mit
+      Pflicht-Bestätigung ("ok"/"verstanden"). NICHT zu verwechseln mit
+      der bereits umgesetzten TID-Warnung im Bestätigungs-Popup VOR der
+      Beleg-Übernahme in Schritt 2 (siehe "TID-Whitelist editierbar"
+      unten) — hier geht es um die Bestätigung NACH dem tatsächlichen
+      Versand.
+
+- [ ] **Ausgaben-/Sonstiges-Zeilen: Label-Feld breiter, Betrag-Feld
+      schmaler** Betrifft zwei Stellen: `_Schritt2AusgabenZeile`
+      (schritt2_kino_soll_ausgaben_section.dart, Abschnitt "Ausgaben"
+      in Schritt 2) und `Schritt1UmschlaegeSection`
+      (schritt1_umschlaege_section.dart, Abschnitt "Sonstiges
+      (Umschläge u.a.)" in Schritt 1). Das Betrag-Feld
+      (`BetragCentEingabefeld`) zeigt bei Text einen "+"-Additions-Chip
+      und einen "x"-Clear-Chip im Suffix; bei den Umschlägen zusätzlich
+      ein floatendes Label "Betrag €". Alle drei entfernen, damit das
+      feste Betrag-Feld schmaler werden kann und das ohnehin schon
+      `Expanded`-Label-Feld mehr Platz bekommt. `zeigeAdditionsButton`
+      existiert bereits als Parameter (auf `false` setzen reicht für
+      den "+"-Chip); für den Clear-Chip gibt es noch keinen Parameter —
+      neuer optionaler Parameter (z. B. `zeigeClearButton`, Default
+      `true`) nötig, damit andere Aufrufstellen unverändert bleiben.
 
 - [ ] **CocoaPods → Swift Package Manager migrieren (ios/)**
       KORRIGIERT (Run 398a2): Ursprüngliche Annahme "iOS wird nicht
@@ -159,6 +185,19 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 - [ ] **Storno auf Belegen** Noch nie vorgekommen, aber die App muss
       Stornos erkennen können.
 
+### Personalgetränke-Kachel *(Schritt 2)*
+
+- [ ] **"Schwund gebont?" + Hinweiszeile "Kellner-Portemonnaie nicht
+      vergessen"** In der Personalgetränke-Kachel
+      (schritt2_personalgetraenke_section.dart, aktuell nur eine Zeile
+      "Personalgetränke gebont?" + Checkbox) zwei weitere Zeilen
+      ergänzen: "Schwund gebont?" + eigene Checkbox (neues bool-Feld —
+      Erweiterung von TagesabschlussFinal/Persistenz, kein reiner
+      UI-Fix), sowie eine dritte Zeile in Rot "Kellner-Portemonnaie
+      nicht vergessen" ohne Checkbox (reiner Hinweistext). Beachten:
+      Kachel ist am Standort CO komplett ausgeblendet (Run 372a) — neue
+      Zeilen erben das automatisch, da gleiches Widget.
+
 ### Einstellungen & Konfiguration *(Phase C)*
 
 - [ ] **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
@@ -184,22 +223,48 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
-- [ ] **Schutz vor doppeltem Versand derselben Abrechnung** Klären: Wie
-      verhindern, dass eine Abrechnung mit exakt denselben Werten
-      zweimal an Flurbocash gesendet wird (z. B. Doppel-Tap auf
-      Senden-Button, oder erneuter Versand nach unklarem
-      Netzwerk-Ergebnis)? Einfachster Ansatz vermutlich rein
-      client-seitig (Button nach erstem Tap sperren bzw.
-      Idempotenz-Check vor dem Call) — kein Backend-/IT-Klärungsbedarf
-      vorausgesetzt, vor Umsetzung aber gegenprüfen.
+- [ ] **Schutz vor doppeltem Versand derselben Abrechnung** KONKRETISIERT
+      (Code-Durchspiel 2026-08-29): In tagesabschluss_schritt3_seite.dart
+      ist der Button "Abrechnung an Büro senden" nur über
+      `buttonGesperrt = _autoSaveLaeuft` gesperrt — NICHT zusätzlich über
+      `_apiUploadLaeuft`. Ein zweiter Tap während der laufenden Anfrage
+      ruft `_zeigeAbschlussDialog()` erneut auf; da `_apiUploadErledigt`
+      erst NACH Abschluss des ersten Calls gesetzt wird, startet das
+      einen zweiten, parallelen `_doApiUpload()`-Aufruf → doppelter
+      POST/PUT bei schnellem Doppel-Tap oder langsamer Verbindung.
+      In verlauf_detail_seite.dart (`_erneutSenden()`) ist der analoge
+      Button dagegen bereits korrekt über die lokale `_sendet`-Variable
+      gesperrt (`onPressed: _sendet ? null : _erneutSenden`) — dient als
+      Vorlage für den Fix in Schritt 3 (`buttonGesperrt` um
+      `_apiUploadLaeuft` erweitern). Kein Backend-/IT-Klärungsbedarf,
+      rein client-seitiger Fix, geringes Risiko. Nicht abgedeckt bleibt
+      der Fall "erneuter Versand nach unklarem Netzwerk-Ergebnis" (App
+      neu geöffnet, Status unklar) — dafür wäre serverseitige Idempotenz
+      nötig (siehe Notiz beim Punkt "Erneut senden" unten, nicht
+      verifiziert).
 
 - [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 
 - [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung**
       `settlement_number: 1` statt neuem Eintrag. Bei `400 "maximum reached"`:
       verständliche Meldung + Textbutton "Info an Buchhaltung senden".
-      Nach Tap: Mail an konfigurierte Adresse, Bestätigung "Buchhaltung ist
-      informiert — Abrechnung beendet." Setzt CORS-Freigabe voraus.
+      VERALTET (Paco-Entscheidung 2026-08-26): kein Mailversand für
+      Fallbacks vorgesehen — der Mail-Teil dieses Punkts entfällt.
+      Weiterhin offen: welcher Fallback beim 4x-Limit stattdessen
+      erscheinen soll (siehe .dev/flurbocash stuff/fragen_yannik.md,
+      Frage 3.4).
+      Stand Code-Durchspiel (2026-08-29, NICHT am Server verifiziert):
+      `settlementsBody()` (api_upload_service.dart) enthält aktuell gar
+      kein `settlement_number`-Feld. "Erneut senden" nutzt denselben
+      Flow wie der Erstversand (`ApiUploadService.upload()`): `_ensure()`
+      holt/erstellt den Report anhand Datum+Standort, `_settlements()`
+      sendet ein PUT auf denselben `reportId` — vermutlich überschreibt
+      das serverseitig den bestehenden Satz vollständig (kein separater
+      "Korrektur-Call" nötig), das ist aber nicht anhand von FC-Doku
+      bestätigt, sondern nur aus dem Client-Code erschlossen. Vor
+      Umsetzung: mit Yannik bzw. an der Sandbox verifizieren, ob PUT
+      wirklich überschreibt oder ob `settlement_number` serverseitig
+      doch erwartet wird.
       Ergänzung Paco-Idee (2026-08-22): lokale Verlauf-Seite soll bei
       einer Korrektur nicht nur `gesendetAm` am bestehenden Eintrag
       aktualisieren, sondern einen zusätzlichen, eigenen
@@ -213,9 +278,16 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       betrifft. Vor Umsetzung klären, ob/wie sich das mit der
       Mehrfach-Abrechnung-Logik für Kinos mit `maxAbrechnungenProTag`
       > 1 (aktuell nur Bar Tabak) verträgt.
-
-- [ ] **Buchhaltungs-E-Mail konfigurierbar** Empfängeradresse in Einstellungen.
-      Mailmethode abhängig von Yannik-Antwort.
+      Zusatz (Run 399b): seit Run 399b zeigt
+      `LokalerSpeicher.ladeFinaleTagesabschluesseNeuesteProTag()`
+      im Verlauf und auf der Startseite pro Kalendertag grundsätzlich
+      nur noch den zuletzt erstellten Eintrag an (Paco-Entscheidung,
+      ausgelöst durch einen liegengebliebenen Testdaten-/Korrektur-
+      Eintrag im Verlauf). Ein zusätzlicher Korrektur-Verlaufseintrag
+      würde bei der Umsetzung dieses Punkts also ebenfalls
+      ausgeblendet, sofern er älter ist als der Haupteintrag —
+      diese Filterung muss beim Umsetzen entweder mit einbezogen
+      oder für Korrektur-Einträge gezielt umgangen werden.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
@@ -263,6 +335,29 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Abrechnungen hinweg offen bleibenden Tab.
 
 ### Verlauf
+
+- [ ] **Verlauf-Detail: Button-Text "Erneut senden" auch für nie
+      gesendete Einträge** In verlauf_detail_seite.dart zeigt der
+      Sende-Button (Zeile ~540-557) immer den Text "Erneut senden",
+      auch wenn `_gesendetAm == null` (Eintrag trägt das rote
+      NichtGesendetBadge, wurde also noch NIE gesendet) — irreführend,
+      sollte dann z. B. "Jetzt senden" heißen. Gefunden beim
+      Durchspielen des Szenarios "gar nicht versandt" (2026-08-29).
+
+- [ ] **"JSON anzeigen"-Button im Dev-Modus auch in Verlauf-Detail**
+      Existiert in tagesabschluss_schritt3_seite.dart bereits
+      (`_zeigeFlurbocashJson()`, gated über `DevModus.istAktiv()`,
+      Zeile 778-782) — analog für verlauf_detail_seite.dart ergänzen,
+      damit sich auch bei historischen/erneut gesendeten Einträgen das
+      tatsächlich gesendete JSON prüfen lässt. Unabhängig vom
+      folgenden Punkt umsetzbar.
+
+- [ ] **Verlauf-Seite neu gestalten** KLÄRUNGSBEDÜRFTIG (2026-08-29):
+      Paco-Wunsch ohne konkrete Vorgabe, was am aktuellen Design
+      (verlauf_seite.dart, verlauf_detail_seite.dart) genau stört oder
+      wie es aussehen soll. Vor einer Run-Vergabe erst klären: was
+      genau soll anders werden (Layout, Informationsdichte, Sortierung,
+      Filter o. Ä.)?
 
 - [ ] **Bargeld-/Kartenzahlungen-Kachel: Unterkategorien einzeln
       klappbar** In der Verlauf-Detailansicht sind "Bargeld" und die
@@ -326,6 +421,17 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Rückfrage "Ersetzen" vs. "Zusätzliche Abrechnung". Ersetzt NICHT
       die eigentliche Umbau-Idee mit den zwei Startseiten-Buttons, die
       bleibt offen.
+      Zusatz (Run 399b): Verlauf und Startseite ("Übertrag auf
+      Umschlag") zeigen seit Run 399b pro Kalendertag grundsätzlich
+      nur noch den zuletzt erstellten Eintrag
+      (`ladeFinaleTagesabschluesseNeuesteProTag()` in
+      lokaler_speicher.dart) — die als "Zusätzliche Abrechnung"
+      gespeicherte erste der beiden BT-Abrechnungen würde damit aktuell
+      unsichtbar/nicht anwählbar, sobald die zweite gespeichert ist.
+      Muss bei der Umsetzung der zwei Startseiten-Buttons mit gelöst
+      werden (z. B. eigene, ungefilterte Ladefunktion für BT statt der
+      Pro-Tag-Filterung, oder die beiden Abrechnungen anders
+      unterscheiden als nur über den Kalendertag).
 
 - [ ] **Refactoring** Wiederkehrende UI-Elemente als Widgets extrahieren,
       Inline-Styling durch Theme-Konstanten ersetzen, Logik in Services auslagern.
