@@ -96,6 +96,33 @@ um Durcheinander zu vermeiden.
       das erneute Prüfen beim Resume, nicht das Löschen der
       Sende-Signatur.
 
+- [ ] **Gesendet-Häkchen im Startmenü erscheint seit Run 401 nie mehr**
+      REGRESSION durch Run 401, von Paco bestätigt (2026-08-30): das
+      grüne Häkchen neben dem "Kassenabrechnung"-Button im Startmenü
+      fehlt jetzt komplett (weder grau noch grün) — auch direkt nach
+      einem erfolgreichen echten Versand. Ursache:
+      `_pruefeAbrechnungHeuteGesendet()` (startmenue_seite.dart:104-116)
+      liest aus der gespeicherten Sende-Signatur das Feld `isoDatum`
+      und vergleicht es mit `DatumsHelper.logischesIsoDatum()`. Run 401
+      hat `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart) auf
+      `jsonEncode(ApiUploadService.settlementsBody(...))` umgestellt —
+      dieses Objekt enthält kein `isoDatum` mehr (nur
+      `settlements`/`cash_total`/`note`/`sent_at`/`terminals`), der
+      Vergleich ist damit dauerhaft `false` statt nur einmalig bei
+      Alt-Daten (siehe CHANGELOG.md Run 401, dort nur der einmalige
+      Alt-Daten-Fall bedacht, dieser Dauerfall nicht). Zusätzlich ist
+      der Docstring über `_pruefeAbrechnungHeuteGesendet()`
+      (startmenue_seite.dart:99-102) jetzt veraltet, verweist noch auf
+      das alte Signatur-Format.
+      Fix-Richtung: `_pruefeAbrechnungHeuteGesendet()` braucht ein
+      Datumsfeld, das im neuen Signatur-Format tatsächlich existiert —
+      entweder ein separates Datum zusätzlich zur Signatur speichern
+      (z. B. eigener SharedPreferences-Key oder Tupel statt nur
+      String), oder `_sendeSignatur()`/`speichereSendeBestaetigung()`
+      so erweitern, dass ein Datumsfeld wieder Teil des gespeicherten
+      Werts ist, ohne dass es (wie vor Run 401) die Signatur bei jeder
+      Schritt-1/2-Änderung ungültig macht.
+
 - [ ] **Sendebestätigung nach Flurbocash-Versand als Popup statt Snackbar**
       Nach erfolgreichem Versand (`_doApiUpload()` in
       tagesabschluss_schritt3_seite.dart:344-355, analog
