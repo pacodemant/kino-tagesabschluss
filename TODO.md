@@ -255,14 +255,40 @@ um Durcheinander zu vermeiden.
 - [ ] **Auto-Fill: konfigurierte TID pro Standort statt fest verdrahtet**
       (Paco-Notiz 2026-08-30) `_autoFillDev()` in
       tagesabschluss_schritt2_seite.dart:1328+1363 setzt für JEDEN
-      Standort hart `_ecBelegLabels[0] = '54017635'` (die für SB
-      angenommene TID, siehe `config/terminal_ids.json`) — unabhängig
-      davon, für welches Kino der MA gerade testet. Auto-Fill sollte
-      stattdessen die für `widget.kinoId` tatsächlich konfigurierte(n)
-      TID(s) aus `TerminalIdsConfigService`/`config/terminal_ids.json`
-      verwenden, damit Test-Abrechnungen an anderen Standorten nicht
-      fälschlich die TID-Warnung auslösen (siehe "TID-Whitelist
+      Standort hart `_ecBelegLabels[0] = '54017635'` (die erste SB-TID)
+      — unabhängig davon, für welches Kino der MA gerade testet. Auto-
+      Fill sollte stattdessen die für `widget.kinoId` tatsächlich
+      AKTIVE TID aus `TerminalIdsConfigService`/`config/terminal_ids.
+      json` verwenden, damit Test-Abrechnungen an anderen Standorten
+      nicht fälschlich die TID-Warnung auslösen (siehe "TID-Whitelist
       editierbar" oben).
+      WICHTIG bei der Umsetzung — nicht einfach `terminal_ids[0]` bzw.
+      irgendeinen/alle Einträge nehmen: laut Paco (2026-08-30) sind pro
+      Standort teils mehrere TIDs hinterlegt, aber nicht alle aktiv
+      (Ersatz-/Zukunfts-Geräte, noch nicht in Betrieb). Stand
+      `config/terminal_ids.json` + Pacos Erklärung dazu:
+      - AT (Atlantis): 1 TID, eindeutig — kein Sonderfall.
+      - SB (Schauburg): 4 TIDs gelistet, davon ist NUR die erste
+        (`54017635`) aktiv — die anderen drei sind für neue Geräte, die
+        erst noch kommen.
+      - CO (Cinema Ostertor): 1 TID (`60561995`) — neu und bereits aktiv
+        (neues Terminal in Betrieb, ersetzt eine ältere TID).
+      - GO (Gondel): noch Platzhalter `"XXXX"`, keine echte TID —
+        Auto-Fill kann hier aktuell keine sinnvolle TID einsetzen, bis
+        Yannik die echten TIDs liefert (siehe blockierten Punkt
+        "Registrierte TIDs pro Standort" oben).
+      - BT (Bar Tabak): 4 TIDs gelistet, die ERSTEN ZWEI
+        (`54069493`, `54017664`) sind aktiv, die letzten zwei für neue
+        Geräte. Passt zur geplanten 2-Abrechnungen/Tag-Struktur von BT
+        (siehe "Bar Tabak: 2-Settlement-Logik" unten) — relevant sobald
+        BT-Auto-Fill zwei EC-Belege mit unterschiedlicher TID braucht.
+      Da diese "aktiv vs. Ersatzgerät"-Unterscheidung in
+      `config/terminal_ids.json` selbst nicht abgebildet ist (nur eine
+      flache Liste), reicht ein reiner Code-Fix in `_autoFillDev()`
+      allein nicht — entweder die JSON-Struktur um eine Markierung
+      "aktiv" erweitern, oder (einfacher) Auto-Fill nutzt bewusst nur
+      den ersten Listeneintrag pro Standort, mit einem Kommentar, der
+      auf diese Konvention hinweist.
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
@@ -451,16 +477,20 @@ um Durcheinander zu vermeiden.
       `_loseMuenzenUnterzeilen()`/`_umschlagUnterzeilen()`; Abschnitt
       "Belege" mit `_ecBelegUnterzeilen()`).
 
-- [ ] **Bargeld-Kachel: bereinigter Bar-Bestand im Titel** (Paco-Notiz
-      2026-08-30) `verlauf_detail_seite.dart:428-434`: Die "Bargeld"-
-      Kachel zeigt aktuell `title: 'Bargeld'` (statischer Text) und
-      `subtitle: _euro(a.kassenbestandGesamtCent)` — das ist der
-      gezählte Gesamtbestand VOR Abzug des Wechselgelds. Paco will den
-      bereinigten Wert (`a.barBestandAbzglWechselgeldCent`, an anderer
-      Stelle in derselben Datei bereits als "Bar-Bestand bereinigt"
-      gelistet, Zeile 456) direkt im TITEL sehen, nicht nur beim
-      Aufklappen. Haengt mit dem "Bargeldbestand" → "Bar-Umsatz"-
-      Umbenennungspunkt oben zusammen (gleicher Wert, andere Stelle).
+- [ ] **Bargeld-Kachel: bereinigter Bar-Bestand statt Kassenbestand
+      gesamt im Titelbereich** (Paco-Notiz 2026-08-30, per Screenshot
+      präzisiert): `verlauf_detail_seite.dart:428-434` — die "Bargeld"-
+      Kachel zeigt im (optisch als Einheit wahrgenommenen) Titelbereich
+      bereits einen Wert: `title: 'Bargeld'` (fett) direkt gefolgt von
+      `subtitle: _euro(a.kassenbestandGesamtCent)` (Screenshot: "Bargeld
+      / 1.057,70 €"). Das ist aber der gezählte Gesamtbestand VOR Abzug
+      des Wechselgelds. Gewünscht: diesen Wert durch den bereinigten
+      Bar-Bestand ersetzen (`a.barBestandAbzglWechselgeldCent` — im
+      Screenshot 557,70 €, an anderer Stelle in derselben Datei bereits
+      als "Bar-Bestand bereinigt" gelistet, Zeile 456) — also ein
+      Werte-AUSTAUSCH in der bestehenden `subtitle`, keine neue Anzeige.
+      Hängt mit dem "Bargeldbestand" → "Bar-Umsatz"-Umbenennungspunkt
+      oben zusammen (gleicher Wert, andere Stelle).
 
 - [ ] **EC-Kachel: Kartenarten + Beträge pro Beleg auflisten** (Paco-Notiz
       2026-08-30) `_ecBelegUnterzeilen()` (verlauf_detail_seite.dart:
