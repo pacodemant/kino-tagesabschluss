@@ -184,6 +184,20 @@ um Durcheinander zu vermeiden.
       werden? (Schritt 1 "Kassenbestand gesamt" ist ein ANDERER, noch
       nicht um Wechselgeld bereinigter Wert — vermutlich nicht gemeint.)
 
+- [ ] **Kino-/Bistro-SOLL-Kachel: Info-Zeilen "Umsätze" entfernen**
+      (Paco-Notiz 2026-08-30, verifiziert) In
+      `schritt2_kino_soll_ausgaben_section.dart:94-133` (Schritt 2,
+      Kachel mit Kino-SOLL/Bistro-SOLL + Ausgaben-Liste): am Ende steht
+      ein `Divider` gefolgt von zwei reinen Info-Zeilen "Umsätze gesamt
+      (Info)" und "Umsätze abzgl. Ausgaben (Info)" — sollen komplett weg
+      (Divider + beide Rows + der SizedBox dazwischen). Die
+      zugrundeliegenden Werte `gesamtUmsatzCent`/`gesamtNachAusgabenCent`
+      (Konstruktor-Parameter dieses Widgets) werden dadurch in der UI
+      nicht mehr gebraucht — bei der Umsetzung prüfen, ob sie danach an
+      der Aufrufstelle (`schritt2_gruppen_orchestrierung.dart` o. Ä.)
+      noch für etwas anderes gebraucht werden oder mit entfernt werden
+      können (kein totes Durchreichen stehen lassen).
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
@@ -284,11 +298,29 @@ um Durcheinander zu vermeiden.
         BT-Auto-Fill zwei EC-Belege mit unterschiedlicher TID braucht.
       Da diese "aktiv vs. Ersatzgerät"-Unterscheidung in
       `config/terminal_ids.json` selbst nicht abgebildet ist (nur eine
-      flache Liste), reicht ein reiner Code-Fix in `_autoFillDev()`
-      allein nicht — entweder die JSON-Struktur um eine Markierung
-      "aktiv" erweitern, oder (einfacher) Auto-Fill nutzt bewusst nur
-      den ersten Listeneintrag pro Standort, mit einem Kommentar, der
-      auf diese Konvention hinweist.
+      flache Liste pro Standort), reicht ein reiner Code-Fix in
+      `_autoFillDev()` allein nicht. Zwei Optionen, Empfehlung ist
+      Option A (einfacher, kein Schema-Wechsel), Option B nur falls BT
+      demnächst wirklich 2 aktive TIDs gleichzeitig braucht:
+      - Option A — Konvention ohne JSON-Änderung: Auto-Fill nutzt
+        einfach `terminal_ids[0]` als "die aktive TID" (Reihenfolge in
+        der Datei entscheidet), mit Code-Kommentar der das festhält.
+        Deckt SB/CO/AT sauber ab. Für BT (2 aktive TIDs) würde das
+        NICHT reichen, ist aber erst relevant, wenn Bar Tabak mit
+        seiner 2-Abrechnungen/Tag-Logik tatsächlich gebaut wird (siehe
+        "Bar Tabak: 2-Settlement-Logik" unten) — bis dahin reicht auch
+        für BT der erste Eintrag.
+      - Option B — Struktur erweitern: pro Standort explizit zwischen
+        aktiven und reservierten TIDs unterscheiden, z. B.
+        `"terminal_ids_aktiv": ["54017635"], "terminal_ids_reserviert":
+        ["60561994", "60561996", "60561997"]` statt der einen flachen
+        Liste. Robuster (kein Reihenfolge-Zufall), bildet BTs 2 aktive
+        TIDs direkt ab, braucht aber Anpassungen an
+        `TerminalIdsConfigService` (Parsing) UND an
+        `pruefeTerminalIdsGegenKonfiguration()` (muss weiterhin BEIDE
+        Listen als "bekannt, keine Warnung" behandeln, nicht nur
+        "aktiv" — reservierte TIDs sind ja trotzdem gültige TIDs,
+        sobald das jeweilige Gerät in Betrieb geht).
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
