@@ -6,6 +6,15 @@ Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 abgeglichen, daher hält diese Datei nur die offenen Punkte schlank.
 Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
 
+**Aktueller Fokus (Paco, seit 2026-08-30):** korrekte Dateneingabe durch
+die MA und klare Benutzerführung (damit MA nicht durch die App irritiert
+werden und dadurch Fehler machen) hat Vorrang vor rein technischen
+Themen wie der Flurbocash-`settlement_number`-Korrektur-Logik — letztere
+bewusst zurückgestellt, bis Paco selbst verschiedene Szenarien in der
+Sandbox getestet hat (siehe Punkt "'Erneut senden' → Korrektur-Call"
+unten). Runs werden einzeln, nacheinander abgearbeitet statt parallel,
+um Durcheinander zu vermeiden.
+
 ---
 
 ## 🔴 Blockiert — wartet auf IT (Yannik)
@@ -147,6 +156,34 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       die CocoaPods-Dateien entfernen. Kein Zeitdruck vor Dezember
       2026, aber unkritisch früh erledigbar.
 
+- [ ] **"Belege" → "Umsätze" umbenennen** (Paco-Notiz 2026-08-30) Betrifft
+      als reiner Text-Fix vier Stellen: `tagesabschluss_schritt2_seite.
+      dart:2741` (`schrittTitel: 'Belege'`, AppBar-Titel von Schritt 2),
+      `verlauf_detail_seite.dart:470` (ExpansionTile-Titel),
+      `kurzeinstieg_seite.dart:19-21` (Schritt-Titel + erklärender Text
+      "Trage alle Belege ein: ..."), `schritt_auswahl_bottom_sheet_
+      helper.dart:22` (`'2/4 · Belege'` im Schritt-Wechsel-BottomSheet,
+      auch Doc-Kommentar Zeile 4). NICHT anfassen: alle `EC-Belege`-
+      Vorkommen (Beleg-Scan-Feature) — anderer Begriff, bleibt wie er ist.
+
+- [ ] **Verlauf: "Ergebnis"-Kachel aufgeklappt anzeigen** (Paco-Notiz
+      2026-08-30) `verlauf_detail_seite.dart`, ExpansionTile "Ergebnis"
+      (Abschnitt 3): `initiallyExpanded: false` → `true`. Reiner
+      Wertewechsel, eine Zeile.
+
+- [ ] **"Bargeldbestand" → "Bar-Umsatz" umbenennen** KLÄRUNGSBEDÜRFTIG
+      (Paco-Notiz 2026-08-30): Der Begriff "Bargeldbestand" kommt als
+      Literal-String aktuell NIRGENDS im Code vor (geprüft per grep) —
+      Paco meint vermutlich den bereinigten Bar-Bestand
+      (`barBestandAbzglWechselgeldCent`), den wir im Gespräch selbst so
+      genannt haben. Kandidaten dafür in der UI: Schritt 3 "+ bar IST"
+      (`schritt3_ist_section.dart:28`) und/oder Verlauf-Detail
+      "Bar-Bestand bereinigt" (`verlauf_detail_seite.dart:456`) — beides
+      derselbe Wert, unterschiedlich beschriftet. Vor Umsetzung klären:
+      welche der beiden (oder beide) soll auf "Bar-Umsatz" geändert
+      werden? (Schritt 1 "Kassenbestand gesamt" ist ein ANDERER, noch
+      nicht um Wechselgeld bereinigter Wert — vermutlich nicht gemeint.)
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)
@@ -215,6 +252,18 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte
       bis auf SB von Yannik noch nicht bestätigt).
 
+- [ ] **Auto-Fill: konfigurierte TID pro Standort statt fest verdrahtet**
+      (Paco-Notiz 2026-08-30) `_autoFillDev()` in
+      tagesabschluss_schritt2_seite.dart:1328+1363 setzt für JEDEN
+      Standort hart `_ecBelegLabels[0] = '54017635'` (die für SB
+      angenommene TID, siehe `config/terminal_ids.json`) — unabhängig
+      davon, für welches Kino der MA gerade testet. Auto-Fill sollte
+      stattdessen die für `widget.kinoId` tatsächlich konfigurierte(n)
+      TID(s) aus `TerminalIdsConfigService`/`config/terminal_ids.json`
+      verwenden, damit Test-Abrechnungen an anderen Standorten nicht
+      fälschlich die TID-Warnung auslösen (siehe "TID-Whitelist
+      editierbar" oben).
+
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder
       regelmäßiger Export-Hinweis. *(Vorerst zurückgestellt — Zielplattform
@@ -233,18 +282,31 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       Weiterhin offen: welcher Fallback beim 4x-Limit stattdessen
       erscheinen soll (siehe .dev/flurbocash stuff/fragen_yannik.md,
       Frage 3.4).
-      Stand Code-Durchspiel (2026-08-29, NICHT am Server verifiziert):
-      `settlementsBody()` (api_upload_service.dart) enthält aktuell gar
-      kein `settlement_number`-Feld. "Erneut senden" nutzt denselben
-      Flow wie der Erstversand (`ApiUploadService.upload()`): `_ensure()`
-      holt/erstellt den Report anhand Datum+Standort, `_settlements()`
-      sendet ein PUT auf denselben `reportId` — vermutlich überschreibt
-      das serverseitig den bestehenden Satz vollständig (kein separater
-      "Korrektur-Call" nötig), das ist aber nicht anhand von FC-Doku
-      bestätigt, sondern nur aus dem Client-Code erschlossen. Vor
-      Umsetzung: mit Yannik bzw. an der Sandbox verifizieren, ob PUT
-      wirklich überschreibt oder ob `settlement_number` serverseitig
-      doch erwartet wird.
+      KORRIGIERT (2026-08-30, jetzt anhand `.dev/flurbocash stuff/
+      EXTERNAL_API_Schauburg_de.md` verifiziert, nicht mehr nur
+      vermutet): Die Notiz vom 2026-08-29 hier war falsch. Laut Doku
+      (Zeile 64-69) steuert `settlement_number` explizit, was ein PUT
+      auf `/settlements` bewirkt — WEGLASSEN legt eine NEUE Abrechnung
+      an (naechste freie Nummer, 1-4 pro Tag), nur ein gesetzter Wert
+      1-4 UEBERSCHREIBT eine bestehende. `settlementsBody()`
+      (api_upload_service.dart) setzt dieses Feld aktuell NIE. Jeder
+      Sendevorgang — Erstversand, "Erneut senden" nach einer Korrektur,
+      oder ein Doppel-Tap vor dem Run-400-Fix — legt bei Flurbocash also
+      tatsaechlich eine ZUSAETZLICHE Abrechnung an statt die vorherige
+      zu ersetzen. Die Server-Antwort-Felder `entered_total_cents` (Summe
+      ueber ALLE bisher fuer den Tag eingereichten Abrechnungen) und
+      `discrepancy_cents` zeigen das direkt: bei Paco am 2026-08-30 mit
+      Testdaten beobachtet (entered 3.757,20 € vs. system 1.545,00 €,
+      passt zu mehrfachem Testsenden ohne settlement_number).
+      Noch nicht Run-reif: Paco will vorher selbst verschiedene
+      Szenarien in der Sandbox durchspielen (Korrektur senden,
+      versehentlich doppelt senden, neue Abrechnung z. B. bei Bar Tabak
+      mit seinen 2 taeglichen Abrechnungen), um zu verstehen was
+      tatsaechlich gebraucht wird, bevor ein Loesungsansatz feststeht
+      (z. B. "immer settlement_number 1" wuerde fuer Bar Tabak mit 2
+      echten Abrechnungen/Tag vermutlich nicht reichen). Aktueller
+      Fokus liegt ohnehin auf MA-Bedienfuehrung/Dateneingabe-
+      Korrektheit, nicht auf diesem Thema (siehe Hinweis am Dateianfang).
       Ergänzung Paco-Idee (2026-08-22): lokale Verlauf-Seite soll bei
       einer Korrektur nicht nur `gesendetAm` am bestehenden Eintrag
       aktualisieren, sondern einen zusätzlichen, eigenen
@@ -268,6 +330,44 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       ausgeblendet, sofern er älter ist als der Haupteintrag —
       diese Filterung muss beim Umsetzen entweder mit einbezogen
       oder für Korrektur-Einträge gezielt umgangen werden.
+
+- [ ] **Mechanismus für Verbindungsabbruch waehrend des Uebertragens**
+      (Paco-Notiz 2026-08-30) Fall: Verbindung geht ausgerechnet
+      waehrend des laufenden Sendevorgangs verloren (nicht vorher — die
+      Verbindungspruefung beim BelegScan-Tap deckt nur den Fall vor dem
+      Senden ab, siehe "Offline-Hinweis bei BelegScan konkretisieren"
+      oben). Aktueller Stand: `http.post`/`http.put` in
+      api_upload_service.dart werfen bei einem Verbindungsabbruch
+      bereits eine klare Exception ("Keine Verbindung zur
+      Flurbocash-API"), die in Schritt 3/Verlauf als Fehlermeldung
+      angezeigt wird — die Abrechnung bleibt aber lokal gespeichert,
+      MA kann erneut senden. Offen/zu klaeren: reicht das, oder soll es
+      einen deutlicheren Hinweis/Mechanismus geben? Haengt jetzt auch
+      mit der `settlement_number`-Erkenntnis oben zusammen: ein
+      Abbruch mitten im Call, gefolgt von einem Resend, koennte
+      serverseitig eine zusaetzliche statt einer korrigierten
+      Abrechnung anlegen — nicht isoliert von der "Erneut senden"-Frage
+      oben zu loesen.
+
+- [ ] **Kommentar: Sendezeitpunkt erst unmittelbar beim Senden ergaenzen/
+      ersetzen** (Paco-Notiz 2026-08-30) Aktueller Stand (verifiziert,
+      tagesabschluss_schritt2_seite.dart:825-856): Das "testdaten
+      HH:mm"-Kennzeichen wird JETZT schon beim Seitenaufbau von
+      Schritt 2 ins sichtbare Kommentarfeld geschrieben
+      (`_wendeDevModusKommentarAn()`, laeuft in `initState()`) bzw.
+      spaetestens beim Uebergang zu Schritt 3 als Sicherheitsnetz
+      (`_anmerkungFuerUebertragung()`) — NICHT erst beim tatsaechlichen
+      Sendevorgang in Schritt 3. Ausserdem ersetzt
+      `_anmerkungFuerUebertragung()` einen bereits vorhandenen
+      Zeitstempel aktuell NICHT (`if (basis.contains(marker)) return
+      basis;` — gibt den Text unveraendert zurueck). Paco-Wunsch: der
+      Zeitstempel soll erst unmittelbar vor/beim echten Sendevorgang
+      (Schritt 3, `_doApiUpload()`/`_erneutSenden()`) gesetzt werden
+      und dabei einen ggf. vorhandenen alten Zeitstempel ERSETZEN, nicht
+      nur ergaenzen. Wichtig fuer Run 401 (Sende-Signatur): solange der
+      Zeitstempel exakt einmal beim Senden geschrieben und danach nicht
+      mehr veraendert wird, bleibt die Signatur-Logik aus Run 401
+      korrekt (siehe Kommentar dort) — das bei der Umsetzung beachten.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
@@ -351,6 +451,28 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       `_loseMuenzenUnterzeilen()`/`_umschlagUnterzeilen()`; Abschnitt
       "Belege" mit `_ecBelegUnterzeilen()`).
 
+- [ ] **Bargeld-Kachel: bereinigter Bar-Bestand im Titel** (Paco-Notiz
+      2026-08-30) `verlauf_detail_seite.dart:428-434`: Die "Bargeld"-
+      Kachel zeigt aktuell `title: 'Bargeld'` (statischer Text) und
+      `subtitle: _euro(a.kassenbestandGesamtCent)` — das ist der
+      gezählte Gesamtbestand VOR Abzug des Wechselgelds. Paco will den
+      bereinigten Wert (`a.barBestandAbzglWechselgeldCent`, an anderer
+      Stelle in derselben Datei bereits als "Bar-Bestand bereinigt"
+      gelistet, Zeile 456) direkt im TITEL sehen, nicht nur beim
+      Aufklappen. Haengt mit dem "Bargeldbestand" → "Bar-Umsatz"-
+      Umbenennungspunkt oben zusammen (gleicher Wert, andere Stelle).
+
+- [ ] **EC-Kachel: Kartenarten + Beträge pro Beleg auflisten** (Paco-Notiz
+      2026-08-30) `_ecBelegUnterzeilen()` (verlauf_detail_seite.dart:
+      222-234) zeigt pro Beleg bisher nur EINE Zeile mit Label +
+      Gesamtbetrag (z. B. "Beleg 1: 45,00 €") — die Aufschlüsselung nach
+      Kartenart (Girocard/Mastercard/Visa/...) aus
+      `a.zahlungsartenAufschluesselung` (`ZahlungsartErgebnis`, Felder
+      `art`/`betragCent`/`belegIndex`) wird hier nicht angezeigt, obwohl
+      sie in den Daten vorhanden ist. Pro Beleg zusätzlich die einzelnen
+      Kartenart-Zeilen ergänzen (gefiltert nach `belegIndex` analog zu
+      `ApiUploadService._terminalsListe()`).
+
 - [ ] **Grünes "gesendet"-Badge im Verlauf** Aktuell gibt es nur ein
       negatives `NichtGesendetBadge` (angezeigt wenn
       `eintrag.gesendetAm == null`), aber kein positives Badge für
@@ -378,6 +500,19 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
          (Muster wie `pwa_install_service_web.dart`/
          `sw_update_service_web.dart`), dafür kein Export auf
          nativem iOS/Android (nur PWA-Zielplattform bedient).
+
+- [ ] **"Verlauf löschen"-Button in der AppBar, nur im Dev-Modus**
+      (Paco-Notiz 2026-08-30) verlauf_seite.dart hat aktuell keine
+      AppBar-`actions`. Gewünscht: Button zum Löschen des KOMPLETTEN
+      Verlaufs (alle Einträge dieses Kinos) — anders als der bereits
+      vorhandene Einzel-Eintrag-Löschen-Button in verlauf_detail_seite.
+      dart, der über `AdminSession.entsperrt` (Admin-PIN) gated ist.
+      Dieser neue Button soll stattdessen über `DevModus.istAktiv()`
+      gated sein (gleiches Gate wie beim Auto-Fill/"JSON anzeigen") —
+      zum schnellen Aufräumen von Testdaten, nicht für den
+      Produktivbetrieb gedacht. `LokalerSpeicher` hat aktuell nur
+      `loescheFinalenTagesabschluss()` (einzelner Eintrag) — eine
+      Bulk-Lösch-Methode für alle Einträge eines Kinos fehlt noch.
 
 ### Weitere Features
 

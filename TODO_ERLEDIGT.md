@@ -293,12 +293,19 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       (`_erneutSenden()`, dort schon immer über `_sendet` gesperrt).
       EINSCHRÄNKUNG: Der Fall "erneuter Versand nach unklarem
       Netzwerk-Ergebnis" (App neu geöffnet, Status unklar) ist damit
-      NICHT abgedeckt — dafür wäre serverseitige Idempotenz nötig. Aus
-      dem Client-Code erschlossen (nicht am Server verifiziert): Flurbo-
-      cash scheint das ohnehin gutmütig zu behandeln (`_ensure()` holt/
-      erstellt den Report anhand Datum+Standort, `_settlements()`
-      überschreibt denselben `reportId` per PUT) — daher kein eigener
-      neuer TODO-Punkt dafür, nur diese Notiz. *(Run 400)*
+      NICHT abgedeckt.
+      KORRIGIERT (2026-08-30): Die ursprüngliche Notiz hier ("Flurbocash
+      scheint das gutmütig zu behandeln, PUT überschreibt denselben
+      reportId") war eine unverifizierte Vermutung und ist FALSCH — per
+      `.dev/flurbocash stuff/EXTERNAL_API_Schauburg_de.md` bestätigt:
+      ohne explizit gesetztes `settlement_number` legt jeder PUT-Aufruf
+      eine ZUSÄTZLICHE Abrechnung an (bis zu 4/Tag), überschreibt NICHT
+      die vorherige. Ein erneuter Versand nach unklarem Ergebnis ist
+      also serverseitig NICHT automatisch harmlos. Siehe TODO.md,
+      Punkt "'Erneut senden' → Korrektur-Call" — dort mit den Details
+      und dem Hinweis, dass ein Fix erst nach Pacos eigenen
+      Sandbox-Tests verschiedener Szenarien angegangen wird. *(Run 400,
+      Korrektur 2026-08-30)*
 
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
