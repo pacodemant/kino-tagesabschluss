@@ -184,6 +184,37 @@ um Durcheinander zu vermeiden.
       werden? (Schritt 1 "Kassenbestand gesamt" ist ein ANDERER, noch
       nicht um Wechselgeld bereinigter Wert — vermutlich nicht gemeint.)
 
+- [ ] **EC-Scan: Bestätigungs-SnackBar entfernen** (Paco-Notiz
+      2026-08-30, verifiziert) In `_starteEcBelegScan()`
+      (tagesabschluss_schritt2_seite.dart:1671-1679) erscheint nach
+      erfolgreichem Scan eine SnackBar "Scan bestätigt · Gesamt: X €" —
+      überflüssig, da die EC-Kachel die übernommenen Daten direkt
+      sichtbar anzeigt (aufgeklappt, `_ecKachelAufgeklappt = true` wird
+      im selben Zug gesetzt). Nur DIESE Erfolgs-SnackBar entfernen — die
+      Fehler-SnackBars direkt darunter (unlesbarer Scan, Netzwerkfehler,
+      Zeile 1686-1720+) bleiben, die sind weiterhin nötig.
+
+- [ ] **"testdaten"-Kommentar verschwindet nicht, wenn Dev-Modus wieder
+      ausgeschaltet wird** (Paco-Notiz 2026-08-30, verifiziert) Aktueller
+      Stand: `_wendeDevModusKommentarAn()`
+      (tagesabschluss_schritt2_seite.dart:867-876) füllt das
+      Kommentarfeld nur automatisch, wenn Dev-Modus AN ist und das Feld
+      noch leer ist — es LÖSCHT das Feld aber nie, wenn Dev-Modus wieder
+      AUS ist. Ein zuvor mit Dev-Modus erzeugter/geladener
+      "testdaten HH:mm"-Kommentar (z. B. aus einem gespeicherten
+      Entwurf) bleibt also stehen, auch nachdem Dev-Modus deaktiviert
+      wurde — Risiko, dass er unbemerkt in eine ECHTE Abrechnung
+      mitgesendet wird. Gewünscht: bei Dev-Modus AUS soll kein
+      automatisch gesetzter "testdaten"-Text mehr im Feld stehen —
+      MA füllt das Kommentarfeld dann bei Bedarf manuell aus. Bei der
+      Umsetzung vorsichtig sein: nur automatisch gesetzten Text löschen,
+      nicht einen echten, vom MA getippten Kommentar, der zufällig das
+      Wort "testdaten" enthält (z. B. eigenes Feld/Flag statt reinem
+      Text-Vergleich). Hängt inhaltlich mit dem Punkt "Kommentar:
+      Sendezeitpunkt erst unmittelbar beim Senden ergänzen/ersetzen"
+      oben zusammen (beide betreffen denselben Mechanismus) — bei
+      Umsetzung zusammen betrachten, nicht als zwei unabhängige Patches.
+
 - [ ] **Kino-/Bistro-SOLL-Kachel: Info-Zeilen "Umsätze" entfernen**
       (Paco-Notiz 2026-08-30, verifiziert) In
       `schritt2_kino_soll_ausgaben_section.dart:94-133` (Schritt 2,
@@ -296,13 +327,13 @@ um Durcheinander zu vermeiden.
         Geräte. Passt zur geplanten 2-Abrechnungen/Tag-Struktur von BT
         (siehe "Bar Tabak: 2-Settlement-Logik" unten) — relevant sobald
         BT-Auto-Fill zwei EC-Belege mit unterschiedlicher TID braucht.
-      Da diese "aktiv vs. Ersatzgerät"-Unterscheidung in
-      `config/terminal_ids.json` selbst nicht abgebildet ist (nur eine
-      flache Liste pro Standort), reicht ein reiner Code-Fix in
-      `_autoFillDev()` allein nicht. Zwei Optionen, Empfehlung ist
-      Option A (einfacher, kein Schema-Wechsel), Option B nur falls BT
-      demnächst wirklich 2 aktive TIDs gleichzeitig braucht:
-      - Option A — Konvention ohne JSON-Änderung: Auto-Fill nutzt
+      ENTSCHIEDEN (Paco, 2026-08-30): `config/terminal_ids.json` bleibt
+      strukturell wie sie ist (Option A, keine JSON-Schema-Änderung) —
+      Option B unten damit verworfen/nicht weiterverfolgen. Die
+      Listeninhalte selbst (welche TIDs drinstehen, Reihenfolge) pflegt
+      Paco manuell im Code, sobald neue Terminals tatsächlich in Betrieb
+      gehen — kein Automatismus dafür nötig/gewünscht.
+      - Option A (GEWÄHLT) — Konvention ohne JSON-Änderung: Auto-Fill nutzt
         einfach `terminal_ids[0]` als "die aktive TID" (Reihenfolge in
         der Datei entscheidet), mit Code-Kommentar der das festhält.
         Deckt SB/CO/AT sauber ab. Für BT (2 aktive TIDs) würde das
@@ -310,7 +341,7 @@ um Durcheinander zu vermeiden.
         seiner 2-Abrechnungen/Tag-Logik tatsächlich gebaut wird (siehe
         "Bar Tabak: 2-Settlement-Logik" unten) — bis dahin reicht auch
         für BT der erste Eintrag.
-      - Option B — Struktur erweitern: pro Standort explizit zwischen
+      - Option B (VERWORFEN) — Struktur erweitern: pro Standort explizit zwischen
         aktiven und reservierten TIDs unterscheiden, z. B.
         `"terminal_ids_aktiv": ["54017635"], "terminal_ids_reserviert":
         ["60561994", "60561996", "60561997"]` statt der einen flachen
