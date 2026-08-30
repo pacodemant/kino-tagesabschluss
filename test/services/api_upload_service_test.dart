@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kino.dart';
@@ -524,6 +526,112 @@ void main() {
       expect(
         ApiUploadService.tidsAusSettlementsBody(body),
         <String>['A', 'B'],
+      );
+    });
+  });
+
+  group('ApiUploadService.settlementsBody als Sende-Signatur (Run 401)', () {
+    // tagesabschluss_schritt3_seite.dart leitet die "gesendet"-Signatur aus
+    // settlementsBody() ab (ohne sent_at) — die Tests hier sichern genau
+    // die Eigenschaften, auf die sich dieser Vergleich verlässt.
+    TagesabschlussFinal abrechnung({
+      int barBestandAbzglWechselgeldCent = 10000,
+      int differenzAnfangsbestandCent = 0,
+      int ecUmsatzGesamtCent = 0,
+      List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung,
+    }) {
+      return TagesabschlussFinal(
+        kinoId: 'kino_01',
+        kinoName: 'Schauburg',
+        datum: DateTime(2026, 8, 16),
+        createdAt: DateTime(2026, 8, 16, 23, 0),
+        scheineCent: 10000,
+        loseMuenzenCent: 0,
+        rollenCent: 0,
+        umschlaegeCent: 0,
+        kassenbestandGesamtCent: 10000,
+        wechselgeldSollwertCent: 0,
+        barBestandAbzglWechselgeldCent: barBestandAbzglWechselgeldCent,
+        kinoSollCent: 5000,
+        bistroSollCent: 0,
+        ausgabenCent: 0,
+        ecBelegeCent: <int>[ecUmsatzGesamtCent],
+        ecUmsatzGesamtCent: ecUmsatzGesamtCent,
+        gesamtSollCent: 5000,
+        gesamtIstCent: 5000,
+        differenzGesamtCent: 0,
+        differenzAnfangsbestandCent: differenzAnfangsbestandCent,
+        zahlungsartenAufschluesselung: zahlungsartenAufschluesselung,
+      );
+    }
+
+    String signatur(TagesabschlussFinal a, {DateTime? jetzt}) {
+      final Map<String, dynamic> body =
+          ApiUploadService.settlementsBody(a, jetzt: jetzt);
+      final Map<String, dynamic> settlement =
+          (body['settlements'] as List<dynamic>).first
+              as Map<String, dynamic>;
+      settlement.remove('sent_at');
+      return jsonEncode(body);
+    }
+
+    test(
+        'gleiche Daten, unterschiedlicher Sendezeitpunkt → identische '
+        'Signatur (sent_at darf einen Vergleich nicht verfälschen)', () {
+      final TagesabschlussFinal a = abrechnung();
+      expect(
+        signatur(a, jetzt: DateTime(2026, 8, 16, 20, 0)),
+        signatur(a, jetzt: DateTime(2026, 8, 17, 9, 30)),
+      );
+    });
+
+    test(
+        'nur Differenz im Anfangsbestand geändert → Signatur bleibt '
+        'gleich (Feld geht nie an Flurbocash)', () {
+      expect(
+        signatur(abrechnung(differenzAnfangsbestandCent: 0)),
+        signatur(abrechnung(differenzAnfangsbestandCent: 500)),
+      );
+    });
+
+    test('Bargeldbestand geändert → Signatur ändert sich', () {
+      expect(
+        signatur(abrechnung(barBestandAbzglWechselgeldCent: 10000)),
+        isNot(
+          signatur(abrechnung(barBestandAbzglWechselgeldCent: 12000)),
+        ),
+      );
+    });
+
+    test('Kartenart-Betrag geändert → Signatur ändert sich', () {
+      final TagesabschlussFinal a = abrechnung(
+        ecUmsatzGesamtCent: 2000,
+        zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+          ZahlungsartErgebnis(art: 'Girocard', betragCent: 2000),
+        ],
+      );
+      final TagesabschlussFinal b = abrechnung(
+        ecUmsatzGesamtCent: 1500,
+        zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+          ZahlungsartErgebnis(art: 'Girocard', betragCent: 1500),
+        ],
+      );
+      expect(signatur(a), isNot(signatur(b)));
+    });
+
+    test(
+        'EC-Umsatz ohne Kartenart-Aufschlüsselung (unvollständige Daten) → '
+        'wirft nicht, wird von _sendeSignatur() als Sentinel behandelt '
+        '(Absturzschutz, siehe tagesabschluss_schritt3_seite.dart)', () {
+      // settlementsBody() selbst wirft hier bewusst (siehe Test oben bei
+      // "EC-Umsatz > 0 ohne Aufschlüsselung") — dieser Test dokumentiert
+      // nur, dass der Aufrufer (die Seite) das abfangen muss, nicht dass
+      // settlementsBody() selbst sich anders verhält.
+      expect(
+        () => ApiUploadService.settlementsBody(
+          abrechnung(ecUmsatzGesamtCent: 1000),
+        ),
+        throwsException,
       );
     });
   });

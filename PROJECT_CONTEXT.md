@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.72+400 · Run 400
+Version: 0.9.73+401 · Run 401
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,18 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 400)
+## Laufender Entwicklungsstand (Run 401)
+
+- Run 401 ✅ `_sendeSignatur()` (Schritt 3) auf die FC-relevanten Felder
+  verengt: direkt aus `ApiUploadService.settlementsBody()` abgeleitet
+  (ohne `sent_at`) statt der kompletten Schritt-1/2-Eingabe. Der grüne
+  "gesendet"-Haken verschwindet damit nur noch bei Änderungen, die FC
+  tatsächlich betreffen (Bargeldbestand, Kartenumsätze pro Kartenart,
+  Belegfoto, Anmerkung) — nicht mehr bei rein lokalen Feldern wie der
+  Differenz im Anfangsbestand. Absturzschutz ergänzt (Sentinel bei
+  unvollständigen EC-Daten statt Exception). Bestandsdaten mit alter
+  Signatur zeigen einmalig "nicht gesendet", korrigiert sich beim
+  nächsten Versand von selbst. Details siehe CHANGELOG.md.
 
 - Run 400 ✅ TODO.md durchgesehen und neu sortiert (u. a. drei veraltete
   Mailversand-Referenzen bereinigt, Paco-Entscheidung 2026-08-26: kein

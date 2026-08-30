@@ -9,6 +9,40 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 401: `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart) auf die
+  Felder verengt, die tatsächlich an Flurbocash gehen. Anlass (Paco):
+  der "gesendet"-Haken soll nur verschwinden, wenn sich fachlich etwas
+  ändert, das FC auch wirklich bekommt — z. B. eine nachträglich
+  korrigierte Differenz im Anfangsbestand geht an FC gar nicht raus und
+  sollte den Haken nicht ungültig machen. Vorher enthielt die Signatur
+  praktisch die komplette Schritt-1/2-Eingabe (Kino-/Bistro-SOLL,
+  Stückzahlen, Beleg-Nr, EC-Uhrzeit, Differenz im Anfangsbestand, …),
+  jetzt wird sie direkt aus `ApiUploadService.settlementsBody()`
+  abgeleitet (abzüglich `sent_at`, das ist immer "jetzt" und darf nicht
+  in den Vergleich einfließen) — damit können Signatur und tatsächlich
+  gesendete Daten strukturell nicht mehr auseinanderlaufen. Deckt damit
+  automatisch cash_total (Bargeldbestand bereinigt), note (Anmerkung)
+  und terminals[] (Kartenumsätze pro Kartenart inkl. Belegfoto) ab.
+  Absturzschutz ergänzt: `_terminalsListe()` innerhalb von
+  `settlementsBody()` wirft bei unvollständigen EC-Daten bewusst eine
+  Exception (z. B. EC-Umsatz ohne Kartenart-Aufschlüsselung) — das ist
+  beim echten Versand erwünscht, durfte aber nicht die neue
+  Signatur-Berechnung (u. a. beim Seitenaufbau) zum Absturz bringen;
+  `_sendeSignatur()` fängt das jetzt ab und liefert einen Sentinel-Wert,
+  der nie zu einer gültigen gespeicherten Signatur passt (Haken bleibt
+  dann einfach aus statt die Seite crashen zu lassen).
+  Nebeneffekt für Bestandsdaten: Geräte mit einer bereits gespeicherten
+  Sende-Signatur im alten Format zeigen nach diesem Update einmalig
+  "nicht gesendet", auch wenn tatsächlich schon gesendet wurde (altes
+  und neues Format passen nicht zusammen) — harmlos, korrigiert sich
+  von selbst beim nächsten tatsächlichen Versand.
+  Fünf neue Tests in api_upload_service_test.dart (neue Gruppe
+  "als Sende-Signatur"): sent_at fließt nicht ein, Differenz im
+  Anfangsbestand ändert die Signatur nicht, Bargeldbestand- und
+  Kartenart-Änderungen ändern sie, unvollständige EC-Daten werfen (wie
+  von `_sendeSignatur()` erwartet) eine Exception statt still falsche
+  Daten zu signieren. Alle 102 Tests grün, flutter analyze sauber.
+
 - Run 400: TODO.md durchgesehen, neue Punkte sinnvoll einsortiert (siehe
   unten) und dabei drei veraltete Mailversand-Referenzen bereinigt
   (Paco-Entscheidung vom 2026-08-26: kein Mailversand als Fallback

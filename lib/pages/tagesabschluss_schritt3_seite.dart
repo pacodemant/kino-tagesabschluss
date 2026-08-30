@@ -147,42 +147,35 @@ class _TagesabschlussSchritt3SeiteState
     _initialisierenAsync();
   }
 
-  /// Signatur der aktuell eingegebenen Abrechnungsdaten. Ändert sich
-  /// ausschließlich, wenn sich tatsächlich eingegebene Werte ändern
-  /// (kein Zeitstempel enthalten) — dient dem Vergleich mit der zuletzt
-  /// gespeicherten Sende-Bestätigung, um den Haken bei nachträglicher
-  /// Änderung automatisch wieder auszublenden.
+  /// Signatur dessen, was Flurbocash bei einem Versand tatsächlich
+  /// bekommen würde — bewusst NICHT die komplette Schritt-1/2-Eingabe
+  /// (die enthält viele Felder, die FC nie sieht, z. B. Differenz im
+  /// Anfangsbestand, Kino-/Bistro-SOLL, Stückzahlen). Direkt aus
+  /// ApiUploadService.settlementsBody() abgeleitet (abzüglich `sent_at`,
+  /// das ist immer "jetzt" und darf einen Vergleich nie verfälschen),
+  /// damit Signatur und tatsächlich gesendete Daten strukturell nicht
+  /// auseinanderlaufen können. Dient dem Vergleich mit der zuletzt
+  /// gespeicherten Sende-Bestätigung, um den "gesendet"-Haken bei einer
+  /// fachlich relevanten nachträglichen Änderung automatisch wieder
+  /// auszublenden.
   String _sendeSignatur() {
-    final Map<String, dynamic> daten = <String, dynamic>{
-      'isoDatum': DatumsHelper.logischesIsoDatum(),
-      'scheineCent': widget.argumente.scheineCent,
-      'loseMuenzenCent': widget.argumente.loseMuenzenCent,
-      'rollenCent': widget.argumente.rollenCent,
-      'umschlaegeCent': widget.argumente.umschlaegeCent,
-      'wechselgeldSollwertCent': widget.argumente.wechselgeldSollwertCent,
-      'kinoSollCent': widget.argumente.kinoSollCent,
-      'bistroSollCent': widget.argumente.bistroSollCent,
-      'ausgabenCent': widget.argumente.ausgabenCent,
-      'ecBelegeCent': widget.argumente.ecBelegeCent,
-      'differenzAnfangsbestandCent':
-          widget.argumente.differenzAnfangsbestandCent,
-      'stueckzahlen': widget.argumente.stueckzahlen,
-      'loseMuenzenNachArtCent': widget.argumente.loseMuenzenNachArtCent,
-      'umschlaege':
-          widget.argumente.umschlaege?.map((UmschlagEintrag u) => u.toJson()).toList(),
-      'ausgabenBetraegeCent': widget.argumente.ausgabenBetraegeCent,
-      'ausgabenLabels': widget.argumente.ausgabenLabels,
-      'ecBelegeLabels': widget.argumente.ecBelegeLabels,
-      'terminalId': widget.argumente.terminalId,
-      'belegNrVon': widget.argumente.belegNrVon,
-      'belegNrBis': widget.argumente.belegNrBis,
-      'ecUhrzeit': widget.argumente.ecUhrzeit,
-      'zahlungsartenAnzahl':
-          widget.argumente.zahlungsartenAufschluesselung?.length,
-      'ecTerminalsAnzahl': widget.argumente.ecTerminals?.length,
-      'anmerkung': widget.argumente.anmerkung,
-    };
-    return jsonEncode(daten);
+    try {
+      final Map<String, dynamic> body =
+          ApiUploadService.settlementsBody(_abschlussVorschau!);
+      final Map<String, dynamic> settlement = (body['settlements']
+          as List<dynamic>).first as Map<String, dynamic>;
+      settlement.remove('sent_at');
+      return jsonEncode(body);
+    } catch (_) {
+      // _terminalsListe() innerhalb von settlementsBody() wirft bei
+      // unvollständigen/inkonsistenten EC-Daten bewusst eine Exception
+      // (z. B. EC-Umsatz ohne Kartenart-Aufschlüsselung) — das ist beim
+      // echten Versand erwünscht (siehe _doApiUpload()-Catch-Block),
+      // darf hier aber nicht die Seite zum Absturz bringen. Sentinel,
+      // der nie zu einer gültig gespeicherten Signatur passt — der
+      // Haken bleibt in diesem Fall einfach aus.
+      return '__unvollstaendig__';
+    }
   }
 
   Future<void> _initialisierenAsync() async {
