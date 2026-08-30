@@ -42,7 +42,15 @@ class ApiUploadService {
   /// Erfolg — siehe [_pruefeTerminalIds]: die Referenzliste in
   /// config/terminal_ids.json ist laut TODO.md fuer alle Standorte noch
   /// nicht von Yannik bestaetigt, ein harter Block waere daher riskant.
-  static Future<List<String>> upload(TagesabschlussFinal abrechnung) async {
+  ///
+  /// [serverAntwort] ist der geparste JSON-Body der settlements-Antwort
+  /// (report_id, entered_total_cents, discrepancy_cents, ...) — seit
+  /// Run 399a4 fuers Dev-Modus-Debugging durchgereicht, damit sich am
+  /// Server-Wert prüfen lässt, was Flurbocash tatsächlich verbucht hat
+  /// (z. B. bei mehreren terminals[]-Einträgen gleicher TID). null, falls
+  /// die Antwort kein gültiges JSON war.
+  static Future<({List<String> warnungen, Map<String, dynamic>? serverAntwort})>
+      upload(TagesabschlussFinal abrechnung) async {
     final ({String url, int locationId, String apiKey}) konfig =
         await _ladeKonfigWerte(abrechnung.kinoId);
 
@@ -56,8 +64,9 @@ class ApiUploadService {
     );
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
-    await _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
-    return warnungen;
+    final Map<String, dynamic>? serverAntwort =
+        await _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
+    return (warnungen: warnungen, serverAntwort: serverAntwort);
   }
 
   /// Gleicht die tatsächlich zu sendenden TIDs gegen config/terminal_ids.json
@@ -210,7 +219,7 @@ class ApiUploadService {
     return (body['report_id'] as num).toInt();
   }
 
-  static Future<void> _settlements(
+  static Future<Map<String, dynamic>?> _settlements(
     String baseUrl,
     String apiKey,
     int reportId,
@@ -232,6 +241,11 @@ class ApiUploadService {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
     }
     _pruefeStatus(response);
+    try {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } catch (_) {
+      return null;
+    }
   }
 
   static List<Map<String, dynamic>> _terminalsListe(

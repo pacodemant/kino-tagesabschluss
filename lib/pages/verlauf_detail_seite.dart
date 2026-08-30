@@ -54,7 +54,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     setState(() => _sendet = true);
 
     try {
-      await ApiUploadService.upload(widget.abschluss);
+      await ApiUploadService.upload(widget.abschluss); // .serverAntwort hier ungenutzt
       await LokalerSpeicher.markiereAlsGesendet(
         widget.abschluss.kinoId,
         widget.abschluss.createdAt,

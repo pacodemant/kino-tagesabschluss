@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399b · Run 399b
+Version: 0.9.71+399a8 · Run 399a8
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399b)
+## Laufender Entwicklungsstand (Run 399a8)
+
+- Run 399a8 ✅ Debug-Button "Server-Antwort anzeigen" (Schritt 3,
+  neben "JSON anzeigen") ergänzt, um ohne Browser-DevTools zu prüfen,
+  was Flurbocash bei mehreren terminals[]-Einträgen gleicher TID
+  tatsächlich verbucht (Verdacht: TID ist dort ein Upsert-Schlüssel,
+  siehe EXTERNAL_API_Schauburg_de.md "Korrekturen"). Rein additiv,
+  kein Sende-Verhalten geändert. Details siehe CHANGELOG.md.
 
 - Run 399b ✅ Direkte Anweisung ohne eigene Run-Nummer (neues Thema,
   daher "b" statt Fortsetzung der "a"-Kette). Paco fand im Verlauf

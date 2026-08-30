@@ -132,6 +132,13 @@ class _TagesabschlussSchritt3SeiteState
   bool _apiUploadErledigt = false;
   bool _apiUploadLaeuft = false;
   bool _devModusAktiv = false;
+
+  // Server-Antwort des letzten echten settlements-Aufrufs dieser Sitzung
+  // (report_id, entered_total_cents, discrepancy_cents, ...) — null,
+  // solange in dieser Sitzung noch nicht wirklich gesendet wurde. Nur
+  // für den Dev-Tools-Button "Server-Antwort anzeigen", nicht
+  // persistiert.
+  Map<String, dynamic>? _letzteServerAntwort;
   bool _abrechnungGesendet = false;
 
   @override
@@ -322,8 +329,10 @@ class _TagesabschlussSchritt3SeiteState
       setState(() => _apiUploadLaeuft = true);
     }
     try {
-      final List<String> tidWarnungen =
-          await ApiUploadService.upload(_abschlussVorschau!);
+      final ({List<String> warnungen, Map<String, dynamic>? serverAntwort})
+          uploadErgebnis = await ApiUploadService.upload(_abschlussVorschau!);
+      final List<String> tidWarnungen = uploadErgebnis.warnungen;
+      _letzteServerAntwort = uploadErgebnis.serverAntwort;
       _apiUploadErledigt = true;
       // Bewusst nicht mounted-gated: diese beiden Aufrufe persistieren
       // den Sende-Status lokal und müssen auch dann laufen, wenn die
@@ -618,6 +627,39 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
+  /// Zeigt die zuletzt vom echten settlements-Aufruf empfangene
+  /// Server-Antwort (report_id, entered_total_cents, discrepancy_cents,
+  /// ...) — z. B. um zu prüfen, ob Flurbocash bei mehreren
+  /// terminals[]-Einträgen gleicher TID tatsächlich beide Beträge
+  /// verbucht hat, ohne dafür extra die Browser-DevTools zu brauchen.
+  void _zeigeServerAntwort() {
+    final Map<String, dynamic>? antwort = _letzteServerAntwort;
+    if (antwort == null) return;
+    const JsonEncoder encoder = JsonEncoder.withIndent('  ');
+    final String antwortJson = encoder.convert(antwort);
+
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Flurbocash Server-Antwort'),
+          content: SingleChildScrollView(
+            child: SelectableText(
+              antwortJson,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Schließen'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _navigiereZuSchritt4() {
     Navigator.of(context).pushNamed(
       StueckelungVorschlagSeite.routenName,
@@ -779,6 +821,11 @@ class _TagesabschlussSchritt3SeiteState
             TextButton(
               onPressed: _zeigeFlurbocashJson,
               child: const Text('JSON anzeigen'),
+            ),
+          if (_devModusAktiv)
+            TextButton(
+              onPressed: _letzteServerAntwort == null ? null : _zeigeServerAntwort,
+              child: const Text('Server-Antwort anzeigen'),
             ),
           if (_autoSaveFehler)
             Padding(

@@ -9,6 +9,28 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 399a8: Direkte Anweisung ohne eigene Run-Nummer (Fortsetzung der
+  "a"-Kette — gleiches Thema wie Run 399a: Flurbocash-Übertragung
+  debuggen). Nach Run 399a3 (Terminals pro Beleg statt pro TID) fiel
+  beim Live-Test auf: FC-Dashboard zeigte bei zwei EC-Belegen mit
+  identischer TID (SB, TID 54017635) nur den zuletzt im Array
+  stehenden Eintrag — Verdacht: Flurbocash behandelt TID pro
+  Abrechnung als eindeutigen Schlüssel (Upsert), wie es die eigene
+  API-Doku für den Korrektur-Fall bereits beschreibt
+  (`EXTERNAL_API_Schauburg_de.md`, Abschnitt "Korrekturen"). Um das
+  ohne Browser-DevTools verifizieren zu können, zeigt ein neuer
+  Dev-Modus-Button "Server-Antwort anzeigen" (Schritt 3, neben "JSON
+  anzeigen") jetzt die tatsächliche Antwort des letzten echten
+  settlements-Aufrufs (`report_id`, `entered_total_cents`,
+  `discrepancy_cents`, ...). Dafür `ApiUploadService.upload()` von
+  `Future<List<String>>` auf einen Record
+  `Future<({List<String> warnungen, Map<String, dynamic>? serverAntwort})>`
+  umgestellt (beide Aufrufstellen — Schritt 3 und Verlauf "Erneut
+  senden" — angepasst); `_settlements()` gibt jetzt den geparsten
+  JSON-Response-Body zurück statt ihn zu verwerfen. Rein additiv fürs
+  Debugging, keine Änderung am tatsächlichen Sende-Verhalten. Alle 97
+  Tests grün, flutter analyze sauber.
+
 - Run 399b: Direkte Anweisung ohne eigene Run-Nummer (neues Thema,
   daher Buchstabe "b" statt Fortsetzung der "a"-Kette). Paco meldete:
   im Verlauf tauchten für heute zwei Abrechnungen auf, und "Übertrag
