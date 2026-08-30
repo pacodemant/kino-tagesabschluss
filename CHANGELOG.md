@@ -9,6 +9,43 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 400: TODO.md durchgesehen, neue Punkte sinnvoll einsortiert (siehe
+  unten) und dabei drei veraltete Mailversand-Referenzen bereinigt
+  (Paco-Entscheidung vom 2026-08-26: kein Mailversand als Fallback
+  vorgesehen — betraf die Punkte "Mailversand" im Block "Blockiert",
+  "Buchhaltungs-E-Mail konfigurierbar" sowie den Mail-Teil von "Erneut
+  senden → Korrektur-Call"). Anschließend die Flurbocash-Sendeszenarien
+  "2x versandt", "korrigiert + erneut versandt", "gar nicht versandt"
+  per Code-Durchspiel geprüft (kein echter Sandbox-Call möglich) — dabei
+  zwei konkrete Funde gemacht und behoben bzw. dokumentiert:
+  (1) In tagesabschluss_schritt3_seite.dart war der Sende-Button nur
+  während des Auto-Saves gesperrt (`buttonGesperrt = _autoSaveLaeuft`),
+  nicht aber während des laufenden Uploads — ein zweiter, schneller Tap
+  während die erste Anfrage noch offen war, löste tatsächlich einen
+  zweiten, parallelen `_doApiUpload()`-Aufruf aus (`_apiUploadErledigt`
+  wird erst NACH Abschluss des ersten Calls gesetzt, der Guard in
+  `_zeigeAbschlussDialog()` griff also zu spät). Fix: `buttonGesperrt`
+  um `_apiUploadLaeuft` erweitert, analog zum bereits korrekten Muster
+  in verlauf_detail_seite.dart (`_erneutSenden()`, dort schon immer über
+  die lokale `_sendet`-Variable gesperrt). (2) Der Sende-Button in
+  verlauf_detail_seite.dart zeigt unabhängig vom Sende-Status immer den
+  Text "Erneut senden", auch bei Einträgen die nie gesendet wurden
+  (rotes NichtGesendetBadge) — nur dokumentiert (kein Bugfix in diesem
+  Run, siehe TODO.md), da nicht Teil des ursprünglich vorgeschlagenen
+  Run-400-Zielbereichs. Der dritte Fund (`ensure()`-by-date +
+  PUT-Overwrite scheint Korrekturen bereits idempotent zu behandeln) ist
+  nur aus dem Client-Code erschlossen, nicht am Server verifiziert — als
+  Notiz in TODO.md festgehalten, keine Code-Änderung.
+  Nebenbefund beim Vorbereiten dieses Runs: Zwischen dem letzten
+  Snapshot dieser Session und "go" liefen parallel zwei weitere Runs auf
+  demselben Arbeitsverzeichnis (399a8, 399b, siehe unten) — die bereits
+  vor "go" lokal (unkommittiert) vorbereiteten TODO.md-Ergänzungen dieser
+  Session wurden dabei in den Commit von Run 399b mit hineingezogen
+  (gleiche Datei, keine Kollision, nichts verloren — geprüft per `git
+  log`/`grep` vor dem Weiterarbeiten). Rein informativ, keine weitere
+  Aktion nötig.
+  Alle 97 Tests weiterhin grün, flutter analyze sauber.
+
 - Run 399a8: Direkte Anweisung ohne eigene Run-Nummer (Fortsetzung der
   "a"-Kette — gleiches Thema wie Run 399a: Flurbocash-Übertragung
   debuggen). Nach Run 399a3 (Terminals pro Beleg statt pro TID) fiel

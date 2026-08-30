@@ -280,6 +280,26 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       `belegIndex` (z. B. "Erneut senden" aus dem Verlauf) bleibt die
       alte TID-Gruppierung als Fallback erhalten. *(Run 399a3)*
 
+- [x] **Schutz vor doppeltem Versand derselben Abrechnung** Konkreter
+      Bug beim Code-Durchspiel der Szenarien "2x versandt"/"korrigiert +
+      erneut versandt"/"gar nicht versandt" gefunden (2026-08-29): In
+      tagesabschluss_schritt3_seite.dart war der Sende-Button nur
+      während des Auto-Saves gesperrt (`buttonGesperrt =
+      _autoSaveLaeuft`), nicht während des laufenden Uploads. Ein
+      zweiter, schneller Tap während die erste Anfrage noch offen war,
+      löste tatsächlich einen zweiten, parallelen `_doApiUpload()`-Aufruf
+      aus. Fix: `buttonGesperrt` um `_apiUploadLaeuft` erweitert, analog
+      zum bereits korrekten Muster in verlauf_detail_seite.dart
+      (`_erneutSenden()`, dort schon immer über `_sendet` gesperrt).
+      EINSCHRÄNKUNG: Der Fall "erneuter Versand nach unklarem
+      Netzwerk-Ergebnis" (App neu geöffnet, Status unklar) ist damit
+      NICHT abgedeckt — dafür wäre serverseitige Idempotenz nötig. Aus
+      dem Client-Code erschlossen (nicht am Server verifiziert): Flurbo-
+      cash scheint das ohnehin gutmütig zu behandeln (`_ensure()` holt/
+      erstellt den Report anhand Datum+Standort, `_settlements()`
+      überschreibt denselben `reportId` per PUT) — daher kein eigener
+      neuer TODO-Punkt dafür, nur diese Notiz. *(Run 400)*
+
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
 ### Verlauf

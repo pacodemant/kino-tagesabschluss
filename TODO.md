@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 399a8 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 400 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -222,26 +222,6 @@ Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
       nur Pacos private Testumgebung.)*
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
-
-- [ ] **Schutz vor doppeltem Versand derselben Abrechnung** KONKRETISIERT
-      (Code-Durchspiel 2026-08-29): In tagesabschluss_schritt3_seite.dart
-      ist der Button "Abrechnung an Büro senden" nur über
-      `buttonGesperrt = _autoSaveLaeuft` gesperrt — NICHT zusätzlich über
-      `_apiUploadLaeuft`. Ein zweiter Tap während der laufenden Anfrage
-      ruft `_zeigeAbschlussDialog()` erneut auf; da `_apiUploadErledigt`
-      erst NACH Abschluss des ersten Calls gesetzt wird, startet das
-      einen zweiten, parallelen `_doApiUpload()`-Aufruf → doppelter
-      POST/PUT bei schnellem Doppel-Tap oder langsamer Verbindung.
-      In verlauf_detail_seite.dart (`_erneutSenden()`) ist der analoge
-      Button dagegen bereits korrekt über die lokale `_sendet`-Variable
-      gesperrt (`onPressed: _sendet ? null : _erneutSenden`) — dient als
-      Vorlage für den Fix in Schritt 3 (`buttonGesperrt` um
-      `_apiUploadLaeuft` erweitern). Kein Backend-/IT-Klärungsbedarf,
-      rein client-seitiger Fix, geringes Risiko. Nicht abgedeckt bleibt
-      der Fall "erneuter Versand nach unklarem Netzwerk-Ergebnis" (App
-      neu geöffnet, Status unklar) — dafür wäre serverseitige Idempotenz
-      nötig (siehe Notiz beim Punkt "Erneut senden" unten, nicht
-      verifiziert).
 
 - [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 

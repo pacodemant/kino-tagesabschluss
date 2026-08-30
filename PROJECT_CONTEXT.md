@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.71+399a8 · Run 399a8
+Version: 0.9.72+400 · Run 400
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,22 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 399a8)
+## Laufender Entwicklungsstand (Run 400)
+
+- Run 400 ✅ TODO.md durchgesehen und neu sortiert (u. a. drei veraltete
+  Mailversand-Referenzen bereinigt, Paco-Entscheidung 2026-08-26: kein
+  Mailversand als Fallback). Anschließend die Flurbocash-Sendeszenarien
+  "2x versandt"/"korrigiert + erneut versandt"/"gar nicht versandt" per
+  Code-Durchspiel geprüft: konkreter Doppel-Versand-Bug in
+  tagesabschluss_schritt3_seite.dart gefunden und behoben (Sende-Button
+  war nur während des Auto-Saves gesperrt, nicht während des laufenden
+  Uploads — `buttonGesperrt` jetzt zusätzlich um `_apiUploadLaeuft`
+  erweitert). Zwei weitere Funde nur dokumentiert (kein Bugfix in
+  diesem Run, siehe TODO.md): irreführender Button-Text "Erneut senden"
+  in verlauf_detail_seite.dart auch bei nie gesendeten Einträgen; sowie
+  eine nicht am Server verifizierte Annahme, dass Korrekturen über
+  `_ensure()`+PUT bereits idempotent überschrieben werden. Details siehe
+  CHANGELOG.md und TODO_ERLEDIGT.md.
 
 - Run 399a8 ✅ Debug-Button "Server-Antwort anzeigen" (Schritt 3,
   neben "JSON anzeigen") ergänzt, um ohne Browser-DevTools zu prüfen,

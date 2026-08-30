@@ -697,7 +697,12 @@ class _TagesabschlussSchritt3SeiteState
     final Color differenzFarbe =
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
 
-    final bool buttonGesperrt = _autoSaveLaeuft;
+    // _apiUploadLaeuft zusaetzlich sperren (nicht nur _autoSaveLaeuft):
+    // sonst startet ein zweiter Tap waehrend der laufende Upload noch
+    // auf Antwort wartet einen weiteren, parallelen _doApiUpload()-Call
+    // (siehe _zeigeAbschlussDialog(), Guard dort greift erst NACH
+    // Abschluss des ersten Calls).
+    final bool buttonGesperrt = _autoSaveLaeuft || _apiUploadLaeuft;
 
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
