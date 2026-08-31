@@ -84,7 +84,7 @@ void main() {
     });
 
     test(
-      'finalisieren zaehlt Abschluss vor 6 Uhr noch als Vortag '
+      'finalisieren zaehlt Abschluss vor 5 Uhr noch als Vortag '
       '(Cutoff fuer Spaetvorstellungen nach Mitternacht)',
       () {
         final TagesabschlussFinal ergebnis = usecase.finalisieren(
@@ -97,19 +97,19 @@ void main() {
       },
     );
 
-    test('finalisieren zaehlt Abschluss um 5:59 Uhr noch als Vortag', () {
+    test('finalisieren zaehlt Abschluss um 4:59 Uhr noch als Vortag', () {
       final TagesabschlussFinal ergebnis = usecase.finalisieren(
         eingabe: eingabe(),
-        jetzt: DateTime(2026, 3, 16, 5, 59),
+        jetzt: DateTime(2026, 3, 16, 4, 59),
       );
 
       expect(ergebnis.datum, DateTime(2026, 3, 15));
     });
 
-    test('finalisieren zaehlt Abschluss ab 6 Uhr als aktuellen Tag', () {
+    test('finalisieren zaehlt Abschluss ab 5 Uhr als aktuellen Tag', () {
       final TagesabschlussFinal ergebnis = usecase.finalisieren(
         eingabe: eingabe(),
-        jetzt: DateTime(2026, 3, 16, 6, 0),
+        jetzt: DateTime(2026, 3, 16, 5, 0),
       );
 
       expect(ergebnis.datum, DateTime(2026, 3, 16));

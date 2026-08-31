@@ -3,7 +3,7 @@ import 'package:kino_bar_app/utils/datums_helper.dart';
 
 void main() {
   group('DatumsHelper.logischerAbrechnungsTag', () {
-    test('zaehlt 00:01 Uhr noch als Vortag (Cutoff 6 Uhr)', () {
+    test('zaehlt 00:01 Uhr noch als Vortag (Cutoff 5 Uhr)', () {
       expect(
         DatumsHelper.logischerAbrechnungsTag(
           jetzt: DateTime(2026, 3, 16, 0, 1),
@@ -12,16 +12,25 @@ void main() {
       );
     });
 
-    test('zaehlt 05:59 Uhr noch als Vortag', () {
+    test('zaehlt 04:59 Uhr noch als Vortag', () {
       expect(
         DatumsHelper.logischerAbrechnungsTag(
-          jetzt: DateTime(2026, 3, 16, 5, 59),
+          jetzt: DateTime(2026, 3, 16, 4, 59),
         ),
         DateTime(2026, 3, 15),
       );
     });
 
-    test('zaehlt 06:00 Uhr als aktuellen Tag', () {
+    test('zaehlt 05:00 Uhr als aktuellen Tag', () {
+      expect(
+        DatumsHelper.logischerAbrechnungsTag(
+          jetzt: DateTime(2026, 3, 16, 5, 0),
+        ),
+        DateTime(2026, 3, 16),
+      );
+    });
+
+    test('zaehlt 06:00 Uhr ebenfalls als aktuellen Tag', () {
       expect(
         DatumsHelper.logischerAbrechnungsTag(
           jetzt: DateTime(2026, 3, 16, 6, 0),

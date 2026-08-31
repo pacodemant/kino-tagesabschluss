@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.74+402 · Run 402
+Version: 0.9.75+403 · Run 403
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 402)
+## Laufender Entwicklungsstand (Run 403)
+
+- Run 403 ✅ Geschäftstag-Cutoff von 6 auf 5 Uhr umgestellt (Yannik-
+  Bestätigung für Flurbocash). Reiner Wertewechsel in
+  `DatumsHelper._geschaeftstagCutoffStunde`, einzige Quelle für die
+  Regel, wirkt automatisch auch für
+  `TagesabschlussFinalisierenUsecase.finalisieren()`. Details siehe
+  CHANGELOG.md.
 
 - Run 402 ✅ Regression aus Run 401 behoben: das grüne "gesendet"-Häkchen
   im Startmenü erschien nie mehr, da `_pruefeAbrechnungHeuteGesendet()`

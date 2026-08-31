@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 402 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 403 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -51,20 +51,6 @@ um Durcheinander zu vermeiden.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
-
-- [ ] **Geschäftstag-Cutoff von 6 auf 5 Uhr umstellen** Yannik hat
-      bestätigt (siehe .dev/flurbocash stuff/fragen_yannik.md, Frage
-      2.6): Flurbocash erwartet den logischen Geschäftstag, aber mit
-      Knick um 5 Uhr, nicht um 6 Uhr wie aktuell in der App
-      (`DatumsHelper._geschaeftstagCutoffStunde = 6`,
-      lib/utils/datums_helper.dart:8). Datei ist laut eigenem
-      Docstring "einzige Quelle für diese Regel" — Konstante auf 5
-      ändern sollte als reiner Wertewechsel ausreichen. Betrifft auch
-      TagesabschlussFinalisierenUsecase.finalisieren() (nutzt
-      dieselbe Methode). Vor Umsetzung: bestehende Tests/Verlaufsdaten
-      auf Annahmen zum 6-Uhr-Cutoff prüfen (z. B. Abschlüsse zwischen
-      5:00 und 5:59 Uhr, die bisher als Vortag galten und nach der
-      Änderung als aktueller Tag zählen).
 
 - [ ] **Offline-Hinweis bei BelegScan konkretisieren** Die
       Verbindungsprüfung beim Tap aufs Foto-Icon existiert bereits

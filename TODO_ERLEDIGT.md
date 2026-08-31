@@ -37,6 +37,18 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Geschäftstag-Cutoff von 6 auf 5 Uhr umstellen** Yannik hat
+      bestätigt: Flurbocash erwartet den logischen Geschäftstag mit
+      Knick um 5 Uhr, nicht 6 Uhr wie bisher in der App.
+      *(Run 403)* Umgesetzt wie beschrieben: reiner Wertewechsel
+      `DatumsHelper._geschaeftstagCutoffStunde` 6 → 5. Bestehende
+      Tests, die die alte Grenze bei 5:59 Uhr prüften
+      (datums_helper_test.dart,
+      tagesabschluss_finalisieren_usecase_test.dart), auf die neue
+      Grenze (4:59 Vortag / 5:00 aktueller Tag) umgestellt statt
+      entfernt. Veralteter "6-Uhr-Knick"-Kommentar in
+      lokaler_speicher.dart korrigiert.
+
 - [x] **Gesendet-Häkchen im Startmenü erscheint seit Run 401 nie mehr**
       REGRESSION durch Run 401, von Paco bestätigt (2026-08-30): das
       grüne Häkchen fehlte komplett, auch nach einem erfolgreichen

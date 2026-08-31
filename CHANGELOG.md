@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 403: Geschaeftstag-Cutoff von 6 auf 5 Uhr umgestellt (Yannik hat
+  bestaetigt: Flurbocash erwartet den logischen Geschaeftstag mit Knick
+  um 5 Uhr, nicht 6 Uhr, siehe .dev/flurbocash stuff/fragen_yannik.md
+  Frage 2.6). Reiner Wertewechsel:
+  DatumsHelper._geschaeftstagCutoffStunde (datums_helper.dart) von 6 auf
+  5 — einzige Quelle fuer diese Regel, betrifft automatisch auch
+  TagesabschlussFinalisierenUsecase.finalisieren() (nutzt dieselbe
+  Methode, kein eigener Cutoff-Wert). Veralteter "6-Uhr-Knick"-Kommentar
+  in lokaler_speicher.dart auf 5-Uhr korrigiert.
+  Randfall geprueft wie im TODO gefordert: Abschluesse zwischen 5:00 und
+  5:59 Uhr galten bisher als Vortag, zaehlen jetzt als aktueller Tag —
+  zwei bestehende Tests (datums_helper_test.dart,
+  tagesabschluss_finalisieren_usecase_test.dart) haben diese alte
+  Grenze exakt bei 5:59 Uhr geprueft und wurden auf die neue Grenze
+  (4:59 Uhr Vortag / 5:00 Uhr aktueller Tag) umgestellt, kein
+  Test-Vorwand entfernt. Keine weiteren Code- oder UI-Stellen mit
+  eigenem 6-Uhr-Wissen gefunden (per grep verifiziert). Alle 107 Tests
+  gruen, flutter analyze sauber.
+
 - Run 402: Regression aus Run 401 behoben — das gruene "gesendet"-Haekchen
   im Startmenue erschien seit Run 401 nie mehr, auch nicht nach einem
   erfolgreichen echten Versand. Ursache: `_pruefeAbrechnungHeuteGesendet()`

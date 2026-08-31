@@ -265,7 +265,7 @@ class LokalerSpeicher {
   }
 
   /// Laedt die finalen Tagesabschluesse eines Kinos, die dem aktuellen
-  /// logischen Tag (6-Uhr-Knick) zugeordnet sind (neueste zuerst) — pro
+  /// logischen Tag (5-Uhr-Knick) zugeordnet sind (neueste zuerst) — pro
   /// Kalendertag maximal ein Eintrag, siehe
   /// `ladeFinaleTagesabschluesseNeuesteProTag()`.
   static Future<List<TagesabschlussFinal>> ladeHeutigeFinaleTagesabschluesse(

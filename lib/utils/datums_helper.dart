@@ -4,8 +4,9 @@ class DatumsHelper {
   /// Abschluss vor dieser Uhrzeit zaehlt noch als Vortag (Spaetvorstellungen
   /// enden teils nach Mitternacht, der Geschaeftstag laeuft aber weiter).
   /// Einzige Quelle fuer diese Regel — auch fuer
-  /// TagesabschlussFinalisierenUsecase.finalisieren().
-  static const int _geschaeftstagCutoffStunde = 6;
+  /// TagesabschlussFinalisierenUsecase.finalisieren(). Seit Run 402 5 Uhr
+  /// (vorher 6 Uhr) — von Yannik fuer Flurbocash bestaetigt.
+  static const int _geschaeftstagCutoffStunde = 5;
 
   /// [jetzt] optional fuer deterministische Tests, sonst DateTime.now().
   static DateTime logischerAbrechnungsTag({DateTime? jetzt}) {
