@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 405 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 406 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -185,20 +185,6 @@ um Durcheinander zu vermeiden.
       Sendezeitpunkt erst unmittelbar beim Senden ergänzen/ersetzen"
       oben zusammen (beide betreffen denselben Mechanismus) — bei
       Umsetzung zusammen betrachten, nicht als zwei unabhängige Patches.
-
-- [ ] **Kino-/Bistro-SOLL-Kachel: Info-Zeilen "Umsätze" entfernen**
-      (Paco-Notiz 2026-08-30, verifiziert) In
-      `schritt2_kino_soll_ausgaben_section.dart:94-133` (Schritt 2,
-      Kachel mit Kino-SOLL/Bistro-SOLL + Ausgaben-Liste): am Ende steht
-      ein `Divider` gefolgt von zwei reinen Info-Zeilen "Umsätze gesamt
-      (Info)" und "Umsätze abzgl. Ausgaben (Info)" — sollen komplett weg
-      (Divider + beide Rows + der SizedBox dazwischen). Die
-      zugrundeliegenden Werte `gesamtUmsatzCent`/`gesamtNachAusgabenCent`
-      (Konstruktor-Parameter dieses Widgets) werden dadurch in der UI
-      nicht mehr gebraucht — bei der Umsetzung prüfen, ob sie danach an
-      der Aufrufstelle (`schritt2_gruppen_orchestrierung.dart` o. Ä.)
-      noch für etwas anderes gebraucht werden oder mit entfernt werden
-      können (kein totes Durchreichen stehen lassen).
 
 ---
 

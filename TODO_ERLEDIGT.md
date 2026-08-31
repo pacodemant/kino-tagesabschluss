@@ -37,6 +37,18 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Kino-/Bistro-SOLL-Kachel: Info-Zeilen "Umsätze" entfernen**
+      (Paco-Notiz 2026-08-30, verifiziert) In
+      `schritt2_kino_soll_ausgaben_section.dart` stand am Ende der
+      Kachel ein Divider gefolgt von zwei reinen Info-Zeilen "Umsätze
+      gesamt (Info)" und "Umsätze abzgl. Ausgaben (Info)".
+      *(Run 406)* Umgesetzt wie beschrieben: Divider + beide Rows +
+      SizedBox entfernt. Die dadurch toten Werte
+      gesamtUmsatzCent/gesamtNachAusgabenCent komplett durchgereicht
+      entfernt (Widget-Parameter, Orchestrierungs-Ebene, Berechnung an
+      der Aufrufstelle) statt totes Durchreichen stehen zu lassen.
+      Neuer isolierter Widget-Test für die Section ergänzt.
+
 - [x] **EC-Scan: Bestätigungs-SnackBar entfernen** (Paco-Notiz
       2026-08-30) In `_starteEcBelegScan()` erschien nach erfolgreichem
       Scan eine SnackBar "Scan bestätigt · Gesamt: X €" — überflüssig,

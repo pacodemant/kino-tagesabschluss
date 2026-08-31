@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 406: Kino-/Bistro-SOLL-Kachel (Schritt 2), die beiden reinen
+  Info-Zeilen "Umsätze gesamt (Info)" und "Umsätze abzgl. Ausgaben
+  (Info)" entfernt (Divider + beide Rows + SizedBox dazwischen,
+  schritt2_kino_soll_ausgaben_section.dart). Die zugrundeliegenden
+  Werte gesamtUmsatzCent/gesamtNachAusgabenCent wurden dadurch tot —
+  komplett durchgereicht entfernt: Konstruktor-Parameter des Widgets,
+  Parameter+Übergabe in schritt2_gruppen_orchestrierung.dart, sowie
+  die Berechnung an der Aufrufstelle in
+  tagesabschluss_schritt2_seite.dart (kein totes Durchreichen stehen
+  gelassen, wie im TODO gefordert). Neuer isolierter Widget-Test für
+  Schritt2KinoSollUndAusgabenSection (erster Test für eine
+  Schritt-2-Section überhaupt) prüft, dass die beiden Info-Zeilen
+  nicht mehr im Baum stehen. Alle 109 Tests grün, flutter analyze
+  sauber.
+
 - Run 405: EC-Scan, Bestätigungs-SnackBar nach erfolgreichem Scan
   entfernt (`_starteEcBelegScan()`,
   tagesabschluss_schritt2_seite.dart). War überflüssig, da die

@@ -2688,10 +2688,6 @@ class _TagesabschlussSchritt2SeiteState
               ),
               onChanged: _beiBistroSollGeaendert,
             ),
-      gesamtUmsatzCent: _kinoSollCent + _bistroSollCent,
-      gesamtNachAusgabenCent: _kinoSollCent +
-          _bistroSollCent -
-          TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
       ausgabenIds: _ausgabenIds,
       ausgabenLabelController: _ausgabenLabelController,
       ausgabenLabelFocusNode: _ausgabenLabelFocusNode,

@@ -23,8 +23,6 @@ class Schritt2GruppenOrchestrierung {
     required ValueChanged<String> beiAnmerkungGeaendert,
     required Widget kinoSollEingabeZeile,
     required Widget? bistroSollEingabeZeile,
-    required int gesamtUmsatzCent,
-    required int gesamtNachAusgabenCent,
     required List<int> ausgabenIds,
     required List<TextEditingController> ausgabenLabelController,
     required List<FocusNode> ausgabenLabelFocusNode,
@@ -55,8 +53,6 @@ class Schritt2GruppenOrchestrierung {
       kinoSollUndAusgaben: Schritt2KinoSollUndAusgabenSection(
         kinoSollEingabeZeile: kinoSollEingabeZeile,
         bistroSollEingabeZeile: bistroSollEingabeZeile,
-        gesamtUmsatzCent: gesamtUmsatzCent,
-        gesamtNachAusgabenCent: gesamtNachAusgabenCent,
         ausgabenIds: ausgabenIds,
         ausgabenLabelController: ausgabenLabelController,
         ausgabenLabelFocusNode: ausgabenLabelFocusNode,
