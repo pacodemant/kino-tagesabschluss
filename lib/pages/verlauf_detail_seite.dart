@@ -554,7 +554,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                               Text('Wird gesendet...'),
                             ],
                           )
-                        : const Text('Erneut senden'),
+                        : Text(
+                            _gesendetAm == null
+                                ? 'Jetzt senden'
+                                : 'Erneut senden',
+                          ),
                   ),
                 ),
                 if (AdminSession.entsperrt) ...<Widget>[

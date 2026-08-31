@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 406 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 407 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -461,14 +461,6 @@ um Durcheinander zu vermeiden.
       Abrechnungen hinweg offen bleibenden Tab.
 
 ### Verlauf
-
-- [ ] **Verlauf-Detail: Button-Text "Erneut senden" auch für nie
-      gesendete Einträge** In verlauf_detail_seite.dart zeigt der
-      Sende-Button (Zeile ~540-557) immer den Text "Erneut senden",
-      auch wenn `_gesendetAm == null` (Eintrag trägt das rote
-      NichtGesendetBadge, wurde also noch NIE gesendet) — irreführend,
-      sollte dann z. B. "Jetzt senden" heißen. Gefunden beim
-      Durchspielen des Szenarios "gar nicht versandt" (2026-08-29).
 
 - [ ] **"JSON anzeigen"-Button im Dev-Modus auch in Verlauf-Detail**
       Existiert in tagesabschluss_schritt3_seite.dart bereits

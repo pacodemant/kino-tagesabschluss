@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.78+406 · Run 406
+Version: 0.9.79+407 · Run 407
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 406)
+## Laufender Entwicklungsstand (Run 407)
+
+- Run 407 ✅ Verlauf-Detail: Sende-Button zeigt "Jetzt senden" statt
+  "Erneut senden", wenn ein Eintrag noch nie gesendet wurde. Details
+  siehe CHANGELOG.md.
 
 - Run 406 ✅ Kino-/Bistro-SOLL-Kachel (Schritt 2): die beiden reinen
   Info-Zeilen "Umsätze gesamt/abzgl. Ausgaben (Info)" entfernt, dabei

@@ -28,6 +28,7 @@ void main() {
     List<String>? ecBelegeFotosBase64,
     List<String>? ecBelegeFotosMediaTypen,
     List<String>? ecBelegeLabels,
+    DateTime? gesendetAm,
   }) {
     return TagesabschlussFinal(
       kinoId: 'kino_01',
@@ -53,8 +54,37 @@ void main() {
       ecBelegeLabels: ecBelegeLabels,
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
+      gesendetAm: gesendetAm,
     );
   }
+
+  testWidgets(
+      'Sende-Button zeigt "Jetzt senden" bei einem noch nie gesendeten '
+      'Eintrag (gesendetAm == null, Run 407)', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(home: VerlaufDetailSeite(abschluss: abschluss())),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Jetzt senden'), findsOneWidget);
+    expect(find.text('Erneut senden'), findsNothing);
+  });
+
+  testWidgets(
+      'Sende-Button zeigt "Erneut senden" bei einem bereits gesendeten '
+      'Eintrag (gesendetAm gesetzt, Run 407)', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: VerlaufDetailSeite(
+          abschluss: abschluss(gesendetAm: DateTime(2026, 8, 26, 23, 0)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Erneut senden'), findsOneWidget);
+    expect(find.text('Jetzt senden'), findsNothing);
+  });
 
   testWidgets(
       '"Ergebnis"-Kachel ist initial aufgeklappt, ohne Antippen sichtbar '

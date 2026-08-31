@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 407: Verlauf-Detail, Sende-Button zeigt jetzt "Jetzt senden"
+  statt immer "Erneut senden", wenn ein Eintrag noch nie gesendet
+  wurde (`_gesendetAm == null`, verlauf_detail_seite.dart). Gefunden
+  beim Durchspielen des Szenarios "gar nicht versandt" (Run 400).
+  Zwei neue Widget-Tests in verlauf_detail_seite_test.dart (Helper
+  `abschluss()` um optionalen `gesendetAm`-Parameter erweitert): ohne
+  gesendetAm zeigt der Button "Jetzt senden", mit gesetztem gesendetAm
+  "Erneut senden". Alle 111 Tests grün, flutter analyze sauber.
+
 - Run 406: Kino-/Bistro-SOLL-Kachel (Schritt 2), die beiden reinen
   Info-Zeilen "Umsätze gesamt (Info)" und "Umsätze abzgl. Ausgaben
   (Info)" entfernt (Divider + beide Rows + SizedBox dazwischen,

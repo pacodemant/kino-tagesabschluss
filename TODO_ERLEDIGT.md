@@ -366,6 +366,17 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Verlauf
 
+- [x] **Verlauf-Detail: Button-Text "Erneut senden" auch für nie
+      gesendete Einträge** In verlauf_detail_seite.dart zeigte der
+      Sende-Button immer den Text "Erneut senden", auch wenn
+      `_gesendetAm == null` (Eintrag trägt das rote
+      NichtGesendetBadge, wurde also noch NIE gesendet) — irreführend.
+      Gefunden beim Durchspielen des Szenarios "gar nicht versandt"
+      (2026-08-29).
+      *(Run 407)* Umgesetzt wie beschrieben: Button zeigt jetzt
+      "Jetzt senden" bei `_gesendetAm == null`, sonst weiterhin
+      "Erneut senden". Zwei neue Widget-Tests ergänzt.
+
 - [x] **Übertragungs-Flag je Verlaufseintrag** Neues Feld `gesendetAm`
       (DateTime?, nullable) in `TagesabschlussFinal`. Wird nach
       erfolgreichem Upload (inkl. CORS-Sonderfall, der schon vorher
