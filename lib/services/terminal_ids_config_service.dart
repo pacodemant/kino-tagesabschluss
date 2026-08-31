@@ -22,4 +22,18 @@ class TerminalIdsConfigService {
     }
     return ergebnis;
   }
+
+  /// Liefert die als "aktiv" geltende TID fuer ein Kino-Kuerzel (z.B. "SB")
+  /// aus einer bereits geladenen Konfiguration — Konvention (Paco-
+  /// Entscheidung 2026-08-30, siehe TODO.md "Auto-Fill: konfigurierte TID
+  /// pro Standort"): der erste Eintrag der Liste gilt als aktiv, weitere
+  /// Eintraege sind Ersatz-/Zukunftsgeraete. Leerer String, wenn kein
+  /// Standort/keine TID hinterlegt ist.
+  static String aktiveTid(
+    String? kinoKuerzel,
+    Map<String, List<String>> konfiguration,
+  ) {
+    final List<String> tids = konfiguration[kinoKuerzel] ?? const <String>[];
+    return tids.isNotEmpty ? tids.first : '';
+  }
 }

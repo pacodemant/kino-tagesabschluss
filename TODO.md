@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 408 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 409 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -253,62 +253,6 @@ um Durcheinander zu vermeiden.
       Einstellungen statt der statischen JSON-Datei (siehe auch
       blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte
       bis auf SB von Yannik noch nicht bestätigt).
-
-- [ ] **Auto-Fill: konfigurierte TID pro Standort statt fest verdrahtet**
-      (Paco-Notiz 2026-08-30) `_autoFillDev()` in
-      tagesabschluss_schritt2_seite.dart:1328+1363 setzt für JEDEN
-      Standort hart `_ecBelegLabels[0] = '54017635'` (die erste SB-TID)
-      — unabhängig davon, für welches Kino der MA gerade testet. Auto-
-      Fill sollte stattdessen die für `widget.kinoId` tatsächlich
-      AKTIVE TID aus `TerminalIdsConfigService`/`config/terminal_ids.
-      json` verwenden, damit Test-Abrechnungen an anderen Standorten
-      nicht fälschlich die TID-Warnung auslösen (siehe "TID-Whitelist
-      editierbar" oben).
-      WICHTIG bei der Umsetzung — nicht einfach `terminal_ids[0]` bzw.
-      irgendeinen/alle Einträge nehmen: laut Paco (2026-08-30) sind pro
-      Standort teils mehrere TIDs hinterlegt, aber nicht alle aktiv
-      (Ersatz-/Zukunfts-Geräte, noch nicht in Betrieb). Stand
-      `config/terminal_ids.json` + Pacos Erklärung dazu:
-      - AT (Atlantis): 1 TID, eindeutig — kein Sonderfall.
-      - SB (Schauburg): 4 TIDs gelistet, davon ist NUR die erste
-        (`54017635`) aktiv — die anderen drei sind für neue Geräte, die
-        erst noch kommen.
-      - CO (Cinema Ostertor): 1 TID (`60561995`) — neu und bereits aktiv
-        (neues Terminal in Betrieb, ersetzt eine ältere TID).
-      - GO (Gondel): noch Platzhalter `"XXXX"`, keine echte TID —
-        Auto-Fill kann hier aktuell keine sinnvolle TID einsetzen, bis
-        Yannik die echten TIDs liefert (siehe blockierten Punkt
-        "Registrierte TIDs pro Standort" oben).
-      - BT (Bar Tabak): 4 TIDs gelistet, die ERSTEN ZWEI
-        (`54069493`, `54017664`) sind aktiv, die letzten zwei für neue
-        Geräte. Passt zur geplanten 2-Abrechnungen/Tag-Struktur von BT
-        (siehe "Bar Tabak: 2-Settlement-Logik" unten) — relevant sobald
-        BT-Auto-Fill zwei EC-Belege mit unterschiedlicher TID braucht.
-      ENTSCHIEDEN (Paco, 2026-08-30): `config/terminal_ids.json` bleibt
-      strukturell wie sie ist (Option A, keine JSON-Schema-Änderung) —
-      Option B unten damit verworfen/nicht weiterverfolgen. Die
-      Listeninhalte selbst (welche TIDs drinstehen, Reihenfolge) pflegt
-      Paco manuell im Code, sobald neue Terminals tatsächlich in Betrieb
-      gehen — kein Automatismus dafür nötig/gewünscht.
-      - Option A (GEWÄHLT) — Konvention ohne JSON-Änderung: Auto-Fill nutzt
-        einfach `terminal_ids[0]` als "die aktive TID" (Reihenfolge in
-        der Datei entscheidet), mit Code-Kommentar der das festhält.
-        Deckt SB/CO/AT sauber ab. Für BT (2 aktive TIDs) würde das
-        NICHT reichen, ist aber erst relevant, wenn Bar Tabak mit
-        seiner 2-Abrechnungen/Tag-Logik tatsächlich gebaut wird (siehe
-        "Bar Tabak: 2-Settlement-Logik" unten) — bis dahin reicht auch
-        für BT der erste Eintrag.
-      - Option B (VERWORFEN) — Struktur erweitern: pro Standort explizit zwischen
-        aktiven und reservierten TIDs unterscheiden, z. B.
-        `"terminal_ids_aktiv": ["54017635"], "terminal_ids_reserviert":
-        ["60561994", "60561996", "60561997"]` statt der einen flachen
-        Liste. Robuster (kein Reihenfolge-Zufall), bildet BTs 2 aktive
-        TIDs direkt ab, braucht aber Anpassungen an
-        `TerminalIdsConfigService` (Parsing) UND an
-        `pruefeTerminalIdsGegenKonfiguration()` (muss weiterhin BEIDE
-        Listen als "bekannt, keine Warnung" behandeln, nicht nur
-        "aktiv" — reservierte TIDs sind ja trotzdem gültige TIDs,
-        sobald das jeweilige Gerät in Betrieb geht).
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder

@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 409: Auto-Fill (Dev-Modus, Schritt 2), `_autoFillDev()`
+  (tagesabschluss_schritt2_seite.dart) setzte für JEDEN Standort hart
+  die erste SB-TID '54017635', unabhängig davon für welches Kino der
+  MA gerade testet. Jetzt liest eine neue Methode `_autoFillAktiveTid()`
+  die für `widget.kinoId` tatsächlich aktive TID aus
+  `config/terminal_ids.json` (über `TerminalIdsConfigService`) und
+  befüllt damit `_ecBelegLabels[0]`/`_ecBelegLabelController[0]`. Neue
+  reine Methode `TerminalIdsConfigService.aktiveTid(kinoKuerzel,
+  konfiguration)` kapselt die Konvention (Paco-Entscheidung
+  2026-08-30, Option A): der erste Eintrag der TID-Liste eines
+  Standorts gilt als aktiv, weitere Einträge sind Ersatz-/
+  Zukunftsgeräte — deckt SB/CO/AT sauber ab, reicht für BT (2 aktive
+  TIDs) noch nicht, ist dort aber erst relevant sobald Bar Tabak
+  gebaut wird. Gondel (Platzhalter "XXXX") bekommt weiterhin den
+  Platzhalter eingesetzt, bis Yannik echte TIDs liefert — bewusst kein
+  Sonderfall dafür. Reiner Dev-Modus-Fix (gated hinter DevModus,
+  keine Produktivauswirkung). Fünf neue Tests in
+  terminal_ids_config_service_test.dart decken alle vier echten
+  Standort-Fälle sowie ein unbekanntes Kürzel ab. Alle 117 Tests
+  grün, flutter analyze sauber.
+
 - Run 408: Verlauf-Detail, "Bargeld"-Kachel zeigt im Titelbereich
   (subtitle) jetzt den bereinigten Bar-Bestand
   (`a.barBestandAbzglWechselgeldCent`) statt des ungekürzten

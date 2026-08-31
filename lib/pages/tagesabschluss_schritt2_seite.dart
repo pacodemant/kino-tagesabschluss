@@ -1297,9 +1297,24 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
+  /// Liefert die fuer widget.kinoId aktive TID aus config/terminal_ids.json
+  /// fuers Auto-Fill — Konvention (Paco-Entscheidung 2026-08-30, siehe
+  /// TODO.md "Auto-Fill: konfigurierte TID pro Standort"): der erste
+  /// Eintrag der Liste gilt als die aktive TID, weitere Eintraege sind
+  /// Ersatz-/Zukunftsgeraete. Leerer String, wenn kein Standort/keine TID
+  /// hinterlegt ist (z.B. Gondel-Platzhalter "XXXX" bleibt unveraendert
+  /// stehen, da dort noch keine echte TID vorliegt).
+  Future<String> _autoFillAktiveTid() async {
+    final Kino? kino = KinoRepository.nachId(widget.kinoId);
+    final Map<String, List<String>> konfiguration =
+        await TerminalIdsConfigService.laden();
+    return TerminalIdsConfigService.aktiveTid(kino?.kuerzel, konfiguration);
+  }
+
   Future<void> _autoFillDev() async {
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeAutoFillSchritt2(widget.kinoId);
+    final String aktiveTid = await _autoFillAktiveTid();
     if (!mounted) {
       return;
     }
@@ -1325,7 +1340,7 @@ class _TagesabschlussSchritt2SeiteState
 
       _setzeEcBelegAnzahl(1);
       _ecBelegeCent[0] = ecBeleg;
-      _ecBelegLabels[0] = '54017635';
+      _ecBelegLabels[0] = aktiveTid;
       _kartenartenGesamtBetragCent[0] = ecBeleg;
       _kartenartenGesamt1Beruehrt = true;
       _ecBelegLabel1Beruehrt = true;
@@ -1360,7 +1375,7 @@ class _TagesabschlussSchritt2SeiteState
             ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
             : '',
       );
-      _setzeControllerText(_ecBelegLabelController[0], '54017635');
+      _setzeControllerText(_ecBelegLabelController[0], aktiveTid);
       _setzeControllerText(
         _kartenartenGesamtBetragController[0],
         ecBeleg != 0

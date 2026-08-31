@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.80+408 · Run 408
+Version: 0.9.81+409 · Run 409
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 408)
+## Laufender Entwicklungsstand (Run 409)
+
+- Run 409 ✅ Auto-Fill (Dev-Modus, Schritt 2) nutzt jetzt die für den
+  jeweiligen Standort tatsächlich aktive TID aus
+  config/terminal_ids.json statt hart die erste SB-TID zu setzen.
+  Neue reine Methode TerminalIdsConfigService.aktiveTid(). Details
+  siehe CHANGELOG.md.
 
 - Run 408 ✅ Verlauf-Detail: "Bargeld"-Kachel zeigt im Titelbereich
   jetzt den bereinigten Bar-Bestand statt des ungekürzten

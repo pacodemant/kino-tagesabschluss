@@ -221,6 +221,21 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
+- [x] **Auto-Fill: konfigurierte TID pro Standort statt fest verdrahtet**
+      (Paco-Notiz 2026-08-30) `_autoFillDev()` setzte für JEDEN Standort
+      hart die erste SB-TID `54017635`, unabhängig davon für welches
+      Kino der MA gerade testet.
+      *(Run 409)* Umgesetzt wie ENTSCHIEDEN (Option A, siehe
+      TODO_ERLEDIGT.md-Historie/CHANGELOG Run 409): neue reine Methode
+      `TerminalIdsConfigService.aktiveTid(kinoKuerzel, konfiguration)`
+      liefert den ersten Eintrag der TID-Liste als aktive TID.
+      `_autoFillDev()` nutzt jetzt die für `widget.kinoId` tatsächlich
+      aktive TID statt der hartcodierten SB-TID. Deckt SB/CO/AT sauber
+      ab; BT (2 aktive TIDs) und GO (noch Platzhalter) bleiben wie
+      erwartet unvollständig, bis diese Standorte tatsächlich gebaut
+      bzw. von Yannik bestätigt sind — kein Sonderfall dafür eingebaut.
+      Fünf neue Tests in terminal_ids_config_service_test.dart.
+
 - [x] **Standort-Betriebsmodus (Admin)** Im Verwaltungsbereich einstellbar,
       für welchen Standort das Gerät arbeitet: „Alle" oder ein festes Kino.
       Ist ein einzelner Standort gewählt, entfällt für MA die Kinoauswahl
