@@ -57,6 +57,17 @@ void main() {
   }
 
   testWidgets(
+      '"Ergebnis"-Kachel ist initial aufgeklappt, ohne Antippen sichtbar '
+      '(Run 404)', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(home: VerlaufDetailSeite(abschluss: abschluss())),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Gesamt SOLL'), findsOneWidget);
+  });
+
+  testWidgets(
       'kein Beleg-Foto vorhanden → keine Miniatur, Seite rendert ohne Fehler',
       (WidgetTester tester) async {
     await tester.pumpWidget(

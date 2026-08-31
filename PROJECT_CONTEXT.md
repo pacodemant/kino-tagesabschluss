@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.75+403 · Run 403
+Version: 0.9.76+404 · Run 404
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 403)
+## Laufender Entwicklungsstand (Run 404)
+
+- Run 404 ✅ Verlauf-Detail: "Ergebnis"-Kachel ist jetzt initial
+  aufgeklappt statt eingeklappt (Paco-Wunsch). Reiner Wertewechsel.
+  Details siehe CHANGELOG.md.
 
 - Run 403 ✅ Geschäftstag-Cutoff von 6 auf 5 Uhr umgestellt (Yannik-
   Bestätigung für Flurbocash). Reiner Wertewechsel in

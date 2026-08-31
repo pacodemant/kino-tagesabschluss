@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 403 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 404 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -151,11 +151,6 @@ um Durcheinander zu vermeiden.
       helper.dart:22` (`'2/4 · Belege'` im Schritt-Wechsel-BottomSheet,
       auch Doc-Kommentar Zeile 4). NICHT anfassen: alle `EC-Belege`-
       Vorkommen (Beleg-Scan-Feature) — anderer Begriff, bleibt wie er ist.
-
-- [ ] **Verlauf: "Ergebnis"-Kachel aufgeklappt anzeigen** (Paco-Notiz
-      2026-08-30) `verlauf_detail_seite.dart`, ExpansionTile "Ergebnis"
-      (Abschnitt 3): `initiallyExpanded: false` → `true`. Reiner
-      Wertewechsel, eine Zeile.
 
 - [ ] **"Bargeldbestand" → "Bar-Umsatz" umbenennen** KLÄRUNGSBEDÜRFTIG
       (Paco-Notiz 2026-08-30): Der Begriff "Bargeldbestand" kommt als

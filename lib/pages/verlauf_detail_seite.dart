@@ -505,7 +505,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                                 : Colors.black87,
                       ),
                     ),
-                    initiallyExpanded: false,
+                    initiallyExpanded: true,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       InfoZeile(

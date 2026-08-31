@@ -37,6 +37,12 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Verlauf: "Ergebnis"-Kachel aufgeklappt anzeigen** (Paco-Notiz
+      2026-08-30) `verlauf_detail_seite.dart`, ExpansionTile "Ergebnis"
+      (Abschnitt 3).
+      *(Run 404)* Umgesetzt wie beschrieben: `initiallyExpanded: false`
+      → `true`, reiner Wertewechsel. Neuer Widget-Test ergänzt.
+
 - [x] **Geschäftstag-Cutoff von 6 auf 5 Uhr umstellen** Yannik hat
       bestätigt: Flurbocash erwartet den logischen Geschäftstag mit
       Knick um 5 Uhr, nicht 6 Uhr wie bisher in der App.

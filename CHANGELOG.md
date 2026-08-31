@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 404: Verlauf-Detail, "Ergebnis"-Kachel (Abschnitt 3, Gesamt SOLL/
+  IST/Differenz) ist jetzt initial aufgeklappt (`initiallyExpanded:
+  false` → `true` in verlauf_detail_seite.dart) statt wie die anderen
+  beiden Kacheln ("Bargeld", "Belege") eingeklappt zu starten — Paco-
+  Wunsch, das Ergebnis ist die zuerst relevante Information beim
+  Oeffnen eines Verlaufseintrags. Ein reiner Wertewechsel, die anderen
+  beiden ExpansionTiles bleiben unveraendert eingeklappt. Neuer
+  Widget-Test in verlauf_detail_seite_test.dart prueft, dass "Gesamt
+  SOLL" ohne vorheriges Antippen im Baum steht. Alle 108 Tests gruen,
+  flutter analyze sauber.
+
 - Run 403: Geschaeftstag-Cutoff von 6 auf 5 Uhr umgestellt (Yannik hat
   bestaetigt: Flurbocash erwartet den logischen Geschaeftstag mit Knick
   um 5 Uhr, nicht 6 Uhr, siehe .dev/flurbocash stuff/fragen_yannik.md
