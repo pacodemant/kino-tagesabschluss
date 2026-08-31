@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 407 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 408 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -488,21 +488,6 @@ um Durcheinander zu vermeiden.
       `_scheinUnterzeilen()`/`_rollenUnterzeilen()`/
       `_loseMuenzenUnterzeilen()`/`_umschlagUnterzeilen()`; Abschnitt
       "Belege" mit `_ecBelegUnterzeilen()`).
-
-- [ ] **Bargeld-Kachel: bereinigter Bar-Bestand statt Kassenbestand
-      gesamt im Titelbereich** (Paco-Notiz 2026-08-30, per Screenshot
-      präzisiert): `verlauf_detail_seite.dart:428-434` — die "Bargeld"-
-      Kachel zeigt im (optisch als Einheit wahrgenommenen) Titelbereich
-      bereits einen Wert: `title: 'Bargeld'` (fett) direkt gefolgt von
-      `subtitle: _euro(a.kassenbestandGesamtCent)` (Screenshot: "Bargeld
-      / 1.057,70 €"). Das ist aber der gezählte Gesamtbestand VOR Abzug
-      des Wechselgelds. Gewünscht: diesen Wert durch den bereinigten
-      Bar-Bestand ersetzen (`a.barBestandAbzglWechselgeldCent` — im
-      Screenshot 557,70 €, an anderer Stelle in derselben Datei bereits
-      als "Bar-Bestand bereinigt" gelistet, Zeile 456) — also ein
-      Werte-AUSTAUSCH in der bestehenden `subtitle`, keine neue Anzeige.
-      Hängt mit dem "Bargeldbestand" → "Bar-Umsatz"-Umbenennungspunkt
-      oben zusammen (gleicher Wert, andere Stelle).
 
 - [ ] **EC-Kachel: Kartenarten + Beträge pro Beleg auflisten** (Paco-Notiz
       2026-08-30) `_ecBelegUnterzeilen()` (verlauf_detail_seite.dart:

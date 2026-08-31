@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 408: Verlauf-Detail, "Bargeld"-Kachel zeigt im Titelbereich
+  (subtitle) jetzt den bereinigten Bar-Bestand
+  (`a.barBestandAbzglWechselgeldCent`) statt des ungekürzten
+  Kassenbestands (`a.kassenbestandGesamtCent`) — reiner Werte-
+  Austausch, Label "Bargeld" unverändert, die aufklappbaren
+  Unterzeilen (u. a. "Kassenbestand gesamt" mit dem alten Wert)
+  bleiben ebenfalls unverändert bestehen. Paco-Notiz, per Screenshot
+  präzisiert: der Gesamtbestand VOR Wechselgeld-Abzug war im
+  Titelbereich irreführend, da er nicht dem tatsächlichen Bar-Umsatz
+  entspricht. Neuer Widget-Test mit bewusst unterschiedlichen Werten
+  für beide Felder (vorher identisch im Test-Helper, hätte den
+  Unterschied nicht gezeigt) prüft, dass der bereinigte statt des
+  ungekürzten Werts angezeigt wird. Alle 112 Tests grün, flutter
+  analyze sauber.
+
 - Run 407: Verlauf-Detail, Sende-Button zeigt jetzt "Jetzt senden"
   statt immer "Erneut senden", wenn ein Eintrag noch nie gesendet
   wurde (`_gesendetAm == null`, verlauf_detail_seite.dart). Gefunden

@@ -29,6 +29,8 @@ void main() {
     List<String>? ecBelegeFotosMediaTypen,
     List<String>? ecBelegeLabels,
     DateTime? gesendetAm,
+    int kassenbestandGesamtCent = 10000,
+    int barBestandAbzglWechselgeldCent = 10000,
   }) {
     return TagesabschlussFinal(
       kinoId: 'kino_01',
@@ -39,9 +41,9 @@ void main() {
       loseMuenzenCent: 0,
       rollenCent: 0,
       umschlaegeCent: 0,
-      kassenbestandGesamtCent: 10000,
+      kassenbestandGesamtCent: kassenbestandGesamtCent,
       wechselgeldSollwertCent: 0,
-      barBestandAbzglWechselgeldCent: 10000,
+      barBestandAbzglWechselgeldCent: barBestandAbzglWechselgeldCent,
       kinoSollCent: 5000,
       bistroSollCent: 0,
       ausgabenCent: 0,
@@ -57,6 +59,26 @@ void main() {
       gesendetAm: gesendetAm,
     );
   }
+
+  testWidgets(
+      '"Bargeld"-Kachel zeigt im Titelbereich den bereinigten '
+      'Bar-Bestand, nicht den ungekürzten Kassenbestand (Run 408)',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: VerlaufDetailSeite(
+          abschluss: abschluss(
+            kassenbestandGesamtCent: 105770,
+            barBestandAbzglWechselgeldCent: 55770,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('557,70 €'), findsOneWidget);
+    expect(find.text('1.057,70 €'), findsNothing);
+  });
 
   testWidgets(
       'Sende-Button zeigt "Jetzt senden" bei einem noch nie gesendeten '

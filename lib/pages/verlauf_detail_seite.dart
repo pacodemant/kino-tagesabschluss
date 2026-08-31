@@ -431,7 +431,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       'Bargeld',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(_euro(a.kassenbestandGesamtCent)),
+                    subtitle: Text(_euro(a.barBestandAbzglWechselgeldCent)),
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[

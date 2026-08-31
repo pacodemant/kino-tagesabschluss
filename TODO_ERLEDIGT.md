@@ -366,6 +366,18 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Verlauf
 
+- [x] **Bargeld-Kachel: bereinigter Bar-Bestand statt Kassenbestand
+      gesamt im Titelbereich** (Paco-Notiz 2026-08-30, per Screenshot
+      präzisiert) Die "Bargeld"-Kachel zeigte im Titelbereich
+      `subtitle: _euro(a.kassenbestandGesamtCent)` — den gezählten
+      Gesamtbestand VOR Abzug des Wechselgelds, nicht den tatsächlichen
+      Bar-Umsatz.
+      *(Run 408)* Umgesetzt wie beschrieben: reiner Werte-Austausch auf
+      `a.barBestandAbzglWechselgeldCent`, Label "Bargeld" und die
+      aufklappbaren Unterzeilen (inkl. "Kassenbestand gesamt" mit dem
+      alten Wert) unverändert. Neuer Widget-Test mit bewusst
+      unterschiedlichen Werten für beide Felder ergänzt.
+
 - [x] **Verlauf-Detail: Button-Text "Erneut senden" auch für nie
       gesendete Einträge** In verlauf_detail_seite.dart zeigte der
       Sende-Button immer den Text "Erneut senden", auch wenn
