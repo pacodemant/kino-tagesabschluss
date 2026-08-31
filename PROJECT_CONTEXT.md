@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.73+401 · Run 401
+Version: 0.9.74+402 · Run 402
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 401)
+## Laufender Entwicklungsstand (Run 402)
+
+- Run 402 ✅ Regression aus Run 401 behoben: das grüne "gesendet"-Häkchen
+  im Startmenü erschien nie mehr, da `_pruefeAbrechnungHeuteGesendet()`
+  ein `isoDatum`-Feld erwartete, das seit Run 401 nicht mehr Teil der
+  Sende-Signatur ist. `LokalerSpeicher.speichereSendeBestaetigung()`
+  speichert das logische Sendedatum jetzt separat (eigener
+  SharedPreferences-Key), unabhängig von der Signatur selbst. Details
+  siehe CHANGELOG.md.
 
 - Run 401 ✅ `_sendeSignatur()` (Schritt 3) auf die FC-relevanten Felder
   verengt: direkt aus `ApiUploadService.settlementsBody()` abgeleitet

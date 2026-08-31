@@ -330,13 +330,19 @@ class LokalerSpeicher {
 
   /// Speichert die Signatur der zuletzt erfolgreich an die Buchhaltung
   /// gesendeten Abrechnung eines Kinos (für den "Gesendet"-Haken in
-  /// Schritt 3, überlebt Navigation weg von der Seite).
+  /// Schritt 3, überlebt Navigation weg von der Seite) sowie separat das
+  /// logische Sendedatum (seit Run 402 — die Signatur selbst enthält seit
+  /// Run 401 kein Datumsfeld mehr, siehe _sendeSignatur() in
+  /// tagesabschluss_schritt3_seite.dart, wird aber für den "heute
+  /// gesendet"-Haken im Startmenü gebraucht).
   static Future<void> speichereSendeBestaetigung(
     String kinoId,
-    String signatur,
-  ) async {
+    String signatur, {
+    required String isoDatum,
+  }) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString(_sendeBestaetigungKey(kinoId), signatur);
+    await speicher.setString(_sendeBestaetigungDatumKey(kinoId), isoDatum);
   }
 
   /// Lädt die gespeicherte Sende-Signatur eines Kinos, oder null wenn
@@ -346,8 +352,19 @@ class LokalerSpeicher {
     return speicher.getString(_sendeBestaetigungKey(kinoId));
   }
 
+  /// Lädt das separat gespeicherte logische Sendedatum eines Kinos, oder
+  /// null wenn noch nie erfolgreich gesendet wurde (siehe
+  /// [speichereSendeBestaetigung]).
+  static Future<String?> ladeSendeBestaetigungDatum(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getString(_sendeBestaetigungDatumKey(kinoId));
+  }
+
   static String _sendeBestaetigungKey(String kinoId) =>
       'sende_bestaetigung_$kinoId';
+
+  static String _sendeBestaetigungDatumKey(String kinoId) =>
+      'sende_bestaetigung_datum_$kinoId';
 
   /// Löscht die gespeicherte Sende-Signatur eines Kinos (z. B. wenn die
   /// zugehörige Abrechnung wieder gelöscht wird — siehe
@@ -355,6 +372,7 @@ class LokalerSpeicher {
   static Future<void> loescheSendeBestaetigung(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.remove(_sendeBestaetigungKey(kinoId));
+    await speicher.remove(_sendeBestaetigungDatumKey(kinoId));
   }
 
   static Map<String, dynamic> _schritt1StandardWerte(String kinoId) {

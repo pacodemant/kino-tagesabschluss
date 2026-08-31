@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 402: Regression aus Run 401 behoben — das gruene "gesendet"-Haekchen
+  im Startmenue erschien seit Run 401 nie mehr, auch nicht nach einem
+  erfolgreichen echten Versand. Ursache: `_pruefeAbrechnungHeuteGesendet()`
+  (startmenue_seite.dart) las das Feld `isoDatum` aus der gespeicherten
+  Sende-Signatur, aber Run 401 hat die Signatur auf
+  `ApiUploadService.settlementsBody()` verengt — dieses Objekt enthaelt
+  kein `isoDatum` mehr, der Vergleich war damit dauerhaft `false`.
+  Fix: `LokalerSpeicher.speichereSendeBestaetigung()`
+  (lokaler_speicher.dart) speichert das logische Sendedatum jetzt in
+  einem eigenen SharedPreferences-Key (`sende_bestaetigung_datum_$kinoId`,
+  neuer Pflicht-Parameter `isoDatum`), unabhaengig vom Inhalt/Format der
+  Signatur selbst. `_pruefeAbrechnungHeuteGesendet()` liest dieses Feld
+  jetzt direkt statt es aus der Signatur zu parsen (dart:convert-Import
+  in startmenue_seite.dart dadurch ueberfluessig, entfernt). Geraete mit
+  einer Sende-Signatur aus der Zeit vor Run 402 zeigen einmalig "nicht
+  gesendet", bis der naechste echte Versand stattfindet — gleiches,
+  bereits akzeptiertes Verhalten wie beim Uebergang auf das neue
+  Signatur-Format in Run 401.
+  Vier neue Tests in lokaler_speicher_test.dart (neue Gruppe
+  "speichereSendeBestaetigung / ladeSendeBestaetigung*"): Signatur und
+  isoDatum werden getrennt gespeichert/geladen, ohne vorherigen
+  Sendevorgang liefert das Datum null, loescheSendeBestaetigung entfernt
+  beide Werte, unterschiedliche Kinos speichern ihr Datum unabhaengig
+  voneinander. Alle 106 Tests gruen, flutter analyze sauber.
+
 - Run 401: `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart) auf die
   Felder verengt, die tatsächlich an Flurbocash gehen. Anlass (Paco):
   der "gesendet"-Haken soll nur verschwinden, wenn sich fachlich etwas

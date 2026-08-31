@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/config/app_version.dart';
 import 'package:kino_bar_app/models/kino.dart';
@@ -96,25 +94,19 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
     });
   }
 
-  /// Die Sende-Bestätigung aus Schritt 3 speichert eine JSON-Signatur mit
-  /// 'isoDatum' des gesendeten Abschlusses (siehe _sendeSignatur() in
-  /// tagesabschluss_schritt3_seite.dart) — hier wird nur geprüft, ob diese
-  /// Signatur zum heutigen logischen Datum passt, ohne die vollen
-  /// Abschlussdaten neu laden zu müssen.
+  /// Die Sende-Bestätigung aus Schritt 3 speichert seit Run 402 neben der
+  /// Signatur (siehe _sendeSignatur() in tagesabschluss_schritt3_seite.dart,
+  /// enthält seit Run 401 kein Datumsfeld mehr) separat das logische
+  /// Sendedatum — hier wird nur geprüft, ob dieses Datum zum heutigen
+  /// logischen Datum passt, ohne die vollen Abschlussdaten neu laden zu
+  /// müssen.
   Future<bool> _pruefeAbrechnungHeuteGesendet() async {
-    final String? signatur = await LokalerSpeicher.ladeSendeBestaetigung(
-      kino.id,
-    );
-    if (signatur == null) {
+    final String? gespeichertesDatum =
+        await LokalerSpeicher.ladeSendeBestaetigungDatum(kino.id);
+    if (gespeichertesDatum == null) {
       return false;
     }
-    try {
-      final Map<String, dynamic> daten =
-          jsonDecode(signatur) as Map<String, dynamic>;
-      return daten['isoDatum'] == DatumsHelper.logischesIsoDatum();
-    } catch (_) {
-      return false;
-    }
+    return gespeichertesDatum == DatumsHelper.logischesIsoDatum();
   }
 
   void _oeffneTagesabschlussSchritt1(BuildContext context) {

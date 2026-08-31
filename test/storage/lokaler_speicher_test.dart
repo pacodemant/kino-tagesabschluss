@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('LokalerSpeicher.ladeFinaleTagesabschluesseNeuesteProTag', () {
@@ -98,6 +99,91 @@ void main() {
         expect(gefiltert, hasLength(2));
         expect(gefiltert.first.datum, DateTime(2026, 3, 15));
         expect(gefiltert.last.datum, DateTime(2026, 3, 14));
+      },
+    );
+  });
+
+  group('LokalerSpeicher.speichereSendeBestaetigung / ladeSendeBestaetigung*', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+    });
+
+    test(
+      'Signatur und isoDatum werden getrennt gespeichert und wieder '
+      'geladen (Regression Run 401: das Datum steht seither NICHT mehr '
+      'in der Signatur selbst, siehe _sendeSignatur() in '
+      'tagesabschluss_schritt3_seite.dart)',
+      () async {
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          'kino_01',
+          '{"settlements":[{"cash_total":123}]}',
+          isoDatum: '2026-08-31',
+        );
+
+        final String? signatur = await LokalerSpeicher.ladeSendeBestaetigung(
+          'kino_01',
+        );
+        final String? datum = await LokalerSpeicher.ladeSendeBestaetigungDatum(
+          'kino_01',
+        );
+
+        expect(signatur, '{"settlements":[{"cash_total":123}]}');
+        expect(datum, '2026-08-31');
+      },
+    );
+
+    test(
+      'ohne vorherigen Sendevorgang liefert ladeSendeBestaetigungDatum null',
+      () async {
+        final String? datum = await LokalerSpeicher.ladeSendeBestaetigungDatum(
+          'kino_01',
+        );
+        expect(datum, isNull);
+      },
+    );
+
+    test(
+      'loescheSendeBestaetigung entfernt Signatur UND Datum',
+      () async {
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          'kino_01',
+          'irgendeine-signatur',
+          isoDatum: '2026-08-31',
+        );
+
+        await LokalerSpeicher.loescheSendeBestaetigung('kino_01');
+
+        expect(await LokalerSpeicher.ladeSendeBestaetigung('kino_01'), isNull);
+        expect(
+          await LokalerSpeicher.ladeSendeBestaetigungDatum('kino_01'),
+          isNull,
+        );
+      },
+    );
+
+    test(
+      'unterschiedliche Kinos speichern ihr Sendedatum unabhaengig '
+      'voneinander',
+      () async {
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          'kino_01',
+          'signatur-1',
+          isoDatum: '2026-08-31',
+        );
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          'kino_02',
+          'signatur-2',
+          isoDatum: '2026-08-30',
+        );
+
+        expect(
+          await LokalerSpeicher.ladeSendeBestaetigungDatum('kino_01'),
+          '2026-08-31',
+        );
+        expect(
+          await LokalerSpeicher.ladeSendeBestaetigungDatum('kino_02'),
+          '2026-08-30',
+        );
       },
     );
   });

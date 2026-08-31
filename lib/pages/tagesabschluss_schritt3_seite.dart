@@ -335,6 +335,7 @@ class _TagesabschlussSchritt3SeiteState
       await LokalerSpeicher.speichereSendeBestaetigung(
         widget.argumente.kinoId,
         _sendeSignatur(),
+        isoDatum: DatumsHelper.logischesIsoDatum(),
       );
       await LokalerSpeicher.markiereAlsGesendet(
         _abschlussVorschau!.kinoId,
@@ -446,6 +447,7 @@ class _TagesabschlussSchritt3SeiteState
         await LokalerSpeicher.speichereSendeBestaetigung(
           widget.argumente.kinoId,
           _sendeSignatur(),
+          isoDatum: DatumsHelper.logischesIsoDatum(),
         );
         if (!mounted) return;
       }

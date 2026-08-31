@@ -37,6 +37,23 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Gesendet-Häkchen im Startmenü erscheint seit Run 401 nie mehr**
+      REGRESSION durch Run 401, von Paco bestätigt (2026-08-30): das
+      grüne Häkchen fehlte komplett, auch nach einem erfolgreichen
+      echten Versand, weil `_pruefeAbrechnungHeuteGesendet()`
+      (startmenue_seite.dart) ein `isoDatum`-Feld aus der Sende-Signatur
+      las, das seit Run 401 dort nicht mehr vorkommt.
+      *(Run 402)* Umgesetzt wie in der Fix-Richtung beschrieben (Option
+      "separates Datum"): `LokalerSpeicher.speichereSendeBestaetigung()`
+      speichert das logische Sendedatum jetzt in einem eigenen
+      SharedPreferences-Key, unabhängig von Inhalt/Format der Signatur.
+      `_pruefeAbrechnungHeuteGesendet()` liest dieses Feld direkt statt
+      es aus der Signatur zu parsen. Geräte mit einer Signatur aus der
+      Zeit vor Run 402 zeigen einmalig "nicht gesendet", bis zum
+      nächsten echten Versand — bewusst in Kauf genommen, gleiches
+      Verhalten wie beim Formatwechsel in Run 401. Vier neue Tests in
+      lokaler_speicher_test.dart.
+
 - [x] **Standort-Wechsel schließt offene Kino-Seite nicht** Ist man auf
       einer Kino-spezifischen Seite (z. B. Atlantis-Startseite) und
       wechselt in den Einstellungen den Standort (z. B. auf Schauburg)
