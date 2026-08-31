@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 410a: Korrektur zu Run 410 (Paco hatte die Stelle nachträglich
+  gefunden) — Weiter-Button von Schritt 1 zu Schritt 2
+  (tagesabschluss_schritt1_seite.dart:1171) zeigte noch
+  "Belege eingeben (2/4)", jetzt "Umsätze eingeben (2/4)". War in Run
+  410 nicht in der grep-Suche aufgetaucht, da dort nach dem exakten
+  String `'Belege'`/`"Belege"` gesucht wurde, dieser Button-Text aber
+  Teil eines längeren Strings war (`'Belege eingeben (2/4)'`). Keine
+  weiteren betroffenen Stellen mit diesem Muster gefunden. Reiner
+  Text-Fix, kein bestehender Test betroffen. Alle 117 Tests weiterhin
+  grün, flutter analyze sauber.
+
 - Run 410: "Belege" → "Umsätze" umbenannt, reiner Text-Fix an fünf
   Stellen: tagesabschluss_schritt2_seite.dart (AppBar-Titel
   schrittTitel UND der direkt daneben angezeigte HelpButton-Hilfetext

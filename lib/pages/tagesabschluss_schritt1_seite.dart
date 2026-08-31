@@ -1168,7 +1168,7 @@ class _TagesabschlussSchritt1SeiteState
                     children: const <Widget>[
                       Icon(Icons.arrow_forward),
                       SizedBox(width: 6),
-                      Text('Belege eingeben (2/4)'),
+                      Text('Umsätze eingeben (2/4)'),
                     ],
                   ),
                 ),

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+410 · Run 410
+Version: 0.9.82+410a · Run 410a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 410)
+## Laufender Entwicklungsstand (Run 410a)
+
+- Run 410a ✅ Korrektur zu Run 410: Weiter-Button Schritt 1 → Schritt 2
+  zeigte noch "Belege eingeben (2/4)", jetzt "Umsätze eingeben (2/4)".
+  Details siehe CHANGELOG.md.
 
 - Run 410 ✅ "Belege" → "Umsätze" umbenannt (reiner Text-Fix, fünf
   Stellen: AppBar-Titel + Hilfetext Schritt 2, Verlauf-Detail-Kachel,

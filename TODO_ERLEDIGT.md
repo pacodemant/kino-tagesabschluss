@@ -55,6 +55,11 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       wäre inkonsistent gewesen. Bestehender Widget-Test in
       verlauf_detail_seite_test.dart (tippte auf 'Belege' zum
       Aufklappen) auf 'Umsätze' angepasst.
+      Nachtrag (Run 410a): Paco fand eine weitere, im Run-410-grep
+      übersehene Stelle — der Weiter-Button Schritt 1 → Schritt 2
+      zeigte noch "Belege eingeben (2/4)" (String enthielt "Belege"
+      nicht isoliert, sondern als Teil von "Belege eingeben (2/4)").
+      Auf "Umsätze eingeben (2/4)" korrigiert.
 
 - [x] **Kino-/Bistro-SOLL-Kachel: Info-Zeilen "Umsätze" entfernen**
       (Paco-Notiz 2026-08-30, verifiziert) In
