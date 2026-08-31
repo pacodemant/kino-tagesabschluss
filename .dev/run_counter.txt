@@ -1,3 +1,3 @@
-last_run: 404
-next_run: 405
-last_run_title: Run 404: Verlauf-Detail Ergebnis-Kachel initial aufgeklappt
+last_run: 405
+next_run: 406
+last_run_title: Run 405: EC-Scan Bestaetigungs-SnackBar entfernt

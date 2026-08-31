@@ -37,6 +37,14 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **EC-Scan: Bestätigungs-SnackBar entfernen** (Paco-Notiz
+      2026-08-30) In `_starteEcBelegScan()` erschien nach erfolgreichem
+      Scan eine SnackBar "Scan bestätigt · Gesamt: X €" — überflüssig,
+      da die EC-Kachel die übernommenen Daten direkt sichtbar anzeigt.
+      *(Run 405)* Umgesetzt wie beschrieben: nur die Erfolgs-SnackBar
+      entfernt, die Fehler-SnackBars (unlesbarer Scan, Netzwerkfehler)
+      bleiben unverändert bestehen.
+
 - [x] **Verlauf: "Ergebnis"-Kachel aufgeklappt anzeigen** (Paco-Notiz
       2026-08-30) `verlauf_detail_seite.dart`, ExpansionTile "Ergebnis"
       (Abschnitt 3).

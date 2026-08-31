@@ -1665,18 +1665,6 @@ class _TagesabschlussSchritt2SeiteState
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
-        final String betrag = geprueftes.gesamtBetragCent != null
-            ? '${(geprueftes.gesamtBetragCent! / 100).toStringAsFixed(2).replaceAll('.', ',')} €'
-            : '—';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: Text(
-              'Scan bestätigt · Gesamt: $betrag',
-              style: const TextStyle(color: AppFarben.appBarRot),
-            ),
-          ),
-        );
       } on BelegScanException catch (e) {
         if (!mounted) return;
         final bool istNetzwerkFehler = e.message.startsWith('Keine Internet') ||

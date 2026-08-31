@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.76+404 · Run 404
+Version: 0.9.77+405 · Run 405
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 404)
+## Laufender Entwicklungsstand (Run 405)
+
+- Run 405 ✅ EC-Scan: überflüssige Bestätigungs-SnackBar nach
+  erfolgreichem Scan entfernt (EC-Kachel zeigt die Daten ohnehin
+  direkt aufgeklappt). Fehler-SnackBars unverändert. Details siehe
+  CHANGELOG.md.
 
 - Run 404 ✅ Verlauf-Detail: "Ergebnis"-Kachel ist jetzt initial
   aufgeklappt statt eingeklappt (Paco-Wunsch). Reiner Wertewechsel.

@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 405: EC-Scan, Bestätigungs-SnackBar nach erfolgreichem Scan
+  entfernt (`_starteEcBelegScan()`,
+  tagesabschluss_schritt2_seite.dart). War überflüssig, da die
+  EC-Kachel die übernommenen Daten direkt aufgeklappt sichtbar zeigt
+  (`_ecKachelAufgeklappt = true` wird im selben Zug gesetzt). Nur die
+  Erfolgs-SnackBar ("Scan bestätigt · Gesamt: X €") entfernt, die
+  Fehler-SnackBars direkt darunter (unlesbarer Scan, Netzwerkfehler)
+  bleiben unverändert bestehen. Kein neuer Test — die Änderung entfernt
+  nur einen SnackBar-Aufruf, ein isolierter Test bräuchte einen
+  aufwendigen Mock des kompletten Scan-HTTP-Flows für eine reine
+  Entfernung ohne neues Verhalten; flutter analyze bestätigt keinen
+  toten Code (temporäre `betrag`-Variable mit entfernt). Alle 108 Tests
+  weiterhin grün, flutter analyze sauber.
+
 - Run 404: Verlauf-Detail, "Ergebnis"-Kachel (Abschnitt 3, Gesamt SOLL/
   IST/Differenz) ist jetzt initial aufgeklappt (`initiallyExpanded:
   false` → `true` in verlauf_detail_seite.dart) statt wie die anderen

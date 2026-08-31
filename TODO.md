@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 404 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 405 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -164,16 +164,6 @@ um Durcheinander zu vermeiden.
       welche der beiden (oder beide) soll auf "Bar-Umsatz" geändert
       werden? (Schritt 1 "Kassenbestand gesamt" ist ein ANDERER, noch
       nicht um Wechselgeld bereinigter Wert — vermutlich nicht gemeint.)
-
-- [ ] **EC-Scan: Bestätigungs-SnackBar entfernen** (Paco-Notiz
-      2026-08-30, verifiziert) In `_starteEcBelegScan()`
-      (tagesabschluss_schritt2_seite.dart:1671-1679) erscheint nach
-      erfolgreichem Scan eine SnackBar "Scan bestätigt · Gesamt: X €" —
-      überflüssig, da die EC-Kachel die übernommenen Daten direkt
-      sichtbar anzeigt (aufgeklappt, `_ecKachelAufgeklappt = true` wird
-      im selben Zug gesetzt). Nur DIESE Erfolgs-SnackBar entfernen — die
-      Fehler-SnackBars direkt darunter (unlesbarer Scan, Netzwerkfehler,
-      Zeile 1686-1720+) bleiben, die sind weiterhin nötig.
 
 - [ ] **"testdaten"-Kommentar verschwindet nicht, wenn Dev-Modus wieder
       ausgeschaltet wird** (Paco-Notiz 2026-08-30, verifiziert) Aktueller
