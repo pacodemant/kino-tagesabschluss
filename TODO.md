@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: August 2026 · Run 409 · wird fortlaufend ergänzt
+Stand: August 2026 · Run 410 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -141,16 +141,6 @@ um Durcheinander zu vermeiden.
       Build auch ohne Podfile weiterhin sauber läuft — erst danach
       die CocoaPods-Dateien entfernen. Kein Zeitdruck vor Dezember
       2026, aber unkritisch früh erledigbar.
-
-- [ ] **"Belege" → "Umsätze" umbenennen** (Paco-Notiz 2026-08-30) Betrifft
-      als reiner Text-Fix vier Stellen: `tagesabschluss_schritt2_seite.
-      dart:2741` (`schrittTitel: 'Belege'`, AppBar-Titel von Schritt 2),
-      `verlauf_detail_seite.dart:470` (ExpansionTile-Titel),
-      `kurzeinstieg_seite.dart:19-21` (Schritt-Titel + erklärender Text
-      "Trage alle Belege ein: ..."), `schritt_auswahl_bottom_sheet_
-      helper.dart:22` (`'2/4 · Belege'` im Schritt-Wechsel-BottomSheet,
-      auch Doc-Kommentar Zeile 4). NICHT anfassen: alle `EC-Belege`-
-      Vorkommen (Beleg-Scan-Feature) — anderer Begriff, bleibt wie er ist.
 
 - [ ] **"Bargeldbestand" → "Bar-Umsatz" umbenennen** KLÄRUNGSBEDÜRFTIG
       (Paco-Notiz 2026-08-30): Der Begriff "Bargeldbestand" kommt als

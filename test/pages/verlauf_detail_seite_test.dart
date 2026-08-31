@@ -153,8 +153,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // "Belege"-Kachel aufklappen, damit die Miniatur im Widget-Baum landet.
-    await tester.tap(find.text('Belege'));
+    // "Umsätze"-Kachel aufklappen, damit die Miniatur im Widget-Baum landet.
+    await tester.tap(find.text('Umsätze'));
     await tester.pumpAndSettle();
 
     expect(find.text('12345'), findsOneWidget);

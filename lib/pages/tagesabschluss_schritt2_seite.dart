@@ -2737,13 +2737,13 @@ class _TagesabschlussSchritt2SeiteState
       ),
       appBar: TagesabschlussHeader(
         schrittNummer: 2,
-        schrittTitel: 'Belege',
+        schrittTitel: 'Umsätze',
         kinoName: widget.kinoName,
         onTap: _zeigeSchrittSlider,
         actions: <Widget>[
           const HelpButton(
             helpText:
-                'Trage alle Belege ein: Kino- und Bistro-Soll aus dem '
+                'Trage alle Umsätze ein: Kino- und Bistro-Soll aus dem '
                 'Kassensystem, Ausgaben mit Quittung sowie EC-Belege. '
                 'Daraus errechnet sich die Differenz zum gezählten Bargeld.',
           ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Gemeinsames BottomSheet "Schritt X/4 · ..." — genutzt von allen vier
-/// Tagesabschluss-Seiten (Bargeld zählen, Belege, Übertrag auf Umschlag,
+/// Tagesabschluss-Seiten (Bargeld zählen, Umsätze, Übertrag auf Umschlag,
 /// Stückelung Barumsatz). Frühere Schritte sind per Zurück-Navigation immer
 /// erreichbar, der aktuelle Schritt ist fett/deaktiviert markiert, alle
 /// weiter vorne liegenden Schritte sind per springeZuSchritt-Callback
@@ -19,7 +19,7 @@ class SchrittAuswahlBottomSheetHelper {
 
   static const List<String> _labels = <String>[
     '1/4 · Bargeld zählen',
-    '2/4 · Belege',
+    '2/4 · Umsätze',
     '3/4 · Übertrag auf Umschlag',
     '4/4 · Stückelung Barumsatz',
   ];

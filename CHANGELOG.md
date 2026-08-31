@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 410: "Belege" → "Umsätze" umbenannt, reiner Text-Fix an fünf
+  Stellen: tagesabschluss_schritt2_seite.dart (AppBar-Titel
+  schrittTitel UND der direkt daneben angezeigte HelpButton-Hilfetext
+  "Trage alle Belege ein: ..." — letzterer stand nicht explizit im
+  TODO, aber ein unveränderter Hilfetext neben dem neuen Titel
+  "Umsätze" wäre inkonsistent gewesen, deshalb mitgezogen),
+  verlauf_detail_seite.dart (ExpansionTile-Titel Abschnitt 2),
+  kurzeinstieg_seite.dart (Schritt-Titel + Erklärtext),
+  schritt_auswahl_bottom_sheet_helper.dart ('2/4 · Belege' im
+  Schritt-Wechsel-BottomSheet + Doc-Kommentar). Bewusst NICHT
+  angefasst: alle "EC-Belege"-Vorkommen (anderer Begriff, u. a. im
+  selben Hilfetext-Satz). Bestehender Widget-Test in
+  verlauf_detail_seite_test.dart, der zuvor auf find.text('Belege')
+  tippte, um die Kachel aufzuklappen, auf 'Umsätze' angepasst — deckt
+  die Umbenennung an dieser Stelle weiterhin ab. Alle 117 Tests grün,
+  flutter analyze sauber.
+
 - Run 409: Auto-Fill (Dev-Modus, Schritt 2), `_autoFillDev()`
   (tagesabschluss_schritt2_seite.dart) setzte für JEDEN Standort hart
   die erste SB-TID '54017635', unabhängig davon für welches Kino der

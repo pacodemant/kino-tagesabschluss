@@ -16,8 +16,8 @@ class KurzeinstiegSeite extends StatelessWidget {
     ),
     _KurzeinstiegSchritt(
       nummer: 2,
-      titel: 'Belege',
-      text: 'Trage alle Belege ein: Kino- und Bistro-Soll aus dem '
+      titel: 'Umsätze',
+      text: 'Trage alle Umsätze ein: Kino- und Bistro-Soll aus dem '
           'Kassensystem, Ausgaben mit Quittung sowie EC-Belege. Daraus '
           'errechnet sich die Differenz zum gezählten Bargeld.',
     ),

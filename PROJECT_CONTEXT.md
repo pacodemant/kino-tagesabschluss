@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.81+409 · Run 409
+Version: 0.9.82+410 · Run 410
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 409)
+## Laufender Entwicklungsstand (Run 410)
+
+- Run 410 ✅ "Belege" → "Umsätze" umbenannt (reiner Text-Fix, fünf
+  Stellen: AppBar-Titel + Hilfetext Schritt 2, Verlauf-Detail-Kachel,
+  Kurzeinstieg, Schritt-Wechsel-BottomSheet). EC-Belege-Vorkommen
+  bewusst unverändert. Details siehe CHANGELOG.md.
 
 - Run 409 ✅ Auto-Fill (Dev-Modus, Schritt 2) nutzt jetzt die für den
   jeweiligen Standort tatsächlich aktive TID aus

@@ -467,7 +467,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                 Card(
                   child: ExpansionTile(
                     title: const Text(
-                      'Belege',
+                      'Umsätze',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text(_euro(a.gesamtIstCent)),

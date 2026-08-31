@@ -37,6 +37,25 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **"Belege" → "Umsätze" umbenennen** (Paco-Notiz 2026-08-30)
+      Betraf als reiner Text-Fix vier Stellen:
+      `tagesabschluss_schritt2_seite.dart` (`schrittTitel: 'Belege'`,
+      AppBar-Titel von Schritt 2), `verlauf_detail_seite.dart`
+      (ExpansionTile-Titel), `kurzeinstieg_seite.dart` (Schritt-Titel +
+      erklärender Text "Trage alle Belege ein: ..."),
+      `schritt_auswahl_bottom_sheet_helper.dart` (`'2/4 · Belege'` im
+      Schritt-Wechsel-BottomSheet, auch Doc-Kommentar). NICHT
+      anfassen: alle `EC-Belege`-Vorkommen (Beleg-Scan-Feature) —
+      anderer Begriff.
+      *(Run 410)* Umgesetzt wie beschrieben, plus eine fünfte, im TODO
+      nicht explizit gelistete Stelle mitgezogen: der HelpButton-
+      Hilfetext direkt neben dem AppBar-Titel in
+      tagesabschluss_schritt2_seite.dart ("Trage alle Belege ein: ...")
+      — ein unveränderter Hilfetext neben dem neuen Titel "Umsätze"
+      wäre inkonsistent gewesen. Bestehender Widget-Test in
+      verlauf_detail_seite_test.dart (tippte auf 'Belege' zum
+      Aufklappen) auf 'Umsätze' angepasst.
+
 - [x] **Kino-/Bistro-SOLL-Kachel: Info-Zeilen "Umsätze" entfernen**
       (Paco-Notiz 2026-08-30, verifiziert) In
       `schritt2_kino_soll_ausgaben_section.dart` stand am Ende der
