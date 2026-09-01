@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 414a: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
+  Run 414). Paco-Feedback nach dem Testen: der Hinweistext im
+  Scan-Popup verwies auf einen nicht existierenden "Abbrechen"-Button
+  (es gibt nur "nochmal" und "übernehmen"). Statt "übernehmen" bei
+  TID-Abweichung zu deaktivieren (Run 414), bleibt der Button jetzt
+  immer aktiv — führt bei einer Abweichung aber NICHT die erkannte
+  (falsche) TID ins Feld ein, sondern lässt es bewusst leer. Dadurch
+  greift automatisch derselbe "TID unleserlich"-Mechanismus, der schon
+  für nicht lesbare Scans existiert (`_subKachelTidUnleserlich()`):
+  rotes Hint "Terminal-ID?" + roter Rahmen, sowohl im Ein-Beleg- als
+  auch im Mehrbeleg-Modus (`Schritt2EcBelegTerminalIdZeile` und
+  `Schritt2EcBelegSubKacheln` nutzen dieselbe Funktion). Sub-Kachel
+  bleibt zusätzlich im Bearbeitungsmodus offen (`hatUnlesbareDaten ||
+  tidKonfigWarnung != null`), TID-Feld wird nach dem Übernehmen direkt
+  fokussiert und ins Bild gescrollt (`_macheFehlerfeldSichtbar()`,
+  bestehende Hilfsmethode). Hinweistext im Popup jetzt: '... Nochmals
+  scannen oder "übernehmen" (ohne TID) tippen und die TID danach
+  manuell eintragen.' Vorteil gegenüber Run 414: Beträge/Kartenarten
+  aus dem Scan bleiben erhalten, nur die TID muss manuell nachgetragen
+  werden, statt den kompletten Beleg neu einzutippen. Der bewusst
+  blockierende Charakter (Weiter-Button, Senden) aus Run 414 bleibt
+  unverändert — nur das Scan-Popup selbst wurde umgestellt; r414a.
+
 - Run 414: TID-Prüfung gegen config/terminal_ids.json ist jetzt an
   allen drei Stellen blockierend statt nur ein weicher Hinweis —
   Paco-Entscheidung: die TID ist eindeutig, eine falsche Ziffer soll

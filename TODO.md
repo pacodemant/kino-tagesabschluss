@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 414 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 414a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -240,9 +240,11 @@ um Durcheinander zu vermeiden.
       an allen drei Stellen (Scan-Popup, Weiter-Button Schritt 2→3,
       Senden) blockierend statt nur ein weicher Hinweis (Paco-
       Entscheidung: TID ist eindeutig, falsche Ziffer wird abgelehnt).
-      Im Scan-Popup ist "übernehmen" bei Abweichung jetzt deaktiviert
-      (kein "manuell korrigieren nach Übernehmen" mehr möglich, MA muss
-      nochmal scannen oder abbrechen + manuell eintragen).
+      Im Scan-Popup bleibt "übernehmen" bei Abweichung aktiv (Run 414a,
+      Korrektur zu Run 414), übernimmt dabei aber bewusst nicht die
+      erkannte falsche TID — Feld bleibt leer, zeigt automatisch den
+      "TID unleserlich"-Zustand (rot) und wird fokussiert, MA trägt die
+      TID manuell nach.
       Weiterhin offen: eigene, editierbare Felder pro Standort in den
       Einstellungen statt der statischen JSON-Datei (siehe auch
       blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte

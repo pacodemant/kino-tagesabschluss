@@ -1655,10 +1655,17 @@ class _TagesabschlussSchritt2SeiteState
             _ecBelegFotosMediaTypen[belegIndex] = scanResultat.fotoMediaType;
           }
           _scanTerminalId = _feldWertOderNull(geprueftes.terminalId);
-          if (_scanTerminalId != null) {
+          if (_scanTerminalId != null && tidKonfigWarnung == null) {
             _ecBelegLabels[belegIndex] = _scanTerminalId!;
             _setzeControllerText(
                 _ecBelegLabelController[belegIndex], _scanTerminalId!);
+            if (belegIndex == 0) _ecBelegLabel1Beruehrt = true;
+          } else if (tidKonfigWarnung != null) {
+            // TID gescannt, passt aber nicht zur Konfiguration — Feld
+            // bewusst leer lassen statt der ungueltigen TID, MA traegt
+            // die richtige TID manuell nach (siehe Warnhinweis im Popup).
+            _ecBelegLabels[belegIndex] = '';
+            _setzeControllerText(_ecBelegLabelController[belegIndex], '');
             if (belegIndex == 0) _ecBelegLabel1Beruehrt = true;
           }
           if (belegIndex < _ecUnterkachelAufgeklappt.length) {
@@ -1688,7 +1695,7 @@ class _TagesabschlussSchritt2SeiteState
           }
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis, belegIndex);
-          if (hatUnlesbareDaten) {
+          if (hatUnlesbareDaten || tidKonfigWarnung != null) {
             if (belegIndex < _ecUnterkachelEditModus.length) {
               _ecUnterkachelEditModus[belegIndex] = true;
             }
@@ -1717,6 +1724,12 @@ class _TagesabschlussSchritt2SeiteState
           _letzteAenderung = DateTime.now();
         });
         _speichereEntwurf();
+        if (tidKonfigWarnung != null && mounted) {
+          FocusScope.of(context).requestFocus(_ecBelegLabelFocusNode[belegIndex]);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _macheFehlerfeldSichtbar(_ecBelegLabelFocusNode[belegIndex]);
+          });
+        }
       } on BelegScanException catch (e) {
         if (!mounted) return;
         final bool istNetzwerkFehler = e.message.startsWith('Keine Internet') ||

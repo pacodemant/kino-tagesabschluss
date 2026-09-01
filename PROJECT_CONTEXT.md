@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+414 · Run 414
+Version: 0.9.82+414a · Run 414a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 414)
+## Laufender Entwicklungsstand (Run 414a)
+
+- Run 414a ✅ Korrektur zu Run 414: Scan-Popup blockiert "übernehmen"
+  bei TID-Abweichung nicht mehr komplett (es gab keinen Abbrechen-Weg
+  zurück zum Hinweistext). Stattdessen wird die ungültige TID beim
+  Übernehmen einfach nicht ins Feld geschrieben — Feld bleibt leer,
+  zeigt automatisch den bestehenden "TID unleserlich"-Zustand (rotes
+  Hint + roter Rahmen) und wird fokussiert, MA trägt die TID manuell
+  nach. Details siehe CHANGELOG.md.
 
 - Run 414 ✅ TID-Prüfung gegen config/terminal_ids.json ist jetzt an
   allen drei Stellen (Scan-Popup, Weiter-Button Schritt 2→3, Senden)

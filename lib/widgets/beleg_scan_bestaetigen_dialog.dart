@@ -60,8 +60,9 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      '$tidKonfigWarnung Bitte nochmals scannen oder '
-                      'abbrechen und den Beleg manuell eingeben.',
+                      '$tidKonfigWarnung Nochmals scannen oder '
+                      '„übernehmen" (ohne TID) tippen und die TID danach '
+                      'manuell eintragen.',
                       style: const TextStyle(fontSize: 12, color: Colors.red),
                     ),
                   ),
@@ -128,9 +129,7 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
             backgroundColor: AppFarben.appBarRot,
             foregroundColor: Colors.white,
           ),
-          onPressed: tidKonfigWarnung != null
-              ? null
-              : () => Navigator.of(dialogContext).pop(true),
+          onPressed: () => Navigator.of(dialogContext).pop(true),
           child: const Text('übernehmen'),
         ),
       ],
