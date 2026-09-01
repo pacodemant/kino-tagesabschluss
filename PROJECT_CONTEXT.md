@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+413 · Run 413
+Version: 0.9.82+413a · Run 413a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 413)
+## Laufender Entwicklungsstand (Run 413a)
+
+- Run 413a ✅ `config/terminal_ids.json`: TID-Liste pro Standort von
+  flachen Strings auf Objekte `{"tid": ..., "kommentar": ...}`
+  umgestellt, damit jede TID dokumentarisch als "alte TID"/"neue TID"
+  gekennzeichnet werden kann (Standard-JSON kennt keine echten
+  Kommentare). `TerminalIdsConfigService.laden()` entsprechend
+  angepasst. Details siehe CHANGELOG.md.
 
 - Run 413 ✅ Scan-Metadaten-Block in der EC-Kachel (Schritt 2) wird
   nur noch im Dev-Modus angezeigt, statt immer sichtbar zu sein.

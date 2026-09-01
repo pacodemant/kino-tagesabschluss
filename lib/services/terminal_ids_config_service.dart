@@ -18,7 +18,12 @@ class TerminalIdsConfigService {
       final Map<String, dynamic> kino = eintrag.value as Map<String, dynamic>;
       final List<dynamic> tids = kino['terminal_ids'] as List<dynamic>? ??
           const <dynamic>[];
-      ergebnis[eintrag.key] = tids.cast<String>();
+      // Jeder Eintrag ist ein Objekt {"tid": "...", "kommentar": "..."} —
+      // "kommentar" ist rein dokumentarisch (z. B. "alte TID"/"neue TID")
+      // und wird hier bewusst nicht ausgelesen.
+      ergebnis[eintrag.key] = tids
+          .map((dynamic e) => (e as Map<String, dynamic>)['tid'] as String)
+          .toList();
     }
     return ergebnis;
   }

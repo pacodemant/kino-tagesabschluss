@@ -9,6 +9,28 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 413a: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
+  Run 413). Paco-Frage: können JSON-Dateien Kommentare enthalten?
+  Antwort: nein (RFC 8259) — `TerminalIdsConfigService.laden()` parst
+  `config/terminal_ids.json` zur Laufzeit strikt per `json.decode()`,
+  ein echtes `//`-Kommentarzeichen hätte beim nächsten App-Start eine
+  `FormatException` geworfen und die TID-Prüfung für alle Standorte
+  lahmgelegt. Stattdessen `terminal_ids` von einer flachen String-Liste
+  auf eine Liste von Objekten `{"tid": "...", "kommentar": "..."}`
+  umgestellt — `kommentar` ist rein dokumentarisch, wird beim Laden
+  ignoriert. `laden()` entsprechend angepasst (`tids.cast<String>()`
+  ersetzt durch `.map(...['tid'])`), alle Aufrufstellen
+  (`aktiveTid()`, `api_upload_service.dart`) arbeiten weiterhin nur mit
+  der bereits geparsten `List<String>` und blieben unverändert. Zuordnung
+  alt/neu anhand CHANGELOG Run 399a5 (dort explizit als "neu ergänzt"
+  dokumentiert) sowie Pacos Entscheidung zu den drei Standorten mit nur
+  einer TID: SB (`54017635` alt; `60561994`/`60561996`/`60561997` neu),
+  BT (`54069493`/`54017664` alt; `60561992`/`60561993` neu), CO
+  (`60561995` neu, kein Alt-Gegenstück), AT/GO ohne Kommentar (je nur
+  eine unveränderte TID bzw. Platzhalter "XXXX"). Keine neuen Tests
+  ergänzt (reine Parsing-Anpassung, bestehende `aktiveTid()`-Tests
+  decken die bereits geparste `List<String>` weiterhin ab); r413a.
+
 - Run 413: Scan-Metadaten-Block in der EC-Kachel (Schritt 2, Datum/
   Uhrzeit/Beleg-Nr. von-bis) wird nur noch im Dev-Modus angezeigt.
   `_baueMetadatenBlock()` (tagesabschluss_schritt2_seite.dart) liefert
