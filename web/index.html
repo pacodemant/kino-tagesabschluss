@@ -115,7 +115,6 @@
   </script>
   <script>
     var _swUpdateReady = false;
-    var _hadController = !!(navigator.serviceWorker && navigator.serviceWorker.controller);
     function _reloadPage() {
       _purgeCachesUndSw().then(function() {
         window.location.reload();
@@ -123,43 +122,45 @@
         window.location.reload();
       });
     }
-    if ('serviceWorker' in navigator) {
-      // Primär: feuert wenn neuer SW via skipWaiting() die Kontrolle übernimmt (Flutter-Default)
-      navigator.serviceWorker.addEventListener('controllerchange', function() {
-        if (_hadController) {
+
+    // Update-Erkennung über version.json statt über den Service Worker:
+    // Flutter generiert seit 3.44.5 keinen versionierten SW mehr (siehe
+    // github.com/flutter/flutter/issues/156910) — die SW-Datei ändert
+    // sich nie mehr zwischen Builds, ein Vergleich darüber würde also
+    // nie mehr anschlagen. Stattdessen wird die kleine version.json
+    // verglichen, höchstens 1x pro Tag, ausgelöst beim Laden und beim
+    // Zurückkehren aus dem Hintergrund (PWA hat keine Tabs, daher hier
+    // aktiv nachfragen statt auf einen neuen Seitenaufbau zu warten).
+    var _currentBuildNumber = null;
+    var _lastUpdateCheckKey = 'kbg_last_update_check';
+    var _oneDayMs = 24 * 60 * 60 * 1000;
+
+    function _fetchBuildNumber() {
+      return fetch('version.json', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(j) { return j.build_number; })
+        .catch(function() { return null; });
+    }
+
+    function _checkForUpdate() {
+      if (!navigator.onLine) return;
+      var last = parseInt(localStorage.getItem(_lastUpdateCheckKey) || '0', 10);
+      if (Date.now() - last < _oneDayMs) return;
+      localStorage.setItem(_lastUpdateCheckKey, String(Date.now()));
+      _fetchBuildNumber().then(function(remote) {
+        if (remote && _currentBuildNumber && remote !== _currentBuildNumber) {
           _swUpdateReady = true;
-        }
-      });
-      // Fallback für SWs ohne skipWaiting()
-      navigator.serviceWorker.getRegistration().then(function(reg) {
-        if (!reg) return;
-        if (reg.waiting && navigator.serviceWorker.controller) {
-          _swUpdateReady = true;
-          return;
-        }
-        reg.addEventListener('updatefound', function() {
-          var newWorker = reg.installing;
-          if (!newWorker) return;
-          newWorker.addEventListener('statechange', function() {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              _swUpdateReady = true;
-            }
-          });
-        });
-        reg.update().catch(function() {});
-        // Periodisch prüfen — neue Version könnte während die App offen ist deployed werden
-        setInterval(function() { reg.update().catch(function() {}); }, 3600000);
-      });
-      // PWA hat keine Tabs: beim Zurückkehren aus dem Hintergrund (Home-Bildschirm-Icon
-      // erneut geöffnet) läuft kein neuer Seitenaufbau, daher hier aktiv nachfragen.
-      document.addEventListener('visibilitychange', function() {
-        if (document.visibilityState === 'visible') {
-          navigator.serviceWorker.getRegistration().then(function(reg) {
-            if (reg) reg.update().catch(function() {});
-          });
         }
       });
     }
+
+    _fetchBuildNumber().then(function(v) { _currentBuildNumber = v; });
+
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+        _checkForUpdate();
+      }
+    });
   </script>
 </head>
 <body>

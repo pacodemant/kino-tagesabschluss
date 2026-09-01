@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 411: Update-Erkennung (`web/index.html`) komplett umgebaut — statt
+  auf Service-Worker-Events (`controllerchange`/`updatefound`/stündliches
+  `reg.update()`) zu hören, wird jetzt `version.json` verglichen
+  (`build_number`), höchstens 1x/24h, ausgelöst beim Laden und beim
+  Zurückkehren aus dem Hintergrund (`visibilitychange`); Zeitstempel des
+  letzten Checks in `localStorage`. Auslöser: Flutter generiert seit
+  3.44.5 keinen versionierten Service Worker mehr (nur noch Aufräum-Stub,
+  siehe github.com/flutter/flutter/issues/156910) — der alte
+  Erkennungsmechanismus griff dadurch nie mehr. `lib/services/
+  sw_update_service_web.dart` unverändert (pollt weiterhin denselben
+  `_swUpdateReady`-Flag alle 20s); Reaktion bei Update (`reloadPage()`,
+  sofortiger Reload ohne Rückfrage) ebenfalls unverändert. Nebeneffekt:
+  löst TODO-Punkt "Fallback auf letzte Version bei fehlgeschlagenem
+  Update-Check" (Offline/Fehler → stillschweigend aktuelle Version
+  weiterverwenden); TODO-Punkt "Update-Reload nicht mitten in der
+  Abrechnung" bleibt offen (nur Häufigkeit reduziert). Entdeckt und
+  umgesetzt im Rahmen einer lokalen PWA-Deployment-Generalprobe; r411.
+
 - Run 410a: Korrektur zu Run 410 (Paco hatte die Stelle nachträglich
   gefunden) — Weiter-Button von Schritt 1 zu Schritt 2
   (tagesabschluss_schritt1_seite.dart:1171) zeigte noch

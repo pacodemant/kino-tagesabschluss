@@ -403,6 +403,17 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
+### App-Update / PWA
+
+- [x] **Fallback auf letzte Version bei fehlgeschlagenem Update-Check**
+      Erledigt als Nebeneffekt von Run 411 (Update-Erkennung komplett
+      auf `version.json`-Vergleich umgestellt statt Service-Worker-
+      Events, siehe Memory `project_sw_update_deprecated`). Neue Logik
+      prüft `navigator.onLine` vor jedem Check und fängt fehlgeschlagene
+      Fetches ab — bei fehlendem Netz oder Fehler bleibt die App
+      stillschweigend bei der aktuell geladenen Version, kein Reload
+      wird ausgelöst. *(Run 411, 2026-09-01)*
+
 ### Verlauf
 
 - [x] **Bargeld-Kachel: bereinigter Bar-Bestand statt Kassenbestand

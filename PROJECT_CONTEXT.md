@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+410a · Run 410a
+Version: 0.9.82+411 · Run 411
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 410a)
+## Laufender Entwicklungsstand (Run 411)
+
+- Run 411 ✅ Update-Erkennung (`web/index.html`) auf `version.json`-
+  Vergleich umgestellt statt Service-Worker-Events — Flutter generiert
+  seit 3.44.5 keinen versionierten Service Worker mehr (nur noch
+  Aufräum-Stub). Prüfung höchstens 1x/24h, beim Laden und beim
+  Zurückkehren aus dem Hintergrund. Details siehe CHANGELOG.md.
 
 - Run 410a ✅ Korrektur zu Run 410: Weiter-Button Schritt 1 → Schritt 2
   zeigte noch "Belege eingeben (2/4)", jetzt "Umsätze eingeben (2/4)".
