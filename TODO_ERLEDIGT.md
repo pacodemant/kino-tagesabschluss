@@ -414,6 +414,21 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       stillschweigend bei der aktuell geladenen Version, kein Reload
       wird ausgelöst. *(Run 411, 2026-09-01)*
 
+- [x] **Update-Reload nicht mitten in der Abrechnung** Ursprünglich:
+      Update-Reload passierte SOFORT und ungefragt, auch mitten in
+      einer offenen Abrechnung (Paco-Test 2026-08-27, "das ist doof").
+      Gelöst in Run 412 nach Pacos Entscheidung: der lokale 20s-Poll
+      (`sw_update_service_web.dart`) läuft jetzt weiter statt sich nach
+      dem ersten Treffer abzuschalten; `onUpdate()` liefert `bool` und
+      lädt nur neu, wenn laut neuem `UpdateReloadGuard`
+      (`lib/services/update_reload_guard.dart`, rein lesender
+      NavigatorObserver) gerade Kinoauswahl oder Startmenü sichtbar
+      ist — sonst wird beim nächsten Tick erneut gefragt. Bewusst KEIN
+      neuer Auslöser (kein Reload-Versuch bei Navigation) — die
+      Prüf-Häufigkeit (Start/Vordergrund, max. 1x/Tag) aus Run 411
+      bleibt unverändert, nur der Reload-Zeitpunkt wird zusätzlich
+      gegen die sichtbare Seite geprüft. *(Run 412, 2026-09-01)*
+
 ### Verlauf
 
 - [x] **Bargeld-Kachel: bereinigter Bar-Bestand statt Kassenbestand

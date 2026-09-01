@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+411 · Run 411
+Version: 0.9.82+412 · Run 412
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 411)
+## Laufender Entwicklungsstand (Run 412)
+
+- Run 412 ✅ Update-Reload passiert nicht mehr mitten in einer offenen
+  Abrechnung: neuer `UpdateReloadGuard` (NavigatorObserver) lädt nur
+  neu, wenn Kinoauswahl oder Startmenü sichtbar ist. Prüf-Häufigkeit
+  (Start/Vordergrund, max. 1x/24h) aus Run 411 unverändert. Details
+  siehe CHANGELOG.md.
 
 - Run 411 ✅ Update-Erkennung (`web/index.html`) auf `version.json`-
   Vergleich umgestellt statt Service-Worker-Events — Flutter generiert

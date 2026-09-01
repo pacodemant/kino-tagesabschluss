@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 412: Update-Reload passiert nicht mehr mitten in einer offenen
+  Abrechnung. `sw_update_service_web.dart`: `initSwUpdateWatcher()`
+  erwartet jetzt `bool Function()` statt `void Function()` — der 20s-
+  Poll läuft weiter, bis `onUpdate()` `true` liefert (Reload tatsächlich
+  ausgeführt), statt sich nach dem ersten Treffer abzuschalten. Neue
+  Datei `lib/services/update_reload_guard.dart`
+  (`UpdateReloadGuard extends NavigatorObserver`, rein lesend) verfolgt
+  die aktuell sichtbare Route; `main.dart`s `onUpdate`-Callback lädt nur
+  neu, wenn Kinoauswahl oder Startmenü sichtbar ist, sonst wird beim
+  nächsten Tick erneut geprüft. Bewusst kein neuer Auslöser — die
+  Check-Häufigkeit aus Run 411 (Start/Vordergrund, max. 1x/24h) bleibt
+  unverändert, nur der Reload-Zeitpunkt wird zusätzlich gegen die
+  sichtbare Seite geprüft. Löst TODO-Punkt "Update-Reload nicht mitten
+  in der Abrechnung" (Paco-Test 2026-08-27); r412.
+
 - Run 411: Update-Erkennung (`web/index.html`) komplett umgebaut — statt
   auf Service-Worker-Events (`controllerchange`/`updatefound`/stündliches
   `reg.update()`) zu hören, wird jetzt `version.json` verglichen

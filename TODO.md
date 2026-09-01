@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 411 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 412 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -364,33 +364,6 @@ um Durcheinander zu vermeiden.
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
 
 ### App-Update / PWA
-
-- [ ] **Update-Reload nicht mitten in der Abrechnung** Aktuell
-      (`main.dart:72-74`, `sw_update_service_web.dart`) prüft die App
-      alle 20s lokal, ob ein Update laut `web/index.html` bereit ist,
-      und lädt bei Erkennung SOFORT und ungefragt die Seite neu
-      (`reloadPage()`) — auch mitten in einer offenen Abrechnung/einem
-      offenen Dialog. Bei Pacos Test (2026-08-27) hat das versehentlich
-      mitten im Testen der Beleg-Foto-Funktion die Seite neu geladen.
-      Paco: "das ist doof", Update soll nicht mehrfach täglich/sofort,
-      sondern kontrolliert angewendet werden. Vorschlag (noch nicht
-      umgesetzt, Paco muss zwischen den Optionen entscheiden): statt
-      fester Uhrzeit lieber gar nicht reloaden, während eine
-      Tagesabschluss-Seite (Schritt 1/2/3) offen ist — nur auf der
-      Kino-Auswahl-/Startseite anwenden. Ergänzend:
-      `web/index.html:104-114` holt bei jedem neuen Tab/Fresh-Load
-      ohnehin schon automatisch die aktuellste Version — die Lücke
-      betrifft nur einen über mehrere Abrechnungen hinweg offen
-      bleibenden Tab.
-      Update (Run 411, 2026-09-01): Der Erkennungsmechanismus wurde
-      komplett umgebaut (Flutters Service-Worker-Versionierung ist seit
-      3.44.5 abgeschafft, siehe Memory `project_sw_update_deprecated`) —
-      geprüft wird jetzt per `version.json`-Abgleich (`web/index.html`),
-      ausgelöst nur noch beim Laden und beim Zurückkehren aus dem
-      Hintergrund, höchstens 1x/24h. Das Grundproblem (Reload ohne
-      Rückfrage, auch mitten in einer offenen Abrechnung) besteht
-      dadurch weiterhin — nur die Häufigkeit ist jetzt viel geringer.
-      Die hier beschriebene Entscheidung steht weiterhin aus.
 
 ### Verlauf
 

@@ -1,2 +1,2 @@
-void initSwUpdateWatcher(void Function() onUpdate) {}
+void initSwUpdateWatcher(bool Function() onUpdate) {}
 void reloadPage() {}

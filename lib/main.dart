@@ -25,6 +25,7 @@ import 'package:kino_bar_app/pages/datenschutz_seite.dart';
 import 'package:kino_bar_app/pages/kurzeinstieg_seite.dart';
 import 'package:kino_bar_app/pages/ueber_entwickler_seite.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
+import 'package:kino_bar_app/services/update_reload_guard.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/route_observer.dart';
@@ -70,7 +71,11 @@ Future<void> main() async {
 
   runApp(const MeineApp());
   initSwUpdateWatcher(() {
+    if (!UpdateReloadGuard.istAufSichererSeite) {
+      return false;
+    }
     reloadPage();
+    return true;
   });
 }
 
@@ -81,7 +86,7 @@ class MeineApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Kassenabrechnung',
-      navigatorObservers: <NavigatorObserver>[routeObserver],
+      navigatorObservers: <NavigatorObserver>[routeObserver, UpdateReloadGuard()],
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         scaffoldBackgroundColor: AppFarben.seitenHintergrund,
