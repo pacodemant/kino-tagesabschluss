@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 413: Scan-Metadaten-Block in der EC-Kachel (Schritt 2, Datum/
+  Uhrzeit/Beleg-Nr. von-bis) wird nur noch im Dev-Modus angezeigt.
+  `_baueMetadatenBlock()` (tagesabschluss_schritt2_seite.dart) liefert
+  jetzt `SizedBox.shrink()`, solange das bereits vorhandene
+  `_devModusAktiv`-Feld (per `DevModus.istAktiv()` in `initState()`
+  gesetzt) `false` ist — kein neuer Async-Check nötig. Kein Eingriff in
+  `Schritt2MetadatenBlock` selbst (schritt2_ui_builder.dart) oder in
+  Persistenz/Datenmodell, reine Sichtbarkeit; r413.
+
 - Run 412: Update-Reload passiert nicht mehr mitten in einer offenen
   Abrechnung. `sw_update_service_web.dart`: `initSwUpdateWatcher()`
   erwartet jetzt `bool Function()` statt `void Function()` — der 20s-

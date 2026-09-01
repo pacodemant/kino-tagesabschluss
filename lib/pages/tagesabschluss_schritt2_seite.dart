@@ -2331,6 +2331,7 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   Widget _baueMetadatenBlock(int belegIndex) {
+    if (!_devModusAktiv) return const SizedBox.shrink();
     final bool aufgeklappt = belegIndex < _metadatenAufgeklappt.length
         ? _metadatenAufgeklappt[belegIndex]
         : false;

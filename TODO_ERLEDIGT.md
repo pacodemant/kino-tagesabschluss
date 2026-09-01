@@ -205,6 +205,15 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### BelegScan & EC-Kachel *(Phase A, Runs 275–281)*
 
+- [x] **Scan-Metadaten in der EC-Kachel nur im Dev-Modus anzeigen**
+      Der auf-/zuklappbare "Scan-Metadaten"-Block (Datum, Uhrzeit,
+      Beleg-Nr. von/bis) war bisher unabhängig vom Dev-Modus immer
+      sichtbar. *(Run 413)* `_baueMetadatenBlock()`
+      (tagesabschluss_schritt2_seite.dart) liefert jetzt
+      `SizedBox.shrink()`, solange das bereits vorhandene
+      `_devModusAktiv`-Feld `false` ist — kein Eingriff in
+      `Schritt2MetadatenBlock` selbst nötig.
+
 - [x] **Prüf-Popup entfernen — Fehler direkt in der Kachel** Fragliche
       Daten werden in der Sub-Kachel direkt hervorgehoben und
       korrigierbar gemacht. *(Run 304d3/304d4 — Hervorhebung; Run 307 —

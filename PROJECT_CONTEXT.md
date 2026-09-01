@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+412 · Run 412
+Version: 0.9.82+413 · Run 413
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 412)
+## Laufender Entwicklungsstand (Run 413)
+
+- Run 413 ✅ Scan-Metadaten-Block in der EC-Kachel (Schritt 2) wird
+  nur noch im Dev-Modus angezeigt, statt immer sichtbar zu sein.
+  Reine Sichtbarkeits-Änderung über das bereits vorhandene
+  `_devModusAktiv`-Feld. Details siehe CHANGELOG.md.
 
 - Run 412 ✅ Update-Reload passiert nicht mehr mitten in einer offenen
   Abrechnung: neuer `UpdateReloadGuard` (NavigatorObserver) lädt nur
