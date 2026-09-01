@@ -1067,7 +1067,12 @@ class _TagesabschlussSchritt2SeiteState
     setState(() {
       _letzteAenderung = DateTime.now();
       for (int j = 0; j < _ecUnterkachelAufgeklappt.length; j++) {
-        _ecUnterkachelAufgeklappt[j] = false;
+        // Kacheln mit ungelöstem TID-Fehler (Scan ohne passende TID, siehe
+        // Run 414a) bleiben aufgeklappt, damit sie nicht unbemerkt
+        // verschwinden, wenn ein weiterer Beleg hinzugefügt wird.
+        if (!_subKachelTidUnleserlich(j)) {
+          _ecUnterkachelAufgeklappt[j] = false;
+        }
       }
       final int prevIdx = _ecUnterkachelEditModus.length - 1;
       if (prevIdx >= 0 &&

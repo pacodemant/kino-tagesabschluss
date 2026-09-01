@@ -217,7 +217,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                           : null,
                                       decoration: InputDecoration(
                                         hintText: tidUnleserlich
-                                            ? 'Terminal-ID?'
+                                            ? 'TID eintragen'
                                             : 'Terminal-ID',
                                         hintStyle: TextStyle(
                                           color: labelFocusNode.hasFocus
@@ -378,8 +378,8 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 4),
                         child: Text(
-                          'Terminal-ID konnte nicht gelesen werden – oben '
-                          'korrigieren.',
+                          'Terminal-ID fehlt oder unbekannt – oben '
+                          'eintragen.',
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.red.shade700,

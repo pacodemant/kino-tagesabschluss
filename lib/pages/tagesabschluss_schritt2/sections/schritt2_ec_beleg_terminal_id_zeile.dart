@@ -68,7 +68,7 @@ class Schritt2EcBelegTerminalIdZeile extends StatelessWidget {
         cursorColor: focusNode.hasFocus ? Colors.black : null,
         textInputAction: textInputActionErmitteln(focusNode),
         decoration: InputDecoration(
-          hintText: hintUnleserlich ? 'Terminal-ID?' : 'Terminal-ID',
+          hintText: hintUnleserlich ? 'TID eintragen' : 'Terminal-ID',
           hintStyle: TextStyle(
             fontSize: 15,
             color: focusNode.hasFocus

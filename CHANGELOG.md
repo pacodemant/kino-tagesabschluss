@@ -9,6 +9,43 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 414a2: Direkte Anweisung ohne eigene Run-Nummer (drei
+  Test-Rückmeldungen zu Run 414a).
+  t1) Popup-Hinweistext vereinfacht auf Pacos vorgeschlagene Formulierung:
+  '... Bitte nochmal scannen oder auf „übernehmen" tippen und die TID
+  manuell eintragen.' (`beleg_scan_bestaetigen_dialog.dart`).
+  t2) Echter Bug gefunden und behoben: `_ecBelegHinzufuegen()` klappte
+  beim Hinzufügen eines weiteren EC-Belegs ausnahmslos ALLE
+  bestehenden Sub-Kacheln zu (`_ecUnterkachelAufgeklappt[j] = false`
+  für jedes j) — traf damit auch eine Kachel mit noch ungelöstem
+  TID-Fehler aus Run 414a, deren Bearbeitungsmodus (roter Titel)
+  dabei unverändert blieb, da die Sonderbehandlung dafür nur am
+  Label-Inhalt hängt, nicht am Aufklapp-Status. Ergebnis: "zugeklappt,
+  aber roter Titel", schwer bemerkbar. Fix: Kacheln mit
+  `_subKachelTidUnleserlich(j) == true` werden vom Zuklappen jetzt
+  ausgenommen, bleiben also sichtbar aufgeklappt. Rückfrage an Paco,
+  ob die fehlerhafte Kachel zusätzlich unabhängig vom Index ganz oben
+  einsortiert werden soll (Sub-Kacheln werden in
+  `Schritt2EcBelegSubKacheln` bewusst in umgekehrter Reihenfolge
+  gerendert, neuester Beleg zuerst) — Antwort: nicht nötig, "aufgeklappt
+  bleiben" reicht.
+  Zusätzlich (Pacos eigene "vielleicht"-Idee aus t2, bestätigt):
+  Hint-Text im TID-Feld bei unleserlicher/fehlender TID von
+  "Terminal-ID?" auf "TID eintragen" geändert — in beiden Widgets
+  (`schritt2_ec_beleg_terminal_id_zeile.dart` Ein-Beleg-Modus,
+  `schritt2_ec_beleg_sub_kacheln.dart` Mehrbeleg-Modus). Body-Hinweis
+  in `schritt2_ec_beleg_sub_kacheln.dart` von "Terminal-ID konnte
+  nicht gelesen werden – oben korrigieren." auf "Terminal-ID fehlt
+  oder unbekannt – oben eintragen." präzisiert, da derselbe
+  `tidUnleserlich`-Zustand jetzt zwei Ursachen hat (Scan wirklich
+  unlesbar ODER TID gelesen, aber nicht in der Konfiguration
+  gefunden) — die alte Formulierung passte nur zur ersten Ursache.
+  t3) Bestätigung ohne Änderungsbedarf (gültige TID sendet normal
+  durch). Kein neuer Code-Parameter für die Ursachen-Unterscheidung
+  eingeführt (keine Architekturänderung) — die präzisierte Formulierung
+  deckt beide Fälle korrekt ab, ohne einen zusätzlichen Zustand
+  durchreichen zu müssen; r414a2.
+
 - Run 414a: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
   Run 414). Paco-Feedback nach dem Testen: der Hinweistext im
   Scan-Popup verwies auf einen nicht existierenden "Abbrechen"-Button

@@ -60,9 +60,8 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      '$tidKonfigWarnung Nochmals scannen oder '
-                      '„übernehmen" (ohne TID) tippen und die TID danach '
-                      'manuell eintragen.',
+                      '$tidKonfigWarnung Bitte nochmal scannen oder auf '
+                      '„übernehmen" tippen und die TID manuell eintragen.',
                       style: const TextStyle(fontSize: 12, color: Colors.red),
                     ),
                   ),

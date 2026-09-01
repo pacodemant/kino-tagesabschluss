@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+414a · Run 414a
+Version: 0.9.82+414a2 · Run 414a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 414a)
+## Laufender Entwicklungsstand (Run 414a2)
+
+- Run 414a2 ✅ Drei Test-Rückmeldungen zu Run 414a: Popup-Text
+  vereinfacht; echter Bug behoben (`_ecBelegHinzufuegen()` klappte
+  eine Kachel mit ungelöstem TID-Fehler beim Hinzufügen eines
+  weiteren Belegs zu, obwohl ihr roter Bearbeitungsmodus stehen
+  blieb — jetzt bleibt sie aufgeklappt); Hint-Text "Terminal-ID?" auf
+  "TID eintragen" umbenannt (Ein- und Mehrbeleg-Modus). Details siehe
+  CHANGELOG.md.
 
 - Run 414a ✅ Korrektur zu Run 414: Scan-Popup blockiert "übernehmen"
   bei TID-Abweichung nicht mehr komplett (es gab keinen Abbrechen-Weg
