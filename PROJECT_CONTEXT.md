@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+414a2 · Run 414a2
+Version: 0.9.82+414a3 · Run 414a3
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 414a2)
+## Laufender Entwicklungsstand (Run 414a3)
+
+- Run 414a3 ✅ Popup-Text weiter vereinfacht (redundantes "Bitte
+  pruefen." entfernt). Echter Fund behoben: eine manuell eingetippte
+  (nicht gescannte), falsche TID im Mehrbeleg-Modus zeigte nach dem
+  Weiter-Block keine Eingabemöglichkeit/Hervorhebung mehr. Neue
+  Methoden `_ecBelegHatTidProblem()` (fokus-unabhängig, steuert
+  Lese-/Editier-Modus) und ergänztes `_subKachelTidUnleserlich()`
+  (Konfig-Abgleich nur bei fehlendem Fokus, Run-374-Konvention) lösen
+  das für Ein- und Mehrbeleg-Modus einheitlich. Details siehe
+  CHANGELOG.md.
 
 - Run 414a2 ✅ Drei Test-Rückmeldungen zu Run 414a: Popup-Text
   vereinfacht; echter Bug behoben (`_ecBelegHinzufuegen()` klappte

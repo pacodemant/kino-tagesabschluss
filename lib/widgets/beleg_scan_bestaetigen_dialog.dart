@@ -32,6 +32,16 @@ bool belegScanHatUnlesbareDaten(
           z.nichtLesbar || z.nameNichtLesbar);
 }
 
+/// Entfernt den Satz "Bitte pruefen." vom Ende der TID-Konfig-Warnung, wenn
+/// direkt danach im Popup ohnehin eine konkrete Handlungsanweisung folgt
+/// (Paco-Feedback: doppelt sich sonst mit dem Folgesatz).
+String _ohneBittePruefen(String warnung) {
+  const String suffix = ' Bitte pruefen.';
+  return warnung.endsWith(suffix)
+      ? warnung.substring(0, warnung.length - suffix.length)
+      : warnung;
+}
+
 Future<bool> zeigeBelegScanBestaetigenDialog(
   BuildContext context, {
   required BelegScanErgebnis ergebnis,
@@ -60,8 +70,9 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      '$tidKonfigWarnung Bitte nochmal scannen oder auf '
-                      '„übernehmen" tippen und die TID manuell eintragen.',
+                      '${_ohneBittePruefen(tidKonfigWarnung)} Bitte nochmal '
+                      'scannen oder auf „übernehmen" tippen und die TID '
+                      'manuell eintragen.',
                       style: const TextStyle(fontSize: 12, color: Colors.red),
                     ),
                   ),

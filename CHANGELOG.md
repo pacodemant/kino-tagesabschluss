@@ -9,6 +9,59 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 414a3: Direkte Anweisung ohne eigene Run-Nummer (drei weitere
+  Test-Rückmeldungen zu Run 414a2). t1 (Kachel bleibt beim
+  Hinzufügen aufgeklappt) und t3 (Versand mit gültiger TID) ok, kein
+  Änderungsbedarf.
+  t2: Popup-Text weiter vereinfacht — der Satz "Bitte pruefen." am
+  Ende der zugrunde liegenden Warnung
+  (`ApiUploadService.pruefeTerminalIdsGegenKonfiguration()`) wird im
+  Scan-Popup jetzt entfernt (neue lokale Hilfsfunktion
+  `_ohneBittePruefen()` in `beleg_scan_bestaetigen_dialog.dart`), da
+  er sich mit dem direkt folgenden Handlungssatz doppelt. Die anderen
+  beiden Verwendungsstellen derselben Warnung (Weiter-Button-Dialog,
+  Sende-Fehlermeldung) behalten "Bitte pruefen." — dort gibt es keinen
+  Folgesatz, der die gleiche Information liefert.
+  t3 (eigentlich ein neuer Fund, in der Nachricht als "t3" bezeichnet):
+  Bei einer über "Weiter" blockierten, MANUELL eingetippten (nicht
+  gescannten) TID gab es im Mehrbeleg-Modus keine Eingabemöglichkeit
+  mehr, ohne explizit "Belegdaten bearbeiten" anzutippen — und auch
+  dann keine farbliche Hervorhebung, da der bestehende
+  "unleserlich"-Zustand nur auf ein LEERES Label reagierte, nicht auf
+  ein vorhandenes, aber falsches. Fix, mehrteilig:
+  1) Neues gecachtes Feld `_terminalIdsKonfiguration`
+  (`TerminalIdsConfigService.laden()` einmalig in `initState()`),
+  damit sich eine TID synchron (ohne erneuten Async-Aufruf) gegen die
+  Konfiguration prüfen lässt — neue Methode
+  `_tidPasstNichtZurKonfiguration(String tid)`.
+  2) Neue Methode `_ecBelegHatTidProblem(int i)`: true bei leer/
+  unleserlich nach Scan ODER (unabhängig vom Fokus) TID passt nicht
+  zur Konfiguration. Steuert jetzt `ecBeleg0ZeigeReadModus` (1-Beleg-
+  Modus) und den Zuklapp-Schutz in `_ecBelegHinzufuegen()` — bewusst
+  NICHT fokus-abhängig, da sie mitentscheidet, OB überhaupt das
+  editierbare statt das Lese-Widget gerendert wird; fokus-abhängig
+  hätte das Feld genau beim Fokussieren (nach dem Fehler-Dialog)
+  wieder auf Lese-Modus zurückspringen können.
+  3) `_subKachelTidUnleserlich(int i)` (weiterhin für die reine rote
+  Hervorhebung/Hint-Text zuständig) prüft den Konfig-Abgleich-Teil nur
+  noch, wenn das TID-Feld NICHT fokussiert ist (Konvention aus
+  Run 374: Prüfung bei Feld-Verlassen statt bei jedem Tastendruck) —
+  sonst wäre jede unvollständige TID während des Tippens rot markiert
+  gewesen. Der bestehende leer/unleserlich-Zweig (nach einem Scan)
+  bleibt unabhängig vom Fokus weiterhin sofort rot, unverändert zu
+  Run 414a/414a2.
+  4) `_pruefePflichtfelderVorSchritt3()`: setzt bei einer blockierten
+  TID im Mehrbeleg-Modus jetzt zusätzlich
+  `_ecUnterkachelAufgeklappt[i]`/`_ecUnterkachelEditModus[i]` auf
+  `true`, bevor der Fehler-Dialog erscheint — die Sub-Kachel ist damit
+  beim Fokussieren garantiert aufgeklappt und editierbar (nicht nur im
+  1-Beleg-Modus, der das bereits reaktiv über `_ecBelegHatTidProblem`
+  regelt).
+  Kein neues paralleles Array eingeführt — die Erkennung bleibt eine
+  reine Ableitung aus vorhandenen Daten (Label + eine einmalig
+  geladene Konfiguration), nicht ein zusätzlich mitzupflegender
+  Pro-Beleg-Zustand; r414a3.
+
 - Run 414a2: Direkte Anweisung ohne eigene Run-Nummer (drei
   Test-Rückmeldungen zu Run 414a).
   t1) Popup-Hinweistext vereinfacht auf Pacos vorgeschlagene Formulierung:

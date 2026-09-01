@@ -206,6 +206,11 @@ class _TagesabschlussSchritt2SeiteState
   // EC-Kachel
   bool _ecKachelAufgeklappt = false;
 
+  /// Einmal beim Seitenaufbau geladen, damit sich eine TID reaktiv (ohne
+  /// erneuten Async-Aufruf bei jedem build()) gegen config/terminal_ids.json
+  /// prüfen lässt — siehe _tidPasstNichtZurKonfiguration().
+  Map<String, List<String>>? _terminalIdsKonfiguration;
+
   @override
   void initState() {
     super.initState();
@@ -218,6 +223,13 @@ class _TagesabschlussSchritt2SeiteState
       setState(() {
         _devModusAktiv = aktiv;
       });
+    });
+    TerminalIdsConfigService.laden().then((Map<String, List<String>> konfig) {
+      if (mounted) {
+        setState(() {
+          _terminalIdsKonfiguration = konfig;
+        });
+      }
     });
     _scrollController.addListener(_beiScrollAenderung);
     FocusManager.instance.addListener(_beiGlobalerFokusAenderung);
@@ -975,6 +987,19 @@ class _TagesabschlussSchritt2SeiteState
       if (tid.isEmpty) continue;
       final List<String> warnungen = await _pruefeTidGegenKonfiguration(tid);
       if (warnungen.isNotEmpty) {
+        if (!mounted) return false;
+        setState(() {
+          // Kachel im Mehrbeleg-Modus aufklappen + editierbar machen, damit
+          // die TID nach dem Fehler-Dialog direkt fokussiert/korrigiert
+          // werden kann, statt erst "Belegdaten bearbeiten" antippen zu
+          // müssen (Run 414a3).
+          if (i < _ecUnterkachelAufgeklappt.length) {
+            _ecUnterkachelAufgeklappt[i] = true;
+          }
+          if (i < _ecUnterkachelEditModus.length) {
+            _ecUnterkachelEditModus[i] = true;
+          }
+        });
         await _zeigeTidFehlerUndFokussiere(
           warnung: warnungen.first,
           fokusNode: _ecBelegLabelFocusNode[i],
@@ -1068,9 +1093,10 @@ class _TagesabschlussSchritt2SeiteState
       _letzteAenderung = DateTime.now();
       for (int j = 0; j < _ecUnterkachelAufgeklappt.length; j++) {
         // Kacheln mit ungelöstem TID-Fehler (Scan ohne passende TID, siehe
-        // Run 414a) bleiben aufgeklappt, damit sie nicht unbemerkt
-        // verschwinden, wenn ein weiterer Beleg hinzugefügt wird.
-        if (!_subKachelTidUnleserlich(j)) {
+        // Run 414a, oder TID passt nicht zur Konfiguration, siehe Run 414a3)
+        // bleiben aufgeklappt, damit sie nicht unbemerkt verschwinden, wenn
+        // ein weiterer Beleg hinzugefügt wird.
+        if (!_ecBelegHatTidProblem(j)) {
           _ecUnterkachelAufgeklappt[j] = false;
         }
       }
@@ -1817,12 +1843,55 @@ class _TagesabschlussSchritt2SeiteState
     return warnungen.isEmpty ? null : warnungen.first;
   }
 
-  bool _subKachelTidUnleserlich(int i) {
-    if (i >= _ecBelegScanGescannt.length || !_ecBelegScanGescannt[i]) {
-      return false;
+  /// true, wenn [tid] nicht leer ist, aber nicht zu den fuer diesen Standort
+  /// in config/terminal_ids.json hinterlegten TIDs passt — synchron, da
+  /// _terminalIdsKonfiguration bereits in initState() geladen wird. Nutzt
+  /// dieselbe, bereits getestete Pruef-Logik wie beim Scan/Weiter/Senden.
+  bool _tidPasstNichtZurKonfiguration(String tid) {
+    final String bereinigt = tid.trim();
+    if (bereinigt.isEmpty || _terminalIdsKonfiguration == null) return false;
+    final Kino? kino = KinoRepository.nachId(widget.kinoId);
+    return ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+      <String>[bereinigt],
+      kino,
+      _terminalIdsKonfiguration!,
+    ).isNotEmpty;
+  }
+
+  /// true, wenn diese TID ein ungelöstes Problem hat: leer/unleserlich nach
+  /// einem Scan, ODER (unabhängig vom Fokus) nicht zur Konfiguration passt.
+  /// Bewusst NICHT fokus-abhängig, da dies u. a. steuert, ob das Feld im
+  /// 1-Beleg-Modus editierbar statt nur lesbar angezeigt wird
+  /// (ecBeleg0ZeigeReadModus) — ein Umschalten auf Lese-Modus genau in dem
+  /// Moment, in dem das Feld fokussiert wird, würde das Textfeld unter der
+  /// MA verschwinden lassen.
+  bool _ecBelegHatTidProblem(int i) {
+    final bool warScan = i < _ecBelegScanGescannt.length && _ecBelegScanGescannt[i];
+    final String label = i < _ecBelegLabels.length ? _ecBelegLabels[i] : '';
+    if (warScan && (label.isEmpty || label.trim().toLowerCase() == 'unleserlich')) {
+      return true;
     }
-    final String label = _ecBelegLabels[i];
-    return label.isEmpty || label.trim().toLowerCase() == 'unleserlich';
+    return _tidPasstNichtZurKonfiguration(label);
+  }
+
+  /// true, wenn die TID eines Belegs rot hervorgehoben werden soll: entweder
+  /// nach einem Scan ohne lesbare TID (bestehend), oder — unabhängig davon,
+  /// ob gescannt oder manuell eingetragen — wenn die vorhandene TID nicht
+  /// zur Konfiguration passt (Run 414a3, ergänzt zum bestehenden Verhalten).
+  /// Der Konfig-Abgleich wird bewusst nur geprüft, solange das TID-Feld
+  /// NICHT fokussiert ist (Konvention aus Run 374: Prüfung bei Feld-
+  /// Verlassen statt bei jedem Tastendruck, sonst würde jede unvollständige
+  /// Eingabe während des Tippens rot erscheinen).
+  bool _subKachelTidUnleserlich(int i) {
+    final bool warScan = i < _ecBelegScanGescannt.length && _ecBelegScanGescannt[i];
+    final String label = i < _ecBelegLabels.length ? _ecBelegLabels[i] : '';
+    if (warScan && (label.isEmpty || label.trim().toLowerCase() == 'unleserlich')) {
+      return true;
+    }
+    final bool hatFokus =
+        i < _ecBelegLabelFocusNode.length && _ecBelegLabelFocusNode[i].hasFocus;
+    if (hatFokus) return false;
+    return _tidPasstNichtZurKonfiguration(label);
   }
 
   bool _ersterBelegIstLeer() {
@@ -2583,7 +2652,7 @@ class _TagesabschlussSchritt2SeiteState
         !_zahlungsartZeilen[0].any(
           (ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing,
         ) &&
-        !_subKachelTidUnleserlich(0);
+        !_ecBelegHatTidProblem(0);
     final Widget belegInhalt = _ecBelegController.length == 1
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
