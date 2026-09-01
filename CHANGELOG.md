@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 413a2: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung/
+  Korrektur zu Run 413a, gleicher uncommitteter Arbeitsstand). Paco
+  wollte den Alt/Neu-Kommentar doch nicht als Datenfeld pro TID (siehe
+  Run 413a) — die Objekt-Umstellung `{"tid": ..., "kommentar": ...}`
+  wieder zurückgebaut: `terminal_ids` ist wieder eine flache
+  String-Liste, `TerminalIdsConfigService.laden()` wieder
+  `tids.cast<String>()` wie vor Run 413a. Der Alt/Neu-Hinweis steht
+  stattdessen gesammelt im bereits vorhandenen `"_comment"`-Kopf der
+  Datei (ein Satz pro Standort). Zusätzlich, auf explizite Rückfrage:
+  CO (Cinema Ostertor) bekommt die alte TID `54017639` zurück
+  (`terminal_ids: ["60561995", "54017639"]`) — laut Git-Historie (Run
+  295b, Commit c83c91b) die ursprünglich eingetragene TID, am
+  2026-08-30 von Paco selbst bewusst entfernt (Commit 5eafb00: "nur
+  noch die neue aktive 60561995 behalten"). Reihenfolge bewusst
+  `60561995` zuerst: `TerminalIdsConfigService.aktiveTid()` behandelt
+  den ERSTEN Listeneintrag als aktiv — bei CO ist laut Commit 5eafb00
+  die neue TID die aktuell aktive, anders als bei SB/BT, wo die alte
+  TID noch aktiv ist und die neuen Ersatz-/Zukunftsgeräte sind. Ohne
+  diese Reihenfolge hätte Auto-Fill (Dev-Modus) für CO wieder die
+  längst abgelöste alte TID eingetragen. Run 413a selbst bleibt als
+  Commit stehen (dokumentiert den ursprünglichen Ansatz), Run 413a2
+  ist die vollständige Korrektur davon; r413a2.
+
 - Run 413a: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung zu
   Run 413). Paco-Frage: können JSON-Dateien Kommentare enthalten?
   Antwort: nein (RFC 8259) — `TerminalIdsConfigService.laden()` parst

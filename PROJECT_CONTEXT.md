@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+413a · Run 413a
+Version: 0.9.82+413a2 · Run 413a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 413a)
+## Laufender Entwicklungsstand (Run 413a2)
+
+- Run 413a2 ✅ Korrektur zu Run 413a: Objekt-Umstellung pro TID
+  wieder zurückgebaut (`terminal_ids` wieder flache String-Liste,
+  `TerminalIdsConfigService.laden()` wieder `cast<String>()`) — der
+  Alt/Neu-Hinweis steht stattdessen gesammelt im `"_comment"`-Kopf der
+  Datei. Zusätzlich CO (Cinema Ostertor) bekommt die 2026-08-30
+  entfernte alte TID `54017639` zurück (beide TIDs gültig, bis Paco
+  die alten nach vollständiger Terminal-Umstellung manuell entfernt).
+  Details siehe CHANGELOG.md.
 
 - Run 413a ✅ `config/terminal_ids.json`: TID-Liste pro Standort von
   flachen Strings auf Objekte `{"tid": ..., "kommentar": ...}`
@@ -162,6 +171,8 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
   gekennzeichnet werden kann (Standard-JSON kennt keine echten
   Kommentare). `TerminalIdsConfigService.laden()` entsprechend
   angepasst. Details siehe CHANGELOG.md.
+  KORRIGIERT in Run 413a2 (siehe dort) — Objekt-Struktur wieder
+  zurückgebaut, Paco wollte den Kommentar nicht als Datenfeld.
 
 - Run 413 ✅ Scan-Metadaten-Block in der EC-Kachel (Schritt 2) wird
   nur noch im Dev-Modus angezeigt, statt immer sichtbar zu sein.
