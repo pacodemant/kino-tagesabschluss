@@ -9,6 +9,48 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 414: TID-Prüfung gegen config/terminal_ids.json ist jetzt an
+  allen drei Stellen blockierend statt nur ein weicher Hinweis —
+  Paco-Entscheidung: die TID ist eindeutig, eine falsche Ziffer soll
+  abgelehnt werden. Auslöser: Paco konnte nach manueller Änderung
+  einer TID-Ziffer ohne jede Warnung bis Schritt 3 weiterkommen (die
+  bestehende Prüfung lief nur direkt nach einem BelegScan, nicht bei
+  manueller Nachbearbeitung oder beim Verlassen von Schritt 2).
+  1) `beleg_scan_bestaetigen_dialog.dart`: "übernehmen"-Button ist
+  jetzt deaktiviert, wenn `tidKonfigWarnung != null` — MA muss
+  nochmal scannen oder den Kamera-Dialog abbrechen und manuell
+  eintragen. Hinweistext angepasst (Verweis auf "manuell korrigieren
+  nach Übernehmen" entfernt, da dieser Weg entfällt).
+  2) `tagesabschluss_schritt2_seite.dart`: `_pruefePflichtfelderVorSchritt3()`
+  prüft nach dem bestehenden Pflichtfeld-Block zusätzlich jede
+  ausgefüllte EC-Beleg-TID gegen die Konfiguration (bestehende
+  `_pruefeTidGegenKonfiguration()`-Logik, keine Duplikation). Bei
+  Abweichung neue Methode `_zeigeTidFehlerUndFokussiere()` (analog
+  zum bestehenden Pflichtfeld-Fehler: Dialog mit der konkreten
+  Warnung, Scroll+Fokus aufs TID-Feld), "Weiter" wird verhindert.
+  3) `api_upload_service.dart`: `upload()` wirft jetzt eine Exception,
+  falls `_pruefeTerminalIds()` eine Abweichung findet — VOR dem
+  eigentlichen Netzwerk-Versand (`_ensure()`/`_settlements()`), es
+  wird bei ungültiger TID also gar nichts an Flurbocash geschickt.
+  Rückgabetyp vereinfacht von `({List<String> warnungen, Map<String,
+  dynamic>? serverAntwort})` auf `Map<String, dynamic>?`, da
+  `warnungen` im Erfolgsfall jetzt immer leer wäre (tote Information).
+  `tagesabschluss_schritt3_seite.dart`s `_doApiUpload()` entsprechend
+  vereinfacht (kein "gesendet — Achtung: ..."-Zweig mehr, da ein
+  TID-Fehler jetzt in den bestehenden `catch`-Block läuft und dort
+  bereits verständlich angezeigt wird, ohne als gesendet markiert zu
+  werden). `verlauf_detail_seite.dart`s `_erneuthSenden()` unverändert
+  (destrukturiert die Rückgabe ohnehin nicht). Alte Doku-Note in
+  `api_upload_service.dart` ("Referenzliste noch unbestätigt, harter
+  Block riskant") durch die neue Entscheidung ersetzt.
+  `pruefeTerminalIdsGegenKonfiguration()` selbst unverändert (bleibt
+  die reine, bereits getestete Prüf-Funktion, wirft weiterhin nicht) —
+  nur die drei Aufrufstellen reagieren jetzt blockierend. Kein neuer
+  automatisierter Test für den Wurf in `upload()`: die Prüf-Logik
+  selbst ist bereits vollständig getestet, `upload()` bräuchte dafür
+  HTTP-Mocking-Infrastruktur, die im Projekt noch nicht existiert
+  (neue Dependency, nicht Teil dieses Runs).
+
 - Run 413a2: Direkte Anweisung ohne eigene Run-Nummer (Ergänzung/
   Korrektur zu Run 413a, gleicher uncommitteter Arbeitsstand). Paco
   wollte den Alt/Neu-Kommentar doch nicht als Datenfeld pro TID (siehe

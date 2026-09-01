@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 413a · wird fortlaufend ergänzt
+Stand: September 2026 · Run 414 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -84,16 +84,19 @@ um Durcheinander zu vermeiden.
 
 - [ ] **Sendebestätigung nach Flurbocash-Versand als Popup statt Snackbar**
       Nach erfolgreichem Versand (`_doApiUpload()` in
-      tagesabschluss_schritt3_seite.dart:344-355, analog
-      `_erneutSenden()` in verlauf_detail_seite.dart) erscheint die
-      Bestätigung ("API Upload erfolgreich ✓" bzw. mit TID-Warnungen)
-      nur als SnackBar — kann übersehen/weggewischt werden, gerade bei
-      TID-Warnungen relevant. Gewünscht: eigenes Popup mit
+      tagesabschluss_schritt3_seite.dart, analog `_erneuthSenden()` in
+      verlauf_detail_seite.dart) erscheint die Bestätigung
+      ("API Upload erfolgreich ✓") nur als SnackBar — kann
+      übersehen/weggewischt werden. Gewünscht: eigenes Popup mit
       Pflicht-Bestätigung ("ok"/"verstanden"). NICHT zu verwechseln mit
-      der bereits umgesetzten TID-Warnung im Bestätigungs-Popup VOR der
+      der bereits umgesetzten TID-Prüfung im Bestätigungs-Popup VOR der
       Beleg-Übernahme in Schritt 2 (siehe "TID-Whitelist editierbar"
       unten) — hier geht es um die Bestätigung NACH dem tatsächlichen
-      Versand.
+      Versand. Seit Run 414 gibt es bei erfolgreichem Versand keine
+      "... — Achtung: TID-Warnungen" mehr (eine TID-Abweichung
+      blockiert den Versand jetzt komplett, statt als Warnung neben
+      einem erfolgreichen Versand zu erscheinen) — dieser Punkt betrifft
+      also nur noch die reine Erfolgsbestätigung.
 
 - [ ] **Ausgaben-/Sonstiges-Zeilen: Label-Feld breiter, Betrag-Feld
       schmaler** Betrifft zwei Stellen: `_Schritt2AusgabenZeile`
@@ -230,19 +233,22 @@ um Durcheinander zu vermeiden.
 ### Einstellungen & Konfiguration *(Phase C)*
 
 - [ ] **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
-      `config/terminal_ids.json`, Warnung bei Unstimmigkeit statt
-      Blockade) ist seit Run 399 umgesetzt, seit Run 399a6 direkt im
-      Bestätigungs-Popup nach dem BelegScan in Schritt 2 sichtbar
-      (rote Warnzeile bei der TID: "... TID falsch? Nochmals scannen
-      oder nach dem 'Übernehmen' manuell korrigieren.") statt erst
-      beim Upload in Schritt 3 — der MA sieht eine Abweichung damit
-      sofort, bevor der Beleg übernommen wird. Der Check beim Upload
-      in Schritt 3 bleibt zusätzlich als Sicherheitsnetz bestehen
-      (z. B. bei manuell nachgetragener TID ohne erneuten Scan).
+      `config/terminal_ids.json`) ist seit Run 399 umgesetzt, seit
+      Run 399a6 direkt im Bestätigungs-Popup nach dem BelegScan in
+      Schritt 2 sichtbar statt erst beim Upload in Schritt 3 — der MA
+      sieht eine Abweichung damit sofort. Seit Run 414 ist der Abgleich
+      an allen drei Stellen (Scan-Popup, Weiter-Button Schritt 2→3,
+      Senden) blockierend statt nur ein weicher Hinweis (Paco-
+      Entscheidung: TID ist eindeutig, falsche Ziffer wird abgelehnt).
+      Im Scan-Popup ist "übernehmen" bei Abweichung jetzt deaktiviert
+      (kein "manuell korrigieren nach Übernehmen" mehr möglich, MA muss
+      nochmal scannen oder abbrechen + manuell eintragen).
       Weiterhin offen: eigene, editierbare Felder pro Standort in den
       Einstellungen statt der statischen JSON-Datei (siehe auch
       blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte
-      bis auf SB von Yannik noch nicht bestätigt).
+      bis auf SB von Yannik noch nicht bestätigt; da der Abgleich jetzt
+      blockierend ist, hat eine falsche/unvollständige Referenzliste
+      ein höheres Gewicht als vorher).
 
 - [ ] **Safari-iOS: Lokale Speicherung** Safari löscht localStorage/IndexedDB
       nach 7 Tagen (ITP). Lösung: Warnung bei drohendem Datenverlust oder

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+413a2 · Run 413a2
+Version: 0.9.82+414 · Run 414
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 413a2)
+## Laufender Entwicklungsstand (Run 414)
+
+- Run 414 ✅ TID-Prüfung gegen config/terminal_ids.json ist jetzt an
+  allen drei Stellen (Scan-Popup, Weiter-Button Schritt 2→3, Senden)
+  blockierend statt nur ein weicher Hinweis — Paco-Entscheidung: TID
+  ist eindeutig, falsche Ziffer wird abgelehnt. `ApiUploadService.
+  upload()` wirft jetzt vor dem eigentlichen Versand, Rückgabetyp
+  vereinfacht (kein `warnungen`-Feld mehr, da im Erfolgsfall immer
+  leer). Details siehe CHANGELOG.md.
 
 - Run 413a2 ✅ Korrektur zu Run 413a: Objekt-Umstellung pro TID
   wieder zurückgebaut (`terminal_ids` wieder flache String-Liste,

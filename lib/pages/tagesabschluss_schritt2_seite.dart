@@ -969,7 +969,44 @@ class _TagesabschlussSchritt2SeiteState
         return false;
       }
     }
+
+    for (int i = 0; i < _ecBelegLabelController.length; i++) {
+      final String tid = _ecBelegLabelController[i].text.trim();
+      if (tid.isEmpty) continue;
+      final List<String> warnungen = await _pruefeTidGegenKonfiguration(tid);
+      if (warnungen.isNotEmpty) {
+        await _zeigeTidFehlerUndFokussiere(
+          warnung: warnungen.first,
+          fokusNode: _ecBelegLabelFocusNode[i],
+        );
+        return false;
+      }
+    }
     return true;
+  }
+
+  Future<void> _zeigeTidFehlerUndFokussiere({
+    required String warnung,
+    required FocusNode fokusNode,
+  }) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        content: Text(warnung),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Ändern'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    FocusScope.of(context).requestFocus(fokusNode);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _macheFehlerfeldSichtbar(fokusNode);
+    });
   }
 
   bool _istPflichtfeldLeer(TextEditingController controller) {

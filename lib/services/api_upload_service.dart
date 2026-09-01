@@ -38,10 +38,16 @@ class ApiUploadService {
     'vpay',
   ];
 
-  /// Liefert Warnungen zu nicht erkannten TIDs zusaetzlich zum normalen
-  /// Erfolg — siehe [_pruefeTerminalIds]: die Referenzliste in
-  /// config/terminal_ids.json ist laut TODO.md fuer alle Standorte noch
-  /// nicht von Yannik bestaetigt, ein harter Block waere daher riskant.
+  /// Wirft, falls eine der zu sendenden TIDs nicht zu
+  /// config/terminal_ids.json passt (siehe [_pruefeTerminalIds]) — bewusste
+  /// Paco-Entscheidung (2026-09-01): die TID ist eindeutig, eine falsche
+  /// Ziffer soll den Versand verhindern statt nur eine Warnung zu zeigen.
+  /// Wirft VOR dem eigentlichen Netzwerk-Versand (_ensure()/_settlements()),
+  /// damit bei einer ungueltigen TID gar nichts an Flurbocash geschickt
+  /// wird. Aeltere Doku-Note (bis Run 413a2, jetzt ueberholt): die
+  /// Referenzliste war laut TODO.md fuer manche Standorte noch nicht von
+  /// Yannik bestaetigt — das Risiko einer falschen Referenzliste wird
+  /// jetzt bewusst in Kauf genommen.
   ///
   /// [serverAntwort] ist der geparste JSON-Body der settlements-Antwort
   /// (report_id, entered_total_cents, discrepancy_cents, ...) — seit
@@ -49,12 +55,16 @@ class ApiUploadService {
   /// Server-Wert prüfen lässt, was Flurbocash tatsächlich verbucht hat
   /// (z. B. bei mehreren terminals[]-Einträgen gleicher TID). null, falls
   /// die Antwort kein gültiges JSON war.
-  static Future<({List<String> warnungen, Map<String, dynamic>? serverAntwort})>
-      upload(TagesabschlussFinal abrechnung) async {
+  static Future<Map<String, dynamic>?> upload(
+    TagesabschlussFinal abrechnung,
+  ) async {
     final ({String url, int locationId, String apiKey}) konfig =
         await _ladeKonfigWerte(abrechnung.kinoId);
 
     final List<String> warnungen = await _pruefeTerminalIds(abrechnung);
+    if (warnungen.isNotEmpty) {
+      throw Exception('TID-Pruefung fehlgeschlagen: ${warnungen.join(' ')}');
+    }
 
     final int reportId = await _ensure(
       konfig.url,
@@ -64,9 +74,7 @@ class ApiUploadService {
     );
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
-    final Map<String, dynamic>? serverAntwort =
-        await _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
-    return (warnungen: warnungen, serverAntwort: serverAntwort);
+    return _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
   }
 
   /// Gleicht die tatsächlich zu sendenden TIDs gegen config/terminal_ids.json
