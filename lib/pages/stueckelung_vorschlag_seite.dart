@@ -259,7 +259,12 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
       width: 44,
       child: Material(
         color: aktiv ? Colors.grey.shade200 : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(4),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+          side: BorderSide(
+            color: aktiv ? Colors.grey.shade500 : Colors.grey.shade300,
+          ),
+        ),
         child: InkWell(
           onTap: onPressed,
           borderRadius: BorderRadius.circular(4),
