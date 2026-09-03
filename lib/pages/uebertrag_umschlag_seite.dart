@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
@@ -92,7 +93,8 @@ class UebertragUmschlagSeite extends StatelessWidget {
                     wert: _euro(abschluss.kinoSollCent),
                     stil: InfoZeileStil.fuehrungslinie,
                   ),
-                  if (abschluss.kinoId != 'kino_04')
+                  if (KinoRepository.nachId(abschluss.kinoId)?.hatBistro ??
+                      true)
                     InfoZeile(
                       label: '+ Bistro Soll',
                       wert: _euro(abschluss.bistroSollCent),

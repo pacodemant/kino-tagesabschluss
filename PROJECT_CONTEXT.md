@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.83+423 · Run 423
+Version: 0.9.83+424 · Run 424
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 423)
+## Laufender Entwicklungsstand (Run 424)
+
+- Run 424 ✅ Dritter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
+  4): neues `Kino.hatBistro`-Feld (kino.dart, Muster wie
+  hatGetraenke/hatWechselgeld) ersetzt 8 verstreute
+  `kinoId == 'kino_04'`-Vergleiche in 5 Dateien. Bewusst nicht
+  angefasst: 3 separate `kino_04`-Vergleiche für die
+  Personalgetränke-Regel (eigene, seit Run 372a bewusst getrennte
+  Fachregel) sowie die Kino-ID-Switch-Blöcke für Testwerte (Fund 3,
+  eigener Architektur-Run). Details siehe CHANGELOG.md.
 
 - Run 423 ✅ Zweiter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
   1): die 6 EC-Kartenarten waren in api_upload_service.dart an 3

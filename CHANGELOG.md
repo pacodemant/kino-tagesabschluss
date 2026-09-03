@@ -9,6 +9,34 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 424: Dritter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund 4,
+  siehe Chat): "Cinema Ostertor (kino_04) hat kein Bistro" war als
+  Literalvergleich `kinoId == 'kino_04'`/`!= 'kino_04'` an 8 Stellen
+  in 5 Dateien dupliziert (tagesabschluss_schritt2_seite.dart,
+  tagesabschluss_schritt3_seite.dart, uebertrag_umschlag_seite.dart,
+  verlauf_detail_seite.dart, einstellungen_seite.dart) — bei einem
+  neuen Kino ohne Bistro oder falls Cinema Ostertor später doch eins
+  bekommt, hätte eine der 8 Stellen vergessen werden können. Jetzt
+  neues Feld `Kino.hatBistro` (Model kino.dart, gleiches Muster wie
+  hatGetraenke/hatWechselgeld) — default false, explizit true für
+  Atlantis/Schauburg/Gondel/Bar Tabak. Alle 8 Stellen lesen jetzt
+  `KinoRepository.nachId(kinoId)?.hatBistro` (bzw. lokale Getter
+  `_hatBistro`/`_aktivesKinoHatBistro` in den beiden Dateien mit
+  mehreren Vorkommen). Verhalten unverändert für alle 5 Kinos.
+  Bewusst NICHT angefasst: 3 weitere `kinoId == 'kino_04'`-Vergleiche
+  in tagesabschluss_schritt2_seite.dart (Personalgetränke-Kachel +
+  "gebont"-Blockade) — das ist laut Run-372a-Historie eine eigene,
+  bewusst separate Regel für Cinema Ostertor, keine Bistro-Frage;
+  beide Regeln zufällig auf denselben Wert zusammenzufassen hätte ein
+  stilles Kopplungsrisiko geschaffen, falls sie sich künftig
+  auseinanderentwickeln. Ebenfalls offen: die 3 Kino-ID-Switch-Blöcke
+  in einstellungen_seite.dart/lokaler_speicher.dart/
+  getraenke_config_service.dart (Fund 3 aus der Diagnose) — größere
+  Datenmodell-Umstrukturierung, eigener Architektur-Run. Keine neuen
+  Tests nötig (keine automatisierten Tests für die betroffenen
+  Widget-Bäume vorhanden, reine Verhaltensgleichheit per Konstruktion
+  der Ersatzausdrücke).
+
 - Run 423: Zweiter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund 1,
   siehe Chat): die sechs EC-Kartenarten
   (girocard/lastschrift/mastercard/visa/maestro/vpay) waren in

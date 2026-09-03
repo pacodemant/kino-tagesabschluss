@@ -475,7 +475,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
                       InfoZeile(label: 'Kino SOLL', wert: _euro(a.kinoSollCent)),
-                      if (a.kinoId != 'kino_04')
+                      if (KinoRepository.nachId(a.kinoId)?.hatBistro ?? true)
                         InfoZeile(label: 'Bistro SOLL', wert: _euro(a.bistroSollCent)),
                       InfoZeile(label: 'Ausgaben', wert: _euro(a.ausgabenCent)),
                       ..._ausgabenUnterzeilen(a),

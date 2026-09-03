@@ -772,7 +772,9 @@ class _TagesabschlussSchritt3SeiteState
           Schritt3SollSection(
             kinoSollCent: vorschau.kinoSollCent,
             bistroSollCent: vorschau.bistroSollCent,
-            zeigeBistroSoll: widget.argumente.kinoId != 'kino_04',
+            zeigeBistroSoll:
+                KinoRepository.nachId(widget.argumente.kinoId)?.hatBistro ??
+                    true,
             ausgabenCent: vorschau.ausgabenCent,
             gesamtSollCent: vorschau.gesamtSollCent,
           ),

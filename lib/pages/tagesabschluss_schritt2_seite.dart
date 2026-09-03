@@ -182,6 +182,14 @@ class _TagesabschlussSchritt2SeiteState
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
   bool get _scanLaeuft => _scanBelegIndex != null;
+
+  /// Ob widget.kinoId ein eigenes Bistro-SOLL hat (seit Run 424 aus
+  /// Kino.hatBistro; vorher als kinoId=='kino_04'-Vergleich an 4
+  /// Stellen in dieser Datei dupliziert). Betrifft NUR das Bistro-SOLL
+  /// -Feld — die Personalgetraenke-Kachel weiter unten ist eine
+  /// eigene, seit Run 372a bewusst separate Regel fuer kino_04 und
+  /// bleibt unveraendert.
+  bool get _hatBistro => KinoRepository.nachId(widget.kinoId)?.hatBistro ?? true;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
   bool _bistroSollBeruehrt = false;
@@ -949,7 +957,7 @@ class _TagesabschlussSchritt2SeiteState
         fokus: _kinoSollFocusNode,
         bezeichnung: 'Kino-Soll',
       ),
-      if (widget.kinoId != 'kino_04')
+      if (_hatBistro)
         (
           controller: _bistroSollController,
           fokus: _bistroSollFocusNode,
@@ -2270,7 +2278,7 @@ class _TagesabschlussSchritt2SeiteState
     // Kein Bistro-SOLL-Feld fuer dieses Kino gebaut (siehe Kino-SOLL-
     // Card) -> zugehoerigen FocusNode aus der Fokus-Reihenfolge nehmen,
     // sonst landet "Weiter" auf einem FocusNode ohne Widget im Baum.
-    if (widget.kinoId == 'kino_04') {
+    if (!_hatBistro) {
       reihenfolge.remove(_bistroSollFocusNode);
     }
     return reihenfolge;
@@ -2819,7 +2827,7 @@ class _TagesabschlussSchritt2SeiteState
       anmerkungFocusNode: _anmerkungFocusNode,
       beiAnmerkungGeaendert: _beiAnmerkungGeaendert,
       kinoSollEingabeZeile: _baueEingabeZeile(
-        label: widget.kinoId == 'kino_04' ? 'Gesamt SOLL' : 'Kino SOLL',
+        label: _hatBistro ? 'Kino SOLL' : 'Gesamt SOLL',
         controller: _kinoSollController,
         focusNode: _kinoSollFocusNode,
         fehlermeldungText: _pflichtfeldFehlertext(
@@ -2828,9 +2836,8 @@ class _TagesabschlussSchritt2SeiteState
         ),
         onChanged: _beiKinoSollGeaendert,
       ),
-      bistroSollEingabeZeile: widget.kinoId == 'kino_04'
-          ? null
-          : _baueEingabeZeile(
+      bistroSollEingabeZeile: _hatBistro
+          ? _baueEingabeZeile(
               label: 'Bistro SOLL',
               controller: _bistroSollController,
               focusNode: _bistroSollFocusNode,
@@ -2839,7 +2846,8 @@ class _TagesabschlussSchritt2SeiteState
                 controller: _bistroSollController,
               ),
               onChanged: _beiBistroSollGeaendert,
-            ),
+            )
+          : null,
       ausgabenIds: _ausgabenIds,
       ausgabenLabelController: _ausgabenLabelController,
       ausgabenLabelFocusNode: _ausgabenLabelFocusNode,

@@ -103,6 +103,13 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       ? KinoRepository.kinos[_aktiveKinoIndex].kuerzel
       : '';
 
+  /// Seit Run 424 aus Kino.hatBistro (vorher als
+  /// kinoId!='kino_04'-Vergleich dupliziert, siehe auch
+  /// tagesabschluss_schritt2_seite.dart._hatBistro).
+  bool get _aktivesKinoHatBistro => _aktiveKinoIndex >= 0
+      ? KinoRepository.kinos[_aktiveKinoIndex].hatBistro
+      : true;
+
   List<String> _getraenkeliste = <String>[];
   final List<TextEditingController> _getraenkeController =
       <TextEditingController>[];
@@ -844,7 +851,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               controller: _s2KinoSollCtrl,
               onChanged: _speichereAutoFillSchritt2,
             ),
-            if (_aktiveKinoId != 'kino_04')
+            if (_aktivesKinoHatBistro)
               _baueCentZeile(
                 label: 'Bistro SOLL',
                 controller: _s2BistroSollCtrl,
