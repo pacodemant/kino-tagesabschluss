@@ -253,20 +253,28 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
   Widget _baueSteuerKnopf({
     required IconData icon,
     required VoidCallback? onPressed,
-  }) => SizedBox(
-    width: 35,
-    height: 22,
-    child: IconButton(
-      icon: Icon(icon, size: 14),
-      onPressed: onPressed,
-      padding: EdgeInsets.zero,
-      constraints: const BoxConstraints(),
-      visualDensity: VisualDensity.compact,
-      splashRadius: 14,
-      color: Colors.grey.shade800,
-      disabledColor: Colors.grey.shade300,
-    ),
-  );
+  }) {
+    final bool aktiv = onPressed != null;
+    return SizedBox(
+      width: 35,
+      height: 22,
+      child: Material(
+        color: aktiv ? Colors.grey.shade200 : Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(4),
+        child: InkWell(
+          onTap: onPressed,
+          borderRadius: BorderRadius.circular(4),
+          child: Center(
+            child: Icon(
+              icon,
+              size: 14,
+              color: aktiv ? Colors.grey.shade800 : Colors.grey.shade400,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _baueZeile(_ErgebnisZeile zeile) {
     switch (zeile.art) {
