@@ -148,6 +148,11 @@ class _TagesabschlussSchritt2SeiteState
 
   // Per-Beleg: Zahlungsarten und Scan-Status
   List<String> _zahlungsartKonfigNamen = <String>[];
+  // Wird in initState gesetzt und in _autoFillDev() abgewartet, damit das
+  // Dev-Auto-Fill nicht auf eine noch leere _zahlungsartKonfigNamen-Liste
+  // trifft, wenn der Config-Asset-Fetch (im Web ein echter HTTP-Request,
+  // siehe ZahlungsartenConfigService) noch nicht fertig ist.
+  late final Future<List<String>> _zahlungsartKonfigFuture;
   final List<List<ZahlungsartZeile>> _zahlungsartZeilen = <List<ZahlungsartZeile>>[];
   final List<bool> _scanHatStattgefunden = <bool>[];
   final List<int?> _kartenartenGesamtBetragCent = <int?>[];
@@ -244,7 +249,8 @@ class _TagesabschlussSchritt2SeiteState
         if (mounted) setState(() {});
       });
     }
-    ZahlungsartenConfigService.laden().then((List<String> liste) async {
+    _zahlungsartKonfigFuture = ZahlungsartenConfigService.laden();
+    _zahlungsartKonfigFuture.then((List<String> liste) async {
       if (!mounted) return;
       _zahlungsartKonfigNamen = liste;
       setState(() {
@@ -1383,6 +1389,12 @@ class _TagesabschlussSchritt2SeiteState
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeAutoFillSchritt2(widget.kinoId);
     final String aktiveTid = await _autoFillAktiveTid();
+    // Ohne dieses Warten kann der Zahlungsarten-Namensabgleich unten ins
+    // Leere laufen, wenn der Asset-Fetch aus initState() (im Web ein
+    // HTTP-Request) beim Tippen auf Auto-Fill noch nicht fertig ist —
+    // _zahlungsartZeilen[0] wäre dann noch leer, alle Kartenarten-Beträge
+    // blieben 0 (Symptom: nur Gesamtbetrag gefüllt, Kartenarten fehlen).
+    await _zahlungsartKonfigFuture;
     if (!mounted) {
       return;
     }

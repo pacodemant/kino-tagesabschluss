@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 416: Auto-Fill (DEV-Tools, Umsätze-Seite/Schritt 2) füllte nach
+  einem Bug-Report (Kachel zeigte nur den Gesamtbetrag + Hinweis
+  "Summe der Beträge stimmt nicht ...", Kartenarten fehlten; nach
+  "Belegdaten bearbeiten" erschienen sie mit 0) manchmal keine
+  Kartenarten-Beträge. Ursache: Race Condition zwischen dem
+  asynchronen Laden von `config/zahlungsarten.json`
+  (`ZahlungsartenConfigService.laden()`, im Web ein echter
+  HTTP-Request statt eines gebündelten Assets) in `initState()` und
+  dem Namensabgleich in `_autoFillDev()` — wurde Auto-Fill getippt,
+  bevor der Request fertig war, war `_zahlungsartZeilen[0]` noch leer
+  und der Abgleich lief komplett ins Leere, während der
+  Gesamtbetrag unabhängig davon trotzdem gesetzt wurde. Auf
+  installierten PWAs mit warmem Service-Worker-Cache kaum sichtbar,
+  auf frischen Browser-Tabs ohne Cache deutlich wahrscheinlicher.
+  Fix: `_autoFillDev()` wartet jetzt zusätzlich auf den bereits in
+  `initState()` gestarteten Ladevorgang (neues Feld
+  `_zahlungsartKonfigFuture`), bevor der Namensabgleich läuft.
+  Betrifft nur den Dev-Auto-Fill-Button (Debug/Profile), kein
+  Persistenz- oder API-Vertrag geändert.
+
 - Run 414a3: Direkte Anweisung ohne eigene Run-Nummer (drei weitere
   Test-Rückmeldungen zu Run 414a2). t1 (Kachel bleibt beim
   Hinzufügen aufgeklappt) und t3 (Versand mit gültiger TID) ok, kein

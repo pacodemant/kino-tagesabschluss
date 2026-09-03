@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+414a3 · Run 414a3
+Version: 0.9.82+416 · Run 416
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 414a3)
+## Laufender Entwicklungsstand (Run 416)
+
+- Run 416 ✅ Auto-Fill (DEV-Tools, Schritt 2) füllte bei ungünstigem
+  Timing keine Kartenarten-Beträge (Race Condition beim asynchronen
+  Laden von `config/zahlungsarten.json`, siehe CHANGELOG.md).
+  `_autoFillDev()` wartet jetzt auf den Konfig-Ladevorgang, bevor der
+  Namensabgleich läuft.
 
 - Run 414a3 ✅ Popup-Text weiter vereinfacht (redundantes "Bitte
   pruefen." entfernt). Echter Fund behoben: eine manuell eingetippte
