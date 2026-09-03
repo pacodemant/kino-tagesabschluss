@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -184,6 +185,68 @@ void main() {
           await LokalerSpeicher.ladeSendeBestaetigungDatum('kino_02'),
           '2026-08-30',
         );
+      },
+    );
+  });
+
+  group('LokalerSpeicher.ladeAutoFillSchritt2', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+    });
+
+    test(
+      'fuellt zahlungsartenNamen/-BetragCent aus den Standardwerten nach, '
+      'wenn ein bereits gespeicherter (vor Run 419 entstandener, kaputter) '
+      'Stand sie nicht enthaelt, alle anderen Felder bleiben unveraendert '
+      '(Regression Run 420: Run-419-Fix verhinderte nur kuenftigen '
+      'Datenverlust, reparierte aber bereits kaputte Altstaende nicht)',
+      () async {
+        final SharedPreferences speicher =
+            await SharedPreferences.getInstance();
+        await speicher.setString(
+          'dev_autofill_schritt2_kino_03',
+          jsonEncode(<String, dynamic>{
+            'kinoSollCent': 12345,
+            'bistroSollCent': 0,
+            'ausgabenCent': 0,
+            'ecBelegCent': 52000,
+            'differenzAnfangsbestandCent': 0,
+          }),
+        );
+
+        final Map<String, dynamic>? geladen =
+            await LokalerSpeicher.ladeAutoFillSchritt2('kino_03');
+
+        expect(geladen?['kinoSollCent'], 12345);
+        expect(geladen?['ecBelegCent'], 52000);
+        expect(
+          geladen?['zahlungsartenNamen'],
+          <String>['Girocard', 'MasterCard', 'Visa'],
+        );
+        expect(geladen?['zahlungsartenBetragCent'], <int>[25000, 8000, 5160]);
+      },
+    );
+
+    test(
+      'laesst einen bereits vollstaendigen gespeicherten Stand '
+      '(mit eigenen zahlungsartenNamen) unveraendert',
+      () async {
+        final SharedPreferences speicher =
+            await SharedPreferences.getInstance();
+        await speicher.setString(
+          'dev_autofill_schritt2_kino_03',
+          jsonEncode(<String, dynamic>{
+            'kinoSollCent': 12345,
+            'zahlungsartenNamen': <String>['Girocard'],
+            'zahlungsartenBetragCent': <int>[12345],
+          }),
+        );
+
+        final Map<String, dynamic>? geladen =
+            await LokalerSpeicher.ladeAutoFillSchritt2('kino_03');
+
+        expect(geladen?['zahlungsartenNamen'], <String>['Girocard']);
+        expect(geladen?['zahlungsartenBetragCent'], <int>[12345]);
       },
     );
   });

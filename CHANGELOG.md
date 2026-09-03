@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 420: Der Run-419-Fix (Merge beim Speichern) verhinderte nur
+  künftigen Datenverlust, reparierte aber bereits vor Run 419
+  kaputt gespeicherte Auto-Fill-Altstände nicht — auf Pacos iPhone
+  fehlten die Kartenarten nach Run 419 weiterhin, weil der dort
+  geladene "bestehende" Stand selbst schon keine zahlungsartenNamen
+  mehr hatte (nichts zum Übernehmen). LokalerSpeicher.
+  ladeAutoFillSchritt2() füllt beim Laden jetzt automatisch mit den
+  Standard-Kartenarten des jeweiligen Kinos nach
+  (_schritt2StandardWerte()), falls der gespeicherte Stand kein
+  zahlungsartenNamen enthält — repariert jeden betroffenen Stand
+  beim nächsten Laden, ohne dass Storage manuell zurückgesetzt
+  werden muss. Macht damit auch den Run-419-Merge-Schritt wirksam,
+  da "bestehend" ab jetzt nie mehr ohne Kartenarten geladen wird.
+  2 neue Unit-Tests (kaputter Altstand wird nachgefüllt,
+  vollständiger Stand bleibt unverändert).
+
 - Run 419: Echte Ursache des Run-416-Bugs gefunden (der Timing-Fix
   dort war real, aber nicht die Ursache dieses konkreten Falls):
   EinstellungenSeite._speichereAutoFillSchritt2() (aufgerufen bei

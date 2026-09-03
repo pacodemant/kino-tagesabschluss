@@ -500,7 +500,20 @@ class LokalerSpeicher {
       return _schritt2StandardWerte(kinoId);
     }
     try {
-      return jsonDecode(rohwert) as Map<String, dynamic>;
+      final Map<String, dynamic> geladen = jsonDecode(rohwert) as Map<String, dynamic>;
+      // Reparatur für Altstände (vor Run 419 gespeichert, siehe dortiger
+      // Bug): _speichereAutoFillSchritt2() in einstellungen_seite.dart
+      // konnte zahlungsartenNamen/-BetragCent beim Speichern der übrigen
+      // Felder verlieren, da es dafür keine eigene UI gibt. Ohne dieses
+      // Nachfüllen bleibt ein bereits kaputter Stand dauerhaft kaputt,
+      // weil der Run-419-Merge-Schritt beim nächsten Speichern nichts zum
+      // Übernehmen findet.
+      if (geladen['zahlungsartenNamen'] == null) {
+        final Map<String, dynamic> standard = _schritt2StandardWerte(kinoId);
+        geladen['zahlungsartenNamen'] = standard['zahlungsartenNamen'];
+        geladen['zahlungsartenBetragCent'] = standard['zahlungsartenBetragCent'];
+      }
+      return geladen;
     } catch (_) {
       return null;
     }

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+419 · Run 419
+Version: 0.9.82+420 · Run 420
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 419)
+## Laufender Entwicklungsstand (Run 420)
+
+- Run 420 ✅ Run-419-Fix verhinderte nur künftigen Datenverlust,
+  reparierte bereits kaputte Auto-Fill-Altstände nicht.
+  LokalerSpeicher.ladeAutoFillSchritt2() füllt beim Laden jetzt
+  automatisch mit Standard-Kartenarten nach, falls der gespeicherte
+  Stand keine zahlungsartenNamen enthält. 2 neue Unit-Tests. Details
+  siehe CHANGELOG.md.
 
 - Run 419 ✅ Echte Ursache des Run-416-Bugs gefunden:
   `_speichereAutoFillSchritt2()` in `einstellungen_seite.dart` löschte
