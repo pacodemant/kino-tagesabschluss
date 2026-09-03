@@ -324,7 +324,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 64,
+                  width: 40,
                   child: Text(
                     '/ ${zeile.vorhanden}',
                     textAlign: TextAlign.right,
@@ -364,7 +364,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
               ),
-              const SizedBox(width: 64),
+              const SizedBox(width: 40),
             ],
           ),
         );
@@ -472,7 +472,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 64,
+                  width: 40,
                   child: Text(
                     'Vorh.',
                     textAlign: TextAlign.right,
