@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 421: Erster Aufräum-Run aus der Code-Qualitäts-Diagnose (siehe
+  Chat, ausgelöst durch Run 416/419/420): Die SharedPreferences-Keys
+  für die Flurbocash-Zugangsdaten pro Kino
+  (`flurbocash_location_id_$kinoId`, `flurbocash_api_key_$kinoId`)
+  waren als rohe String-Literale an 9 Stellen in 3 Dateien
+  (api_upload_service.dart, einstellungen_seite.dart,
+  tagesabschluss_schritt3_seite.dart) dupliziert — Tippfehler an
+  einer der Stellen wären beim Kompilieren nicht aufgefallen und
+  hätten Zugangsdaten stillschweigend auseinanderlaufen lassen,
+  exakt das Muster von Run 416/419/420. Jetzt zentral in
+  `ApiUploadService.locationIdPrefKey(kinoId)` und
+  `apiKeyPrefKey(kinoId)`, alle 9 Aufrufstellen umgestellt. Die
+  gespeicherten Key-Strings selbst sind unverändert (kein
+  Storage-Contract-Bruch, bestehende Flurbocash-Zugangsdaten auf
+  Geräten bleiben lesbar). Keine neuen Tests nötig — reine
+  Zentralisierung ohne Verhaltensänderung, vorhandene
+  api_upload_service_test.dart deckt die Lese-/Schreib-Pfade weiter ab.
+
 - Run 420: Der Run-419-Fix (Merge beim Speichern) verhinderte nur
   künftigen Datenverlust, reparierte aber bereits vor Run 419
   kaputt gespeicherte Auto-Fill-Altstände nicht — auf Pacos iPhone

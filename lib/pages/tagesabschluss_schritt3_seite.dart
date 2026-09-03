@@ -532,8 +532,9 @@ class _TagesabschlussSchritt3SeiteState
 
   Future<void> _zeigeFlurbocashJson() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? locationIdStr =
-        speicher.getString('flurbocash_location_id_${widget.argumente.kinoId}');
+    final String? locationIdStr = speicher.getString(
+      ApiUploadService.locationIdPrefKey(widget.argumente.kinoId),
+    );
     final int locationId =
         (locationIdStr != null && locationIdStr.isNotEmpty)
             ? (int.tryParse(locationIdStr) ?? 0)

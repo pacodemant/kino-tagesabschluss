@@ -14,6 +14,16 @@ class ApiUploadService {
 
   static const String apiUploadUrlPrefKey = 'api_upload_url';
 
+  /// Einzige Quelle fuer den SharedPreferences-Key der Flurbocash-
+  /// Location-ID eines Kinos (seit Run 421 zentralisiert, vorher an
+  /// mehreren Stellen als rohes String-Literal dupliziert).
+  static String locationIdPrefKey(String kinoId) =>
+      'flurbocash_location_id_$kinoId';
+
+  /// Einzige Quelle fuer den SharedPreferences-Key des Flurbocash-API-Keys
+  /// eines Kinos (seit Run 421 zentralisiert, siehe [locationIdPrefKey]).
+  static String apiKeyPrefKey(String kinoId) => 'flurbocash_api_key_$kinoId';
+
   // Schluessel normalisiert (getrimmt + kleingeschrieben) — der Lookup in
   // _terminalsListe() normalisiert z.art genauso, damit vom Beleg-Scan
   // gelieferte Varianten wie "MASTERCARD" oder " Girocard" nicht am reinen
@@ -154,14 +164,13 @@ class ApiUploadService {
     }
 
     final String? locationIdStr =
-        speicher.getString('flurbocash_location_id_$kinoId');
+        speicher.getString(locationIdPrefKey(kinoId));
     final int locationId =
         (locationIdStr != null && locationIdStr.isNotEmpty)
             ? (int.tryParse(locationIdStr) ?? 0)
             : 0;
 
-    final String? perKinoKey =
-        speicher.getString('flurbocash_api_key_$kinoId');
+    final String? perKinoKey = speicher.getString(apiKeyPrefKey(kinoId));
     final String apiKey = (perKinoKey != null && perKinoKey.isNotEmpty)
         ? perKinoKey
         : (speicher.getString('api_upload_key') ?? '');

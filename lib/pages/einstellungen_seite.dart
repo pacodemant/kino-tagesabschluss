@@ -233,10 +233,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString(BelegScanService.belegScanUrlPrefKey) ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
-    final String? overrideLocationId =
-        speicher.getString('flurbocash_location_id_$_aktiveKinoId');
-    final String? overrideApiKey =
-        speicher.getString('flurbocash_api_key_$_aktiveKinoId');
+    final String? overrideLocationId = speicher.getString(
+      ApiUploadService.locationIdPrefKey(_aktiveKinoId),
+    );
+    final String? overrideApiKey = speicher.getString(
+      ApiUploadService.apiKeyPrefKey(_aktiveKinoId),
+    );
     final String? standortModus = await LokalerSpeicher.ladeStandortModus();
     final bool adminStatusHaltenAktiv =
         speicher.getBool('admin_status_halten_aktiv') ?? false;
@@ -372,20 +374,22 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Future<void> _speichereLocationId() async {
     final String wert = _locationIdCtrl.text.trim();
     final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = ApiUploadService.locationIdPrefKey(_aktiveKinoId);
     if (wert.isEmpty) {
-      await speicher.remove('flurbocash_location_id_$_aktiveKinoId');
+      await speicher.remove(key);
     } else {
-      await speicher.setString('flurbocash_location_id_$_aktiveKinoId', wert);
+      await speicher.setString(key, wert);
     }
   }
 
   Future<void> _speichereFlurbocashApiKey() async {
     final String wert = _flurbocashApiKeyCtrl.text.trim();
     final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key = ApiUploadService.apiKeyPrefKey(_aktiveKinoId);
     if (wert.isEmpty) {
-      await speicher.remove('flurbocash_api_key_$_aktiveKinoId');
+      await speicher.remove(key);
     } else {
-      await speicher.setString('flurbocash_api_key_$_aktiveKinoId', wert);
+      await speicher.setString(key, wert);
     }
   }
 

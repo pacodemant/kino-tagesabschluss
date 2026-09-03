@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+420 · Run 420
+Version: 0.9.82+421 · Run 421
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,18 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 420)
+## Laufender Entwicklungsstand (Run 421)
+
+- Run 421 ✅ Code-Qualitäts-Diagnose über lib/ (Fund aus Run 416/419/420
+  aufgegriffen: dieselbe Konfiguration an mehreren Stellen von Hand
+  synchron gehalten) hat u.a. die SharedPreferences-Keys
+  `flurbocash_location_id_$kinoId`/`flurbocash_api_key_$kinoId` als
+  rohe String-Literale an 9 Stellen in 3 Dateien gefunden. Jetzt
+  zentral in `ApiUploadService.locationIdPrefKey()`/`apiKeyPrefKey()`
+  (Key-Werte selbst unverändert, nur die Konstruktion zentralisiert).
+  Weitere Diagnose-Funde (Kartenarten-Liste, Kino-ID-Switches,
+  Bistro-Flag, u.a.) stehen offen und werden als eigene Runs
+  nachgezogen.
 
 - Run 420 ✅ Run-419-Fix verhinderte nur künftigen Datenverlust,
   reparierte bereits kaputte Auto-Fill-Altstände nicht.
