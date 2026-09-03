@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.83+422 · Run 422
+Version: 0.9.83+422a · Run 422a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 422)
+## Laufender Entwicklungsstand (Run 422a)
+
+- Run 422a ✅ Korrektur zu Run 422: Layout der Personalgetränke-Kachel
+  umgestellt (Row aus Text-Column | Checkbox statt Column aus Row |
+  Text-Zeilen) — Checkbox jetzt vertikal über alle drei Zeilen
+  zentriert, Abstand zwischen allen drei Zeilen einheitlich 4px.
 
 - Run 422 ✅ Personalgetränke-Kachel (Schritt 2) um zwei reine
   Hinweiszeilen ergänzt: "Artikel gestundet?" und "Denk' ans

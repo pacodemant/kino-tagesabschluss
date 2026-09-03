@@ -16,29 +16,30 @@ class Schritt2PersonalgetraenkeSection extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: Row(
           children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const Text('Personalgetränke gebont?'),
-                Checkbox(
-                  value: gebont,
-                  onChanged: onChanged,
-                  activeColor: Colors.green,
-                  shape: const CircleBorder(),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Text('Personalgetränke gebont?'),
+                  const SizedBox(height: 4),
+                  const Text('Artikel gestundet?'),
+                  const SizedBox(height: 4),
+                  const Text(
+                    "Denk' ans Kellnerportemonnaie.",
+                    style: TextStyle(color: AppFarben.differenzNegativ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            const Text('Artikel gestundet?'),
-            const Text(
-              "Denk' ans Kellnerportemonnaie.",
-              style: TextStyle(color: AppFarben.differenzNegativ),
+            Checkbox(
+              value: gebont,
+              onChanged: onChanged,
+              activeColor: Colors.green,
+              shape: const CircleBorder(),
             ),
-            const SizedBox(height: 4),
           ],
         ),
       ),

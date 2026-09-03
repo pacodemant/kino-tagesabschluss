@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 422a: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
+  Run 422). Layout der Personalgetränke-Kachel umgestellt: statt
+  Row(Text|Checkbox) + Column mit ungleichmäßigen Abständen jetzt
+  Row(Column-mit-drei-Zeilen | Checkbox) — Checkbox durch die
+  Standard-Center-Ausrichtung der Row vertikal über alle drei
+  Zeilen zentriert, Abstand zwischen allen drei Zeilen einheitlich
+  4px.
+
 - Run 422: Personalgetränke-Kachel (Schritt 2) um zwei reine
   Hinweiszeilen ergänzt: "Artikel gestundet?" und "Denk' ans
   Kellnerportemonnaie." (letzte Zeile in Rot, `AppFarben.
