@@ -37,6 +37,9 @@ class _ErgebnisZeile {
     this.gruen = false,
     this.rot = false,
     this.ausgegraut = false,
+    this.steuerbar = false,
+    this.onPlus,
+    this.onMinus,
   });
 
   factory _ErgebnisZeile.stueckzahl({
@@ -45,29 +48,33 @@ class _ErgebnisZeile {
     required int vorhanden,
     bool gruen = false,
     bool ausgegraut = false,
-  }) =>
-      _ErgebnisZeile._(
-        art: _ZeilenArt.stueckzahl,
-        bezeichnung: bezeichnung,
-        genommen: genommen,
-        vorhanden: vorhanden,
-        gruen: gruen,
-        ausgegraut: ausgegraut,
-      );
+    bool steuerbar = false,
+    VoidCallback? onPlus,
+    VoidCallback? onMinus,
+  }) => _ErgebnisZeile._(
+    art: _ZeilenArt.stueckzahl,
+    bezeichnung: bezeichnung,
+    genommen: genommen,
+    vorhanden: vorhanden,
+    gruen: gruen,
+    ausgegraut: ausgegraut,
+    steuerbar: steuerbar,
+    onPlus: onPlus,
+    onMinus: onMinus,
+  );
 
   factory _ErgebnisZeile.betragzeile({
     required String bezeichnung,
     required int betragCent,
     bool ausgegraut = false,
     bool rot = false,
-  }) =>
-      _ErgebnisZeile._(
-        art: _ZeilenArt.betragzeile,
-        bezeichnung: bezeichnung,
-        betragCent: betragCent,
-        ausgegraut: ausgegraut,
-        rot: rot,
-      );
+  }) => _ErgebnisZeile._(
+    art: _ZeilenArt.betragzeile,
+    bezeichnung: bezeichnung,
+    betragCent: betragCent,
+    ausgegraut: ausgegraut,
+    rot: rot,
+  );
 
   factory _ErgebnisZeile.restbetrag(int betragCent) =>
       _ErgebnisZeile._(art: _ZeilenArt.restbetrag, betragCent: betragCent);
@@ -83,30 +90,67 @@ class _ErgebnisZeile {
   final bool gruen;
   final bool rot;
   final bool ausgegraut;
+  final bool steuerbar;
+  final VoidCallback? onPlus;
+  final VoidCallback? onMinus;
 }
 
 // ---------------------------------------------------------------------------
 
-class StueckelungVorschlagSeite extends StatelessWidget {
+class StueckelungVorschlagSeite extends StatefulWidget {
   const StueckelungVorschlagSeite({super.key, required this.argumente});
 
   static const String routenName = '/closure-step-4';
 
   final StueckelungVorschlagArgumente argumente;
 
+  @override
+  State<StueckelungVorschlagSeite> createState() =>
+      _StueckelungVorschlagSeiteState();
+}
+
+class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
+  // Verschiebt Scheine manuell zwischen Umschlag (Barumsatz) und
+  // Wechselgeld: +1 = ein Zwanziger mehr im Umschlag (zwei Zehner weniger),
+  // -1 = umgekehrt. 1 Zwanziger entspricht wertmäßig 2 Zehnern, die
+  // Umschlag-Summe bleibt bei jeder Verschiebung exakt gleich.
+  int _verschiebung = 0;
+
   List<_ErgebnisZeile> _berechneErgebnis() {
-    int restCent = argumente.barBestandAbzglWechselgeldCent;
+    int restCent = widget.argumente.barBestandAbzglWechselgeldCent;
     final List<_ErgebnisZeile> zeilen = <_ErgebnisZeile>[];
+
+    String bezeichnung20 = '';
+    String bezeichnung10 = '';
+    int vorhanden20 = 0;
+    int vorhanden10 = 0;
+    int basis20 = 0;
+    int basis10 = 0;
+    int index20 = -1;
+    int index10 = -1;
 
     // Scheine greedy, absteigend
     for (final Kassenzeile schein in StueckelungKonfiguration.scheine) {
-      final int vorhanden = argumente.stueckzahlen[schein.id] ?? 0;
+      final int vorhanden = widget.argumente.stueckzahlen[schein.id] ?? 0;
       int genommen = 0;
       if (restCent > 0 && vorhanden > 0) {
         final int maxMoeglich = restCent ~/ schein.einzelwertCent;
         genommen = maxMoeglich < vorhanden ? maxMoeglich : vorhanden;
         restCent -= genommen * schein.einzelwertCent;
       }
+
+      if (schein.id == 'note_20') {
+        bezeichnung20 = schein.bezeichnung;
+        vorhanden20 = vorhanden;
+        basis20 = genommen;
+        index20 = zeilen.length;
+      } else if (schein.id == 'note_10') {
+        bezeichnung10 = schein.bezeichnung;
+        vorhanden10 = vorhanden;
+        basis10 = genommen;
+        index10 = zeilen.length;
+      }
+
       zeilen.add(
         _ErgebnisZeile.stueckzahl(
           bezeichnung: schein.bezeichnung,
@@ -118,16 +162,58 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       );
     }
 
+    // Manuelle Verschiebung Zwanziger <-> Zehner einrechnen. Die
+    // Umschlag-Gesamtsumme bleibt dabei unverändert (1x20€ = 2x10€),
+    // restCent (für Münzen/Restbetrag unten) muss daher nicht angepasst
+    // werden.
+    if (index20 != -1 && index10 != -1) {
+      final int genommen20 = basis20 + _verschiebung;
+      final int genommen10 = basis10 - (2 * _verschiebung);
+      final bool kannMehrZwanziger =
+          genommen20 < vorhanden20 && genommen10 >= 2;
+      final bool kannWenigerZwanziger =
+          genommen20 > 0 && vorhanden10 - genommen10 >= 2;
+
+      zeilen[index20] = _ErgebnisZeile.stueckzahl(
+        bezeichnung: bezeichnung20,
+        genommen: genommen20,
+        vorhanden: vorhanden20,
+        gruen: genommen20 > 0 && genommen20 == vorhanden20,
+        ausgegraut: genommen20 == 0,
+        steuerbar: true,
+        onMinus: kannWenigerZwanziger
+            ? () => setState(() => _verschiebung--)
+            : null,
+        onPlus: kannMehrZwanziger
+            ? () => setState(() => _verschiebung++)
+            : null,
+      );
+      zeilen[index10] = _ErgebnisZeile.stueckzahl(
+        bezeichnung: bezeichnung10,
+        genommen: genommen10,
+        vorhanden: vorhanden10,
+        gruen: genommen10 > 0 && genommen10 == vorhanden10,
+        ausgegraut: genommen10 == 0,
+        steuerbar: true,
+        onMinus: kannMehrZwanziger
+            ? () => setState(() => _verschiebung++)
+            : null,
+        onPlus: kannWenigerZwanziger
+            ? () => setState(() => _verschiebung--)
+            : null,
+      );
+    }
+
     zeilen.add(_ErgebnisZeile.trennlinie());
 
     // Münzen: Kupfer und Silber aus losen Münzen summieren
     int kupferCent = 0;
     for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
-      kupferCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
+      kupferCent += widget.argumente.loseMuenzenNachArtCent[id] ?? 0;
     }
     int silberCent = 0;
     for (final String id in StueckelungKonfiguration.silberMuenzenIds) {
-      silberCent += argumente.loseMuenzenNachArtCent[id] ?? 0;
+      silberCent += widget.argumente.loseMuenzenNachArtCent[id] ?? 0;
     }
 
     final bool hatKupfer = kupferCent > 0;
@@ -143,8 +229,9 @@ class StueckelungVorschlagSeite extends StatelessWidget {
       if (restCent < 0) restCent = 0;
     }
 
-    final int silberGenommen =
-        restCent > 0 ? (silberCent < restCent ? silberCent : restCent) : 0;
+    final int silberGenommen = restCent > 0
+        ? (silberCent < restCent ? silberCent : restCent)
+        : 0;
     zeilen.add(
       _ErgebnisZeile.betragzeile(
         bezeichnung: hatKupfer ? 'Münzgeld (ohne Kupfer)' : 'Münzgeld',
@@ -163,11 +250,28 @@ class StueckelungVorschlagSeite extends StatelessWidget {
 
   String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
 
+  Widget _baueSteuerKnopf({
+    required IconData icon,
+    required VoidCallback? onPressed,
+  }) => SizedBox(
+    width: 35,
+    height: 22,
+    child: IconButton(
+      icon: Icon(icon, size: 14),
+      onPressed: onPressed,
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      visualDensity: VisualDensity.compact,
+      splashRadius: 14,
+      color: Colors.grey.shade800,
+      disabledColor: Colors.grey.shade300,
+    ),
+  );
+
   Widget _baueZeile(_ErgebnisZeile zeile) {
     switch (zeile.art) {
       case _ZeilenArt.stueckzahl:
-        final Color? grauFarbe =
-            zeile.ausgegraut ? Colors.grey.shade400 : null;
+        final Color? grauFarbe = zeile.ausgegraut ? Colors.grey.shade400 : null;
         return Container(
           margin: const EdgeInsets.only(bottom: 4),
           decoration: zeile.gruen
@@ -186,6 +290,11 @@ class StueckelungVorschlagSeite extends StatelessWidget {
                   style: TextStyle(color: grauFarbe),
                 ),
               ),
+              if (zeile.steuerbar) ...<Widget>[
+                _baueSteuerKnopf(icon: Icons.remove, onPressed: zeile.onMinus),
+                const SizedBox(width: 2),
+                _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
+              ],
               SizedBox(
                 width: 96,
                 child: Text(
@@ -210,8 +319,7 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         );
 
       case _ZeilenArt.betragzeile:
-        final Color? grauFarbe =
-            zeile.ausgegraut ? Colors.grey.shade400 : null;
+        final Color? grauFarbe = zeile.ausgegraut ? Colors.grey.shade400 : null;
         final Color? rotFarbe = zeile.rot ? AppFarben.differenzNegativ : null;
         return Container(
           margin: const EdgeInsets.only(bottom: 4),
@@ -295,14 +403,17 @@ class StueckelungVorschlagSeite extends StatelessWidget {
         schrittNummer: 4,
         schrittTitel: 'Stückelung Barumsatz',
         gesamtSchritte: 4,
-        kinoName: argumente.kinoName,
+        kinoName: widget.argumente.kinoName,
         onTap: () => _zeigeSchrittSlider(context),
         actions: <Widget>[
           const HelpButton(
             helpText:
                 'Hier siehst du, wie du den Barumsatz optimal mit den '
                 'verfügbaren Scheinen und Münzen stückeln kannst. '
-                'Grün markierte Einheiten werden vollständig in den Umschlag gegeben.',
+                'Grün markierte Einheiten werden vollständig in den Umschlag gegeben. '
+                'Mit den +/- Knöpfen bei den 20ern und 10ern kannst du bei Bedarf '
+                'Zwanziger gegen Zehner tauschen, z. B. um Wechselgeld für den '
+                'nächsten Tag zurückzubehalten.',
           ),
         ],
       ),
@@ -314,13 +425,10 @@ class StueckelungVorschlagSeite extends StatelessWidget {
               children: <TextSpan>[
                 const TextSpan(
                   text: 'Bareinnahmen Stückelung: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextSpan(
-                  text: _euro(argumente.barBestandAbzglWechselgeldCent),
+                  text: _euro(widget.argumente.barBestandAbzglWechselgeldCent),
                   style: const TextStyle(fontSize: 16),
                 ),
               ],
@@ -390,9 +498,9 @@ class StueckelungVorschlagSeite extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).popUntil(
-              ModalRoute.withName(StartmenueSeite.routenName),
-            ),
+            onPressed: () => Navigator.of(
+              context,
+            ).popUntil(ModalRoute.withName(StartmenueSeite.routenName)),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppFarben.fokusFarbe,
               foregroundColor: AppFarben.appBarRot,
