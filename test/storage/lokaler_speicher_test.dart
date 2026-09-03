@@ -187,4 +187,103 @@ void main() {
       },
     );
   });
+
+  group(
+    'LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten',
+    () {
+      test(
+        'uebernimmt zahlungsartenNamen/-BetragCent aus den bestehenden '
+        'Daten, wenn "neu" (aus der Einstellungen-Seite, hat dafuer keine '
+        'eigenen Felder) sie nicht enthaelt (Regression Run 419: Auto-Fill '
+        'auf der Umsaetze-Seite fuellte auf Geraeten, auf denen schon '
+        'einmal in den Einstellungen gespeichert wurde, keine Kartenarten '
+        'mehr, nur noch den Gesamtbetrag)',
+        () {
+          final Map<String, dynamic> bestehend = <String, dynamic>{
+            'kinoSollCent': 110000,
+            'zahlungsartenNamen': <String>['Girocard', 'MasterCard'],
+            'zahlungsartenBetragCent': <int>[40000, 12000],
+          };
+          final Map<String, dynamic> neu = <String, dynamic>{
+            'kinoSollCent': 99900,
+            'bistroSollCent': 0,
+            'ausgabenCent': 0,
+            'ecBelegCent': 52000,
+            'differenzAnfangsbestandCent': 0,
+          };
+
+          final Map<String, dynamic> ergebnis =
+              LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten(
+            neu,
+            bestehend,
+          );
+
+          expect(ergebnis['kinoSollCent'], 99900);
+          expect(ergebnis['ecBelegCent'], 52000);
+          expect(
+            ergebnis['zahlungsartenNamen'],
+            <String>['Girocard', 'MasterCard'],
+          );
+          expect(ergebnis['zahlungsartenBetragCent'], <int>[40000, 12000]);
+        },
+      );
+
+      test(
+        'ohne bestehende Daten (erstes Speichern ueberhaupt) bleibt "neu" '
+        'unveraendert, kein Absturz',
+        () {
+          final Map<String, dynamic> neu = <String, dynamic>{
+            'kinoSollCent': 0,
+          };
+
+          final Map<String, dynamic> ergebnis =
+              LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten(
+            neu,
+            null,
+          );
+
+          expect(ergebnis, <String, dynamic>{'kinoSollCent': 0});
+        },
+      );
+
+      test(
+        'Speichern+Laden-Roundtrip ueber SharedPreferences: '
+        'zahlungsartenNamen bleiben ueber zwei aufeinanderfolgende '
+        'Speichervorgaenge erhalten, auch wenn nur die uebrigen Felder '
+        'geaendert werden',
+        () async {
+          SharedPreferences.setMockInitialValues(<String, Object>{});
+
+          final Map<String, dynamic>? erste =
+              await LokalerSpeicher.ladeAutoFillSchritt2('kino_03');
+          await LokalerSpeicher.speichereAutoFillSchritt2(
+            'kino_03',
+            LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten(
+              <String, dynamic>{'kinoSollCent': 12345},
+              erste,
+            ),
+          );
+
+          final Map<String, dynamic>? zweite =
+              await LokalerSpeicher.ladeAutoFillSchritt2('kino_03');
+          await LokalerSpeicher.speichereAutoFillSchritt2(
+            'kino_03',
+            LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten(
+              <String, dynamic>{'kinoSollCent': 67890},
+              zweite,
+            ),
+          );
+
+          final Map<String, dynamic>? dritte =
+              await LokalerSpeicher.ladeAutoFillSchritt2('kino_03');
+
+          expect(dritte?['kinoSollCent'], 67890);
+          expect(
+            dritte?['zahlungsartenNamen'],
+            <String>['Girocard', 'MasterCard', 'Visa'],
+          );
+        },
+      );
+    },
+  );
 }

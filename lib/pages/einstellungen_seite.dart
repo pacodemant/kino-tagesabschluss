@@ -445,25 +445,31 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _speichereAutoFillSchritt2() async {
+    final Map<String, dynamic>? bestehend =
+        await LokalerSpeicher.ladeAutoFillSchritt2(_aktiveKinoId);
+    final Map<String, dynamic> neu = <String, dynamic>{
+      'kinoSollCent': TagesabschlussBerechnung.parseCentZiffern(
+        _s2KinoSollCtrl.text,
+      ),
+      'bistroSollCent': TagesabschlussBerechnung.parseCentZiffern(
+        _s2BistroSollCtrl.text,
+      ),
+      'ausgabenCent': TagesabschlussBerechnung.parseCentZiffern(
+        _s2AusgabenCtrl.text,
+      ),
+      'ecBelegCent': TagesabschlussBerechnung.parseCentZiffern(
+        _s2EcBelegCtrl.text,
+      ),
+      'differenzAnfangsbestandCent': TagesabschlussBerechnung.parseCentZiffern(
+        _s2DifferenzCtrl.text,
+      ),
+    };
     await LokalerSpeicher.speichereAutoFillSchritt2(
       _aktiveKinoId,
-      <String, dynamic>{
-        'kinoSollCent': TagesabschlussBerechnung.parseCentZiffern(
-          _s2KinoSollCtrl.text,
-        ),
-        'bistroSollCent': TagesabschlussBerechnung.parseCentZiffern(
-          _s2BistroSollCtrl.text,
-        ),
-        'ausgabenCent': TagesabschlussBerechnung.parseCentZiffern(
-          _s2AusgabenCtrl.text,
-        ),
-        'ecBelegCent': TagesabschlussBerechnung.parseCentZiffern(
-          _s2EcBelegCtrl.text,
-        ),
-        'differenzAnfangsbestandCent': TagesabschlussBerechnung.parseCentZiffern(
-          _s2DifferenzCtrl.text,
-        ),
-      },
+      LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten(
+        neu,
+        bestehend,
+      ),
     );
   }
 

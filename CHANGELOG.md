@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 419: Echte Ursache des Run-416-Bugs gefunden (der Timing-Fix
+  dort war real, aber nicht die Ursache dieses konkreten Falls):
+  EinstellungenSeite._speichereAutoFillSchritt2() (aufgerufen bei
+  jeder Änderung eines der 5 Schritt-2-Auto-Fill-Felder oder beim
+  Tippen auf "Standard-Testwerte setzen") schrieb eine neue
+  SharedPreferences-Map mit nur diesen 5 Feldern — ohne
+  zahlungsartenNamen/zahlungsartenBetragCent, für die es in dieser
+  UI gar keine eigenen Eingabefelder gibt. Da
+  LokalerSpeicher.speichereAutoFillSchritt2() ersetzt statt
+  zusammenführt, gingen zuvor gespeicherte Kartenarten-Testdaten
+  dabei dauerhaft verloren — betroffen ist nur das Gerät, auf dem
+  einmal in den Einstellungen gespeichert wurde (SharedPreferences
+  ist pro Plattform getrennter Speicher: native iOS-App
+  NSUserDefaults, PWA localStorage der Browser-Origin — komplett
+  unabhängig voneinander). Bis zum ersten Speichern liefert
+  LokalerSpeicher._schritt2StandardWerte() vollständige
+  Default-Kartenarten, danach nicht mehr. Fix: neue, öffentlich
+  testbare LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten()
+  führt die zuvor gespeicherten zahlungsartenNamen/-BetragCent beim
+  Speichern unverändert fort; _speichereAutoFillSchritt2() lädt vor
+  dem Schreiben den bestehenden Stand und nutzt diesen Helper.
+  Zusätzlich 3 neue Unit-Tests in lokaler_speicher_test.dart
+  (Merge-Logik direkt + Roundtrip über zwei Speichervorgänge).
+
 - Run 416: Auto-Fill (DEV-Tools, Umsätze-Seite/Schritt 2) füllte nach
   einem Bug-Report (Kachel zeigte nur den Gesamtbetrag + Hinweis
   "Summe der Beträge stimmt nicht ...", Kartenarten fehlten; nach

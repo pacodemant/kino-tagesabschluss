@@ -514,6 +514,28 @@ class LokalerSpeicher {
     await speicher.setString('dev_autofill_schritt2_$kinoId', jsonEncode(daten));
   }
 
+  /// Übernimmt zahlungsartenNamen/zahlungsartenBetragCent unverändert aus
+  /// [bestehend] in [neu], falls dort vorhanden. Die Einstellungen-Seite
+  /// hat für diese beiden Felder keine eigenen Eingabefelder (siehe
+  /// _baueAutoFillInhalt() in einstellungen_seite.dart) und würde sie beim
+  /// Speichern der übrigen Schritt-2-Auto-Fill-Werte sonst stillschweigend
+  /// verlieren (Bug, gemeldet 2026-09-03: Auto-Fill auf der Umsätze-Seite
+  /// füllte auf Geräten, auf denen schon einmal über die
+  /// Einstellungen-Seite gespeichert wurde, keine Kartenarten mehr, nur
+  /// noch den Gesamtbetrag).
+  static Map<String, dynamic> autoFillSchritt2MitBestehendenZahlungsarten(
+    Map<String, dynamic> neu,
+    Map<String, dynamic>? bestehend,
+  ) {
+    return <String, dynamic>{
+      ...neu,
+      if (bestehend?['zahlungsartenNamen'] != null)
+        'zahlungsartenNamen': bestehend!['zahlungsartenNamen'],
+      if (bestehend?['zahlungsartenBetragCent'] != null)
+        'zahlungsartenBetragCent': bestehend!['zahlungsartenBetragCent'],
+    };
+  }
+
   static Future<Map<String, dynamic>?> ladeWechselgeldZaehlEntwurf(
     String kinoId,
   ) async {

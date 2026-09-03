@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+416 · Run 416
+Version: 0.9.82+419 · Run 419
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 416)
+## Laufender Entwicklungsstand (Run 419)
+
+- Run 419 ✅ Echte Ursache des Run-416-Bugs gefunden:
+  `_speichereAutoFillSchritt2()` in `einstellungen_seite.dart` löschte
+  beim Speichern der 5 dortigen Auto-Fill-Felder stillschweigend die
+  zuvor gespeicherten Kartenarten-Testdaten, weil dafür keine
+  Einstellungen-UI existiert. Neuer, testbarer Helper
+  `LokalerSpeicher.autoFillSchritt2MitBestehendenZahlungsarten()` führt
+  sie jetzt fort. 3 neue Unit-Tests. Details siehe CHANGELOG.md.
 
 - Run 416 ✅ Auto-Fill (DEV-Tools, Schritt 2) füllte bei ungünstigem
   Timing keine Kartenarten-Beträge (Race Condition beim asynchronen
