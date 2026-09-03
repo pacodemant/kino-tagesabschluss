@@ -847,7 +847,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
             ),
             const SizedBox(height: 6),
             _baueCentZeile(
-              label: 'Kino SOLL',
+              label: _aktivesKinoHatBistro ? 'Kino SOLL' : 'Gesamt SOLL',
               controller: _s2KinoSollCtrl,
               onChanged: _speichereAutoFillSchritt2,
             ),

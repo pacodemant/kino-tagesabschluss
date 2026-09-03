@@ -24,7 +24,11 @@ class Schritt3SollSection extends StatelessWidget {
     return Schritt3InfoCard(
       zeilen: <Widget>[
         InfoZeile(
-          label: '+ Kino Soll',
+          // Ohne Bistro (zeigeBistroSoll == false) enthaelt dieser Wert
+          // bereits das komplette SOLL fuer dieses Kino (siehe
+          // tagesabschluss_schritt2_seite.dart._hatBistro) — Label
+          // spiegelt das, wie schon bei der Eingabe in Schritt 2.
+          label: zeigeBistroSoll ? '+ Kino Soll' : '+ Gesamt SOLL',
           wert: TagesabschlussFormatierung.formatiereEuro(kinoSollCent),
           stil: InfoZeileStil.fuehrungslinie,
         ),

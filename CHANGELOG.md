@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 424a: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
+  Run 424). Testfeedback: auf der "Übertrag auf Umschlag"-Seite
+  stand für Cinema Ostertor (kino_04) weiterhin "Kino Soll" statt des
+  in Schritt 2 bereits eingeführten "Gesamt SOLL" (dort gibt es für
+  dieses Kino kein separates Bistro-Soll, das Kino-Soll-Feld
+  enthält also schon die komplette SOLL-Summe). Beim Nachsehen war
+  dieselbe hartcodierte Beschriftung an 3 weiteren Stellen vorhanden,
+  die dieselbe Kino-Soll-Zeile anzeigen: Schritt3SollSection
+  (tagesabschluss_schritt3_seite.dart/Schritt 3),
+  verlauf_detail_seite.dart (Verlauf-Detailansicht, Abschnitt
+  "Umsätze") und einstellungen_seite.dart (Auto-Fill-Testwerte-UI für
+  Schritt 2). Alle 4 nutzen jetzt dieselbe Bedingung wie Schritt 2
+  (Kino.hatBistro) und zeigen "Gesamt SOLL" statt "Kino Soll", wenn
+  das Kino kein Bistro hat. Bekannter, bewusst in Kauf genommener
+  Nebeneffekt: auf der Übertrag-Seite und in Schritt 3 steht direkt
+  darunter zusätzlich eine separate, tatsächlich berechnete
+  "= Gesamt Soll"-Zeile (Kino-Soll + Bistro-Soll − Ausgaben) — für
+  Kinos ohne Bistro und mit Ausgaben ≠ 0 zeigen beide Zeilen
+  dasselbe Label, aber unterschiedliche Beträge. War schon vor
+  diesem Fix so angelegt (Kino-Soll-Zeile plus separate Summenzeile
+  in derselben Karte), nur jetzt mit identischem statt
+  unterschiedlichem Zeilen-Label — bei Bedarf gesondert ansehen.
+
 - Run 424: Dritter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund 4,
   siehe Chat): "Cinema Ostertor (kino_04) hat kein Bistro" war als
   Literalvergleich `kinoId == 'kino_04'`/`!= 'kino_04'` an 8 Stellen

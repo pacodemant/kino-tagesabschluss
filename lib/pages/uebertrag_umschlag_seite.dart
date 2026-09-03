@@ -32,6 +32,8 @@ class UebertragUmschlagSeite extends StatelessWidget {
     final int differenzCent = abschluss.differenzGesamtCent;
     final Color differenzFarbe =
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
+    final bool hatBistro =
+        KinoRepository.nachId(abschluss.kinoId)?.hatBistro ?? true;
 
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
@@ -89,12 +91,11 @@ class UebertragUmschlagSeite extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   InfoZeile(
-                    label: '+ Kino Soll',
+                    label: hatBistro ? '+ Kino Soll' : '+ Gesamt SOLL',
                     wert: _euro(abschluss.kinoSollCent),
                     stil: InfoZeileStil.fuehrungslinie,
                   ),
-                  if (KinoRepository.nachId(abschluss.kinoId)?.hatBistro ??
-                      true)
+                  if (hatBistro)
                     InfoZeile(
                       label: '+ Bistro Soll',
                       wert: _euro(abschluss.bistroSollCent),

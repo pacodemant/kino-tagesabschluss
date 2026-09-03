@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.83+424 · Run 424
+Version: 0.9.83+424a · Run 424a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 424)
+## Laufender Entwicklungsstand (Run 424a)
+
+- Run 424a ✅ Korrektur zu Run 424: "Kino Soll"-Label war für Cinema
+  Ostertor (kein Bistro) noch an 4 weiteren Stellen hartcodiert
+  (Schritt3SollSection, verlauf_detail_seite.dart,
+  einstellungen_seite.dart Auto-Fill-UI, uebertrag_umschlag_seite.dart)
+  und zeigte dort weiterhin "Kino Soll" statt "Gesamt SOLL" wie
+  bereits in Schritt 2. Jetzt überall auf Kino.hatBistro umgestellt.
+  Details siehe CHANGELOG.md.
 
 - Run 424 ✅ Dritter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
   4): neues `Kino.hatBistro`-Feld (kino.dart, Muster wie

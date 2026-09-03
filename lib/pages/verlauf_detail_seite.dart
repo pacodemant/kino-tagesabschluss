@@ -340,6 +340,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     final String isoDatum = DatumsHelper.isoDatum(a.datum);
     final bool istHeute = isoDatum == DatumsHelper.logischesIsoDatum();
     final String kuerzel = KinoRepository.nachId(a.kinoId)?.kuerzel ?? a.kinoName;
+    final bool hatBistro = KinoRepository.nachId(a.kinoId)?.hatBistro ?? true;
 
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
@@ -474,8 +475,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     initiallyExpanded: false,
                     childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                     children: <Widget>[
-                      InfoZeile(label: 'Kino SOLL', wert: _euro(a.kinoSollCent)),
-                      if (KinoRepository.nachId(a.kinoId)?.hatBistro ?? true)
+                      InfoZeile(
+                        label: hatBistro ? 'Kino SOLL' : 'Gesamt SOLL',
+                        wert: _euro(a.kinoSollCent),
+                      ),
+                      if (hatBistro)
                         InfoZeile(label: 'Bistro SOLL', wert: _euro(a.bistroSollCent)),
                       InfoZeile(label: 'Ausgaben', wert: _euro(a.ausgabenCent)),
                       ..._ausgabenUnterzeilen(a),
