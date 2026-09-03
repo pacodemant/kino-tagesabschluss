@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 423: Zweiter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund 1,
+  siehe Chat): die sechs EC-Kartenarten
+  (girocard/lastschrift/mastercard/visa/maestro/vpay) waren in
+  api_upload_service.dart an drei unabhängigen Stellen innerhalb
+  derselben Klasse hart codiert (_kartenartMapping-Zielwerte,
+  _kartenfelder-Liste für die Summenprüfung, _terminalEintrag-
+  JSON-Ausgabe) — eine neue Kartenart hätte an einer der drei
+  Stellen vergessen werden können und wäre dann beim Versand bzw.
+  bei der Summenprüfung stillschweigend verworfen worden bzw. hätte
+  einen Fehler ausgelöst. Jetzt eine einzige Liste `_kartenarten`
+  plus eine separate Alias-Map `_kartenartAliase` (für
+  Scan-Varianten wie "SEPA Lastschrift"/"V Pay") als Quelle;
+  Mapping, Summenprüfung und JSON-Ausgabe leiten sich davon ab. Die
+  gesendete JSON-Struktur ist inhaltlich unverändert (nur die
+  Feld-Reihenfolge von "vpay" hat sich innerhalb des Objekts
+  verschoben, JSON-Objekte sind ungeordnet, Flurbocash und die
+  Tests lesen per Schlüssel). Bewusst nicht mit angefasst: das
+  separate, bereits als totes Parallel-Datenmodell identifizierte
+  EcTerminalErgebnis (models/ec_terminal_ergebnis.dart) und die
+  zugehörige Erzeugung in tagesabschluss_schritt2_seite.dart
+  (_baueEcTerminals) — eigener Fund, eigener Run. Keine neuen
+  Tests nötig, bestehende api_upload_service_test.dart (Kartenart-
+  Erkennung, Summenprüfung, Alias-Varianten) deckt die Änderung ab.
+
 - Run 422a: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
   Run 422). Layout der Personalgetränke-Kachel umgestellt: statt
   Row(Text|Checkbox) + Column mit ungleichmäßigen Abständen jetzt

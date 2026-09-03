@@ -24,22 +24,13 @@ class ApiUploadService {
   /// eines Kinos (seit Run 421 zentralisiert, siehe [locationIdPrefKey]).
   static String apiKeyPrefKey(String kinoId) => 'flurbocash_api_key_$kinoId';
 
-  // Schluessel normalisiert (getrimmt + kleingeschrieben) — der Lookup in
-  // _terminalsListe() normalisiert z.art genauso, damit vom Beleg-Scan
-  // gelieferte Varianten wie "MASTERCARD" oder " Girocard" nicht am reinen
-  // String-Vergleich scheitern und den Betrag stillschweigend verlieren.
-  static const Map<String, String> _kartenartMapping = <String, String>{
-    'girocard': 'girocard',
-    'sepa lastschrift': 'lastschrift',
-    'lastschrift': 'lastschrift',
-    'mastercard': 'mastercard',
-    'visa': 'visa',
-    'maestro': 'maestro',
-    'v pay': 'vpay',
-    'vpay': 'vpay',
-  };
-
-  static const List<String> _kartenfelder = <String>[
+  /// Kanonische Kartenarten-Namen, wie sie in Betrags-Maps und im an
+  /// Flurbocash gesendeten JSON verwendet werden. Einzige Quelle seit
+  /// Run 423 (vorher als drei unabhaengige Kopien in dieser Klasse
+  /// gepflegt: Mapping-Zielwerte, Summenpruefungs-Liste, JSON-Ausgabe
+  /// in _terminalEintrag — eine vergessene Stelle haette bei einer
+  /// neuen Kartenart einen Betrag stillschweigend verloren).
+  static const List<String> _kartenarten = <String>[
     'girocard',
     'lastschrift',
     'mastercard',
@@ -47,6 +38,23 @@ class ApiUploadService {
     'maestro',
     'vpay',
   ];
+
+  /// Nicht-kanonische Eingabe-Varianten, die auf eine kanonische
+  /// Kartenart aus [_kartenarten] gemappt werden (z. B. Beleg-Scan
+  /// liefert "SEPA Lastschrift" oder "V Pay").
+  static const Map<String, String> _kartenartAliase = <String, String>{
+    'sepa lastschrift': 'lastschrift',
+    'v pay': 'vpay',
+  };
+
+  // Schluessel normalisiert (getrimmt + kleingeschrieben) — der Lookup in
+  // _terminalsListe() normalisiert z.art genauso, damit vom Beleg-Scan
+  // gelieferte Varianten wie "MASTERCARD" oder " Girocard" nicht am reinen
+  // String-Vergleich scheitern und den Betrag stillschweigend verlieren.
+  static final Map<String, String> _kartenartMapping = <String, String>{
+    for (final String art in _kartenarten) art: art,
+    ..._kartenartAliase,
+  };
 
   /// Wirft, falls eine der zu sendenden TIDs nicht zu
   /// config/terminal_ids.json passt (siehe [_pruefeTerminalIds]) — bewusste
@@ -330,7 +338,7 @@ class ApiUploadService {
     final int summeTerminals = terminals.fold<int>(
       0,
       (int summe, Map<String, dynamic> t) => summe +
-          _kartenfelder.fold<int>(
+          _kartenarten.fold<int>(
             0,
             (int s, String feld) => s + (t[feld] as int),
           ),
@@ -397,14 +405,9 @@ class ApiUploadService {
   ) {
     return <String, dynamic>{
       'tid': tid,
-      'girocard': karten['girocard'] ?? 0,
-      'lastschrift': karten['lastschrift'] ?? 0,
-      'mastercard': karten['mastercard'] ?? 0,
-      'visa': karten['visa'] ?? 0,
-      'maestro': karten['maestro'] ?? 0,
+      for (final String art in _kartenarten) art: karten[art] ?? 0,
       if (foto != null) 'receipt_photo': foto.base64,
       if (foto != null) 'receipt_media_type': foto.mediaType,
-      'vpay': karten['vpay'] ?? 0,
     };
   }
 

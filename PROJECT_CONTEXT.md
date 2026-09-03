@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.83+422a · Run 422a
+Version: 0.9.83+423 · Run 423
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 422a)
+## Laufender Entwicklungsstand (Run 423)
+
+- Run 423 ✅ Zweiter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
+  1): die 6 EC-Kartenarten waren in api_upload_service.dart an 3
+  unabhängigen Stellen hart codiert (Mapping-Zielwerte,
+  Summenprüfungs-Liste, JSON-Ausgabe). Jetzt eine Liste
+  `_kartenarten` + Alias-Map `_kartenartAliase` als Quelle, Mapping/
+  Summenprüfung/JSON-Ausgabe leiten sich davon ab. Verhalten
+  unverändert (JSON-Feldreihenfolge ist irrelevant). Bewusst nicht
+  angefasst: totes EcTerminalErgebnis-Modell (eigener Fund). Details
+  siehe CHANGELOG.md.
 
 - Run 422a ✅ Korrektur zu Run 422: Layout der Personalgetränke-Kachel
   umgestellt (Row aus Text-Column | Checkbox statt Column aus Row |
