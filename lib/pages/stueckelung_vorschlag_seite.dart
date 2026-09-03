@@ -256,8 +256,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
   }) {
     final bool aktiv = onPressed != null;
     return SizedBox(
-      width: 35,
-      height: 22,
+      width: 44,
       child: Material(
         color: aktiv ? Colors.grey.shade200 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(4),
@@ -290,39 +289,45 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                 )
               : null,
           padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(
-                  zeile.bezeichnung,
-                  style: TextStyle(color: grauFarbe),
-                ),
-              ),
-              if (zeile.steuerbar) ...<Widget>[
-                _baueSteuerKnopf(icon: Icons.remove, onPressed: zeile.onMinus),
-                const SizedBox(width: 2),
-                _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
-              ],
-              SizedBox(
-                width: 96,
-                child: Text(
-                  '${zeile.genommen} Stk.',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: grauFarbe,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    zeile.bezeichnung,
+                    style: TextStyle(color: grauFarbe),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 64,
-                child: Text(
-                  '/ ${zeile.vorhanden}',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(color: grauFarbe ?? Colors.grey.shade600),
+                if (zeile.steuerbar) ...<Widget>[
+                  _baueSteuerKnopf(
+                    icon: Icons.remove,
+                    onPressed: zeile.onMinus,
+                  ),
+                  const SizedBox(width: 22),
+                  _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
+                ],
+                SizedBox(
+                  width: 96,
+                  child: Text(
+                    '${zeile.genommen} Stk.',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: grauFarbe,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(
+                  width: 64,
+                  child: Text(
+                    '/ ${zeile.vorhanden}',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: grauFarbe ?? Colors.grey.shade600),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
 
