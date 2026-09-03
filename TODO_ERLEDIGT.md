@@ -252,6 +252,16 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       auf den Summen-Abgleich (kein Freitext, keine visuellen
       Einschätzungen). *(geprüft Run 319b)*
 
+### Personalgetränke-Kachel *(Schritt 2)*
+
+- [x] **Hinweiszeilen in Personalgetränke-Kachel** *(Run 422)* Ergebnis
+      weicht vom ursprünglichen Plan ab: Statt "Schwund gebont?" mit
+      eigener Checkbox (neues bool-Feld) wollte Paco zwei reine
+      Hinweiszeilen ohne Logik: "Artikel gestundet?" und "Denk' ans
+      Kellnerportemonnaie." (letzte Zeile in Rot, `AppFarben.
+      differenzNegativ`). Kein neuer State, keine Persistenz-Änderung,
+      keine Erweiterung von TagesabschlussFinal.
+
 ### Einstellungen & Konfiguration *(Phase C)*
 
 - [x] **Auto-Fill: konfigurierte TID pro Standort statt fest verdrahtet**

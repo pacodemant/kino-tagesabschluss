@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.82+421 · Run 421
+Version: 0.9.83+422 · Run 422
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 421)
+## Laufender Entwicklungsstand (Run 422)
+
+- Run 422 ✅ Personalgetränke-Kachel (Schritt 2) um zwei reine
+  Hinweiszeilen ergänzt: "Artikel gestundet?" und "Denk' ans
+  Kellnerportemonnaie." (letzte Zeile in Rot). Kein neuer State,
+  keine Persistenz-Änderung.
 
 - Run 421 ✅ Code-Qualitäts-Diagnose über lib/ (Fund aus Run 416/419/420
   aufgegriffen: dieselbe Konfiguration an mehreren Stellen von Hand

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 420 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 422 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -216,19 +216,6 @@ um Durcheinander zu vermeiden.
 
 - [ ] **Storno auf Belegen** Noch nie vorgekommen, aber die App muss
       Stornos erkennen können.
-
-### Personalgetränke-Kachel *(Schritt 2)*
-
-- [ ] **"Schwund gebont?" + Hinweiszeile "Kellner-Portemonnaie nicht
-      vergessen"** In der Personalgetränke-Kachel
-      (schritt2_personalgetraenke_section.dart, aktuell nur eine Zeile
-      "Personalgetränke gebont?" + Checkbox) zwei weitere Zeilen
-      ergänzen: "Schwund gebont?" + eigene Checkbox (neues bool-Feld —
-      Erweiterung von TagesabschlussFinal/Persistenz, kein reiner
-      UI-Fix), sowie eine dritte Zeile in Rot "Kellner-Portemonnaie
-      nicht vergessen" ohne Checkbox (reiner Hinweistext). Beachten:
-      Kachel ist am Standort CO komplett ausgeblendet (Run 372a) — neue
-      Zeilen erben das automatisch, da gleiches Widget.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 

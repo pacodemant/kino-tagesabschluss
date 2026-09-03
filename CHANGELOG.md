@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 422: Personalgetränke-Kachel (Schritt 2) um zwei reine
+  Hinweiszeilen ergänzt: "Artikel gestundet?" und "Denk' ans
+  Kellnerportemonnaie." (letzte Zeile in Rot, `AppFarben.
+  differenzNegativ`). Beide Zeilen sind reiner Text ohne eigene
+  Checkbox/Logik — kein neuer State, keine Persistenz-Änderung.
+  Weicht vom TODO-Punkt ab, der ursprünglich eine eigene Checkbox
+  für "Schwund gebont?" vorsah — Paco wollte stattdessen nur
+  Hinweistext.
+
 - Run 421: Erster Aufräum-Run aus der Code-Qualitäts-Diagnose (siehe
   Chat, ausgelöst durch Run 416/419/420): Die SharedPreferences-Keys
   für die Flurbocash-Zugangsdaten pro Kino
