@@ -40,6 +40,7 @@ class _ErgebnisZeile {
     this.steuerbar = false,
     this.onPlus,
     this.onMinus,
+    this.wechselgeldRest,
   });
 
   factory _ErgebnisZeile.stueckzahl({
@@ -51,6 +52,7 @@ class _ErgebnisZeile {
     bool steuerbar = false,
     VoidCallback? onPlus,
     VoidCallback? onMinus,
+    int? wechselgeldRest,
   }) => _ErgebnisZeile._(
     art: _ZeilenArt.stueckzahl,
     bezeichnung: bezeichnung,
@@ -61,6 +63,7 @@ class _ErgebnisZeile {
     steuerbar: steuerbar,
     onPlus: onPlus,
     onMinus: onMinus,
+    wechselgeldRest: wechselgeldRest,
   );
 
   factory _ErgebnisZeile.betragzeile({
@@ -93,6 +96,7 @@ class _ErgebnisZeile {
   final bool steuerbar;
   final VoidCallback? onPlus;
   final VoidCallback? onMinus;
+  final int? wechselgeldRest;
 }
 
 // ---------------------------------------------------------------------------
@@ -173,6 +177,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
           genommen20 < vorhanden20 && genommen10 >= 2;
       final bool kannWenigerZwanziger =
           genommen20 > 0 && vorhanden10 - genommen10 >= 2;
+      final bool hatVerschiebung = _verschiebung != 0;
 
       zeilen[index20] = _ErgebnisZeile.stueckzahl(
         bezeichnung: bezeichnung20,
@@ -187,6 +192,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
         onPlus: kannMehrZwanziger
             ? () => setState(() => _verschiebung++)
             : null,
+        wechselgeldRest: hatVerschiebung ? vorhanden20 - genommen20 : null,
       );
       zeilen[index10] = _ErgebnisZeile.stueckzahl(
         bezeichnung: bezeichnung10,
@@ -201,6 +207,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
         onPlus: kannWenigerZwanziger
             ? () => setState(() => _verschiebung--)
             : null,
+        wechselgeldRest: hatVerschiebung ? vorhanden10 - genommen10 : null,
       );
     }
 
@@ -313,6 +320,16 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
                 ],
                 SizedBox(
+                  width: 40,
+                  child: Text(
+                    zeile.wechselgeldRest != null
+                        ? '(${zeile.wechselgeldRest})'
+                        : '',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                ),
+                SizedBox(
                   width: 96,
                   child: Text(
                     '${zeile.genommen} Stk.',
@@ -353,6 +370,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
               ),
+              const SizedBox(width: 40),
               SizedBox(
                 width: 96,
                 child: Text(
@@ -463,6 +481,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                     style: TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ),
+                const SizedBox(width: 40),
                 SizedBox(
                   width: 96,
                   child: Text(
