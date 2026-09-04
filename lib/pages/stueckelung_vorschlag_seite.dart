@@ -481,7 +481,14 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                     style: TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ),
-                const SizedBox(width: 40),
+                const SizedBox(
+                  width: 40,
+                  child: Text(
+                    'Wechselg.',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ),
                 SizedBox(
                   width: 96,
                   child: Text(

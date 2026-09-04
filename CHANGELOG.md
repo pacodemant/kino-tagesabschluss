@@ -9,6 +9,9 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a: Stückelung-Seite — bisher unbeschriftete Spalte (zeigt
+  den Wechselgeld-Rest in Klammern, z. B. "(3)") mit "Wechselg."
+  überschrieben, damit klar ist, was die Zahl bedeutet.
 - Run 429: Ausgaben-Familie in Schritt 2 (Architektur-Run, erster
   Teil einer 2-Run-Serie): die 7 parallelen Listen
   (_ausgabenBetragController/_ausgabenLabelController/
