@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 429a7 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 429a8 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -51,6 +51,19 @@ um Durcheinander zu vermeiden.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Nativer Android-Build aktuell kaputt (Gradle/AGP-Konflikt)**
+      Entdeckt in Run 429a8 beim Versuch, `flutter run -d
+      <android-emulator>` zu nutzen: Build bricht ab mit "5 issues
+      were found when checking AAR metadata" — mehrere androidx-
+      Abhängigkeiten (activity-ktx 1.12.4, core-ktx 1.18.0 u. a.)
+      verlangen Android Gradle Plugin ≥ 8.9.1, das Projekt nutzt
+      aber 8.7.3. Vermutlich kein Produktions-Blocker, da die
+      Kino-Standorte die App als PWA im Browser nutzen (siehe
+      project_zielplattform_android), nicht als native APK — aber
+      relevant, falls je ein nativer Android-Testbuild gebraucht
+      wird. Fix: android/settings.gradle bzw. Gradle-Wrapper-Version
+      anheben (Build-Konfiguration, eigener Run nötig).
 
 - [ ] **Offline-Hinweis bei BelegScan konkretisieren** Die
       Verbindungsprüfung beim Tap aufs Foto-Icon existiert bereits

@@ -4,9 +4,12 @@ import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 
 void main() {
   // Reale Werte aus einem gemeldeten Fall (Run 429a-Serie): auf einem
-  // 390pt breiten iPhone brachen die Bezeichnungen der Zeilen mit +/-
-  // Knöpfen (20 €/10 €) um, weil Knöpfe + fest verdrahtete Zahlenspalten
-  // zusammen zu viel Breite belegten.
+  // 390pt breiten Screen brachen die Bezeichnungen der Zeilen mit +/-
+  // Knöpfen (20 €/10 €) um, weil Knöpfe + Zahlenspalten zusammen zu viel
+  // Breite belegten. Läuft unter `flutter test` immer mit Android/Roboto-
+  // Typografie (Flutter erzwingt TargetPlatform.android in Tests) — das
+  // entspricht der echten Zielplattform (Kino-Standorte nutzen die App
+  // als PWA auf Android-Smartphones, siehe project_zielplattform_android).
   StueckelungVorschlagArgumente argumente() => const StueckelungVorschlagArgumente(
     barBestandAbzglWechselgeldCent: 55770,
     stueckzahlen: <String, int>{

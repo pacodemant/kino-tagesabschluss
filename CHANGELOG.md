@@ -9,6 +9,37 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a8: Stückelung-Seite — Korrektur zu 429a7, ausgelöst durch
+  einen Screenshot von Paco: auf dem echten iPhone sah neben den
+  +/- Knöpfen sichtbar noch Platz für eine Wechselgeld-Spalte aus,
+  obwohl 429a7 sie mangels Platz komplett entfernt hatte. Ursache
+  waren zwei echte Bugs in der Breitenmessung
+  (_textBreite/_spaltenbreiten), nicht ein echtes Platzproblem:
+  (1) die Messung hat nicht mit DefaultTextStyle.of(context).style
+  gemischt (macht das echte Text-Widget aber selbst, siehe
+  flutter/lib/src/widgets/text.dart), fehlende Schriftart/-größe
+  aus dem Theme; (2) der verwendete context lag noch VOR dem
+  Scaffold/Material von TagesabschlussScaffold, wodurch
+  DefaultTextStyle.of(context) auf Flutters Debug-Fallback-Stil
+  (48px fett, siehe DefaultTextStyle.fallback()) traf statt auf
+  den echten 14px-Theme-Stil — beides zusammen ergab absurd große,
+  falsche Breiten. Fix: _textBreite mischt jetzt mit
+  DefaultTextStyle.of(context).style; die Breitenberechnung läuft
+  jetzt in einem Builder innerhalb des Scaffolds (korrekter
+  context). Mit beiden Fixes zeigt ein Regressionstest
+  (stueckelung_vorschlag_seite_test.dart, läuft unter Android/
+  Roboto-Typografie wie die echte PWA auf den Kino-Android-
+  Smartphones) aber weiterhin einen Umbruch, sobald die
+  Wechselgeld-Spalte zusätzlich zu Knöpfen + Bedarf + Vorh.
+  eingebaut wird — das ist also doch ein echtes, jetzt sauber
+  verifiziertes Platzproblem auf der eigentlichen Zielplattform
+  (Android), auch wenn es auf Pacos iPhone (schmalere
+  CupertinoSystemDisplay-Schrift) nicht auffällt. Ergebnis bleibt
+  daher wie in 429a7: keine eigene Spalte, stattdessen der
+  Hinweistext "Für das Wechselgeld bleiben übrig: ..." oberhalb
+  der Tabelle. Die beiden Mess-Bugs sind trotzdem ein echter Fix
+  (Bedarf/Vorh.-Spaltenbreiten sind jetzt korrekt statt zufällig
+  durch einen Fallback-Stil beeinflusst).
 - Run 429a7: Stückelung-Seite — Architektur-Korrektur (große Runde,
   auf Wunsch: "wo nicht zwingend nötig, keine festen Werte
   verwenden"). Die 3 an mehreren Stellen hart codierten

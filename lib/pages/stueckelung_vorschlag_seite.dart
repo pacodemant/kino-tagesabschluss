@@ -262,9 +262,24 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
   // Schriftart/Textgröße der jeweiligen Plattform sowie an
   // Nutzer-Textgrößeneinstellungen (Accessibility) an, statt bei jeder
   // Textänderung erneut per Hand geschätzt werden zu müssen.
+  //
+  // Wichtig: mit DefaultTextStyle.of(context).style mischen, genau wie es
+  // das echte Text-Widget selbst tut (siehe Text.build() in
+  // flutter/lib/src/widgets/text.dart: "defaultTextStyle.style.merge(style)").
+  // Ohne dieses Merge fehlen Schriftart/-größe aus dem Theme, die Messung
+  // liefert also einen falschen Wert. Der `context` muss außerdem von
+  // INNERHALB des Scaffolds kommen (siehe Builder in build()) — mit dem
+  // context von direkt oberhalb von TagesabschlussScaffold liefert
+  // DefaultTextStyle.of(context) Flutters Debug-Fallback-Stil (48px fett,
+  // siehe DefaultTextStyle.fallback()) statt des echten Theme-Stils. Beide
+  // Fehler zusammen führten in einem ersten Versuch zu absurd großen
+  // Breiten.
   double _textBreite(BuildContext context, String text, TextStyle style) {
+    final TextStyle effektiverStil = DefaultTextStyle.of(
+      context,
+    ).style.merge(style);
     final TextPainter painter = TextPainter(
-      text: TextSpan(text: text, style: style),
+      text: TextSpan(text: text, style: effektiverStil),
       textDirection: TextDirection.ltr,
       textScaler: MediaQuery.textScalerOf(context),
     )..layout();
@@ -275,13 +290,21 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
   // dem tatsächlich in dieser Berechnung vorkommenden Text (Kopfzeile +
   // jede Zeile), statt wie bisher an drei Stellen im Code geschätzte
   // Pixelwerte zu pflegen, die bei Text-/Layoutänderungen immer wieder
-  // auseinanderliefen (Ursache mehrerer Umbruch-Bugs in Run 429a). Die
-  // Wechselgeld-Information hat hier bewusst keine eigene Spalte mehr
-  // (siehe wechselgeldHinweis in build()) — ein Regressionstest
-  // (stueckelung_vorschlag_seite_test.dart) hat gezeigt, dass auf einem
-  // schmalen Screen neben den +/- Knöpfen selbst für die kurzen
-  // Klammer-Werte ("(6)") kein Platz mehr bleibt, ohne dass die
-  // Bezeichnung umbricht.
+  // auseinanderliefen (Ursache mehrerer Umbruch-Bugs in Run 429a).
+  //
+  // Die Wechselgeld-Information hat hier bewusst keine eigene Spalte (siehe
+  // wechselgeldHinweis in build()). Zwischenzeitlich gab es zwei
+  // Mess-Bugs (falscher/fehlender DefaultTextStyle-Merge, falscher context
+  // vor statt in dem Scaffold — beide siehe _textBreite), die zunächst zur
+  // falschen Diagnose "es passt nirgends mehr" führten. Nach Behebung
+  // BEIDER Bugs (korrekte, mit dem echten Rendering übereinstimmende
+  // Messung) zeigt ein Regressionstest (stueckelung_vorschlag_seite_test.dart,
+  // läuft unter derselben Android/Roboto-Schrift wie die PWA auf den
+  // Kino-Android-Smartphones, siehe project_zielplattform_android):
+  // selbst mit korrekt gemessenen, minimalen Breiten reicht der Platz
+  // neben den +/- Knöpfen (20 €/10 €-Zeile) nicht für eine eigene
+  // Wechselgeld-Spalte — auf iOS (schmalere CupertinoSystemDisplay-
+  // Schrift) sieht das großzügiger aus, ist aber nicht die Zielplattform.
   ({double bedarf, double vorh}) _spaltenbreiten(
     BuildContext context,
     List<_ErgebnisZeile> zeilen,
@@ -494,18 +517,6 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
   @override
   Widget build(BuildContext context) {
     final List<_ErgebnisZeile> zeilen = _berechneErgebnis();
-    final ({double bedarf, double vorh}) breiten = _spaltenbreiten(
-      context,
-      zeilen,
-    );
-    final Iterable<_ErgebnisZeile> wechselgeldZeilen = zeilen.where(
-      (_ErgebnisZeile z) =>
-          z.art == _ZeilenArt.stueckzahl && z.wechselgeldRest != null,
-    );
-    final String? wechselgeldHinweis = wechselgeldZeilen.isEmpty
-        ? null
-        : 'Für das Wechselgeld bleiben übrig: '
-              '${wechselgeldZeilen.map((_ErgebnisZeile z) => '${z.wechselgeldRest}× ${z.bezeichnung}').join(', ')}.';
 
     return TagesabschlussScaffold(
       appBar: TagesabschlussHeader(
@@ -526,113 +537,146 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
           ),
         ],
       ),
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-        children: <Widget>[
-          Text.rich(
-            TextSpan(
-              children: <TextSpan>[
-                const TextSpan(
-                  text: 'Bareinnahmen Stückelung: ',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
+      // Builder statt direktem `context` aus build(): dieser context liegt
+      // noch VOR dem Scaffold/Material, das TagesabschlussScaffold erst
+      // erzeugt. DefaultTextStyle.of(context) würde dort auf Flutters
+      // Debug-Fallback-Stil (48px fett, siehe DefaultTextStyle.fallback())
+      // statt auf den echten Theme-Stil treffen — _spaltenbreiten() braucht
+      // den context von INNERHALB des Scaffolds, um korrekt zu messen.
+      child: Builder(
+        builder: (BuildContext innerContext) {
+          final ({double bedarf, double vorh}) breiten = _spaltenbreiten(
+            innerContext,
+            zeilen,
+          );
+          final Iterable<_ErgebnisZeile> wechselgeldZeilen = zeilen.where(
+            (_ErgebnisZeile z) =>
+                z.art == _ZeilenArt.stueckzahl && z.wechselgeldRest != null,
+          );
+          final String? wechselgeldHinweis = wechselgeldZeilen.isEmpty
+              ? null
+              : 'Für das Wechselgeld bleiben übrig: '
+                    '${wechselgeldZeilen.map((_ErgebnisZeile z) => '${z.wechselgeldRest}× ${z.bezeichnung}').join(', ')}.';
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            children: <Widget>[
+              Text.rich(
                 TextSpan(
-                  text: _euro(widget.argumente.barBestandAbzglWechselgeldCent),
-                  style: const TextStyle(fontSize: 16),
+                  children: <TextSpan>[
+                    const TextSpan(
+                      text: 'Bareinnahmen Stückelung: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextSpan(
+                      text: _euro(
+                        widget.argumente.barBestandAbzglWechselgeldCent,
+                      ),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (wechselgeldHinweis != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                wechselgeldHinweis,
-                style: const TextStyle(fontSize: 11, color: Colors.grey),
               ),
-            ),
-          const SizedBox(height: 4),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              children: <Widget>[
-                const Expanded(
+              const SizedBox(height: 4),
+              if (wechselgeldHinweis != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Text(
-                    'Einheit',
-                    style: TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ),
-                SizedBox(
-                  width: breiten.bedarf,
-                  child: Text(
-                    'Bedarf',
-                    textAlign: TextAlign.right,
+                    wechselgeldHinweis,
                     style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ),
-                SizedBox(
-                  width: breiten.vorh,
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Row(
+                  children: <Widget>[
+                    const Expanded(
+                      child: Text(
+                        'Einheit',
+                        style: TextStyle(fontSize: 11, color: Colors.grey),
+                      ),
+                    ),
+                    SizedBox(
+                      width: breiten.bedarf,
+                      child: Text(
+                        'Bedarf',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: breiten.vorh,
+                      child: Text(
+                        'Vorh.',
+                        textAlign: TextAlign.right,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 12),
+              if (zeilen.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Text(
-                    'Vorh.',
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    'Keine Einheiten benötigt.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                )
+              else
+                ...zeilen.map(
+                  (_ErgebnisZeile z) => _baueZeile(
+                    z,
+                    breiteBedarf: breiten.bedarf,
+                    breiteVorh: breiten.vorh,
                   ),
                 ),
-              ],
-            ),
-          ),
-          const Divider(height: 12),
-          if (zeilen.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: Text(
-                'Keine Einheiten benötigt.',
-                style: TextStyle(color: Colors.grey),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+                decoration: BoxDecoration(
+                  color: AppFarben.validierungErfolgsHintergrund,
+                  border: Border.all(color: AppFarben.stueckelungErfolgsRand),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'Grüne Zeile: Die Anzahl der Scheine im Stapel entspricht genau '
+                  'dem Soll-Betrag — der gesamte Stapel kann direkt in den Umschlag '
+                  'gelegt werden, nochmaliges Zählen entfällt.',
+                  style: TextStyle(fontSize: 12),
+                ),
               ),
-            )
-          else
-            ...zeilen.map(
-              (_ErgebnisZeile z) => _baueZeile(
-                z,
-                breiteBedarf: breiten.bedarf,
-                breiteVorh: breiten.vorh,
+              const SizedBox(height: 12),
+              const Text(
+                'Barumsatz und Belege in den Umschlag tun.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.w700),
               ),
-            ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
-            decoration: BoxDecoration(
-              color: AppFarben.validierungErfolgsHintergrund,
-              border: Border.all(color: AppFarben.stueckelungErfolgsRand),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: const Text(
-              'Grüne Zeile: Die Anzahl der Scheine im Stapel entspricht genau '
-              'dem Soll-Betrag — der gesamte Stapel kann direkt in den Umschlag '
-              'gelegt werden, nochmaliges Zählen entfällt.',
-              style: TextStyle(fontSize: 12),
-            ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'Barumsatz und Belege in den Umschlag tun.',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 12),
-          ElevatedButton(
-            onPressed: () => Navigator.of(
-              context,
-            ).popUntil(ModalRoute.withName(StartmenueSeite.routenName)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppFarben.fokusFarbe,
-              foregroundColor: AppFarben.appBarRot,
-              minimumSize: const Size(double.infinity, 44),
-            ),
-            child: const Text('Fertig.'),
-          ),
-        ],
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () => Navigator.of(
+                  context,
+                ).popUntil(ModalRoute.withName(StartmenueSeite.routenName)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppFarben.fokusFarbe,
+                  foregroundColor: AppFarben.appBarRot,
+                  minimumSize: const Size(double.infinity, 44),
+                ),
+                child: const Text('Fertig.'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
