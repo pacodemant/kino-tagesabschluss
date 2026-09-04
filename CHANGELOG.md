@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 428: Verbliebene Hinweis-SnackBars in Schritt 2/3 auf den
+  bereits bestehenden zeigeHinweisSnackBar()-Helfer
+  (lib/widgets/hinweis_snackbar.dart, seit Run 374) umgestellt. 10
+  Stellen in tagesabschluss_schritt2_seite.dart (4) und
+  tagesabschluss_schritt3_seite.dart (6) hatten den
+  ScaffoldMessenger/SnackBar-Boilerplate (orange Fokusfarbe als
+  Hintergrund, dunkelrote Schrift) unabhängig vom Helfer nachgebaut —
+  bereits am 2026-08-16 in einer Codebasis-Analyse als offener Punkt
+  notiert (TODO.md, Abschnitt "Duplikat-/Abstraktions-Audit"), aber
+  außerhalb des Zielbereichs von Run 374 bewusst nicht mitgezogen.
+  Neu ergänzt: zeigeHinweisSnackBarRich() im selben File, für den
+  einen Fall mit hervorgehobenem Teiltext (TID-Konfigurationsfehler
+  beim EC-Beleg-Scan). Zwei der zehn Stellen (API-Upload-
+  Fehlermeldung, JSON-Vorschau-Fehler) nutzten abweichend
+  `duration: 8 Sekunden` statt der Standard-Dauer — unverändert
+  übernommen. Rein technische Vereinfachung, kein UI-/Text-
+  Unterschied für Anwender:innen.
+
 - Run 427: Lücke geschlossen, durch die eine unveränderte Abrechnung
   bei einem Neuaufbau von Schritt 3 versehentlich ein zweites Mal an
   Flurbocash gesendet werden konnte. Auslöser: der beim Öffnen von

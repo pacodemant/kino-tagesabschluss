@@ -32,6 +32,7 @@ import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
+import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/seitenwechsel_warnung_helper.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
@@ -1604,14 +1605,9 @@ class _TagesabschlussSchritt2SeiteState
         await Connectivity().checkConnectivity();
     if (verbindung.contains(ConnectivityResult.none)) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: AppFarben.fokusFarbe,
-          content: Text(
-            'Kein Internet – Scan nicht möglich.',
-            style: TextStyle(color: AppFarben.appBarRot),
-          ),
-        ),
+      zeigeHinweisSnackBar(
+        context,
+        'Kein Internet – Scan nicht möglich.',
       );
       return;
     }
@@ -1787,42 +1783,29 @@ class _TagesabschlussSchritt2SeiteState
             e.message.startsWith('HTTP ');
         final bool istKonfigurationsFehler =
             e.message.startsWith('Service-URL nicht konfiguriert');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: (istNetzwerkFehler || istKonfigurationsFehler)
-                ? Text.rich(
-                    TextSpan(
-                      style: const TextStyle(color: AppFarben.appBarRot),
-                      children: <TextSpan>[
-                        TextSpan(text: '${e.message}\n'),
-                        const TextSpan(
-                          text: 'Beleg kann auch manuell eingegeben werden.',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  )
-                : const Text(
-                    'Scan nicht lesbar – bitte erneut versuchen\n'
-                    '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
-                    'manuell eingeben.',
-                    style: TextStyle(color: AppFarben.appBarRot),
-                  ),
-          ),
-        );
+        if (istNetzwerkFehler || istKonfigurationsFehler) {
+          zeigeHinweisSnackBarRich(context, <TextSpan>[
+            TextSpan(text: '${e.message}\n'),
+            const TextSpan(
+              text: 'Beleg kann auch manuell eingegeben werden.',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ]);
+        } else {
+          zeigeHinweisSnackBar(
+            context,
+            'Scan nicht lesbar – bitte erneut versuchen\n'
+            '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
+            'manuell eingeben.',
+          );
+        }
       } catch (_) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: Text(
-              'Scan nicht lesbar – bitte erneut versuchen\n'
-              '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
-              'manuell eingeben.',
-              style: TextStyle(color: AppFarben.appBarRot),
-            ),
-          ),
+        zeigeHinweisSnackBar(
+          context,
+          'Scan nicht lesbar – bitte erneut versuchen\n'
+          '(z.B. unscharf, zu dunkel oder kein Beleg) oder Beleg '
+          'manuell eingeben.',
         );
       } finally {
         if (mounted) setState(() => _scanBelegIndex = null);
@@ -2949,14 +2932,9 @@ class _TagesabschlussSchritt2SeiteState
               child: ElevatedButton(
                 onPressed: () {
                   if (widget.kinoId != 'kino_04' && !_personalgetraenkeGebot) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: AppFarben.fokusFarbe,
-                        content: Text(
-                          'Personalgetränke gebont?',
-                          style: TextStyle(color: AppFarben.appBarRot),
-                        ),
-                      ),
+                    zeigeHinweisSnackBar(
+                      context,
+                      'Personalgetränke gebont?',
                     );
                     return;
                   }

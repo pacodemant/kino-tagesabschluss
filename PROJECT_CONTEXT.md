@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.85+427 · Run 427
+Version: 0.9.86+428 · Run 428
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 427)
+## Laufender Entwicklungsstand (Run 428)
+
+- Run 428 ✅ Verbliebene Hinweis-SnackBars in Schritt 2/3 auf den
+  bestehenden zeigeHinweisSnackBar()-Helfer (lib/widgets/
+  hinweis_snackbar.dart) umgestellt: 10 Stellen (4x Schritt 2, 6x
+  Schritt 3) bauten den ScaffoldMessenger/SnackBar-Boilerplate
+  unabhängig vom Helfer nach. Neu ergänzt: zeigeHinweisSnackBarRich()
+  im selben File für den TID-Konfigurationsfehler-Fall mit
+  hervorgehobenem Teiltext. Rein technisch, kein UI-Unterschied.
+  Details siehe CHANGELOG.md.
 
 - Run 427 ✅ Doppel-Versand-Lücke bei Schritt-3-Neuaufbau geschlossen:
   der Signatur-Abgleich beim Öffnen von Schritt 3

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 427 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 428 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -695,6 +695,13 @@ um Durcheinander zu vermeiden.
       einstellungen_seite.dart: _baueStueckzahlZeile/_baueCentZeile
       auf gemeinsame _baueZahlenZeile() zurückgeführt — Details siehe
       CHANGELOG.md).
+      Erledigt: Run 428 (die bei der Codebasis-Analyse 2026-08-16
+      gefundenen 10 verbliebenen SnackBar-Aufrufe in
+      tagesabschluss_schritt2_seite.dart und
+      tagesabschluss_schritt3_seite.dart auf das bestehende
+      zeigeHinweisSnackBar() umgestellt; neue
+      zeigeHinweisSnackBarRich()-Variante für den einen Fall mit
+      hervorgehobenem Teiltext ergänzt — Details siehe CHANGELOG.md).
       Kandidatensuche nach Run 384 für weitere Runs dieser Serie noch
       offen — nächster Fokus bei Bedarf über eine neue
       Codebasis-Analyse ermitteln.
@@ -721,13 +728,6 @@ um Durcheinander zu vermeiden.
       sendet den Scan-Request ohne API-Key-Header); Feld entfernen
       (da nie genutzt) oder Scan-Request tatsächlich mit API-Key
       versehen?
-      Zusätzlich entdeckt, noch nicht eingeplant: ca. 11 weitere
-      SnackBar-Aufrufe in tagesabschluss_schritt2_seite.dart (5x) und
-      tagesabschluss_schritt3_seite.dart (6x), die ebenfalls
-      zeigeHinweisSnackBar() nutzen könnten (siehe CHANGELOG Run 374,
-      Abschnitt "Neuer Fund beim Umsetzen") — bewusst nicht
-      mitgezogen, da außerhalb des kommunizierten Zielbereichs von
-      Run 374.
       Bewusst zurückgestellt: paralleles Listen-Resize-Muster in
       tagesabschluss_schritt2_seite.dart (EC-Beleg-/Ausgaben-Familie)
       — nur bei größerem Schritt-2-Umbau sinnvoll, nicht isoliert

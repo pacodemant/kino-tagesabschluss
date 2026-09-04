@@ -23,3 +23,24 @@ void zeigeHinweisSnackBar(
     ),
   );
 }
+
+/// Wie [zeigeHinweisSnackBar], aber für Text mit hervorgehobenem Teiltext
+/// (z. B. Fehlermeldung + fett gedruckter Handlungshinweis).
+void zeigeHinweisSnackBarRich(
+  BuildContext context,
+  List<InlineSpan> children, {
+  Duration? duration,
+}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: AppFarben.fokusFarbe,
+      content: Text.rich(
+        TextSpan(
+          style: const TextStyle(color: AppFarben.appBarRot),
+          children: children,
+        ),
+      ),
+      duration: duration ?? const Duration(seconds: 4),
+    ),
+  );
+}

@@ -29,6 +29,7 @@ import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
+import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -353,15 +354,7 @@ class _TagesabschlussSchritt3SeiteState
       );
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: Text(
-              'API Upload erfolgreich ✓',
-              style: TextStyle(color: AppFarben.appBarRot),
-            ),
-          ),
-        );
+        zeigeHinweisSnackBar(context, 'API Upload erfolgreich ✓');
       }
     } catch (e) {
       if (ApiUploadService.isCorsArtFehler(e)) {
@@ -372,14 +365,9 @@ class _TagesabschlussSchritt3SeiteState
           DateTime.now(),
         );
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: AppFarben.fokusFarbe,
-              content: Text(
-                'Upload gesendet — Empfang nicht bestätigbar',
-                style: TextStyle(color: AppFarben.appBarRot),
-              ),
-            ),
+          zeigeHinweisSnackBar(
+            context,
+            'Upload gesendet — Empfang nicht bestätigbar',
           );
         }
       } else {
@@ -387,15 +375,10 @@ class _TagesabschlussSchritt3SeiteState
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: AppFarben.fokusFarbe,
-              content: Text(
-                'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
-                style: const TextStyle(color: AppFarben.appBarRot),
-              ),
-              duration: const Duration(seconds: 8),
-            ),
+          zeigeHinweisSnackBar(
+            context,
+            'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
+            duration: const Duration(seconds: 8),
           );
         }
       }
@@ -419,14 +402,9 @@ class _TagesabschlussSchritt3SeiteState
         return;
       }
       if (!_autoSaveErledigt) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: AppFarben.fokusFarbe,
-            content: Text(
-              'Speichern fehlgeschlagen. Bitte erneut versuchen.',
-              style: TextStyle(color: AppFarben.appBarRot),
-            ),
-          ),
+        zeigeHinweisSnackBar(
+          context,
+          'Speichern fehlgeschlagen. Bitte erneut versuchen.',
         );
         return;
       }
@@ -573,15 +551,10 @@ class _TagesabschlussSchritt3SeiteState
       call2Json = encoder.convert(_fuerAnzeigeGekuerzt(call2));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppFarben.fokusFarbe,
-          content: Text(
-            'JSON-Vorschau fehlgeschlagen: $e',
-            style: const TextStyle(color: AppFarben.appBarRot),
-          ),
-          duration: const Duration(seconds: 8),
-        ),
+      zeigeHinweisSnackBar(
+        context,
+        'JSON-Vorschau fehlgeschlagen: $e',
+        duration: const Duration(seconds: 8),
       );
       return;
     }
@@ -731,14 +704,9 @@ class _TagesabschlussSchritt3SeiteState
               child: ElevatedButton(
                 onPressed: () {
                   if (!_abrechnungGesendet && !_devModusAktiv) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: AppFarben.fokusFarbe,
-                        content: Text(
-                          'Bitte zuerst die Abrechnung senden.',
-                          style: TextStyle(color: AppFarben.appBarRot),
-                        ),
-                      ),
+                    zeigeHinweisSnackBar(
+                      context,
+                      'Bitte zuerst die Abrechnung senden.',
                     );
                     return;
                   }
