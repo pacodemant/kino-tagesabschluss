@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 426: Auf Schritt 1 (Kassensturz) wurden fehlende Eingaben
+  bisher in zwei separaten, nacheinander erscheinenden Dialogen
+  bemängelt (erst alle leeren Scheine, danach alle leeren losen
+  Münzen). Auf Wunsch von Paco zu einem einzigen Dialog komprimiert:
+  _pruefeEingabenUndWeiterZuSchritt2() in
+  tagesabschluss_schritt1_seite.dart sammelt jetzt beide Gruppen
+  vorab und zeigt einen AlertDialog mit Titel "Eingaben
+  unvollständig", der die fehlenden Angaben lesbar nach "Scheine:"
+  und "Münzen:" gruppiert auflistet. Bewusst unverändert: Münzrollen
+  und "Sonstiges (Umschläge u.a.)" werden weiterhin nicht geprüft
+  (wie bisher), kein harter Block (Korrigieren/Bestätigen wie
+  gehabt), wechselgeld_pruefen_seite.dart bleibt unangetastet.
+
 - Run 425: Vierter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
   12, siehe Chat): der "gleicher Kalendertag"-Vergleich (Jahr/Monat/
   Tag, Uhrzeit ignoriert) war an 3 Stellen unabhängig als Jahr/Monat/

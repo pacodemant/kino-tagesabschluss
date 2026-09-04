@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.83+425 · Run 425
+Version: 0.9.84+426 · Run 426
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 425)
+## Laufender Entwicklungsstand (Run 426)
+
+- Run 426 ✅ Geldarten-Hinweise auf Schritt 1 komprimiert: statt zwei
+  nacheinander gezeigter Dialoge (erst Scheine, dann lose Münzen)
+  zeigt _pruefeEingabenUndWeiterZuSchritt2() jetzt einen einzigen
+  AlertDialog mit den fehlenden Angaben nach Scheine/Münzen
+  gruppiert. Rollen und "Sonstiges (Umschläge u.a.)" bleiben bewusst
+  ungeprüft (unverändert). Kein harter Block: "Korrigieren" bleibt
+  auf der Seite, "Bestätigen" füllt fehlende Felder mit 0 und macht
+  weiter. Details siehe CHANGELOG.md.
 
 - Run 425 ✅ Vierter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
   12): neue Methode DatumsHelper.istGleicherKalendertag() ersetzt 3

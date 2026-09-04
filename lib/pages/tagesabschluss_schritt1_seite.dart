@@ -906,46 +906,12 @@ class _TagesabschlussSchritt1SeiteState
       return;
     }
 
-    // Bereich 1: Scheine
     final List<Kassenzeile> leereScheine = _scheine
         .where(
           (Kassenzeile zeile) => _stueckzahlController[zeile.id]!.text.isEmpty,
         )
         .toList();
 
-    if (leereScheine.isNotEmpty) {
-      setState(() {
-        _rotHervorgehoben.clear();
-        _rotHervorgehoben.addAll(
-          leereScheine.map(
-            (Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!,
-          ),
-        );
-      });
-      final String auflistung = _formatiereLeereListe(
-        leereScheine.map((Kassenzeile zeile) => zeile.bezeichnung).toList(),
-      );
-      final bool bestaetigt = await _zeigeEingabePruefDialog(
-        titel: 'Scheine unvollständig',
-        inhalt:
-            'Für $auflistung wurde kein Wert eingegeben. Ist das korrekt?',
-      );
-      if (!mounted) {
-        return;
-      }
-      if (!bestaetigt) {
-        _fokussiereTextfeld(_stueckzahlFocusNode[leereScheine.first.id]!);
-        return;
-      }
-      setState(() {
-        _rotHervorgehoben.clear();
-      });
-      for (final Kassenzeile zeile in leereScheine) {
-        _stueckzahlController[zeile.id]!.text = '0';
-      }
-    }
-
-    // Bereich 2: Lose Münzen
     final List<Kassenzeile> leereMuenzen = _loseMuenzarten
         .where(
           (Kassenzeile zeile) =>
@@ -955,33 +921,52 @@ class _TagesabschlussSchritt1SeiteState
         )
         .toList();
 
-    if (leereMuenzen.isNotEmpty) {
+    if (leereScheine.isNotEmpty || leereMuenzen.isNotEmpty) {
       setState(() {
         _rotHervorgehoben.clear();
+        _rotHervorgehoben.addAll(
+          leereScheine.map(
+            (Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!,
+          ),
+        );
         _rotHervorgehoben.addAll(
           leereMuenzen.map(
             (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
           ),
         );
       });
-      final String auflistung = _formatiereLeereListe(
-        leereMuenzen.map((Kassenzeile zeile) => zeile.bezeichnung).toList(),
-      );
+      final List<String> abschnitte = <String>[];
+      if (leereScheine.isNotEmpty) {
+        abschnitte.add(
+          'Scheine: ${_formatiereLeereListe(leereScheine.map((Kassenzeile zeile) => zeile.bezeichnung).toList())}',
+        );
+      }
+      if (leereMuenzen.isNotEmpty) {
+        abschnitte.add(
+          'Münzen: ${_formatiereLeereListe(leereMuenzen.map((Kassenzeile zeile) => zeile.bezeichnung).toList())}',
+        );
+      }
       final bool bestaetigt = await _zeigeEingabePruefDialog(
-        titel: 'Lose Münzen unvollständig',
+        titel: 'Eingaben unvollständig',
         inhalt:
-            'Für $auflistung wurde kein Wert eingegeben. Ist das korrekt?',
+            'Für folgende Angaben wurde kein Wert eingegeben. Ist das korrekt?\n\n${abschnitte.join('\n\n')}',
       );
       if (!mounted) {
         return;
       }
       if (!bestaetigt) {
-        _fokussiereTextfeld(_loseMuenzenFocusNode[leereMuenzen.first.id]!);
+        final FocusNode ersteFocusNode = leereScheine.isNotEmpty
+            ? _stueckzahlFocusNode[leereScheine.first.id]!
+            : _loseMuenzenFocusNode[leereMuenzen.first.id]!;
+        _fokussiereTextfeld(ersteFocusNode);
         return;
       }
       setState(() {
         _rotHervorgehoben.clear();
       });
+      for (final Kassenzeile zeile in leereScheine) {
+        _stueckzahlController[zeile.id]!.text = '0';
+      }
       for (final Kassenzeile zeile in leereMuenzen) {
         _loseMuenzenController[zeile.id]!.text = '0,00';
       }
