@@ -264,7 +264,6 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
     final bool aktiv = onPressed != null;
     return SizedBox(
       width: 44,
-      height: 40,
       child: Material(
         color: aktiv ? Colors.grey.shade200 : Colors.grey.shade100,
         shape: RoundedRectangleBorder(

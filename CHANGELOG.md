@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a5: Stückelung-Seite — Rücknahme von 429a4 (feste
+  Knopfhöhe 40px). Die feste Höhe machte die Knöpfe auch in
+  Desktop Chrome quadratisch statt wie vorher rechteckig
+  (die tatsächliche Zeilenhöhe war dort größer als 40, die
+  Annahme "kaum sichtbarer Unterschied" aus der 429a4-Diagnose
+  war falsch). _baueSteuerKnopf ist jetzt wieder byte-identisch
+  zum Stand vor 429a4 (nur width: 44, Höhe wieder aus
+  IntrinsicHeight/CrossAxisAlignment.stretch abgeleitet) — Chrome
+  ist damit wieder exakt wie vor dem gesamten Knopf-Höhe-Umbau.
+  Der ursprüngliche iPhone-Bug (Knöpfe dort quadratisch) ist
+  dadurch wieder vorhanden; ein plattformunabhängiger Fix, der
+  Chrome nicht verändert, ist noch offen (siehe Chat-Rückfrage).
 - Run 429a4: Stückelung-Seite — Plus/Minus-Knöpfe (_baueSteuerKnopf,
   stueckelung_vorschlag_seite.dart) bekommen jetzt eine feste Höhe
   von 40px statt sich per IntrinsicHeight/CrossAxisAlignment.stretch
