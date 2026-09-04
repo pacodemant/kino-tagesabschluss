@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a3: Stückelung-Seite — Wechselgeld-Spaltenname von der
+  Abkürzung "Wechselg." auf das ausgeschriebene Wort in Klammern
+  "(Wechselgeld)" geändert (Klammer passend zum Format der Werte
+  darunter, z. B. "(3)"), weiterhin rechtsbündig und weiterhin nur
+  sichtbar bei aktiver Verschiebung. Spalte dafür auf 96px
+  verbreitert. Im Gegenzug "Bedarf"-Spalte von 96 auf 72px
+  verschmälert (war für den kurzen Kopftext unnötig breit, zwei-
+  stellige Stückzahlen passen weiterhin). Hinweis: dieselbe
+  72px-Spalte zeigt bei den Münzgeld-/Kupfergeld-Zeilen auch
+  Euro-Summen (nicht nur "NN Stk.") — bei ungewöhnlich hohen
+  Münzgeld-Summen im Test beobachten, ob der Betrag noch ohne
+  Umbruch passt.
 - Run 429a2: Stückelung-Seite — Korrektur zu 429a. Spaltenname
   "Wechselg." erscheint jetzt nur noch, wenn der MA tatsächlich an
   der 10er/20er-Aufteilung etwas verschoben hat (`_verschiebung !=

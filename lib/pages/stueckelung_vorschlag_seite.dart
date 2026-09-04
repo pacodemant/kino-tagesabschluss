@@ -320,7 +320,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
                 ],
                 SizedBox(
-                  width: 64,
+                  width: 96,
                   child: Text(
                     zeile.wechselgeldRest != null
                         ? '(${zeile.wechselgeldRest})'
@@ -330,7 +330,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 96,
+                  width: 72,
                   child: Text(
                     '${zeile.genommen} Stk.',
                     textAlign: TextAlign.right,
@@ -370,9 +370,9 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
               ),
-              const SizedBox(width: 64),
+              const SizedBox(width: 96),
               SizedBox(
-                width: 96,
+                width: 72,
                 child: Text(
                   _euro(zeile.betragCent),
                   textAlign: TextAlign.right,
@@ -482,15 +482,15 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 64,
+                  width: 96,
                   child: Text(
-                    _verschiebung != 0 ? 'Wechselg.' : '',
+                    _verschiebung != 0 ? '(Wechselgeld)' : '',
                     textAlign: TextAlign.right,
                     style: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ),
                 SizedBox(
-                  width: 96,
+                  width: 72,
                   child: Text(
                     'Bedarf',
                     textAlign: TextAlign.right,
