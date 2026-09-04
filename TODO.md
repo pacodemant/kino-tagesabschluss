@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 428 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 429 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -728,11 +728,18 @@ um Durcheinander zu vermeiden.
       sendet den Scan-Request ohne API-Key-Header); Feld entfernen
       (da nie genutzt) oder Scan-Request tatsächlich mit API-Key
       versehen?
-      Bewusst zurückgestellt: paralleles Listen-Resize-Muster in
-      tagesabschluss_schritt2_seite.dart (EC-Beleg-/Ausgaben-Familie)
-      — nur bei größerem Schritt-2-Umbau sinnvoll, nicht isoliert
-      (bestätigt durch Codebasis-Analyse 2026-08-16, dort als
-      "Parallel-Array-Antipattern" beschrieben).
+      Erledigt: Run 429 (Ausgaben-Familie: 7 parallele Listen zu
+      List<AusgabenZeile> konsolidiert, ~90 Fundstellen betroffen,
+      neue Widget-Interaktionstests für Zeile hinzufügen/entfernen —
+      Details siehe CHANGELOG.md). Ursprünglich am 2026-08-16 als
+      "Parallel-Array-Antipattern" bewusst zurückgestellt worden, dann
+      am 2026-09-04 doch angegangen, weil die App zu diesem Zeitpunkt
+      noch im Testeinsatz an der SB steht (Paco-Entscheidung: Umbau
+      jetzt sicherer als nach dem Wechsel in echten Produktivbetrieb).
+      Offen, geplant als Run 2 dieser Serie: EC-Beleg-Familie nach
+      demselben Muster (15 parallele Listen, ~356 Fundstellen,
+      zusätzlich verschachtelte List<List<ZahlungsartZeile>>,
+      dadurch größer/riskanter als Ausgaben — eigener Run).
       FeatureFlags/DevModus-Boilerplate — niedrige Priorität, nur bei
       weiteren Flags relevant.
       Offene Abwägungsfrage (Paco-Entscheidung nötig): soll

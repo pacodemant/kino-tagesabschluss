@@ -9,6 +9,44 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429: Ausgaben-Familie in Schritt 2 (Architektur-Run, erster
+  Teil einer 2-Run-Serie): die 7 parallelen Listen
+  (_ausgabenBetragController/_ausgabenLabelController/
+  _ausgabenBetragFocusNode/_ausgabenLabelFocusNode/
+  _ausgabenBetrageCent/_ausgabenLabels/_ausgabenIds) in
+  tagesabschluss_schritt2_seite.dart durch eine einzige
+  `List<AusgabenZeile>` ersetzt (neues Modell lib/pages/
+  tagesabschluss_schritt2/models/ausgaben_zeile.dart). Bündelt Betrag,
+  Label und deren Controller/FocusNodes pro Zeile in einem Objekt statt
+  sie über 7 separate, nur per Index verknüpfte Listen synchron zu
+  halten — vorher mussten Hinzufügen/Entfernen jeweils an bis zu 7
+  Stellen von Hand angepasst werden (Risiko: Index-Verschiebung bei
+  vergessener Liste). Zusätzlich dabei aufgelöst: die
+  "Zeile hinzufügen/entfernen"-Logik war innerhalb der Datei selbst
+  dupliziert (_ausgabeHinzufuegen()/_ausgabeEntfernen() vs. die
+  Wachstums-/Schrumpf-Schleifen in _setzeAusgabenAnzahl()).
+  Nach außen (Schritt2KinoSollUndAusgabenSection, Schritt2FokusHelper)
+  unverändert: beide erhalten weiterhin dieselben 5 parallelen Listen,
+  jetzt per `.map()` aus `_ausgaben` abgeleitet — keine Vertrags-
+  änderung, kein Test/Sub-Widget musste angepasst werden. Persistenz-
+  Format (JSON-Keys ausgabenBetraegeCent/ausgabenLabels/ausgabenCent
+  in LokalerSpeicher.speichereSchritt2Entwurf) ebenfalls unverändert.
+  Neu: Widget-Interaktionstest in test/pages/tagesabschluss_schritt2/
+  sections/schritt2_kino_soll_ausgaben_section_test.dart — baut über
+  eine kleine Test-Harness (_AusgabenTestHarness) echte Zeilen auf,
+  tippt Text ein, entfernt Zeile 0 und prüft, dass Zeile 1s Wert
+  korrekt nach vorne rutscht statt vertauscht/verloren zu werden.
+  Kein automatisierter Test für die volle Seite (Entwurf-Laden/
+  -Speichern, Auto-Fill) — deren Setup (SharedPreferences, Config-
+  Services, Connectivity) wäre unverhältnismäßig aufwendig gegenüber
+  dem Run-Fokus; hierfür bleibt Pacos manueller Test die maßgebliche
+  Prüfung. Auslöser: Codebasis-Analyse identifizierte das Muster als
+  "Parallel-Array-Antipattern" (siehe TODO.md), ursprünglich am
+  2026-08-16 zurückgestellt, jetzt umgesetzt solange die App noch im
+  Testeinsatz an der SB läuft statt im echten Produktivbetrieb (Paco-
+  Entscheidung). Run 2 dieser Serie (EC-Beleg-Familie, deutlich größer:
+  15 Listen statt 7, ~356 statt ~90 Fundstellen) folgt separat.
+
 - Run 428: Verbliebene Hinweis-SnackBars in Schritt 2/3 auf den
   bereits bestehenden zeigeHinweisSnackBar()-Helfer
   (lib/widgets/hinweis_snackbar.dart, seit Run 374) umgestellt. 10

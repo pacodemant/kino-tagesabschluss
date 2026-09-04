@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.86+428 · Run 428
+Version: 0.9.87+429 · Run 429
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 428)
+## Laufender Entwicklungsstand (Run 429)
+
+- Run 429 ✅ Architektur-Run: Ausgaben-Familie in Schritt 2 von 7
+  parallelen Listen auf eine List<AusgabenZeile> konsolidiert (neues
+  Modell lib/pages/tagesabschluss_schritt2/models/ausgaben_zeile.dart).
+  Nach außen (Section-Widget, Fokus-Helper, Persistenz-Format)
+  unverändert — reine interne Vereinfachung, ~90 Fundstellen betroffen.
+  Neuer Widget-Interaktionstest für Zeile hinzufügen/entfernen. Erster
+  Teil einer 2-Run-Serie, EC-Beleg-Familie (15 Listen, ~356 Fundstellen)
+  folgt als eigener, größerer Run. Details siehe CHANGELOG.md.
 
 - Run 428 ✅ Verbliebene Hinweis-SnackBars in Schritt 2/3 auf den
   bestehenden zeigeHinweisSnackBar()-Helfer (lib/widgets/

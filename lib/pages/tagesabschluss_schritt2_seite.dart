@@ -10,6 +10,7 @@ import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/ausgaben_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_sub_kacheln.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_terminal_id_zeile.dart';
@@ -162,13 +163,7 @@ class _TagesabschlussSchritt2SeiteState
   final List<bool> _metadatenAufgeklappt = <bool>[];
   final List<bool> _metadatenNurAnzeige = <bool>[];
 
-  final List<TextEditingController> _ausgabenBetragController = <TextEditingController>[];
-  final List<TextEditingController> _ausgabenLabelController = <TextEditingController>[];
-  final List<FocusNode> _ausgabenBetragFocusNode = <FocusNode>[];
-  final List<FocusNode> _ausgabenLabelFocusNode = <FocusNode>[];
-  final List<int> _ausgabenBetrageCent = <int>[];
-  final List<String> _ausgabenLabels = <String>[];
-  final List<int> _ausgabenIds = <int>[];
+  final List<AusgabenZeile> _ausgaben = <AusgabenZeile>[];
   int _naechsteAusgabeId = 1;
 
   int _kinoSollCent = 0;
@@ -323,10 +318,9 @@ class _TagesabschlussSchritt2SeiteState
     disposeControllers(_ecBelegLabelController);
     disposeFocusNodes(_ecBelegFocusNode);
     disposeFocusNodes(_ecBelegLabelFocusNode);
-    disposeControllers(_ausgabenBetragController);
-    disposeControllers(_ausgabenLabelController);
-    disposeFocusNodes(_ausgabenBetragFocusNode);
-    disposeFocusNodes(_ausgabenLabelFocusNode);
+    for (final AusgabenZeile zeile in _ausgaben) {
+      zeile.dispose();
+    }
     for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
       for (final ZahlungsartZeile zeile in belegZeilen) {
         zeile.dispose();
@@ -478,8 +472,8 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegFotosMediaTypen[i] = ecBelegeFotosMediaTypenListe[i];
       }
       for (int i = 0; i < ausgabenBetraege.length; i++) {
-        _ausgabenBetrageCent[i] = ausgabenBetraege[i];
-        _ausgabenLabels[i] = ausgabenLabelListe[i];
+        _ausgaben[i].betragCent = ausgabenBetraege[i];
+        _ausgaben[i].label = ausgabenLabelListe[i];
       }
       // scanHatStattgefunden: neu List<bool>, rückwärtskompatibel bool
       final Object? scanRoh = daten['scanHatStattgefunden'];
@@ -569,12 +563,12 @@ class _TagesabschlussSchritt2SeiteState
     for (int i = 0; i < ausgabenBetraege.length; i++) {
       if (ausgabenBetraege[i] != 0) {
         _setzeControllerText(
-          _ausgabenBetragController[i],
+          _ausgaben[i].betragController,
           TagesabschlussFormatierung.formatiereEuroEingabe(ausgabenBetraege[i]),
         );
       }
       if (ausgabenLabelListe[i].isNotEmpty) {
-        _setzeControllerText(_ausgabenLabelController[i], ausgabenLabelListe[i]);
+        _setzeControllerText(_ausgaben[i].labelController, ausgabenLabelListe[i]);
       }
     }
 
@@ -645,9 +639,12 @@ class _TagesabschlussSchritt2SeiteState
         'isoDatum': DatumsHelper.logischesIsoDatum(),
         'kinoSollCent': _kinoSollCent,
         'bistroSollCent': _bistroSollCent,
-        'ausgabenCent': TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
-        'ausgabenBetraegeCent': List<int>.from(_ausgabenBetrageCent),
-        'ausgabenLabels': List<String>.from(_ausgabenLabels),
+        'ausgabenCent': TagesabschlussBerechnung.summeCentBetraege(
+          _ausgaben.map((AusgabenZeile z) => z.betragCent),
+        ),
+        'ausgabenBetraegeCent':
+            _ausgaben.map((AusgabenZeile z) => z.betragCent).toList(),
+        'ausgabenLabels': _ausgaben.map((AusgabenZeile z) => z.label).toList(),
         'differenzAnfangsbestandCent': _differenzAnfangsbestandCent,
         'ecBelegeCent': List<int>.from(_ecBelegeCent),
         'ecBelegeLabels': List<String>.from(_ecBelegLabels),
@@ -827,14 +824,17 @@ class _TagesabschlussSchritt2SeiteState
       wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
       kinoSollCent: _kinoSollCent,
       bistroSollCent: _bistroSollCent,
-      ausgabenCent: TagesabschlussBerechnung.summeCentBetraege(_ausgabenBetrageCent),
+      ausgabenCent: TagesabschlussBerechnung.summeCentBetraege(
+        _ausgaben.map((AusgabenZeile z) => z.betragCent),
+      ),
       ecBelegeCent: List<int>.from(_ecBelegeCent),
       differenzAnfangsbestandCent: _differenzAnfangsbestandCent,
       stueckzahlen: widget.stueckzahlen,
       loseMuenzenNachArtCent: widget.loseMuenzenNachArtCent,
       umschlaege: widget.umschlaege,
-      ausgabenBetraegeCent: List<int>.from(_ausgabenBetrageCent),
-      ausgabenLabels: List<String>.from(_ausgabenLabels),
+      ausgabenBetraegeCent:
+          _ausgaben.map((AusgabenZeile z) => z.betragCent).toList(),
+      ausgabenLabels: _ausgaben.map((AusgabenZeile z) => z.label).toList(),
       ecBelegeLabels: List<String>.from(_ecBelegLabels),
       terminalId: _scanTerminalId,
       belegNrVon: _scanBelegNrVon,
@@ -930,12 +930,12 @@ class _TagesabschlussSchritt2SeiteState
     });
 
     // V3: Ausgaben mit Label aber Betrag = 0
-    for (int i = 0; i < _ausgabenLabels.length; i++) {
-      if (_ausgabenLabels[i].trim().isNotEmpty &&
-          (i < _ausgabenBetrageCent.length && _ausgabenBetrageCent[i] == 0)) {
+    for (int i = 0; i < _ausgaben.length; i++) {
+      if (_ausgaben[i].label.trim().isNotEmpty &&
+          _ausgaben[i].betragCent == 0) {
         await _zeigeValidierungsfehlerUndFokussiere(
-          fokusNode: _ausgabenBetragFocusNode[i],
-          feldBezeichnung: 'Betrag für „${_ausgabenLabels[i]}"',
+          fokusNode: _ausgaben[i].betragFocusNode,
+          feldBezeichnung: 'Betrag für „${_ausgaben[i].label}"',
         );
         return false;
       }
@@ -1288,24 +1288,24 @@ class _TagesabschlussSchritt2SeiteState
   void _beiAusgabenLabelGeaendert(int index, String wert) {
     setState(() {
       _letzteAenderung = DateTime.now();
-      _ausgabenLabels[index] = wert;
+      _ausgaben[index].label = wert;
     });
     _speichereEntwurf();
   }
 
   void _ausgabenLabelLoeschen(int index) {
-    _ausgabenLabelController[index].clear();
+    _ausgaben[index].labelController.clear();
     setState(() {
-      _ausgabenLabels[index] = '';
+      _ausgaben[index].label = '';
     });
     _speichereEntwurf();
-    _ausgabenLabelFocusNode[index].requestFocus();
+    _ausgaben[index].labelFocusNode.requestFocus();
   }
 
   void _beiAusgabenBetragGeaendert(int index, String wert) {
     setState(() {
       _letzteAenderung = DateTime.now();
-      _ausgabenBetrageCent[index] = _parsiereBetragCent(wert);
+      _ausgaben[index].betragCent = _parsiereBetragCent(wert);
     });
     _speichereEntwurf();
   }
@@ -1313,70 +1313,42 @@ class _TagesabschlussSchritt2SeiteState
   void _ausgabeHinzufuegen() {
     setState(() {
       _letzteAenderung = DateTime.now();
-      final FocusNode neueAusgabenBetragFn = FocusNode();
-      final FocusNode neueAusgabenLabelFn = FocusNode();
-      _verknuepfeFeldNavigationSchritt2(neueAusgabenBetragFn);
-      _verknuepfeFeldNavigationSchritt2(neueAusgabenLabelFn);
-      _ausgabenBetragController.add(TextEditingController());
-      _ausgabenLabelController.add(TextEditingController());
-      _ausgabenBetragFocusNode.add(neueAusgabenBetragFn);
-      _ausgabenLabelFocusNode.add(neueAusgabenLabelFn);
-      _ausgabenBetrageCent.add(0);
-      _ausgabenLabels.add('');
-      _ausgabenIds.add(_naechsteAusgabeId++);
+      final AusgabenZeile zeile = AusgabenZeile(id: _naechsteAusgabeId++);
+      _verknuepfeFeldNavigationSchritt2(zeile.betragFocusNode);
+      _verknuepfeFeldNavigationSchritt2(zeile.labelFocusNode);
+      _ausgaben.add(zeile);
     });
     _speichereEntwurf();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && _ausgabenLabelFocusNode.isNotEmpty) {
-        FocusScope.of(context).requestFocus(_ausgabenLabelFocusNode.last);
+      if (mounted && _ausgaben.isNotEmpty) {
+        FocusScope.of(context).requestFocus(_ausgaben.last.labelFocusNode);
       }
     });
   }
 
   void _ausgabeEntfernen(int index) {
-    if (_ausgabenBetragController.length <= 1 ||
-        index < 0 ||
-        index >= _ausgabenBetragController.length) {
+    if (_ausgaben.length <= 1 || index < 0 || index >= _ausgaben.length) {
       return;
     }
     setState(() {
       _letzteAenderung = DateTime.now();
-      _ausgabenBetragController.removeAt(index).dispose();
-      _ausgabenLabelController.removeAt(index).dispose();
-      _ausgabenBetragFocusNode.removeAt(index).dispose();
-      _ausgabenLabelFocusNode.removeAt(index).dispose();
-      _ausgabenBetrageCent.removeAt(index);
-      _ausgabenLabels.removeAt(index);
-      _ausgabenIds.removeAt(index);
+      _ausgaben.removeAt(index).dispose();
     });
     _speichereEntwurf();
   }
 
   void _setzeAusgabenAnzahl(int anzahl) {
-    while (_ausgabenBetragController.length > anzahl) {
-      _ausgabenBetragController.removeLast().dispose();
-      _ausgabenLabelController.removeLast().dispose();
-      _ausgabenBetragFocusNode.removeLast().dispose();
-      _ausgabenLabelFocusNode.removeLast().dispose();
-      _ausgabenBetrageCent.removeLast();
-      _ausgabenLabels.removeLast();
-      _ausgabenIds.removeLast();
+    while (_ausgaben.length > anzahl) {
+      _ausgaben.removeLast().dispose();
     }
-    while (_ausgabenBetragController.length < anzahl) {
-      _ausgabenBetragController.add(TextEditingController());
-      _ausgabenLabelController.add(TextEditingController());
-      final FocusNode ausgabenBetragFn = FocusNode();
-      _verknuepfeFeldNavigationSchritt2(ausgabenBetragFn);
-      _ausgabenBetragFocusNode.add(ausgabenBetragFn);
-      final FocusNode ausgabenLabelFn = FocusNode()
-        ..addListener(() {
-          if (mounted) setState(() {});
-        });
-      _verknuepfeFeldNavigationSchritt2(ausgabenLabelFn);
-      _ausgabenLabelFocusNode.add(ausgabenLabelFn);
-      _ausgabenBetrageCent.add(0);
-      _ausgabenLabels.add('');
-      _ausgabenIds.add(_naechsteAusgabeId++);
+    while (_ausgaben.length < anzahl) {
+      final AusgabenZeile zeile = AusgabenZeile(id: _naechsteAusgabeId++);
+      _verknuepfeFeldNavigationSchritt2(zeile.betragFocusNode);
+      zeile.labelFocusNode.addListener(() {
+        if (mounted) setState(() {});
+      });
+      _verknuepfeFeldNavigationSchritt2(zeile.labelFocusNode);
+      _ausgaben.add(zeile);
     }
   }
 
@@ -1435,8 +1407,8 @@ class _TagesabschlussSchritt2SeiteState
       _ecBelegLabel1Beruehrt = true;
 
       _setzeAusgabenAnzahl(1);
-      _ausgabenBetrageCent[0] = ausgaben;
-      _ausgabenLabels[0] = '';
+      _ausgaben[0].betragCent = ausgaben;
+      _ausgaben[0].label = '';
 
       _setzeControllerText(
         _kinoSollController,
@@ -1451,12 +1423,12 @@ class _TagesabschlussSchritt2SeiteState
             : '',
       );
       _setzeControllerText(
-        _ausgabenBetragController[0],
+        _ausgaben[0].betragController,
         ausgaben != 0
             ? TagesabschlussFormatierung.formatiereEuroEingabe(ausgaben)
             : '',
       );
-      _setzeControllerText(_ausgabenLabelController[0], '');
+      _setzeControllerText(_ausgaben[0].labelController, '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(
         _ecBelegController[0],
@@ -1514,13 +1486,13 @@ class _TagesabschlussSchritt2SeiteState
       if (_ecBelegFotosMediaTypen.isNotEmpty) _ecBelegFotosMediaTypen[0] = '';
 
       _setzeAusgabenAnzahl(1);
-      _ausgabenBetrageCent[0] = 0;
-      _ausgabenLabels[0] = '';
+      _ausgaben[0].betragCent = 0;
+      _ausgaben[0].label = '';
 
       _setzeControllerText(_kinoSollController, '');
       _setzeControllerText(_bistroSollController, '');
-      _setzeControllerText(_ausgabenBetragController[0], '');
-      _setzeControllerText(_ausgabenLabelController[0], '');
+      _setzeControllerText(_ausgaben[0].betragController, '');
+      _setzeControllerText(_ausgaben[0].labelController, '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(_ecBelegController[0], '');
       _setzeControllerText(_ecBelegLabelController[0], '');
@@ -1566,16 +1538,16 @@ class _TagesabschlussSchritt2SeiteState
       if (_ecBelegFotosMediaTypen.isNotEmpty) _ecBelegFotosMediaTypen[0] = '';
 
       _setzeAusgabenAnzahl(1);
-      _ausgabenBetrageCent[0] = 0;
-      _ausgabenLabels[0] = '';
+      _ausgaben[0].betragCent = 0;
+      _ausgaben[0].label = '';
 
       _setzeControllerText(_kinoSollController, '');
       _setzeControllerText(_bistroSollController, '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
       _setzeControllerText(_ecBelegController[0], '');
       _setzeControllerText(_ecBelegLabelController[0], '');
-      _setzeControllerText(_ausgabenBetragController[0], '');
-      _setzeControllerText(_ausgabenLabelController[0], '');
+      _setzeControllerText(_ausgaben[0].betragController, '');
+      _setzeControllerText(_ausgaben[0].labelController, '');
       _scanTerminalId = null;
       _scanDatum = null;
       _scanUhrzeit = null;
@@ -2252,8 +2224,10 @@ class _TagesabschlussSchritt2SeiteState
       differenzAnfangsbestandFocusNode: _differenzAnfangsbestandFocusNode,
       kinoSollFocusNode: _kinoSollFocusNode,
       bistroSollFocusNode: _bistroSollFocusNode,
-      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
-      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
+      ausgabenLabelFocusNode:
+          _ausgaben.map((AusgabenZeile z) => z.labelFocusNode).toList(),
+      ausgabenBetragFocusNode:
+          _ausgaben.map((AusgabenZeile z) => z.betragFocusNode).toList(),
       ecBelegLabelFocusNode: _ecBelegLabelFocusNode,
       kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
       zahlungsartZeilen: _zahlungsartZeilen,
@@ -2324,10 +2298,14 @@ class _TagesabschlussSchritt2SeiteState
       bistroSollController: _bistroSollController,
       differenzAnfangsbestandFocusNode: _differenzAnfangsbestandFocusNode,
       differenzAnfangsbestandController: _differenzAnfangsbestandController,
-      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
-      ausgabenLabelController: _ausgabenLabelController,
-      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
-      ausgabenBetragController: _ausgabenBetragController,
+      ausgabenLabelFocusNode:
+          _ausgaben.map((AusgabenZeile z) => z.labelFocusNode).toList(),
+      ausgabenLabelController:
+          _ausgaben.map((AusgabenZeile z) => z.labelController).toList(),
+      ausgabenBetragFocusNode:
+          _ausgaben.map((AusgabenZeile z) => z.betragFocusNode).toList(),
+      ausgabenBetragController:
+          _ausgaben.map((AusgabenZeile z) => z.betragController).toList(),
       ecBelegLabelFocusNode: _ecBelegLabelFocusNode,
       ecBelegLabelController: _ecBelegLabelController,
       kartenartenGesamtBetragFocusNode: _kartenartenGesamtBetragFocusNode,
@@ -2451,9 +2429,11 @@ class _TagesabschlussSchritt2SeiteState
       return true;
     }
     if (_ecBelegeCent.any((int c) => c != 0)) return true;
-    if (_ausgabenBetrageCent.any((int c) => c != 0)) return true;
+    if (_ausgaben.any((AusgabenZeile z) => z.betragCent != 0)) return true;
     if (_ecBelegLabels.any((String s) => s.trim().isNotEmpty)) return true;
-    if (_ausgabenLabels.any((String s) => s.trim().isNotEmpty)) return true;
+    if (_ausgaben.any((AusgabenZeile z) => z.label.trim().isNotEmpty)) {
+      return true;
+    }
     return _anmerkung.trim().isNotEmpty;
   }
 
@@ -2831,11 +2811,15 @@ class _TagesabschlussSchritt2SeiteState
               onChanged: _beiBistroSollGeaendert,
             )
           : null,
-      ausgabenIds: _ausgabenIds,
-      ausgabenLabelController: _ausgabenLabelController,
-      ausgabenLabelFocusNode: _ausgabenLabelFocusNode,
-      ausgabenBetragController: _ausgabenBetragController,
-      ausgabenBetragFocusNode: _ausgabenBetragFocusNode,
+      ausgabenIds: _ausgaben.map((AusgabenZeile z) => z.id).toList(),
+      ausgabenLabelController:
+          _ausgaben.map((AusgabenZeile z) => z.labelController).toList(),
+      ausgabenLabelFocusNode:
+          _ausgaben.map((AusgabenZeile z) => z.labelFocusNode).toList(),
+      ausgabenBetragController:
+          _ausgaben.map((AusgabenZeile z) => z.betragController).toList(),
+      ausgabenBetragFocusNode:
+          _ausgaben.map((AusgabenZeile z) => z.betragFocusNode).toList(),
       textInputActionFuerSchritt2: _textInputActionFuerSchritt2,
       beiEingabeAbgeschlossen: _beiEingabeAbgeschlossenSchritt2,
       onAusgabenLabelGeaendert: _beiAusgabenLabelGeaendert,
