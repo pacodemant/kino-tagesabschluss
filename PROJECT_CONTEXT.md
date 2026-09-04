@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.83+424a · Run 424a
+Version: 0.9.83+425 · Run 425
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 424a)
+## Laufender Entwicklungsstand (Run 425)
+
+- Run 425 ✅ Vierter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
+  12): neue Methode DatumsHelper.istGleicherKalendertag() ersetzt 3
+  unabhängig gepflegte Jahr/Monat/Tag-Vergleiche in
+  SpeichereTagesabschlussUsecase und LokalerSpeicher (ersetzen/
+  löschen). Reine Zentralisierung, Verhalten unverändert. Details
+  siehe CHANGELOG.md.
 
 - Run 424a ✅ Korrektur zu Run 424: "Kino Soll"-Label war für Cinema
   Ostertor (kein Bistro) noch an 4 weiteren Stellen hartcodiert

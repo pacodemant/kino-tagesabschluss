@@ -26,4 +26,15 @@ class DatumsHelper {
     final DateTime tag = logischerAbrechnungsTag(jetzt: jetzt);
     return isoDatum(tag);
   }
+
+  /// Ob [links] und [rechts] auf denselben Kalendertag fallen (Jahr/Monat/
+  /// Tag, Uhrzeit wird ignoriert). Einzige Quelle seit Run 425 — vorher an
+  /// 3 Stellen unabhaengig als Jahr/Monat/Tag-Vergleich nachgebaut
+  /// (SpeichereTagesabschlussUsecase, LokalerSpeicher.
+  /// ersetzeFinalenTagesabschluss/loescheFinalenTagesabschluss).
+  static bool istGleicherKalendertag(DateTime links, DateTime rechts) {
+    return links.year == rechts.year &&
+        links.month == rechts.month &&
+        links.day == rechts.day;
+  }
 }

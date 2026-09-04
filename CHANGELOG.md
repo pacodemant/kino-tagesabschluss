@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 425: Vierter Aufräum-Run aus der Code-Qualitäts-Diagnose (Fund
+  12, siehe Chat): der "gleicher Kalendertag"-Vergleich (Jahr/Monat/
+  Tag, Uhrzeit ignoriert) war an 3 Stellen unabhängig als Jahr/Monat/
+  Tag-Vergleich nachgebaut:
+  SpeichereTagesabschlussUsecase._istGleicherKalendertag(),
+  LokalerSpeicher.ersetzeFinalenTagesabschluss() und
+  LokalerSpeicher.loescheFinalenTagesabschluss() — obwohl
+  DatumsHelper in lib/utils/ laut eigener Doku bereits "einzige
+  Quelle" für Datumslogik ist, deckte diese Regel dort bisher nicht
+  ab. Jetzt eine Methode DatumsHelper.istGleicherKalendertag(), alle
+  3 Stellen umgestellt, private Methode in
+  SpeichereTagesabschlussUsecase entfernt. Reine Zentralisierung,
+  Verhalten unverändert. Keine neuen Tests nötig — bestehende
+  speichere_tagesabschluss_usecase_test.dart und
+  lokaler_speicher_test.dart decken das Duplikat-/Ersetz-/
+  Löschverhalten bereits ab.
+
 - Run 424a: Direkte Anweisung ohne eigene Run-Nummer (Korrektur zu
   Run 424). Testfeedback: auf der "Übertrag auf Umschlag"-Seite
   stand für Cinema Ostertor (kino_04) weiterhin "Kino Soll" statt des

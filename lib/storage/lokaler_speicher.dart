@@ -171,10 +171,10 @@ class LokalerSpeicher {
           if (eintrag is Map<String, dynamic>) {
             final TagesabschlussFinal bestehend =
                 TagesabschlussFinal.fromJson(eintrag);
-            final bool gleichenTag =
-                bestehend.datum.year == abschluss.datum.year &&
-                bestehend.datum.month == abschluss.datum.month &&
-                bestehend.datum.day == abschluss.datum.day;
+            final bool gleichenTag = DatumsHelper.istGleicherKalendertag(
+              bestehend.datum,
+              abschluss.datum,
+            );
             if (gleichenTag) {
               gleicherTag.add(eintrag);
             } else {
@@ -633,10 +633,10 @@ class LokalerSpeicher {
         if (eintrag is Map<String, dynamic>) {
           final TagesabschlussFinal bestehend =
               TagesabschlussFinal.fromJson(eintrag);
-          final bool gleichenTag =
-              bestehend.datum.year == datum.year &&
-              bestehend.datum.month == datum.month &&
-              bestehend.datum.day == datum.day;
+          final bool gleichenTag = DatumsHelper.istGleicherKalendertag(
+            bestehend.datum,
+            datum,
+          );
           if (!gleichenTag) {
             aktualisiert.add(eintrag);
           }

@@ -1,6 +1,7 @@
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 
 /// Usecase zum Speichern einer finalen Tagesabrechnung mit Duplikat-Pruefung.
 class SpeichereTagesabschlussUsecase {
@@ -27,7 +28,10 @@ class SpeichereTagesabschlussUsecase {
     final int anzahlHeute = vorhandeneAbschluesse
         .where(
           (TagesabschlussFinal eintrag) =>
-              _istGleicherKalendertag(eintrag.datum, abschluss.datum) &&
+              DatumsHelper.istGleicherKalendertag(
+                eintrag.datum,
+                abschluss.datum,
+              ) &&
               !_istTestdatenEintrag(eintrag),
         )
         .length;
@@ -49,12 +53,6 @@ class SpeichereTagesabschlussUsecase {
 
     await LokalerSpeicher.ersetzeFinalenTagesabschluss(abschluss);
     return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: false);
-  }
-
-  bool _istGleicherKalendertag(DateTime links, DateTime rechts) {
-    return links.year == rechts.year &&
-        links.month == rechts.month &&
-        links.day == rechts.day;
   }
 
   bool _istTestdatenEintrag(TagesabschlussFinal eintrag) {
