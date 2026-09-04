@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a7: Stückelung-Seite — Architektur-Korrektur (große Runde,
+  auf Wunsch: "wo nicht zwingend nötig, keine festen Werte
+  verwenden"). Die 3 an mehreren Stellen hart codierten
+  Spaltenbreiten (Wechselgeld/Bedarf/Vorh., zuletzt 96/72/40 aus
+  429a3) sind ersetzt durch eine einzige Methode
+  (`_spaltenbreiten`), die die tatsächlich benötigte Breite je
+  Spalte per `TextPainter` aus dem real angezeigten Text
+  berechnet (inkl. `MediaQuery.textScalerOf` für
+  Accessibility-Textgrößen) — Kopfzeile und alle Zeilentypen
+  nutzen jetzt dieselben zwei berechneten Werte (`breiteBedarf`,
+  `breiteVorh`) statt eigener Literale. Ein dabei neu geschriebener
+  Regressionstest (test/pages/stueckelung_vorschlag_seite_test.dart,
+  simuliert 390pt iPhone-Breite) deckte auf: selbst mit berechneten
+  statt geratenen Breiten reicht der Platz neben den +/- Knöpfen
+  (20 €/10 €-Zeile) nicht für eine eigene Wechselgeld-Spalte — die
+  Bezeichnung brach weiterhin um (Beweis, kein Ratefehler diesmal:
+  RenderFlex-Overflow bzw. dreifache Zeilenhöhe im Test). Daher
+  fällt die Wechselgeld-Spalte komplett weg; die Information
+  ("(N)" je Zeile) erscheint stattdessen als ein Satz oberhalb der
+  Tabelle ("Für das Wechselgeld bleiben übrig: 1× 20 €, 27× 10 €."),
+  sobald eine Verschiebung aktiv ist — dort gibt es keine Breiten-
+  Konkurrenz mit den Knöpfen. Knopfbreite (44), Knopfabstand (22)
+  und Knopfhöhe (18, aus 429a6) bleiben bewusst fest — das sind
+  Tastflächen-Maße, kein Text, für die "aus Inhalt berechnen"
+  nicht zutrifft. Kein Verhaltensunterschied für Nutzer ohne
+  aktive Verschiebung.
 - Run 429a6: Stückelung-Seite — _baueSteuerKnopf bekommt erneut
   eine feste Höhe, diesmal 18px (statt der falsch geschätzten
   40px aus 429a4). Wert stammt aus einer echten Nachmessung von

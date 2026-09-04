@@ -257,6 +257,73 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
 
   String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
 
+  // Misst die tatsächlich benötigte Breite für einen Zellentext statt sie
+  // fest zu verdrahten — Spaltenbreiten passen sich damit automatisch an
+  // Schriftart/Textgröße der jeweiligen Plattform sowie an
+  // Nutzer-Textgrößeneinstellungen (Accessibility) an, statt bei jeder
+  // Textänderung erneut per Hand geschätzt werden zu müssen.
+  double _textBreite(BuildContext context, String text, TextStyle style) {
+    final TextPainter painter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+    )..layout();
+    return painter.width;
+  }
+
+  // Ermittelt die beiden rechtsbündigen Spaltenbreiten (Bedarf/Vorh.) aus
+  // dem tatsächlich in dieser Berechnung vorkommenden Text (Kopfzeile +
+  // jede Zeile), statt wie bisher an drei Stellen im Code geschätzte
+  // Pixelwerte zu pflegen, die bei Text-/Layoutänderungen immer wieder
+  // auseinanderliefen (Ursache mehrerer Umbruch-Bugs in Run 429a). Die
+  // Wechselgeld-Information hat hier bewusst keine eigene Spalte mehr
+  // (siehe wechselgeldHinweis in build()) — ein Regressionstest
+  // (stueckelung_vorschlag_seite_test.dart) hat gezeigt, dass auf einem
+  // schmalen Screen neben den +/- Knöpfen selbst für die kurzen
+  // Klammer-Werte ("(6)") kein Platz mehr bleibt, ohne dass die
+  // Bezeichnung umbricht.
+  ({double bedarf, double vorh}) _spaltenbreiten(
+    BuildContext context,
+    List<_ErgebnisZeile> zeilen,
+  ) {
+    const TextStyle kopfStil = TextStyle(fontSize: 11, color: Colors.grey);
+    const TextStyle bedarfStilStk = TextStyle(fontWeight: FontWeight.w600);
+    const TextStyle bedarfStilEuro = TextStyle(fontWeight: FontWeight.bold);
+    const TextStyle normalStil = TextStyle();
+
+    double breiteBedarf = _textBreite(context, 'Bedarf', kopfStil);
+    double breiteVorh = _textBreite(context, 'Vorh.', kopfStil);
+
+    for (final _ErgebnisZeile zeile in zeilen) {
+      if (zeile.art == _ZeilenArt.stueckzahl) {
+        final double bedarfBreite = _textBreite(
+          context,
+          '${zeile.genommen} Stk.',
+          bedarfStilStk,
+        );
+        if (bedarfBreite > breiteBedarf) breiteBedarf = bedarfBreite;
+        final double vorhBreite = _textBreite(
+          context,
+          '/ ${zeile.vorhanden}',
+          normalStil,
+        );
+        if (vorhBreite > breiteVorh) breiteVorh = vorhBreite;
+      } else if (zeile.art == _ZeilenArt.betragzeile) {
+        final double bedarfBreite = _textBreite(
+          context,
+          _euro(zeile.betragCent),
+          bedarfStilEuro,
+        );
+        if (bedarfBreite > breiteBedarf) breiteBedarf = bedarfBreite;
+      }
+    }
+
+    // Kleiner Sicherheitsabstand, damit der Text nicht direkt am Rand der
+    // nächsten Spalte klebt.
+    const double puffer = 4;
+    return (bedarf: breiteBedarf + puffer, vorh: breiteVorh + puffer);
+  }
+
   Widget _baueSteuerKnopf({
     required IconData icon,
     required VoidCallback? onPressed,
@@ -288,7 +355,11 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
     );
   }
 
-  Widget _baueZeile(_ErgebnisZeile zeile) {
+  Widget _baueZeile(
+    _ErgebnisZeile zeile, {
+    required double breiteBedarf,
+    required double breiteVorh,
+  }) {
     switch (zeile.art) {
       case _ZeilenArt.stueckzahl:
         final Color? grauFarbe = zeile.ausgegraut ? Colors.grey.shade400 : null;
@@ -321,17 +392,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
                 ],
                 SizedBox(
-                  width: 96,
-                  child: Text(
-                    zeile.wechselgeldRest != null
-                        ? '(${zeile.wechselgeldRest})'
-                        : '',
-                    textAlign: TextAlign.right,
-                    style: TextStyle(color: Colors.grey.shade600),
-                  ),
-                ),
-                SizedBox(
-                  width: 72,
+                  width: breiteBedarf,
                   child: Text(
                     '${zeile.genommen} Stk.',
                     textAlign: TextAlign.right,
@@ -342,7 +403,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 40,
+                  width: breiteVorh,
                   child: Text(
                     '/ ${zeile.vorhanden}',
                     textAlign: TextAlign.right,
@@ -371,9 +432,8 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
               ),
-              const SizedBox(width: 96),
               SizedBox(
-                width: 72,
+                width: breiteBedarf,
                 child: Text(
                   _euro(zeile.betragCent),
                   textAlign: TextAlign.right,
@@ -383,7 +443,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
               ),
-              const SizedBox(width: 40),
+              SizedBox(width: breiteVorh),
             ],
           ),
         );
@@ -434,6 +494,18 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
   @override
   Widget build(BuildContext context) {
     final List<_ErgebnisZeile> zeilen = _berechneErgebnis();
+    final ({double bedarf, double vorh}) breiten = _spaltenbreiten(
+      context,
+      zeilen,
+    );
+    final Iterable<_ErgebnisZeile> wechselgeldZeilen = zeilen.where(
+      (_ErgebnisZeile z) =>
+          z.art == _ZeilenArt.stueckzahl && z.wechselgeldRest != null,
+    );
+    final String? wechselgeldHinweis = wechselgeldZeilen.isEmpty
+        ? null
+        : 'Für das Wechselgeld bleiben übrig: '
+              '${wechselgeldZeilen.map((_ErgebnisZeile z) => '${z.wechselgeldRest}× ${z.bezeichnung}').join(', ')}.';
 
     return TagesabschlussScaffold(
       appBar: TagesabschlussHeader(
@@ -472,6 +544,15 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
             ),
           ),
           const SizedBox(height: 4),
+          if (wechselgeldHinweis != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                wechselgeldHinweis,
+                style: const TextStyle(fontSize: 11, color: Colors.grey),
+              ),
+            ),
+          const SizedBox(height: 4),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
@@ -483,15 +564,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 96,
-                  child: Text(
-                    _verschiebung != 0 ? '(Wechselgeld)' : '',
-                    textAlign: TextAlign.right,
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
-                  ),
-                ),
-                SizedBox(
-                  width: 72,
+                  width: breiten.bedarf,
                   child: Text(
                     'Bedarf',
                     textAlign: TextAlign.right,
@@ -499,7 +572,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   ),
                 ),
                 SizedBox(
-                  width: 40,
+                  width: breiten.vorh,
                   child: Text(
                     'Vorh.',
                     textAlign: TextAlign.right,
@@ -519,7 +592,13 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
               ),
             )
           else
-            ...zeilen.map(_baueZeile),
+            ...zeilen.map(
+              (_ErgebnisZeile z) => _baueZeile(
+                z,
+                breiteBedarf: breiten.bedarf,
+                breiteVorh: breiten.vorh,
+              ),
+            ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
