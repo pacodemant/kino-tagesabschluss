@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a6: Stückelung-Seite — _baueSteuerKnopf bekommt erneut
+  eine feste Höhe, diesmal 18px (statt der falsch geschätzten
+  40px aus 429a4). Wert stammt aus einer echten Nachmessung von
+  Paco am aktuellen (korrekten) Chrome-Rendering: Breite:Höhe
+  ≈ 12:5, also bei fester Breite 44px → Höhe ≈ 44 × 5/12 ≈ 18px.
+  Feste width+height auf einem SizedBox erzwingen die Maße auch
+  unter dem umgebenden IntrinsicHeight/CrossAxisAlignment.stretch
+  (Flutter klemmt eingehende Constraints per BoxConstraints.
+  enforce() auf die SizedBox-Werte) — Knopfgröße ist damit auf
+  jeder Plattform identisch 44×18, unabhängig von
+  plattformspezifischen Schrift-Metriken (siehe 429a4-Diagnose).
 - Run 429a5: Stückelung-Seite — Rücknahme von 429a4 (feste
   Knopfhöhe 40px). Die feste Höhe machte die Knöpfe auch in
   Desktop Chrome quadratisch statt wie vorher rechteckig
