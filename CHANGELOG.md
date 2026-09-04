@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 427: Lücke geschlossen, durch die eine unveränderte Abrechnung
+  bei einem Neuaufbau von Schritt 3 versehentlich ein zweites Mal an
+  Flurbocash gesendet werden konnte. Auslöser: der beim Öffnen von
+  Schritt 3 laufende Signatur-Abgleich (_sendeSignatur() vs. lokal
+  gespeicherter Sende-Bestätigung, tagesabschluss_schritt3_seite.dart)
+  setzte bei Übereinstimmung bisher nur `_abrechnungGesendet` (rein
+  optisch: grüner Haken, Freischaltung "Weiter"-Button) — nicht aber
+  `_apiUploadErledigt`, die einzige Sperre, die _doApiUpload() vor
+  einem erneuten Netzwerk-Versand schützt. Wurde Schritt 3 für
+  denselben Tag mit unveränderten Daten neu aufgebaut (z. B. erneuter
+  Durchlauf durch Schritt 1-3 zur Kontrolle, "Ersetzen" bei der
+  Mehrfach-Abrechnung-Abfrage), löste ein Klick auf "Abrechnung an
+  Büro senden" trotz erkannt identischer Signatur einen echten
+  zweiten API-Call aus. Fix: `_apiUploadErledigt` wird jetzt im
+  selben Signatur-Treffer-Zweig mitgesetzt, sodass der Klick in
+  diesem Fall direkt zum Dialog springt statt erneut zu senden.
+  Bewusst unverändert: eine echte inhaltliche Änderung nach bereits
+  erfolgtem Versand (Signatur weicht ab) löst weiterhin einen
+  regulären (Korrektur-)Versand aus — das manuelle "Erneut senden"
+  auf der Verlauf-Seite (verlauf_detail_seite.dart) ist ebenfalls
+  unverändert, da dort bewusst und sichtbar ("Erneut senden"-Label)
+  manuell ausgelöst wird. Die separate, größere Frage nach
+  `settlement_number` bei Flurbocash (TODO.md, "'Erneut senden' →
+  Korrektur-Call") ist davon unberührt und bleibt bewusst
+  zurückgestellt.
+
 - Run 426: Auf Schritt 1 (Kassensturz) wurden fehlende Eingaben
   bisher in zwei separaten, nacheinander erscheinenden Dialogen
   bemängelt (erst alle leeren Scheine, danach alle leeren losen

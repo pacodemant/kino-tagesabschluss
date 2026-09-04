@@ -226,7 +226,18 @@ class _TagesabschlussSchritt3SeiteState
         if (mounted &&
             gespeicherteSignatur != null &&
             gespeicherteSignatur == _sendeSignatur()) {
-          setState(() => _abrechnungGesendet = true);
+          // _apiUploadErledigt hier mitsetzen (nicht nur
+          // _abrechnungGesendet): sonst würde ein Klick auf "Abrechnung
+          // an Büro senden" nach einem Neuaufbau dieser Seite (z. B.
+          // erneuter Durchlauf durch Schritt 1-3 für denselben Tag mit
+          // unveränderten Daten) in _zeigeAbschlussDialog() erneut
+          // _doApiUpload() auslösen und die Abrechnung ein zweites Mal
+          // an Flurbocash senden, obwohl die Signatur bereits als
+          // identisch erkannt wurde (Run 427).
+          setState(() {
+            _abrechnungGesendet = true;
+            _apiUploadErledigt = true;
+          });
         }
       },
     );

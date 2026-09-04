@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.84+426 · Run 426
+Version: 0.9.85+427 · Run 427
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 426)
+## Laufender Entwicklungsstand (Run 427)
+
+- Run 427 ✅ Doppel-Versand-Lücke bei Schritt-3-Neuaufbau geschlossen:
+  der Signatur-Abgleich beim Öffnen von Schritt 3
+  (tagesabschluss_schritt3_seite.dart) setzte bei einer Übereinstimmung
+  bisher nur den optischen "gesendet"-Haken, nicht aber die Sperre
+  gegen einen erneuten _doApiUpload()-Aufruf. Dadurch konnte eine
+  unveränderte Abrechnung bei einem Neuaufbau der Seite (z. B.
+  erneuter Durchlauf durch Schritt 1-3 für denselben Tag) ein zweites
+  Mal an Flurbocash gesendet werden. Jetzt wird `_apiUploadErledigt`
+  im selben Zweig mitgesetzt. Details siehe CHANGELOG.md.
 
 - Run 426 ✅ Geldarten-Hinweise auf Schritt 1 komprimiert: statt zwei
   nacheinander gezeigter Dialoge (erst Scheine, dann lose Münzen)
