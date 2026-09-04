@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a2: Stückelung-Seite — Korrektur zu 429a. Spaltenname
+  "Wechselg." erscheint jetzt nur noch, wenn der MA tatsächlich an
+  der 10er/20er-Aufteilung etwas verschoben hat (`_verschiebung !=
+  0`, identisch zur Bedingung, unter der die Klammer-Werte in der
+  Spalte selbst angezeigt werden) — vorher stand die Überschrift
+  immer da, auch wenn die Spalte leer war. Außerdem Spalte von 40
+  auf 64px verbreitert (Header, Wert-Spalte und der Leerraum-
+  Platzhalter in den Betragszeilen einheitlich), damit "Wechselg."
+  nicht umbricht; Ausrichtung bleibt rechtsbündig.
 - Run 429a: Stückelung-Seite — bisher unbeschriftete Spalte (zeigt
   den Wechselgeld-Rest in Klammern, z. B. "(3)") mit "Wechselg."
   überschrieben, damit klar ist, was die Zahl bedeutet.
