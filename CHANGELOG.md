@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 429a4: Stückelung-Seite — Plus/Minus-Knöpfe (_baueSteuerKnopf,
+  stueckelung_vorschlag_seite.dart) bekommen jetzt eine feste Höhe
+  von 40px statt sich per IntrinsicHeight/CrossAxisAlignment.stretch
+  an die Zeilenhöhe anzupassen. Ursache des gemeldeten Bugs
+  (Knöpfe auf iPhone quadratisch, auf Desktop Chrome ok): die
+  Zeilenhöhe wurde aus der intrinsischen Texthöhe abgeleitet, die
+  je Plattform-Standardschrift unterschiedlich ausfällt (iOS nutzt
+  laut Flutter-Typography 'CupertinoSystemDisplay', macOS
+  '.AppleSystemUIFont' — unterschiedlicher Zeilenabstand). Feste
+  Höhe macht die Knöpfe plattformunabhängig identisch groß.
 - Run 429a3: Stückelung-Seite — Wechselgeld-Spaltenname von der
   Abkürzung "Wechselg." auf das ausgeschriebene Wort in Klammern
   "(Wechselgeld)" geändert (Klammer passend zum Format der Werte
