@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+429a8 · Run 429a8
+Version: 0.9.87+430 · Run 430
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 429)
+## Laufender Entwicklungsstand (Run 430)
+
+- Run 430 ✅ Testfeedback zu Run 427: Klick auf "Abrechnung an Büro
+  senden" ohne echten neuen Versand zeigte keine Rückmeldung — neuer
+  Hinweis "Bereits an Flurbocash gesendet ✓" in genau diesem Fall
+  (tagesabschluss_schritt3_seite.dart). Dabei totes Parallel-
+  Datenmodell EcTerminalErgebnis entfernt (models/
+  ec_terminal_ergebnis.dart gelöscht, war nirgends gelesen). Details
+  siehe CHANGELOG.md.
 
 - Run 429 ✅ Architektur-Run: Ausgaben-Familie in Schritt 2 von 7
   parallelen Listen auf eine List<AusgabenZeile> konsolidiert (neues

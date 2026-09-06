@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
-import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_anfangsbestand_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_section.dart';
@@ -56,7 +55,6 @@ class TagesabschlussSchritt3Argumente {
     this.belegNrBis,
     this.ecUhrzeit,
     this.zahlungsartenAufschluesselung,
-    this.ecTerminals,
     this.anmerkung,
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
@@ -88,7 +86,6 @@ class TagesabschlussSchritt3Argumente {
   final String? belegNrBis;
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
-  final List<EcTerminalErgebnis>? ecTerminals;
   final String? anmerkung;
   final List<String>? ecBelegeFotosBase64;
   final List<String>? ecBelegeFotosMediaTypen;
@@ -435,6 +432,15 @@ class _TagesabschlussSchritt3SeiteState
         );
         if (!mounted) return;
       }
+    } else {
+      // _apiUploadErledigt war schon vor diesem Klick true — entweder ein
+      // echter Versand in dieser Sitzung, oder der Signatur-Treffer beim
+      // Seitenaufbau (Run 427: verhindert einen zweiten echten Versand).
+      // Ohne diesen Hinweis sah der Klick für den Nutzer aus wie ein
+      // Fehlschlag ohne jede Rückmeldung (Testfeedback Paco, 2026-09-06;
+      // Idee/Wortlaut angelehnt an .dev/flurbocash stuff/
+      // fragen_yannik.md, Abschnitt 3.2).
+      zeigeHinweisSnackBar(context, 'Bereits an Flurbocash gesendet ✓');
     }
 
     await showDialog<void>(

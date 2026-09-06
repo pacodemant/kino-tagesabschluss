@@ -7,7 +7,6 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
-import 'package:kino_bar_app/models/ec_terminal_ergebnis.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/ausgaben_zeile.dart';
@@ -841,7 +840,6 @@ class _TagesabschlussSchritt2SeiteState
       belegNrBis: _scanBelegNrBis,
       ecUhrzeit: _scanUhrzeit,
       zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
-      ecTerminals: _baueEcTerminals(),
       anmerkung: _anmerkungFuerUebertragung(),
       ecBelegeFotosBase64: List<String>.from(_ecBelegFotosBase64),
       ecBelegeFotosMediaTypen: List<String>.from(_ecBelegFotosMediaTypen),
@@ -2178,33 +2176,6 @@ class _TagesabschlussSchritt2SeiteState
       }
     }
     return liste.isEmpty ? null : liste;
-  }
-
-  List<EcTerminalErgebnis> _baueEcTerminals() {
-    final List<EcTerminalErgebnis> liste = <EcTerminalErgebnis>[];
-    for (int i = 0; i < _zahlungsartZeilen.length; i++) {
-      final String tid =
-          i < _ecBelegLabels.length ? _ecBelegLabels[i] : '';
-      final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[i];
-
-      int betragFuer(String art) {
-        for (final ZahlungsartZeile z in zeilen) {
-          if (z.name == art) return z.betragCentWert ?? 0;
-        }
-        return 0;
-      }
-
-      liste.add(EcTerminalErgebnis(
-        tid: tid,
-        girocard: betragFuer('girocard'),
-        lastschrift: betragFuer('lastschrift'),
-        mastercard: betragFuer('mastercard'),
-        visa: betragFuer('visa'),
-        maestro: betragFuer('maestro'),
-        vpay: betragFuer('vpay'),
-      ));
-    }
-    return liste;
   }
 
   Future<void> _bestaetigeUndLeereEingaben() async {

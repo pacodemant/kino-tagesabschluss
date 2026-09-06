@@ -9,6 +9,34 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 430: Testfeedback zu Run 427 (Doppel-Versand-Schutz): der Klick
+  auf "Abrechnung an Büro senden" ohne echten neuen Versand (weil
+  `_apiUploadErledigt` schon vorher true war — entweder ein echter
+  Versand in derselben Sitzung, oder der Signatur-Treffer beim
+  Seitenaufbau aus Run 427) zeigte keinerlei Rückmeldung, bevor der
+  "Was möchtest du als nächstes tun?"-Dialog aufging — wirkte für
+  Paco wie ein Fehlschlag ohne Meldung. Neuer `else`-Zweig in
+  `_zeigeAbschlussDialog()` (tagesabschluss_schritt3_seite.dart)
+  zeigt jetzt `zeigeHinweisSnackBar(context, 'Bereits an Flurbocash
+  gesendet ✓')` in genau diesem Fall. Wortlaut/Idee angelehnt an
+  Pacos eigene Notiz in `.dev/flurbocash stuff/fragen_yannik.md`,
+  Abschnitt 3.2 ("Du hast das schon geschickt") — dort noch offen
+  gegenüber Yannik, betrifft aber nur die serverseitige
+  Korrektur-Frage, nicht diese rein lokale UI-Rückmeldung.
+  Bei derselben Gelegenheit totes Parallel-Datenmodell entfernt
+  (bereits in einer früheren Code-Qualitäts-Diagnose als unbenutzt
+  identifiziert, jetzt verifiziert und bereinigt): `EcTerminalErgebnis`
+  (lib/models/ec_terminal_ergebnis.dart, komplett gelöscht) wurde in
+  tagesabschluss_schritt2_seite.dart (`_baueEcTerminals()`, entfernt)
+  gebaut und über `TagesabschlussSchritt3Argumente.ecTerminals`
+  (Parameter + Feld entfernt) an Schritt 3 durchgereicht, dort aber
+  nirgends gelesen — die tatsächlich an Flurbocash gesendeten
+  Kartenbeträge kommen aus `TagesabschlussFinal.
+  zahlungsartenAufschluesselung` (`ZahlungsartErgebnis`), nicht aus
+  diesem Modell. Keine neuen Tests nötig (kein automatisierter Test
+  für diesen Dialog-Zweig vorhanden; EcTerminalErgebnis war in
+  keinem Test referenziert).
+
 - Run 429a8: Stückelung-Seite — Korrektur zu 429a7, ausgelöst durch
   einen Screenshot von Paco: auf dem echten iPhone sah neben den
   +/- Knöpfen sichtbar noch Platz für eine Wechselgeld-Spalte aus,
