@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 430a: Weiteres Testfeedback zu Run 430 (Hinweis "bereits
+  gesendet"): Paco fand den SnackBar-Hinweis aus Run 430 nicht am
+  richtigen Ort — die Bestätigung soll direkt im "Was möchtest du als
+  nächstes tun?"-Dialog stehen, nicht in einem separaten SnackBar.
+  `_zeigeAbschlussDialog()` (tagesabschluss_schritt3_seite.dart)
+  erfasst jetzt `bereitsGesendetVorKlick` (= `_apiUploadErledigt` vor
+  jeder Prüfung/Änderung in der Funktion) und zeigt, falls true, den
+  Dialog-Titel "Du hast die Abrechnung bereits gesendet." mit der
+  bisherigen Frage als `content` darunter; sonst unverändert nur der
+  Titel "Was möchtest du als nächstes tun?". Der SnackBar-Zweig aus
+  Run 430 entfällt dadurch ersatzlos.
+
 - Run 430: Testfeedback zu Run 427 (Doppel-Versand-Schutz): der Klick
   auf "Abrechnung an Büro senden" ohne echten neuen Versand (weil
   `_apiUploadErledigt` schon vorher true war — entweder ein echter

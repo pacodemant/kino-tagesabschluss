@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+430 · Run 430
+Version: 0.9.87+430a · Run 430a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 430)
+## Laufender Entwicklungsstand (Run 430a)
+
+- Run 430a ✅ Weiteres Testfeedback zu Run 430: der "bereits gesendet"-
+  Hinweis stand bisher in einem separaten SnackBar, sollte laut Paco
+  aber im "Was möchtest du als nächstes tun?"-Dialog selbst stehen.
+  Dialog zeigt jetzt in diesem Fall den Titel "Du hast die Abrechnung
+  bereits gesendet." gefolgt von der bisherigen Frage als Content
+  (tagesabschluss_schritt3_seite.dart, _zeigeAbschlussDialog()). Der
+  SnackBar-Zweig aus Run 430 entfällt dadurch. Details siehe
+  CHANGELOG.md.
 
 - Run 430 ✅ Testfeedback zu Run 427: Klick auf "Abrechnung an Büro
   senden" ohne echten neuen Versand zeigte keine Rückmeldung — neuer

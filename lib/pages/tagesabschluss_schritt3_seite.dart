@@ -387,6 +387,14 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   Future<void> _zeigeAbschlussDialog() async {
+    // Vor jeder Prüfung/Änderung erfasst: true nur, wenn schon VOR
+    // diesem Klick gesendet war (echter Versand in einer früheren
+    // Sitzung, oder Signatur-Treffer beim Seitenaufbau, Run 427) —
+    // steuert unten den Hinweis im Dialog. Run 430 zeigte das noch als
+    // SnackBar; Testfeedback Paco (2026-09-06): gehört in den Dialog
+    // selbst, nicht in einen separaten SnackBar.
+    final bool bereitsGesendetVorKlick = _apiUploadErledigt;
+
     // Falls Auto-Save noch läuft, kurz warten und erneut prüfen.
     if (_autoSaveLaeuft) {
       return;
@@ -432,15 +440,6 @@ class _TagesabschlussSchritt3SeiteState
         );
         if (!mounted) return;
       }
-    } else {
-      // _apiUploadErledigt war schon vor diesem Klick true — entweder ein
-      // echter Versand in dieser Sitzung, oder der Signatur-Treffer beim
-      // Seitenaufbau (Run 427: verhindert einen zweiten echten Versand).
-      // Ohne diesen Hinweis sah der Klick für den Nutzer aus wie ein
-      // Fehlschlag ohne jede Rückmeldung (Testfeedback Paco, 2026-09-06;
-      // Idee/Wortlaut angelehnt an .dev/flurbocash stuff/
-      // fragen_yannik.md, Abschnitt 3.2).
-      zeigeHinweisSnackBar(context, 'Bereits an Flurbocash gesendet ✓');
     }
 
     await showDialog<void>(
@@ -449,7 +448,14 @@ class _TagesabschlussSchritt3SeiteState
       builder: (BuildContext dialogContext) {
         final Kino? kino = KinoRepository.nachId(widget.argumente.kinoId);
         return AlertDialog(
-          title: const Text('Was möchtest du als nächstes tun?'),
+          title: Text(
+            bereitsGesendetVorKlick
+                ? 'Du hast die Abrechnung bereits gesendet.'
+                : 'Was möchtest du als nächstes tun?',
+          ),
+          content: bereitsGesendetVorKlick
+              ? const Text('Was möchtest du als nächstes tun?')
+              : null,
           actions: <Widget>[
             if (kino?.hatWechselgeld == true)
               TextButton(
