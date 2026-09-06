@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 429a8 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 430 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -761,6 +761,86 @@ um Durcheinander zu vermeiden.
       Mustern) oder zurückgebaut werden (mehr Einfachheit, da hier —
       anders als bei Schritt1/2/3 — keine eigene Logik/Verzweigung
       drinsteckt)?
+      Zweite, unabhängige Diagnoserunde (Chat mit Claude Code,
+      2026-09-03, ausgelöst durch Run 416/419/420 — Auto-Fill-
+      Testdaten Schritt 2 waren an zwei unabhängigen Stellen
+      dupliziert, eine davon unvollständig). Erledigt daraus:
+      Run 421 (Flurbocash-SharedPreferences-Keys
+      'flurbocash_location_id_$kinoId'/'flurbocash_api_key_$kinoId'
+      an 9 Stellen in 3 Dateien als rohe String-Literale dupliziert,
+      jetzt zentral in ApiUploadService.locationIdPrefKey()/
+      apiKeyPrefKey()). Run 423 (6 EC-Kartenarten-Namen an 3 Stellen
+      innerhalb ApiUploadService unabhängig hart codiert, jetzt eine
+      Liste _kartenarten + Alias-Map _kartenartAliase als Quelle).
+      Run 424/424a (Kino.hatBistro-Flag ersetzt kinoId=='kino_04'-
+      Vergleich an 8 Stellen in 5 Dateien; die 3 kinoId=='kino_04'-
+      Vergleiche für die Personalgetränke-Regel in
+      tagesabschluss_schritt2_seite.dart bewusst NICHT mit hatBistro
+      zusammengeführt — eigene, seit Run 372a separate Fachregel).
+      Run 425 (DatumsHelper.istGleicherKalendertag() ersetzt 3
+      unabhängige Jahr/Monat/Tag-Vergleiche in
+      SpeichereTagesabschlussUsecase und LokalerSpeicher). Run 430
+      (totes Parallel-Datenmodell EcTerminalErgebnis entfernt — wurde
+      in tagesabschluss_schritt2_seite.dart gebaut und über
+      TagesabschlussSchritt3Argumente.ecTerminals durchgereicht, aber
+      nirgends gelesen; tatsächliche Quelle für den Flurbocash-Versand
+      ist TagesabschlussFinal.zahlungsartenAufschluesselung).
+      Offen aus derselben Diagnoserunde, priorisiert:
+      Kino-ID-Switch-Blöcke ('kino_03'/'kino_04'/default) an 6
+      Stellen in 3 Dateien (lokaler_speicher.dart x2,
+      getraenke_config_service.dart, einstellungen_seite.dart x3)
+      statt zentral im Kino-Modell — größere Datenmodell-
+      Umstrukturierung, eigener Architektur-Run nötig, nicht als
+      normaler Run behandeln. — Soll/Ist/Differenz-Kartenlayout aus
+      Schritt 3 an 3 Stellen unabhängig reimplementiert statt
+      vorhandener Section-Widgets: uebertrag_umschlag_seite.dart:
+      85-117 (Kommentar dort bestätigt die Duplikation selbst),
+      verlauf_detail_seite.dart:466-484 (dritte, erweiterte Variante)
+      vs. tagesabschluss_schritt3/sections/schritt3_soll_section.dart.
+      — Zentraler Bestätigungsdialog-Helfer (widgets/
+      loeschen_dialog.dart: zeigeBestaetigungsDialog/zeigeInfoDialog)
+      wird an vielen Stellen umgangen (eigene AlertDialogs u. a. in
+      tagesabschluss_schritt1_seite.dart, tagesabschluss_schritt2_
+      seite.dart mehrfach, tagesabschluss_schritt3_seite.dart,
+      startmenue_seite.dart). — Doppelte Getränkeliste-Persistenz:
+      LokalerSpeicher.ladeGetraenkeliste/speichereGetraenkeliste
+      (Hive-Box "box_getraenkeliste", in main.dart extra geöffnet)
+      sind toter Code, aktiv genutzt wird stattdessen
+      GetraenkeConfigService.loadLocal/saveLocal (SharedPreferences).
+      — Vier strukturell vergleichbare "Konfigurationsliste pro Kino
+      laden"-Services architektonisch zweigeteilt ohne erkennbaren
+      Grund: getraenke_config_service.dart/wechselgeld_config_
+      service.dart erben von RemoteConfigServiceBasis (Cache,
+      try/catch beim Asset-Laden), zahlungsarten_config_service.dart/
+      terminal_ids_config_service.dart sind einfache static-Klassen
+      ohne Caching und ohne try/catch (crasht bei kaputtem Asset
+      ungeschützt). — TagesabschlussFinal (models/
+      tagesabschluss_final.dart) pflegt ~35 Felder an 4 Stellen von
+      Hand synchron (Konstruktor, toJson, fromJson, mitGesendetAm);
+      kleine Variante: nur copyWith ergänzen, große Variante: Codegen
+      (freezed/json_serializable) einführen — neue Dependency, braucht
+      explizite Freigabe. — wechselgeld_pruefen_seite.dart importiert
+      und instanziiert 6 als Schritt1-privat dokumentierte Module
+      direkt (controller/orchestrierung/scroll/setup/ui aus
+      tagesabschluss_schritt1/) — echte Extraktion einer gemeinsamen
+      Schein/Rollen-Zähl-Bibliothek nötig, kein kleiner Patch, eigener
+      Architektur-Run. Niedrig-Priorität (kosmetisch/kleiner
+      Blast-Radius): Kupfermünzen-IDs doppelt definiert
+      (tagesabschluss_finalisieren_usecase.dart _kupferCoinIds vs.
+      stueckelung_konfiguration.dart kupferMuenzenIds); 3
+      unterschiedliche HTTP-Fehlerbehandlungsstile (remote_config_
+      service_basis.dart, api_upload_service.dart, beleg_scan_
+      service.dart); Stub/Web-Split-Inkonsistenz (pwa_install_
+      service_*/sw_update_service_* nutzen freie Funktionen,
+      storage_persist_service_* eine Klasse); BetragCentEingabefeld
+      vs. GanzzahlEingabefeld haben leicht auseinandergedriftete
+      Rahmen-/Suffix-Row-Logik statt gemeinsamer Basis; heute_badge.
+      dart/nicht_gesendet_badge.dart sind bis auf Text/Farbe 1:1
+      identisch ohne gemeinsame Basis; Footer-Block (AppVersion+QR-
+      Code, Datenschutz-Link) Zeile-für-Zeile dupliziert zwischen
+      kinoauswahl_seite.dart und startmenue_seite.dart; startmenue_
+      seite.dart wiederholt einen inline ButtonStyle 3x statt einer
+      zentralen Konstante wie AppFarben.footerButtonStyle.
 
 - [ ] **Fokus-Farbe Admin-Bereich (einstellungen_seite.dart)**
       Sämtliche Admin-Bereich-Felder (Upload-URL, location_id,
