@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 430c: Wechselgeld-Hinweis in Schritt 4 (Stückelung) weiter
+  verfeinert — nach "Für das Wechselgeld bleiben übrig:" folgt jetzt
+  ein Zeilenumbruch, die Stückzahl-Liste danach ist fett gesetzt
+  statt Fließtext in einer Zeile. `stueckelung_vorschlag_seite.dart`.
+
 - Run 430b: Wechselgeld-Hinweis in Schritt 4 (Stückelung, nach
   Tausch von Zwanzigern/Zehnern über die +/- Knöpfe) auffälliger
   gestaltet — dünner oranger Rahmen, oranger Füllhintergrund

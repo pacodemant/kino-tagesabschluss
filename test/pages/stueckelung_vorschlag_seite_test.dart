@@ -79,7 +79,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text('Für das Wechselgeld bleiben übrig: 1× 20 €, 27× 10 €.'),
+        find.textContaining(
+          'Für das Wechselgeld bleiben übrig:\n1× 20 €, 27× 10 €.',
+        ),
         findsOneWidget,
       );
       expect(

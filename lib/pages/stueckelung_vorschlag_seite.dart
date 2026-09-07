@@ -553,10 +553,9 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
             (_ErgebnisZeile z) =>
                 z.art == _ZeilenArt.stueckzahl && z.wechselgeldRest != null,
           );
-          final String? wechselgeldHinweis = wechselgeldZeilen.isEmpty
+          final String? wechselgeldHinweisDetails = wechselgeldZeilen.isEmpty
               ? null
-              : 'Für das Wechselgeld bleiben übrig: '
-                    '${wechselgeldZeilen.map((_ErgebnisZeile z) => '${z.wechselgeldRest}× ${z.bezeichnung}').join(', ')}.';
+              : '${wechselgeldZeilen.map((_ErgebnisZeile z) => '${z.wechselgeldRest}× ${z.bezeichnung}').join(', ')}.';
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
             children: <Widget>[
@@ -580,7 +579,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                 ),
               ),
               const SizedBox(height: 4),
-              if (wechselgeldHinweis != null)
+              if (wechselgeldHinweisDetails != null)
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   padding: const EdgeInsets.symmetric(
@@ -592,9 +591,19 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                     border: Border.all(color: AppFarben.fokusFarbe),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                  child: Text(
-                    wechselgeldHinweis,
-                    style: const TextStyle(fontSize: 13),
+                  child: Text.rich(
+                    TextSpan(
+                      style: const TextStyle(fontSize: 13),
+                      children: <TextSpan>[
+                        const TextSpan(
+                          text: 'Für das Wechselgeld bleiben übrig:\n',
+                        ),
+                        TextSpan(
+                          text: wechselgeldHinweisDetails,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               const SizedBox(height: 4),
