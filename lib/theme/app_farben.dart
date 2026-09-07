@@ -30,6 +30,9 @@ class AppFarben {
   // Stückelung Erfolgs-Rahmen
   static const Color stueckelungErfolgsRand = Color(0xFF81C784); // green.shade300
 
+  // Stückelung Wechselgeld-Hinweis (nach 20er/10er-Tausch), Füllung + Rahmen
+  static const Color stueckelungWechselgeldHintergrund = Color(0xFFFFF3E0); // orange.shade50
+
   // Subtiler Text
   static const Color subtilerText = Color(0x8A000000);           // black54
 

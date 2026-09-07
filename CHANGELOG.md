@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 430b: Wechselgeld-Hinweis in Schritt 4 (Stückelung, nach
+  Tausch von Zwanzigern/Zehnern über die +/- Knöpfe) auffälliger
+  gestaltet — dünner oranger Rahmen, oranger Füllhintergrund
+  (`AppFarben.stueckelungWechselgeldHintergrund`, orange.shade50) und
+  größere Schrift (11px → 13px, ohne graue Textfarbe) statt reinem
+  grauem Fließtext. `stueckelung_vorschlag_seite.dart`,
+  `app_farben.dart`.
+
 - Run 430a: Weiteres Testfeedback zu Run 430 (Hinweis "bereits
   gesendet"): Paco fand den SnackBar-Hinweis aus Run 430 nicht am
   richtigen Ort — die Bestätigung soll direkt im "Was möchtest du als

@@ -581,11 +581,20 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
               ),
               const SizedBox(height: 4),
               if (wechselgeldHinweis != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppFarben.stueckelungWechselgeldHintergrund,
+                    border: Border.all(color: AppFarben.fokusFarbe),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                   child: Text(
                     wechselgeldHinweis,
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    style: const TextStyle(fontSize: 13),
                   ),
                 ),
               const SizedBox(height: 4),
