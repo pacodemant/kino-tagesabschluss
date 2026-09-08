@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+431 · Run 431
+Version: 0.9.87+432 · Run 432
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 431)
+## Laufender Entwicklungsstand (Run 432)
+
+- Run 432 ✅ "+"-Additions-Chip auch bei "Kino SOLL"/"Gesamt SOLL"
+  und "Bistro SOLL" (Schritt 2) entfernt, analog Run 431. Details
+  siehe CHANGELOG.md.
 
 - Run 431 ✅ Ausgaben-Zeile in Schritt 2: Betrag-Feld war bei
   dreistelligen Beträgen zu eng. "+"-Additions-Chip entfernt

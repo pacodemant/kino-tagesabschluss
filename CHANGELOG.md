@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 432: "+"-Additions-Chip auch bei "Kino SOLL"/"Gesamt SOLL" und
+  "Bistro SOLL" (Schritt 2, tagesabschluss_schritt2_seite.dart)
+  entfernt (`zeigeAdditionsButton: false` an den beiden
+  `_baueEingabeZeile()`-Aufrufen), analog zu Run 431 (Ausgaben) und
+  dem bereits zuvor so behandelten Feld "Differenz im
+  Anfangsbestand". Reine Optik, keine Logikänderung — Additions-
+  Syntax ("260+20") bleibt beim Tippen weiterhin möglich, nur der
+  Chip zum Antippen verschwindet.
+
 - Run 431: Ausgaben-Zeile in Schritt 2 (schritt2_kino_soll_ausgaben_
   section.dart) — Wertefeld war bei dreistelligen Beträgen (100 €+)
   zu eng. Zwei Änderungen, um dem Wertefeld intern mehr Platz zu

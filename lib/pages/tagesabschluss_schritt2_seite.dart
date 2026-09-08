@@ -2769,6 +2769,7 @@ class _TagesabschlussSchritt2SeiteState
           controller: _kinoSollController,
         ),
         onChanged: _beiKinoSollGeaendert,
+        zeigeAdditionsButton: false,
       ),
       bistroSollEingabeZeile: _hatBistro
           ? _baueEingabeZeile(
@@ -2780,6 +2781,7 @@ class _TagesabschlussSchritt2SeiteState
                 controller: _bistroSollController,
               ),
               onChanged: _beiBistroSollGeaendert,
+              zeigeAdditionsButton: false,
             )
           : null,
       ausgabenIds: _ausgaben.map((AusgabenZeile z) => z.id).toList(),
