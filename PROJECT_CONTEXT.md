@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+430d · Run 430d
+Version: 0.9.87+431 · Run 431
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 430a)
+## Laufender Entwicklungsstand (Run 431)
+
+- Run 431 ✅ Ausgaben-Zeile in Schritt 2: Betrag-Feld war bei
+  dreistelligen Beträgen zu eng. "+"-Additions-Chip entfernt
+  (zeigeAdditionsButton: false) und Abstand zum Papierkorb-Button
+  verkleinert (6px → 2px) — Feldbreite selbst unverändert, "x"-Clear-
+  Chip bleibt. Details siehe CHANGELOG.md.
 
 - Run 430a ✅ Weiteres Testfeedback zu Run 430: der "bereits gesendet"-
   Hinweis stand bisher in einem separaten SnackBar, sollte laut Paco

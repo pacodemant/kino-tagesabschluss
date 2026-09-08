@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 431: Ausgaben-Zeile in Schritt 2 (schritt2_kino_soll_ausgaben_
+  section.dart) — Wertefeld war bei dreistelligen Beträgen (100 €+)
+  zu eng. Zwei Änderungen, um dem Wertefeld intern mehr Platz zu
+  geben: "+"-Additions-Chip im Betrag-Feld entfernt
+  (`zeigeAdditionsButton: false`, Parameter existierte bereits an
+  BetragCentEingabefeld); Abstand zwischen Betrag-Feld und
+  Papierkorb-Button von 6px auf 2px reduziert (IconButton bringt
+  durch sein eigenes Innenpolster ohnehin schon Abstand mit). Der
+  "×"-Clear-Chip bleibt unverändert bestehen. Betrifft nur Ausgaben
+  in Schritt 2, nicht die analoge Stelle bei "Sonstiges" in Schritt 1
+  (Schritt1UmschlaegeSection) — dort nicht angefragt.
+
 - Run 430d: Stückelung-Seite — +/- Knöpfe bei 20 €/10 € liegen jetzt
   mittig in der Lücke zwischen Geldeinheit-Bezeichnung (z. B.
   "20 €") und der Bedarf-Spalte, statt flächenbündig an der

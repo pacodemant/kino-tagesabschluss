@@ -189,10 +189,11 @@ class _Schritt2AusgabenZeile extends StatelessWidget {
               schriftgroesse: 15,
               hinweisText: '0,00 €',
               mitKomma: false,
+              zeigeAdditionsButton: false,
             ),
           ),
           if (zeigeLoeschen) ...<Widget>[
-            const SizedBox(width: 6),
+            const SizedBox(width: 2),
             IconButton(
               onPressed: onLoeschen,
               icon: const Icon(Icons.delete_outline),
