@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 430c · wird fortlaufend ergänzt
+Stand: September 2026 · Run 430d · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -229,6 +229,25 @@ um Durcheinander zu vermeiden.
 
 - [ ] **Storno auf Belegen** Noch nie vorgekommen, aber die App muss
       Stornos erkennen können.
+
+- [ ] **Vollständigkeits-Check: fehlende Terminal-Belege** Paco-Wunsch
+      (2026-09-07): Prüfung, ob am Ende von Schritt 2 alle für den
+      Standort erwarteten Terminal-Belege bereits eingescannt wurden;
+      falls nicht, Hinweis in der Art "Es fehlen noch Terminal-Nr.
+      XXXXX und YYYYYYY" — nur per Button "Verstanden" bestätigbar
+      (kein SnackBar-Wisch-weg; `beleg_scan_bestaetigen_dialog.dart`
+      als bestehendes Vorbild für einen Bestätigungs-Dialog).
+      BEWUSST ZURÜCKGESTELLT (Paco, 2026-09-07): Der Umstieg auf die
+      drei neuen SB-Terminals ist noch unruhig — die neuen Geräte
+      können vorerst nur Girocard, keine Kreditkarte, weshalb SB ab
+      heute sowohl die neuen als auch das alte Terminal parallel für
+      Zahlungen nutzt. Eine reine "sind alle TIDs aus
+      config/terminal_ids.json für diesen Standort gescannt"-Prüfung
+      würde deshalb ständig fälschlich warnen (z. B. wenn an einem Tag
+      keine Kreditkarten-Zahlung anfiel und das alte Terminal darum
+      gar nicht benutzt wurde). Vor einer Umsetzung muss erst geklärt
+      werden, wie "erwartet" von "an diesem Tag ggf. gar nicht genutzt"
+      unterschieden wird — sonst nervt der Hinweis mehr, als er hilft.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 

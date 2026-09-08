@@ -401,19 +401,41 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 Expanded(
-                  child: Text(
-                    zeile.bezeichnung,
-                    style: TextStyle(color: grauFarbe),
-                  ),
+                  child: zeile.steuerbar
+                      ? Row(
+                          children: <Widget>[
+                            Text(
+                              zeile.bezeichnung,
+                              style: TextStyle(color: grauFarbe),
+                            ),
+                            // Knöpfe mittig in der verbleibenden Lücke
+                            // zwischen Bezeichnung und Bedarf-Spalte statt
+                            // flächenbündig an der Bedarf-Spalte.
+                            Expanded(
+                              child: Center(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    _baueSteuerKnopf(
+                                      icon: Icons.remove,
+                                      onPressed: zeile.onMinus,
+                                    ),
+                                    const SizedBox(width: 22),
+                                    _baueSteuerKnopf(
+                                      icon: Icons.add,
+                                      onPressed: zeile.onPlus,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Text(
+                          zeile.bezeichnung,
+                          style: TextStyle(color: grauFarbe),
+                        ),
                 ),
-                if (zeile.steuerbar) ...<Widget>[
-                  _baueSteuerKnopf(
-                    icon: Icons.remove,
-                    onPressed: zeile.onMinus,
-                  ),
-                  const SizedBox(width: 22),
-                  _baueSteuerKnopf(icon: Icons.add, onPressed: zeile.onPlus),
-                ],
                 SizedBox(
                   width: breiteBedarf,
                   child: Text(
@@ -676,7 +698,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
               ),
               const SizedBox(height: 12),
               const Text(
-                'Barumsatz und Belege in den Umschlag tun.',
+                'Jetzt noch Barumsatz und Belege in den Umschlag tun und …',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.w700),
               ),
@@ -690,7 +712,7 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                   foregroundColor: AppFarben.appBarRot,
                   minimumSize: const Size(double.infinity, 44),
                 ),
-                child: const Text('Fertig.'),
+                child: const Text('… fertig.'),
               ),
             ],
           );

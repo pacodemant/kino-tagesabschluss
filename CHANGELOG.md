@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 430d: Stückelung-Seite — +/- Knöpfe bei 20 €/10 € liegen jetzt
+  mittig in der Lücke zwischen Geldeinheit-Bezeichnung (z. B.
+  "20 €") und der Bedarf-Spalte, statt flächenbündig an der
+  Bedarf-Spalte zu kleben. Umgesetzt über ein inneres Expanded +
+  Center um die Knopf-Gruppe (kein fester Pixel-Versatz, passt sich
+  automatisch an die tatsächlich verfügbare Lücke an).
+  `stueckelung_vorschlag_seite.dart`.
+
 - Run 430c: Wechselgeld-Hinweis in Schritt 4 (Stückelung) weiter
   verfeinert — nach "Für das Wechselgeld bleiben übrig:" folgt jetzt
   ein Zeilenumbruch, die Stückzahl-Liste danach ist fett gesetzt
