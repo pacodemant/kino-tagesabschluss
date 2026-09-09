@@ -495,6 +495,26 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _entferneKupferLose() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogCtx) => AlertDialog(
+        title: const Text('Kupfermünzen entfernen?'),
+        content: const Text('Kupfermünzen wirklich entfernen?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
     setState(() {
       _kupferLoseSichtbar = false;
       for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
@@ -512,6 +532,26 @@ class _TagesabschlussSchritt1SeiteState
   }
 
   Future<void> _entferneKupferRollen() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogCtx) => AlertDialog(
+        title: const Text('Kupfer-Rollen entfernen?'),
+        content: const Text('Kupfer-Rollen wirklich entfernen?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
     setState(() {
       _kupferRollenSichtbar = false;
       for (final String id in StueckelungKonfiguration.kupferRollenIds) {
