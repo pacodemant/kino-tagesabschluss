@@ -29,6 +29,7 @@ import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
+import 'package:kino_bar_app/widgets/info_zeile.dart';
 
 class TagesabschlussSchritt3Argumente {
   const TagesabschlussSchritt3Argumente({
@@ -386,6 +387,59 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
+  /// Zeigt Soll/Ist/Differenz nochmal zusammengefasst an und fragt vor
+  /// dem tatsächlichen Versand (_doApiUpload()) explizit nach, da dieser
+  /// nicht rückgängig zu machen ist. Gibt true zurück, wenn gesendet
+  /// werden soll.
+  Future<bool> _zeigeVersandBestaetigungsDialog() async {
+    final TagesabschlussFinal vorschau = _abschlussVorschau!;
+    final int differenzCent = vorschau.differenzGesamtCent;
+    final Color differenzFarbe =
+        differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Abrechnung senden?'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            InfoZeile(
+              label: 'Gesamt SOLL',
+              wert: TagesabschlussFormatierung.formatiereEuro(
+                vorschau.gesamtSollCent,
+              ),
+            ),
+            InfoZeile(
+              label: 'Gesamt IST',
+              wert: TagesabschlussFormatierung.formatiereEuro(
+                vorschau.gesamtIstCent,
+              ),
+            ),
+            InfoZeile(
+              label: 'Differenz',
+              wert: TagesabschlussFormatierung.formatiereEuroMitVorzeichen(
+                differenzCent,
+              ),
+              fett: true,
+              farbe: differenzFarbe,
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Senden'),
+          ),
+        ],
+      ),
+    );
+    return bestaetigt == true;
+  }
+
   Future<void> _zeigeAbschlussDialog() async {
     // Vor jeder Prüfung/Änderung erfasst: true nur, wenn schon VOR
     // diesem Klick gesendet war (echter Versand in einer früheren
@@ -420,6 +474,10 @@ class _TagesabschlussSchritt3SeiteState
     }
 
     if (!_apiUploadErledigt) {
+      if (!await _zeigeVersandBestaetigungsDialog()) {
+        return;
+      }
+      if (!mounted) return;
       final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
       if (!mounted) return;
       if (apiAktiv) {
