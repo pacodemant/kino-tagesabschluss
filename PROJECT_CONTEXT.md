@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+432 · Run 432
+Version: 0.9.87+433 · Run 433
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 432)
+## Laufender Entwicklungsstand (Run 433)
+
+- Run 433 ✅ Vorzeichen-Bug bei "Differenz im Anfangsbestand" behoben:
+  Anzeige verlor das Minuszeichen, sobald nach dem ±-Toggle
+  weitergetippt wurde (Ziffern-Formatter des Feldes kennt kein "-"),
+  während der interne Wert korrekt negativ blieb — Anzeige und Wert
+  liefen auseinander. Anzeige wird jetzt nach jeder Änderung, falls
+  negativ, explizit aus dem gespeicherten Wert neu gesetzt
+  (tagesabschluss_schritt2_seite.dart,
+  _beiDifferenzAnfangsbestandGeaendert). Details siehe CHANGELOG.md.
 
 - Run 432 ✅ "+"-Additions-Chip auch bei "Kino SOLL"/"Gesamt SOLL"
   und "Bistro SOLL" (Schritt 2) entfernt, analog Run 431. Details

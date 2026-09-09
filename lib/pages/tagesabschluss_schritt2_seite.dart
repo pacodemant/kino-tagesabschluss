@@ -690,12 +690,24 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   void _beiDifferenzAnfangsbestandGeaendert(String wert) {
+    final int absolutWert = _parsiereBetragCent(wert);
+    final bool istNegativ = _differenzAnfangsbestandCent < 0;
+    final int neuerWert = istNegativ ? -absolutWert : absolutWert;
     setState(() {
       _letzteAenderung = DateTime.now();
-      final int absolutWert = _parsiereBetragCent(wert);
-      final bool istNegativ = _differenzAnfangsbestandCent < 0;
-      _differenzAnfangsbestandCent = istNegativ ? -absolutWert : absolutWert;
+      _differenzAnfangsbestandCent = neuerWert;
     });
+    // Der Formatter des Feldes kennt nur Ziffern und entfernt ein "-" bei
+    // jeder echten Tastatur-Eingabe wieder (siehe betrag_cent_eingabefeld.
+    // dart). Damit Anzeige und _differenzAnfangsbestandCent (einzige
+    // Wahrheitsquelle) nie auseinanderlaufen, wird die Anzeige nach jeder
+    // Änderung explizit aus dem gespeicherten Wert neu gesetzt.
+    if (istNegativ) {
+      _setzeControllerText(
+        _differenzAnfangsbestandController,
+        _differenzAnzeigeText(neuerWert),
+      );
+    }
     _speichereEntwurf();
   }
 

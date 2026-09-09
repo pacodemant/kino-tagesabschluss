@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 433: Vorzeichen-Bug bei "Differenz im Anfangsbestand" behoben
+  (tagesabschluss_schritt2_seite.dart, `_beiDifferenzAnfangsbestand
+  Geaendert`). Ursache: Der Ziffern-Formatter des Feldes
+  (betrag_cent_eingabefeld.dart) kennt kein Minuszeichen und entfernte
+  es bei jeder echten Tastatur-Eingabe wieder aus der Anzeige, sobald
+  nach dem ±-Toggle weitergetippt wurde — der intern gespeicherte und
+  an Schritt 3 übergebene Wert blieb dabei zwar korrekt negativ, aber
+  Anzeige und Wert liefen auseinander. Fix: Nach jeder Änderung wird
+  die Anzeige, falls der Wert negativ ist, explizit aus
+  `_differenzAnfangsbestandCent` (einzige Wahrheitsquelle) neu gesetzt
+  — analog zum bereits bestehenden Vorgehen beim ±-Toggle selbst.
+  Betrifft nur dieses Feld, keine Änderung an der geteilten
+  Formatter-Logik in betrag_cent_eingabefeld.dart.
+
 - Run 432: "+"-Additions-Chip auch bei "Kino SOLL"/"Gesamt SOLL" und
   "Bistro SOLL" (Schritt 2, tagesabschluss_schritt2_seite.dart)
   entfernt (`zeigeAdditionsButton: false` an den beiden
