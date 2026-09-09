@@ -195,7 +195,26 @@ class _Schritt2AusgabenZeile extends StatelessWidget {
           if (zeigeLoeschen) ...<Widget>[
             const SizedBox(width: 2),
             IconButton(
-              onPressed: onLoeschen,
+              onPressed: () async {
+                final bool? bestaetigt = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext dialogCtx) => AlertDialog(
+                    title: const Text('Ausgabe entfernen?'),
+                    content: const Text('Diesen Eintrag wirklich löschen?'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogCtx).pop(false),
+                        child: const Text('Abbrechen'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogCtx).pop(true),
+                        child: const Text('Löschen'),
+                      ),
+                    ],
+                  ),
+                );
+                if (bestaetigt == true) onLoeschen();
+              },
               icon: const Icon(Icons.delete_outline),
               tooltip: 'Ausgabe entfernen',
             ),
