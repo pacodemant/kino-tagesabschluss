@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:js_interop';
 
 @JS('_swUpdateReady')
@@ -7,19 +6,19 @@ external JSBoolean? get _jsSwUpdateReady;
 @JS('_reloadPage')
 external void _reloadPage();
 
-Timer? _pollTimer;
-
-// onUpdate liefert true, wenn der Reload tatsächlich ausgeführt wurde —
-// erst dann hört der Poll auf. Liefert es false (z. B. weil gerade eine
-// Tagesabschluss-Seite offen ist), wird beim nächsten Tick erneut gefragt.
-void initSwUpdateWatcher(bool Function() onUpdate) {
-  _pollTimer = Timer.periodic(const Duration(seconds: 20), (_) {
-    if (_jsSwUpdateReady?.toDart == true) {
-      if (onUpdate()) {
-        _pollTimer?.cancel();
-      }
-    }
-  });
+/// Prueft EINMALIG, ob laut JS-Seite (web/index.html, _checkForUpdate(),
+/// dort bereits auf max. 1x/Tag gedrosselt und nur beim Laden/Wieder-
+/// sichtbarwerden ausgeloest) ein Update bereitsteht, und ruft dann
+/// [onUpdate] auf. Kein Dauer-Timer mehr (Run 435 — vorher 20s-Polling,
+/// konnte dadurch auch spaetabends mitten in einer laufenden Abrechnung
+/// auf dem Startmenue zuschlagen, sobald irgendwann tagsueber ein Update
+/// erkannt wurde). Aufrufer ist dafuer verantwortlich, diese Funktion bei
+/// den gewuenschten Gelegenheiten erneut aufzurufen (App-Start, Resume aus
+/// dem Hintergrund) — siehe update_lifecycle_watcher.dart.
+void pruefeUndWendeUpdateAnFallsBereit(void Function() onUpdate) {
+  if (_jsSwUpdateReady?.toDart == true) {
+    onUpdate();
+  }
 }
 
 void reloadPage() => _reloadPage();

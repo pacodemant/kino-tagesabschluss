@@ -9,6 +9,27 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 435: Update-Check nicht mehr per Dauer-Timer, sondern nur bei
+  App-Start und beim Zurückkehren aus dem Hintergrund. Auslöser:
+  Paco-Feedback nach der Diagnose zu "Verlauf zeigt fälschlich nicht
+  gesendet" — die alte 20-Sekunden-Poll-Schleife
+  (`sw_update_service_web.dart`, `initSwUpdateWatcher()`) konnte einen
+  automatischen Seiten-Reload zu jeder Tageszeit auslösen, sobald
+  irgendwann zuvor ein Update erkannt wurde UND die App gerade auf
+  Kinoauswahl/Startmenü stand (`UpdateReloadGuard`) — auch abends
+  mitten im Kassenabrechnungs-Ablauf, direkt nachdem man von Schritt 3
+  zurück zum Startmenü navigiert. Neu: `sw_update_service_web.dart`
+  bietet nur noch eine einmalige Prüfung
+  (`pruefeUndWendeUpdateAnFallsBereit()`), aufgerufen von der neuen
+  `lib/services/update_lifecycle_watcher.dart`
+  (`UpdateLifecycleWatcher`, `WidgetsBindingObserver`) bei App-Start
+  und bei jedem `AppLifecycleState.resumed`. Die eigentliche
+  Update-Erkennung (`web/index.html`, `_checkForUpdate()`, max. 1x/Tag,
+  ausgelöst bei `visibilitychange`) war bereits vorher korrekt
+  gedrosselt und bleibt unverändert. Der bestehende "App neu
+  laden"-Button in den Einstellungen (`reloadPage()`, unconditional)
+  ist von dieser Änderung nicht betroffen.
+
 - Run 434: Bestätigungsdialoge vor kritischen/destruktiven Aktionen
   ergänzt (6 von 7 Einzelstellen umgesetzt, Punkt 7 offen — siehe
   unten):

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+434 · Run 434
+Version: 0.9.87+435 · Run 435
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 434)
+## Laufender Entwicklungsstand (Run 435)
+
+- Run 435 ✅ Update-Check nicht mehr per 20s-Dauer-Timer, sondern nur
+  noch bei App-Start und Resume aus dem Hintergrund
+  (`UpdateLifecycleWatcher`, neue Datei
+  `lib/services/update_lifecycle_watcher.dart`) — konnte vorher zu
+  jeder Tageszeit auf dem Startmenü einen automatischen Reload
+  auslösen. Details siehe CHANGELOG.md.
 
 - Run 434 ⚠️ Bestätigungsdialoge vor kritischen/destruktiven Aktionen
   an 6 von 7 Einzelstellen ergänzt (Versand an Zentrale, Kartendaten
