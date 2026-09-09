@@ -113,7 +113,11 @@ void main() {
 
       // Zeile 0 entfernen -> "Zweite" muss jetzt allein/vorne stehen,
       // "Erste" darf nirgends mehr auftauchen (kein Index-Versatz).
+      // Seit Run 434 zeigt der Papierkorb-Button zuerst einen
+      // Bestätigungsdialog, der hier bestätigt werden muss.
       await tester.tap(find.byIcon(Icons.delete_outline).first);
+      await tester.pump();
+      await tester.tap(find.text('Löschen'));
       await tester.pump();
 
       expect(find.byType(TextField), findsNWidgets(2));

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+433 · Run 433
+Version: 0.9.87+434 · Run 434
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,18 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 433)
+## Laufender Entwicklungsstand (Run 434)
+
+- Run 434 ⚠️ Bestätigungsdialoge vor kritischen/destruktiven Aktionen
+  an 6 von 7 Einzelstellen ergänzt (Versand an Zentrale, Kartendaten
+  löschen, Kupfermünzen/-rollen entfernen, Erneut senden, zweiter
+  Umschlag ab Bezeichnung statt Betrag > 0, Ausgabe entfernen bei
+  Kino-Soll). Punkt 7 (Verlassen-Dialog bei manueller Stückelungs-
+  Verschiebung) nicht umgesetzt — referenziertes Vorbild in
+  wechselgeld_pruefen_seite.dart passt fachlich nicht (dort geht es um
+  eine Sollwert-Prüfung, nicht um ungespeicherte Änderungen; die
+  Stückelungs-Verschiebung wird nirgends persistiert). Details siehe
+  CHANGELOG.md.
 
 - Run 433 ✅ Vorzeichen-Bug bei "Differenz im Anfangsbestand" behoben:
   Anzeige verlor das Minuszeichen, sobald nach dem ±-Toggle

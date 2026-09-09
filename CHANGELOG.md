@@ -9,6 +9,46 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 434: Bestätigungsdialoge vor kritischen/destruktiven Aktionen
+  ergänzt (6 von 7 Einzelstellen umgesetzt, Punkt 7 offen — siehe
+  unten):
+  1. Versand an Zentrale (tagesabschluss_schritt3_seite.dart,
+     `_zeigeVersandBestaetigungsDialog()`): neuer Zusammenfassungs-
+     dialog mit Gesamt SOLL/IST/Differenz VOR `_doApiUpload()`, mit
+     Abbrechen/Senden. Nur bei Bestätigung wird tatsächlich gesendet.
+  2. Kartendaten löschen (tagesabschluss_schritt2_seite.dart,
+     `_loescheKartenDaten()`): gleicher Bestätigungsdialog-Aufbau wie
+     beim Einzelbeleg-Löschen (schritt2_ec_beleg_sub_kacheln.dart).
+  3. Kupfermünzen/-rollen entfernen (tagesabschluss_schritt1_seite.
+     dart, `_entferneKupferLose()`/`_entferneKupferRollen()`):
+     gleicher Bestätigungsdialog-Aufbau wie beim Umschlag-Löschen
+     (schritt1_umschlaege_section.dart).
+  4. "Jetzt senden"/"Erneut senden" (verlauf_detail_seite.dart,
+     `_erneuthSenden()`): kurze Bestätigung ("Erneut senden?") über
+     den zentralen `zeigeBestaetigungsDialog()`-Helfer, analog zu
+     "Eintrag löschen" direkt darunter.
+  5. Zweiter Umschlag ist jetzt anlegbar, sobald beim ersten die
+     Bezeichnung gesetzt ist (statt erst ab Betrag > 0) —
+     schritt1_umschlaege_section.dart, Bedingung des "Umschlag
+     hinzufügen"-Buttons.
+  6. "Ausgabe entfernen" bei Kino-Soll (schritt2_kino_soll_ausgaben_
+     section.dart): gleicher Bestätigungsdialog-Aufbau wie bei den
+     anderen Lösch-Aktionen.
+
+  Punkt 7 (Verlassen-Dialog bei manueller Stückelungs-Verschiebung,
+  stueckelung_vorschlag_seite.dart, analog zum Dialog in
+  wechselgeld_pruefen_seite.dart:386-402) wurde NICHT umgesetzt:
+  Die referenzierte Stelle in wechselgeld_pruefen_seite.dart ist kein
+  "Verlassen mit ungespeicherten Änderungen?"-Dialog, sondern eine
+  fachliche Prüfung ("Wechselgeld stimmt nicht" — Kassenbestand weicht
+  vom Sollwert ab). stueckelung_vorschlag_seite.dart hat weder eine
+  vergleichbare fachliche Prüfung noch persistiert die dortige manuelle
+  Verschiebung (`_verschiebung`) irgendwohin — die Seite hat nur einen
+  einzigen Ausgang (Button "Zurück zur Startseite", Zeile ~707) und
+  kein PopScope/keine Zurück-Geste-Abfangung. Ein "ungespeicherte
+  Änderungen"-Dialog hätte hier keine reale Grundlage. Nicht committet,
+  wartet auf Rückmeldung von Paco.
+
 - Run 433: Vorzeichen-Bug bei "Differenz im Anfangsbestand" behoben
   (tagesabschluss_schritt2_seite.dart, `_beiDifferenzAnfangsbestand
   Geaendert`). Ursache: Der Ziffern-Formatter des Feldes
