@@ -481,12 +481,33 @@ class _TagesabschlussSchritt3SeiteState
       final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
       if (!mounted) return;
       if (apiAktiv) {
-        // Bewusst nicht awaited: Dialog soll sofort öffnen, ohne auf die
-        // Netzwerkantwort zu warten. Haken + Persistierung passieren
-        // direkt in _doApiUpload() im echten Erfolgsfall — nicht beim
-        // CORS-Fallback, da der nicht von einem echten Offline-Fehler
-        // unterscheidbar ist.
-        _doApiUpload().ignore();
+        // Bewusst awaited (seit Run 436 — vorher .ignore()): der
+        // "Was möchtest du als nächstes tun?"-Dialog unten bot sofort
+        // "Zurück zur Startseite" an, noch bevor der Upload lokal als
+        // gesendet vermerkt war. Landete man dabei auf dem Startmenü,
+        // während im Hintergrund noch auf die Serverantwort gewartet
+        // wurde, konnte ein automatischer Update-Reload (siehe
+        // update_lifecycle_watcher.dart) oder ein Schließen/Verlassen
+        // der Seite genau diesen Moment abschneiden: Der Request war
+        // beim Server (Flurbocash) bereits angekommen und verarbeitet,
+        // aber markiereAlsGesendet()/speichereSendeBestaetigung()
+        // liefen nie — der Verlauf zeigte die Abrechnung dauerhaft als
+        // "noch nicht gesendet", obwohl sie bei Flurbocash bereits lag.
+        // Das verleitete dazu, dieselbe Abrechnung ein zweites Mal zu
+        // senden (Doppel-Einträge bei Flurbocash). Die kurze Wartezeit
+        // hier (Ladebalken via zeigeLadebalken: _apiUploadLaeuft ist
+        // bereits vorhanden) nimmt das in Kauf, um einen zuverlässigen
+        // Status zu garantieren.
+        await _doApiUpload();
+        if (!mounted) return;
+        if (!_apiUploadErledigt) {
+          // Echter Fehlschlag (kein CORS-Fallback, siehe _doApiUpload()):
+          // Fehler-SnackBar kam bereits von dort. Den "Was möchtest du
+          // als nächstes tun?"-Dialog hier NICHT zeigen — der würde
+          // "Zurück zur Startseite" anbieten, obwohl nichts gesendet
+          // wurde. Nutzer bleibt auf Schritt 3 und kann erneut senden.
+          return;
+        }
       } else {
         // Kein Online-Versand für dieses Kino aktiv — "gesendet" meint
         // hier nur die bereits erfolgte lokale Speicherung.

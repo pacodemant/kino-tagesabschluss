@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+435 · Run 435
+Version: 0.9.87+436 · Run 436
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 435)
+## Laufender Entwicklungsstand (Run 436)
+
+- Run 436 ✅ Versand an Flurbocash in Schritt 3 wird jetzt abgewartet,
+  bevor der Abschluss-Dialog "Zurück zur Startseite" anbietet
+  (`tagesabschluss_schritt3_seite.dart`) — behebt Root Cause für
+  "Verlauf zeigt fälschlich nicht gesendet" und vermutlich auch für
+  doppelte Abrechnungen bei Flurbocash (unnötiges "Erneut senden").
+  Details siehe CHANGELOG.md.
 
 - Run 435 ✅ Update-Check nicht mehr per 20s-Dauer-Timer, sondern nur
   noch bei App-Start und Resume aus dem Hintergrund

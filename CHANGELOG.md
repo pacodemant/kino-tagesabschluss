@@ -9,6 +9,29 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 436: Versand an Flurbocash in Schritt 3 wird jetzt abgewartet,
+  bevor der "Was möchtest du als nächstes tun?"-Dialog erscheint
+  (`tagesabschluss_schritt3_seite.dart`, `_zeigeAbschlussDialog()`,
+  `_doApiUpload()` nicht mehr `.ignore()`t). Auslöser: Paco meldete,
+  dass der Verlauf zweimal "noch nicht gesendet" zeigte, obwohl die
+  Daten nachweislich korrekt bei Flurbocash lagen — und dass dieselbe
+  Abrechnung (gleiche Werte, gleiche Beleg-Scans) doppelt bei
+  Flurbocash auftauchte. Root-Cause-Diagnose: der Dialog bot sofort
+  "Zurück zur Startseite" an, noch bevor
+  `markiereAlsGesendet()`/`speichereSendeBestaetigung()` liefen. Beim
+  Zurücknavigieren aufs Startmenü konnte u. a. der (mit Run 435
+  entschärfte) automatische Update-Reload oder ein Schließen der Seite
+  genau diesen Moment abschneiden — der Request war bei Flurbocash
+  bereits angekommen und verarbeitet, lokal blieb `gesendetAm` aber
+  dauerhaft `null`. Das verleitete dazu, dieselbe Abrechnung über
+  "Erneut senden" im Verlauf ein zweites Mal zu schicken. Zusätzlich:
+  bei einem echten Fehlschlag (kein CORS-Fallback) erscheint der "Was
+  möchtest du als nächstes tun?"-Dialog jetzt nicht mehr — der hätte
+  fälschlich "Zurück zur Startseite" angeboten, obwohl nichts gesendet
+  wurde. Kein Änderung an `_erneuthSenden()`
+  (`verlauf_detail_seite.dart`) nötig — dort war der Versand bereits
+  awaited.
+
 - Run 435: Update-Check nicht mehr per Dauer-Timer, sondern nur bei
   App-Start und beim Zurückkehren aus dem Hintergrund. Auslöser:
   Paco-Feedback nach der Diagnose zu "Verlauf zeigt fälschlich nicht
