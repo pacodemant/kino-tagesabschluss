@@ -2322,7 +2322,27 @@ class _TagesabschlussSchritt2SeiteState
   void _scrolleNachUnten() =>
       _scrollHelper.scrolleNachUnten(scrollController: _scrollController);
 
-  void _loescheKartenDaten() {
+  Future<void> _loescheKartenDaten() async {
+    final bool? bestaetigt = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogCtx) => AlertDialog(
+        title: const Text('Kartendaten löschen?'),
+        content: const Text('Kartendaten wirklich löschen?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(true),
+            child: const Text('Löschen'),
+          ),
+        ],
+      ),
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
     setState(() {
       _scanTerminalId = null;
       _scanDatum = null;
