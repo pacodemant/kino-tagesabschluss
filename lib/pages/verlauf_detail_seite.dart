@@ -51,6 +51,17 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
   Future<void> _erneuthSenden() async {
     if (_sendet) return;
+
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Erneut senden?',
+      inhalt: 'Diese Abrechnung erneut an die Zentrale senden?',
+      bestaetigenText: 'Senden',
+    );
+    if (bestaetigt != true || !mounted) {
+      return;
+    }
+
     setState(() => _sendet = true);
 
     try {
