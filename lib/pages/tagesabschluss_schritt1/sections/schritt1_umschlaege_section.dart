@@ -170,7 +170,8 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-        if (umschlaege.isNotEmpty && umschlaege.first.betragCent > 0)
+        if (umschlaege.isNotEmpty &&
+            umschlaege.first.bezeichnung.trim().isNotEmpty)
           Align(
             alignment: Alignment.centerLeft,
             child: TextButton.icon(
