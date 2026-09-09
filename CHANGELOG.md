@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 437: Sendebestätigung nach Flurbocash-Versand als Popup statt
+  SnackBar (TODO.md-Punkt, jetzt in TODO_ERLEDIGT.md), ausgelöst durch
+  Pacos Testfeedback zu Run 436. Betrifft `_doApiUpload()`
+  (tagesabschluss_schritt3_seite.dart) und `_erneuthSenden()`
+  (verlauf_detail_seite.dart), über den bereits vorhandenen
+  `zeigeInfoDialog()`-Helfer (loeschen_dialog.dart). Zusätzlich der
+  CORS-Fallback-Hinweis ("Empfang nicht bestätigbar") auf denselben
+  Popup-Stil umgestellt, mit eigenem, vorsichtigerem Wortlaut ("Senden
+  nicht sicher bestätigt") — Paco stufte diesen Zustand explizit als
+  änderungsbedürftig ein. Echter Fehlschlag bleibt SnackBar.
+
 - Run 436: Versand an Flurbocash in Schritt 3 wird jetzt abgewartet,
   bevor der "Was möchtest du als nächstes tun?"-Dialog erscheint
   (`tagesabschluss_schritt3_seite.dart`, `_zeigeAbschlussDialog()`,

@@ -74,7 +74,16 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
       if (mounted) {
         setState(() => _gesendetAm = DateTime.now());
-        zeigeHinweisSnackBar(context, 'API Upload erfolgreich ✓');
+        // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,
+        // analog tagesabschluss_schritt3_seite.dart, _doApiUpload()).
+        await zeigeInfoDialog(
+          context,
+          titel: 'Abrechnung gesendet',
+          inhalt: const Text(
+            'Die Abrechnung wurde erfolgreich an die Zentrale '
+            '(Flurbocash) übertragen.',
+          ),
+        );
       }
     } catch (e) {
       if (ApiUploadService.isCorsArtFehler(e)) {
@@ -85,9 +94,16 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         );
         if (mounted) {
           setState(() => _gesendetAm = DateTime.now());
-          zeigeHinweisSnackBar(
+          await zeigeInfoDialog(
             context,
-            'Upload gesendet — Empfang nicht bestätigbar',
+            titel: 'Senden nicht sicher bestätigt',
+            inhalt: const Text(
+              'Die Abrechnung wurde an die Zentrale geschickt, der '
+              'Browser konnte die Antwort aber nicht lesen (z. B. wegen '
+              'eines kurzen WLAN-Aussetzers). Ob sie dort tatsächlich '
+              'angekommen ist, lässt sich von hier aus nicht sicher '
+              'sagen.',
+            ),
           );
         }
       } else {

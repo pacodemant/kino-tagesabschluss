@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+436 · Run 436
+Version: 0.9.87+437 · Run 437
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 436)
+## Laufender Entwicklungsstand (Run 437)
+
+- Run 437 ✅ Sendebestätigung nach Flurbocash-Versand als Popup statt
+  SnackBar (zeigeInfoDialog statt zeigeHinweisSnackBar), inkl.
+  eigenem, vorsichtigerem Popup für den CORS-Fallback ("Empfang nicht
+  bestätigbar"). Details siehe CHANGELOG.md.
 
 - Run 436 ✅ Versand an Flurbocash in Schritt 3 wird jetzt abgewartet,
   bevor der Abschluss-Dialog "Zurück zur Startseite" anbietet

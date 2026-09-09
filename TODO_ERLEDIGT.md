@@ -199,6 +199,23 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       sonst ginge die Kreuzvalidierung gegen Scan-Fehler bei
       einzelnen Kartenarten verloren. *(Run 357)*
 
+- [x] **Sendebestätigung nach Flurbocash-Versand als Popup statt
+      Snackbar** Nach erfolgreichem Versand (`_doApiUpload()` in
+      tagesabschluss_schritt3_seite.dart, analog `_erneuthSenden()` in
+      verlauf_detail_seite.dart) erschien die Bestätigung nur als
+      SnackBar — konnte übersehen/weggewischt werden.
+      *(Run 437)* Umgesetzt wie beschrieben, über den bereits
+      vorhandenen `zeigeInfoDialog()`-Helfer (loeschen_dialog.dart).
+      Zusätzlich, im selben Run mitgezogen (Paco-Feedback beim Testen
+      von Run 436): auch der CORS-Fallback-Hinweis ("Upload gesendet —
+      Empfang nicht bestätigbar") wurde auf denselben Popup-Stil
+      umgestellt, mit eigenem Titel "Senden nicht sicher bestätigt"
+      und erklärendem Text — war im ursprünglichen TODO-Punkt nicht
+      erwähnt, aber dieselbe Übersehbarkeits-Problematik. Der echte
+      Fehlschlag-Fall (Exception außerhalb CORS) bleibt bewusst
+      SnackBar (bereits gut sichtbar, mit Retry-Möglichkeit direkt auf
+      derselben Seite).
+
 ---
 
 ## 🟡 Mittlere Features (eigenständige Funktionsblöcke)

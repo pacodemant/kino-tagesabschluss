@@ -21,6 +21,7 @@ import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
@@ -352,7 +353,17 @@ class _TagesabschlussSchritt3SeiteState
       );
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
-        zeigeHinweisSnackBar(context, 'API Upload erfolgreich ✓');
+        // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,
+        // TODO.md "Sendebestätigung ... als Popup statt Snackbar") —
+        // kann nicht übersehen/weggewischt werden wie eine SnackBar.
+        await zeigeInfoDialog(
+          context,
+          titel: 'Abrechnung gesendet',
+          inhalt: const Text(
+            'Die Abrechnung wurde erfolgreich an die Zentrale '
+            '(Flurbocash) übertragen.',
+          ),
+        );
       }
     } catch (e) {
       if (ApiUploadService.isCorsArtFehler(e)) {
@@ -363,9 +374,16 @@ class _TagesabschlussSchritt3SeiteState
           DateTime.now(),
         );
         if (mounted) {
-          zeigeHinweisSnackBar(
+          await zeigeInfoDialog(
             context,
-            'Upload gesendet — Empfang nicht bestätigbar',
+            titel: 'Senden nicht sicher bestätigt',
+            inhalt: const Text(
+              'Die Abrechnung wurde an die Zentrale geschickt, der '
+              'Browser konnte die Antwort aber nicht lesen (z. B. wegen '
+              'eines kurzen WLAN-Aussetzers). Ob sie dort tatsächlich '
+              'angekommen ist, lässt sich von hier aus nicht sicher '
+              'sagen.',
+            ),
           );
         }
       } else {

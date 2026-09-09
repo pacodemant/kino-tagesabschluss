@@ -95,22 +95,6 @@ um Durcheinander zu vermeiden.
       das erneute Prüfen beim Resume, nicht das Löschen der
       Sende-Signatur.
 
-- [ ] **Sendebestätigung nach Flurbocash-Versand als Popup statt Snackbar**
-      Nach erfolgreichem Versand (`_doApiUpload()` in
-      tagesabschluss_schritt3_seite.dart, analog `_erneuthSenden()` in
-      verlauf_detail_seite.dart) erscheint die Bestätigung
-      ("API Upload erfolgreich ✓") nur als SnackBar — kann
-      übersehen/weggewischt werden. Gewünscht: eigenes Popup mit
-      Pflicht-Bestätigung ("ok"/"verstanden"). NICHT zu verwechseln mit
-      der bereits umgesetzten TID-Prüfung im Bestätigungs-Popup VOR der
-      Beleg-Übernahme in Schritt 2 (siehe "TID-Whitelist editierbar"
-      unten) — hier geht es um die Bestätigung NACH dem tatsächlichen
-      Versand. Seit Run 414 gibt es bei erfolgreichem Versand keine
-      "... — Achtung: TID-Warnungen" mehr (eine TID-Abweichung
-      blockiert den Versand jetzt komplett, statt als Warnung neben
-      einem erfolgreichen Versand zu erscheinen) — dieser Punkt betrifft
-      also nur noch die reine Erfolgsbestätigung.
-
 - [ ] **Sonstiges-Zeilen (Schritt 1): Label-Feld breiter, Betrag-Feld
       schmaler** Betrifft `Schritt1UmschlaegeSection`
       (schritt1_umschlaege_section.dart, Abschnitt "Sonstiges
