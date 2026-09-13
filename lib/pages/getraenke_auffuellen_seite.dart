@@ -174,18 +174,22 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
     });
   }
 
+  static final ButtonStyle _kompakteTastenStil = OutlinedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    minimumSize: Size.zero,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    side: const BorderSide(color: Color(0x665C0A0A)),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+  );
+
   Widget _baueFilterTaste() {
     final bool hatBenoetigte =
         _mengeController.any((TextEditingController c) => (int.tryParse(c.text) ?? 0) > 0);
-    return TextButton(
+    return OutlinedButton(
       onPressed: hatBenoetigte
           ? () => setState(() => _nurBenoetigte = !_nurBenoetigte)
           : null,
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
+      style: _kompakteTastenStil,
       child: Text(
         _nurBenoetigte ? 'alle anzeigen' : 'nur benötigte anzeigen',
         style: const TextStyle(fontSize: 13),
@@ -194,13 +198,9 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
   }
 
   Widget _baueHandednessTaste() {
-    return TextButton(
+    return OutlinedButton(
       onPressed: _toggleHandedness,
-      style: TextButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        minimumSize: Size.zero,
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      ),
+      style: _kompakteTastenStil,
       child: RichText(
         text: TextSpan(
           style: const TextStyle(fontSize: 13, color: AppFarben.appBarRot),
@@ -208,10 +208,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
               ? <TextSpan>[
                   const TextSpan(
                     text: 'Links',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const TextSpan(text: '-/Rechtshänder'),
                 ]
@@ -219,10 +216,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                   const TextSpan(text: 'Links-/'),
                   const TextSpan(
                     text: 'Rechts',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const TextSpan(text: 'händer'),
                 ],

@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 439a2: Auf der Seite "Getränke auffüllen"
+  (`getraenke_auffuellen_seite.dart`) sind die beiden Textlinks
+  "nur benötigte anzeigen" / "alle anzeigen" und
+  "Links-/Rechtshänder" jetzt als kompakte umrandete Buttons
+  (`OutlinedButton`, abgerundet, schmales Padding) statt reiner
+  Textlinks zu erkennen — die Unterstreichung der aktiven
+  Händigkeits-Seite entfällt dabei, da diese Kennzeichnung als
+  Fett-Text zusammen mit dem Button-Rahmen ausreicht.
+
 - Run 439a: Drei Korrekturen zu Run 439 nach Pacos Testfeedback:
   (1) Es kann jetzt nur noch ein Abschnitt gleichzeitig offen sein —
   Öffnen eines anderen klappt den vorherigen automatisch zu

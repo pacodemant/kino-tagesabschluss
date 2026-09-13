@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.88+439a · Run 439a
+Version: 0.9.88+439a2 · Run 439a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 439a)
+## Laufender Entwicklungsstand (Run 439a2)
+
+- Run 439a2 ✅ "Getränke auffüllen": Filter- und Händigkeits-Link
+  als kompakte OutlinedButton statt reiner Textlinks. Details siehe
+  CHANGELOG.md.
 
 - Run 439a ✅ Drei Korrekturen zu Run 439: nur ein Hilfe-Abschnitt
   gleichzeitig offen, Titelzeile entfernt, neuer Abschnitt "Weitere
