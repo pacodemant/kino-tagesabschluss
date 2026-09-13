@@ -2860,9 +2860,11 @@ class _TagesabschlussSchritt2SeiteState
         actions: <Widget>[
           const HelpButton(
             helpText:
-                'Trage alle Umsätze ein: Kino- und Bistro-Soll aus dem '
-                'Kassensystem, Ausgaben mit Quittung sowie EC-Belege. '
-                'Daraus errechnet sich die Differenz zum gezählten Bargeld.',
+                'Tragt die Umsätze ein: Kino- und Bistro-Soll aus dem '
+                'Kassensystem, Ausgaben mit Quittung sowie die EC-Belege '
+                '– die könnt ihr einfach fotografieren, die App liest die '
+                'Beträge aus. Daraus errechnet die App die Differenz zum '
+                'gezählten Bargeld.',
           ),
           TextButton(
             onPressed: _bestaetigeUndLeereEingaben,

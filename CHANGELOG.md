@@ -9,6 +9,36 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440: Ton der sechs Fragezeichen-Hilfetexte (`help_button.dart`-
+  Einsätze in tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart,
+  stueckelung_vorschlag_seite.dart, wechselgeld_pruefen_seite.dart,
+  getraenke_auffuellen_seite.dart) von Einzel-Anrede „du" auf Team-
+  Anrede „ihr" umgestellt, damit sie zum bestehenden Ton der Hilfe-Seite
+  (`kurzeinstieg_seite.dart`) und der externen PDF-Anleitung passen —
+  Auslöser war Pacos erster /goal-Lauf zur Hilfe-Vereinheitlichung.
+  Inhaltlich zusätzlich: Schritt-1-Text stellt jetzt korrekt klar, dass
+  bei Scheinen/Rollen die Anzahl, bei losen Münzen/Sonstigem die
+  Beträge einzutragen sind (vorher pauschal „Anzahl"). Schritt-2-Text
+  weist jetzt auf die Beleg-Fotografierfunktion hin. Schritt-3-Text
+  relativiert die Ursachenklärung bei Abweichungen mit „wenn möglich"
+  statt sie als Pflichtschritt zu formulieren. Stückelungs- und
+  Getränke-auffüllen-Texte wurden gekürzt (Detail zum Schein-Tausch
+  bzw. Nachfüll-Erklärung entfernt, nach Pacos Einschätzung, dass das
+  kaum genutzt/gebraucht wird bzw. selbsterklärend ist) — passend zu
+  Pacos Wunsch, die Hilfe schlank zu halten und manche Details lieber
+  entdecken zu lassen. Wechselgeld-Text jetzt als unverbindlicher,
+  optionaler Gegencheck formuliert statt als Pflichtaufgabe.
+  Zusätzlich der stets sichtbare Scan-Hinweistext in
+  `schritt2_ec_belege_kachel_section.dart` („Beleg fehlt oder ist
+  unlesbar? …") um den Hinweis ergänzt, dass ein unscharfes Foto
+  einfach noch einmal aufgenommen werden kann, und ebenfalls auf
+  „ihr"-Anrede umgestellt (vorher „Tippe"). Im
+  Beleg-Scan-Bestätigungsdialog (`beleg_scan_bestaetigen_dialog.dart`)
+  „du scannst" zu „ihr scannt" korrigiert. Kein Eingriff in
+  `kurzeinstieg_seite.dart` oder die externe PDF-Anleitung nötig, da
+  beide bereits die referenzierte „ihr"-Tonalität hatten.
+
 - Run 439a2: Auf der Seite "Getränke auffüllen"
   (`getraenke_auffuellen_seite.dart`) sind die beiden Textlinks
   "nur benötigte anzeigen" / "alle anzeigen" und

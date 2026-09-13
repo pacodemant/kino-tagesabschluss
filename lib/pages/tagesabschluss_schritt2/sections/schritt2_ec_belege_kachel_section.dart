@@ -179,10 +179,10 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
                           children: <InlineSpan>[
                             const TextSpan(
                               text:
-                                  'Beleg fehlt oder ist '
-                                  'unlesbar? Fehlende Felder '
-                                  'unten einfach manuell '
-                                  'eintragen. Tippe auf ',
+                                  'Beleg fehlt oder ist unlesbar? Einfach '
+                                  'nochmal fotografieren oder die '
+                                  'fehlenden Felder unten manuell '
+                                  'eintragen. Tippt dazu auf ',
                             ),
                             TextSpan(
                               text: 'Belegdaten bearbeiten',

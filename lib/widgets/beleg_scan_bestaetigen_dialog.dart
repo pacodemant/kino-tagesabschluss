@@ -98,7 +98,7 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
               const Text(
                 'Rot markierte Werte können nach der Übernahme direkt '
                 'in den Feldern nachgetragen oder korrigiert werden – '
-                'oder du scannst den Beleg noch einmal.',
+                'oder ihr scannt den Beleg noch einmal.',
                 style: TextStyle(fontSize: 12, color: AppFarben.subtilerText),
               ),
             ],
