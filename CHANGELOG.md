@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 438: Hilfe-Seite (`kurzeinstieg_seite.dart`, hinter dem
+  "Hilfe"-Button auf der Startseite) mit Pacos vollständiger Anleitung
+  "Kassenabrechnung mit der Kassen-App" befüllt statt des bisherigen
+  Platzhaltertexts ("Vorläufiger Hilfetext"). Enthält jetzt alle fünf
+  Abschnitte (0. Start, Schritt 1–4) mit den zugehörigen Screenshots
+  aus Pacos Anleitungs-PDF (8 Bilder, neu unter
+  `assets/images/hilfe/`, in `pubspec.yaml` als Ordner eingetragen)
+  sowie die Fußnote zu den Nice-to-have-Buttons (Übertrag auf
+  Umschlag, Wechselgeld prüfen, Getränke auffüllen). Neue private
+  Hilfswidgets `_AbschnittUeberschrift`, `_Screenshot` und `_Absatz`
+  (Absatz mit `**Fett**`-Markdown-Auszeichnung) in derselben Datei.
+  Verbesserungsvorschläge aus der vorherigen Session sind bewusst noch
+  nicht eingearbeitet, folgen in einem späteren Run.
+
 - Run 437: Sendebestätigung nach Flurbocash-Versand als Popup statt
   SnackBar (TODO.md-Punkt, jetzt in TODO_ERLEDIGT.md), ausgelöst durch
   Pacos Testfeedback zu Run 436. Betrifft `_doApiUpload()`

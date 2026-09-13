@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.87+437 · Run 437
+Version: 0.9.87+438 · Run 438
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 437)
+## Laufender Entwicklungsstand (Run 438)
+
+- Run 438 ✅ Hilfe-Seite (`kurzeinstieg_seite.dart`) mit Pacos
+  vollständiger Anleitung "Kassenabrechnung mit der Kassen-App" befüllt
+  (Text + 8 Screenshots aus dem PDF, neu unter
+  `assets/images/hilfe/`) statt des bisherigen Platzhaltertexts.
+  Details siehe CHANGELOG.md.
 
 - Run 437 ✅ Sendebestätigung nach Flurbocash-Versand als Popup statt
   SnackBar (zeigeInfoDialog statt zeigeHinweisSnackBar), inkl.
