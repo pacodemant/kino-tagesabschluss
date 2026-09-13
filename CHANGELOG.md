@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 439a: Drei Korrekturen zu Run 439 nach Pacos Testfeedback:
+  (1) Es kann jetzt nur noch ein Abschnitt gleichzeitig offen sein —
+  Öffnen eines anderen klappt den vorherigen automatisch zu
+  (`KurzeinstiegSeite` jetzt StatefulWidget, `_KlappAbschnitt` von
+  außen über `offen`/`onToggle` gesteuert statt eigenem State).
+  (2) Titelzeile "Kassenabrechnung mit der Kassen-App" entfernt.
+  (3) Neuer sechster Abschnitt "Weitere Funktionen" nach Schritt 4 mit
+  der Erläuterung zu den Buttons Übertrag auf Umschlag, Wechselgeld
+  prüfen und Getränke auffüllen — dieser Text stand bisher als
+  Fußnote im Abschnitt "0. Start" und wurde dorthin verschoben statt
+  dupliziert.
+
 - Run 439: Die fünf Abschnitte der Hilfe-Seite (`kurzeinstieg_seite.dart`,
   0. Start, Schritt 1–4) sind jetzt einzeln auf-/zuklappbar (neues
   privates StatefulWidget `_KlappAbschnitt`, ersetzt das bisherige

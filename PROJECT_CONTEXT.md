@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.88+439 · Run 439
+Version: 0.9.88+439a · Run 439a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 439)
+## Laufender Entwicklungsstand (Run 439a)
+
+- Run 439a ✅ Drei Korrekturen zu Run 439: nur ein Hilfe-Abschnitt
+  gleichzeitig offen, Titelzeile entfernt, neuer Abschnitt "Weitere
+  Funktionen" nach Schritt 4 (Text aus "0. Start" dorthin verschoben).
+  Details siehe CHANGELOG.md.
 
 - Run 439 ✅ Die fünf Abschnitte der Hilfe-Seite
   (`kurzeinstieg_seite.dart`) sind jetzt einzeln auf-/zuklappbar und

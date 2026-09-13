@@ -4,7 +4,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 /// Bebilderte Bedienungsanleitung hinter dem "Hilfe"-Button der Startseite.
 /// Inhalt und Screenshots stammen aus der vom Kino erstellten Anleitung
 /// "Kassenabrechnung mit der Kassen-App".
-class KurzeinstiegSeite extends StatelessWidget {
+class KurzeinstiegSeite extends StatefulWidget {
   const KurzeinstiegSeite({super.key});
 
   static const String routenName = '/kurzeinstieg';
@@ -16,6 +16,23 @@ class KurzeinstiegSeite extends StatelessWidget {
     fontStyle: FontStyle.italic,
     color: AppFarben.subtilerText,
   );
+
+  @override
+  State<KurzeinstiegSeite> createState() => _KurzeinstiegSeiteState();
+}
+
+/// Index des aktuell aufgeklappten Abschnitts (0 = "0. Start" bis
+/// 5 = "Weitere Funktionen"); null = alle zu. Nur ein Abschnitt kann
+/// gleichzeitig offen sein — das Öffnen eines anderen klappt den
+/// vorherigen automatisch wieder zu.
+class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
+  int? _offenerIndex;
+
+  void _umschalten(int index) {
+    setState(() {
+      _offenerIndex = _offenerIndex == index ? null : index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +47,10 @@ class KurzeinstiegSeite extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'Kassenabrechnung mit der Kassen-App',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
-
             _KlappAbschnitt(
               titel: '0. Start',
+              offen: _offenerIndex == 0,
+              onToggle: () => _umschalten(0),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/start.png'),
                 SizedBox(height: 12),
@@ -63,29 +76,14 @@ class KurzeinstiegSeite extends StatelessWidget {
                   'ihr müsst nicht mehr rechnen und mit Geldscheinen '
                   'jonglieren.',
                 ),
-                SizedBox(height: 14),
-                _Absatz(
-                  'Die Funktionen unter dem orangefarbenen Button '
-                  '„Kassenabrechnung" sind für die Konfiguration der App '
-                  'bzw. Nice-to-haves und für den Hauptzweck Abrechnung '
-                  'nicht wichtig:\n'
-                  '• **Übertrag auf Umschlag**: erst aktiv nach einer '
-                  'abgeschlossenen Kassenabrechnung\n'
-                  '• **Wechselgeld prüfen**: für die Frühschicht, erklärt '
-                  'sich von selbst\n'
-                  '• **Getränke auffüllen**: nice-to-have, ist für jeden '
-                  'Standort vorkonfiguriert, einfach ausprobieren oder wie '
-                  'gewohnt mit Kellnerblock und Kuli …\n'
-                  '• **Einstellungen**, **Verlauf** und **Hilfe** erklären '
-                  'sich auch von selbst.',
-                  stil: _fussnotenStil,
-                ),
               ],
             ),
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 1: Bargeld zählen',
+              offen: _offenerIndex == 1,
+              onToggle: () => _umschalten(1),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt1_bargeld.png'),
                 SizedBox(height: 12),
@@ -133,6 +131,8 @@ class KurzeinstiegSeite extends StatelessWidget {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 2: Umsätze ermitteln',
+              offen: _offenerIndex == 2,
+              onToggle: () => _umschalten(2),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt2_umsaetze.png'),
                 SizedBox(height: 12),
@@ -189,6 +189,8 @@ class KurzeinstiegSeite extends StatelessWidget {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 3: Übertrag auf Umschlag',
+              offen: _offenerIndex == 3,
+              onToggle: () => _umschalten(3),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt3_umschlag.png'),
                 SizedBox(height: 12),
@@ -211,6 +213,8 @@ class KurzeinstiegSeite extends StatelessWidget {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 4: Stückelung des Bargeldes',
+              offen: _offenerIndex == 4,
+              onToggle: () => _umschalten(4),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt4_stueckelung.png'),
                 SizedBox(height: 12),
@@ -232,6 +236,31 @@ class KurzeinstiegSeite extends StatelessWidget {
                 ),
               ],
             ),
+
+            const SizedBox(height: 20),
+            _KlappAbschnitt(
+              titel: 'Weitere Funktionen',
+              offen: _offenerIndex == 5,
+              onToggle: () => _umschalten(5),
+              kinder: const <Widget>[
+                _Absatz(
+                  'Die Funktionen unter dem orangefarbenen Button '
+                  '„Kassenabrechnung" sind für die Konfiguration der App '
+                  'bzw. Nice-to-haves und für den Hauptzweck Abrechnung '
+                  'nicht wichtig:\n'
+                  '• **Übertrag auf Umschlag**: erst aktiv nach einer '
+                  'abgeschlossenen Kassenabrechnung\n'
+                  '• **Wechselgeld prüfen**: für die Frühschicht, erklärt '
+                  'sich von selbst\n'
+                  '• **Getränke auffüllen**: nice-to-have, ist für jeden '
+                  'Standort vorkonfiguriert, einfach ausprobieren oder wie '
+                  'gewohnt mit Kellnerblock und Kuli …\n'
+                  '• **Einstellungen**, **Verlauf** und **Hilfe** erklären '
+                  'sich auch von selbst.',
+                  stil: KurzeinstiegSeite._fussnotenStil,
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
           ],
         ),
@@ -241,20 +270,21 @@ class KurzeinstiegSeite extends StatelessWidget {
 }
 
 /// Ein- und ausklappbarer Abschnitt der Hilfe-Seite: Kopfzeile im bisherigen
-/// Design (fokusFarbe-Hintergrund) plus Chevron, Inhalt startet zugeklappt,
-/// damit die Seite beim Öffnen erst einen Überblick über alle Schritte zeigt.
-class _KlappAbschnitt extends StatefulWidget {
-  const _KlappAbschnitt({required this.titel, required this.kinder});
+/// Design (fokusFarbe-Hintergrund) plus Chevron. Der Auf-/Zu-Zustand wird
+/// vom Elternwidget (`_KurzeinstiegSeiteState`) gesteuert, damit stets nur
+/// ein Abschnitt gleichzeitig offen sein kann.
+class _KlappAbschnitt extends StatelessWidget {
+  const _KlappAbschnitt({
+    required this.titel,
+    required this.kinder,
+    required this.offen,
+    required this.onToggle,
+  });
 
   final String titel;
   final List<Widget> kinder;
-
-  @override
-  State<_KlappAbschnitt> createState() => _KlappAbschnittState();
-}
-
-class _KlappAbschnittState extends State<_KlappAbschnitt> {
-  bool _offen = false;
+  final bool offen;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -262,7 +292,7 @@ class _KlappAbschnittState extends State<_KlappAbschnitt> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         InkWell(
-          onTap: () => setState(() => _offen = !_offen),
+          onTap: onToggle,
           borderRadius: BorderRadius.circular(8),
           child: Container(
             width: double.infinity,
@@ -275,7 +305,7 @@ class _KlappAbschnittState extends State<_KlappAbschnitt> {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    widget.titel,
+                    titel,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -284,17 +314,14 @@ class _KlappAbschnittState extends State<_KlappAbschnitt> {
                   ),
                 ),
                 Icon(
-                  _offen ? Icons.expand_less : Icons.expand_more,
+                  offen ? Icons.expand_less : Icons.expand_more,
                   color: Colors.black87,
                 ),
               ],
             ),
           ),
         ),
-        if (_offen) ...<Widget>[
-          const SizedBox(height: 12),
-          ...widget.kinder,
-        ],
+        if (offen) ...<Widget>[const SizedBox(height: 12), ...kinder],
       ],
     );
   }
