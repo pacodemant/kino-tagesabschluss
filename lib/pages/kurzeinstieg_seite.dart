@@ -29,190 +29,210 @@ class KurzeinstiegSeite extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const <Widget>[
-            Text(
+          children: <Widget>[
+            const Text(
               'Kassenabrechnung mit der Kassen-App',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            _AbschnittUeberschrift('0. Start'),
-            SizedBox(height: 12),
-            _Screenshot('assets/images/hilfe/start.png'),
-            SizedBox(height: 12),
-            _Absatz(
-              'Nach dem Öffnen der App seht ihr diesen Screen. Tippt auf '
-              '**Kassenabrechnung (4 Schritte)** und die App wird Euch durch '
-              'diese vier Schritte führen:',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              '1. Alles **Bargeld zählen** (Personalgetränke bonieren, ggf. '
-              'Produkte stunden, Kellnerportemonnaie nicht vergessen)\n'
-              '2. **Umsätze eingeben** (Kino, Bistro, Ausgaben, '
-              'Kassenschnitte aller Terminals)\n'
-              '3. Die von der App errechneten Daten wie gewohnt auf den '
-              'Abrechnungs**umschlag** schreiben und alles mit einem Tap '
-              '**an die Buchhaltung senden** (der Umschlag bleibt für die '
-              'Abrechnung übrigens weiterhin bestehen).\n'
-              '4. Tages-**Barumsatz stückeln**, und zwar so, dass keine '
-              'großen Scheine oder Kupfermünzen im Wechselgeld für den '
-              'nächsten Tag landen. Die Stückelung schlägt die App vor, ihr '
-              'müsst nicht mehr rechnen und mit Geldscheinen jonglieren.',
-            ),
-            SizedBox(height: 14),
-            _Absatz(
-              'Die Funktionen unter dem orangefarbenen Button '
-              '„Kassenabrechnung" sind für die Konfiguration der App bzw. '
-              'Nice-to-haves und für den Hauptzweck Abrechnung nicht '
-              'wichtig:\n'
-              '• **Übertrag auf Umschlag**: erst aktiv nach einer '
-              'abgeschlossenen Kassenabrechnung\n'
-              '• **Wechselgeld prüfen**: für die Frühschicht, erklärt sich '
-              'von selbst\n'
-              '• **Getränke auffüllen**: nice-to-have, ist für jeden '
-              'Standort vorkonfiguriert, einfach ausprobieren oder wie '
-              'gewohnt mit Kellnerblock und Kuli …\n'
-              '• **Einstellungen**, **Verlauf** und **Hilfe** erklären sich '
-              'auch von selbst.',
-              stil: _fussnotenStil,
-            ),
-
-            SizedBox(height: 32),
-            _AbschnittUeberschrift('Schritt 1: Bargeld zählen'),
-            SizedBox(height: 12),
-            _Screenshot('assets/images/hilfe/schritt1_bargeld.png'),
-            SizedBox(height: 12),
-            _Absatz(
-              'Zuerst zählt ihr das Bargeld. Denkt an die **Kellnerbörse** '
-              'sowie eventuelle Umschläge mit losem Kleingeld (unter '
-              'Sonstiges).',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Für Scheine und Geldrollen tragt ihr nur die **Anzahl** ein, '
-              'die App errechnet die Summen. Für die losen Münzen und '
-              'etwaiges Geld in Umschlägen tragt Ihr die tatsächlichen '
-              '**Beträge** ein. Die Beträge gebt Ihr in **Cent** ein, also '
-              'ohne Komma, genau so, wie auch an den '
-              'Kartenzahlungsterminals: für 2,20 € tippt ihr „220" ein, die '
-              'App setzt das Komma automatisch.',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Unter **Sonstiges** gebt Ihr die Werte von Gutscheinen, '
-              'Umschlägen mit losen Münzen und ggf. anderem ein.',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Wenn Ihr alles gezählt habt, tippt ihr ganz unten auf den '
-              'orangenen Button „Umsätze eingeben" …',
-            ),
-            SizedBox(height: 16),
-            _Screenshot(
-              'assets/images/hilfe/schritt1_kupfermuenzen.png',
-              breite: 260,
-            ),
-            SizedBox(height: 12),
-            _Absatz(
-              '**Kupfermünzen** kommen selten vor. Wenn das aber mal der '
-              'Fall ist, tippt an der entsprechenden Stelle auf '
-              '„Kupfermünzen hinzufügen" und tragt die Beträge ein. (Das '
-              'wird später bei der Stückelung des Barumsatzes '
-              'berücksichtigt.)',
+            _KlappAbschnitt(
+              titel: '0. Start',
+              kinder: const <Widget>[
+                _Screenshot('assets/images/hilfe/start.png'),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Nach dem Öffnen der App seht ihr diesen Screen. Tippt auf '
+                  '**Kassenabrechnung (4 Schritte)** und die App wird Euch '
+                  'durch diese vier Schritte führen:',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  '1. Alles **Bargeld zählen** (Personalgetränke bonieren, '
+                  'ggf. Produkte stunden, Kellnerportemonnaie nicht '
+                  'vergessen)\n'
+                  '2. **Umsätze eingeben** (Kino, Bistro, Ausgaben, '
+                  'Kassenschnitte aller Terminals)\n'
+                  '3. Die von der App errechneten Daten wie gewohnt auf den '
+                  'Abrechnungs**umschlag** schreiben und alles mit einem Tap '
+                  '**an die Buchhaltung senden** (der Umschlag bleibt für '
+                  'die Abrechnung übrigens weiterhin bestehen).\n'
+                  '4. Tages-**Barumsatz stückeln**, und zwar so, dass keine '
+                  'großen Scheine oder Kupfermünzen im Wechselgeld für den '
+                  'nächsten Tag landen. Die Stückelung schlägt die App vor, '
+                  'ihr müsst nicht mehr rechnen und mit Geldscheinen '
+                  'jonglieren.',
+                ),
+                SizedBox(height: 14),
+                _Absatz(
+                  'Die Funktionen unter dem orangefarbenen Button '
+                  '„Kassenabrechnung" sind für die Konfiguration der App '
+                  'bzw. Nice-to-haves und für den Hauptzweck Abrechnung '
+                  'nicht wichtig:\n'
+                  '• **Übertrag auf Umschlag**: erst aktiv nach einer '
+                  'abgeschlossenen Kassenabrechnung\n'
+                  '• **Wechselgeld prüfen**: für die Frühschicht, erklärt '
+                  'sich von selbst\n'
+                  '• **Getränke auffüllen**: nice-to-have, ist für jeden '
+                  'Standort vorkonfiguriert, einfach ausprobieren oder wie '
+                  'gewohnt mit Kellnerblock und Kuli …\n'
+                  '• **Einstellungen**, **Verlauf** und **Hilfe** erklären '
+                  'sich auch von selbst.',
+                  stil: _fussnotenStil,
+                ),
+              ],
             ),
 
-            SizedBox(height: 32),
-            _AbschnittUeberschrift('Schritt 2: Umsätze ermitteln'),
-            SizedBox(height: 12),
-            _Screenshot('assets/images/hilfe/schritt2_umsaetze.png'),
-            SizedBox(height: 12),
-            _Absatz(
-              'Im nächsten Schritt ermittelt Ihr wie bisher die **Umsätze** '
-              'für Kino und ggf. Bistro, etwaige **Ausgaben** und die '
-              '**Kassenschnitte** der Kartenzahlungsterminals.',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Von den Karten-Terminals zieht ihr zunächst wie gewohnt den '
-              'Kassenschnitt aller Terminals. Statt nun alle Beträge '
-              'manuell einzugeben, **fotografiert ihr die Belege einfach**, '
-              'die App liest die Daten und trägt sie automatisch ein.',
-            ),
-            SizedBox(height: 16),
-            _Screenshot(
-              'assets/images/hilfe/schritt2_ec_beleg.png',
-              breite: 280,
-            ),
-            SizedBox(height: 12),
-            _Absatz(
-              'Dazu legt ihr den Beleg möglichst plan auf den Tisch, '
-              '**zieht den Beleg, wenn nötig, glatt** und fotografiert ihn. '
-              'Achtet darauf, dass das Foto scharf ist. Wenn das Foto '
-              'scharf und deutlich ist, bestätigt das Foto. Die App '
-              'arbeitet kurz und zeigt dann an, was sie vom Beleg '
-              'eingelesen hat.',
-            ),
-            SizedBox(height: 16),
-            _Screenshot(
-              'assets/images/hilfe/schritt2_scan_ergebnis.png',
-              breite: 220,
-            ),
-            SizedBox(height: 12),
-            _Absatz(
-              'Überprüft die Beträge und tippt dann auf „übernehmen". '
-              'Falls irgendetwas nicht stimmt, fotografiert den Beleg '
-              'einfach noch mal. **Wenn der Beleg zu uneben, gewellt oder '
-              'geknickt ist, werden einige Bereiche des Beleges unscharf '
-              'und ggf. nicht korrekt erkannt.**',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Für weitere Kassenschnitt-Belege tippt einfach auf '
-              '„Weiteren Beleg hinzufügen" usw. Schließlich tippt ihr auf '
-              'den orangefarbenen Button „Übertrag auf Umschlag".',
+            const SizedBox(height: 20),
+            _KlappAbschnitt(
+              titel: 'Schritt 1: Bargeld zählen',
+              kinder: const <Widget>[
+                _Screenshot('assets/images/hilfe/schritt1_bargeld.png'),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Zuerst zählt ihr das Bargeld. Denkt an die '
+                  '**Kellnerbörse** sowie eventuelle Umschläge mit losem '
+                  'Kleingeld (unter Sonstiges).',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Für Scheine und Geldrollen tragt ihr nur die **Anzahl** '
+                  'ein, die App errechnet die Summen. Für die losen Münzen '
+                  'und etwaiges Geld in Umschlägen tragt Ihr die '
+                  'tatsächlichen **Beträge** ein. Die Beträge gebt Ihr in '
+                  '**Cent** ein, also ohne Komma, genau so, wie auch an den '
+                  'Kartenzahlungsterminals: für 2,20 € tippt ihr „220" ein, '
+                  'die App setzt das Komma automatisch.',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Unter **Sonstiges** gebt Ihr die Werte von Gutscheinen, '
+                  'Umschlägen mit losen Münzen und ggf. anderem ein.',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Wenn Ihr alles gezählt habt, tippt ihr ganz unten auf '
+                  'den orangenen Button „Umsätze eingeben" …',
+                ),
+                SizedBox(height: 16),
+                _Screenshot(
+                  'assets/images/hilfe/schritt1_kupfermuenzen.png',
+                  breite: 260,
+                ),
+                SizedBox(height: 12),
+                _Absatz(
+                  '**Kupfermünzen** kommen selten vor. Wenn das aber mal '
+                  'der Fall ist, tippt an der entsprechenden Stelle auf '
+                  '„Kupfermünzen hinzufügen" und tragt die Beträge ein. '
+                  '(Das wird später bei der Stückelung des Barumsatzes '
+                  'berücksichtigt.)',
+                ),
+              ],
             ),
 
-            SizedBox(height: 32),
-            _AbschnittUeberschrift('Schritt 3: Übertrag auf Umschlag'),
-            SizedBox(height: 12),
-            _Screenshot('assets/images/hilfe/schritt3_umschlag.png'),
-            SizedBox(height: 12),
-            _Absatz(
-              'Das Ausfüllen des Abrechnungsumschlages wird weiterhin '
-              'beibehalten. Hier wird genau angegeben, was auf dem '
-              'Umschlag einzutragen ist.',
-            ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Wenn Ihr das getan habt, ist es wichtig, dass die '
-              'Abrechnung ans Büro gesendet wird: tippt auf den '
-              'orangefarbenen Button. Erst, wenn Ihr die Abrechnung '
-              'gesendet habt, kommt Ihr weiter zum nächsten Schritt, der '
-              'Stückelung …',
+            const SizedBox(height: 20),
+            _KlappAbschnitt(
+              titel: 'Schritt 2: Umsätze ermitteln',
+              kinder: const <Widget>[
+                _Screenshot('assets/images/hilfe/schritt2_umsaetze.png'),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Im nächsten Schritt ermittelt Ihr wie bisher die '
+                  '**Umsätze** für Kino und ggf. Bistro, etwaige '
+                  '**Ausgaben** und die **Kassenschnitte** der '
+                  'Kartenzahlungsterminals.',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Von den Karten-Terminals zieht ihr zunächst wie gewohnt '
+                  'den Kassenschnitt aller Terminals. Statt nun alle '
+                  'Beträge manuell einzugeben, **fotografiert ihr die '
+                  'Belege einfach**, die App liest die Daten und trägt sie '
+                  'automatisch ein.',
+                ),
+                SizedBox(height: 16),
+                _Screenshot(
+                  'assets/images/hilfe/schritt2_ec_beleg.png',
+                  breite: 280,
+                ),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Dazu legt ihr den Beleg möglichst plan auf den Tisch, '
+                  '**zieht den Beleg, wenn nötig, glatt** und fotografiert '
+                  'ihn. Achtet darauf, dass das Foto scharf ist. Wenn das '
+                  'Foto scharf und deutlich ist, bestätigt das Foto. Die '
+                  'App arbeitet kurz und zeigt dann an, was sie vom Beleg '
+                  'eingelesen hat.',
+                ),
+                SizedBox(height: 16),
+                _Screenshot(
+                  'assets/images/hilfe/schritt2_scan_ergebnis.png',
+                  breite: 220,
+                ),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Überprüft die Beträge und tippt dann auf „übernehmen". '
+                  'Falls irgendetwas nicht stimmt, fotografiert den Beleg '
+                  'einfach noch mal. **Wenn der Beleg zu uneben, gewellt '
+                  'oder geknickt ist, werden einige Bereiche des Beleges '
+                  'unscharf und ggf. nicht korrekt erkannt.**',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Für weitere Kassenschnitt-Belege tippt einfach auf '
+                  '„Weiteren Beleg hinzufügen" usw. Schließlich tippt ihr '
+                  'auf den orangefarbenen Button „Übertrag auf Umschlag".',
+                ),
+              ],
             ),
 
-            SizedBox(height: 32),
-            _AbschnittUeberschrift('Schritt 4: Stückelung des Bargeldes'),
-            SizedBox(height: 12),
-            _Screenshot('assets/images/hilfe/schritt4_stueckelung.png'),
-            SizedBox(height: 12),
-            _Absatz(
-              'Zum Schluss legt Ihr den Barumsatz des Tages stückelungs'
-              'gerecht in den Umschlag. Damit im Wechselgeld für den '
-              'nächsten Tag keine großen Scheine liegen, empfiehlt die App '
-              'eine entsprechende Stückelung. Wenn eine Zeile grün '
-              'hinterlegt ist, entspricht die Anzahl der Scheine im '
-              'Stapel genau dem Soll-Betrag — der gesamte Stapel kann '
-              'direkt in den Umschlag gelegt werden, ihr müsst ihn nicht '
-              'noch mal zählen.',
+            const SizedBox(height: 20),
+            _KlappAbschnitt(
+              titel: 'Schritt 3: Übertrag auf Umschlag',
+              kinder: const <Widget>[
+                _Screenshot('assets/images/hilfe/schritt3_umschlag.png'),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Das Ausfüllen des Abrechnungsumschlages wird weiterhin '
+                  'beibehalten. Hier wird genau angegeben, was auf dem '
+                  'Umschlag einzutragen ist.',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Wenn Ihr das getan habt, ist es wichtig, dass die '
+                  'Abrechnung ans Büro gesendet wird: tippt auf den '
+                  'orangefarbenen Button. Erst, wenn Ihr die Abrechnung '
+                  'gesendet habt, kommt Ihr weiter zum nächsten Schritt, '
+                  'der Stückelung …',
+                ),
+              ],
             ),
-            SizedBox(height: 10),
-            _Absatz(
-              'Jetzt noch Barumsatz und Belege in den Umschlag tun und … '
-              'fertig.',
+
+            const SizedBox(height: 20),
+            _KlappAbschnitt(
+              titel: 'Schritt 4: Stückelung des Bargeldes',
+              kinder: const <Widget>[
+                _Screenshot('assets/images/hilfe/schritt4_stueckelung.png'),
+                SizedBox(height: 12),
+                _Absatz(
+                  'Zum Schluss legt Ihr den Barumsatz des Tages '
+                  'stückelungsgerecht in den Umschlag. Damit im '
+                  'Wechselgeld für den nächsten Tag keine großen Scheine '
+                  'liegen, empfiehlt die App eine entsprechende '
+                  'Stückelung. Wenn eine Zeile grün hinterlegt ist, '
+                  'entspricht die Anzahl der Scheine im Stapel genau dem '
+                  'Soll-Betrag — der gesamte Stapel kann direkt in den '
+                  'Umschlag gelegt werden, ihr müsst ihn nicht noch mal '
+                  'zählen.',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Jetzt noch Barumsatz und Belege in den Umschlag tun und '
+                  '… fertig.',
+                ),
+              ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
           ],
         ),
       ),
@@ -220,28 +240,62 @@ class KurzeinstiegSeite extends StatelessWidget {
   }
 }
 
-class _AbschnittUeberschrift extends StatelessWidget {
-  const _AbschnittUeberschrift(this.text);
+/// Ein- und ausklappbarer Abschnitt der Hilfe-Seite: Kopfzeile im bisherigen
+/// Design (fokusFarbe-Hintergrund) plus Chevron, Inhalt startet zugeklappt,
+/// damit die Seite beim Öffnen erst einen Überblick über alle Schritte zeigt.
+class _KlappAbschnitt extends StatefulWidget {
+  const _KlappAbschnitt({required this.titel, required this.kinder});
 
-  final String text;
+  final String titel;
+  final List<Widget> kinder;
+
+  @override
+  State<_KlappAbschnitt> createState() => _KlappAbschnittState();
+}
+
+class _KlappAbschnittState extends State<_KlappAbschnitt> {
+  bool _offen = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: AppFarben.fokusFarbe,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        InkWell(
+          onTap: () => setState(() => _offen = !_offen),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppFarben.fokusFarbe,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    widget.titel,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+                Icon(
+                  _offen ? Icons.expand_less : Icons.expand_more,
+                  color: Colors.black87,
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+        if (_offen) ...<Widget>[
+          const SizedBox(height: 12),
+          ...widget.kinder,
+        ],
+      ],
     );
   }
 }

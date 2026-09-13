@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 439: Die fünf Abschnitte der Hilfe-Seite (`kurzeinstieg_seite.dart`,
+  0. Start, Schritt 1–4) sind jetzt einzeln auf-/zuklappbar (neues
+  privates StatefulWidget `_KlappAbschnitt`, ersetzt das bisherige
+  statische `_AbschnittUeberschrift`) und starten alle zugeklappt, damit
+  man beim Öffnen sofort einen Überblick über alle Schritte hat statt
+  einer langen Textwand. Screenshots und Texte selbst unverändert.
+
 - Run 438: Hilfe-Seite (`kurzeinstieg_seite.dart`, hinter dem
   "Hilfe"-Button auf der Startseite) mit Pacos vollständiger Anleitung
   "Kassenabrechnung mit der Kassen-App" befüllt statt des bisherigen
