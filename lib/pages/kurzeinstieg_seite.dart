@@ -21,8 +21,8 @@ class KurzeinstiegSeite extends StatefulWidget {
   State<KurzeinstiegSeite> createState() => _KurzeinstiegSeiteState();
 }
 
-/// Index des aktuell aufgeklappten Abschnitts (0 = "0. Start" bis
-/// 5 = "Weitere Funktionen"); null = alle zu. Nur ein Abschnitt kann
+/// Index des aktuell aufgeklappten Abschnitts (0 = "Die App" bis
+/// 6 = "Weitere Funktionen"); null = alle zu. Nur ein Abschnitt kann
 /// gleichzeitig offen sein — das Öffnen eines anderen klappt den
 /// vorherigen automatisch wieder zu.
 class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
@@ -48,9 +48,54 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _KlappAbschnitt(
-              titel: '0. Start',
+              titel: 'Die App',
               offen: _offenerIndex == 0,
               onToggle: () => _umschalten(0),
+              kinder: const <Widget>[
+                _Absatz(
+                  'Der Hauptzweck der App ist, die '
+                  '**Kassenabrechnung einfacher, schneller und '
+                  'fehlerresistenter** zu machen. Außerdem müssen '
+                  'die Kartenzahlungsbelege künftig nicht mehr nur '
+                  'als Gesamtbetrag, sondern **nach Kartenart '
+                  'einzeln aufgeschlüsselt** an die Buchhaltung '
+                  'gesendet werden. Das müsst ihr nicht händisch '
+                  'machen: Ihr **fotografiert die '
+                  'Kassenschnitt-Belege einfach**, die App liest '
+                  'sie aus und rechnet alles für euch – das '
+                  'erspart euch und der Buchhaltung eine Menge '
+                  'unangenehmer Rechenarbeit.',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Die App ist für jedes Kino bzw. Bistro '
+                  'individuell eingerichtet und größtenteils '
+                  'selbsterklärend. Die Abrechnung ist in vier '
+                  'Schritten eingeteilt – wenn ihr den Schritten '
+                  'folgt, ist es schwer, etwas falsch zu machen. '
+                  '(Aktuell ist die App noch in der Testphase.)',
+                ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Hintergrund: Es gibt neue und mehr '
+                  'Kartenzahlungsterminals pro Standort. Die '
+                  'Kartenzahlungsbelege müssen für die Steuer '
+                  'künftig aufgeschlüsselt werden – nicht nur der '
+                  'Gesamtbetrag zählt, sondern die Beträge je '
+                  'Kartenart (Visa, Mastercard usw.). Das wäre von '
+                  'Hand viel Aufwand und fehleranfällig gewesen, '
+                  'vor allem nach einer langen Schicht – das '
+                  'übernimmt jetzt die App.',
+                  stil: KurzeinstiegSeite._fussnotenStil,
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 20),
+            _KlappAbschnitt(
+              titel: '0. Start',
+              offen: _offenerIndex == 1,
+              onToggle: () => _umschalten(1),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/start.png'),
                 SizedBox(height: 12),
@@ -82,14 +127,16 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 1: Bargeld zählen',
-              offen: _offenerIndex == 1,
-              onToggle: () => _umschalten(1),
+              offen: _offenerIndex == 2,
+              onToggle: () => _umschalten(2),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt1_bargeld.png'),
                 SizedBox(height: 12),
                 _Absatz(
-                  'Zuerst zählt ihr das Bargeld. Denkt an die '
-                  '**Kellnerbörse** sowie eventuelle Umschläge mit losem '
+                  'Zuerst zählt ihr das Bargeld. Denkt an das '
+                  '**Kellnerportemonnaie**, das Bonieren der '
+                  '**Personalgetränke** und ein etwaiges **Stunden** von '
+                  'Produkten sowie an eventuelle Umschläge mit losem '
                   'Kleingeld (unter Sonstiges).',
                 ),
                 SizedBox(height: 10),
@@ -104,8 +151,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 10),
                 _Absatz(
-                  'Unter **Sonstiges** gebt Ihr die Werte von Gutscheinen, '
-                  'Umschlägen mit losen Münzen und ggf. anderem ein.',
+                  'Unter **Sonstiges** gebt Ihr die Werte von Umschlägen '
+                  'mit losen Münzen und ggf. anderem ein.',
                 ),
                 SizedBox(height: 10),
                 _Absatz(
@@ -122,8 +169,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   '**Kupfermünzen** kommen selten vor. Wenn das aber mal '
                   'der Fall ist, tippt an der entsprechenden Stelle auf '
                   '„Kupfermünzen hinzufügen" und tragt die Beträge ein. '
-                  '(Das wird später bei der Stückelung des Barumsatzes '
-                  'berücksichtigt.)',
+                  '(Das benötigt die App später für die Stückelung des '
+                  'Bargelds für den Umschlag.)',
                 ),
               ],
             ),
@@ -131,8 +178,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 2: Umsätze ermitteln',
-              offen: _offenerIndex == 2,
-              onToggle: () => _umschalten(2),
+              offen: _offenerIndex == 3,
+              onToggle: () => _umschalten(3),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt2_umsaetze.png'),
                 SizedBox(height: 12),
@@ -144,11 +191,10 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 10),
                 _Absatz(
-                  'Von den Karten-Terminals zieht ihr zunächst wie gewohnt '
-                  'den Kassenschnitt aller Terminals. Statt nun alle '
-                  'Beträge manuell einzugeben, **fotografiert ihr die '
-                  'Belege einfach**, die App liest die Daten und trägt sie '
-                  'automatisch ein.',
+                  'Zunächst zieht ihr von allen Kartenterminals den '
+                  'Kassenschnitt. Statt nun alle Beträge manuell '
+                  'einzugeben, **fotografiert ihr die Belege einfach**, '
+                  'die App liest die Daten und trägt sie automatisch ein.',
                 ),
                 SizedBox(height: 16),
                 _Screenshot(
@@ -189,20 +235,20 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 3: Übertrag auf Umschlag',
-              offen: _offenerIndex == 3,
-              onToggle: () => _umschalten(3),
+              offen: _offenerIndex == 4,
+              onToggle: () => _umschalten(4),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt3_umschlag.png'),
                 SizedBox(height: 12),
                 _Absatz(
                   'Das Ausfüllen des Abrechnungsumschlages wird weiterhin '
-                  'beibehalten. Hier wird genau angegeben, was auf dem '
+                  'beibehalten. Diese Seite zeigt an, was auf dem '
                   'Umschlag einzutragen ist.',
                 ),
                 SizedBox(height: 10),
                 _Absatz(
                   'Wenn Ihr das getan habt, ist es wichtig, dass die '
-                  'Abrechnung ans Büro gesendet wird: tippt auf den '
+                  'Abrechnung **ans Büro gesendet** wird: tippt auf den '
                   'orangefarbenen Button. Erst, wenn Ihr die Abrechnung '
                   'gesendet habt, kommt Ihr weiter zum nächsten Schritt, '
                   'der Stückelung …',
@@ -213,20 +259,18 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Schritt 4: Stückelung des Bargeldes',
-              offen: _offenerIndex == 4,
-              onToggle: () => _umschalten(4),
+              offen: _offenerIndex == 5,
+              onToggle: () => _umschalten(5),
               kinder: const <Widget>[
                 _Screenshot('assets/images/hilfe/schritt4_stueckelung.png'),
                 SizedBox(height: 12),
                 _Absatz(
-                  'Zum Schluss legt Ihr den Barumsatz des Tages '
-                  'stückelungsgerecht in den Umschlag. Damit im '
-                  'Wechselgeld für den nächsten Tag keine großen Scheine '
-                  'liegen, empfiehlt die App eine entsprechende '
-                  'Stückelung. Wenn eine Zeile grün hinterlegt ist, '
-                  'entspricht die Anzahl der Scheine im Stapel genau dem '
-                  'Soll-Betrag — der gesamte Stapel kann direkt in den '
-                  'Umschlag gelegt werden, ihr müsst ihn nicht noch mal '
+                  'Zum Schluss legt Ihr den Barumsatz des Tages in den '
+                  'Umschlag. Damit im Wechselgeld für den nächsten Tag '
+                  'keine großen Scheine liegen, empfiehlt die App eine '
+                  'entsprechende Stückelung. Wenn eine Zeile grün '
+                  'hinterlegt ist, kann der komplette Stapel Scheine '
+                  'direkt in den Umschlag – ihr müsst ihn nicht noch mal '
                   'zählen.',
                 ),
                 SizedBox(height: 10),
@@ -240,16 +284,18 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
             const SizedBox(height: 20),
             _KlappAbschnitt(
               titel: 'Weitere Funktionen',
-              offen: _offenerIndex == 5,
-              onToggle: () => _umschalten(5),
+              offen: _offenerIndex == 6,
+              onToggle: () => _umschalten(6),
               kinder: const <Widget>[
                 _Absatz(
                   'Die Funktionen unter dem orangefarbenen Button '
                   '„Kassenabrechnung" sind für die Konfiguration der App '
                   'bzw. Nice-to-haves und für den Hauptzweck Abrechnung '
                   'nicht wichtig:\n'
-                  '• **Übertrag auf Umschlag**: erst aktiv nach einer '
-                  'abgeschlossenen Kassenabrechnung\n'
+                  '• **Übertrag auf Umschlag**: wenn ihr die Daten für '
+                  'den Umschlag noch mal prüfen wollt, ohne noch mal '
+                  'durch die Abrechnung swipen zu müssen. Erst aktiv '
+                  'nach einer abgeschlossenen Kassenabrechnung.\n'
                   '• **Wechselgeld prüfen**: für die Frühschicht, erklärt '
                   'sich von selbst\n'
                   '• **Getränke auffüllen**: nice-to-have, ist für jeden '

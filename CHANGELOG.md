@@ -9,6 +9,33 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440a: Hilfe-Seite (`kurzeinstieg_seite.dart`) inhaltlich
+  überarbeitet, zusätzlich zum Ton-Fix aus Run 440. Neue erste Kachel
+  "Die App" (ohne Nummer, Index 0, alle Folgekacheln um eins nach
+  hinten verschoben) erklärt Zweck und Hintergrund der App (neue
+  Anforderung: Kartenzahlungsbelege künftig nach Kartenart
+  aufgeschlüsselt an die Buchhaltung, das übernimmt die App per
+  Beleg-Foto) sowie, dass die App größtenteils selbsterklärend ist
+  und aktuell in der Testphase — Inhalt/Formulierung nach Pacos
+  Vorlage, im Ton an die übrigen Kacheln angeglichen. Weitere
+  Korrekturen laut Pacos Feedback: "Gutscheine" aus dem
+  Sonstiges-Absatz (Schritt 1) entfernt (kam nur an dieser einen
+  Stelle im Code vor); Kupfermünzen-Absatz erklärt jetzt den Zweck
+  ("für die Stückelung des Bargelds für den Umschlag") statt nur
+  "wird berücksichtigt"; Bargeld-zählen-Absatz nennt jetzt zusätzlich
+  Kellnerportemonnaie (vereinheitlicht mit "0. Start", vorher
+  "Kellnerbörse"), Personalgetränke bonieren und Produkte stunden;
+  Umsätze-Absatz gestrafft ("Zunächst zieht ihr von allen
+  Kartenterminals den Kassenschnitt."); "ans Büro gesendet" in
+  Schritt 3 fett hervorgehoben; Übertrag-Absatz umformuliert ("Diese
+  Seite zeigt an, was auf dem Umschlag einzutragen ist."); Stückelung
+  ohne "stückelungsgerecht" und mit vereinfachtem Grün-Hinweis;
+  Weitere-Funktionen-Bullet zu "Übertrag auf Umschlag" erklärt jetzt
+  den Nutzen (Daten vor Abschluss noch mal prüfen, ohne erneut durch
+  die Abrechnung swipen zu müssen). Kein Eingriff in die externe
+  PDF-Anleitung — die ist dadurch jetzt an mehreren Stellen inhaltlich
+  hinter der App-Hilfe zurück, Abgleich steht noch aus.
+
 - Run 440: Ton der sechs Fragezeichen-Hilfetexte (`help_button.dart`-
   Einsätze in tagesabschluss_schritt1_seite.dart,
   tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart,
