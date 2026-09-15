@@ -10,12 +10,6 @@ class KurzeinstiegSeite extends StatefulWidget {
   static const String routenName = '/kurzeinstieg';
 
   static const TextStyle _absatzStil = TextStyle(fontSize: 15, height: 1.5);
-  static const TextStyle _fussnotenStil = TextStyle(
-    fontSize: 13,
-    height: 1.5,
-    fontStyle: FontStyle.italic,
-    color: AppFarben.subtilerText,
-  );
 
   @override
   State<KurzeinstiegSeite> createState() => _KurzeinstiegSeiteState();
@@ -163,8 +157,11 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 10),
                 _Absatz(
-                  'Wenn Ihr alles gezählt habt, tippt ihr ganz unten auf '
-                  'den orangenen Button „Umsätze eingeben" …',
+                  '**Kupfermünzen** kommen selten vor. Wenn das aber mal '
+                  'der Fall ist, tippt an der entsprechenden Stelle auf '
+                  '„Kupfermünzen hinzufügen" und tragt die Beträge ein. '
+                  '(Das benötigt die App später für die Stückelung des '
+                  'Bargelds für den Umschlag.)',
                 ),
                 SizedBox(height: 16),
                 _Screenshot(
@@ -173,11 +170,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 12),
                 _Absatz(
-                  '**Kupfermünzen** kommen selten vor. Wenn das aber mal '
-                  'der Fall ist, tippt an der entsprechenden Stelle auf '
-                  '„Kupfermünzen hinzufügen" und tragt die Beträge ein. '
-                  '(Das benötigt die App später für die Stückelung des '
-                  'Bargelds für den Umschlag.)',
+                  'Wenn Ihr alles gezählt habt, tippt ihr ganz unten auf '
+                  'den orangenen Button „Umsätze eingeben" …',
                 ),
               ],
             ),
@@ -211,12 +205,12 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 12),
                 _Absatz(
-                  'Dazu legt ihr den Beleg möglichst plan auf den Tisch, '
-                  '**zieht den Beleg, wenn nötig, glatt** und fotografiert '
-                  'ihn. Achtet darauf, dass das Foto scharf ist. Wenn das '
-                  'Foto scharf und deutlich ist, bestätigt das Foto. Die '
-                  'App arbeitet kurz und zeigt dann an, was sie vom Beleg '
-                  'eingelesen hat.',
+                  'Dazu legt ihr die Belege möglichst plan auf den Tisch, '
+                  '**zieht sie, wenn nötig, glatt** und fotografiert '
+                  'jeden Beleg einzeln. Achtet darauf, dass das Foto '
+                  'scharf ist. Wenn das Foto scharf und deutlich ist, '
+                  'bestätigt das Foto. Die App arbeitet kurz und zeigt '
+                  'dann an, was sie vom Beleg eingelesen hat.',
                 ),
                 SizedBox(height: 16),
                 _Screenshot(
@@ -233,7 +227,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 10),
                 _Absatz(
-                  'Für weitere Kassenschnitt-Belege tippt einfach auf '
+                  'Für jeden weiteren Beleg tippt einfach auf '
                   '„Weiteren Beleg hinzufügen" usw. Schließlich tippt ihr '
                   'auf den orangefarbenen Button „Übertrag auf Umschlag".',
                 ),
@@ -250,17 +244,17 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 _Screenshot('assets/images/hilfe/schritt3_umschlag.png'),
                 SizedBox(height: 12),
                 _Absatz(
-                  'Das Ausfüllen des Abrechnungsumschlages wird weiterhin '
-                  'beibehalten. Diese Seite zeigt an, was auf dem '
-                  'Umschlag einzutragen ist.',
+                  'Diese Seite zeigt die von der App errechneten '
+                  'Beträge an, die ihr einfach auf den Umschlag '
+                  'eintragt.',
                 ),
                 SizedBox(height: 10),
                 _Absatz(
                   'Wenn Ihr das getan habt, ist es wichtig, dass die '
-                  'Abrechnung **ans Büro gesendet** wird: tippt auf den '
-                  'orangefarbenen Button. Erst, wenn Ihr die Abrechnung '
-                  'gesendet habt, kommt Ihr weiter zum nächsten Schritt, '
-                  'der Stückelung …',
+                  'Abrechnung **ans Büro gesendet** wird. Dazu tippt ihr '
+                  'auf den orangefarbenen Button. Erst, wenn Ihr die '
+                  'Abrechnung gesendet habt, kommt Ihr weiter zum '
+                  'nächsten Schritt, der Stückelung …',
                 ),
               ],
             ),
@@ -288,6 +282,13 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   'Jetzt noch Barumsatz und Belege in den Umschlag tun und '
                   '… fertig.',
                 ),
+                SizedBox(height: 10),
+                _Absatz(
+                  'Wer sicher gehen will, prüft danach die '
+                  'Wechselgeldkasse (Button „Wechselgeld prüfen" auf '
+                  'der Startseite). Wenn die Wechselgeldkasse stimmt, '
+                  'ist in der Regel auch die Abrechnung korrekt.',
+                ),
               ],
             ),
 
@@ -307,8 +308,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   'den Umschlag noch mal prüfen wollt, ohne noch mal '
                   'durch die Abrechnung swipen zu müssen. Erst aktiv '
                   'nach einer abgeschlossenen Kassenabrechnung.\n'
-                  '• **Wechselgeld prüfen**: für die Frühschicht, erklärt '
-                  'sich von selbst\n'
+                  '• **Wechselgeld prüfen**: Für die Frühschicht oder die '
+                  'Überprüfung nach der Tagesabrechnung.\n'
                   '• **Getränke auffüllen**: nice-to-have, für jeden '
                   'Standort vorkonfiguriert – die Liste ist in der '
                   'Reihenfolge sortiert, wie die Getränke im Regal '
@@ -316,7 +317,6 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   'Kellnerblock und Kuli …\n'
                   '• **Einstellungen**, **Verlauf** und **Hilfe** erklären '
                   'sich auch von selbst.',
-                  stil: KurzeinstiegSeite._fussnotenStil,
                 ),
               ],
             ),
@@ -414,14 +414,18 @@ class _Screenshot extends StatelessWidget {
 /// Anleitungstexte oben lesbar bleiben statt aus einzelnen TextSpans
 /// zusammengesetzt zu werden.
 class _Absatz extends StatelessWidget {
-  const _Absatz(this.text, {this.stil = KurzeinstiegSeite._absatzStil});
+  const _Absatz(this.text);
 
   final String text;
-  final TextStyle stil;
 
   @override
   Widget build(BuildContext context) {
-    return Text.rich(TextSpan(style: stil, children: _fettSpans(text)));
+    return Text.rich(
+      TextSpan(
+        style: KurzeinstiegSeite._absatzStil,
+        children: _fettSpans(text),
+      ),
+    );
   }
 
   static List<InlineSpan> _fettSpans(String text) {

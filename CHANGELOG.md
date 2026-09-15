@@ -9,6 +9,32 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440a3: Weitere Hilfe-Seiten-Korrekturen nach Pacos Review.
+  Schritt 1: Reihenfolge um den Kupfermünzen-Screenshot getauscht
+  (Kupfermünzen-Absatz jetzt darüber, "Wenn ihr alles gezählt
+  habt …" jetzt darunter). Schritt 2: "Dazu legt ihr die Belege …
+  fotografiert jeden Beleg einzeln" (vorher Singular "den Beleg …
+  fotografiert ihn", unpassend da mehrere Belege gemeint sind);
+  "Für jeden weiteren Beleg tippt …" statt "Für weitere
+  Kassenschnitt-Belege". Schritt 3: erster Absatz auf einen Satz
+  reduziert ("Diese Seite zeigt die von der App errechneten
+  Beträge an, die ihr einfach auf den Umschlag eintragt.", ersetzt
+  zwei vorherige Sätze mit Überschneidung); zweiter Absatz in zwei
+  Sätze aufgeteilt ("… ans Büro gesendet wird. Dazu tippt ihr auf
+  den orangefarbenen Button.", vorher Doppelpunkt-Anschluss).
+  Schritt 4: neuer dritter Absatz — optionaler Hinweis, nach der
+  Abrechnung die Wechselgeldkasse gegenzuchecken (spiegelt den
+  HelpButton-Text aus Run 440 auf wechselgeld_pruefen_seite.dart).
+  Weitere Funktionen: kompletter Abschnitt jetzt in normaler
+  Absatzschrift statt kursiv/grau (Fußnotenstil), damit er nicht
+  mehr wie eine Randnotiz wirkt; Wechselgeld-prüfen-Bullet nennt
+  jetzt konkret die zwei Anwendungsfälle (Frühschicht, Check nach
+  Tagesabrechnung) statt "erklärt sich von selbst". Als Folge davon
+  `_fussnotenStil` (jetzt ungenutzt) sowie der `stil`-Parameter von
+  `_Absatz` entfernt (war nur noch nie mit einem anderen Wert als
+  dem Default belegt) — reine Aufräumarbeit, durch die Stiländerung
+  direkt notwendig geworden, keine eigenständige Änderung.
+
 - Run 440a2: Weitere Korrekturen an der Hilfe-Seite nach Pacos
   Review von Run 440a. Hintergrund-Absatz in der "Die App"-Kachel
   entfernt (wiederholte Run 440a's ersten Absatz fast wörtlich,
