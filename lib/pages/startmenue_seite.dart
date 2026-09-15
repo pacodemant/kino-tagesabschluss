@@ -288,9 +288,6 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => _oeffneKurzeinstieg(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppFarben.appBarRotGedaempft,
-                  ),
                   child: const Text('Hilfe'),
                 ),
                 const SizedBox(height: 12),

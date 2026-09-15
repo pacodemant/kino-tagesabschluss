@@ -1146,9 +1146,10 @@ class _TagesabschlussSchritt1SeiteState
           ),
           const HelpButton(
             helpText:
-                'Zähle das gesamte Bargeld in der Kasse. Trage für jede '
-                'Stückelung (Scheine, Münzrollen, lose Münzen, Umschläge) '
-                'die gezählte Anzahl ein. Die Summe wird automatisch berechnet.',
+                'Zählt das gesamte Bargeld in der Kasse: Bei Scheinen und '
+                'Rollen tragt ihr die Anzahl ein, bei losen Münzen und '
+                'Sonstigem die tatsächlichen Beträge in Cent. Die App '
+                'rechnet die Summen für euch aus.',
           ),
           const SizedBox(width: 8),
         ],

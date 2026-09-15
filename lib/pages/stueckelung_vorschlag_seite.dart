@@ -550,12 +550,11 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
         actions: <Widget>[
           const HelpButton(
             helpText:
-                'Hier siehst du, wie du den Barumsatz optimal mit den '
-                'verfügbaren Scheinen und Münzen stückeln kannst. '
-                'Grün markierte Einheiten werden vollständig in den Umschlag gegeben. '
-                'Mit den +/- Knöpfen bei den 20ern und 10ern kannst du bei Bedarf '
-                'Zwanziger gegen Zehner tauschen, z. B. um Wechselgeld für den '
-                'nächsten Tag zurückzubehalten.',
+                'Hier seht ihr, wie ihr den Barumsatz optimal mit den '
+                'verfügbaren Scheinen und Münzen stückeln könnt, sodass '
+                'möglichst kein großes Geld in der Wechselgeldkasse '
+                'verbleibt. Grün markierte Einheiten kommen komplett so '
+                'in den Umschlag.',
           ),
         ],
       ),

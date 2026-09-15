@@ -9,6 +9,142 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440a5: Zwei Ergänzungen an kurzeinstieg_seite.dart nach Pacos
+  Wunsch. Schritt 2: neuer Absatz am Ende verweist auf den
+  "manuell eingeben"-Link links neben dem Foto-Button, falls das
+  Scannen mal nicht klappt (z. B. kein Internet). "Die App"-Kachel:
+  neuer dritter Absatz als allgemeine Beruhigung für den Fall, dass
+  wirklich mal gar nichts klappen will ("Nichts geht dabei kaputt
+  oder verloren … meldet euch einfach im Büro") — Formulierung ist
+  Claudes eigener Vorschlag auf Pacos ausdrücklichen Wunsch hin
+  ("Schlag was vor"), noch nicht von Paco final abgenommen.
+
+- Run 440a4: Hilfe-Button auf der Startseite (startmenue_seite.dart)
+  zeigt jetzt volles Rot statt der gedämpften 50%-Variante
+  (appBarRotGedaempft entfernt, fällt jetzt auf den App-weiten
+  ElevatedButton-Standard zurück, genau wie "Wechselgeld prüfen" und
+  "Getränke auffüllen") — Auslöser: Paco empfand den Button als zu
+  blass. Einstellungen/Verlauf bleiben bewusst unverändert gedämpft,
+  das war nicht Teil der Anweisung. Weitere Textkorrekturen an
+  kurzeinstieg_seite.dart: Schritt 2 fasst die beiden Foto-Sätze zu
+  einem zusammen ("scharf und deutlich ist und wenn das der Fall
+  ist, bestätigt das Foto"); Schritt 3 behält jetzt wieder den Satz
+  "Das Ausfüllen des Abrechnungsumschlages wird weiterhin
+  beibehalten" (in Run 440a3 versehentlich mitentfernt statt nur den
+  zweiten Satz zu ersetzen) und der zweite Absatz ist jetzt aktiv
+  formuliert ("müsst ihr die Abrechnung ans Büro senden" statt "ist
+  es wichtig, dass … gesendet wird"). Funktional größere Änderung:
+  Der Titel der gerade geöffneten Kachel bleibt jetzt oben fixiert
+  sichtbar, sobald er beim Scrollen sonst aus dem Bildschirm
+  wandern würde (neues `_KachelKopf`-Widget aus `_KlappAbschnitt`
+  extrahiert und für einen fixierten Overlay-Balken wiederverwendet;
+  `ScrollController` + Scroll-Listener vergleicht die
+  Bildschirmposition des echten Kachel-Kopfes mit der des
+  Scroll-Bereichs). Kein neues Package nötig, rein mit Flutter-
+  Bordmitteln (Stack + Positioned) umgesetzt.
+
+- Run 440a3: Weitere Hilfe-Seiten-Korrekturen nach Pacos Review.
+  Schritt 1: Reihenfolge um den Kupfermünzen-Screenshot getauscht
+  (Kupfermünzen-Absatz jetzt darüber, "Wenn ihr alles gezählt
+  habt …" jetzt darunter). Schritt 2: "Dazu legt ihr die Belege …
+  fotografiert jeden Beleg einzeln" (vorher Singular "den Beleg …
+  fotografiert ihn", unpassend da mehrere Belege gemeint sind);
+  "Für jeden weiteren Beleg tippt …" statt "Für weitere
+  Kassenschnitt-Belege". Schritt 3: erster Absatz auf einen Satz
+  reduziert ("Diese Seite zeigt die von der App errechneten
+  Beträge an, die ihr einfach auf den Umschlag eintragt.", ersetzt
+  zwei vorherige Sätze mit Überschneidung); zweiter Absatz in zwei
+  Sätze aufgeteilt ("… ans Büro gesendet wird. Dazu tippt ihr auf
+  den orangefarbenen Button.", vorher Doppelpunkt-Anschluss).
+  Schritt 4: neuer dritter Absatz — optionaler Hinweis, nach der
+  Abrechnung die Wechselgeldkasse gegenzuchecken (spiegelt den
+  HelpButton-Text aus Run 440 auf wechselgeld_pruefen_seite.dart).
+  Weitere Funktionen: kompletter Abschnitt jetzt in normaler
+  Absatzschrift statt kursiv/grau (Fußnotenstil), damit er nicht
+  mehr wie eine Randnotiz wirkt; Wechselgeld-prüfen-Bullet nennt
+  jetzt konkret die zwei Anwendungsfälle (Frühschicht, Check nach
+  Tagesabrechnung) statt "erklärt sich von selbst". Als Folge davon
+  `_fussnotenStil` (jetzt ungenutzt) sowie der `stil`-Parameter von
+  `_Absatz` entfernt (war nur noch nie mit einem anderen Wert als
+  dem Default belegt) — reine Aufräumarbeit, durch die Stiländerung
+  direkt notwendig geworden, keine eigenständige Änderung.
+
+- Run 440a2: Weitere Korrekturen an der Hilfe-Seite nach Pacos
+  Review von Run 440a. Hintergrund-Absatz in der "Die App"-Kachel
+  entfernt (wiederholte Run 440a's ersten Absatz fast wörtlich,
+  Steuer-/Finanzamt-Kontext hätte eher Druck aufgebaut statt Angst
+  genommen). Erster Satz der Kachel direkter formuliert ("Die App
+  soll euch … machen" statt "Der Hauptzweck der App ist, … zu
+  machen") — passt jetzt zum direkten Anrede-Stil der übrigen
+  Kacheln. In "0. Start" die vier Listenziffern fett gesetzt.
+  Schritt-1-Sonstiges-Absatz umgestellt ("Eventuell vorhandene
+  Umschläge … gebt ihr unter **Sonstiges** ein" statt "Unter
+  Sonstiges gebt Ihr …"). Schritt-4-Text ergänzt: "der komplette,
+  kurz vorher gezählte Stapel" statt nur "der komplette Stapel".
+  Weitere-Funktionen-Bullet zu Getränke auffüllen erklärt jetzt,
+  dass die Liste in Regal-Reihenfolge sortiert ist. Funktional neu:
+  Jede Kachel scrollt beim Öffnen automatisch so, dass ihr Titel
+  oben im sichtbaren Bereich steht (`_abschnittKeys` je Kachel +
+  `Scrollable.ensureVisible` in `_umschalten()`), Auslöser war Pacos
+  Wunsch nach besserer Orientierung beim Aufklappen langer Kacheln.
+
+- Run 440a: Hilfe-Seite (`kurzeinstieg_seite.dart`) inhaltlich
+  überarbeitet, zusätzlich zum Ton-Fix aus Run 440. Neue erste Kachel
+  "Die App" (ohne Nummer, Index 0, alle Folgekacheln um eins nach
+  hinten verschoben) erklärt Zweck und Hintergrund der App (neue
+  Anforderung: Kartenzahlungsbelege künftig nach Kartenart
+  aufgeschlüsselt an die Buchhaltung, das übernimmt die App per
+  Beleg-Foto) sowie, dass die App größtenteils selbsterklärend ist
+  und aktuell in der Testphase — Inhalt/Formulierung nach Pacos
+  Vorlage, im Ton an die übrigen Kacheln angeglichen. Weitere
+  Korrekturen laut Pacos Feedback: "Gutscheine" aus dem
+  Sonstiges-Absatz (Schritt 1) entfernt (kam nur an dieser einen
+  Stelle im Code vor); Kupfermünzen-Absatz erklärt jetzt den Zweck
+  ("für die Stückelung des Bargelds für den Umschlag") statt nur
+  "wird berücksichtigt"; Bargeld-zählen-Absatz nennt jetzt zusätzlich
+  Kellnerportemonnaie (vereinheitlicht mit "0. Start", vorher
+  "Kellnerbörse"), Personalgetränke bonieren und Produkte stunden;
+  Umsätze-Absatz gestrafft ("Zunächst zieht ihr von allen
+  Kartenterminals den Kassenschnitt."); "ans Büro gesendet" in
+  Schritt 3 fett hervorgehoben; Übertrag-Absatz umformuliert ("Diese
+  Seite zeigt an, was auf dem Umschlag einzutragen ist."); Stückelung
+  ohne "stückelungsgerecht" und mit vereinfachtem Grün-Hinweis;
+  Weitere-Funktionen-Bullet zu "Übertrag auf Umschlag" erklärt jetzt
+  den Nutzen (Daten vor Abschluss noch mal prüfen, ohne erneut durch
+  die Abrechnung swipen zu müssen). Kein Eingriff in die externe
+  PDF-Anleitung — die ist dadurch jetzt an mehreren Stellen inhaltlich
+  hinter der App-Hilfe zurück, Abgleich steht noch aus.
+
+- Run 440: Ton der sechs Fragezeichen-Hilfetexte (`help_button.dart`-
+  Einsätze in tagesabschluss_schritt1_seite.dart,
+  tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart,
+  stueckelung_vorschlag_seite.dart, wechselgeld_pruefen_seite.dart,
+  getraenke_auffuellen_seite.dart) von Einzel-Anrede „du" auf Team-
+  Anrede „ihr" umgestellt, damit sie zum bestehenden Ton der Hilfe-Seite
+  (`kurzeinstieg_seite.dart`) und der externen PDF-Anleitung passen —
+  Auslöser war Pacos erster /goal-Lauf zur Hilfe-Vereinheitlichung.
+  Inhaltlich zusätzlich: Schritt-1-Text stellt jetzt korrekt klar, dass
+  bei Scheinen/Rollen die Anzahl, bei losen Münzen/Sonstigem die
+  Beträge einzutragen sind (vorher pauschal „Anzahl"). Schritt-2-Text
+  weist jetzt auf die Beleg-Fotografierfunktion hin. Schritt-3-Text
+  relativiert die Ursachenklärung bei Abweichungen mit „wenn möglich"
+  statt sie als Pflichtschritt zu formulieren. Stückelungs- und
+  Getränke-auffüllen-Texte wurden gekürzt (Detail zum Schein-Tausch
+  bzw. Nachfüll-Erklärung entfernt, nach Pacos Einschätzung, dass das
+  kaum genutzt/gebraucht wird bzw. selbsterklärend ist) — passend zu
+  Pacos Wunsch, die Hilfe schlank zu halten und manche Details lieber
+  entdecken zu lassen. Wechselgeld-Text jetzt als unverbindlicher,
+  optionaler Gegencheck formuliert statt als Pflichtaufgabe.
+  Zusätzlich der stets sichtbare Scan-Hinweistext in
+  `schritt2_ec_belege_kachel_section.dart` („Beleg fehlt oder ist
+  unlesbar? …") um den Hinweis ergänzt, dass ein unscharfes Foto
+  einfach noch einmal aufgenommen werden kann, und ebenfalls auf
+  „ihr"-Anrede umgestellt (vorher „Tippe"). Im
+  Beleg-Scan-Bestätigungsdialog (`beleg_scan_bestaetigen_dialog.dart`)
+  „du scannst" zu „ihr scannt" korrigiert. Kein Eingriff in
+  `kurzeinstieg_seite.dart` oder die externe PDF-Anleitung nötig, da
+  beide bereits die referenzierte „ihr"-Tonalität hatten.
+
 - Run 439a2: Auf der Seite "Getränke auffüllen"
   (`getraenke_auffuellen_seite.dart`) sind die beiden Textlinks
   "nur benötigte anzeigen" / "alle anzeigen" und

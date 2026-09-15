@@ -1022,9 +1022,9 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
           ),
           const HelpButton(
             helpText:
-                'Zähle den Wechselgeldbestand und vergleiche ihn mit dem '
-                'Sollwert. Der Bestand muss täglich stimmen, da er als '
-                'Startkasse für den nächsten Tag dient.',
+                'Optional könnt ihr nach der Abrechnung das übrige '
+                'Wechselgeld noch einmal gegenchecken: Stimmt der Betrag, '
+                'war auch die Abrechnung korrekt.',
           ),
           const SizedBox(width: 8),
         ],

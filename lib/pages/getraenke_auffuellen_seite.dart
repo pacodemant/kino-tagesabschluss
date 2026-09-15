@@ -409,9 +409,9 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
           ),
           const HelpButton(
             helpText:
-                'Trage ein, wie viel von jedem Getränk nachgefüllt wurde. '
-                'Die Mengen werden gespeichert und stehen beim nächsten '
-                'Öffnen als Vorschlag bereit.',
+                'Nice-to-have: Die Liste ist in der Reihenfolge sortiert, '
+                'in der die Getränke auch in den Schränken stehen – so '
+                'geht die Inventur zügig von der Hand.',
           ),
           const SizedBox(width: 8),
         ],

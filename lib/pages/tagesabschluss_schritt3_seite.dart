@@ -799,9 +799,10 @@ class _TagesabschlussSchritt3SeiteState
         actions: <Widget>[
           const HelpButton(
             helpText:
-                'Hier wird der Betrag errechnet, der auf den Umschlag gehört. '
-                'Prüfe die Differenz zwischen Soll und Ist. Bei Abweichungen '
-                'zuerst die Ursache klären, dann den Umschlag befüllen.',
+                'Hier steht, was auf den Umschlag gehört. Prüft die '
+                'Differenz zwischen Soll und Ist – bei Abweichungen wenn '
+                'möglich erst die Ursache klären, dann den Umschlag '
+                'befüllen.',
           ),
         ],
       ),
