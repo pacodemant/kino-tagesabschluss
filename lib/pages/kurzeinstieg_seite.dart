@@ -150,6 +150,14 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                       'folgt, ist es schwer, etwas falsch zu machen. '
                       '(Aktuell ist die App noch in der Testphase.)',
                     ),
+                    SizedBox(height: 10),
+                    _Absatz(
+                      'Und falls doch mal etwas nicht klappen will: '
+                      'Nichts geht dabei kaputt oder verloren, eure '
+                      'Eingaben bleiben gespeichert. Meldet euch '
+                      'einfach im Büro, gemeinsam lässt sich jedes '
+                      'Problem lösen.',
+                    ),
                   ],
                 ),
 
@@ -294,6 +302,13 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                       'Für jeden weiteren Beleg tippt einfach auf '
                       '„Weiteren Beleg hinzufügen" usw. Schließlich tippt ihr '
                       'auf den orangefarbenen Button „Übertrag auf Umschlag".',
+                    ),
+                    SizedBox(height: 10),
+                    _Absatz(
+                      'Wenn das Scannen mal nicht klappen will (z. B. '
+                      'kein Internet), könnt ihr die Beträge auch '
+                      'jederzeit manuell eingeben: Tippt dazu links '
+                      'neben dem Foto-Button auf „manuell eingeben".',
                     ),
                   ],
                 ),

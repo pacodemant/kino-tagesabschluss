@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440a5: Zwei Ergänzungen an kurzeinstieg_seite.dart nach Pacos
+  Wunsch. Schritt 2: neuer Absatz am Ende verweist auf den
+  "manuell eingeben"-Link links neben dem Foto-Button, falls das
+  Scannen mal nicht klappt (z. B. kein Internet). "Die App"-Kachel:
+  neuer dritter Absatz als allgemeine Beruhigung für den Fall, dass
+  wirklich mal gar nichts klappen will ("Nichts geht dabei kaputt
+  oder verloren … meldet euch einfach im Büro") — Formulierung ist
+  Claudes eigener Vorschlag auf Pacos ausdrücklichen Wunsch hin
+  ("Schlag was vor"), noch nicht von Paco final abgenommen.
+
 - Run 440a4: Hilfe-Button auf der Startseite (startmenue_seite.dart)
   zeigt jetzt volles Rot statt der gedämpften 50%-Variante
   (appBarRotGedaempft entfernt, fällt jetzt auf den App-weiten
