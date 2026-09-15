@@ -1144,6 +1144,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String kinoId = _aktiveKinoId;
     await AbrechnungSpeicher.loesche(kinoId);
     await LokalerSpeicher.loescheSchritt2Entwurf(kinoId);
+    await LokalerSpeicher.loescheSchritt3Entwurf(kinoId);
     await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(kinoId);
     await LokalerSpeicher.loescheFinalenTagesabschluss(
       kinoId,

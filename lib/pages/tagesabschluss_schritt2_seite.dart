@@ -170,9 +170,6 @@ class _TagesabschlussSchritt2SeiteState
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[];
   bool _personalgetraenkeGebot = false;
-  String _anmerkung = '';
-  final TextEditingController _anmerkungController = TextEditingController();
-  final FocusNode _anmerkungFocusNode = FocusNode();
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
@@ -246,7 +243,6 @@ class _TagesabschlussSchritt2SeiteState
       _scanUhrzeitFocusNode,
       _scanBelegNrVonFocusNode,
       _scanBelegNrBisFocusNode,
-      _anmerkungFocusNode,
     ]) {
       fn.addListener(() {
         if (mounted) setState(() {});
@@ -275,8 +271,6 @@ class _TagesabschlussSchritt2SeiteState
         }
       }
       await _ladeEntwurf();
-      if (!mounted) return;
-      await _wendeDevModusKommentarAn();
       if (!mounted) return;
       _autoFokussiereNachLaden();
       if (widget.zielSchrittBeimSprung != null) {
@@ -325,8 +319,6 @@ class _TagesabschlussSchritt2SeiteState
         zeile.dispose();
       }
     }
-    _anmerkungController.dispose();
-    _anmerkungFocusNode.dispose();
     super.dispose();
   }
 
@@ -504,12 +496,8 @@ class _TagesabschlussSchritt2SeiteState
           ecBelegeLabelsListe[0].isNotEmpty) {
         _ecKachelAufgeklappt = true;
       }
-      _anmerkung = (daten['anmerkung'] as String?) ?? '';
       _personalgetraenkeGebot = (daten['personalgetraenkeGebot'] as bool?) ?? false;
     });
-    if (_anmerkung.isNotEmpty) {
-      _anmerkungController.text = _anmerkung;
-    }
 
     if (kinoSollCent != 0) {
       _setzeControllerText(
@@ -664,7 +652,6 @@ class _TagesabschlussSchritt2SeiteState
                 .map((ZahlungsartZeile z) => z.betragCentWert)
                 .toList(),
         ],
-        if (_anmerkung.trim().isNotEmpty) 'anmerkung': _anmerkung.trim(),
       },
     );
   }
@@ -736,11 +723,6 @@ class _TagesabschlussSchritt2SeiteState
 
   void _beiPersonalgetraenkeGeaendert(bool? v) {
     setState(() => _personalgetraenkeGebot = v ?? false);
-    _speichereEntwurf();
-  }
-
-  void _beiAnmerkungGeaendert(String wert) {
-    _anmerkung = wert;
     _speichereEntwurf();
   }
 
@@ -852,64 +834,10 @@ class _TagesabschlussSchritt2SeiteState
       belegNrBis: _scanBelegNrBis,
       ecUhrzeit: _scanUhrzeit,
       zahlungsartenAufschluesselung: _baueZahlungsartenListe(),
-      anmerkung: _anmerkungFuerUebertragung(),
       ecBelegeFotosBase64: List<String>.from(_ecBelegFotosBase64),
       ecBelegeFotosMediaTypen: List<String>.from(_ecBelegFotosMediaTypen),
       zielSchrittBeimSprung: zielSchrittBeimSprung,
     );
-  }
-
-  /// Baut das Dev-Modus-Kennzeichen "testdaten" inkl. aktuellem Datum/
-  /// Uhrzeit, z. B. "testdaten 26.9. Mo 12:34" — gemeinsam genutzt von
-  /// _wendeDevModusKommentarAn() (Vorbefüllung des sichtbaren Felds) und
-  /// _anmerkungFuerUebertragung() (Absicherung beim Übergang zu Schritt 3).
-  static String _testdatenKennzeichenMitZeitstempel() {
-    return 'testdaten '
-        '${DateFormat("d.M. EEE HH:mm", 'de_DE').format(DateTime.now())}';
-  }
-
-  /// Anmerkung für Flurbocash/lokale Anzeige: im Dev-Modus (Auto-Fill,
-  /// siehe Einstellungen) wird das Kennzeichen "testdaten" inkl. Sende-
-  /// Datum/-Uhrzeit (z. B. "testdaten 26.9. Mo 12:34") ergänzt, damit
-  /// mit Dev-Modus erzeugte Abrechnungen (z. B. Auto-Fill-Dummy-Zahlen)
-  /// dort erkennbar bleiben, auch wenn der Dev-Modus bis zum tatsächlichen
-  /// Versand wieder ausgeschaltet wird. In der Praxis trägt bereits
-  /// _wendeDevModusKommentarAn() das Kennzeichen samt Zeitstempel ein,
-  /// bevor dieser Übergang läuft — der Duplikat-Check hier greift daher
-  /// nur noch, falls das Feld manuell auf das nackte Wort "testdaten"
-  /// ohne Zeitstempel gesetzt wurde.
-  String? _anmerkungFuerUebertragung() {
-    final String basis = _anmerkung.trim();
-    if (!_devModusAktiv) {
-      return basis.isNotEmpty ? basis : null;
-    }
-    const String marker = 'testdaten';
-    if (basis.toLowerCase().contains(marker)) {
-      return basis;
-    }
-    return basis.isEmpty
-        ? _testdatenKennzeichenMitZeitstempel()
-        : '$basis · ${_testdatenKennzeichenMitZeitstempel()}';
-  }
-
-  /// Befüllt das sichtbare Kommentarfeld im Dev-Modus automatisch mit
-  /// "testdaten" inkl. Datum/Uhrzeit, sofern noch kein eigener/geladener
-  /// Kommentar vorhanden ist — macht Dev-Modus-Testabrechnungen schon
-  /// beim Ausfüllen sichtbar und zeitlich zuordenbar erkennbar, nicht
-  /// erst beim Versand (siehe _anmerkungFuerUebertragung, die als
-  /// zusätzliche Absicherung beim Übergang zu Schritt 3 greift, falls das
-  /// Feld nachträglich geleert oder ohne das Kennzeichen überschrieben
-  /// wurde). Läuft erst NACH _ladeEntwurf(), damit ein echter
-  /// gespeicherter Kommentar nicht überschrieben wird.
-  Future<void> _wendeDevModusKommentarAn() async {
-    final bool devModusAktiv = await DevModus.istAktiv();
-    if (!mounted || !devModusAktiv || _anmerkung.trim().isNotEmpty) {
-      return;
-    }
-    setState(() {
-      _anmerkung = _testdatenKennzeichenMitZeitstempel();
-    });
-    _anmerkungController.text = _anmerkung;
   }
 
   /// AppBar-Schritt-Sprung: ruft exakt den regulären "Weiter"-Übergang auf
@@ -2437,7 +2365,7 @@ class _TagesabschlussSchritt2SeiteState
     if (_ausgaben.any((AusgabenZeile z) => z.label.trim().isNotEmpty)) {
       return true;
     }
-    return _anmerkung.trim().isNotEmpty;
+    return false;
   }
 
   Widget _baueMetadatenBlock(int belegIndex) {
@@ -2789,9 +2717,6 @@ class _TagesabschlussSchritt2SeiteState
         onChanged: _beiDifferenzAnfangsbestandGeaendert,
       ),
       vorzeichenToggleDifferenz: _vorzeichenToggleDifferenz,
-      anmerkungController: _anmerkungController,
-      anmerkungFocusNode: _anmerkungFocusNode,
-      beiAnmerkungGeaendert: _beiAnmerkungGeaendert,
       kinoSollEingabeZeile: _baueEingabeZeile(
         label: _hatBistro ? 'Kino SOLL' : 'Gesamt SOLL',
         controller: _kinoSollController,
@@ -2963,7 +2888,6 @@ class _TagesabschlussSchritt2SeiteState
         differenzAnfangsbestandSection: sections.differenzAnfangsbestand,
         kinoSollUndAusgabenBereich: sections.kinoSollUndAusgaben,
         ecBelegeBereich: ecBelegeBereich,
-        anmerkungSection: sections.anmerkung,
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,
         beiScrollMetrikAenderung: _beiScrollMetrikAenderung,

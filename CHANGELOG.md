@@ -9,6 +9,36 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 441: Kommentarfeld ("Hinweis / Kommentar (optional)") von
+  Schritt 2 nach Schritt 3 verschoben, dort jetzt direkt über dem
+  "Abrechnung an Büro senden"-Button (Paco-Wunsch). Datei
+  `schritt2_anmerkung_section.dart` nach
+  `lib/pages/tagesabschluss_schritt3/sections/
+  schritt3_anmerkung_section.dart` verschoben und Klasse in
+  `Schritt3AnmerkungSection` umbenannt. Schritt 3 verwaltet das Feld
+  jetzt komplett selbst (eigener State, Controller, FocusNode,
+  Dev-Modus-Testdaten-Automatik — alles aus Schritt 2 hierher
+  übernommen) und speichert Änderungen live in `_abschlussVorschau`,
+  sodass sowohl der tatsächliche Versand als auch der bestehende
+  "Gesendet"-Haken-Abgleich (Signatur-Vergleich) automatisch den
+  jeweils aktuellen Kommentar berücksichtigen — ändert man den
+  Kommentar nach dem Senden, verlangt die App wie bei anderen
+  Feldern ein erneutes Senden. `TagesabschlussSchritt3Argumente.
+  anmerkung` entfällt, Schritt 2 kennt das Feld nicht mehr.
+  Neuer, eigener Zwischenspeicher `LokalerSpeicher.
+  speichereSchritt3Entwurf/ladeSchritt3Entwurf/
+  loescheSchritt3Entwurf` (Hive-Box `box_schritt3_entwuerfe`, in
+  `main.dart` registriert; `_resetHeutigeAbrechnung()` in
+  `einstellungen_seite.dart` räumt sie beim "Heutige Abrechnung
+  zurücksetzen" mit auf) — analog zum bestehenden
+  Schritt-2-Entwurf-Muster, damit ein noch nicht gesendeter
+  Kommentar beim Verlassen von Schritt 3 nicht sofort verloren geht
+  (bewusste Ausnahme von "keine neuen Speicher-Schlüssel ohne
+  Grund", von Paco vorab abgesegnet). War ein eigener Branch/PR,
+  unabhängig vom Hilfe-Ton-PR (Run 440er-Serie) entwickelt und lokal
+  mit diesem zusammengeführt (Versionskonflikt 0.9.89 beim Merge
+  aufgelöst).
+
 - Run 440a5: Zwei Ergänzungen an kurzeinstieg_seite.dart nach Pacos
   Wunsch. Schritt 2: neuer Absatz am Ende verweist auf den
   "manuell eingeben"-Link links neben dem Foto-Button, falls das
