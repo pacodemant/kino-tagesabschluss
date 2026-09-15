@@ -27,11 +27,27 @@ class KurzeinstiegSeite extends StatefulWidget {
 /// vorherigen automatisch wieder zu.
 class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
   int? _offenerIndex;
+  final List<GlobalKey> _abschnittKeys =
+      List<GlobalKey>.generate(7, (_) => GlobalKey());
 
   void _umschalten(int index) {
+    final bool wirdGeoeffnet = _offenerIndex != index;
     setState(() {
-      _offenerIndex = _offenerIndex == index ? null : index;
+      _offenerIndex = wirdGeoeffnet ? index : null;
     });
+    if (wirdGeoeffnet) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final BuildContext? ctx = _abschnittKeys[index].currentContext;
+        if (ctx != null) {
+          Scrollable.ensureVisible(
+            ctx,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
+            alignment: 0,
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -48,14 +64,15 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             _KlappAbschnitt(
+              key: _abschnittKeys[0],
               titel: 'Die App',
               offen: _offenerIndex == 0,
               onToggle: () => _umschalten(0),
               kinder: const <Widget>[
                 _Absatz(
-                  'Der Hauptzweck der App ist, die '
+                  'Die App soll euch die '
                   '**Kassenabrechnung einfacher, schneller und '
-                  'fehlerresistenter** zu machen. Außerdem müssen '
+                  'fehlerresistenter** machen. Außerdem müssen '
                   'die Kartenzahlungsbelege künftig nicht mehr nur '
                   'als Gesamtbetrag, sondern **nach Kartenart '
                   'einzeln aufgeschlüsselt** an die Buchhaltung '
@@ -75,24 +92,12 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   'folgt, ist es schwer, etwas falsch zu machen. '
                   '(Aktuell ist die App noch in der Testphase.)',
                 ),
-                SizedBox(height: 10),
-                _Absatz(
-                  'Hintergrund: Es gibt neue und mehr '
-                  'Kartenzahlungsterminals pro Standort. Die '
-                  'Kartenzahlungsbelege müssen für die Steuer '
-                  'künftig aufgeschlüsselt werden – nicht nur der '
-                  'Gesamtbetrag zählt, sondern die Beträge je '
-                  'Kartenart (Visa, Mastercard usw.). Das wäre von '
-                  'Hand viel Aufwand und fehleranfällig gewesen, '
-                  'vor allem nach einer langen Schicht – das '
-                  'übernimmt jetzt die App.',
-                  stil: KurzeinstiegSeite._fussnotenStil,
-                ),
               ],
             ),
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
+              key: _abschnittKeys[1],
               titel: '0. Start',
               offen: _offenerIndex == 1,
               onToggle: () => _umschalten(1),
@@ -106,26 +111,28 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 10),
                 _Absatz(
-                  '1. Alles **Bargeld zählen** (Personalgetränke bonieren, '
-                  'ggf. Produkte stunden, Kellnerportemonnaie nicht '
-                  'vergessen)\n'
-                  '2. **Umsätze eingeben** (Kino, Bistro, Ausgaben, '
+                  '**1.** Alles **Bargeld zählen** (Personalgetränke '
+                  'bonieren, ggf. Produkte stunden, Kellnerportemonnaie '
+                  'nicht vergessen)\n'
+                  '**2.** **Umsätze eingeben** (Kino, Bistro, Ausgaben, '
                   'Kassenschnitte aller Terminals)\n'
-                  '3. Die von der App errechneten Daten wie gewohnt auf den '
-                  'Abrechnungs**umschlag** schreiben und alles mit einem Tap '
-                  '**an die Buchhaltung senden** (der Umschlag bleibt für '
-                  'die Abrechnung übrigens weiterhin bestehen).\n'
-                  '4. Tages-**Barumsatz stückeln**, und zwar so, dass keine '
-                  'großen Scheine oder Kupfermünzen im Wechselgeld für den '
-                  'nächsten Tag landen. Die Stückelung schlägt die App vor, '
-                  'ihr müsst nicht mehr rechnen und mit Geldscheinen '
-                  'jonglieren.',
+                  '**3.** Die von der App errechneten Daten wie gewohnt '
+                  'auf den Abrechnungs**umschlag** schreiben und alles '
+                  'mit einem Tap **an die Buchhaltung senden** (der '
+                  'Umschlag bleibt für die Abrechnung übrigens weiterhin '
+                  'bestehen).\n'
+                  '**4.** Tages-**Barumsatz stückeln**, und zwar so, '
+                  'dass keine großen Scheine oder Kupfermünzen im '
+                  'Wechselgeld für den nächsten Tag landen. Die '
+                  'Stückelung schlägt die App vor, ihr müsst nicht mehr '
+                  'rechnen und mit Geldscheinen jonglieren.',
                 ),
               ],
             ),
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
+              key: _abschnittKeys[2],
               titel: 'Schritt 1: Bargeld zählen',
               offen: _offenerIndex == 2,
               onToggle: () => _umschalten(2),
@@ -151,8 +158,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
                 SizedBox(height: 10),
                 _Absatz(
-                  'Unter **Sonstiges** gebt Ihr die Werte von Umschlägen '
-                  'mit losen Münzen und ggf. anderem ein.',
+                  'Eventuell vorhandene Umschläge mit losen Münzen und '
+                  'evtl. anderem gebt ihr unter **Sonstiges** ein.',
                 ),
                 SizedBox(height: 10),
                 _Absatz(
@@ -177,6 +184,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
+              key: _abschnittKeys[3],
               titel: 'Schritt 2: Umsätze ermitteln',
               offen: _offenerIndex == 3,
               onToggle: () => _umschalten(3),
@@ -234,6 +242,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
+              key: _abschnittKeys[4],
               titel: 'Schritt 3: Übertrag auf Umschlag',
               offen: _offenerIndex == 4,
               onToggle: () => _umschalten(4),
@@ -258,6 +267,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
+              key: _abschnittKeys[5],
               titel: 'Schritt 4: Stückelung des Bargeldes',
               offen: _offenerIndex == 5,
               onToggle: () => _umschalten(5),
@@ -269,9 +279,9 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   'Umschlag. Damit im Wechselgeld für den nächsten Tag '
                   'keine großen Scheine liegen, empfiehlt die App eine '
                   'entsprechende Stückelung. Wenn eine Zeile grün '
-                  'hinterlegt ist, kann der komplette Stapel Scheine '
-                  'direkt in den Umschlag – ihr müsst ihn nicht noch mal '
-                  'zählen.',
+                  'hinterlegt ist, kann der komplette, kurz vorher '
+                  'gezählte Stapel Scheine direkt in den Umschlag – ihr '
+                  'müsst ihn nicht noch mal zählen.',
                 ),
                 SizedBox(height: 10),
                 _Absatz(
@@ -283,6 +293,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
 
             const SizedBox(height: 20),
             _KlappAbschnitt(
+              key: _abschnittKeys[6],
               titel: 'Weitere Funktionen',
               offen: _offenerIndex == 6,
               onToggle: () => _umschalten(6),
@@ -298,9 +309,11 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                   'nach einer abgeschlossenen Kassenabrechnung.\n'
                   '• **Wechselgeld prüfen**: für die Frühschicht, erklärt '
                   'sich von selbst\n'
-                  '• **Getränke auffüllen**: nice-to-have, ist für jeden '
-                  'Standort vorkonfiguriert, einfach ausprobieren oder wie '
-                  'gewohnt mit Kellnerblock und Kuli …\n'
+                  '• **Getränke auffüllen**: nice-to-have, für jeden '
+                  'Standort vorkonfiguriert – die Liste ist in der '
+                  'Reihenfolge sortiert, wie die Getränke im Regal '
+                  'stehen. Einfach ausprobieren oder wie gewohnt mit '
+                  'Kellnerblock und Kuli …\n'
                   '• **Einstellungen**, **Verlauf** und **Hilfe** erklären '
                   'sich auch von selbst.',
                   stil: KurzeinstiegSeite._fussnotenStil,
@@ -321,6 +334,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
 /// ein Abschnitt gleichzeitig offen sein kann.
 class _KlappAbschnitt extends StatelessWidget {
   const _KlappAbschnitt({
+    super.key,
     required this.titel,
     required this.kinder,
     required this.offen,

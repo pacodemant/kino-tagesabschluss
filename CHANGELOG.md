@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440a2: Weitere Korrekturen an der Hilfe-Seite nach Pacos
+  Review von Run 440a. Hintergrund-Absatz in der "Die App"-Kachel
+  entfernt (wiederholte Run 440a's ersten Absatz fast wörtlich,
+  Steuer-/Finanzamt-Kontext hätte eher Druck aufgebaut statt Angst
+  genommen). Erster Satz der Kachel direkter formuliert ("Die App
+  soll euch … machen" statt "Der Hauptzweck der App ist, … zu
+  machen") — passt jetzt zum direkten Anrede-Stil der übrigen
+  Kacheln. In "0. Start" die vier Listenziffern fett gesetzt.
+  Schritt-1-Sonstiges-Absatz umgestellt ("Eventuell vorhandene
+  Umschläge … gebt ihr unter **Sonstiges** ein" statt "Unter
+  Sonstiges gebt Ihr …"). Schritt-4-Text ergänzt: "der komplette,
+  kurz vorher gezählte Stapel" statt nur "der komplette Stapel".
+  Weitere-Funktionen-Bullet zu Getränke auffüllen erklärt jetzt,
+  dass die Liste in Regal-Reihenfolge sortiert ist. Funktional neu:
+  Jede Kachel scrollt beim Öffnen automatisch so, dass ihr Titel
+  oben im sichtbaren Bereich steht (`_abschnittKeys` je Kachel +
+  `Scrollable.ensureVisible` in `_umschalten()`), Auslöser war Pacos
+  Wunsch nach besserer Orientierung beim Aufklappen langer Kacheln.
+
 - Run 440a: Hilfe-Seite (`kurzeinstieg_seite.dart`) inhaltlich
   überarbeitet, zusätzlich zum Ton-Fix aus Run 440. Neue erste Kachel
   "Die App" (ohne Nummer, Index 0, alle Folgekacheln um eins nach
