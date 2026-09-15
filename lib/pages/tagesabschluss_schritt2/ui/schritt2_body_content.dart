@@ -18,7 +18,6 @@ class Schritt2BodyContent extends StatelessWidget {
     required this.differenzAnfangsbestandSection,
     required this.kinoSollUndAusgabenBereich,
     required this.ecBelegeBereich,
-    required this.anmerkungSection,
     required this.downButtonSichtbar,
     required this.scrolleNachUnten,
     required this.beiScrollMetrikAenderung,
@@ -31,7 +30,6 @@ class Schritt2BodyContent extends StatelessWidget {
   final Widget differenzAnfangsbestandSection;
   final Widget kinoSollUndAusgabenBereich;
   final List<Widget> ecBelegeBereich;
-  final Widget anmerkungSection;
   final bool downButtonSichtbar;
   final VoidCallback scrolleNachUnten;
   final VoidCallback beiScrollMetrikAenderung;
@@ -58,8 +56,6 @@ class Schritt2BodyContent extends StatelessWidget {
           kinoSollUndAusgabenBereich,
           const SizedBox(height: 10),
           ...ecBelegeBereich,
-          const SizedBox(height: 8),
-          anmerkungSection,
           const SizedBox(height: 8),
         ],
       ),

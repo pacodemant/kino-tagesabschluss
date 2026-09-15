@@ -328,6 +328,40 @@ class LokalerSpeicher {
     await box.delete(schritt2EntwurfKey(kinoId));
   }
 
+  /// Speichert den Schritt-3-Entwurf (aktuell nur der Kommentar/die
+  /// Anmerkung, seit Run 441 von Schritt 2 nach Schritt 3 verschoben)
+  /// fuer ein Kino.
+  static Future<void> speichereSchritt3Entwurf(
+    String kinoId,
+    Map<String, dynamic> daten,
+  ) async {
+    await _speichereJson(
+      'box_schritt3_entwuerfe',
+      schritt3EntwurfKey(kinoId),
+      daten,
+    );
+  }
+
+  /// Laedt den Schritt-3-Entwurf fuer ein Kino, oder null wenn keiner vorhanden.
+  static Future<Map<String, dynamic>?> ladeSchritt3Entwurf(
+    String kinoId,
+  ) async {
+    return _ladeJson(
+      'box_schritt3_entwuerfe',
+      schritt3EntwurfKey(kinoId),
+      (dynamic v) => v as Map<String, dynamic>,
+    );
+  }
+
+  static String schritt3EntwurfKey(String kinoId) =>
+      'entwurf_schritt3_$kinoId';
+
+  /// Löscht den Schritt-3-Entwurf für ein Kino.
+  static Future<void> loescheSchritt3Entwurf(String kinoId) async {
+    final Box<dynamic> box = Hive.box('box_schritt3_entwuerfe');
+    await box.delete(schritt3EntwurfKey(kinoId));
+  }
+
   /// Speichert die Signatur der zuletzt erfolgreich an die Buchhaltung
   /// gesendeten Abrechnung eines Kinos (für den "Gesendet"-Haken in
   /// Schritt 3, überlebt Navigation weg von der Seite) sowie separat das

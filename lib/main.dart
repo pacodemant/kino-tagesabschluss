@@ -55,6 +55,7 @@ Future<void> main() async {
     Hive.openBox('box_tagesabschluesse'),
     Hive.openBox('box_abrechnung_entwuerfe'),
     Hive.openBox('box_schritt2_entwuerfe'),
+    Hive.openBox('box_schritt3_entwuerfe'),
     Hive.openBox('box_getraenke_mengen'),
     Hive.openBox('box_wechselgeld_entwuerfe'),
     Hive.openBox('box_getraenkeliste'),

@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_anmerkung_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_anfangsbestand_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_ist_section.dart';
@@ -57,7 +59,6 @@ class TagesabschlussSchritt3Argumente {
     this.belegNrBis,
     this.ecUhrzeit,
     this.zahlungsartenAufschluesselung,
-    this.anmerkung,
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
     this.zielSchrittBeimSprung,
@@ -88,7 +89,6 @@ class TagesabschlussSchritt3Argumente {
   final String? belegNrBis;
   final String? ecUhrzeit;
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
-  final String? anmerkung;
   final List<String>? ecBelegeFotosBase64;
   final List<String>? ecBelegeFotosMediaTypen;
   /// Nur beim AppBar-Schritt-Sprung von Schritt 1/2 zu Schritt 4 gesetzt
@@ -125,6 +125,12 @@ class _TagesabschlussSchritt3SeiteState
   // null solange die async-Initialisierung noch läuft
   TagesabschlussFinal? _abschlussVorschau;
 
+  // Kommentarfeld, seit Run 441 hier statt in Schritt 2 (näher am
+  // Senden-Button, direkt bevor die Abrechnung tatsächlich rausgeht).
+  String _anmerkung = '';
+  final TextEditingController _anmerkungController = TextEditingController();
+  final FocusNode _anmerkungFocusNode = FocusNode();
+
   // true = Auto-Save läuft oder abgeschlossen, false = noch ausstehend
   bool _autoSaveErledigt = false;
   bool _autoSaveLaeuft = false;
@@ -145,6 +151,13 @@ class _TagesabschlussSchritt3SeiteState
   void initState() {
     super.initState();
     _initialisierenAsync();
+  }
+
+  @override
+  void dispose() {
+    _anmerkungController.dispose();
+    _anmerkungFocusNode.dispose();
+    super.dispose();
   }
 
   /// Signatur dessen, was Flurbocash bei einem Versand tatsächlich
@@ -178,7 +191,46 @@ class _TagesabschlussSchritt3SeiteState
     }
   }
 
-  Future<void> _initialisierenAsync() async {
+  /// Baut das Dev-Modus-Kennzeichen "testdaten" inkl. aktuellem Datum/
+  /// Uhrzeit, z. B. "testdaten 26.9. Mo 12:34" (seit Run 441 hier statt
+  /// in Schritt 2, mit dem Kommentarfeld mitgewandert).
+  static String _testdatenKennzeichenMitZeitstempel() {
+    return 'testdaten '
+        '${DateFormat("d.M. EEE HH:mm", 'de_DE').format(DateTime.now())}';
+  }
+
+  /// Lädt einen zuvor auf dieser Seite eingegebenen, noch nicht
+  /// gesendeten Kommentar (siehe _speichereAnmerkungEntwurf()) — nur
+  /// gültig für den heutigen logischen Abrechnungstag, sonst wie ein
+  /// alter Schritt-2/3-Entwurf verworfen.
+  Future<void> _ladeAnmerkungEntwurf() async {
+    final Map<String, dynamic>? daten =
+        await LokalerSpeicher.ladeSchritt3Entwurf(widget.argumente.kinoId);
+    if (daten == null) return;
+    final String? gespeichertesDatum = daten['isoDatum'] as String?;
+    if (gespeichertesDatum != DatumsHelper.logischesIsoDatum()) return;
+    _anmerkung = (daten['anmerkung'] as String?) ?? '';
+    if (_anmerkung.isNotEmpty) {
+      _anmerkungController.text = _anmerkung;
+    }
+  }
+
+  Future<void> _speichereAnmerkungEntwurf() async {
+    await LokalerSpeicher.speichereSchritt3Entwurf(
+      widget.argumente.kinoId,
+      <String, dynamic>{
+        'isoDatum': DatumsHelper.logischesIsoDatum(),
+        if (_anmerkung.trim().isNotEmpty) 'anmerkung': _anmerkung.trim(),
+      },
+    );
+  }
+
+  /// Baut _abschlussVorschau aus widget.argumente + dem aktuellen
+  /// Kommentar neu — wird sowohl beim initialen Seitenaufbau als auch
+  /// bei jeder Änderung des Kommentarfelds aufgerufen, damit Versand
+  /// (_doApiUpload()) und der "Gesendet"-Haken-Abgleich (_sendeSignatur())
+  /// immer den zuletzt eingegebenen Kommentar sehen.
+  void _aktualisiereAbschlussVorschau() {
     final TagesabschlussFinal abschluss = _finalisierenUsecase.finalisieren(
       eingabe: TagesabschlussFinalisierenEingabe(
         kinoId: widget.argumente.kinoId,
@@ -206,7 +258,7 @@ class _TagesabschlussSchritt3SeiteState
         ecUhrzeit: widget.argumente.ecUhrzeit,
         zahlungsartenAufschluesselung:
             widget.argumente.zahlungsartenAufschluesselung,
-        anmerkung: widget.argumente.anmerkung,
+        anmerkung: _anmerkung.trim().isEmpty ? null : _anmerkung.trim(),
         ecBelegeFotosBase64: widget.argumente.ecBelegeFotosBase64,
         ecBelegeFotosMediaTypen: widget.argumente.ecBelegeFotosMediaTypen,
       ),
@@ -214,13 +266,29 @@ class _TagesabschlussSchritt3SeiteState
     );
     if (!mounted) return;
     setState(() => _abschlussVorschau = abschluss);
+  }
+
+  void _beiAnmerkungGeaendert(String wert) {
+    _anmerkung = wert;
+    _aktualisiereAbschlussVorschau();
+    _speichereAnmerkungEntwurf();
+  }
+
+  Future<void> _initialisierenAsync() async {
+    final bool devModusAktiv = await DevModus.istAktiv();
+    if (!mounted) return;
+    setState(() => _devModusAktiv = devModusAktiv);
+    await _ladeAnmerkungEntwurf();
+    if (!mounted) return;
+    if (devModusAktiv && _anmerkung.trim().isEmpty) {
+      _anmerkung = _testdatenKennzeichenMitZeitstempel();
+      _anmerkungController.text = _anmerkung;
+    }
+    _aktualisiereAbschlussVorschau();
     if (widget.argumente.zielSchrittBeimSprung == 4) {
       _navigiereZuSchritt4();
     }
     _autoSaveImHintergrund();
-    DevModus.istAktiv().then((bool aktiv) {
-      if (mounted) setState(() => _devModusAktiv = aktiv);
-    });
     LokalerSpeicher.ladeSendeBestaetigung(widget.argumente.kinoId).then(
       (String? gespeicherteSignatur) {
         if (mounted &&
@@ -874,6 +942,14 @@ class _TagesabschlussSchritt3SeiteState
           Schritt3DifferenzSection(
             differenzCent: differenzCent,
             differenzFarbe: differenzFarbe,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Schritt3AnmerkungSection(
+              controller: _anmerkungController,
+              focusNode: _anmerkungFocusNode,
+              onChanged: _beiAnmerkungGeaendert,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),

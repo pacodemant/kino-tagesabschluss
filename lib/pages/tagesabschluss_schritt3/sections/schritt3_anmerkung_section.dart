@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
-class Schritt2AnmerkungSection extends StatelessWidget {
-  const Schritt2AnmerkungSection({
+class Schritt3AnmerkungSection extends StatelessWidget {
+  const Schritt3AnmerkungSection({
     super.key,
     required this.controller,
     required this.focusNode,

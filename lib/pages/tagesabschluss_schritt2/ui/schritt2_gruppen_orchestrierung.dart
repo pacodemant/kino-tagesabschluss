@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_anmerkung_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_differenz_anfangsbestand_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kino_soll_ausgaben_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kopf_section.dart';
@@ -18,9 +17,6 @@ class Schritt2GruppenOrchestrierung {
     required ValueChanged<bool?> beiPersonalgetraenkeGeaendert,
     required Widget differenzAnfangsbestandEingabeZeile,
     required VoidCallback vorzeichenToggleDifferenz,
-    required TextEditingController anmerkungController,
-    required FocusNode anmerkungFocusNode,
-    required ValueChanged<String> beiAnmerkungGeaendert,
     required Widget kinoSollEingabeZeile,
     required Widget? bistroSollEingabeZeile,
     required List<int> ausgabenIds,
@@ -66,14 +62,8 @@ class Schritt2GruppenOrchestrierung {
         onAusgabeEntfernen: onAusgabeEntfernen,
         onAusgabeHinzufuegen: onAusgabeHinzufuegen,
       ),
-      anmerkung: Schritt2AnmerkungSection(
-        controller: anmerkungController,
-        focusNode: anmerkungFocusNode,
-        onChanged: beiAnmerkungGeaendert,
-      ),
     );
   }
-
 }
 
 // Zweck: Buendelt die bisher ausgelagerten Section-Widgets fuer Schritt 2.
@@ -83,12 +73,10 @@ class Schritt2SectionWidgets {
     required this.personalgetraenke,
     required this.differenzAnfangsbestand,
     required this.kinoSollUndAusgaben,
-    required this.anmerkung,
   });
 
   final Widget kopf;
   final Widget personalgetraenke;
   final Widget differenzAnfangsbestand;
   final Widget kinoSollUndAusgaben;
-  final Widget anmerkung;
 }
