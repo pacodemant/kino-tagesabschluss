@@ -172,8 +172,15 @@ class Schritt1GruppenOrchestrierung {
               text: 'Beträge',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            TextSpan(text: ' der verschiedenen Münzen und ggf. Umschläge u.a. eingeben.\n'),
-            TextSpan(text: 'Also z.B. "340" für drei Euro und vierzig Cent.'),
+            TextSpan(
+              text: ' der verschiedenen Münzen und ggf. Umschläge u.a. '
+                  'eingeben, ohne Komma – genau wie an den '
+                  'Kartenzahlungsterminals.\n',
+            ),
+            TextSpan(
+              text: 'Also z.B. "340" für drei Euro und vierzig Cent. Ein '
+                  'versehentlich getipptes Komma wird einfach ignoriert.',
+            ),
           ],
         ),
       ),

@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 442: Hinweis-Dialoge zu den Cent-Eingabefeldern auf der
+  Bargeld-Seite (Schritt 1) ergänzt — betrifft "Münzgeld eingeben"
+  (`schritt1_muenzen_lose_section.dart`) und "Sonstiges eingeben"
+  (`schritt1_gruppen_orchestrierung.dart`, identischer Text an
+  beiden Stellen). Vorher nur ein unkommentiertes Beispiel ("z.B.
+  '340' für drei Euro und vierzig Cent"), jetzt zusätzlich explizit
+  "ohne Komma – genau wie an den Kartenzahlungsterminals" sowie die
+  Beruhigung, dass ein versehentlich getipptes Komma einfach
+  ignoriert wird. Letzteres ist keine Vermutung: verifiziert über
+  `FilteringTextInputFormatter.allow(RegExp('[0-9+]'))` in
+  `betrag_cent_eingabefeld.dart` — Kommas werden dort bereits vor
+  der Eingabe herausgefiltert, können also gar nicht erst im Feld
+  landen. Auslöser: Pacos Frage, was bei einem versehentlichen
+  Komma passiert.
+
 - Run 441: Kommentarfeld ("Hinweis / Kommentar (optional)") von
   Schritt 2 nach Schritt 3 verschoben, dort jetzt direkt über dem
   "Abrechnung an Büro senden"-Button (Paco-Wunsch). Datei

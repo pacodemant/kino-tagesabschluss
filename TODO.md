@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 441 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 442 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -471,6 +471,22 @@ um Durcheinander zu vermeiden.
 
 - [ ] **Abschluss-Export (PDF / Teilen)** Tagesabrechnung als PDF oder Text
       per WhatsApp / Mail an Kinoleitung.
+
+- [ ] **Hilfetexte in weitere Sprachen übersetzen** Paco-Idee
+      (2026-09-16): Die MA an den Standorten haben viele
+      unterschiedliche Nationalitäten, Deutsch ist nicht überall
+      Muttersprache. Aktuell gibt es nur deutsche Hilfetexte
+      (Hilfe-Kachel/-Popups, siehe Run 440/440a-Serie). Bewusst NUR
+      die Hilfetexte übersetzen — Buttons/Labels/restliche UI bleiben
+      Deutsch (Paco-Entscheidung: MA müssen die deutschen Begriffe der
+      Kassensysteme ohnehin kennen/lernen). Gewünschte Sprachen:
+      türkisch, ukrainisch, portugiesisch, spanisch, französisch,
+      italienisch, dazu eine indische Sprache — welche genau noch offen (Indien hat
+      mehrere Amtssprachen, häufigste Vermutung Hindi; Paco weiß es
+      noch nicht genau, bei der MA nachfragen). Vor einer Run-Vergabe
+      klären: Sprachwahl-UI (z. B. in den Einstellungen oder direkt am
+      Hilfetext) sowie technische Umsetzung (Flutter-i18n/intl-Paket
+      vs. einfache eigene Textmap pro Sprache).
 
 ---
 
