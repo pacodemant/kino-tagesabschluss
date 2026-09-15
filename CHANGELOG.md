@@ -9,6 +9,30 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 440a4: Hilfe-Button auf der Startseite (startmenue_seite.dart)
+  zeigt jetzt volles Rot statt der gedämpften 50%-Variante
+  (appBarRotGedaempft entfernt, fällt jetzt auf den App-weiten
+  ElevatedButton-Standard zurück, genau wie "Wechselgeld prüfen" und
+  "Getränke auffüllen") — Auslöser: Paco empfand den Button als zu
+  blass. Einstellungen/Verlauf bleiben bewusst unverändert gedämpft,
+  das war nicht Teil der Anweisung. Weitere Textkorrekturen an
+  kurzeinstieg_seite.dart: Schritt 2 fasst die beiden Foto-Sätze zu
+  einem zusammen ("scharf und deutlich ist und wenn das der Fall
+  ist, bestätigt das Foto"); Schritt 3 behält jetzt wieder den Satz
+  "Das Ausfüllen des Abrechnungsumschlages wird weiterhin
+  beibehalten" (in Run 440a3 versehentlich mitentfernt statt nur den
+  zweiten Satz zu ersetzen) und der zweite Absatz ist jetzt aktiv
+  formuliert ("müsst ihr die Abrechnung ans Büro senden" statt "ist
+  es wichtig, dass … gesendet wird"). Funktional größere Änderung:
+  Der Titel der gerade geöffneten Kachel bleibt jetzt oben fixiert
+  sichtbar, sobald er beim Scrollen sonst aus dem Bildschirm
+  wandern würde (neues `_KachelKopf`-Widget aus `_KlappAbschnitt`
+  extrahiert und für einen fixierten Overlay-Balken wiederverwendet;
+  `ScrollController` + Scroll-Listener vergleicht die
+  Bildschirmposition des echten Kachel-Kopfes mit der des
+  Scroll-Bereichs). Kein neues Package nötig, rein mit Flutter-
+  Bordmitteln (Stack + Positioned) umgesetzt.
+
 - Run 440a3: Weitere Hilfe-Seiten-Korrekturen nach Pacos Review.
   Schritt 1: Reihenfolge um den Kupfermünzen-Screenshot getauscht
   (Kupfermünzen-Absatz jetzt darüber, "Wenn ihr alles gezählt
