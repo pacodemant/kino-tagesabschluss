@@ -11,6 +11,11 @@ class _Sprache {
   final String name;
 }
 
+/// Aktuell aktive Sprache — bis eine echte Übersetzung existiert
+/// immer Deutsch, da das die einzige tatsächlich verfügbare Sprache
+/// ist (siehe TODO.md "Hilfe-Übersetzung").
+const _Sprache _aktuelleSprache = _Sprache('🇩🇪', 'Deutsch');
+
 const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
   _Sprache('🇹🇷', 'Türkçe'),
   _Sprache('🇺🇦', 'Українська'),
@@ -119,6 +124,17 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 ),
               ),
             ),
+            ListTile(
+              leading: Text(
+                _aktuelleSprache.flagge,
+                style: const TextStyle(fontSize: 24),
+              ),
+              title: Text(_aktuelleSprache.name),
+              subtitle: const Text('Aktuell aktiv'),
+              trailing: Icon(Icons.check, color: Colors.green.shade600),
+              onTap: () => Navigator.of(sheetContext).pop(),
+            ),
+            const Divider(height: 1),
             for (final _Sprache sprache in _verfuegbareSprachen)
               ListTile(
                 leading: Text(

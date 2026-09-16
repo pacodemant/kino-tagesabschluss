@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 443a: Sprachauswahl-BottomSheet aus Run 443 zeigt jetzt oben
+  zusätzlich die aktuell aktive Sprache (🇩🇪 Deutsch, mit grünem
+  Häkchen und "Aktuell aktiv"-Untertitel, durch einen Trenner von
+  den sieben Platzhalter-Sprachen abgesetzt) — bis eine echte
+  Übersetzung existiert ist Deutsch die einzig tatsächlich
+  verfügbare Sprache. Tap darauf schließt das Sheet nur, ohne
+  "Bald verfügbar"-Dialog.
+
 - Run 443: Flaggen-Sprachmenü auf der Hilfe-Seite eingebaut
   (`kurzeinstieg_seite.dart`) — Globus-Icon in der AppBar öffnet
   ein BottomSheet mit sieben Sprachen (Türkisch, Ukrainisch,
