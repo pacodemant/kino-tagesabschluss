@@ -6,7 +6,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 // Zweck: Rendert die komplette EC-Belege-Kachel (Header mit Aufklapp-
 // Toggle/Scan-Button/Löschen-Button/Zusammenfassung sowie den
 // aufklappbaren Body-Rahmen mit Leerzustand-Hinweis bzw.
-// "Weiteren Beleg hinzufügen"-Button). Der eigentliche Beleg-Inhalt
+// "Weiteren Kassenschnitt hinzufügen"-Button). Der eigentliche Beleg-Inhalt
 // (1-Beleg-Modus oder Sub-Kacheln im 2+-Beleg-Modus) wird als fertiges
 // Widget durchgereicht (belegInhalt).
 class Schritt2EcBelegeKachelSection extends StatelessWidget {
@@ -203,7 +203,7 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: OutlinedButton(
                         onPressed: scanLaeuft ? null : onEcBelegHinzufuegen,
-                        child: const Text('+ Weiteren Beleg hinzufügen'),
+                        child: const Text('+ Weiteren Kassenschnitt hinzufügen'),
                       ),
                     ),
                   belegInhalt,

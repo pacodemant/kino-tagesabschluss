@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 446: Bug-Fix in Schritt 2 — sobald ein zweiter EC-Beleg
+  hinzugefügt wurde ("2+-Beleg-Modus"), verschwand für ALLE Belege
+  (auch den ersten) der Button, mit dem sich die Kartenarten-Zeilen
+  manuell in den Bearbeitungsmodus schalten lassen
+  (`zeigeKartenartenEditButton` war hart auf
+  `_ecBelegController.length <= 1` gesetzt, eine Altlast aus der
+  Zeit vor dem 2+-Beleg-Modus, siehe Run 341). Damit ließen sich
+  Kartenarten und Beträge für zusätzliche Belege ohne Scan gar
+  nicht mehr eintragen — jetzt immer sichtbar, unabhängig von der
+  Belegzahl. Zusätzlich Umbenennung auf Pacos Wunsch: "Weiteren
+  Beleg hinzufügen" heißt jetzt überall "Weiteren Kassenschnitt
+  hinzufügen" (Button in `schritt2_ec_belege_kachel_section.dart`,
+  Link in `tagesabschluss_schritt2_seite.dart`, sowie die
+  zitierende Stelle im Hilfe-Text in `kurzeinstieg_seite.dart`).
+
 - Run 445: Zwei Ergänzungen an der Hilfe-Seite
   (`kurzeinstieg_seite.dart`). Erstens: Der "Bald verfügbar"-Hinweis
   im Sprachauswahl-Sheet (Run 443) ist jetzt je Sprache übersetzt

@@ -2501,7 +2501,11 @@ class _TagesabschlussSchritt2SeiteState
       gesamtBetragController: gesamtBetragController,
       gesamtBetragFocusNode: gesamtBetragFocusNode,
       gesamtBetragErrorText: gesamtBetragErrorText,
-      zeigeKartenartenEditButton: _ecBelegController.length <= 1,
+      // Vorher nur bei genau einem Beleg sichtbar (_ecBelegController.length
+      // <= 1) — dadurch gab es im 2+-Beleg-Modus für keinen Beleg mehr einen
+      // Weg, die Kartenarten-Zeilen manuell zu befüllen (Paco-Feedback).
+      // Jetzt immer sichtbar, unabhängig von der Belegzahl.
+      zeigeKartenartenEditButton: true,
       istZeileImplausibel: (ZahlungsartZeile z) =>
           _istZeileImplausibel(z, belegIndex),
       dropdownOptionenFuerZeile: (int i) =>
@@ -2667,7 +2671,7 @@ class _TagesabschlussSchritt2SeiteState
                         minimumSize: const Size(0, 32),
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      child: const Text('Weiteren Beleg hinzufügen'),
+                      child: const Text('Weiteren Kassenschnitt hinzufügen'),
                     ),
                   ),
     ];
