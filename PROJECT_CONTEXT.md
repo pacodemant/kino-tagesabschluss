@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.94+446a2 · Run 446a2
+Version: 0.9.95+447 · Run 447
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 439a2)
+## Laufender Entwicklungsstand (Run 447)
+
+- Run 447 ✅ Zugang zur Stückelung bei fehlgeschlagenem/nicht
+  bestätigtem Flurbocash-Versand nicht mehr blockiert, stattdessen
+  Erinnerungs-Popups (beim Weiter zu Schritt 4 UND beim Verlassen der
+  Stückelungs-Seite). Echter Sendefehlschlag zeigt jetzt ebenfalls ein
+  Popup statt nur SnackBar. Haken am Senden-Button: grün/dunkelgrau/
+  hellgrau statt bisher nur grün/hellgrau (bewusst kein Orange, siehe
+  app_farben.dart-Konvention). Wechselgeldprüf-Seite leert einen alten
+  Morgen-Entwurf jetzt auch bei eigenständigem Aufruf ab 18 Uhr, nicht
+  nur im Tagesabschluss-Flow. Details siehe CHANGELOG.md.
 
 - Run 439a2 ✅ "Getränke auffüllen": Filter- und Händigkeits-Link
   als kompakte OutlinedButton statt reiner Textlinks. Details siehe

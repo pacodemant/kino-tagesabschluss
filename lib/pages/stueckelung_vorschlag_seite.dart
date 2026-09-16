@@ -6,6 +6,7 @@ import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
@@ -15,12 +16,19 @@ class StueckelungVorschlagArgumente {
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.kinoName = 'Schauburg',
+    this.versandNichtBestaetigt = false,
   });
 
   final int barBestandAbzglWechselgeldCent;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final String kinoName;
+
+  // true = die zugehörige Abrechnung wurde noch nicht erfolgreich an die
+  // Zentrale (Flurbocash) übertragen (Versand versucht, aber
+  // fehlgeschlagen oder nicht bestätigbar) — steuert den Erinnerungs-
+  // Hinweis beim Verlassen dieser Seite.
+  final bool versandNichtBestaetigt;
 }
 
 // ---------------------------------------------------------------------------
@@ -703,9 +711,27 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: () => Navigator.of(
-                  context,
-                ).popUntil(ModalRoute.withName(StartmenueSeite.routenName)),
+                onPressed: () async {
+                  if (widget.argumente.versandNichtBestaetigt) {
+                    // Zweite Erinnerung (nach dem Hinweis beim Wechsel
+                    // auf diese Seite) — Paco-Wunsch: soll beim
+                    // Verlassen nochmal im Popup auffallen, damit der
+                    // spätere erneute Versand nicht vergessen wird.
+                    await zeigeInfoDialog(
+                      context,
+                      titel: 'Versand nicht bestätigt',
+                      inhalt: const Text(
+                        'Denk daran: Die Abrechnung wurde noch nicht '
+                        'erfolgreich an die Zentrale übertragen. Bitte '
+                        'den Versand später noch einmal versuchen.',
+                      ),
+                    );
+                  }
+                  if (!context.mounted) return;
+                  Navigator.of(
+                    context,
+                  ).popUntil(ModalRoute.withName(StartmenueSeite.routenName));
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppFarben.fokusFarbe,
                   foregroundColor: AppFarben.appBarRot,

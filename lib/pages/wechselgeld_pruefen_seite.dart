@@ -210,16 +210,26 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     super.dispose();
   }
 
+  // Ab 18 Uhr gilt ein Aufruf dieser Seite als Abend-Prüfung, auch wenn
+  // sie nicht über den Tagesabschluss-Flow (ausTagesabrechnung) erreicht
+  // wurde — sonst würde bei einem eigenständigen Aufruf abends noch der
+  // morgens gezählte Bestand angezeigt.
+  bool get _istAbendZeit => DateTime.now().hour >= 18;
+
   Future<void> _ladeInitialeDaten() async {
     Map<String, dynamic>? entwurf =
         await LokalerSpeicher.ladeWechselgeldZaehlEntwurf(widget.kinoId);
-    if (widget.ausTagesabrechnung && entwurf != null && entwurf['herkunft'] != 'abend') {
-      // Abend-Prüfung im Rahmen der Kassenabrechnung: ein vorhandener
-      // Entwurf ohne "abend"-Markierung stammt von der Morgen-Prüfung
-      // (oder aus einer Version vor dieser Markierung) — der darf hier
-      // nicht auftauchen. Ein bereits mit "abend" markierter Entwurf ist
-      // dagegen der eigene, noch nicht fertige Stand dieser Abend-Prüfung
-      // und bleibt erhalten.
+    if ((widget.ausTagesabrechnung || _istAbendZeit) &&
+        entwurf != null &&
+        entwurf['herkunft'] != 'abend') {
+      // Abend-Prüfung (im Rahmen der Kassenabrechnung ODER ab 18 Uhr bei
+      // eigenständigem Aufruf dieser Seite): ein vorhandener Entwurf ohne
+      // "abend"-Markierung stammt von der Morgen-Prüfung (oder aus einer
+      // Version vor dieser Markierung) — der darf hier nicht auftauchen,
+      // damit abends nicht noch der alte Morgen-Bestand angezeigt wird.
+      // Ein bereits mit "abend" markierter Entwurf ist dagegen der
+      // eigene, noch nicht fertige Stand dieser Abend-Prüfung und bleibt
+      // erhalten.
       await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
       entwurf = null;
     }
@@ -291,7 +301,13 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         'umschlaege': _umschlaege
             .map((UmschlagEintrag e) => e.toJson())
             .toList(),
-        'herkunft': widget.ausTagesabrechnung ? 'abend' : 'morgen',
+        // _istAbendZeit hier mit berücksichtigen (nicht nur
+        // ausTagesabrechnung): sonst würde eine frisch nach 18 Uhr
+        // eigenständig eingegebene Zählung beim nächsten Öffnen fälsch-
+        // lich als "alter Morgen-Entwurf" erkannt und oben verworfen.
+        'herkunft': (widget.ausTagesabrechnung || _istAbendZeit)
+            ? 'abend'
+            : 'morgen',
       },
     );
   }

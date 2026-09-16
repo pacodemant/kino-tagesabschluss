@@ -147,6 +147,20 @@ class _TagesabschlussSchritt3SeiteState
   Map<String, dynamic>? _letzteServerAntwort;
   bool _abrechnungGesendet = false;
 
+  // true = in dieser Sitzung wurde mindestens einmal ein Versand-Versuch
+  // gestartet (_doApiUpload()), unabhängig vom Ergebnis. Anders als
+  // _abrechnungGesendet/_apiUploadErledigt (beide bleiben bei einem
+  // echten Fehlschlag false, ununterscheidbar von "nie versucht")
+  // erlaubt dieses Flag, "versucht, aber nicht erfolgreich" von
+  // "nie versucht" zu unterscheiden — steuert den Zugang zu Schritt 4
+  // trotz nicht bestätigtem Versand. Bewusst nicht persistiert: gilt
+  // nur für die aktuelle Sitzung dieser Seite.
+  bool _uploadVersucht = false;
+
+  // true = Versand wurde versucht, aber (noch) nicht als erfolgreich
+  // bestätigt (echter Fehlschlag oder CORS-Fallback ohne Bestätigung).
+  bool get _sendenNichtBestaetigt => _uploadVersucht && !_abrechnungGesendet;
+
   @override
   void initState() {
     super.initState();
@@ -398,7 +412,10 @@ class _TagesabschlussSchritt3SeiteState
 
   Future<void> _doApiUpload() async {
     if (mounted) {
-      setState(() => _apiUploadLaeuft = true);
+      setState(() {
+        _apiUploadLaeuft = true;
+        _uploadVersucht = true;
+      });
     }
     try {
       _letzteServerAntwort =
@@ -459,10 +476,17 @@ class _TagesabschlussSchritt3SeiteState
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-          zeigeHinweisSnackBar(
+          // Popup statt SnackBar (analog Run 437 bei Erfolg/CORS-
+          // Fallback oben) — Paco-Wunsch, damit ein Fehlschlag wirklich
+          // wahrgenommen wird statt als SnackBar übersehen zu werden.
+          await zeigeInfoDialog(
             context,
-            'API Upload fehlgeschlagen — Abrechnung lokal gespeichert\n$anzeige',
-            duration: const Duration(seconds: 8),
+            titel: 'Versand fehlgeschlagen',
+            inhalt: Text(
+              'Die Abrechnung konnte nicht an die Zentrale (Flurbocash) '
+              'übertragen werden und wurde nur lokal gespeichert.\n\n'
+              'Fehler: $anzeige',
+            ),
           );
         }
       }
@@ -821,6 +845,7 @@ class _TagesabschlussSchritt3SeiteState
         stueckzahlen: widget.argumente.stueckzahlen,
         loseMuenzenNachArtCent: widget.argumente.loseMuenzenNachArtCent,
         kinoName: widget.argumente.kinoName,
+        versandNichtBestaetigt: _sendenNichtBestaetigt,
       ),
     );
   }
@@ -881,16 +906,36 @@ class _TagesabschlussSchritt3SeiteState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  if (!_abrechnungGesendet && !_devModusAktiv) {
+                  if (!_abrechnungGesendet &&
+                      !_uploadVersucht &&
+                      !_devModusAktiv) {
                     zeigeHinweisSnackBar(
                       context,
                       'Bitte zuerst die Abrechnung senden.',
                     );
                     return;
                   }
+                  if (_sendenNichtBestaetigt) {
+                    // Versand wurde versucht, aber nicht bestätigt — der
+                    // Weg zu Schritt 4 ist trotzdem frei (Paco-Wunsch),
+                    // aber als Popup (nicht wegwischbar wie eine
+                    // SnackBar) daran erinnern, später erneut zu senden.
+                    zeigeInfoDialog(
+                      context,
+                      titel: 'Versand nicht bestätigt',
+                      inhalt: const Text(
+                        'Die Abrechnung wurde noch nicht erfolgreich an '
+                        'die Zentrale übertragen. Bitte den Versand '
+                        'später noch einmal versuchen.',
+                      ),
+                    ).then((_) {
+                      if (mounted) _navigiereZuSchritt4();
+                    });
+                    return;
+                  }
                   _navigiereZuSchritt4();
                 },
-                style: _abrechnungGesendet
+                style: (_abrechnungGesendet || _uploadVersucht)
                     ? AppFarben.footerButtonStyle
                     : (_devModusAktiv
                         ? AppFarben.devBypassButtonStyle
@@ -972,9 +1017,18 @@ class _TagesabschlussSchritt3SeiteState
                   const SizedBox(width: 8),
                   Icon(
                     Icons.check_circle,
+                    // Grün = erfolgreich gesendet. Sonst neutrales Grau
+                    // statt Orange — Orange ist im Projekt bewusst als
+                    // Führungsfarbe für Bedienelemente reserviert, nicht
+                    // für Warnhinweise (siehe app_farben.dart,
+                    // nichtGesendetBadgeHintergrund). Dunkleres Grau,
+                    // wenn immerhin ein Versand versucht wurde, sonst
+                    // das hellere Grau für "nie versucht".
                     color: _abrechnungGesendet
                         ? Colors.green
-                        : Colors.grey.shade400,
+                        : (_uploadVersucht
+                            ? AppFarben.nichtGesendetBadgeHintergrund
+                            : Colors.grey.shade400),
                   ),
                 ],
               ),

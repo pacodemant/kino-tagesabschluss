@@ -9,6 +9,49 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 447: Zugang zur Stückelung bei fehlgeschlagenem Flurbocash-
+  Versand gelockert + Erinnerungs-Popups statt SnackBar; Wechselgeld-
+  prüf-Seite leert sich jetzt auch bei eigenständigem Aufruf ab 18 Uhr:
+  - `tagesabschluss_schritt3_seite.dart`: neuer Session-Status
+    `_uploadVersucht` (true bei jedem Sendeversuch, unabhängig vom
+    Ergebnis — anders als `_abrechnungGesendet`/`_apiUploadErledigt`,
+    die bei einem echten Fehlschlag unverändert `false` bleiben und
+    damit nicht von "nie versucht" zu unterscheiden waren). Der Button
+    "Stückelung (4/4)" blockiert jetzt nur noch, wenn WIRKLICH nie
+    versucht wurde zu senden; wurde versucht, aber nicht erfolgreich
+    bestätigt, öffnet sich stattdessen ein Popup ("Versand nicht
+    bestätigt … bitte später erneut versuchen") und führt danach
+    trotzdem weiter zu Schritt 4.
+  - Derselbe echte Fehlschlag beim Senden zeigt jetzt ebenfalls ein
+    Popup statt nur einer SnackBar (analog zu Erfolg/CORS-Fallback aus
+    Run 437), damit er nicht übersehen wird.
+  - Haken neben "Abrechnung an Büro senden": grün bei bestätigtem
+    Erfolg, sonst dunkleres Grau (`AppFarben.nichtGesendetBadgeHinter
+    grund`) wenn immerhin versucht wurde, helleres Grau wenn nie
+    versucht — bewusst kein Orange (Orange ist im Projekt als
+    Führungsfarbe für Bedienelemente reserviert, siehe
+    `app_farben.dart`, nicht als Warnfarbe).
+  - `stueckelung_vorschlag_seite.dart`: neues Feld
+    `versandNichtBestaetigt` in `StueckelungVorschlagArgumente`. Beim
+    Verlassen der Seite ("… fertig.") erscheint in diesem Fall
+    zusätzlich noch einmal dasselbe Erinnerungs-Popup, bevor es zurück
+    zur Startseite geht — Paco-Wunsch: soll wirklich nicht übersehen
+    werden.
+  - `wechselgeld_pruefen_seite.dart`: neuer Getter `_istAbendZeit`
+    (`DateTime.now().hour >= 18`). Ein Morgen-Entwurf ohne
+    "abend"-Markierung wird jetzt nicht mehr nur beim Aufruf über den
+    Tagesabschluss-Flow verworfen, sondern auch bei einem
+    eigenständigen Aufruf dieser Seite ab 18 Uhr. Beim Speichern wird
+    "herkunft" konsequent ebenfalls schon ab 18 Uhr als "abend"
+    vermerkt (nicht nur bei `ausTagesabrechnung`), damit eine frisch
+    abends eigenständig eingegebene Zählung beim nächsten Öffnen nicht
+    fälschlich wieder als alter Morgen-Entwurf erkannt und gelöscht
+    wird.
+  - Bewusste Einschränkung: `_uploadVersucht` ist reiner Session-
+    Status, nicht persistiert — nach einem Neuaufbau der Seite (z. B.
+    Reload) gilt wieder "nie versucht", bis in der neuen Sitzung
+    erneut gesendet wurde.
+
 - Run 446a2: Portugiesisch (🇵🇹 Português) im Flaggen-Sprachmenü
   der Hilfe-Seite ergänzt (inkl. übersetztem "Bald verfügbar"-
   Hinweis und Button "Entendi") — fehlte in der ursprünglichen
