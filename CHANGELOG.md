@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 446a2: Portugiesisch (🇵🇹 Português) im Flaggen-Sprachmenü
+  der Hilfe-Seite ergänzt (inkl. übersetztem "Bald verfügbar"-
+  Hinweis und Button "Entendi") — fehlte in der ursprünglichen
+  Liste aus Run 443, Auslöser war Pacos Hinweis. Italienisch war
+  entgegen Pacos Eindruck bereits vorhanden (Run 443), keine
+  Änderung dort nötig.
+
 - Run 446a: Der Bestätigungsbutton im "Bald verfügbar"-Dialog
   (Sprachauswahl, Run 445) ist jetzt ebenfalls je Sprache übersetzt
   ("Anladım", "Зрозуміло", "Entendido", "Capito", "समझ गया", "Got

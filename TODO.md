@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 446a · wird fortlaufend ergänzt
+Stand: September 2026 · Run 446a2 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -962,6 +962,6 @@ um Durcheinander zu vermeiden.
       (Run 443) zeigt seit Run 445 den "Bald verfügbar"-Hinweis
       bereits je Sprache übersetzt (nicht muttersprachlich geprüft)
       — die eigentliche Übersetzung der Hilfe-Texte selbst
-      (Türkisch, Ukrainisch, Spanisch, Italienisch, Hindi,
-      Englisch, Französisch) ist weiterhin offen.
+      (Türkisch, Ukrainisch, Spanisch, Italienisch, Portugiesisch,
+      Hindi, Englisch, Französisch) ist weiterhin offen.
 

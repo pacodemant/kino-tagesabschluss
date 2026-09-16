@@ -64,6 +64,14 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'Capito',
   ),
   _Sprache(
+    '🇵🇹',
+    'Português',
+    'Brevemente',
+    'Este idioma estará disponível numa das próximas versões da '
+        'Ajuda. Por agora, a Ajuda só está disponível em alemão.',
+    'Entendi',
+  ),
+  _Sprache(
     '🇮🇳',
     'हिन्दी',
     'जल्द उपलब्ध होगा',
