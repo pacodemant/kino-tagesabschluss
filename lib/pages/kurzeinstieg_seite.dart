@@ -8,18 +8,25 @@ import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 /// Hinweis ist bereits je Sprache übersetzt, nicht die Hilfe selbst.
 /// Übersetzungen sind nicht muttersprachlich geprüft.
 class _Sprache {
-  const _Sprache(this.flagge, this.name, this.hinweisTitel, this.hinweisText);
+  const _Sprache(
+    this.flagge,
+    this.name,
+    this.hinweisTitel,
+    this.hinweisText,
+    this.hinweisButton,
+  );
 
   final String flagge;
   final String name;
   final String hinweisTitel;
   final String hinweisText;
+  final String hinweisButton;
 }
 
 /// Aktuell aktive Sprache — bis eine echte Übersetzung existiert
 /// immer Deutsch, da das die einzige tatsächlich verfügbare Sprache
 /// ist (siehe TODO.md "Hilfe-Übersetzung").
-const _Sprache _aktuelleSprache = _Sprache('🇩🇪', 'Deutsch', '', '');
+const _Sprache _aktuelleSprache = _Sprache('🇩🇪', 'Deutsch', '', '', '');
 
 const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
   _Sprache(
@@ -28,6 +35,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'Yakında',
     'Bu dil, Yardım bölümünün gelecek sürümlerinden birinde '
         'eklenecek. Şu anda Yardım yalnızca Almanca olarak mevcut.',
+    'Anladım',
   ),
   _Sprache(
     '🇺🇦',
@@ -35,6 +43,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'Незабаром',
     'Ця мова з’явиться в одній з наступних версій довідки. Наразі '
         'довідка доступна лише німецькою мовою.',
+    'Зрозуміло',
   ),
   _Sprache(
     '🇪🇸',
@@ -43,6 +52,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'Este idioma estará disponible en una de las próximas '
         'versiones de la Ayuda. Por ahora, la Ayuda solo está '
         'disponible en alemán.',
+    'Entendido',
   ),
   _Sprache(
     '🇮🇹',
@@ -51,6 +61,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'Questa lingua sarà disponibile in una delle prossime versioni '
         'della Guida. Al momento la Guida è disponibile solo in '
         'tedesco.',
+    'Capito',
   ),
   _Sprache(
     '🇮🇳',
@@ -58,6 +69,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'जल्द उपलब्ध होगा',
     'यह भाषा सहायता के किसी अगले संस्करण में उपलब्ध होगी। फिलहाल '
         'सहायता केवल जर्मन भाषा में उपलब्ध है।',
+    'समझ गया',
   ),
   _Sprache(
     '🇬🇧',
@@ -66,6 +78,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'This language will be available in one of the next versions '
         'of the Help section. For now, the Help is only available '
         'in German.',
+    'Got it',
   ),
   _Sprache(
     '🇫🇷',
@@ -74,6 +87,7 @@ const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
     'Cette langue sera disponible dans une prochaine version de '
         'l’Aide. Pour l’instant, l’Aide n’est disponible qu’en '
         'allemand.',
+    'Compris',
   ),
 ];
 
@@ -210,6 +224,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
       context,
       titel: sprache.hinweisTitel,
       inhalt: Text(sprache.hinweisText),
+      buttonText: sprache.hinweisButton,
     );
   }
 

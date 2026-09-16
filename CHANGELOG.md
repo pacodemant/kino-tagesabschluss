@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 446a: Der Bestätigungsbutton im "Bald verfügbar"-Dialog
+  (Sprachauswahl, Run 445) ist jetzt ebenfalls je Sprache übersetzt
+  ("Anladım", "Зрозуміло", "Entendido", "Capito", "समझ गया", "Got
+  it", "Compris") statt immer "Verstanden" zu zeigen — bewusste
+  Ausnahme von Pacos sonstiger Vorgabe, Buttons deutsch zu lassen,
+  da dieser Button Teil desselben übersetzten Hinweistexts ist.
+
 - Run 446: Bug-Fix in Schritt 2 — sobald ein zweiter EC-Beleg
   hinzugefügt wurde ("2+-Beleg-Modus"), verschwand für ALLE Belege
   (auch den ersten) der Button, mit dem sich die Kartenarten-Zeilen
