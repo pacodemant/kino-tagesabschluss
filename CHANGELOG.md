@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 445: Zwei Ergänzungen an der Hilfe-Seite
+  (`kurzeinstieg_seite.dart`). Erstens: Der "Bald verfügbar"-Hinweis
+  im Sprachauswahl-Sheet (Run 443) ist jetzt je Sprache übersetzt
+  (`_Sprache` hat jetzt `hinweisTitel`/`hinweisText`) statt immer
+  auf Deutsch angezeigt zu werden — Übersetzungen sind nicht
+  muttersprachlich geprüft. Zweitens: Die Hilfe-Seite nutzt jetzt
+  `TagesabschlussScaffold` statt eines einfachen `Scaffold` und
+  bekommt dadurch automatisch den bestehenden `HausButton` im
+  Footer (gleiche Komponente wie auf den Abrechnungsseiten) —
+  vorher gab es keinen direkten Weg zurück zur Startseite außer
+  dem normalen Zurück-Pfeil.
+
 - Run 444: EC-Beleg-Sub-Kacheln (Schritt 2, 2+-Beleg-Modus,
   `schritt2_ec_beleg_sub_kacheln.dart`) zeigen den Titel "Beleg N"
   jetzt immer, auch nach erfolgreichem Scan (vorher wechselte der

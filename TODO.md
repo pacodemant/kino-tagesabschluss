@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 444 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 445 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -959,7 +959,9 @@ um Durcheinander zu vermeiden.
 - [ ] **Admin-Dashboard für Kino-IT** API-Key-Verwaltung, Konfiguration
 
 - [ ] **Hilfe-Übersetzung** Flaggen-Sprachmenü in der Hilfe-Seite
-      (Run 443) zeigt bisher nur "Bald verfügbar" — tatsächliche
-      Übersetzung der Hilfe-Texte (Türkisch, Ukrainisch, Spanisch,
-      Italienisch, Hindi, Englisch, Französisch) noch offen.
+      (Run 443) zeigt seit Run 445 den "Bald verfügbar"-Hinweis
+      bereits je Sprache übersetzt (nicht muttersprachlich geprüft)
+      — die eigentliche Übersetzung der Hilfe-Texte selbst
+      (Türkisch, Ukrainisch, Spanisch, Italienisch, Hindi,
+      Englisch, Französisch) ist weiterhin offen.
 

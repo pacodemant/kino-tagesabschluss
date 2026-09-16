@@ -1,29 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
 
 /// Sprachen fürs Flaggen-Menü der Hilfe-Seite (Auswahl noch ohne
-/// Funktion, siehe _zeigeSprachHinweis() — Übersetzung folgt später).
+/// Funktion, siehe _zeigeSprachHinweis() — nur der "Bald verfügbar"-
+/// Hinweis ist bereits je Sprache übersetzt, nicht die Hilfe selbst.
+/// Übersetzungen sind nicht muttersprachlich geprüft.
 class _Sprache {
-  const _Sprache(this.flagge, this.name);
+  const _Sprache(this.flagge, this.name, this.hinweisTitel, this.hinweisText);
 
   final String flagge;
   final String name;
+  final String hinweisTitel;
+  final String hinweisText;
 }
 
 /// Aktuell aktive Sprache — bis eine echte Übersetzung existiert
 /// immer Deutsch, da das die einzige tatsächlich verfügbare Sprache
 /// ist (siehe TODO.md "Hilfe-Übersetzung").
-const _Sprache _aktuelleSprache = _Sprache('🇩🇪', 'Deutsch');
+const _Sprache _aktuelleSprache = _Sprache('🇩🇪', 'Deutsch', '', '');
 
 const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
-  _Sprache('🇹🇷', 'Türkçe'),
-  _Sprache('🇺🇦', 'Українська'),
-  _Sprache('🇪🇸', 'Español'),
-  _Sprache('🇮🇹', 'Italiano'),
-  _Sprache('🇮🇳', 'हिन्दी'),
-  _Sprache('🇬🇧', 'English'),
-  _Sprache('🇫🇷', 'Français'),
+  _Sprache(
+    '🇹🇷',
+    'Türkçe',
+    'Yakında',
+    'Bu dil, Yardım bölümünün gelecek sürümlerinden birinde '
+        'eklenecek. Şu anda Yardım yalnızca Almanca olarak mevcut.',
+  ),
+  _Sprache(
+    '🇺🇦',
+    'Українська',
+    'Незабаром',
+    'Ця мова з’явиться в одній з наступних версій довідки. Наразі '
+        'довідка доступна лише німецькою мовою.',
+  ),
+  _Sprache(
+    '🇪🇸',
+    'Español',
+    'Próximamente',
+    'Este idioma estará disponible en una de las próximas '
+        'versiones de la Ayuda. Por ahora, la Ayuda solo está '
+        'disponible en alemán.',
+  ),
+  _Sprache(
+    '🇮🇹',
+    'Italiano',
+    'Presto disponibile',
+    'Questa lingua sarà disponibile in una delle prossime versioni '
+        'della Guida. Al momento la Guida è disponibile solo in '
+        'tedesco.',
+  ),
+  _Sprache(
+    '🇮🇳',
+    'हिन्दी',
+    'जल्द उपलब्ध होगा',
+    'यह भाषा सहायता के किसी अगले संस्करण में उपलब्ध होगी। फिलहाल '
+        'सहायता केवल जर्मन भाषा में उपलब्ध है।',
+  ),
+  _Sprache(
+    '🇬🇧',
+    'English',
+    'Coming soon',
+    'This language will be available in one of the next versions '
+        'of the Help section. For now, the Help is only available '
+        'in German.',
+  ),
+  _Sprache(
+    '🇫🇷',
+    'Français',
+    'Bientôt disponible',
+    'Cette langue sera disponible dans une prochaine version de '
+        'l’Aide. Pour l’instant, l’Aide n’est disponible qu’en '
+        'allemand.',
+  ),
 ];
 
 /// Bebilderte Bedienungsanleitung hinter dem "Hilfe"-Button der Startseite.
@@ -144,7 +195,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                 title: Text(sprache.name),
                 onTap: () {
                   Navigator.of(sheetContext).pop();
-                  _zeigeSprachHinweis(context);
+                  _zeigeSprachHinweis(context, sprache);
                 },
               ),
             const SizedBox(height: 8),
@@ -154,14 +205,11 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
     );
   }
 
-  void _zeigeSprachHinweis(BuildContext context) {
+  void _zeigeSprachHinweis(BuildContext context, _Sprache sprache) {
     zeigeInfoDialog(
       context,
-      titel: 'Bald verfügbar',
-      inhalt: const Text(
-        'Diese Sprache kommt in einer der nächsten Versionen der '
-        'Hilfe. Aktuell ist die Hilfe nur auf Deutsch verfügbar.',
-      ),
+      titel: sprache.hinweisTitel,
+      inhalt: Text(sprache.hinweisText),
     );
   }
 
@@ -189,7 +237,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return TagesabschlussScaffold(
       appBar: AppBar(
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
@@ -202,7 +250,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
           ),
         ],
       ),
-      body: Stack(
+      child: Stack(
         children: <Widget>[
           SingleChildScrollView(
             key: _scrollBereichKey,
@@ -390,8 +438,9 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                     SizedBox(height: 10),
                     _Absatz(
                       'Für jeden weiteren Beleg tippt einfach auf '
-                      '„Weiteren Beleg hinzufügen" usw. Schließlich tippt ihr '
-                      'auf den orangefarbenen Button „Übertrag auf Umschlag".',
+                      '„Weiteren Kassenschnitt hinzufügen" usw. Schließlich '
+                      'tippt ihr auf den orangefarbenen Button „Übertrag '
+                      'auf Umschlag".',
                     ),
                     SizedBox(height: 10),
                     _Absatz(
