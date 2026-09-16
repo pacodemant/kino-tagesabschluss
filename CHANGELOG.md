@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 443: Flaggen-Sprachmenü auf der Hilfe-Seite eingebaut
+  (`kurzeinstieg_seite.dart`) — Globus-Icon in der AppBar öffnet
+  ein BottomSheet mit sieben Sprachen (Türkisch, Ukrainisch,
+  Spanisch, Italienisch, Hindi, Englisch, Französisch), jeweils
+  mit Flagge und Sprachname in eigener Schrift. Tap auf eine
+  Sprache zeigt bisher nur den Hinweis "Bald verfügbar" (per
+  `zeigeInfoDialog`) — reine UI-Vorbereitung, noch keine echte
+  Übersetzung. Neuer TODO.md-Punkt unter Roadmap/Post-MVP für die
+  eigentliche Übersetzungsarbeit.
+
 - Run 442: Hinweis-Dialoge zu den Cent-Eingabefeldern auf der
   Bargeld-Seite (Schritt 1) ergänzt — betrifft "Münzgeld eingeben"
   (`schritt1_muenzen_lose_section.dart`) und "Sonstiges eingeben"

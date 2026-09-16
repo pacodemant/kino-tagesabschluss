@@ -1,5 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+
+/// Sprachen fürs Flaggen-Menü der Hilfe-Seite (Auswahl noch ohne
+/// Funktion, siehe _zeigeSprachHinweis() — Übersetzung folgt später).
+class _Sprache {
+  const _Sprache(this.flagge, this.name);
+
+  final String flagge;
+  final String name;
+}
+
+const List<_Sprache> _verfuegbareSprachen = <_Sprache>[
+  _Sprache('🇹🇷', 'Türkçe'),
+  _Sprache('🇺🇦', 'Українська'),
+  _Sprache('🇪🇸', 'Español'),
+  _Sprache('🇮🇹', 'Italiano'),
+  _Sprache('🇮🇳', 'हिन्दी'),
+  _Sprache('🇬🇧', 'English'),
+  _Sprache('🇫🇷', 'Français'),
+];
 
 /// Bebilderte Bedienungsanleitung hinter dem "Hilfe"-Button der Startseite.
 /// Inhalt und Screenshots stammen aus der vom Kino erstellten Anleitung
@@ -82,6 +102,53 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
     }
   }
 
+  void _zeigeSprachauswahl(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Sprache wählen',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            for (final _Sprache sprache in _verfuegbareSprachen)
+              ListTile(
+                leading: Text(
+                  sprache.flagge,
+                  style: const TextStyle(fontSize: 24),
+                ),
+                title: Text(sprache.name),
+                onTap: () {
+                  Navigator.of(sheetContext).pop();
+                  _zeigeSprachHinweis(context);
+                },
+              ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _zeigeSprachHinweis(BuildContext context) {
+    zeigeInfoDialog(
+      context,
+      titel: 'Bald verfügbar',
+      inhalt: const Text(
+        'Diese Sprache kommt in einer der nächsten Versionen der '
+        'Hilfe. Aktuell ist die Hilfe nur auf Deutsch verfügbar.',
+      ),
+    );
+  }
+
   void _umschalten(int index) {
     final bool wirdGeoeffnet = _offenerIndex != index;
     setState(() {
@@ -111,6 +178,13 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
         backgroundColor: AppFarben.appBarRot,
         foregroundColor: Colors.white,
         title: const Text('Hilfe'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.language),
+            tooltip: 'Sprache',
+            onPressed: () => _zeigeSprachauswahl(context),
+          ),
+        ],
       ),
       body: Stack(
         children: <Widget>[
