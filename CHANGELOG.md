@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 444: EC-Beleg-Sub-Kacheln (Schritt 2, 2+-Beleg-Modus,
+  `schritt2_ec_beleg_sub_kacheln.dart`) zeigen den Titel "Beleg N"
+  jetzt immer, auch nach erfolgreichem Scan (vorher wechselte der
+  Titel dann komplett zu "Terminal: <ID>" und die Nummer verschwand
+  — dadurch war auf einen Blick schwer zu erkennen, ob alle Belege
+  durchnummeriert vorhanden sind). Nach Scan zusätzlich "· Terminal:
+  <ID>" angehängt. Neue dezente Erfolgs-Markierung für vollständig
+  erfasste Belege (Betrag vorhanden + lesbare Terminal-ID, keine
+  Fehlermarkierung): kleines grünes Häkchen vor dem Titel plus
+  leicht grünlicher statt grauer Kartenrand — Hintergrundfarbe
+  unverändert, bewusst kein aufdringliches Signal. Auslöser: Pacos
+  Wunsch nach besserer Vollständigkeits-Übersicht ohne den Fokus
+  komplett auf die Erfolgsmarkierung zu lenken.
+
 - Run 443a: Sprachauswahl-BottomSheet aus Run 443 zeigt jetzt oben
   zusätzlich die aktuell aktive Sprache (🇩🇪 Deutsch, mit grünem
   Häkchen und "Aktuell aktiv"-Untertitel, durch einen Trenner von

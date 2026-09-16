@@ -138,6 +138,12 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
   bool get _labelIstLesbarUndBefuellt =>
       label.isNotEmpty && label.trim().toLowerCase() != 'unleserlich';
 
+  /// true, wenn dieser Beleg einen Betrag UND eine lesbare Terminal-ID
+  /// hat, also vollständig und ohne offene Fehler eingelesen wurde —
+  /// steuert die dezente Erfolgs-Markierung (Häkchen + Kartenrand).
+  bool get _erfolgreichGescannt =>
+      betragCent > 0 && !tidUnleserlich && _labelIstLesbarUndBefuellt;
+
   Future<void> _beiLoeschenGedrueckt(BuildContext context) async {
     final bool? ok = await showDialog<bool>(
       context: context,
@@ -173,7 +179,11 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
         color: Colors.grey.shade50,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.grey.shade300),
+          side: BorderSide(
+            color: _erfolgreichGescannt
+                ? Colors.green.shade200
+                : Colors.grey.shade300,
+          ),
         ),
         margin: EdgeInsets.zero,
         child: Column(
@@ -260,20 +270,35 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                       onChanged: onTidGeaendert,
                                     ),
                                   )
-                                : Text(
-                                    _labelIstLesbarUndBefuellt
-                                        ? 'Terminal: $label'
-                                        : 'Beleg ${belegIndex + 1}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                      color: tidUnleserlich
-                                          ? Colors.red.shade700
-                                          : (_labelIstLesbarUndBefuellt
-                                                ? Colors.black87
-                                                : Colors.grey.shade500),
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
+                                : Row(
+                                    children: <Widget>[
+                                      if (_erfolgreichGescannt) ...<Widget>[
+                                        Icon(
+                                          Icons.check_circle,
+                                          size: 14,
+                                          color: Colors.green.shade600,
+                                        ),
+                                        const SizedBox(width: 4),
+                                      ],
+                                      Expanded(
+                                        child: Text(
+                                          _labelIstLesbarUndBefuellt
+                                              ? 'Beleg ${belegIndex + 1} · '
+                                                  'Terminal: $label'
+                                              : 'Beleg ${belegIndex + 1}',
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                            color: tidUnleserlich
+                                                ? Colors.red.shade700
+                                                : (_labelIstLesbarUndBefuellt
+                                                      ? Colors.black87
+                                                      : Colors.grey.shade500),
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
                                   )),
                     ),
                     if (betragCent > 0) ...<Widget>[
