@@ -299,9 +299,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                       'aufgeschlüsselt** werden. Das müsst ihr nicht '
                       'händisch machen: Ihr **fotografiert die '
                       'Kassenschnitt-Belege einfach**, die App liest '
-                      'sie aus und rechnet alles für euch. Das dauert '
-                      'jetzt ein paar Sekunden, erspart uns und der '
-                      'Buchhaltung eine Menge neue Tipperei.',
+                      'sie aus und rechnet alles für euch.',
                     ),
                     SizedBox(height: 10),
                     _Absatz(

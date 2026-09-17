@@ -9,6 +9,44 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 449a: Testfeedback Paco zu Run 448/449 (Flugmodus-Test auf dem
+  iPhone), 3 Korrekturen:
+  - tagesabschluss_schritt3_seite.dart + verlauf_detail_seite.dart:
+    Popup-Text für den nicht unterscheidbaren CORS-/Netzwerk-Fall
+    war "zu kryptisch für MA" (sprach von "Antwort des Servers" und
+    "nicht sicher unterscheidbar") — auf einfache Sprache
+    umformuliert ("vermutlich keine Internetverbindung ... Eingaben
+    sind gespeichert ... bitte später erneut senden"). Der
+    Fehlschlag-Text zeigt die technische Fehlermeldung jetzt explizit
+    als "(fürs Büro)" gekennzeichnet, nicht mehr direkt als erste
+    Information.
+  - tagesabschluss_schritt3_seite.dart: Bug behoben — der rote
+    Warn-Haken (Run 448) ging beim erneuten Öffnen von "Übertrag auf
+    Umschlag" verloren (wieder grauer Haken), weil _uploadVersucht
+    reiner Session-State war und bei einer neuen Seiteninstanz wieder
+    auf false startete, obwohl das Startmenü (liest den persistierten
+    Status) weiterhin korrekt Rot zeigte. _initialisierenAsync() liest
+    jetzt zusätzlich LokalerSpeicher.ladeVersandNichtBestaetigtDatum()
+    und stellt _uploadVersucht bei Treffer wieder her — analog zur
+    bereits bestehenden Signatur-Wiederherstellung für
+    _abrechnungGesendet.
+  - kurzeinstieg_seite.dart, Kachel "Die App": letzter Satz des ersten
+    Absatzes ("Das dauert jetzt ein paar Sekunden...") auf Pacos
+    Hinweis wieder entfernt — Dopplung, das Fotografieren wird weiter
+    unten in der Hilfe bereits erklärt.
+
+  Nicht umgesetzt, da eigenständiges, größeres Thema: Paco fragte, ob
+  die App auch im Flugmodus (bis zum eigentlichen Sende-Schritt)
+  starten/nutzbar sein sollte. Verifiziert (siehe Memory
+  project_sw_update_deprecated): Flutter 3.44.5 generiert nur noch
+  einen Aufräum-Service-Worker ohne Caching/Fetch-Handler (Flutter hat
+  das Standard-Offline-Caching bewusst abgeschafft, offizielles Issue
+  flutter/flutter#156910) — die PWA hat deshalb aktuell grundsätzlich
+  KEIN Offline-Caching mehr, nicht spezifisch für diese App kaputt.
+  Echte Offline-Fähigkeit würde einen selbst geschriebenen Service
+  Worker (App-Shell-Precaching) erfordern — eigener, separat zu
+  planender Architektur-Run, hier nur dokumentiert, nicht begonnen.
+
 - Run 449: Kleinere Textkorrekturen, kein Logik-Fokus:
   - kurzeinstieg_seite.dart, Kachel "Die App", erster Absatz: Text zur
     Kartenart-Aufschlüsselung auf Pacos aktuellen Wortlaut angepasst

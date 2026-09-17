@@ -323,6 +323,20 @@ class _TagesabschlussSchritt3SeiteState
         }
       },
     );
+    LokalerSpeicher.ladeVersandNichtBestaetigtDatum(
+      widget.argumente.kinoId,
+    ).then((String? datum) {
+      if (mounted && datum == DatumsHelper.logischesIsoDatum()) {
+        // Stellt den Warn-Zustand nach einem Neuaufbau dieser Seite
+        // (z. B. "Übertrag auf Umschlag" erneut geöffnet) wieder her —
+        // _uploadVersucht ist sonst reiner Session-State und wäre nach
+        // einer neuen Seiteninstanz wieder false, sodass der Haken hier
+        // fälschlich wieder grau statt rot wirkte, obwohl das Startmenü
+        // (liest denselben persistierten Status) bereits korrekt Rot
+        // zeigte (Paco-Testfund Run 448/449).
+        setState(() => _uploadVersucht = true);
+      }
+    });
   }
 
   /// Speichert den Abschluss beim Öffnen der Seite automatisch.
@@ -480,22 +494,25 @@ class _TagesabschlussSchritt3SeiteState
         final bool unklar = ApiUploadService.isCorsArtFehler(e);
         final String meldung;
         if (unklar) {
+          // Einfache Sprache für MA (Paco-Testfeedback: bisheriger Text
+          // war zu kryptisch, sprach von "Antwort des Servers" und
+          // "nicht sicher unterscheidbar").
           meldung =
-              'Die Abrechnung konnte nicht bestätigt an die Zentrale '
-              '(Flurbocash) übertragen werden. Das kann heißen, dass sie '
-              'zwar ankam, die Antwort des Servers aber nicht lesbar '
-              'war — oder dass gar keine Verbindung bestand (z. B. kein '
-              'Netz). Das lässt sich von hier aus nicht sicher '
-              'unterscheiden. Bitte den Versand später noch einmal '
-              'versuchen.';
+              'Die Abrechnung konnte nicht sicher an die Zentrale '
+              '(Flurbocash) übertragen werden — vermutlich gab es gerade '
+              'keine Internetverbindung. Deine Eingaben sind gespeichert '
+              'und gehen nicht verloren. Bitte später noch einmal auf '
+              '"Abrechnung an Büro senden" tippen.';
         } else {
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
           meldung =
               'Die Abrechnung konnte nicht an die Zentrale (Flurbocash) '
-              'übertragen werden und wurde nur lokal gespeichert.\n\n'
-              'Fehler: $anzeige';
+              'übertragen werden. Deine Eingaben sind gespeichert und '
+              'gehen nicht verloren. Bitte später noch einmal auf '
+              '"Abrechnung an Büro senden" tippen.\n\n'
+              'Fehlermeldung (fürs Büro): $anzeige';
         }
         // Popup statt SnackBar (analog Run 437 bei Erfolg) — Paco-Wunsch,
         // damit ein Fehlschlag wirklich wahrgenommen wird statt als

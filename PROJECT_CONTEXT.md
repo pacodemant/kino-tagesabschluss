@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.97+449 · Run 449
+Version: 0.9.98+449a · Run 449a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 449)
+## Laufender Entwicklungsstand (Run 449a)
+
+- Run 449a ✅ Testfeedback-Korrekturen zu Run 448/449: Popup-Text
+  beim nicht bestätigten Versand in einfacher Sprache, Bug behoben
+  (roter Warn-Haken ging beim Neuaufbau von Schritt 3 verloren), ein
+  redundanter Satz in der Hilfe-Kachel "Die App" wieder entfernt.
+  Details siehe CHANGELOG.md.
 
 - Run 449 ✅ Hilfe-Kachel "Die App" (erster Absatz) auf Pacos aktuellen
   Wortlaut angepasst, Versionsstring jetzt auch am Ende der Hilfe-Seite

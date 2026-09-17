@@ -101,19 +101,21 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         final bool unklar = ApiUploadService.isCorsArtFehler(e);
         final String meldung;
         if (unklar) {
+          // Einfache Sprache für MA (Paco-Testfeedback zu Run 448,
+          // analog tagesabschluss_schritt3_seite.dart).
           meldung =
-              'Die Abrechnung konnte nicht bestätigt an die Zentrale '
-              '(Flurbocash) übertragen werden. Das kann heißen, dass sie '
-              'zwar ankam, die Antwort des Servers aber nicht lesbar '
-              'war — oder dass gar keine Verbindung bestand (z. B. kein '
-              'Netz). Das lässt sich von hier aus nicht sicher '
-              'unterscheiden. Bitte den Versand später noch einmal '
+              'Die Abrechnung konnte nicht sicher an die Zentrale '
+              '(Flurbocash) übertragen werden — vermutlich gab es gerade '
+              'keine Internetverbindung. Bitte später noch einmal '
               'versuchen.';
         } else {
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-          meldung = 'API Upload fehlgeschlagen\n$anzeige';
+          meldung =
+              'Die Abrechnung konnte nicht an die Zentrale (Flurbocash) '
+              'übertragen werden. Bitte später noch einmal versuchen.\n\n'
+              'Fehlermeldung (fürs Büro): $anzeige';
         }
         // Popup statt SnackBar (analog Run 448,
         // tagesabschluss_schritt3_seite.dart) — soll wirklich
