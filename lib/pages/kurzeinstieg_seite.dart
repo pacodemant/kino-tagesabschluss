@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/config/app_version.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -292,15 +293,15 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                       'Die App soll euch die '
                       '**Kassenabrechnung einfacher, schneller und '
                       'fehlerresistenter** machen. Außerdem müssen '
-                      'die Kartenzahlungsbelege künftig nicht mehr nur '
-                      'als Gesamtbetrag, sondern **nach Kartenart '
-                      'einzeln aufgeschlüsselt** an die Buchhaltung '
-                      'gesendet werden. Das müsst ihr nicht händisch '
-                      'machen: Ihr **fotografiert die '
+                      'die Kassenschnitte der Terminals künftig nicht '
+                      'mehr nur als Gesamtbetrag ermittelt werden, '
+                      'sondern aus Fiskalgründen **nach Kartenart '
+                      'aufgeschlüsselt** werden. Das müsst ihr nicht '
+                      'händisch machen: Ihr **fotografiert die '
                       'Kassenschnitt-Belege einfach**, die App liest '
-                      'sie aus und rechnet alles für euch – das '
-                      'erspart euch und der Buchhaltung eine Menge '
-                      'unangenehmer Rechenarbeit.',
+                      'sie aus und rechnet alles für euch. Das dauert '
+                      'jetzt ein paar Sekunden, erspart uns und der '
+                      'Buchhaltung eine Menge neue Tipperei.',
                     ),
                     SizedBox(height: 10),
                     _Absatz(
@@ -561,6 +562,16 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                       'sich auch von selbst.',
                     ),
                   ],
+                ),
+                const SizedBox(height: 24),
+                Center(
+                  child: Text(
+                    AppVersion.text,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppFarben.subtilerText,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
               ],

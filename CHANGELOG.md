@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 449: Kleinere Textkorrekturen, kein Logik-Fokus:
+  - kurzeinstieg_seite.dart, Kachel "Die App", erster Absatz: Text zur
+    Kartenart-Aufschlüsselung auf Pacos aktuellen Wortlaut angepasst
+    ("Kassenschnitte der Terminals ... aus Fiskalgründen nach
+    Kartenart aufgeschlüsselt" statt "Kartenzahlungsbelege ... nach
+    Kartenart einzeln aufgeschlüsselt an die Buchhaltung gesendet"),
+    Satzzeichen-Korrektur (Gedankenstrich vor "das erspart..." durch
+    Punkt + neuen Satz ersetzt: "Das dauert jetzt ein paar Sekunden,
+    erspart uns und der Buchhaltung eine Menge neue Tipperei.").
+  - kurzeinstieg_seite.dart: Versionsstring (AppVersion.text) jetzt
+    auch ganz unten auf der Hilfe-Seite zentriert, gleicher Stil wie
+    im Startmenü (fehlte dort bisher komplett).
+
 - Run 448: Root-Cause-Fix für Memory "Sendefehler als gesendet
   verbucht" — von Paco live per Flugmodus-Test auf dem iPhone
   reproduziert und bestätigt: `ApiUploadService.isCorsArtFehler()`

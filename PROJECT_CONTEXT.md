@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.96+448 · Run 448
+Version: 0.9.97+449 · Run 449
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 448)
+## Laufender Entwicklungsstand (Run 449)
+
+- Run 449 ✅ Hilfe-Kachel "Die App" (erster Absatz) auf Pacos aktuellen
+  Wortlaut angepasst, Versionsstring jetzt auch am Ende der Hilfe-Seite
+  sichtbar (analog Startmenü). Details siehe CHANGELOG.md.
 
 - Run 448 ✅ Root-Cause-Fix "Sendefehler als gesendet verbucht": ein
   echter Netzwerkausfall (z. B. Flugmodus) wurde von
