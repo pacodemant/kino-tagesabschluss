@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 449a2: TODO.md, Abschnitt "App-Update / PWA": neuer Punkt
+  "App-Shell offline-fähig machen" mit niedriger Priorität
+  eingetragen — dokumentiert das Offline-Thema aus der Run-449a-
+  Diagnose (Flutter cacht seit 3.44.5 nicht mehr automatisch) inkl.
+  einer für Yannik verständlichen Erklärung und Pacos Begründung, warum
+  das aktuell keine hohe Priorität hat (alle beteiligten Systeme sowie
+  die Ticketleser-Funktion derselben Smartphones brauchen ohnehin
+  durchgehend Netz). Reine Doku-Änderung, kein App-Code betroffen.
+
 - Run 449a: Testfeedback Paco zu Run 448/449 (Flugmodus-Test auf dem
   iPhone), 3 Korrekturen:
   - tagesabschluss_schritt3_seite.dart + verlauf_detail_seite.dart:

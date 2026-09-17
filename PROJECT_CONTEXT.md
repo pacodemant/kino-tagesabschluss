@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.98+449a · Run 449a
+Version: 0.9.99+449a2 · Run 449a2
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 449a)
+## Laufender Entwicklungsstand (Run 449a2)
+
+- Run 449a2 ✅ TODO.md: Offline-Fähigkeit (Service Worker) als
+  niedrig priorisierter Punkt dokumentiert, inkl. Yannik-tauglicher
+  Erklärung. Reine Doku-Änderung. Details siehe CHANGELOG.md.
 
 - Run 449a ✅ Testfeedback-Korrekturen zu Run 448/449: Popup-Text
   beim nicht bestätigten Versand in einfacher Sprache, Bug behoben

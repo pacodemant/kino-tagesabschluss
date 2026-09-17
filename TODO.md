@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 449a · wird fortlaufend ergänzt
+Stand: September 2026 · Run 449a2 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -382,6 +382,48 @@ um Durcheinander zu vermeiden.
       Flurbocash-Call ersetzen. Format abhängig von Yannik-Antwort.
 
 ### App-Update / PWA
+
+- [ ] **App-Shell offline-fähig machen (eigener Service Worker mit
+      Precaching)** NIEDRIGE PRIORITÄT (Paco-Einschätzung 2026-09-17,
+      nach Diagnose zu Run 448/449 — Flugmodus-Test zeigte: die PWA
+      startet aktuell gar nicht ohne Internetverbindung).
+
+      Hintergrund (verifiziert, siehe Memory
+      project_sw_update_deprecated): Flutter 3.44.5 erzeugt nur noch
+      einen reinen Aufräum-Service-Worker ohne Caching (kein
+      Fetch-Handler, kein Asset-Manifest) — Flutter hat das
+      automatische Offline-Caching bewusst abgeschafft, weil eine
+      starre Standard-Strategie nicht zu jeder App passt (offizielles
+      Issue flutter/flutter#156910). Das betrifft jede Flutter-Web-App
+      in dieser Version, ist also keine Besonderheit dieses Projekts.
+
+      Erklärung für Yannik: Um Offline-Start wiederherzustellen,
+      müsste ein eigener Service Worker geschrieben werden, der das
+      App-Grundgerüst (HTML/JS/Schriften/Icons — NICHT die Kassen-
+      daten selbst) vorab lokal auf dem Gerät speichert
+      ("App-Shell-Precaching") und bei jedem Aufruf von dort statt aus
+      dem Netz ausliefert. Nur die eigentliche Datenübertragung
+      (Flurbocash) bräuchte weiterhin eine Verbindung.
+
+      Warum niedrige Priorität: Kassensystem, EC-Terminal und
+      Flurbocash müssen für eine Abrechnung ohnehin alle online sein —
+      offline wäre der Ablauf sowieso blockiert. Zusätzlich werden
+      dieselben Smartphones auch als Ticketleser für elektronische
+      Tickets genutzt, was ebenfalls durchgehend Netz voraussetzt —
+      echte Offline-Fähigkeit nur für diese App würde praktisch daher
+      wenig bringen. Der eigentliche Schmerzpunkt (kurzer
+      Netz-Aussetzer WÄHREND des Sendens, Daten fälschlich als
+      "gesendet" markiert) ist bereits unabhängig davon in Run 448
+      behoben.
+
+      Aufwand/Risiko bei Umsetzung: mittel bis hoch — eigene
+      Caching-Strategie + Versionierung nötig (sonst droht genau das
+      Problem, wegen dem Flutter den alten Mechanismus abgeschafft
+      hat: Nutzer bleiben auf einer alten Version hängen), sorgfältiges
+      Zusammenspiel mit dem bestehenden version.json-Update-
+      Mechanismus (Run 411/412/435) nötig, aussagekräftige Tests nur
+      auf echten Zielgeräten (Android, siehe
+      project_zielplattform_android) möglich.
 
 ### Verlauf
 
