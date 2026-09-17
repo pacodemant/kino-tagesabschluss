@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.101+451 · Run 451
+Version: 0.9.102+452 · Run 452
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,18 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 449a2)
+## Laufender Entwicklungsstand (Run 452)
+
+- Run 452 ✅ Trinkgeld-Erkennung beim Belegscan: neue Terminals
+  erlauben Trinkgeld-Eingabe per Karte, das dann als eigener Posten
+  auf dem Kassenschnitt-Beleg steht (z. B. "Trinkgeld" oder "Tip").
+  KI-Prompt erkennt diesen Posten unter Varianten-Namen und liefert
+  ihn separat als `trinkgeld_cent`, `BelegScanErgebnis` hält ihn
+  getrennt von `zahlungsarten`/`gesamtBetragCent`. Im
+  Bestätigungsdialog nach dem Scan erscheint er als rein informative
+  Zeile unterhalb von "Gesamt laut Beleg" — fließt nirgends in
+  Berechnung, Zahlungsarten-Tabelle oder Flurbocash-Upload ein.
+  Details siehe CHANGELOG.md.
 
 - Run 449a2 ✅ TODO.md: Offline-Fähigkeit (Service Worker) als
   niedrig priorisierter Punkt dokumentiert, inkl. Yannik-tauglicher

@@ -47,6 +47,7 @@ class BelegScanService {
       '    { "art": "...", "betrag_cent": ... }\n'
       '  ],\n'
       '  "gesamt_betrag_cent": ...,\n'
+      '  "trinkgeld_cent": ...,\n'
       '  "hinweis": null\n'
       '}\n'
       '\n'
@@ -76,7 +77,14 @@ class BelegScanService {
       '- "hinweis" NUR setzen wenn die Summe der einzelnen Zahlungsart-Beträge\n'
       '  rechnerisch NICHT mit gesamt_betrag_cent übereinstimmt: dann einen kurzen\n'
       '  deutschen Satz (max. 8 Wörter, keine Zahlen). In ALLEN anderen Fällen: null.\n'
-      '  Keine visuellen Einschätzungen, keine Warnungen, kein Freitext in hinweis.';
+      '  Keine visuellen Einschätzungen, keine Warnungen, kein Freitext in hinweis.\n'
+      '- Manche Terminals drucken zusätzlich einen eigenen Trinkgeld-Posten,\n'
+      '  auch wenn er nicht "Trinkgeld" heißt (z. B. "Tip", "Tips", "Trinkgeld\n'
+      '  gesamt", "Gratuity"). Diesen Betrag NIEMALS als Zeile in\n'
+      '  "zahlungsarten" ausgeben, sondern ausschließlich in "trinkgeld_cent".\n'
+      '  Trinkgeld ist kein Teil von gesamt_betrag_cent und darf niemals in\n'
+      '  den Summen-Abgleich für "hinweis" einbezogen werden. Kein Trinkgeld-\n'
+      '  Posten auf dem Beleg: trinkgeld_cent auf null setzen.';
 
   /// Scannt [bild] per KI. Liefert neben dem geparsten [BelegScanErgebnis]
   /// auch das bereits für den KI-Call kodierte Foto (base64 + media_type)

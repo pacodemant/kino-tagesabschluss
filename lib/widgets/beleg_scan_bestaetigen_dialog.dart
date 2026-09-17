@@ -93,6 +93,11 @@ Future<bool> zeigeBelegScanBestaetigenDialog(
                 _betragZeile(zeile),
             const Divider(height: 20),
             _summeZeile('Gesamt laut Beleg', ergebnis.gesamtBetragCent),
+            if (ergebnis.trinkgeldCent != null &&
+                ergebnis.trinkgeldCent! > 0) ...<Widget>[
+              const SizedBox(height: 4),
+              _trinkgeldZeile(ergebnis.trinkgeldCent!),
+            ],
             if (belegScanHatUnlesbareDaten(ergebnis, zeilen)) ...<Widget>[
               const SizedBox(height: 8),
               const Text(
@@ -238,6 +243,29 @@ Widget _betragZeile(BelegScanZeilenVorschau zeile) {
           ),
       ],
     ),
+  );
+}
+
+/// Nur informativ – Trinkgeld ist nicht in [_summeZeile] enthalten und
+/// fließt nirgends in die Kassenabrechnung ein.
+Widget _trinkgeldZeile(int cent) {
+  return Row(
+    children: <Widget>[
+      const Expanded(
+        child: Text(
+          'Trinkgeld',
+          style: TextStyle(fontSize: 13, color: AppFarben.subtilerText),
+        ),
+      ),
+      SizedBox(
+        width: 104,
+        child: Text(
+          TagesabschlussFormatierung.formatiereEuro(cent),
+          textAlign: TextAlign.right,
+          style: const TextStyle(fontSize: 13, color: AppFarben.subtilerText),
+        ),
+      ),
+    ],
   );
 }
 

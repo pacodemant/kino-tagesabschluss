@@ -9,7 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
-- Run 451: Belegfoto-Kompression im Verlauf + Verlauf-Aufbewahrung
+- Run 452: Trinkgeld-Erkennung beim Belegscan (neue Terminals erlauben
+  Trinkgeld-Eingabe per Karte, taucht als eigener Posten auf dem
+  Kassenschnitt auf, z. B. "Trinkgeld" oder "Tip"):
+  - beleg_scan_service.dart: KI-Prompt um `trinkgeld_cent` erweitert,
+    inkl. Regel, dass Trinkgeld-Varianten (Trinkgeld, Tip, Tips,
+    Trinkgeld gesamt, Gratuity) erkannt, aber nie als
+    `zahlungsarten`-Zeile ausgegeben werden und nie in
+    `gesamt_betrag_cent` oder den `hinweis`-Summenabgleich einfließen.
+  - beleg_scan_ergebnis.dart: `BelegScanErgebnis` um `trinkgeldCent`
+    ergänzt, getrennt von `zahlungsarten`/`gesamtBetragCent` gehalten.
+  - beleg_scan_bestaetigen_dialog.dart: neue, rein informative Zeile
+    "Trinkgeld" unterhalb von "Gesamt laut Beleg" — nur sichtbar wenn
+    ein Betrag > 0 erkannt wurde. Fließt nicht in Schritt 2, die
+    Zahlungsarten-Tabelle oder den Flurbocash-Upload ein (bewusste
+    Scope-Entscheidung: reine Anzeige, siehe Paco-Rückfrage im Run-Chat).
+  - Run 451: Belegfoto-Kompression im Verlauf + Verlauf-Aufbewahrung
   auf 10 Tage begrenzt (Paco-Entscheidung 2026-09-17, Fortsetzung
   der Root-Cause-Analyse zu Run 450 — unkomprimierte, unbegrenzt
   archivierte Belegfotos in Hive/IndexedDB als plausibler Mitgrund

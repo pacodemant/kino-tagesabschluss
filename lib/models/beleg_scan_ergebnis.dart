@@ -40,6 +40,7 @@ class BelegScanErgebnis {
     this.belegNrBis,
     this.zahlungsarten = const <ZahlungsartErgebnis>[],
     this.gesamtBetragCent,
+    this.trinkgeldCent,
     this.hinweis,
   });
 
@@ -59,6 +60,7 @@ class BelegScanErgebnis {
               .toList() ??
           const <ZahlungsartErgebnis>[],
       gesamtBetragCent: (json['gesamt_betrag_cent'] as num?)?.toInt(),
+      trinkgeldCent: (json['trinkgeld_cent'] as num?)?.toInt(),
       hinweis: json['hinweis'] as String?,
     );
   }
@@ -71,6 +73,12 @@ class BelegScanErgebnis {
   final String? belegNrBis;
   final List<ZahlungsartErgebnis> zahlungsarten;
   final int? gesamtBetragCent;
+
+  /// Getrennt von [zahlungsarten] und [gesamtBetragCent], damit Trinkgeld
+  /// nie in die Kassenabrechnung, den Summen-Abgleich oder den
+  /// Flurbocash-Upload einfließt — es wird ausschließlich im
+  /// Bestätigungsdialog nach dem Scan informativ angezeigt.
+  final int? trinkgeldCent;
   final String? hinweis;
 
   bool get betraegePlausibel {
