@@ -400,6 +400,44 @@ class LokalerSpeicher {
   static String _sendeBestaetigungDatumKey(String kinoId) =>
       'sende_bestaetigung_datum_$kinoId';
 
+  /// Merkt sich, dass ein Versandversuch eines Kinos an diesem logischen
+  /// Datum NICHT als erfolgreich bestätigt werden konnte (echter
+  /// Fehlschlag oder Browser-Antwort nicht lesbar, siehe
+  /// ApiUploadService.isCorsArtFehler) — Gegenstück zu
+  /// [speichereSendeBestaetigung], für den roten Warn-Haken im Startmenü
+  /// (Run 448). Vorher wurde der Ambiguität-Fall fälschlich wie ein
+  /// Erfolg behandelt, siehe CHANGELOG Run 448.
+  static Future<void> markiereVersandNichtBestaetigt(
+    String kinoId, {
+    required String isoDatum,
+  }) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+      _versandNichtBestaetigtDatumKey(kinoId),
+      isoDatum,
+    );
+  }
+
+  /// Löscht den Warn-Status aus [markiereVersandNichtBestaetigt], z. B.
+  /// sobald ein späterer Versandversuch tatsächlich bestätigt wurde.
+  static Future<void> loescheVersandNichtBestaetigt(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.remove(_versandNichtBestaetigtDatumKey(kinoId));
+  }
+
+  /// Lädt das gespeicherte Datum aus [markiereVersandNichtBestaetigt],
+  /// oder null wenn der letzte Versuch bestätigt war oder es noch keinen
+  /// Versuch gab.
+  static Future<String?> ladeVersandNichtBestaetigtDatum(
+    String kinoId,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getString(_versandNichtBestaetigtDatumKey(kinoId));
+  }
+
+  static String _versandNichtBestaetigtDatumKey(String kinoId) =>
+      'versand_nicht_bestaetigt_datum_$kinoId';
+
   /// Löscht die gespeicherte Sende-Signatur eines Kinos (z. B. wenn die
   /// zugehörige Abrechnung wieder gelöscht wird — siehe
   /// [loescheFinalenTagesabschluss]).

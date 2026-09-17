@@ -1151,6 +1151,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       DatumsHelper.logischerAbrechnungsTag(),
     );
     await LokalerSpeicher.loescheSendeBestaetigung(kinoId);
+    await LokalerSpeicher.loescheVersandNichtBestaetigt(kinoId);
     if (!mounted) {
       return;
     }

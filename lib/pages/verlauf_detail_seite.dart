@@ -13,7 +13,6 @@ import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
-import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
@@ -71,6 +70,9 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         widget.abschluss.createdAt,
         DateTime.now(),
       );
+      await LokalerSpeicher.loescheVersandNichtBestaetigt(
+        widget.abschluss.kinoId,
+      );
 
       if (mounted) {
         setState(() => _gesendetAm = DateTime.now());
@@ -86,37 +88,41 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         );
       }
     } catch (e) {
-      if (ApiUploadService.isCorsArtFehler(e)) {
-        await LokalerSpeicher.markiereAlsGesendet(
-          widget.abschluss.kinoId,
-          widget.abschluss.createdAt,
-          DateTime.now(),
-        );
-        if (mounted) {
-          setState(() => _gesendetAm = DateTime.now());
-          await zeigeInfoDialog(
-            context,
-            titel: 'Senden nicht sicher bestätigt',
-            inhalt: const Text(
-              'Die Abrechnung wurde an die Zentrale geschickt, der '
-              'Browser konnte die Antwort aber nicht lesen (z. B. wegen '
-              'eines kurzen WLAN-Aussetzers). Ob sie dort tatsächlich '
-              'angekommen ist, lässt sich von hier aus nicht sicher '
-              'sagen.',
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
+      // Run 448: derselbe Fix wie in tagesabschluss_schritt3_seite.dart,
+      // _doApiUpload() — CORS-artiger Fehler und echter Netzwerkfehler
+      // sind von hier aus nicht unterscheidbar (siehe ApiUploadService.
+      // isCorsArtFehler) und werden deshalb beide als NICHT bestätigt
+      // behandelt, statt fälschlich als erledigt markiert zu werden.
+      await LokalerSpeicher.markiereVersandNichtBestaetigt(
+        widget.abschluss.kinoId,
+        isoDatum: DatumsHelper.logischesIsoDatum(),
+      );
+      if (mounted) {
+        final bool unklar = ApiUploadService.isCorsArtFehler(e);
+        final String meldung;
+        if (unklar) {
+          meldung =
+              'Die Abrechnung konnte nicht bestätigt an die Zentrale '
+              '(Flurbocash) übertragen werden. Das kann heißen, dass sie '
+              'zwar ankam, die Antwort des Servers aber nicht lesbar '
+              'war — oder dass gar keine Verbindung bestand (z. B. kein '
+              'Netz). Das lässt sich von hier aus nicht sicher '
+              'unterscheiden. Bitte den Versand später noch einmal '
+              'versuchen.';
+        } else {
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-          zeigeHinweisSnackBar(
-            context,
-            'API Upload fehlgeschlagen\n$anzeige',
-            duration: const Duration(seconds: 8),
-          );
+          meldung = 'API Upload fehlgeschlagen\n$anzeige';
         }
+        // Popup statt SnackBar (analog Run 448,
+        // tagesabschluss_schritt3_seite.dart) — soll wirklich
+        // wahrgenommen werden.
+        await zeigeInfoDialog(
+          context,
+          titel: 'Versand nicht bestätigt',
+          inhalt: Text(meldung),
+        );
       }
     } finally {
       if (mounted) {

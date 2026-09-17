@@ -9,6 +9,48 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 448: Root-Cause-Fix für Memory "Sendefehler als gesendet
+  verbucht" — von Paco live per Flugmodus-Test auf dem iPhone
+  reproduziert und bestätigt: `ApiUploadService.isCorsArtFehler()`
+  (api_upload_service.dart:465) erkennt die generischen Browser-
+  Fehlertexte ("Failed to fetch" u. Ä.), die sowohl bei einem
+  CORS-blockierten Request (Server hat geantwortet, Browser darf die
+  Antwort nur nicht lesen) als auch bei komplett fehlendem Netz
+  (Flugmodus, WLAN weg) auftreten — Browser unterscheiden das
+  absichtlich nicht (Sicherheitsgrenze), von uns aus nicht feststellbar.
+  Bisher wurde ein Treffer als "wahrscheinlich doch gesendet" behandelt
+  (`_apiUploadErledigt = true`, `markiereAlsGesendet()`), wodurch ein
+  im Flugmodus nie gesendeter Tagesabschluss dauerhaft als gesendet
+  galt UND ein erneuter Sendeversuch danach blockiert war ("Du hast
+  die Abrechnung bereits gesendet", obwohl nie etwas rausging).
+  - `tagesabschluss_schritt3_seite.dart` (`_doApiUpload()`) und
+    `verlauf_detail_seite.dart` (`_erneuthSenden()`): dieser Fall wird
+    jetzt wie ein echter Fehlschlag behandelt — kein
+    `_apiUploadErledigt`/`markiereAlsGesendet()` mehr, Popup-Titel
+    einheitlich "Versand nicht bestätigt" mit ehrlichem Hinweistext
+    (statt "Senden nicht sicher bestätigt" ohne Hinweis auf nötigen
+    erneuten Versand). Bewusster Trade-off: dadurch im (heute laut
+    Memory seltenen) echten CORS-Fall ein möglicher Doppel-Eintrag bei
+    Flurbocash statt wie bisher ein möglicherweise nie ankommender,
+    aber als erledigt markierter Tagesabschluss.
+  - `verlauf_detail_seite.dart`: echter Fehlschlag beim erneuten Senden
+    zeigt jetzt ebenfalls ein Popup statt SnackBar (Konsistenz mit
+    Schritt 3).
+  - `lokaler_speicher.dart`: neues Feld-Trio
+    `markiereVersandNichtBestaetigt`/`loescheVersandNichtBestaetigt`/
+    `ladeVersandNichtBestaetigtDatum` (SharedPreferences, pro Kino +
+    logisches Datum) als Gegenstück zu `speichereSendeBestaetigung` —
+    plus 4 neue Tests in `lokaler_speicher_test.dart`. Wird beim
+    "Heutige Abrechnung zurücksetzen"-Admin-Reset in
+    `einstellungen_seite.dart` mit geleert.
+  - Haken/Status-Icon (`tagesabschluss_schritt3_seite.dart` Senden-
+    Button UND `startmenue_seite.dart` "Kassenabrechnung"-Button, dort
+    neu): grün (bestätigt gesendet) / rot mit Warn-Icon (Paco-Wunsch:
+    "knallrot" — versucht, nicht bestätigt) / kein bzw. helles Grau-
+    Icon (nie versucht). Die dunkelgraue Zwischenstufe aus Run 447
+    entfällt zugunsten von Rot, da es jetzt nur noch zwei inhaltliche
+    Zustände gibt (bestätigt / nicht bestätigt).
+
 - Run 447: Zugang zur Stückelung bei fehlgeschlagenem Flurbocash-
   Versand gelockert + Erinnerungs-Popups statt SnackBar; Wechselgeld-
   prüf-Seite leert sich jetzt auch bei eigenständigem Aufruf ab 18 Uhr:

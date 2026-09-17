@@ -460,8 +460,17 @@ class ApiUploadService {
     return '${datum.year}_${monat}_$tag';
   }
 
-  // Browser blockiert das Lesen der Antwort bei fehlendem CORS-Header,
-  // obwohl der POST beim Server ankam. Diese Fehlertexte kommen vom Browser.
+  // Erkennt die generischen Browser-Fehlertexte ("Failed to fetch" u. Ä.),
+  // die sowohl bei einem CORS-blockierten Request (POST kam beim Server
+  // an, Antwort darf aber nicht gelesen werden) als auch bei völlig
+  // fehlendem Netz (Flugmodus, WLAN weg, Server nicht erreichbar)
+  // auftreten. Browser unterscheiden diese beiden Fälle absichtlich
+  // nicht (Sicherheitsgrenze, sonst liesse sich per CORS-Fehler
+  // Netzwerktopologie erschnüffeln) — von hier aus NICHT zuverlässig
+  // feststellbar, ob der Request den Server tatsächlich erreicht hat.
+  // Aufrufer dürfen aus true deshalb NICHT "wahrscheinlich doch
+  // gesendet" folgern (das war der Bug hinter dem CHANGELOG-Eintrag
+  // Run 448) — nur, dass der Ausgang unklar ist.
   static bool isCorsArtFehler(Object e) {
     final String text = e.toString().toLowerCase();
     return text.contains('failed to fetch') ||

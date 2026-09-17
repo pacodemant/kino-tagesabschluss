@@ -38,6 +38,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
   List<TagesabschlussFinal>? _heutigeAbschluesse;
   String? _standortModus;
   bool _abrechnungHeuteGesendet = false;
+  bool _versandHeuteNichtBestaetigt = false;
 
   Kino get kino => widget.kino;
 
@@ -73,6 +74,8 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
     final String? standortModus = await LokalerSpeicher.ladeStandortModus();
     final bool abrechnungHeuteGesendet =
         await _pruefeAbrechnungHeuteGesendet();
+    final bool versandHeuteNichtBestaetigt =
+        await _pruefeVersandHeuteNichtBestaetigt();
     if (!mounted) {
       return;
     }
@@ -91,6 +94,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
       _heutigeAbschluesse = heutige;
       _standortModus = standortModus;
       _abrechnungHeuteGesendet = abrechnungHeuteGesendet;
+      _versandHeuteNichtBestaetigt = versandHeuteNichtBestaetigt;
     });
   }
 
@@ -103,6 +107,18 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
   Future<bool> _pruefeAbrechnungHeuteGesendet() async {
     final String? gespeichertesDatum =
         await LokalerSpeicher.ladeSendeBestaetigungDatum(kino.id);
+    if (gespeichertesDatum == null) {
+      return false;
+    }
+    return gespeichertesDatum == DatumsHelper.logischesIsoDatum();
+  }
+
+  /// Analog zu [_pruefeAbrechnungHeuteGesendet], aber für den
+  /// Warn-Status aus LokalerSpeicher.markiereVersandNichtBestaetigt()
+  /// (Run 448) — ein heute versuchter, aber nicht bestätigter Versand.
+  Future<bool> _pruefeVersandHeuteNichtBestaetigt() async {
+    final String? gespeichertesDatum =
+        await LokalerSpeicher.ladeVersandNichtBestaetigtDatum(kino.id);
     if (gespeichertesDatum == null) {
       return false;
     }
@@ -240,6 +256,13 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
                       if (_abrechnungHeuteGesendet) ...<Widget>[
                         const SizedBox(width: 8),
                         const Icon(Icons.check_circle, color: Colors.green),
+                      ] else if (_versandHeuteNichtBestaetigt) ...<Widget>[
+                        // Heute wurde versucht zu senden, aber nicht
+                        // bestätigt (Run 448) — bewusst ein anderes
+                        // Icon-Symbol als der Haken, siehe
+                        // tagesabschluss_schritt3_seite.dart.
+                        const SizedBox(width: 8),
+                        const Icon(Icons.error, color: Colors.red),
                       ],
                     ],
                   ),

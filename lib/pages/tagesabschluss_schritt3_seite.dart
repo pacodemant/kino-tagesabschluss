@@ -436,6 +436,12 @@ class _TagesabschlussSchritt3SeiteState
         _abschlussVorschau!.createdAt,
         DateTime.now(),
       );
+      // Etwaigen Warn-Status aus einem früheren, nicht bestätigten Versuch
+      // an diesem Tag löschen — dieser Versuch war jetzt bestätigt
+      // erfolgreich (Run 448).
+      await LokalerSpeicher.loescheVersandNichtBestaetigt(
+        widget.argumente.kinoId,
+      );
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
         // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,
@@ -451,44 +457,54 @@ class _TagesabschlussSchritt3SeiteState
         );
       }
     } catch (e) {
-      if (ApiUploadService.isCorsArtFehler(e)) {
-        _apiUploadErledigt = true;
-        await LokalerSpeicher.markiereAlsGesendet(
-          _abschlussVorschau!.kinoId,
-          _abschlussVorschau!.createdAt,
-          DateTime.now(),
-        );
-        if (mounted) {
-          await zeigeInfoDialog(
-            context,
-            titel: 'Senden nicht sicher bestätigt',
-            inhalt: const Text(
-              'Die Abrechnung wurde an die Zentrale geschickt, der '
-              'Browser konnte die Antwort aber nicht lesen (z. B. wegen '
-              'eines kurzen WLAN-Aussetzers). Ob sie dort tatsächlich '
-              'angekommen ist, lässt sich von hier aus nicht sicher '
-              'sagen.',
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
+      // Run 448: Weder der CORS-artige Fehler (ApiUploadService.
+      // isCorsArtFehler) noch ein echter Netzwerkfehler (z. B. Flugmodus)
+      // dürfen hier noch als "wahrscheinlich doch gesendet" behandelt
+      // werden — Browser werfen für beide Fälle dieselbe generische
+      // Fehlermeldung ("Failed to fetch"/"Load failed"), von hier aus
+      // nicht zuverlässig unterscheidbar (Browser-Sicherheitsgrenze,
+      // kein client-seitig lösbares Problem). Vorher wurde dieser Fall
+      // fälschlich als erledigt markiert (_apiUploadErledigt = true,
+      // markiereAlsGesendet()) — dadurch blieb ein im Flugmodus nie
+      // gesendeter Tagesabschluss dauerhaft unversendet, während App und
+      // Verlauf ihn als gesendet auswiesen (Paco-Testfund 2026-09-16,
+      // siehe auch Memory "Sendefehler als gesendet verbucht"). Beide
+      // Fälle jetzt einheitlich als nicht bestätigt behandelt: kein
+      // _apiUploadErledigt, kein markiereAlsGesendet(), stattdessen
+      // markiereVersandNichtBestaetigt() für den roten Warn-Haken.
+      await LokalerSpeicher.markiereVersandNichtBestaetigt(
+        widget.argumente.kinoId,
+        isoDatum: DatumsHelper.logischesIsoDatum(),
+      );
+      if (mounted) {
+        final bool unklar = ApiUploadService.isCorsArtFehler(e);
+        final String meldung;
+        if (unklar) {
+          meldung =
+              'Die Abrechnung konnte nicht bestätigt an die Zentrale '
+              '(Flurbocash) übertragen werden. Das kann heißen, dass sie '
+              'zwar ankam, die Antwort des Servers aber nicht lesbar '
+              'war — oder dass gar keine Verbindung bestand (z. B. kein '
+              'Netz). Das lässt sich von hier aus nicht sicher '
+              'unterscheiden. Bitte den Versand später noch einmal '
+              'versuchen.';
+        } else {
           final String fehler = e.toString();
           final String anzeige =
               fehler.length > 120 ? '${fehler.substring(0, 120)}…' : fehler;
-          // Popup statt SnackBar (analog Run 437 bei Erfolg/CORS-
-          // Fallback oben) — Paco-Wunsch, damit ein Fehlschlag wirklich
-          // wahrgenommen wird statt als SnackBar übersehen zu werden.
-          await zeigeInfoDialog(
-            context,
-            titel: 'Versand fehlgeschlagen',
-            inhalt: Text(
+          meldung =
               'Die Abrechnung konnte nicht an die Zentrale (Flurbocash) '
               'übertragen werden und wurde nur lokal gespeichert.\n\n'
-              'Fehler: $anzeige',
-            ),
-          );
+              'Fehler: $anzeige';
         }
+        // Popup statt SnackBar (analog Run 437 bei Erfolg) — Paco-Wunsch,
+        // damit ein Fehlschlag wirklich wahrgenommen wird statt als
+        // SnackBar übersehen zu werden.
+        await zeigeInfoDialog(
+          context,
+          titel: 'Versand nicht bestätigt',
+          inhalt: Text(meldung),
+        );
       }
     } finally {
       if (mounted) {
@@ -611,10 +627,11 @@ class _TagesabschlussSchritt3SeiteState
         await _doApiUpload();
         if (!mounted) return;
         if (!_apiUploadErledigt) {
-          // Echter Fehlschlag (kein CORS-Fallback, siehe _doApiUpload()):
-          // Fehler-SnackBar kam bereits von dort. Den "Was möchtest du
-          // als nächstes tun?"-Dialog hier NICHT zeigen — der würde
-          // "Zurück zur Startseite" anbieten, obwohl nichts gesendet
+          // Nicht bestätigt (echter Fehlschlag ODER Ambiguität, siehe
+          // _doApiUpload() — seit Run 448 beide gleich behandelt): das
+          // Popup kam bereits von dort. Den "Was möchtest du als
+          // nächstes tun?"-Dialog hier NICHT zeigen — der würde "Zurück
+          // zur Startseite" anbieten, obwohl nichts bestätigt gesendet
           // wurde. Nutzer bleibt auf Schritt 3 und kann erneut senden.
           return;
         }
@@ -1016,18 +1033,19 @@ class _TagesabschlussSchritt3SeiteState
                   ),
                   const SizedBox(width: 8),
                   Icon(
-                    Icons.check_circle,
-                    // Grün = erfolgreich gesendet. Sonst neutrales Grau
-                    // statt Orange — Orange ist im Projekt bewusst als
-                    // Führungsfarbe für Bedienelemente reserviert, nicht
-                    // für Warnhinweise (siehe app_farben.dart,
-                    // nichtGesendetBadgeHintergrund). Dunkleres Grau,
-                    // wenn immerhin ein Versand versucht wurde, sonst
-                    // das hellere Grau für "nie versucht".
+                    // Grün = bestätigt erfolgreich gesendet. Rot (Run
+                    // 448, Paco-Wunsch) = versucht, aber nicht bestätigt
+                    // (echter Fehlschlag oder Ambiguität, siehe
+                    // _doApiUpload()) — bewusst ein anderes Icon-Symbol
+                    // als der Haken, damit Form UND Farbe "nicht ok"
+                    // signalisieren, nicht nur die Farbe. Sonst neutrales
+                    // Grau ("nie versucht") — bewusst nicht Orange, siehe
+                    // app_farben.dart (Orange ist Führungsfarbe).
+                    _sendenNichtBestaetigt ? Icons.error : Icons.check_circle,
                     color: _abrechnungGesendet
                         ? Colors.green
-                        : (_uploadVersucht
-                            ? AppFarben.nichtGesendetBadgeHintergrund
+                        : (_sendenNichtBestaetigt
+                            ? Colors.red
                             : Colors.grey.shade400),
                   ),
                 ],

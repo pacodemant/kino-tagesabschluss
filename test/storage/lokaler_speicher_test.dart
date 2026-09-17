@@ -189,6 +189,86 @@ void main() {
     );
   });
 
+  group(
+    'LokalerSpeicher.markiereVersandNichtBestaetigt / '
+    'ladeVersandNichtBestaetigtDatum* (Run 448)',
+    () {
+      setUp(() {
+        SharedPreferences.setMockInitialValues(<String, Object>{});
+      });
+
+      test(
+        'ohne vorherigen Versandversuch liefert '
+        'ladeVersandNichtBestaetigtDatum null',
+        () async {
+          final String? datum =
+              await LokalerSpeicher.ladeVersandNichtBestaetigtDatum(
+            'kino_01',
+          );
+          expect(datum, isNull);
+        },
+      );
+
+      test(
+        'markiereVersandNichtBestaetigt speichert das isoDatum, danach '
+        'lesbar ueber ladeVersandNichtBestaetigtDatum',
+        () async {
+          await LokalerSpeicher.markiereVersandNichtBestaetigt(
+            'kino_01',
+            isoDatum: '2026-09-16',
+          );
+
+          expect(
+            await LokalerSpeicher.ladeVersandNichtBestaetigtDatum('kino_01'),
+            '2026-09-16',
+          );
+        },
+      );
+
+      test(
+        'loescheVersandNichtBestaetigt entfernt das Datum wieder (z.B. '
+        'nach einem spaeter doch bestaetigten Versand)',
+        () async {
+          await LokalerSpeicher.markiereVersandNichtBestaetigt(
+            'kino_01',
+            isoDatum: '2026-09-16',
+          );
+
+          await LokalerSpeicher.loescheVersandNichtBestaetigt('kino_01');
+
+          expect(
+            await LokalerSpeicher.ladeVersandNichtBestaetigtDatum('kino_01'),
+            isNull,
+          );
+        },
+      );
+
+      test(
+        'unterschiedliche Kinos speichern ihren Warn-Status unabhaengig '
+        'voneinander',
+        () async {
+          await LokalerSpeicher.markiereVersandNichtBestaetigt(
+            'kino_01',
+            isoDatum: '2026-09-16',
+          );
+          await LokalerSpeicher.markiereVersandNichtBestaetigt(
+            'kino_02',
+            isoDatum: '2026-09-15',
+          );
+
+          expect(
+            await LokalerSpeicher.ladeVersandNichtBestaetigtDatum('kino_01'),
+            '2026-09-16',
+          );
+          expect(
+            await LokalerSpeicher.ladeVersandNichtBestaetigtDatum('kino_02'),
+            '2026-09-15',
+          );
+        },
+      );
+    },
+  );
+
   group('LokalerSpeicher.ladeAutoFillSchritt2', () {
     setUp(() {
       SharedPreferences.setMockInitialValues(<String, Object>{});

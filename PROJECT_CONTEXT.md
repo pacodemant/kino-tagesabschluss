@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.95+447 · Run 447
+Version: 0.9.96+448 · Run 448
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -154,7 +154,20 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 447)
+## Laufender Entwicklungsstand (Run 448)
+
+- Run 448 ✅ Root-Cause-Fix "Sendefehler als gesendet verbucht": ein
+  echter Netzwerkausfall (z. B. Flugmodus) wurde von
+  ApiUploadService.isCorsArtFehler() nicht von einem CORS-Fehler
+  unterschieden und fälschlich als "wahrscheinlich doch gesendet"
+  markiert — dadurch blieb eine nie gesendete Abrechnung dauerhaft
+  unversendet, während App/Verlauf sie als gesendet auswiesen, UND ein
+  erneuter Versand war blockiert. Jetzt wird dieser Fall wie ein echter
+  Fehlschlag behandelt (kein Persistieren als gesendet, Popup statt
+  SnackBar, Retry bleibt möglich). Neuer roter Warn-Haken ("knallrot")
+  bei Senden-Button (Schritt 3) UND Kassenabrechnung-Button (Startmenü)
+  für "versucht, nicht bestätigt", neues Persistenz-Feld dafür in
+  lokaler_speicher.dart. Details siehe CHANGELOG.md.
 
 - Run 447 ✅ Zugang zur Stückelung bei fehlgeschlagenem/nicht
   bestätigtem Flurbocash-Versand nicht mehr blockiert, stattdessen
