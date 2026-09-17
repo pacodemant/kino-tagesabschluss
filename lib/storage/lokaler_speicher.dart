@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/storage_persist_service.dart';
+import 'package:kino_bar_app/utils/beleg_foto_komprimierung.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -146,9 +147,69 @@ class LokalerSpeicher {
       }
     }
 
-    vorhandeneAbschluesse.add(abschluss.toJson());
-    await box.put(key, jsonEncode(vorhandeneAbschluesse));
+    vorhandeneAbschluesse.add(_tagesabschlussJsonFuerVerlauf(abschluss));
+    final List<Map<String, dynamic>> bereinigt =
+        _ohneAbgelaufeneBestaetigteEintraege(vorhandeneAbschluesse);
+    await box.put(key, jsonEncode(bereinigt));
     await StoragePersistService.requestIfNeeded();
+  }
+
+  /// Verlauf-Aufbewahrung (Run 452): Einträge älter als
+  /// [_verlaufAufbewahrungTage] Tage werden entfernt — aber NUR, wenn sie
+  /// bereits bestätigt an Flurbocash gesendet wurden (gesendetAm gesetzt).
+  /// Ein noch nicht bestätigter Versand (roter Warn-Haken, Run 448) bleibt
+  /// unabhängig vom Alter bestehen, bis er bestätigt ist, damit dabei
+  /// keine Buchungsdaten verloren gehen, die eventuell noch erneut
+  /// gesendet werden müssen (Paco-Entscheidung 2026-09-17).
+  static const int _verlaufAufbewahrungTage = 10;
+
+  static List<Map<String, dynamic>> _ohneAbgelaufeneBestaetigteEintraege(
+    List<Map<String, dynamic>> eintraege,
+  ) {
+    final DateTime grenze = DateTime.now().subtract(
+      const Duration(days: _verlaufAufbewahrungTage),
+    );
+    return eintraege.where((Map<String, dynamic> eintrag) {
+      final TagesabschlussFinal geparst = TagesabschlussFinal.fromJson(
+        eintrag,
+      );
+      final bool bestaetigtGesendet = geparst.gesendetAm != null;
+      final bool abgelaufen = geparst.datum.isBefore(grenze);
+      return !(bestaetigtGesendet && abgelaufen);
+    }).toList();
+  }
+
+  /// Wie [TagesabschlussFinal.toJson], aber die Belegfotos werden für die
+  /// lokale Verlaufs-Ablage komprimiert (Run 451, [BelegFotoKomprimierung])
+  /// — das Original bleibt in [abschluss] selbst unverändert und wird
+  /// weiterhin unkomprimiert für den Versand an Flurbocash verwendet, da
+  /// diese Funktion ausschließlich beim Schreiben in den Verlauf läuft.
+  static Map<String, dynamic> _tagesabschlussJsonFuerVerlauf(
+    TagesabschlussFinal abschluss,
+  ) {
+    final Map<String, dynamic> json = abschluss.toJson();
+    final List<String>? fotos = abschluss.ecBelegeFotosBase64;
+    if (fotos == null || fotos.isEmpty) {
+      return json;
+    }
+    final List<String> mediaTypenOriginal =
+        abschluss.ecBelegeFotosMediaTypen ?? <String>[];
+    final List<String> komprimierteFotos = <String>[];
+    final List<String> komprimierteMediaTypen = <String>[];
+    for (int i = 0; i < fotos.length; i++) {
+      final String original = fotos[i];
+      final String komprimiert =
+          BelegFotoKomprimierung.komprimiereFuerVerlauf(original);
+      komprimierteFotos.add(komprimiert);
+      final String urspruenglicherTyp =
+          i < mediaTypenOriginal.length ? mediaTypenOriginal[i] : 'image/jpeg';
+      komprimierteMediaTypen.add(
+        identical(komprimiert, original) ? urspruenglicherTyp : 'image/jpeg',
+      );
+    }
+    json['ecBelegeFotosBase64'] = komprimierteFotos;
+    json['ecBelegeFotosMediaTypen'] = komprimierteMediaTypen;
+    return json;
   }
 
   /// Ersetzt die zuletzt erstellte finale Tagesabrechnung desselben
@@ -197,11 +258,12 @@ class LokalerSpeicher {
       gleicherTag.removeLast();
     }
 
-    final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[
+    final List<Map<String, dynamic>> aktualisiert =
+        _ohneAbgelaufeneBestaetigteEintraege(<Map<String, dynamic>>[
       ...andereTage,
       ...gleicherTag,
-      abschluss.toJson(),
-    ];
+      _tagesabschlussJsonFuerVerlauf(abschluss),
+    ]);
     await box.put(key, jsonEncode(aktualisiert));
   }
 
@@ -683,7 +745,12 @@ class LokalerSpeicher {
       return;
     }
 
-    await box.put(key, jsonEncode(aktualisiert));
+    // Ein Eintrag kann durch das gerade gesetzte gesendetAm neu für die
+    // Aufbewahrungs-Bereinigung (Run 452) infrage kommen, z. B. wenn er
+    // vorher lange als "nicht bestätigt" liegen geblieben war.
+    final List<Map<String, dynamic>> bereinigt =
+        _ohneAbgelaufeneBestaetigteEintraege(aktualisiert);
+    await box.put(key, jsonEncode(bereinigt));
   }
 
   /// Löscht die finale Tagesabrechnung eines bestimmten Kalendertags.

@@ -9,6 +9,50 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 451: Belegfoto-Kompression im Verlauf + Verlauf-Aufbewahrung
+  auf 10 Tage begrenzt (Paco-Entscheidung 2026-09-17, Fortsetzung
+  der Root-Cause-Analyse zu Run 450 — unkomprimierte, unbegrenzt
+  archivierte Belegfotos in Hive/IndexedDB als plausibler Mitgrund
+  für Speicherdruck auf dem Gerät):
+  - Neu: `lib/utils/beleg_foto_komprimierung.dart`
+    (`BelegFotoKomprimierung.komprimiereFuerVerlauf()`) — verkleinert
+    ein Base64-Foto auf max. 1000px Kantenlänge und re-encoded es als
+    JPEG (Qualität 70), nur wenn das Ergebnis tatsächlich kleiner ist
+    als das Original (Fallback: Original unverändert). Nutzt das neu
+    hinzugefügte Package `image: ^4.10.1` (pure Dart, funktioniert
+    identisch auf Web/iOS/Android, keine Plattform-Channels nötig).
+  - lokaler_speicher.dart: `speichereFinalenTagesabschluss()` und
+    `ersetzeFinalenTagesabschluss()` komprimieren die Belegfotos ab
+    sofort NUR für die lokale Verlaufs-Ablage
+    (`_tagesabschlussJsonFuerVerlauf()`) — der an
+    `ApiUploadService.upload()` übergebene Abschluss selbst bleibt
+    unverändert in voller Auflösung, da Versand und Belegscan
+    weiterhin die Original-Base64-Daten aus dem in-memory-Objekt
+    lesen, nicht den in Hive gespeicherten (komprimierten) Wert.
+    Ausdrücklicher Paco-Wunsch: Kompression darf den Versand/Scan
+    nicht beeinträchtigen, nur die Verlaufs-Ablage.
+  - lokaler_speicher.dart: neue Aufbewahrungsgrenze
+    (`_ohneAbgelaufeneBestaetigteEintraege()`, 10 Tage) in
+    `speichereFinalenTagesabschluss()`, `ersetzeFinalenTagesabschluss()`
+    und `markiereAlsGesendet()` — ein Tagesabschluss-Eintrag wird nur
+    gelöscht, wenn er ÄLTER als 10 Tage UND bereits bestätigt an
+    Flurbocash gesendet ist (`gesendetAm` gesetzt). Ein noch nicht
+    bestätigter Versand (roter Warn-Haken, Run 448) bleibt unabhängig
+    vom Alter erhalten, bis er bestätigt ist — explizite
+    Paco-Entscheidung nach Rückfrage, um keine Buchungsdaten eines
+    offenen Versands zu verlieren.
+  - Bestehende, bereits gespeicherte Alt-Einträge werden von der
+    Kompression nicht rückwirkend erfasst (nur ab jetzt neu
+    gespeicherte/ersetzte Einträge) — durch die 10-Tage-Grenze werden
+    ältere, bereits bestätigte Alt-Einträge aber ohnehin bei der
+    nächsten Speicherung entfernt.
+  - Neue Tests: test/utils/beleg_foto_komprimierung_test.dart (4
+    Tests: Verkleinerung, tatsächliche Größenreduktion, Fallback bei
+    ungültiger Eingabe, kein unnötiges Vergrößern kleiner Fotos) und
+    test/storage/lokaler_speicher_test.dart (4 neue Tests: Kompression
+    beim Speichern + 3 Retention-Fälle: bestätigt+alt→gelöscht,
+    unbestätigt+alt→erhalten, bestätigt+jung→erhalten).
+
 - Run 450: Root-Cause-Fix "erfolgreicher Versand wird durch lokalen
   Schreibfehler fälschlich als fehlgeschlagen gemeldet" (Paco-
   Testfund 2026-09-16: MA sah "Versand fehlgeschlagen" mit

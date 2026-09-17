@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.100+450 · Run 450
+Version: 0.9.101+451 · Run 451
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -34,7 +34,9 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
     lib/theme/              → AppFarben (appBarRot #7B0000 u. a.)
     lib/utils/              → DatumsHelper (4-Uhr-Knick-Logik),
                               FeldNavigationHelper (Next-Button,
-                              Tab/Pfeiltasten-Feldnavigation)
+                              Tab/Pfeiltasten-Feldnavigation),
+                              BelegFotoKomprimierung (seit Run 451,
+                              nur für die Verlaufs-Ablage)
     lib/config/             → FeatureFlags
     config/                 → Asset-Textdateien (Getränkelisten, Zahlungsarten)
     .dev/                   → Entwicklungsworkflow und Run-System
@@ -86,7 +88,7 @@ Zwei Ebenen, kein Backend:
 
 | Box / Key-Präfix              | Inhalt                              |
 |-------------------------------|-------------------------------------|
-| `box_tagesabschluesse`        | Finale Tagesabschlüsse (Hive)       |
+| `box_tagesabschluesse`        | Finale Tagesabschlüsse (Hive) — Belegfotos werden beim Speichern für die Ablage komprimiert (Run 451), Original bleibt nur im in-memory-Objekt für Versand/Belegscan; Einträge >10 Tage werden gelöscht, sobald sie bestätigt gesendet sind |
 | `box_abrechnung_entwuerfe`    | Schritt-1-Entwürfe (Hive)           |
 | `box_schritt2_entwuerfe`      | Schritt-2-Entwürfe (Hive)           |
 | `box_getraenke_mengen`        | Getränke-Mengen (Hive)              |

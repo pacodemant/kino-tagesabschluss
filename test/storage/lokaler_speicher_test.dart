@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:image/image.dart' as img;
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,6 +17,9 @@ void main() {
       String kinoId = 'kino_01',
       required DateTime datum,
       required DateTime createdAt,
+      DateTime? gesendetAm,
+      List<String>? ecBelegeFotosBase64,
+      List<String>? ecBelegeFotosMediaTypen,
     }) {
       return TagesabschlussFinal(
         kinoId: kinoId,
@@ -37,6 +42,9 @@ void main() {
         gesamtIstCent: 0,
         differenzGesamtCent: 0,
         differenzAnfangsbestandCent: 0,
+        gesendetAm: gesendetAm,
+        ecBelegeFotosBase64: ecBelegeFotosBase64,
+        ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       );
     }
 
@@ -103,6 +111,213 @@ void main() {
       },
     );
   });
+
+  group(
+    'LokalerSpeicher Verlauf-Aufbewahrung (Run 452, 10-Tage-Grenze)',
+    () {
+      late Directory tempDir;
+
+      TagesabschlussFinal abschluss({
+        required DateTime datum,
+        required DateTime createdAt,
+        DateTime? gesendetAm,
+      }) {
+        return TagesabschlussFinal(
+          kinoId: 'kino_01',
+          kinoName: 'Test-Kino',
+          datum: datum,
+          createdAt: createdAt,
+          scheineCent: 0,
+          loseMuenzenCent: 0,
+          rollenCent: 0,
+          umschlaegeCent: 0,
+          kassenbestandGesamtCent: 0,
+          wechselgeldSollwertCent: 0,
+          barBestandAbzglWechselgeldCent: 0,
+          kinoSollCent: 0,
+          bistroSollCent: 0,
+          ausgabenCent: 0,
+          ecBelegeCent: const <int>[],
+          ecUmsatzGesamtCent: 0,
+          gesamtSollCent: 0,
+          gesamtIstCent: 0,
+          differenzGesamtCent: 0,
+          differenzAnfangsbestandCent: 0,
+          gesendetAm: gesendetAm,
+        );
+      }
+
+      setUp(() async {
+        tempDir = Directory.systemTemp.createTempSync('hive_test_');
+        Hive.init(tempDir.path);
+        await Hive.openBox('box_tagesabschluesse');
+      });
+
+      tearDown(() async {
+        await Hive.deleteFromDisk();
+        if (tempDir.existsSync()) {
+          tempDir.deleteSync(recursive: true);
+        }
+      });
+
+      test(
+        'ein bestaetigt gesendeter Eintrag aelter als 10 Tage wird bei '
+        'der naechsten Speicherung entfernt',
+        () async {
+          final DateTime alteTag = DateTime.now().subtract(
+            const Duration(days: 20),
+          );
+          await LokalerSpeicher.speichereFinalenTagesabschluss(
+            abschluss(
+              datum: alteTag,
+              createdAt: alteTag,
+              gesendetAm: alteTag.add(const Duration(minutes: 5)),
+            ),
+          );
+          await LokalerSpeicher.speichereFinalenTagesabschluss(
+            abschluss(datum: DateTime.now(), createdAt: DateTime.now()),
+          );
+
+          final List<TagesabschlussFinal> alle =
+              await LokalerSpeicher.ladeFinaleTagesabschluesse('kino_01');
+
+          expect(alle, hasLength(1));
+          expect(alle.single.gesendetAm, isNull);
+        },
+      );
+
+      test(
+        'ein NICHT bestaetigter Eintrag aelter als 10 Tage bleibt '
+        'erhalten (kein Datenverlust bei offenem Versand, Run 448)',
+        () async {
+          final DateTime alteTag = DateTime.now().subtract(
+            const Duration(days: 20),
+          );
+          await LokalerSpeicher.speichereFinalenTagesabschluss(
+            abschluss(datum: alteTag, createdAt: alteTag, gesendetAm: null),
+          );
+          await LokalerSpeicher.speichereFinalenTagesabschluss(
+            abschluss(datum: DateTime.now(), createdAt: DateTime.now()),
+          );
+
+          final List<TagesabschlussFinal> alle =
+              await LokalerSpeicher.ladeFinaleTagesabschluesse('kino_01');
+
+          expect(alle, hasLength(2));
+        },
+      );
+
+      test(
+        'ein bestaetigt gesendeter Eintrag juenger als 10 Tage bleibt '
+        'erhalten',
+        () async {
+          final DateTime kuerzlich = DateTime.now().subtract(
+            const Duration(days: 3),
+          );
+          await LokalerSpeicher.speichereFinalenTagesabschluss(
+            abschluss(
+              datum: kuerzlich,
+              createdAt: kuerzlich,
+              gesendetAm: kuerzlich.add(const Duration(minutes: 5)),
+            ),
+          );
+
+          final List<TagesabschlussFinal> alle =
+              await LokalerSpeicher.ladeFinaleTagesabschluesse('kino_01');
+
+          expect(alle, hasLength(1));
+        },
+      );
+    },
+  );
+
+  group(
+    'LokalerSpeicher Belegfoto-Kompression im Verlauf (Run 451)',
+    () {
+      late Directory tempDir;
+
+      // Echtes Rauschen (fester Seed), siehe beleg_foto_komprimierung_
+      // test.dart: bildet ein echtes, detailreiches Kamerafoto realistischer
+      // ab als eine einfarbige/regelmaessige Testflaeche.
+      String grossesBase64Foto() {
+        final img.Image bild = img.Image(width: 2000, height: 1500);
+        final Random rnd = Random(42);
+        for (int y = 0; y < 1500; y++) {
+          for (int x = 0; x < 2000; x++) {
+            bild.setPixelRgb(
+              x,
+              y,
+              rnd.nextInt(256),
+              rnd.nextInt(256),
+              rnd.nextInt(256),
+            );
+          }
+        }
+        return base64Encode(img.encodePng(bild));
+      }
+
+      TagesabschlussFinal abschlussMitFoto(String fotoBase64) {
+        return TagesabschlussFinal(
+          kinoId: 'kino_01',
+          kinoName: 'Test-Kino',
+          datum: DateTime.now(),
+          createdAt: DateTime.now(),
+          scheineCent: 0,
+          loseMuenzenCent: 0,
+          rollenCent: 0,
+          umschlaegeCent: 0,
+          kassenbestandGesamtCent: 0,
+          wechselgeldSollwertCent: 0,
+          barBestandAbzglWechselgeldCent: 0,
+          kinoSollCent: 0,
+          bistroSollCent: 0,
+          ausgabenCent: 0,
+          ecBelegeCent: const <int>[],
+          ecUmsatzGesamtCent: 0,
+          gesamtSollCent: 0,
+          gesamtIstCent: 0,
+          differenzGesamtCent: 0,
+          differenzAnfangsbestandCent: 0,
+          ecBelegeFotosBase64: <String>[fotoBase64],
+          ecBelegeFotosMediaTypen: const <String>['image/png'],
+        );
+      }
+
+      setUp(() async {
+        tempDir = Directory.systemTemp.createTempSync('hive_test_');
+        Hive.init(tempDir.path);
+        await Hive.openBox('box_tagesabschluesse');
+      });
+
+      tearDown(() async {
+        await Hive.deleteFromDisk();
+        if (tempDir.existsSync()) {
+          tempDir.deleteSync(recursive: true);
+        }
+      });
+
+      test(
+        'ein grosses Belegfoto wird beim Speichern in den Verlauf '
+        'komprimiert abgelegt (kuerzeres Base64 als das Original)',
+        () async {
+          final String original = grossesBase64Foto();
+          final TagesabschlussFinal eingabe = abschlussMitFoto(original);
+
+          await LokalerSpeicher.speichereFinalenTagesabschluss(eingabe);
+
+          final List<TagesabschlussFinal> geladen =
+              await LokalerSpeicher.ladeFinaleTagesabschluesse('kino_01');
+          final String gespeichertesFoto =
+              geladen.single.ecBelegeFotosBase64!.single;
+
+          expect(gespeichertesFoto.length, lessThan(original.length));
+          // Das Original-Objekt (z. B. weiterhin fuer den Versand an
+          // Flurbocash in Verwendung) bleibt dabei unveraendert.
+          expect(eingabe.ecBelegeFotosBase64!.single, original);
+        },
+      );
+    },
+  );
 
   group('LokalerSpeicher.speichereSendeBestaetigung / ladeSendeBestaetigung*', () {
     setUp(() {

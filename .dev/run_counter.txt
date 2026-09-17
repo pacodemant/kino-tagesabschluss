@@ -1,3 +1,3 @@
-last_run: 450
-next_run: 451
-last_run_title: Run 450: Erfolgreichen Versand nicht mehr durch lokalen Schreibfehler als fehlgeschlagen melden
+last_run: 451
+next_run: 452
+last_run_title: Run 451: Belegfoto-Kompression im Verlauf + Verlauf-Aufbewahrung auf 10 Tage begrenzt
