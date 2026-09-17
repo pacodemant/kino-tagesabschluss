@@ -9,6 +9,37 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 450: Root-Cause-Fix "erfolgreicher Versand wird durch lokalen
+  Schreibfehler fälschlich als fehlgeschlagen gemeldet" (Paco-
+  Testfund 2026-09-16: MA sah "Versand fehlgeschlagen" mit
+  QuotaExceededError beim Schreiben von
+  "flutter.sende_bestaetigung_kino_01", obwohl die Abrechnung laut
+  Flurbocash-Prüfung tatsächlich angekommen war — dadurch vermutlich
+  auch der gemeldete Doppel-Versand):
+  - tagesabschluss_schritt3_seite.dart, `_doApiUpload()`: Der
+    erfolgreiche Netzwerk-Upload (`ApiUploadService.upload()`) und
+    die anschließenden rein lokalen Bestätigungs-Merker
+    (`LokalerSpeicher.speichereSendeBestaetigung()`,
+    `markiereAlsGesendet()`, `loescheVersandNichtBestaetigt()`) lagen
+    bisher im selben try/catch. Warf der lokale Merker eine Exception
+    (z. B. QuotaExceededError bei vollem Browser-Speicher), landete
+    der Code im "Versand nicht bestätigt"-Zweig, obwohl der Versand
+    an Flurbocash bereits erfolgreich war. Die lokalen Merker-Aufrufe
+    laufen jetzt in einem eigenen try/catch, der bei Fehlschlag nur
+    loggt (`debugPrint`) — die MA sieht bei erfolgreichem Upload
+    immer "Abrechnung gesendet", unabhängig davon, ob der lokale
+    Merker klappt.
+  - verlauf_detail_seite.dart, `_erneuthSenden()`: identischer Fix
+    für den "Erneut senden"-Pfad aus dem Verlauf.
+  - Root-Cause-Analyse (verifiziert, nicht vermutet): Verlaufsdaten
+    inkl. Belegfotos liegen in Hive/IndexedDB
+    (`storage_backend_js.dart`, eigenes, größeres Kontingent),
+    der fehlgeschlagene Schreibvorgang dagegen in SharedPreferences/
+    localStorage (`shared_preferences_web`, kleines, festes
+    Kontingent) — technisch getrennt, ziehen aber aus demselben
+    Geräte-Speicherbudget. Führte zusammen mit Run 451 zur
+    Belegfoto-Kompression und Verlaufs-Aufbewahrungsgrenze.
+
 - Run 449a2: TODO.md, Abschnitt "App-Update / PWA": neuer Punkt
   "App-Shell offline-fähig machen" mit niedriger Priorität
   eingetragen — dokumentiert das Offline-Thema aus der Run-449a-

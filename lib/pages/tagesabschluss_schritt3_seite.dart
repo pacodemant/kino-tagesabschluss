@@ -435,27 +435,38 @@ class _TagesabschlussSchritt3SeiteState
       _letzteServerAntwort =
           await ApiUploadService.upload(_abschlussVorschau!);
       _apiUploadErledigt = true;
-      // Bewusst nicht mounted-gated: diese beiden Aufrufe persistieren
-      // den Sende-Status lokal und müssen auch dann laufen, wenn die
-      // Seite (z. B. via "Zurück zur Startseite") schon verlassen wurde,
-      // bevor der Upload zurückkam — sonst bleibt gesendetAm dauerhaft
-      // null, obwohl der Upload erfolgreich war (Run 396).
-      await LokalerSpeicher.speichereSendeBestaetigung(
-        widget.argumente.kinoId,
-        _sendeSignatur(),
-        isoDatum: DatumsHelper.logischesIsoDatum(),
-      );
-      await LokalerSpeicher.markiereAlsGesendet(
-        _abschlussVorschau!.kinoId,
-        _abschlussVorschau!.createdAt,
-        DateTime.now(),
-      );
-      // Etwaigen Warn-Status aus einem früheren, nicht bestätigten Versuch
-      // an diesem Tag löschen — dieser Versuch war jetzt bestätigt
-      // erfolgreich (Run 448).
-      await LokalerSpeicher.loescheVersandNichtBestaetigt(
-        widget.argumente.kinoId,
-      );
+      // Bewusst nicht mounted-gated: diese Aufrufe persistieren den
+      // Sende-Status lokal und müssen auch dann laufen, wenn die Seite
+      // (z. B. via "Zurück zur Startseite") schon verlassen wurde, bevor
+      // der Upload zurückkam — sonst bleibt gesendetAm dauerhaft null,
+      // obwohl der Upload erfolgreich war (Run 396).
+      // Eigener try/catch (Run 450): Der Versand an Flurbocash oben war
+      // bereits erfolgreich. Ein Fehler bei diesem rein lokalen Merker
+      // (z. B. QuotaExceededError bei vollem Browser-Speicher, Paco-
+      // Testfund 2026-09-16) darf einen erfolgreich übertragenen Versand
+      // nicht mehr fälschlich als "nicht bestätigt" melden — die MA sah
+      // sonst ein Fehler-Popup und schickte die Abrechnung ein zweites
+      // Mal, obwohl sie schon angekommen war.
+      try {
+        await LokalerSpeicher.speichereSendeBestaetigung(
+          widget.argumente.kinoId,
+          _sendeSignatur(),
+          isoDatum: DatumsHelper.logischesIsoDatum(),
+        );
+        await LokalerSpeicher.markiereAlsGesendet(
+          _abschlussVorschau!.kinoId,
+          _abschlussVorschau!.createdAt,
+          DateTime.now(),
+        );
+        // Etwaigen Warn-Status aus einem früheren, nicht bestätigten
+        // Versuch an diesem Tag löschen — dieser Versuch war jetzt
+        // bestätigt erfolgreich (Run 448).
+        await LokalerSpeicher.loescheVersandNichtBestaetigt(
+          widget.argumente.kinoId,
+        );
+      } catch (lokalerFehler) {
+        debugPrint('Lokaler Sende-Merker fehlgeschlagen: $lokalerFehler');
+      }
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
         // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,

@@ -65,14 +65,22 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     try {
       await ApiUploadService.upload(widget.abschluss); // .serverAntwort hier ungenutzt
-      await LokalerSpeicher.markiereAlsGesendet(
-        widget.abschluss.kinoId,
-        widget.abschluss.createdAt,
-        DateTime.now(),
-      );
-      await LokalerSpeicher.loescheVersandNichtBestaetigt(
-        widget.abschluss.kinoId,
-      );
+      // Eigener try/catch (Run 450, analog tagesabschluss_schritt3_seite.
+      // dart, _doApiUpload()): Der Versand oben war bereits erfolgreich —
+      // ein Fehler bei diesem rein lokalen Merker darf das nicht mehr als
+      // "nicht bestätigt" melden.
+      try {
+        await LokalerSpeicher.markiereAlsGesendet(
+          widget.abschluss.kinoId,
+          widget.abschluss.createdAt,
+          DateTime.now(),
+        );
+        await LokalerSpeicher.loescheVersandNichtBestaetigt(
+          widget.abschluss.kinoId,
+        );
+      } catch (lokalerFehler) {
+        debugPrint('Lokaler Sende-Merker fehlgeschlagen: $lokalerFehler');
+      }
 
       if (mounted) {
         setState(() => _gesendetAm = DateTime.now());
