@@ -14,6 +14,7 @@ class Schritt2GruppenOrchestrierung {
     required String kinoName,
     required String kopfDatumUhrzeit,
     required bool personalgetraenkeGebot,
+    required bool personalgetraenkeHervorgehoben,
     required ValueChanged<bool?> beiPersonalgetraenkeGeaendert,
     required Widget differenzAnfangsbestandEingabeZeile,
     required VoidCallback vorzeichenToggleDifferenz,
@@ -40,6 +41,7 @@ class Schritt2GruppenOrchestrierung {
       ),
       personalgetraenke: Schritt2PersonalgetraenkeSection(
         gebont: personalgetraenkeGebot,
+        hervorgehoben: personalgetraenkeHervorgehoben,
         onChanged: beiPersonalgetraenkeGeaendert,
       ),
       differenzAnfangsbestand: Schritt2DifferenzAnfangsbestandSection(

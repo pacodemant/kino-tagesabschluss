@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 466: Schritt 2: Der Grund fürs Nicht-Weiterkommen bei offener
+  Personalgetränke-Kachel ist jetzt sichtbar (UX-Audit Fund 13, statt
+  des zunächst geplanten echten Deaktivierens des Buttons — das hätte
+  die einzige Erklärung, die flüchtige SnackBar "Personalgetränke
+  gebont?", entfernt):
+  - Tippt die MA auf den (grauen) Weiter-Button, obwohl die Kachel
+    nicht abgehakt ist, scrollt Schritt 2 nach oben und die Kachel
+    bekommt einen roten Rahmen, bis sie abgehakt wird. SnackBar und
+    Blockade unverändert. Zustand nicht persistiert.
+  - schritt2_personalgetraenke_section.dart (Parameter hervorgehoben),
+    schritt2_gruppen_orchestrierung.dart, tagesabschluss_schritt2_seite.
+    dart (_personalgetraenkeHinweisAktiv).
+  - Neuer Widget-Test: schritt2_personalgetraenke_section_test.dart
+    (3 Fälle). Scroll-/Setstate-Verdrahtung in der Seite nicht
+    automatisiert getestet.
+  - Schritt 3 (Stückelung-Button) bewusst unverändert: dort ist das
+    Verhalten laut Code-Kommentar ein Paco-Wunsch.
 - Run 465a: Reine Dokumentation (kein App-Verhalten geändert): Pacos
   Test von Run 465 bestanden (Senden -> Schritt 3 erneut öffnen ->
   Verlauf ohne "Noch nicht gesendet"; Daten ändern -> bleibt

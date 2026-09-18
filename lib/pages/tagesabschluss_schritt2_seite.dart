@@ -178,6 +178,9 @@ class _TagesabschlussSchritt2SeiteState
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[];
   bool _personalgetraenkeGebot = false;
+  // Rot hervorheben, sobald "Weiter" wegen der offenen Personalgetraenke-
+  // Kachel geblockt wurde (nicht persistiert).
+  bool _personalgetraenkeHinweisAktiv = false;
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
@@ -730,7 +733,10 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   void _beiPersonalgetraenkeGeaendert(bool? v) {
-    setState(() => _personalgetraenkeGebot = v ?? false);
+    setState(() {
+      _personalgetraenkeGebot = v ?? false;
+      if (_personalgetraenkeGebot) _personalgetraenkeHinweisAktiv = false;
+    });
     _speichereEntwurf();
   }
 
@@ -2720,6 +2726,7 @@ class _TagesabschlussSchritt2SeiteState
       kinoName: widget.kinoName,
       kopfDatumUhrzeit: _kopfDatumUhrzeit(),
       personalgetraenkeGebot: _personalgetraenkeGebot,
+      personalgetraenkeHervorgehoben: _personalgetraenkeHinweisAktiv,
       beiPersonalgetraenkeGeaendert: _beiPersonalgetraenkeGeaendert,
       differenzAnfangsbestandEingabeZeile: _baueEingabeZeile(
         label: 'Differenz im Anfangsbestand',
@@ -2862,6 +2869,14 @@ class _TagesabschlussSchritt2SeiteState
               child: ElevatedButton(
                 onPressed: () {
                   if (widget.kinoId != 'kino_04' && !_personalgetraenkeGebot) {
+                    setState(() => _personalgetraenkeHinweisAktiv = true);
+                    if (_scrollController.hasClients) {
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOutCubic,
+                      );
+                    }
                     zeigeHinweisSnackBar(
                       context,
                       'Personalgetränke gebont?',
