@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 462: Admin-Entsperrung (PIN) läuft automatisch am Tagesknick ab
+  (Paco-Wunsch aus der UX-Audit-Besprechung, Fund 8):
+  - services/admin_session.dart: statt einem dauerhaften bool merkt
+    sich AdminSession den Geschäftstag (DatumsHelper.
+    logischesIsoDatum(), Cutoff 5 Uhr) der Entsperrung. `entsperrt`
+    vergleicht bei jedem Lesen mit dem aktuellen Geschäftstag — kein
+    Timer, kein Lifecycle-Hook nötig; auch eine über Nacht offen
+    gelassene PWA ist ab 5 Uhr wieder gesperrt. Getter/Setter
+    `AdminSession.entsperrt` unverändert, Aufrufer (Einstellungen,
+    Verlauf, Verlauf-Detail) brauchen keine Änderung.
+  - Hinweis: Der Schalter "Admin-Status halten" steuert nur, ob das
+    Admin-Panel in den Einstellungen aufgeklappt bleibt; er sperrt
+    AdminSession nicht. Unverändert gelassen.
+  - Neuer Unit-Test: test/services/admin_session_test.dart (5 Fälle,
+    inkl. 4:59/5:00-Grenze und Entsperren nach Mitternacht).
 - Run 461: Erstfokus in Schritt 2 landet nicht mehr auf dem optionalen
   Feld "Differenz im Anfangsbestand" (Cloud-UX-Audit, Fund 12):
   - schritt2_fokus_helper.dart, erstesLeeresFeld(): überspringt
