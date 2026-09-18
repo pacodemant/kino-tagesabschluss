@@ -106,6 +106,10 @@ class _TagesabschlussSchritt1SeiteState
   final FocusNode _wechselgeldEntnahmeGrundFocusNode = FocusNode();
   bool _wechselgeldEntnahmeBetragFehlerhaft = false;
   bool _wechselgeldEntnahmeGrundFehlerhaft = false;
+  // Standardmäßig zugeklappt (Paco-Wunsch Run 454c): seltener Sonderfall,
+  // soll nicht zu viel Prominenz bekommen. Klappt automatisch auf, wenn
+  // ein Entwurf mit bereits gesetztem Betrag geladen wird.
+  bool _wechselgeldEntnahmeAufgeklappt = false;
 
   int _wechselgeldSollwertCent = 20000;
   bool _laedt = true;
@@ -313,6 +317,9 @@ class _TagesabschlussSchritt1SeiteState
       if (hatKupferLoseWerte) {
         _kupferLoseSichtbar = true;
         _loseMuenzenAufgeklappt = true;
+      }
+      if (_wechselgeldEntnahmeCent > 0) {
+        _wechselgeldEntnahmeAufgeklappt = true;
       }
       if (erstesOeffnenHeute) {
         _loseMuenzenAufgeklappt = true;
@@ -918,6 +925,13 @@ class _TagesabschlussSchritt1SeiteState
     _wechselgeldEntnahmeGrundController.clear();
     _wechselgeldEntnahmeBetragFehlerhaft = false;
     _wechselgeldEntnahmeGrundFehlerhaft = false;
+    _wechselgeldEntnahmeAufgeklappt = false;
+  }
+
+  void _toggleWechselgeldEntnahme() {
+    setState(() {
+      _wechselgeldEntnahmeAufgeklappt = !_wechselgeldEntnahmeAufgeklappt;
+    });
   }
 
   /// zielSchrittBeimSprung: nur beim AppBar-Schritt-Sprung zu Schritt 3
@@ -940,6 +954,10 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _wechselgeldEntnahmeBetragFehlerhaft = hatGrund && !hatBetrag;
       _wechselgeldEntnahmeGrundFehlerhaft = hatBetrag && !hatGrund;
+      // Kachel könnte zugeklappt sein (Standard-Zustand) — ohne
+      // Aufklappen wären die Felder für Fokus/rote Markierung unten
+      // gar nicht erst gebaut.
+      _wechselgeldEntnahmeAufgeklappt = true;
     });
     zeigeHinweisSnackBar(
       context,
@@ -948,11 +966,14 @@ class _TagesabschlussSchritt1SeiteState
           : 'Bitte einen Betrag für die Entnahme aus der Wechselgeldkasse angeben.',
       vorherigeLoeschen: true,
     );
-    FocusScope.of(context).requestFocus(
-      hatBetrag
-          ? _wechselgeldEntnahmeGrundFocusNode
-          : _wechselgeldEntnahmeBetragFocusNode,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      FocusScope.of(context).requestFocus(
+        hatBetrag
+            ? _wechselgeldEntnahmeGrundFocusNode
+            : _wechselgeldEntnahmeBetragFocusNode,
+      );
+    });
     return false;
   }
 
@@ -1345,6 +1366,11 @@ class _TagesabschlussSchritt1SeiteState
               beiGrundGeaendert: _beiWechselgeldEntnahmeGrundGeaendert,
               betragFehlerhaft: _wechselgeldEntnahmeBetragFehlerhaft,
               grundFehlerhaft: _wechselgeldEntnahmeGrundFehlerhaft,
+              aufgeklappt: _wechselgeldEntnahmeAufgeklappt,
+              beimUmschalten: _toggleWechselgeldEntnahme,
+              betragAnzeige: _wechselgeldEntnahmeCent > 0
+                  ? _formatiereEuro(_wechselgeldEntnahmeCent)
+                  : '',
             ),
             const SizedBox(height: 10),
             schritt1_zusammenfassung.Schritt1Zusammenfassung(

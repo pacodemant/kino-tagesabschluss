@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 454c: Kachel "Entnahme Wechselgeldkasse" einklappbar gemacht
+  (Paco-Wunsch: seltener Sonderfall soll nicht zu viel Prominenz
+  bekommen):
+  - schritt1_wechselgeld_entnahme_section.dart: gleiches
+    Einklappbar-Muster wie die anderen Schritt-1-Kacheln (Card +
+    InkWell-Header mit Titel/Betragsvorschau/Pfeil-Icon, Inhalt nur
+    sichtbar wenn aufgeklappt).
+  - tagesabschluss_schritt1_seite.dart: neuer State
+    _wechselgeldEntnahmeAufgeklappt, Default zugeklappt. Klappt
+    automatisch auf, wenn ein Entwurf mit bereits gesetztem Betrag
+    geladen wird, beim Zurücksetzen wieder zugeklappt, klappt bei
+    einem Validierungsfehler (Betrag ohne Grund o.ä.) automatisch
+    auf, bevor das betroffene Feld fokussiert wird (sonst wäre das
+    Feld im zugeklappten Zustand gar nicht gebaut).
 - Run 454b: Hilfetext-Korrektur zu Run 454/454a:
   - schritt1_wechselgeld_entnahme_section.dart: Hilfetext auf
     Text.rich(TextSpan(...)) umgestellt, damit der letzte Satz
