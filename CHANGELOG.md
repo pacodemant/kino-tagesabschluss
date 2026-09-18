@@ -9,6 +9,41 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 454: Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-
+  Vorschuss, wird am Folgetag zurückgelegt) kann jetzt in Schritt 1
+  erfasst werden, ohne dass ein fälschlicher Fehlbetrag entsteht:
+  - tagesabschluss_berechnung.dart: barumsatzBereinigtCent() bekommt
+    neuen optionalen Parameter wechselgeldEntnahmeCent (Default 0),
+    wird vor dem Sollwert-Abzug zum Kassenbestand addiert.
+  - tagesabschluss_finalisieren_usecase.dart: neue Eingabefelder
+    wechselgeldEntnahmeCent/-Grund, Validierung (Betrag und Grund
+    müssen zusammen gesetzt oder beide leer sein, Betrag nicht
+    negativ).
+  - tagesabschluss_final.dart: neue optionale Felder
+    wechselgeldEntnahmeCent/-Grund inkl. JSON (mit Grund-Text,
+    anders als bei Umschlägen — deren Bezeichnung beim Speichern
+    verlorengeht).
+  - Neue Datei schritt1_wechselgeld_entnahme_section.dart: schlanke
+    Eingabe-Card (Betrag + Pflicht-Grund) in Schritt 1, direkt über
+    der Zusammenfassung.
+  - schritt1_uebersicht_section.dart / schritt1_zusammenfassung.dart:
+    neue Zeile "Entnahme Wechselgeldkasse" in der Zusammenfassung,
+    nur sichtbar wenn ein Betrag gesetzt ist.
+  - tagesabschluss_schritt1_seite.dart: neuer State (Controller,
+    Persistenz im Entwurf via AbrechnungSpeicher, Reset bei
+    "Eingaben löschen"), Validierungs-Gate vor "Weiter zu Schritt 2"
+    (Betrag ohne Grund bzw. umgekehrt wird blockiert, Feld rot
+    markiert + fokussiert).
+  - tagesabschluss_schritt2_seite.dart, tagesabschluss_schritt3_seite.dart,
+    main.dart: neue Felder durch die Argumente-Kette
+    Schritt1 → Schritt2 → Schritt3 → Finalisieren-Usecase gereicht.
+  - verlauf_detail_seite.dart: neue Zeile im Verlauf (Betrag + Grund).
+  - Bewusst NICHT in api_upload_service.dart aufgenommen (Paco-
+    Entscheidung: für Flurbocash/Buchhaltung uninteressant).
+  - Tests ergänzt: tagesabschluss_berechnung_test.dart,
+    tagesabschluss_finalisieren_usecase_test.dart.
+  - Vor diesem Run Git-Tag `v0.9.104-r453a` als Rückkehrpunkt gesetzt
+    (Paco-Wunsch, lauffähiger Stand vor der Änderung).
 - Run 453a: Korrektur zu Run 453 (Paco-Testfeedback: T2/T3 schlugen
   fehl, Zeitstempel blieb weiterhin auf Öffnungszeit stehen, auch bei
   Flurbocash kam die Öffnungszeit an):

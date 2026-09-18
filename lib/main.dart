@@ -188,6 +188,8 @@ class MeineApp extends StatelessWidget {
               wechselgeldSollwertCent: argument.wechselgeldSollwertCent,
               barBestandAbzglWechselgeldCent:
                   argument.barBestandAbzglWechselgeldCent,
+              wechselgeldEntnahmeCent: argument.wechselgeldEntnahmeCent,
+              wechselgeldEntnahmeGrund: argument.wechselgeldEntnahmeGrund,
               stueckzahlen: argument.stueckzahlen,
               loseMuenzenNachArtCent: argument.loseMuenzenNachArtCent,
               umschlaege: argument.umschlaege,

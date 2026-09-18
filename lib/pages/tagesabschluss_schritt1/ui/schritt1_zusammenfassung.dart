@@ -8,12 +8,14 @@ class Schritt1Zusammenfassung extends StatelessWidget {
     required this.wechselgeldSollwert,
     required this.barumsatzBereinigt,
     required this.barumsatzNegativ,
+    this.wechselgeldEntnahme,
   });
 
   final String kassenbestandGesamt;
   final String wechselgeldSollwert;
   final String barumsatzBereinigt;
   final bool barumsatzNegativ;
+  final String? wechselgeldEntnahme;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class Schritt1Zusammenfassung extends StatelessWidget {
       wechselgeldSollwert: wechselgeldSollwert,
       barumsatzBereinigt: barumsatzBereinigt,
       barumsatzNegativ: barumsatzNegativ,
+      wechselgeldEntnahme: wechselgeldEntnahme,
     );
   }
 }

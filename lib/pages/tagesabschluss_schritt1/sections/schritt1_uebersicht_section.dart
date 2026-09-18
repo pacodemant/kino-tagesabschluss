@@ -7,12 +7,14 @@ class Schritt1UebersichtSection extends StatelessWidget {
     required this.wechselgeldSollwert,
     required this.barumsatzBereinigt,
     required this.barumsatzNegativ,
+    this.wechselgeldEntnahme,
   });
 
   final String kassenbestandGesamt;
   final String wechselgeldSollwert;
   final String barumsatzBereinigt;
   final bool barumsatzNegativ;
+  final String? wechselgeldEntnahme;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,11 @@ class Schritt1UebersichtSection extends StatelessWidget {
               label: 'Wechselgeld',
               wert: wechselgeldSollwert,
             ),
+            if (wechselgeldEntnahme != null)
+              _UebersichtZeile(
+                label: 'Entnahme Wechselgeldkasse',
+                wert: '+ $wechselgeldEntnahme',
+              ),
             _UebersichtZeile(
               label: 'Barumsatz (bereinigt)',
               wert: barumsatzBereinigt,

@@ -48,6 +48,8 @@ class TagesabschlussSchritt2Argumente {
     required this.umschlaegeCent,
     required this.wechselgeldSollwertCent,
     required this.barBestandAbzglWechselgeldCent,
+    this.wechselgeldEntnahmeCent,
+    this.wechselgeldEntnahmeGrund,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.umschlaege,
@@ -62,6 +64,8 @@ class TagesabschlussSchritt2Argumente {
   final int umschlaegeCent;
   final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
+  final int? wechselgeldEntnahmeCent;
+  final String? wechselgeldEntnahmeGrund;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final List<UmschlagEintrag>? umschlaege;
@@ -83,6 +87,8 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
     required this.umschlaegeCent,
     required this.wechselgeldSollwertCent,
     required this.barBestandAbzglWechselgeldCent,
+    this.wechselgeldEntnahmeCent,
+    this.wechselgeldEntnahmeGrund,
     required this.stueckzahlen,
     required this.loseMuenzenNachArtCent,
     this.umschlaege,
@@ -99,6 +105,8 @@ class TagesabschlussSchritt2Seite extends StatefulWidget {
   final int umschlaegeCent;
   final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
+  final int? wechselgeldEntnahmeCent;
+  final String? wechselgeldEntnahmeGrund;
   final Map<String, int> stueckzahlen;
   final Map<String, int> loseMuenzenNachArtCent;
   final List<UmschlagEintrag>? umschlaege;
@@ -815,6 +823,8 @@ class _TagesabschlussSchritt2SeiteState
       rollenCent: widget.rollenCent,
       umschlaegeCent: widget.umschlaegeCent,
       wechselgeldSollwertCent: widget.wechselgeldSollwertCent,
+      wechselgeldEntnahmeCent: widget.wechselgeldEntnahmeCent,
+      wechselgeldEntnahmeGrund: widget.wechselgeldEntnahmeGrund,
       kinoSollCent: _kinoSollCent,
       bistroSollCent: _bistroSollCent,
       ausgabenCent: TagesabschlussBerechnung.summeCentBetraege(

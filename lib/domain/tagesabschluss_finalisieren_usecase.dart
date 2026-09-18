@@ -14,6 +14,8 @@ class TagesabschlussFinalisierenEingabe {
     required this.rollenCent,
     required this.umschlaegeCent,
     required this.wechselgeldSollwertCent,
+    this.wechselgeldEntnahmeCent,
+    this.wechselgeldEntnahmeGrund,
     required this.kinoSollCent,
     required this.bistroSollCent,
     required this.ausgabenCent,
@@ -47,6 +49,10 @@ class TagesabschlussFinalisierenEingabe {
   final int rollenCent;
   final int umschlaegeCent;
   final int wechselgeldSollwertCent;
+  // Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-Vorschuss) – wird
+  // dem gezählten Bestand vor dem Sollwert-Abzug wieder hinzugerechnet.
+  final int? wechselgeldEntnahmeCent;
+  final String? wechselgeldEntnahmeGrund;
   final int kinoSollCent;
   final int bistroSollCent;
   final int ausgabenCent;
@@ -115,6 +121,7 @@ class TagesabschlussFinalisierenUsecase {
         TagesabschlussBerechnung.barumsatzBereinigtCent(
           kassenbestandGesamtCent: kassenbestandGesamtCent,
           wechselgeldSollwertCent: eingabe.wechselgeldSollwertCent,
+          wechselgeldEntnahmeCent: eingabe.wechselgeldEntnahmeCent ?? 0,
         );
 
     final int ecUmsatzGesamtCent = TagesabschlussBerechnung.summeCentBetraege(
@@ -206,6 +213,14 @@ class TagesabschlussFinalisierenUsecase {
       umschlagBetraegeCent: eingabe.umschlaege
           ?.map((UmschlagEintrag e) => e.betragCent)
           .toList(),
+      wechselgeldEntnahmeCent:
+          (eingabe.wechselgeldEntnahmeCent ?? 0) > 0
+              ? eingabe.wechselgeldEntnahmeCent
+              : null,
+      wechselgeldEntnahmeGrund: eingabe.wechselgeldEntnahmeGrund?.isNotEmpty ==
+              true
+          ? eingabe.wechselgeldEntnahmeGrund
+          : null,
       ausgabenBetraegeCent: eingabe.ausgabenBetraegeCent != null &&
               eingabe.ausgabenBetraegeCent!.isNotEmpty
           ? List<int>.from(eingabe.ausgabenBetraegeCent!)
@@ -258,6 +273,26 @@ class TagesabschlussFinalisierenUsecase {
     if (eingabe.ecBelegeCent.any((int wert) => wert < 0)) {
       throw const TagesabschlussValidierungsFehler(
         'EC-Belege duerfen nicht negativ sein.',
+      );
+    }
+    final int wechselgeldEntnahmeCent = eingabe.wechselgeldEntnahmeCent ?? 0;
+    if (wechselgeldEntnahmeCent < 0) {
+      throw const TagesabschlussValidierungsFehler(
+        'Entnahme aus der Wechselgeldkasse darf nicht negativ sein.',
+      );
+    }
+    final bool hatGrund =
+        eingabe.wechselgeldEntnahmeGrund?.trim().isNotEmpty == true;
+    if (wechselgeldEntnahmeCent > 0 && !hatGrund) {
+      throw const TagesabschlussValidierungsFehler(
+        'Bitte einen Grund für die Entnahme aus der Wechselgeldkasse '
+        'angeben.',
+      );
+    }
+    if (wechselgeldEntnahmeCent == 0 && hatGrund) {
+      throw const TagesabschlussValidierungsFehler(
+        'Bitte einen Betrag für die Entnahme aus der Wechselgeldkasse '
+        'angeben.',
       );
     }
   }

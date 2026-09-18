@@ -22,6 +22,8 @@ void main() {
       List<String>? ecBelegeFotosMediaTypen,
       String? mitarbeiterName,
       String? anmerkung,
+      int? wechselgeldEntnahmeCent,
+      String? wechselgeldEntnahmeGrund,
     }) {
       return TagesabschlussFinalisierenEingabe(
         kinoId: kinoId,
@@ -45,6 +47,8 @@ void main() {
         ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
         mitarbeiterName: mitarbeiterName,
         anmerkung: anmerkung,
+        wechselgeldEntnahmeCent: wechselgeldEntnahmeCent,
+        wechselgeldEntnahmeGrund: wechselgeldEntnahmeGrund,
       );
     }
 
@@ -232,6 +236,65 @@ void main() {
       expect(ergebnis.ecBelegeFotosMediaTypen, isNull);
       expect(ergebnis.mitarbeiterName, isNull);
       expect(ergebnis.anmerkung, isNull);
+    });
+
+    test(
+      'finalisieren verrechnet Wechselgeld-Entnahme mit Grund korrekt',
+      () {
+        final TagesabschlussFinal ergebnis = usecase.finalisieren(
+          eingabe: eingabe(
+            wechselgeldEntnahmeCent: 60000,
+            wechselgeldEntnahmeGrund: 'Rollengeld-Vorschuss',
+          ),
+        );
+
+        // kassenbestandGesamtCent = 12800, + 60000 Entnahme - 20000 Soll
+        expect(ergebnis.barBestandAbzglWechselgeldCent, 52800);
+        expect(ergebnis.wechselgeldEntnahmeCent, 60000);
+        expect(ergebnis.wechselgeldEntnahmeGrund, 'Rollengeld-Vorschuss');
+      },
+    );
+
+    test(
+      'finalisieren normalisiert Wechselgeld-Entnahme ohne Betrag zu null',
+      () {
+        final TagesabschlussFinal ergebnis = usecase.finalisieren(
+          eingabe: eingabe(),
+        );
+
+        expect(ergebnis.wechselgeldEntnahmeCent, isNull);
+        expect(ergebnis.wechselgeldEntnahmeGrund, isNull);
+      },
+    );
+
+    test('finalisieren wirft bei Entnahme-Betrag ohne Grund', () {
+      expect(
+        () => usecase.finalisieren(
+          eingabe: eingabe(wechselgeldEntnahmeCent: 60000),
+        ),
+        throwsA(isA<TagesabschlussValidierungsFehler>()),
+      );
+    });
+
+    test('finalisieren wirft bei Entnahme-Grund ohne Betrag', () {
+      expect(
+        () => usecase.finalisieren(
+          eingabe: eingabe(wechselgeldEntnahmeGrund: 'Rollengeld'),
+        ),
+        throwsA(isA<TagesabschlussValidierungsFehler>()),
+      );
+    });
+
+    test('finalisieren wirft bei negativer Wechselgeld-Entnahme', () {
+      expect(
+        () => usecase.finalisieren(
+          eingabe: eingabe(
+            wechselgeldEntnahmeCent: -1,
+            wechselgeldEntnahmeGrund: 'x',
+          ),
+        ),
+        throwsA(isA<TagesabschlussValidierungsFehler>()),
+      );
     });
 
     test('finalisieren reicht Beleg-Fotos (base64 + media_type) durch', () {

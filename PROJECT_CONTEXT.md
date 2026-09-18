@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.104+453a · Run 453a
+Version: 0.9.105+454 · Run 454
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,22 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 452)
+## Laufender Entwicklungsstand (Run 454)
+
+- Run 454 ✅ Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-
+  Vorschuss, wird am Folgetag zurückgelegt) kann jetzt in Schritt 1
+  erfasst werden (Betrag + Pflicht-Grund), ohne dass ein fälschlicher
+  Fehlbetrag im bereinigten Barumsatz entsteht — der Betrag wird dem
+  gezählten Kassenbestand vor dem Sollwert-Abzug wieder hinzugerechnet
+  (TagesabschlussBerechnung.barumsatzBereinigtCent, neuer optionaler
+  Parameter). Bewusst NICHT als Ausgabe (Schritt 2) modelliert, da das
+  in Schritt 1 einen irreführenden negativen Zwischenwert erzeugt
+  hätte. Bewusst NICHT an Flurbocash übertragen (Paco-Entscheidung,
+  für die Buchhaltung uninteressant). Datenfeld inkl. Grund-Text wird
+  persistiert und im Verlauf angezeigt — anders als bei generischen
+  Umschlag-Einträgen, deren Bezeichnung dort verlorengeht. Vor diesem
+  Run Git-Tag `v0.9.104-r453a` als Rückkehrpunkt gesetzt. Details
+  siehe CHANGELOG.md.
 
 - Run 452 ✅ Trinkgeld-Erkennung beim Belegscan: neue Terminals
   erlauben Trinkgeld-Eingabe per Karte, das dann als eigener Posten

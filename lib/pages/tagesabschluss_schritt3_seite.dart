@@ -43,6 +43,8 @@ class TagesabschlussSchritt3Argumente {
     required this.rollenCent,
     required this.umschlaegeCent,
     required this.wechselgeldSollwertCent,
+    this.wechselgeldEntnahmeCent,
+    this.wechselgeldEntnahmeGrund,
     required this.kinoSollCent,
     required this.bistroSollCent,
     required this.ausgabenCent,
@@ -72,6 +74,8 @@ class TagesabschlussSchritt3Argumente {
   final int rollenCent;
   final int umschlaegeCent;
   final int wechselgeldSollwertCent;
+  final int? wechselgeldEntnahmeCent;
+  final String? wechselgeldEntnahmeGrund;
 
   final int kinoSollCent;
   final int bistroSollCent;
@@ -278,6 +282,8 @@ class _TagesabschlussSchritt3SeiteState
         rollenCent: widget.argumente.rollenCent,
         umschlaegeCent: widget.argumente.umschlaegeCent,
         wechselgeldSollwertCent: widget.argumente.wechselgeldSollwertCent,
+        wechselgeldEntnahmeCent: widget.argumente.wechselgeldEntnahmeCent,
+        wechselgeldEntnahmeGrund: widget.argumente.wechselgeldEntnahmeGrund,
         kinoSollCent: widget.argumente.kinoSollCent,
         bistroSollCent: widget.argumente.bistroSollCent,
         ausgabenCent: widget.argumente.ausgabenCent,

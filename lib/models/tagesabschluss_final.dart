@@ -28,6 +28,10 @@ class TagesabschlussFinal {
     this.silberMuenzenCent,
     this.kupferMuenzenCent,
     this.umschlagBetraegeCent,
+    // Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-Vorschuss) –
+    // seit Run 454, für ältere gespeicherte Einträge null
+    this.wechselgeldEntnahmeCent,
+    this.wechselgeldEntnahmeGrund,
     this.ausgabenBetraegeCent,
     this.ausgabenLabels,
     this.ecBelegeLabels,
@@ -76,6 +80,12 @@ class TagesabschlussFinal {
   final int? silberMuenzenCent;
   final int? kupferMuenzenCent;
   final List<int>? umschlagBetraegeCent;
+
+  // Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-Vorschuss, wird
+  // am Folgetag zurückgelegt) – nur als Korrekturposten zum bereinigten
+  // Barumsatz, wird nicht an Flurbocash übertragen.
+  final int? wechselgeldEntnahmeCent;
+  final String? wechselgeldEntnahmeGrund;
 
   // Rohdaten Einnahmen
   final List<int>? ausgabenBetraegeCent;
@@ -129,6 +139,8 @@ class TagesabschlussFinal {
       silberMuenzenCent: silberMuenzenCent,
       kupferMuenzenCent: kupferMuenzenCent,
       umschlagBetraegeCent: umschlagBetraegeCent,
+      wechselgeldEntnahmeCent: wechselgeldEntnahmeCent,
+      wechselgeldEntnahmeGrund: wechselgeldEntnahmeGrund,
       ausgabenBetraegeCent: ausgabenBetraegeCent,
       ausgabenLabels: ausgabenLabels,
       ecBelegeLabels: ecBelegeLabels,
@@ -175,6 +187,10 @@ class TagesabschlussFinal {
       if (kupferMuenzenCent != null) 'kupferMuenzenCent': kupferMuenzenCent,
       if (umschlagBetraegeCent != null)
         'umschlagBetraegeCent': umschlagBetraegeCent,
+      if (wechselgeldEntnahmeCent != null)
+        'wechselgeldEntnahmeCent': wechselgeldEntnahmeCent,
+      if (wechselgeldEntnahmeGrund != null)
+        'wechselgeldEntnahmeGrund': wechselgeldEntnahmeGrund,
       if (ausgabenBetraegeCent != null)
         'ausgabenBetraegeCent': ausgabenBetraegeCent,
       if (ausgabenLabels != null) 'ausgabenLabels': ausgabenLabels,
@@ -304,6 +320,9 @@ class TagesabschlussFinal {
       silberMuenzenCent: (json['silberMuenzenCent'] as num?)?.toInt(),
       kupferMuenzenCent: (json['kupferMuenzenCent'] as num?)?.toInt(),
       umschlagBetraegeCent: umschlagBetraegeCent,
+      wechselgeldEntnahmeCent:
+          (json['wechselgeldEntnahmeCent'] as num?)?.toInt(),
+      wechselgeldEntnahmeGrund: json['wechselgeldEntnahmeGrund'] as String?,
       ausgabenBetraegeCent: ausgabenBetraegeCent,
       ausgabenLabels: ausgabenLabels,
       ecBelegeLabels: ecBelegeLabels,

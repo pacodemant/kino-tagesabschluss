@@ -11,6 +11,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_wechselgeld_entnahme_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
@@ -23,6 +24,7 @@ import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
 import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
+import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/seitenwechsel_warnung_helper.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -91,6 +93,19 @@ class _TagesabschlussSchritt1SeiteState
   final List<FocusNode> _umschlagBezeichnungFocusNode = <FocusNode>[];
   final List<int> _umschlagIds = <int>[];
   int _naechsteUmschlagId = 1;
+
+  // Einmalige Entnahme aus der Wechselgeldkasse (z.B. Rollengeld-
+  // Vorschuss) – seit Run 454.
+  int _wechselgeldEntnahmeCent = 0;
+  String _wechselgeldEntnahmeGrund = '';
+  final TextEditingController _wechselgeldEntnahmeBetragController =
+      TextEditingController();
+  final TextEditingController _wechselgeldEntnahmeGrundController =
+      TextEditingController();
+  final FocusNode _wechselgeldEntnahmeBetragFocusNode = FocusNode();
+  final FocusNode _wechselgeldEntnahmeGrundFocusNode = FocusNode();
+  bool _wechselgeldEntnahmeBetragFehlerhaft = false;
+  bool _wechselgeldEntnahmeGrundFehlerhaft = false;
 
   int _wechselgeldSollwertCent = 20000;
   bool _laedt = true;
@@ -193,6 +208,10 @@ class _TagesabschlussSchritt1SeiteState
     disposeControllers(_umschlagBezeichnungController);
     disposeFocusNodes(_umschlagBetragFocusNode);
     disposeFocusNodes(_umschlagBezeichnungFocusNode);
+    _wechselgeldEntnahmeBetragController.dispose();
+    _wechselgeldEntnahmeGrundController.dispose();
+    _wechselgeldEntnahmeBetragFocusNode.dispose();
+    _wechselgeldEntnahmeGrundFocusNode.dispose();
     _scrollController.removeListener(_beiScrollAenderung);
     FocusManager.instance.removeListener(_beiGlobalerFokusAenderung);
     _scrollController.dispose();
@@ -265,6 +284,17 @@ class _TagesabschlussSchritt1SeiteState
         }
       }
       _initialisierungHelper.synchronisiereControllerAusState();
+      _wechselgeldEntnahmeCent =
+          (abrechnungDaten['wechselgeldEntnahmeCent'] as num?)?.toInt() ?? 0;
+      _wechselgeldEntnahmeGrund =
+          (abrechnungDaten['wechselgeldEntnahmeGrund'] as String?) ?? '';
+      if (_wechselgeldEntnahmeCent > 0) {
+        _wechselgeldEntnahmeBetragController.text =
+            _formatiereEuroEingabe(_wechselgeldEntnahmeCent);
+      }
+      if (_wechselgeldEntnahmeGrund.isNotEmpty) {
+        _wechselgeldEntnahmeGrundController.text = _wechselgeldEntnahmeGrund;
+      }
     }
 
     final bool hatKupferRollenWerte =
@@ -384,6 +414,7 @@ class _TagesabschlussSchritt1SeiteState
         sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
       );
+      _leereWechselgeldEntnahme();
     });
   }
 
@@ -399,6 +430,8 @@ class _TagesabschlussSchritt1SeiteState
       'umschlaege': _umschlaege
           .map((UmschlagEintrag e) => e.toJson())
           .toList(),
+      'wechselgeldEntnahmeCent': _wechselgeldEntnahmeCent,
+      'wechselgeldEntnahmeGrund': _wechselgeldEntnahmeGrund,
       'barBestandCent': _barumsatzBereinigtCent,
     });
   }
@@ -813,13 +846,38 @@ class _TagesabschlussSchritt1SeiteState
       TagesabschlussBerechnung.barumsatzBereinigtCent(
         kassenbestandGesamtCent: _kassenbestandGesamtCent,
         wechselgeldSollwertCent: _wechselgeldSollwertCent,
+        wechselgeldEntnahmeCent: _wechselgeldEntnahmeCent,
       );
+
+  Future<void> _beiWechselgeldEntnahmeBetragGeaendert(String wert) async {
+    setState(() {
+      _wechselgeldEntnahmeCent = TagesabschlussBerechnung.parseCentZiffern(wert);
+      if (_wechselgeldEntnahmeCent == 0 || _wechselgeldEntnahmeGrund.trim().isNotEmpty) {
+        _wechselgeldEntnahmeBetragFehlerhaft = false;
+      }
+    });
+    await _speichereEntwurf();
+  }
+
+  Future<void> _beiWechselgeldEntnahmeGrundGeaendert(String wert) async {
+    setState(() {
+      _wechselgeldEntnahmeGrund = wert;
+      if (wert.trim().isNotEmpty || _wechselgeldEntnahmeCent == 0) {
+        _wechselgeldEntnahmeGrundFehlerhaft = false;
+      }
+    });
+    await _speichereEntwurf();
+  }
 
   /// Für die Seitenwechsel-Rückfrage: true, sobald irgendein Betrag auf
   /// dieser Seite ungleich 0 ist oder eine Umschlag-Bezeichnung eingetragen
   /// wurde (auch bei noch 0€ Umschlag-Betrag).
   bool get _hatAusgefuellteFelder {
     if (_kassenbestandGesamtCent != 0) return true;
+    if (_wechselgeldEntnahmeCent != 0 ||
+        _wechselgeldEntnahmeGrund.trim().isNotEmpty) {
+      return true;
+    }
     return _umschlaege.any(
       (UmschlagEintrag u) => u.bezeichnung.trim().isNotEmpty,
     );
@@ -847,9 +905,19 @@ class _TagesabschlussSchritt1SeiteState
           sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
           synchronisiereControllerAusState: _synchronisiereControllerAusState,
         );
+        _leereWechselgeldEntnahme();
       },
       speichereEntwurf: _speichereEntwurf,
     );
+  }
+
+  void _leereWechselgeldEntnahme() {
+    _wechselgeldEntnahmeCent = 0;
+    _wechselgeldEntnahmeGrund = '';
+    _wechselgeldEntnahmeBetragController.clear();
+    _wechselgeldEntnahmeGrundController.clear();
+    _wechselgeldEntnahmeBetragFehlerhaft = false;
+    _wechselgeldEntnahmeGrundFehlerhaft = false;
   }
 
   /// zielSchrittBeimSprung: nur beim AppBar-Schritt-Sprung zu Schritt 3
@@ -858,7 +926,40 @@ class _TagesabschlussSchritt1SeiteState
   /// TagesabschlussSchritt2Seite.zielSchrittBeimSprung). Die "0€
   /// übernehmen?"-Rückfrage unten greift dabei unverändert, auch beim
   /// Sprung.
+  /// Prüft, ob Betrag und Grund der Wechselgeld-Entnahme zusammenpassen
+  /// (beide gesetzt oder beide leer) — verhindert einen Fehlbetrag ohne
+  /// dokumentierten Grund bzw. einen Grund ohne Betrag. Bei einem Fehler
+  /// wird das betroffene Feld rot markiert, fokussiert und ein Hinweis
+  /// eingeblendet; die Navigation zu Schritt 2 wird abgebrochen.
+  bool _pruefeWechselgeldEntnahme() {
+    final bool hatBetrag = _wechselgeldEntnahmeCent > 0;
+    final bool hatGrund = _wechselgeldEntnahmeGrund.trim().isNotEmpty;
+    if (hatBetrag == hatGrund) {
+      return true;
+    }
+    setState(() {
+      _wechselgeldEntnahmeBetragFehlerhaft = hatGrund && !hatBetrag;
+      _wechselgeldEntnahmeGrundFehlerhaft = hatBetrag && !hatGrund;
+    });
+    zeigeHinweisSnackBar(
+      context,
+      hatBetrag
+          ? 'Bitte einen Grund für die Entnahme aus der Wechselgeldkasse angeben.'
+          : 'Bitte einen Betrag für die Entnahme aus der Wechselgeldkasse angeben.',
+      vorherigeLoeschen: true,
+    );
+    FocusScope.of(context).requestFocus(
+      hatBetrag
+          ? _wechselgeldEntnahmeGrundFocusNode
+          : _wechselgeldEntnahmeBetragFocusNode,
+    );
+    return false;
+  }
+
   Future<void> _weiterZuSchritt2({int? zielSchrittBeimSprung}) async {
+    if (!_pruefeWechselgeldEntnahme()) {
+      return;
+    }
     await _orchestrierungHelper.weiterZuSchritt2(
       context: context,
       kassenbestandGesamtCent: _kassenbestandGesamtCent,
@@ -887,6 +988,11 @@ class _TagesabschlussSchritt1SeiteState
       umschlaegeCent: _umschlagSummeCent,
       wechselgeldSollwertCent: _wechselgeldSollwertCent,
       barBestandAbzglWechselgeldCent: _barumsatzBereinigtCent,
+      wechselgeldEntnahmeCent:
+          _wechselgeldEntnahmeCent > 0 ? _wechselgeldEntnahmeCent : null,
+      wechselgeldEntnahmeGrund: _wechselgeldEntnahmeGrund.trim().isNotEmpty
+          ? _wechselgeldEntnahmeGrund.trim()
+          : null,
       stueckzahlen: Map<String, int>.from(_stueckzahlen),
       loseMuenzenNachArtCent: Map<String, int>.from(_loseMuenzenNachArtCent),
       umschlaege: List<UmschlagEintrag>.from(_umschlaege),
@@ -1227,11 +1333,31 @@ class _TagesabschlussSchritt1SeiteState
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
         rollenGruppe: gruppen.rollenGruppe,
         hinweiseSection: gruppen.hinweiseSection,
-        zusammenfassung: schritt1_zusammenfassung.Schritt1Zusammenfassung(
-          kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
-          wechselgeldSollwert: '− ${_formatiereEuro(_wechselgeldSollwertCent)}',
-          barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
-          barumsatzNegativ: _barumsatzBereinigtCent < 0,
+        zusammenfassung: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Schritt1WechselgeldEntnahmeSection(
+              betragController: _wechselgeldEntnahmeBetragController,
+              grundController: _wechselgeldEntnahmeGrundController,
+              betragFocusNode: _wechselgeldEntnahmeBetragFocusNode,
+              grundFocusNode: _wechselgeldEntnahmeGrundFocusNode,
+              beiBetragGeaendert: _beiWechselgeldEntnahmeBetragGeaendert,
+              beiGrundGeaendert: _beiWechselgeldEntnahmeGrundGeaendert,
+              betragFehlerhaft: _wechselgeldEntnahmeBetragFehlerhaft,
+              grundFehlerhaft: _wechselgeldEntnahmeGrundFehlerhaft,
+            ),
+            const SizedBox(height: 10),
+            schritt1_zusammenfassung.Schritt1Zusammenfassung(
+              kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
+              wechselgeldSollwert:
+                  '− ${_formatiereEuro(_wechselgeldSollwertCent)}',
+              barumsatzBereinigt: _formatiereEuro(_barumsatzBereinigtCent),
+              barumsatzNegativ: _barumsatzBereinigtCent < 0,
+              wechselgeldEntnahme: _wechselgeldEntnahmeCent > 0
+                  ? _formatiereEuro(_wechselgeldEntnahmeCent)
+                  : null,
+            ),
+          ],
         ),
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,

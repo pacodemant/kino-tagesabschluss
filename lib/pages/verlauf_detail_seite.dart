@@ -496,6 +496,12 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                         label: 'Wechselgeld',
                         wert: '− ${_euro(a.wechselgeldSollwertCent)}',
                       ),
+                      if ((a.wechselgeldEntnahmeCent ?? 0) > 0)
+                        InfoZeile(
+                          label: 'Entnahme Wechselgeldkasse'
+                              '${a.wechselgeldEntnahmeGrund != null && a.wechselgeldEntnahmeGrund!.isNotEmpty ? ' (${a.wechselgeldEntnahmeGrund})' : ''}',
+                          wert: '+ ${_euro(a.wechselgeldEntnahmeCent!)}',
+                        ),
                       InfoZeile(
                         label: 'Bar-Bestand bereinigt',
                         wert: _euro(a.barBestandAbzglWechselgeldCent),

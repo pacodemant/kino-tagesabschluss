@@ -133,6 +133,14 @@ void main() {
         1500,
       );
       expect(
+        TagesabschlussBerechnung.barumsatzBereinigtCent(
+          kassenbestandGesamtCent: 800,
+          wechselgeldSollwertCent: 1400,
+          wechselgeldEntnahmeCent: 600,
+        ),
+        0,
+      );
+      expect(
         TagesabschlussBerechnung.differenzTagesabschlussCent(
           gesamtIstCent: 1500,
           gesamtSollCent: 1400,

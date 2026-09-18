@@ -90,8 +90,11 @@ class TagesabschlussBerechnung {
   static int barumsatzBereinigtCent({
     required int kassenbestandGesamtCent,
     required int wechselgeldSollwertCent,
+    int wechselgeldEntnahmeCent = 0,
   }) {
-    return kassenbestandGesamtCent - wechselgeldSollwertCent;
+    return kassenbestandGesamtCent +
+        wechselgeldEntnahmeCent -
+        wechselgeldSollwertCent;
   }
 
   static int gesamtSollCent({
