@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 454b: Hilfetext-Korrektur zu Run 454/454a:
+  - schritt1_wechselgeld_entnahme_section.dart: Hilfetext auf
+    Text.rich(TextSpan(...)) umgestellt, damit der letzte Satz
+    ("Wichtig: ...") fett und in Kino-Rot (AppFarben.appBarRot)
+    hervorgehoben werden kann — reine Formatierung, kein
+    Textwechsel.
 - Run 454a: Testfeedback-Korrektur zu Run 454:
   - schritt1_wechselgeld_entnahme_section.dart: Hilfetext deutlich
     gekürzt (kein Beispielbetrag mehr, dafür Hinweis auf eine

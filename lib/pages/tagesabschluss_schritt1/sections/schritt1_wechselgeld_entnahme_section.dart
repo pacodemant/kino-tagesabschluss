@@ -55,11 +55,24 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                   onPressed: () => zeigeInfoDialog(
                     context,
                     titel: 'Entnahme Wechselgeldkasse',
-                    inhalt: const Text(
-                      'Wenn ein Betrag entnommen wird, um ihn morgen als '
-                      'Kleingeld wieder in die Wechselgeldkasse '
-                      'zurückzulegen. Wichtig: eine gut sichtbare Notiz '
-                      'darüber in die Wechselgeldkasse legen.',
+                    inhalt: const Text.rich(
+                      TextSpan(
+                        children: <InlineSpan>[
+                          TextSpan(
+                            text: 'Wenn ein Betrag entnommen wird, um ihn '
+                                'morgen als Kleingeld wieder in die '
+                                'Wechselgeldkasse zurückzulegen. ',
+                          ),
+                          TextSpan(
+                            text: 'Wichtig: eine gut sichtbare Notiz '
+                                'darüber in die Wechselgeldkasse legen.',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppFarben.appBarRot,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
