@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 451 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 453 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -240,6 +240,41 @@ um Durcheinander zu vermeiden.
       werden, wie "erwartet" von "an diesem Tag ggf. gar nicht genutzt"
       unterschieden wird — sonst nervt der Hinweis mehr, als er hilft.
 
+- [ ] **BelegScan: Foto-Qualität/Ebenheit vor dem Senden prüfen**
+      WARTEND (Paco-Idee 2026-09-18): Auslöser war die Frage, ob
+      sich per iPhone-LiDAR prüfen lässt, ob ein Beleg beim
+      Fotografieren plan genug aufliegt. LiDAR selbst scheidet aus,
+      da Zielsystem Android ist (teils ohne Tiefensensor, siehe
+      project_zielplattform_android) und Pacos iPhone nur private
+      Testbequemlichkeit ist.
+      Technisch geprüft: Die Foto-Aufnahme läuft über `image_picker`
+      (pubspec.yaml:43) mit der nativen Kamera-App des
+      Betriebssystems — es gibt keinen eigenen Kamera-Preview/
+      Frame-Stream im Code, die App sieht den Beleg erst als
+      fertiges Foto (`beleg_scan_service.dart:98`).
+      Mögliche plattformunabhängige Ansätze (ohne LiDAR):
+      1) Nachträglich am fertigen Foto: Unschärfe-Score (Varianz des
+         Laplace-Filters) und/oder Kontur-/Eckenerkennung des
+         Belegumrisses (verzogene Ecken/Winkel als Hinweis auf
+         gewelltes Papier oder schiefen Winkel) — passt zum
+         bestehenden image_picker-Ablauf, kein Umbau nötig.
+      2) Live während der Aufnahme: würde Wechsel von image_picker
+         auf das camera-Package mit eigenem Preview erfordern —
+         deutlich größerer Eingriff, nur sinnvoll falls
+         Fehlaufnahmen im Betrieb tatsächlich häufig vorkommen.
+      3) Alternative ohne eigene Bildverarbeitung: Qualität der
+         Anthropic-Vision-Scan-Antwort selbst als Signal nutzen
+         (wenige/unsichere Felder → "Bitte erneut fotografieren").
+      Paco-Einwand offen: eventuell hängt die Bildqualität auch vom
+      Gerät selbst ab (z. B. besonders günstiges Smartphone-Modell)
+      statt von der Beleglage — vor einer Umsetzung nicht nur die
+      Beleglage, sondern auch Geräte-/Kameraqualität als mögliche
+      Ursache mit einbeziehen.
+      Grund fürs Zurückstellen: erst umsetzen, falls sich unscharfe/
+      schlecht lesbare Scans im echten Betrieb als wiederkehrendes
+      Problem zeigen (z. B. über Rücklaufquote fehlerhafter Scans) —
+      aktuell kein konkreter Auslöser/Beleg dafür bekannt.
+
 ### Einstellungen & Konfiguration *(Phase C)*
 
 - [ ] **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
@@ -346,26 +381,6 @@ um Durcheinander zu vermeiden.
       serverseitig eine zusaetzliche statt einer korrigierten
       Abrechnung anlegen — nicht isoliert von der "Erneut senden"-Frage
       oben zu loesen.
-
-- [ ] **Kommentar: Sendezeitpunkt erst unmittelbar beim Senden ergaenzen/
-      ersetzen** (Paco-Notiz 2026-08-30) Aktueller Stand (verifiziert,
-      tagesabschluss_schritt2_seite.dart:825-856): Das "testdaten
-      HH:mm"-Kennzeichen wird JETZT schon beim Seitenaufbau von
-      Schritt 2 ins sichtbare Kommentarfeld geschrieben
-      (`_wendeDevModusKommentarAn()`, laeuft in `initState()`) bzw.
-      spaetestens beim Uebergang zu Schritt 3 als Sicherheitsnetz
-      (`_anmerkungFuerUebertragung()`) — NICHT erst beim tatsaechlichen
-      Sendevorgang in Schritt 3. Ausserdem ersetzt
-      `_anmerkungFuerUebertragung()` einen bereits vorhandenen
-      Zeitstempel aktuell NICHT (`if (basis.contains(marker)) return
-      basis;` — gibt den Text unveraendert zurueck). Paco-Wunsch: der
-      Zeitstempel soll erst unmittelbar vor/beim echten Sendevorgang
-      (Schritt 3, `_doApiUpload()`/`_erneutSenden()`) gesetzt werden
-      und dabei einen ggf. vorhandenen alten Zeitstempel ERSETZEN, nicht
-      nur ergaenzen. Wichtig fuer Run 401 (Sende-Signatur): solange der
-      Zeitstempel exakt einmal beim Senden geschrieben und danach nicht
-      mehr veraendert wird, bleibt die Signatur-Logik aus Run 401
-      korrekt (siehe Kommentar dort) — das bei der Umsetzung beachten.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.

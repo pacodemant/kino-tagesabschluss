@@ -437,6 +437,25 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       Sandbox-Tests verschiedener Szenarien angegangen wird. *(Run 400,
       Korrektur 2026-08-30)*
 
+- [x] **Kommentar: Sendezeitpunkt erst unmittelbar beim Senden ergaenzen/
+      ersetzen** (Paco-Notiz 2026-08-30) ERLEDIGT (Run 453, Paco-Testfund
+      2026-09-18): Der Mechanismus war zwischenzeitlich mit Run 441
+      komplett von Schritt 2 nach Schritt 3 gewandert
+      (tagesabschluss_schritt3_seite.dart), der urspruengliche Punkt hier
+      bezog sich noch auf die alten Schritt-2-Funktionsnamen
+      (`_wendeDevModusKommentarAn()`/`_anmerkungFuerUebertragung()`),
+      die es dort nicht mehr gibt — das Grundproblem (Zeitstempel zeigt
+      Oeffnungszeit statt Sendezeit) bestand aber unveraendert fort.
+      Fix: neue Methode `_aktualisiereTestdatenZeitstempelVorVersand()`
+      erkennt den bekannten "testdaten d.M. EEE HH:mm"-Praefix per RegExp
+      und ersetzt NUR diesen (evtl. angehaengter eigener Text bleibt
+      erhalten), aufgerufen direkt nach der Sende-Bestaetigung, vor dem
+      eigentlichen Versand (`_doApiUpload()` bzw. dem Pfad ohne aktiven
+      Online-Versand) — Zeitstempel wird also weiterhin genau einmal
+      geschrieben, Sende-Signatur-Logik aus Run 401 bleibt korrekt. Ein
+      separates `_erneutSenden()` existiert in Schritt 3 nicht mehr, war
+      also nicht zusaetzlich zu beruecksichtigen.
+
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 
 ### App-Update / PWA

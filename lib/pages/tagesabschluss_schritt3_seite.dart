@@ -213,6 +213,29 @@ class _TagesabschlussSchritt3SeiteState
         '${DateFormat("d.M. EEE HH:mm", 'de_DE').format(DateTime.now())}';
   }
 
+  /// Erkennt den von [_testdatenKennzeichenMitZeitstempel] erzeugten
+  /// Zeitstempel-Anfang, auch wenn danach noch eigener Text angehängt
+  /// wurde — damit dieser beim Versand aktualisiert werden kann, ohne
+  /// angehängten Text zu verwerfen.
+  static final RegExp _testdatenZeitstempelMuster =
+      RegExp(r'^testdaten \d{1,2}\.\d{1,2}\. \w{2} \d{2}:\d{2}');
+
+  /// Ersetzt den Zeitstempel im Dev-Modus-Kennzeichen durch den
+  /// tatsächlichen Sendezeitpunkt. Der Zeitstempel wird beim Öffnen der
+  /// Seite mit der aktuellen Uhrzeit vorbefüllt (siehe
+  /// _initialisierenAsync()), spiegelt dort also nur den Zeitpunkt des
+  /// Seitenaufrufs wider, nicht den tatsächlichen Versand — wird hier
+  /// direkt vor dem Versand nachgezogen.
+  void _aktualisiereTestdatenZeitstempelVorVersand() {
+    if (!_devModusAktiv) return;
+    if (!_testdatenZeitstempelMuster.hasMatch(_anmerkung)) return;
+    final String rest =
+        _anmerkung.replaceFirst(_testdatenZeitstempelMuster, '');
+    _anmerkung = '${_testdatenKennzeichenMitZeitstempel()}$rest';
+    _anmerkungController.text = _anmerkung;
+    _aktualisiereAbschlussVorschau();
+  }
+
   /// Lädt einen zuvor auf dieser Seite eingegebenen, noch nicht
   /// gesendeten Kommentar (siehe _speichereAnmerkungEntwurf()) — nur
   /// gültig für den heutigen logischen Abrechnungstag, sonst wie ein
@@ -632,6 +655,7 @@ class _TagesabschlussSchritt3SeiteState
         return;
       }
       if (!mounted) return;
+      _aktualisiereTestdatenZeitstempelVorVersand();
       final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
       if (!mounted) return;
       if (apiAktiv) {

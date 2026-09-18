@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 453: Testdaten-Zeitstempel im Dev-Modus wird beim tatsächlichen
+  Versand aktualisiert (Paco-Testfund: das Anmerkungsfeld wurde im
+  Dev-Modus beim Öffnen der Seite mit "testdaten <Zeitpunkt>" befüllt,
+  der Zeitstempel zeigte danach aber dauerhaft die Öffnungszeit statt
+  der tatsächlichen Sendezeit):
+  - tagesabschluss_schritt3_seite.dart: neue Methode
+    `_aktualisiereTestdatenZeitstempelVorVersand()`, ersetzt per RegExp
+    nur den bekannten Zeitstempel-Präfix direkt vor dem eigentlichen
+    Versand (nach der Sende-Bestätigung, vor `_doApiUpload()`/der
+    lokalen Sendebestätigung) — evtl. manuell angehängter Text bleibt
+    dabei erhalten.
 - Run 452: Trinkgeld-Erkennung beim Belegscan (neue Terminals erlauben
   Trinkgeld-Eingabe per Karte, taucht als eigener Posten auf dem
   Kassenschnitt auf, z. B. "Trinkgeld" oder "Tip"):
