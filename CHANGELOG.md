@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 460: Vollständigkeitsprüfung in Schritt 1 ("Eingaben
+  unvollständig"-Rückfrage vor Schritt 2) prüft jetzt auch Rollen und
+  Umschlag-Beträge (Cloud-UX-Audit, Fund 6):
+  - tagesabschluss_schritt1_seite.dart,
+    _pruefeEingabenUndWeiterZuSchritt2(): bisher nur Scheine + lose
+    Münzen — leer gelassene Rollen-Felder (gleicher Stückzahl-Mechanismus
+    wie Scheine, Kupfer-Rollen nur wenn eingeblendet) und Umschlag-
+    Einträge mit leerem Betragsfeld lösten keine Rückfrage aus und
+    zählten stillschweigend als 0. Jetzt rot markiert + im Dialog
+    gelistet + bei Bestätigung auf 0/"0,00" gesetzt, analog zu
+    Scheinen/Münzen. Bewusst KEINE Prüfung auf "keine Umschläge
+    vorhanden" (0 Einträge ist ein gültiger Normalfall).
+  - Kein neuer Test: Logik steckt in einer privaten State-Methode
+    einer großen Seite ohne bestehende Widget-Test-Infrastruktur für
+    Schritt 1; Extraktion wäre ein Nebenbei-Refactor.
 - Run 459: "Heutige Abrechnung zurücksetzen (Test)"-Button aus dem
   UX-Audit (unwiderruflich, aber bislang für jede MA ohne PIN
   erreichbar) hinter den PIN-Admin-Bereich verschoben:

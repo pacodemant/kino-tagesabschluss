@@ -1088,7 +1088,31 @@ class _TagesabschlussSchritt1SeiteState
         )
         .toList();
 
-    if (leereScheine.isNotEmpty || leereMuenzen.isNotEmpty) {
+    // Rollen nutzen denselben Stueckzahl-Mechanismus wie Scheine (siehe
+    // StueckelungKonfiguration.alleStueckzahlZeilen = scheine + rollen).
+    // Vorher fehlte diese Pruefung fuer Rollen komplett (Cloud-UX-Audit).
+    final List<Kassenzeile> leereRollen = _rollenAlle
+        .where(
+          (Kassenzeile zeile) =>
+              _stueckzahlController[zeile.id]!.text.isEmpty &&
+              (!StueckelungKonfiguration.kupferRollenIds.contains(zeile.id) ||
+                  _kupferRollenSichtbar),
+        )
+        .toList();
+
+    // Umschlaege sind eine optionale Liste (0 Eintraege = kein Sonderfall
+    // "keine weiteren Umschlaege" -> kein Fehlen). Nur ein Eintrag mit
+    // leerem Betragsfeld ist ein Stolperstein: die Bezeichnung wurde
+    // getippt, der Betrag aber vergessen.
+    final List<int> leereUmschlagIndizes = <int>[
+      for (int i = 0; i < _umschlaege.length; i++)
+        if (_umschlagBetragController[i].text.isEmpty) i,
+    ];
+
+    if (leereScheine.isNotEmpty ||
+        leereMuenzen.isNotEmpty ||
+        leereRollen.isNotEmpty ||
+        leereUmschlagIndizes.isNotEmpty) {
       setState(() {
         _rotHervorgehoben.clear();
         _rotHervorgehoben.addAll(
@@ -1099,6 +1123,16 @@ class _TagesabschlussSchritt1SeiteState
         _rotHervorgehoben.addAll(
           leereMuenzen.map(
             (Kassenzeile zeile) => _loseMuenzenFocusNode[zeile.id]!,
+          ),
+        );
+        _rotHervorgehoben.addAll(
+          leereRollen.map(
+            (Kassenzeile zeile) => _stueckzahlFocusNode[zeile.id]!,
+          ),
+        );
+        _rotHervorgehoben.addAll(
+          leereUmschlagIndizes.map(
+            (int i) => _umschlagBetragFocusNode[i],
           ),
         );
       });
@@ -1113,6 +1147,16 @@ class _TagesabschlussSchritt1SeiteState
           'Münzen: ${_formatiereLeereListe(leereMuenzen.map((Kassenzeile zeile) => zeile.bezeichnung).toList())}',
         );
       }
+      if (leereRollen.isNotEmpty) {
+        abschnitte.add(
+          'Rollen: ${_formatiereLeereListe(leereRollen.map((Kassenzeile zeile) => zeile.bezeichnung).toList())}',
+        );
+      }
+      if (leereUmschlagIndizes.isNotEmpty) {
+        abschnitte.add(
+          'Umschläge: ${_formatiereLeereListe(leereUmschlagIndizes.map((int i) => _umschlagBezeichnungController[i].text.isEmpty ? 'Umschlag ${i + 1}' : _umschlagBezeichnungController[i].text).toList())}',
+        );
+      }
       final bool bestaetigt = await _zeigeEingabePruefDialog(
         titel: 'Eingaben unvollständig',
         inhalt:
@@ -1124,7 +1168,11 @@ class _TagesabschlussSchritt1SeiteState
       if (!bestaetigt) {
         final FocusNode ersteFocusNode = leereScheine.isNotEmpty
             ? _stueckzahlFocusNode[leereScheine.first.id]!
-            : _loseMuenzenFocusNode[leereMuenzen.first.id]!;
+            : leereMuenzen.isNotEmpty
+            ? _loseMuenzenFocusNode[leereMuenzen.first.id]!
+            : leereRollen.isNotEmpty
+            ? _stueckzahlFocusNode[leereRollen.first.id]!
+            : _umschlagBetragFocusNode[leereUmschlagIndizes.first];
         _fokussiereTextfeld(ersteFocusNode);
         return;
       }
@@ -1136,6 +1184,12 @@ class _TagesabschlussSchritt1SeiteState
       }
       for (final Kassenzeile zeile in leereMuenzen) {
         _loseMuenzenController[zeile.id]!.text = '0,00';
+      }
+      for (final Kassenzeile zeile in leereRollen) {
+        _stueckzahlController[zeile.id]!.text = '0';
+      }
+      for (final int i in leereUmschlagIndizes) {
+        _umschlagBetragController[i].text = '0,00';
       }
     }
 
