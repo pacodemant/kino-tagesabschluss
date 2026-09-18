@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.110+455 · Run 455
+Version: 0.9.111+456 · Run 456
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 454)
+## Laufender Entwicklungsstand (Run 456)
+
+- Run 456 ✅ Erster Widget-Test für die Sende-Orchestrierung in
+  tagesabschluss_schritt3_seite.dart (_doApiUpload()), als
+  Regressionsschutz für die Run-436/448/450/451-Vorfälle an genau
+  dieser Stelle. Dafür drei neue, im Normalbetrieb immer `null`e
+  Test-Seams am Widget (uploadUeberschreibung,
+  lokalerSendeMerkerUeberschreibung, autoSaveUeberschreibung) — echter
+  Netzwerk-Upload und Hive-Schreibzugriffe sind sonst ohne DI nicht
+  aus einem Widget-Test heraus simulierbar. Reine Testabdeckung, kein
+  App-Verhalten geändert. Details siehe CHANGELOG.md.
 
 - Run 454 ✅ Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-
   Vorschuss, wird am Folgetag zurückgelegt) kann jetzt in Schritt 1

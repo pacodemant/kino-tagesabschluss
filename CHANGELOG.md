@@ -9,6 +9,28 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 456: Neuer Widget-Test für die Sende-Orchestrierung in
+  tagesabschluss_schritt3_seite.dart (_doApiUpload()) — reine
+  Testabdeckung, kein App-Verhalten geändert:
+  - test/pages/tagesabschluss_schritt3_seite_test.dart (neu): drei
+    Szenarien als Regressionsschutz für frühere Produktiv-Bugs an
+    genau dieser Stelle — Erfolgsfall, Netzwerkfehler-Fall (Run 448:
+    Netzwerkfehler wurde früher fälschlich als "gesendet" verbucht)
+    und lokaler-Merker-Fehler-Fall (Run 450/451: QuotaExceededError
+    beim lokalen Speichern maskierte einen erfolgreichen Versand als
+    Fehlschlag).
+  - tagesabschluss_schritt3_seite.dart: da ApiUploadService.upload()
+    direkt die statischen http.post/http.put-Funktionen aufruft und
+    der echte Auto-Save/lokale Sende-Merker via LokalerSpeicher in
+    echte Hive-Boxen schreibt, war beides ohne Test-Einstiegspunkt
+    nicht simulierbar (ein Testversuch mit echtem Hive blockierte
+    real 10 Minuten in tearDown). Drei neue, im Normalbetrieb immer
+    `null`e Konstruktor-Parameter (uploadUeberschreibung,
+    lokalerSendeMerkerUeberschreibung, autoSaveUeberschreibung)
+    erlauben es Tests, diese drei Aufrufe gezielt zu ersetzen; der
+    lokale-Sende-Merker-Block wurde dafür unverändert in eine eigene
+    Methode _speichereLokalenSendeMerker() ausgelagert. Für echte
+    Nutzer:innen ändert sich nichts (Parameter bleiben immer `null`).
 - Run 455: Testdaten-Zeitstempel wird jetzt auch im Entwurf
   gespeichert (Paco-Testfund: nach dem Senden zurück zu Schritt 2 und
   wieder zu Schritt 3 zeigte das Anmerkungsfeld wieder die alte

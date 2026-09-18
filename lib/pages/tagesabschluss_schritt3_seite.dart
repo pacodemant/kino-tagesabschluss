@@ -106,11 +106,44 @@ class TagesabschlussSchritt3Seite extends StatefulWidget {
   const TagesabschlussSchritt3Seite({
     super.key,
     required this.argumente,
+    @visibleForTesting this.uploadUeberschreibung,
+    @visibleForTesting this.lokalerSendeMerkerUeberschreibung,
+    @visibleForTesting this.autoSaveUeberschreibung,
   });
 
   static const String routenName = '/closure-step-3';
 
   final TagesabschlussSchritt3Argumente argumente;
+
+  /// Nur fuer Tests: ersetzt den echten Netzwerk-Upload
+  /// (ApiUploadService.upload) durch eine Fake-Funktion, damit Erfolgs-
+  /// und Fehlerfaelle in _doApiUpload() ohne echtes Netzwerk simulierbar
+  /// sind (ApiUploadService.upload ruft direkt die statischen
+  /// http.post/http.put-Funktionen auf, es gibt sonst keine Stelle zum
+  /// Abfangen). Im Normalbetrieb immer null, dann unveraendertes
+  /// Verhalten (ruft ApiUploadService.upload).
+  @visibleForTesting
+  final Future<Map<String, dynamic>?> Function(TagesabschlussFinal)?
+      uploadUeberschreibung;
+
+  /// Nur fuer Tests: ersetzt das Speichern des lokalen Sende-Merkers
+  /// (siehe _speichereLokalenSendeMerker()), um einen Fehler dort
+  /// gezielt zu simulieren (z. B. QuotaExceededError bei vollem
+  /// Browser-Speicher, Run 450/451). Im Normalbetrieb immer null.
+  @visibleForTesting
+  final Future<void> Function()? lokalerSendeMerkerUeberschreibung;
+
+  /// Nur fuer Tests: ersetzt SpeichereTagesabschlussUsecase.ausfuehren
+  /// (siehe _autoSaveImHintergrund()) — der echte Usecase schreibt via
+  /// LokalerSpeicher in eine Hive-Box auf der Festplatte, was in
+  /// Widget-Tests (Flutters simulierte Pump-Zeit) zu nie auflösenden
+  /// Schreibvorgaengen fuehren kann. Im Normalbetrieb immer null.
+  @visibleForTesting
+  final Future<SpeichereTagesabschlussErgebnis> Function(
+    TagesabschlussFinal abschluss, {
+    bool ueberschreiben,
+    bool alsZusaetzlicheAbrechnung,
+  })? autoSaveUeberschreibung;
 
   @override
   State<TagesabschlussSchritt3Seite> createState() =>
@@ -388,9 +421,15 @@ class _TagesabschlussSchritt3SeiteState
       _autoSaveFehler = false;
     });
 
+    final Future<SpeichereTagesabschlussErgebnis> Function(
+      TagesabschlussFinal, {
+      bool ueberschreiben,
+      bool alsZusaetzlicheAbrechnung,
+    }) speichern = widget.autoSaveUeberschreibung ?? _speichereUsecase.ausfuehren;
+
     try {
       final SpeichereTagesabschlussErgebnis ergebnis =
-          await _speichereUsecase.ausfuehren(_abschlussVorschau!);
+          await speichern(_abschlussVorschau!);
       if (!mounted) {
         return;
       }
@@ -403,7 +442,7 @@ class _TagesabschlussSchritt3SeiteState
             return;
           }
         }
-        await _speichereUsecase.ausfuehren(
+        await speichern(
           _abschlussVorschau!,
           ueberschreiben: !alsZusaetzlicheAbrechnung,
           alsZusaetzlicheAbrechnung: alsZusaetzlicheAbrechnung,
@@ -459,6 +498,32 @@ class _TagesabschlussSchritt3SeiteState
     return zusaetzlich ?? false;
   }
 
+  /// Persistiert den lokalen Sende-Merker nach einem erfolgreichen
+  /// Upload (siehe _doApiUpload()). Eigener try/catch dort (Run 450):
+  /// ein Fehler hier (z. B. QuotaExceededError bei vollem Browser-
+  /// Speicher, Paco-Testfund 2026-09-16) darf einen erfolgreich
+  /// übertragenen Versand nicht mehr fälschlich als "nicht bestätigt"
+  /// melden — die MA sah sonst ein Fehler-Popup und schickte die
+  /// Abrechnung ein zweites Mal, obwohl sie schon angekommen war.
+  Future<void> _speichereLokalenSendeMerker() async {
+    await LokalerSpeicher.speichereSendeBestaetigung(
+      widget.argumente.kinoId,
+      _sendeSignatur(),
+      isoDatum: DatumsHelper.logischesIsoDatum(),
+    );
+    await LokalerSpeicher.markiereAlsGesendet(
+      _abschlussVorschau!.kinoId,
+      _abschlussVorschau!.createdAt,
+      DateTime.now(),
+    );
+    // Etwaigen Warn-Status aus einem früheren, nicht bestätigten Versuch
+    // an diesem Tag löschen — dieser Versuch war jetzt bestätigt
+    // erfolgreich (Run 448).
+    await LokalerSpeicher.loescheVersandNichtBestaetigt(
+      widget.argumente.kinoId,
+    );
+  }
+
   Future<void> _doApiUpload() async {
     if (mounted) {
       setState(() {
@@ -467,38 +532,17 @@ class _TagesabschlussSchritt3SeiteState
       });
     }
     try {
-      _letzteServerAntwort =
-          await ApiUploadService.upload(_abschlussVorschau!);
+      _letzteServerAntwort = await (widget.uploadUeberschreibung ??
+          ApiUploadService.upload)(_abschlussVorschau!);
       _apiUploadErledigt = true;
       // Bewusst nicht mounted-gated: diese Aufrufe persistieren den
       // Sende-Status lokal und müssen auch dann laufen, wenn die Seite
       // (z. B. via "Zurück zur Startseite") schon verlassen wurde, bevor
       // der Upload zurückkam — sonst bleibt gesendetAm dauerhaft null,
       // obwohl der Upload erfolgreich war (Run 396).
-      // Eigener try/catch (Run 450): Der Versand an Flurbocash oben war
-      // bereits erfolgreich. Ein Fehler bei diesem rein lokalen Merker
-      // (z. B. QuotaExceededError bei vollem Browser-Speicher, Paco-
-      // Testfund 2026-09-16) darf einen erfolgreich übertragenen Versand
-      // nicht mehr fälschlich als "nicht bestätigt" melden — die MA sah
-      // sonst ein Fehler-Popup und schickte die Abrechnung ein zweites
-      // Mal, obwohl sie schon angekommen war.
       try {
-        await LokalerSpeicher.speichereSendeBestaetigung(
-          widget.argumente.kinoId,
-          _sendeSignatur(),
-          isoDatum: DatumsHelper.logischesIsoDatum(),
-        );
-        await LokalerSpeicher.markiereAlsGesendet(
-          _abschlussVorschau!.kinoId,
-          _abschlussVorschau!.createdAt,
-          DateTime.now(),
-        );
-        // Etwaigen Warn-Status aus einem früheren, nicht bestätigten
-        // Versuch an diesem Tag löschen — dieser Versuch war jetzt
-        // bestätigt erfolgreich (Run 448).
-        await LokalerSpeicher.loescheVersandNichtBestaetigt(
-          widget.argumente.kinoId,
-        );
+        await (widget.lokalerSendeMerkerUeberschreibung ??
+            _speichereLokalenSendeMerker)();
       } catch (lokalerFehler) {
         debugPrint('Lokaler Sende-Merker fehlgeschlagen: $lokalerFehler');
       }
