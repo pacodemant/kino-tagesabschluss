@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.115+460 · Run 460
+Version: 0.9.116+461 · Run 461
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 460)
+## Laufender Entwicklungsstand (Run 461)
+
+- Run 461 ✅ Schritt 2: Erstfokus beim Betreten überspringt das
+  optionale Feld "Differenz im Anfangsbestand" und landet auf
+  Kino-SOLL; Weiter/Enter-Reihenfolge unverändert. Details siehe
+  CHANGELOG.md.
 
 - Run 460 ✅ Schritt 1: Vollständigkeitsprüfung vor Schritt 2 deckt jetzt
   auch Rollen und Umschlag-Beträge ab (vorher nur Scheine + lose

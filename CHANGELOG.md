@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 461: Erstfokus in Schritt 2 landet nicht mehr auf dem optionalen
+  Feld "Differenz im Anfangsbestand" (Cloud-UX-Audit, Fund 12):
+  - schritt2_fokus_helper.dart, erstesLeeresFeld(): überspringt
+    differenzAnfangsbestandFocusNode. Vorher war dieses (meist leere,
+    optionale) Feld in der Fokus-Reihenfolge das erste und bekam beim
+    Betreten der Seite den Fokus statt des Pflichtfelds Kino-SOLL.
+  - Bewusst NICHT die Reihenfolge in fokusReihenfolge() geändert
+    (ursprünglich so empfohlen): Sie entspricht der visuellen
+    Reihenfolge auf der Seite (Differenz steht über Kino-SOLL); ein
+    Umsortieren hätte Weiter/Enter in Sprüngen nach unten und wieder
+    hoch laufen lassen. Die einfachere Lösung greift nur am Erstfokus.
+  - Neuer Unit-Test: test/pages/tagesabschluss_schritt2/controller/
+    schritt2_fokus_helper_test.dart (4 Fälle).
 - Run 460: Vollständigkeitsprüfung in Schritt 1 ("Eingaben
   unvollständig"-Rückfrage vor Schritt 2) prüft jetzt auch Rollen und
   Umschlag-Beträge (Cloud-UX-Audit, Fund 6):

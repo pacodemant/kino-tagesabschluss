@@ -122,6 +122,12 @@ class Schritt2FokusHelper {
                 zeile.betragFocusNode: zeile.betragController,
         };
     for (final FocusNode fn in fokusReihenfolge) {
+      // Differenz im Anfangsbestand ist optional und meist leer — als
+      // Erstfokus soll das Pflichtfeld Kino-SOLL dran sein. Die Reihenfolge
+      // fuer Weiter/Enter bleibt bewusst unveraendert (= visuelle Reihenfolge).
+      if (fn == differenzAnfangsbestandFocusNode) {
+        continue;
+      }
       if (lookup[fn]?.text.isEmpty ?? true) {
         return fn;
       }
