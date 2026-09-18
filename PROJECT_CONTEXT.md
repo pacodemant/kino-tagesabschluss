@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.112+457 · Run 457
+Version: 0.9.113+458 · Run 458
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 457)
+## Laufender Entwicklungsstand (Run 458)
+
+- Run 458 ✅ Unit-Test für UpdateReloadGuard (istAufSichererSeite,
+  didPush/didPop/didReplace) — reine Testabdeckung, kein
+  App-Verhalten geändert. Details siehe CHANGELOG.md.
 
 - Run 457 ✅ Bugfix: Verlauf zeigte "Noch nicht gesendet" trotz
   erfolgreichem Versand, wenn createdAt der Abrechnung nach dem

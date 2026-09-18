@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 458: Neuer Unit-Test für UpdateReloadGuard (reine Testabdeckung,
+  kein App-Verhalten geändert):
+  - test/services/update_reload_guard_test.dart (neu): prüft
+    istAufSichererSeite (true auf Kinoauswahl/Startmenü, false auf
+    einer Abrechnungs-Seite) sowie didPush/didPop/didReplace,
+    insbesondere dass didPop auf previousRoute zurücksetzt statt auf
+    die gerade gepoppte Route (genau das ist die Bedingung, mit der
+    UpdateLifecycleWatcher einen Auto-Reload nicht mitten in der
+    Abrechnung auslöst). Kein Widget-Pumping/Hive nötig, da die
+    Klasse rein synchron ohne I/O arbeitet.
 - Run 457: Verlauf zeigte "Noch nicht gesendet" trotz erfolgreichem
   Versand (Paco-Testfund 2026-09-18, Dev-Modus mit automatischem
   "testdaten HH:mm"-Zeitstempel im Kommentarfeld):
