@@ -9,6 +9,34 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 465: Verlauf zeigt nach erneutem Öffnen von Schritt 3 nicht mehr
+  fälschlich "Noch nicht gesendet" (Paco-Testfund 2026-09-18, Ursache
+  per Sende-Protokoll aus Run 464 belegt: erneutes Öffnen von Schritt 3
+  nach dem Senden legt per Auto-Save einen NEUEN Eintrag an — bei
+  Anmerkung "testdaten", da diese im Usecase nicht mitzählen — bzw.
+  ERSETZT den vorhandenen; beide ohne gesendetAm, obwohl die Sende-
+  Signatur weiter passt und der Haken in Schritt 3/Startmenü gesetzt ist):
+  - lokaler_speicher.dart: neue Methode markiereAlsGesendetFallsSignatur
+    Passt(): markiert den aktuellen Verlaufseintrag als gesendet, wenn
+    gespeicherte Sende-Signatur == aktuelle UND das Sendedatum der
+    heutige logische Tag ist. Geänderte Daten -> kein Treffer ->
+    "Noch nicht gesendet" bleibt korrekt (Signatur = einzige Wahrheit).
+  - NEUER Persistenz-Key 'sende_bestaetigung_zeit_<kinoId>'
+    (Sendezeitpunkt, ISO): speichereSendeBestaetigung() hat dafür den
+    optionalen Parameter zeitpunkt; loescheSendeBestaetigung() räumt ihn
+    mit auf; ladeSendeBestaetigungZeit() liest ihn. Fehlt er (Versand
+    vor Run 465), wird beim Nachmarkieren "jetzt" verwendet.
+  - tagesabschluss_schritt3_seite.dart: nach dem Auto-Save wird bei
+    Signatur-Treffer nachmarkiert (_markiereVerlaufNachWiedereintritt);
+    beim Senden wird derselbe Zeitpunkt für Bestätigung und
+    markiereAlsGesendet() verwendet.
+  - Bewusst NICHT Teil dieses Runs: im Testdaten-Fall entstehen
+    weiterhin überzählige Kopien im Verlauf (nur noch korrekt als
+    gesendet markiert).
+  - Neue Tests: test/storage/sende_nachmarkieren_test.dart (7 Fälle:
+    passt, Daten geändert, anderer Tag, nie gesendet, ohne Zeit,
+    kein Eintrag, Key-Aufräumen). Die Verdrahtung in Schritt 3 hat
+    keinen eigenen Widget-Test.
 - Run 464: Sende-Protokoll als reine Diagnose (Paco-Testfund
   2026-09-18: Verlauf "Noch nicht gesendet", obwohl gesendet; Start-
   menü ✓, Schritt 3 ohne ✓; gesendet mit r458 ohne Dev-Modus, ein

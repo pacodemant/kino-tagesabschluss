@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.119+464 · Run 464
+Version: 0.9.120+465 · Run 465
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 464)
+## Laufender Entwicklungsstand (Run 465)
+
+- Run 465 ✅ Verlauf-Status-Fix: erneutes Öffnen von Schritt 3 nach dem
+  Senden markiert den dabei neu angelegten/ersetzten Verlaufseintrag per
+  Sende-Signatur nach (LokalerSpeicher.markiereAlsGesendetFallsSignatur
+  Passt). Neuer Persistenz-Key sende_bestaetigung_zeit_<kinoId>.
+  Wartet auf Pacos Test. Details siehe CHANGELOG.md.
 
 - Run 464 ✅ Sende-Protokoll (lib/storage/sende_protokoll.dart): Diagnose-
   Ereignisliste (30 Zeilen, SharedPreferences) rund um Auto-Save,

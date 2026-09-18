@@ -450,14 +450,67 @@ class LokalerSpeicher {
   /// Run 401 kein Datumsfeld mehr, siehe _sendeSignatur() in
   /// tagesabschluss_schritt3_seite.dart, wird aber für den "heute
   /// gesendet"-Haken im Startmenü gebraucht).
+  ///
+  /// [zeitpunkt] (seit Run 465) ist der tatsächliche Sendezeitpunkt; er
+  /// wird gebraucht, um beim erneuten Öffnen von Schritt 3 den dabei
+  /// neu angelegten Verlaufseintrag mit der ursprünglichen Sendezeit als
+  /// gesendet zu markieren (siehe [markiereAlsGesendetFallsSignaturPasst]).
   static Future<void> speichereSendeBestaetigung(
     String kinoId,
     String signatur, {
     required String isoDatum,
+    DateTime? zeitpunkt,
   }) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString(_sendeBestaetigungKey(kinoId), signatur);
     await speicher.setString(_sendeBestaetigungDatumKey(kinoId), isoDatum);
+    if (zeitpunkt != null) {
+      await speicher.setString(
+        _sendeBestaetigungZeitKey(kinoId),
+        zeitpunkt.toIso8601String(),
+      );
+    } else {
+      await speicher.remove(_sendeBestaetigungZeitKey(kinoId));
+    }
+  }
+
+  /// Sendezeitpunkt der zuletzt gespeicherten Sende-Bestätigung, oder null
+  /// (nie gesendet oder vor Run 465 gespeichert).
+  static Future<DateTime?> ladeSendeBestaetigungZeit(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? roh = speicher.getString(_sendeBestaetigungZeitKey(kinoId));
+    return roh == null ? null : DateTime.tryParse(roh);
+  }
+
+  /// Markiert den Verlaufseintrag [createdAt] als gesendet, wenn die
+  /// gespeicherte Sende-Signatur zur [aktuelleSignatur] passt UND heute
+  /// (logischer Tag [heutigesIsoDatum]) gesendet wurde. Hintergrund
+  /// (Run 465): Öffnet man Schritt 3 nach dem Senden erneut, legt der
+  /// Auto-Save einen neuen bzw. ersetzten Verlaufseintrag ohne
+  /// gesendetAm an, obwohl die identischen Daten bereits gesendet sind.
+  /// Die Signatur bleibt die einzige Wahrheit: geänderte Daten -> kein
+  /// Treffer -> "Noch nicht gesendet" bleibt korrekt.
+  static Future<bool> markiereAlsGesendetFallsSignaturPasst({
+    required String kinoId,
+    required DateTime createdAt,
+    required String aktuelleSignatur,
+    required String heutigesIsoDatum,
+    DateTime? jetzt,
+  }) async {
+    final String? gespeicherteSignatur = await ladeSendeBestaetigung(kinoId);
+    final String? gespeichertesDatum = await ladeSendeBestaetigungDatum(kinoId);
+    if (gespeicherteSignatur == null ||
+        gespeicherteSignatur != aktuelleSignatur ||
+        gespeichertesDatum != heutigesIsoDatum) {
+      return false;
+    }
+    final DateTime zeitpunkt =
+        await ladeSendeBestaetigungZeit(kinoId) ?? jetzt ?? DateTime.now();
+    await SendeProtokoll.eintragen(
+      'Nachmarkieren: Signatur passt, ursprüngliche Sendezeit '
+      '${zeitpunkt.toIso8601String()} übernommen',
+    );
+    return markiereAlsGesendet(kinoId, createdAt, zeitpunkt);
   }
 
   /// Lädt die gespeicherte Sende-Signatur eines Kinos, oder null wenn
@@ -480,6 +533,9 @@ class LokalerSpeicher {
 
   static String _sendeBestaetigungDatumKey(String kinoId) =>
       'sende_bestaetigung_datum_$kinoId';
+
+  static String _sendeBestaetigungZeitKey(String kinoId) =>
+      'sende_bestaetigung_zeit_$kinoId';
 
   /// Merkt sich, dass ein Versandversuch eines Kinos an diesem logischen
   /// Datum NICHT als erfolgreich bestätigt werden konnte (echter
@@ -526,6 +582,7 @@ class LokalerSpeicher {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.remove(_sendeBestaetigungKey(kinoId));
     await speicher.remove(_sendeBestaetigungDatumKey(kinoId));
+    await speicher.remove(_sendeBestaetigungZeitKey(kinoId));
   }
 
   static Map<String, dynamic> _schritt1StandardWerte(String kinoId) {

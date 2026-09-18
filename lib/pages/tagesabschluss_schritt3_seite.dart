@@ -188,6 +188,7 @@ class _TagesabschlussSchritt3SeiteState
 
   // true = Auto-Save läuft oder abgeschlossen, false = noch ausstehend
   bool _autoSaveErledigt = false;
+  Future<void>? _autoSaveErsterLauf;
   bool _autoSaveLaeuft = false;
   bool _autoSaveFehler = false;
   bool _apiUploadErledigt = false;
@@ -388,7 +389,7 @@ class _TagesabschlussSchritt3SeiteState
     if (widget.argumente.zielSchrittBeimSprung == 4) {
       _navigiereZuSchritt4();
     }
-    _autoSaveImHintergrund();
+    _autoSaveErsterLauf = _autoSaveImHintergrund();
     LokalerSpeicher.ladeSendeBestaetigung(widget.argumente.kinoId).then(
       (String? gespeicherteSignatur) {
         final String aktuelleSignatur = _sendeSignatur();
@@ -415,6 +416,10 @@ class _TagesabschlussSchritt3SeiteState
             _apiUploadErledigt = true;
           });
         }
+        if (gespeicherteSignatur != null &&
+            gespeicherteSignatur == aktuelleSignatur) {
+          _markiereVerlaufNachWiedereintritt(aktuelleSignatur);
+        }
       },
     );
     LokalerSpeicher.ladeVersandNichtBestaetigtDatum(
@@ -431,6 +436,28 @@ class _TagesabschlussSchritt3SeiteState
         setState(() => _uploadVersucht = true);
       }
     });
+  }
+
+  /// Run 465: Der Auto-Save beim (erneuten) Öffnen dieser Seite legt einen
+  /// neuen bzw. ersetzten Verlaufseintrag ohne gesendetAm an, auch wenn
+  /// dieselben Daten heute schon gesendet wurden (Signatur passt) — der
+  /// Verlauf zeigte dann fälschlich "Noch nicht gesendet". Hier wird nach
+  /// dem Auto-Save die Markierung aus der Sende-Bestätigung nachgezogen.
+  /// Bewusst nicht mounted-gated (reine lokale Speicherung).
+  Future<void> _markiereVerlaufNachWiedereintritt(String signatur) async {
+    try {
+      await _autoSaveErsterLauf;
+      if (!_autoSaveErledigt || _abschlussVorschau == null) return;
+      await LokalerSpeicher.markiereAlsGesendetFallsSignaturPasst(
+        kinoId: widget.argumente.kinoId,
+        createdAt: _abschlussVorschau!.createdAt,
+        aktuelleSignatur: signatur,
+        heutigesIsoDatum: DatumsHelper.logischesIsoDatum(),
+      );
+    } catch (e) {
+      debugPrint('Verlauf nachmarkieren fehlgeschlagen: $e');
+      await SendeProtokoll.eintragen('Nachmarkieren FEHLGESCHLAGEN: $e');
+    }
   }
 
   /// Speichert den Abschluss beim Öffnen der Seite automatisch.
@@ -533,10 +560,12 @@ class _TagesabschlussSchritt3SeiteState
   /// Abrechnung ein zweites Mal, obwohl sie schon angekommen war.
   Future<void> _speichereLokalenSendeMerker() async {
     final String signatur = _sendeSignatur();
+    final DateTime sendezeitpunkt = DateTime.now();
     await LokalerSpeicher.speichereSendeBestaetigung(
       widget.argumente.kinoId,
       signatur,
       isoDatum: DatumsHelper.logischesIsoDatum(),
+      zeitpunkt: sendezeitpunkt,
     );
     await SendeProtokoll.eintragen(
       'Sende-Bestätigung gespeichert, Signatur '
@@ -545,7 +574,7 @@ class _TagesabschlussSchritt3SeiteState
     await LokalerSpeicher.markiereAlsGesendet(
       _abschlussVorschau!.kinoId,
       _abschlussVorschau!.createdAt,
-      DateTime.now(),
+      sendezeitpunkt,
     );
     // Etwaigen Warn-Status aus einem früheren, nicht bestätigten Versuch
     // an diesem Tag löschen — dieser Versuch war jetzt bestätigt
@@ -791,6 +820,7 @@ class _TagesabschlussSchritt3SeiteState
           widget.argumente.kinoId,
           _sendeSignatur(),
           isoDatum: DatumsHelper.logischesIsoDatum(),
+          zeitpunkt: DateTime.now(),
         );
         if (!mounted) return;
       }
