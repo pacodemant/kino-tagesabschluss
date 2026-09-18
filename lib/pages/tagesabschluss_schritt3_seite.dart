@@ -23,6 +23,7 @@ import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
@@ -390,9 +391,17 @@ class _TagesabschlussSchritt3SeiteState
     _autoSaveImHintergrund();
     LokalerSpeicher.ladeSendeBestaetigung(widget.argumente.kinoId).then(
       (String? gespeicherteSignatur) {
+        final String aktuelleSignatur = _sendeSignatur();
+        SendeProtokoll.eintragen(
+          'Schritt 3 geöffnet (createdAt '
+          '${_erstellungszeitpunkt.toIso8601String()}): gespeicherte '
+          'Signatur ${SendeProtokoll.beschreibeSignatur(gespeicherteSignatur)}'
+          ', aktuelle ${SendeProtokoll.beschreibeSignatur(aktuelleSignatur)}'
+          ' -> ${gespeicherteSignatur == null ? 'noch nie gesendet' : gespeicherteSignatur == aktuelleSignatur ? 'passt (Haken)' : 'passt NICHT (kein Haken)'}',
+        );
         if (mounted &&
             gespeicherteSignatur != null &&
-            gespeicherteSignatur == _sendeSignatur()) {
+            gespeicherteSignatur == aktuelleSignatur) {
           // _apiUploadErledigt hier mitsetzen (nicht nur
           // _abrechnungGesendet): sonst würde ein Klick auf "Abrechnung
           // an Büro senden" nach einem Neuaufbau dieser Seite (z. B.
@@ -523,10 +532,15 @@ class _TagesabschlussSchritt3SeiteState
   /// melden — die MA sah sonst ein Fehler-Popup und schickte die
   /// Abrechnung ein zweites Mal, obwohl sie schon angekommen war.
   Future<void> _speichereLokalenSendeMerker() async {
+    final String signatur = _sendeSignatur();
     await LokalerSpeicher.speichereSendeBestaetigung(
       widget.argumente.kinoId,
-      _sendeSignatur(),
+      signatur,
       isoDatum: DatumsHelper.logischesIsoDatum(),
+    );
+    await SendeProtokoll.eintragen(
+      'Sende-Bestätigung gespeichert, Signatur '
+      '${SendeProtokoll.beschreibeSignatur(signatur)}',
     );
     await LokalerSpeicher.markiereAlsGesendet(
       _abschlussVorschau!.kinoId,
@@ -552,6 +566,7 @@ class _TagesabschlussSchritt3SeiteState
       _letzteServerAntwort = await (widget.uploadUeberschreibung ??
           ApiUploadService.upload)(_abschlussVorschau!);
       _apiUploadErledigt = true;
+      await SendeProtokoll.eintragen('Versand erfolgreich (Schritt 3)');
       // Bewusst nicht mounted-gated: diese Aufrufe persistieren den
       // Sende-Status lokal und müssen auch dann laufen, wenn die Seite
       // (z. B. via "Zurück zur Startseite") schon verlassen wurde, bevor
@@ -562,6 +577,9 @@ class _TagesabschlussSchritt3SeiteState
             _speichereLokalenSendeMerker)();
       } catch (lokalerFehler) {
         debugPrint('Lokaler Sende-Merker fehlgeschlagen: $lokalerFehler');
+        await SendeProtokoll.eintragen(
+          'Lokaler Sende-Merker FEHLGESCHLAGEN: $lokalerFehler',
+        );
       }
       if (mounted) {
         setState(() => _abrechnungGesendet = true);
@@ -578,6 +596,10 @@ class _TagesabschlussSchritt3SeiteState
         );
       }
     } catch (e) {
+      await SendeProtokoll.eintragen(
+        'Versand NICHT bestätigt (Schritt 3): '
+        '${e.toString().length > 80 ? '${e.toString().substring(0, 80)}…' : e}',
+      );
       // Run 448: Weder der CORS-artige Fehler (ApiUploadService.
       // isCorsArtFehler) noch ein echter Netzwerkfehler (z. B. Flugmodus)
       // dürfen hier noch als "wahrscheinlich doch gesendet" behandelt

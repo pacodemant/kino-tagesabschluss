@@ -17,6 +17,7 @@ import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
@@ -1096,6 +1097,16 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   einstellungenSections.belegscan,
                   einstellungenSections.devModus,
                   Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: _zeigeSendeProtokoll,
+                        child: const Text('Sende-Protokoll anzeigen'),
+                      ),
+                    ),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: SizedBox(
                       width: double.infinity,
@@ -1122,6 +1133,44 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               onPressed: reloadPage,
               child: const Text('App neu laden'),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Diagnose (Run 464): zeigt die letzten Speicher-/Sende-Ereignisse, um
+  /// ein "Noch nicht gesendet" im Verlauf trotz erfolgreichem Versand
+  /// nachvollziehen zu können.
+  Future<void> _zeigeSendeProtokoll() async {
+    final List<String> zeilen = await SendeProtokoll.laden();
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Sende-Protokoll'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: zeilen.isEmpty
+              ? const Text('Noch keine Einträge.')
+              : SingleChildScrollView(
+                  child: SelectableText(
+                    zeilen.reversed.join('\n\n'),
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () async {
+              await SendeProtokoll.leeren();
+              if (dialogContext.mounted) Navigator.of(dialogContext).pop();
+            },
+            child: const Text('Leeren'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Schließen'),
           ),
         ],
       ),

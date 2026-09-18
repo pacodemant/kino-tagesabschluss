@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 463 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 464 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -51,6 +51,17 @@ um Durcheinander zu vermeiden.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Verlauf "Noch nicht gesendet" trotz erfolgreichem Versand —
+      Ursache offen** *(Run 464 Diagnose, Fix = Run 465)*
+      Paco-Fund 2026-09-18 (r458, kein Dev-Modus, ein Eintrag):
+      Startmenü ✓, Verlauf ✗, Schritt 3 ohne ✓. Kandidaten: (A)
+      Wiedereintritt in Schritt 3 überschreibt den gesendeten
+      Verlaufseintrag (ersetzeFinalenTagesabschluss verliert
+      gesendetAm), (C) Hive-Schreibzugriff von markiereAlsGesendet
+      verloren. Beim nächsten Auftreten: Einstellungen → Admin →
+      "Sende-Protokoll anzeigen" auslesen und die Zeilen zum
+      Zeitpunkt des Sendens an Claude geben.
 
 - [ ] **Nativer Android-Build aktuell kaputt (Gradle/AGP-Konflikt)**
       Entdeckt in Run 429a8 beim Versuch, `flutter run -d

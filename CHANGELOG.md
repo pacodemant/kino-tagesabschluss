@@ -9,6 +9,31 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 464: Sende-Protokoll als reine Diagnose (Paco-Testfund
+  2026-09-18: Verlauf "Noch nicht gesendet", obwohl gesendet; Start-
+  menü ✓, Schritt 3 ohne ✓; gesendet mit r458 ohne Dev-Modus, ein
+  Verlaufseintrag). Kein Verhalten geändert, außer dass
+  markiereAlsGesendet() jetzt bool statt void liefert:
+  - storage/sende_protokoll.dart (neu): letzte 30 Ereignis-Zeilen in
+    SharedPreferences ('sende_protokoll'), wirft nie. Hilfen kuerzel()
+    (FNV-1a, plattformstabil) und beschreibeSignatur() (cash/note/
+    terminals lesbar).
+  - lokaler_speicher.dart: protokolliert "Verlauf: neuer Eintrag
+    angelegt", "Verlauf: Eintrag ersetzt (Vorgänger war gesendet: JA/
+    nein)" und "Verlauf markieren: gefunden / NICHT gefunden (mit
+    vorhandenen createdAt)". Unbelegte Hypothese A (Wiedereintritt in
+    Schritt 3 überschreibt gesendeten Eintrag) und C (Hive-Schreib-
+    zugriff verloren) werden so unterscheidbar.
+  - tagesabschluss_schritt3_seite.dart / verlauf_detail_seite.dart:
+    protokollieren Versand ok/nicht bestätigt, Fehler des lokalen
+    Sende-Merkers und (Schritt 3) beim Öffnen gespeicherte vs.
+    aktuelle Signatur inkl. Ergebnis "passt/passt NICHT" — klärt den
+    fehlenden Schritt-3-Haken.
+  - einstellungen_seite.dart: Button "Sende-Protokoll anzeigen" im
+    PIN-Admin-Bereich (Dialog, Text markierbar, "Leeren").
+  - Neue Tests: test/storage/sende_protokoll_test.dart (9 Fälle).
+  - Folge: Run 465 = gezielter Fix, sobald das Protokoll einen Fall
+    zeigt.
 - Run 463: Reine Dokumentation (kein App-Verhalten geändert): zwei
   Punkte aus der UX-Audit-Besprechung als TODO-Notiz aufgenommen
   (Paco-Entscheidung "vorerst so lassen"): Getränkeliste löschen ohne

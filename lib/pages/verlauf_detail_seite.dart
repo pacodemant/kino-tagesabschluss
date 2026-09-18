@@ -11,6 +11,7 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
@@ -65,6 +66,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     try {
       await ApiUploadService.upload(widget.abschluss); // .serverAntwort hier ungenutzt
+      await SendeProtokoll.eintragen('Versand erfolgreich (Verlauf-Detail)');
       // Eigener try/catch (Run 450, analog tagesabschluss_schritt3_seite.
       // dart, _doApiUpload()): Der Versand oben war bereits erfolgreich —
       // ein Fehler bei diesem rein lokalen Merker darf das nicht mehr als
@@ -80,6 +82,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         );
       } catch (lokalerFehler) {
         debugPrint('Lokaler Sende-Merker fehlgeschlagen: $lokalerFehler');
+        await SendeProtokoll.eintragen(
+          'Lokaler Sende-Merker FEHLGESCHLAGEN (Verlauf-Detail): '
+          '$lokalerFehler',
+        );
       }
 
       if (mounted) {
@@ -96,6 +102,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         );
       }
     } catch (e) {
+      await SendeProtokoll.eintragen(
+        'Versand NICHT bestätigt (Verlauf-Detail): '
+        '${e.toString().length > 80 ? '${e.toString().substring(0, 80)}…' : e}',
+      );
       // Run 448: derselbe Fix wie in tagesabschluss_schritt3_seite.dart,
       // _doApiUpload() — CORS-artiger Fehler und echter Netzwerkfehler
       // sind von hier aus nicht unterscheidbar (siehe ApiUploadService.

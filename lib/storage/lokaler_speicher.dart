@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/storage_persist_service.dart';
+import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/beleg_foto_komprimierung.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -151,6 +152,11 @@ class LokalerSpeicher {
     final List<Map<String, dynamic>> bereinigt =
         _ohneAbgelaufeneBestaetigteEintraege(vorhandeneAbschluesse);
     await box.put(key, jsonEncode(bereinigt));
+    await SendeProtokoll.eintragen(
+      'Verlauf: neuer Eintrag angelegt (createdAt '
+      '${abschluss.createdAt.toIso8601String()}, Einträge gesamt '
+      '${bereinigt.length})',
+    );
     await StoragePersistService.requestIfNeeded();
   }
 
@@ -248,6 +254,7 @@ class LokalerSpeicher {
       }
     }
 
+    Map<String, dynamic>? ersetzter;
     if (gleicherTag.isNotEmpty) {
       gleicherTag.sort(
         (Map<String, dynamic> a, Map<String, dynamic> b) =>
@@ -255,7 +262,7 @@ class LokalerSpeicher {
                   TagesabschlussFinal.fromJson(b).createdAt,
                 ),
       );
-      gleicherTag.removeLast();
+      ersetzter = gleicherTag.removeLast();
     }
 
     final List<Map<String, dynamic>> aktualisiert =
@@ -265,6 +272,18 @@ class LokalerSpeicher {
       _tagesabschlussJsonFuerVerlauf(abschluss),
     ]);
     await box.put(key, jsonEncode(aktualisiert));
+
+    String ersetztInfo = 'kein Vorgänger';
+    if (ersetzter != null) {
+      final TagesabschlussFinal alt = TagesabschlussFinal.fromJson(ersetzter);
+      ersetztInfo = 'Vorgänger createdAt '
+          '${alt.createdAt.toIso8601String()}, war gesendet: '
+          '${alt.gesendetAm != null ? 'JA (Markierung geht verloren)' : 'nein'}';
+    }
+    await SendeProtokoll.eintragen(
+      'Verlauf: Eintrag ersetzt (neu createdAt '
+      '${abschluss.createdAt.toIso8601String()}; $ersetztInfo)',
+    );
   }
 
   /// Laedt alle finalen Tagesabschluesse fuer ein Kino (neueste zuerst).
@@ -714,8 +733,10 @@ class LokalerSpeicher {
 
   /// Markiert den Verlaufseintrag mit passendem [createdAt] (identifiziert
   /// die konkrete Abrechnung, auch wenn mehrere desselben Kalendertags
-  /// existieren) als erfolgreich an Flurbocash gesendet.
-  static Future<void> markiereAlsGesendet(
+  /// existieren) als erfolgreich an Flurbocash gesendet. Liefert true, wenn
+  /// ein passender Eintrag gefunden und markiert wurde (Run 464, vorher
+  /// stilles void — ein fehlender Treffer blieb unsichtbar).
+  static Future<bool> markiereAlsGesendet(
     String kinoId,
     DateTime createdAt,
     DateTime zeitpunkt,
@@ -724,17 +745,25 @@ class LokalerSpeicher {
     final String key = finaleTagesabschluesseKey(kinoId);
     final String? rohwert = box.get(key) as String?;
     if (rohwert == null) {
-      return;
+      await SendeProtokoll.eintragen(
+        'Verlauf markieren: NICHT gefunden (Verlauf leer/kein Schlüssel), '
+        'gesucht createdAt ${createdAt.toIso8601String()}',
+      );
+      return false;
     }
 
     final List<Map<String, dynamic>> aktualisiert = <Map<String, dynamic>>[];
+    final List<String> vorhandeneCreatedAt = <String>[];
+    bool gefunden = false;
     try {
       final List<dynamic> geparst = jsonDecode(rohwert) as List<dynamic>;
       for (final dynamic eintrag in geparst) {
         if (eintrag is Map<String, dynamic>) {
           final TagesabschlussFinal bestehend =
               TagesabschlussFinal.fromJson(eintrag);
+          vorhandeneCreatedAt.add(bestehend.createdAt.toIso8601String());
           if (bestehend.createdAt.isAtSameMomentAs(createdAt)) {
+            gefunden = true;
             aktualisiert.add(bestehend.mitGesendetAm(zeitpunkt).toJson());
           } else {
             aktualisiert.add(eintrag);
@@ -742,7 +771,10 @@ class LokalerSpeicher {
         }
       }
     } catch (_) {
-      return;
+      await SendeProtokoll.eintragen(
+        'Verlauf markieren: NICHT möglich (Verlauf nicht lesbar)',
+      );
+      return false;
     }
 
     // Ein Eintrag kann durch das gerade gesetzte gesendetAm neu für die
@@ -751,6 +783,15 @@ class LokalerSpeicher {
     final List<Map<String, dynamic>> bereinigt =
         _ohneAbgelaufeneBestaetigteEintraege(aktualisiert);
     await box.put(key, jsonEncode(bereinigt));
+    await SendeProtokoll.eintragen(
+      gefunden
+          ? 'Verlauf markieren: gefunden, als gesendet gesetzt (createdAt '
+              '${createdAt.toIso8601String()})'
+          : 'Verlauf markieren: NICHT gefunden, gesucht createdAt '
+              '${createdAt.toIso8601String()}, vorhanden: '
+              '${vorhandeneCreatedAt.join(', ')}',
+    );
+    return gefunden;
   }
 
   /// Löscht die finale Tagesabrechnung eines bestimmten Kalendertags.

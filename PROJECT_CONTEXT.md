@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.118+463 · Run 463
+Version: 0.9.119+464 · Run 464
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 463)
+## Laufender Entwicklungsstand (Run 464)
+
+- Run 464 ✅ Sende-Protokoll (lib/storage/sende_protokoll.dart): Diagnose-
+  Ereignisliste (30 Zeilen, SharedPreferences) rund um Auto-Save,
+  Versand und Verlauf-Markierung, sichtbar im PIN-Admin-Bereich der
+  Einstellungen. Ursache für "Noch nicht gesendet trotz gesendet" noch
+  offen — Fix folgt (Run 465), sobald das Protokoll einen Fall zeigt.
+  Details siehe CHANGELOG.md.
 
 - Run 463 ✅ Nur TODO.md: zwei UX-Audit-Punkte als Notiz erfasst
   (Getränkeliste-Löschen ohne Rückfrage, Schauburg-Fallbackname).
