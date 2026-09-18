@@ -56,13 +56,10 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                     context,
                     titel: 'Entnahme Wechselgeldkasse',
                     inhalt: const Text(
-                      'Nur ausfüllen, wenn heute Bargeld aus der '
-                      'Wechselgeldkasse entnommen wurde, das zeitnah '
-                      'zurückgelegt wird – z. B. ein Rollengeld-Vorschuss '
-                      'von 600 €, der morgen wieder eingelegt wird. Der '
-                      'Betrag gleicht rechnerisch aus, dass heute weniger '
-                      'Bargeld in der Kasse liegt, ohne dass es als '
-                      'fehlender Barumsatz gilt.',
+                      'Wenn ein Betrag entnommen wird, um ihn morgen als '
+                      'Kleingeld wieder in die Wechselgeldkasse '
+                      'zurückzulegen. Wichtig: eine gut sichtbare Notiz '
+                      'darüber in die Wechselgeldkasse legen.',
                     ),
                   ),
                 ),

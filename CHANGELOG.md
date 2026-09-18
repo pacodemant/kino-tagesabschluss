@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 454a: Testfeedback-Korrektur zu Run 454:
+  - schritt1_wechselgeld_entnahme_section.dart: Hilfetext deutlich
+    gekürzt (kein Beispielbetrag mehr, dafür Hinweis auf eine
+    sichtbare Notiz in der Wechselgeldkasse).
+  - schritt1_uebersicht_section.dart / verlauf_detail_seite.dart:
+    Zeile "Entnahme Wechselgeldkasse" steht jetzt VOR "Wechselgeld"
+    statt danach (Paco-Feedback: intuitiver in Rechenreihenfolge
+    Kassenbestand → Entnahme → Wechselgeld → Barumsatz bereinigt).
+  - Kein Code-Fix für den separat gemeldeten "Noch nicht gesendet"-
+    Befund: Ursache liegt vermutlich in
+    _aktualisiereTestdatenZeitstempelVorVersand() (schritt3_seite.dart),
+    die im Dev-Modus kurz vor dem Versand _abschlussVorschau mit
+    einem neuen createdAt neu aufbaut, nachdem der Auto-Save schon
+    mit dem alten createdAt gespeichert hat — markiereAlsGesendet()
+    findet dadurch keinen passenden Eintrag mehr. Unabhängig von
+    Run 454, nicht in diesem Sub-Run behoben (siehe Bericht).
 - Run 454: Entnahme aus der Wechselgeldkasse (z. B. Rollengeld-
   Vorschuss, wird am Folgetag zurückgelegt) kann jetzt in Schritt 1
   erfasst werden, ohne dass ein fälschlicher Fehlbetrag entsteht:

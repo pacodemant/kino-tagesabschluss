@@ -33,15 +33,15 @@ class Schritt1UebersichtSection extends StatelessWidget {
               label: 'Kassenbestand gesamt',
               wert: kassenbestandGesamt,
             ),
-            _UebersichtZeile(
-              label: 'Wechselgeld',
-              wert: wechselgeldSollwert,
-            ),
             if (wechselgeldEntnahme != null)
               _UebersichtZeile(
                 label: 'Entnahme Wechselgeldkasse',
                 wert: '+ $wechselgeldEntnahme',
               ),
+            _UebersichtZeile(
+              label: 'Wechselgeld',
+              wert: wechselgeldSollwert,
+            ),
             _UebersichtZeile(
               label: 'Barumsatz (bereinigt)',
               wert: barumsatzBereinigt,
