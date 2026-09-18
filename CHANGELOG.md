@@ -9,6 +9,9 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 454d: Kacheltitel auf "evtl. Entnahme Wechselgeldkasse"
+  geändert (Paco-Edit direkt in der Datei, hier nur übernommen/
+  committet).
 - Run 454c: Kachel "Entnahme Wechselgeldkasse" einklappbar gemacht
   (Paco-Wunsch: seltener Sonderfall soll nicht zu viel Prominenz
   bekommen):

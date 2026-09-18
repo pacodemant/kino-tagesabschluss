@@ -53,7 +53,7 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                 children: <Widget>[
                   const Expanded(
                     child: Text(
-                      'Entnahme Wechselgeldkasse',
+                      'evtl. Entnahme Wechselgeldkasse',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
