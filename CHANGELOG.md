@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 457: Verlauf zeigte "Noch nicht gesendet" trotz erfolgreichem
+  Versand (Paco-Testfund 2026-09-18, Dev-Modus mit automatischem
+  "testdaten HH:mm"-Zeitstempel im Kommentarfeld):
+  - tagesabschluss_schritt3_seite.dart: _aktualisiereAbschlussVorschau()
+    zog bei jedem Neuaufbau (z. B. jede Kommentaränderung, oder der
+    automatische Testdaten-Zeitstempel-Refresh kurz vor dem Senden in
+    _aktualisiereTestdatenZeitstempelVorVersand()) einen frischen
+    DateTime.now()-Wert als createdAt der Abrechnung. Der Auto-Save
+    persistiert den Verlaufseintrag aber nur einmal, mit dem createdAt
+    vom allerersten Seitenaufbau. Driftete createdAt danach weiter,
+    fand markiereAlsGesendet() (lokaler_speicher.dart, exakter
+    createdAt-Abgleich) beim Senden keinen passenden Verlaufseintrag
+    mehr und setzte gesendetAm nie — der Eintrag blieb trotz
+    erfolgreichem Versand an Flurbocash dauerhaft auf "Noch nicht
+    gesendet" stehen. Fix: neues Feld _erstellungszeitpunkt wird genau
+    einmal beim Aufbau des State-Objekts gesetzt und danach für jedes
+    _aktualisiereAbschlussVorschau() wiederverwendet statt bei jedem
+    Aufruf neu DateTime.now() zu ziehen.
 - Run 456: Neuer Widget-Test für die Sende-Orchestrierung in
   tagesabschluss_schritt3_seite.dart (_doApiUpload()) — reine
   Testabdeckung, kein App-Verhalten geändert:

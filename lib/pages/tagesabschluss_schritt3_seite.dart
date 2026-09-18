@@ -159,6 +159,23 @@ class _TagesabschlussSchritt3SeiteState
   final SchrittAuswahlBottomSheetHelper _schrittAuswahlHelper =
       const SchrittAuswahlBottomSheetHelper();
 
+  // Erstellungszeitpunkt dieser Abrechnung, exakt einmal beim Aufbau
+  // dieses State-Objekts gesetzt (Run 457) — wird als createdAt in jedes
+  // per _aktualisiereAbschlussVorschau() neu gebaute _abschlussVorschau
+  // übernommen. Vorher zog jeder Aufruf von _aktualisiereAbschlussVorschau()
+  // (z. B. bei jeder Kommentaränderung oder beim automatischen
+  // Testdaten-Zeitstempel-Update kurz vor dem Senden,
+  // _aktualisiereTestdatenZeitstempelVorVersand()) einen frischen
+  // DateTime.now()-Wert für createdAt. Der Auto-Save persistiert den
+  // Verlaufseintrag aber nur einmal, mit dem createdAt vom allerersten
+  // Aufbau — driftete createdAt danach weiter, fand markiereAlsGesendet()
+  // (lokaler_speicher.dart) beim Senden per exaktem createdAt-Abgleich
+  // keinen Treffer mehr und setzte gesendetAm nie: der Verlaufseintrag
+  // blieb trotz erfolgreichem Versand dauerhaft auf "Noch nicht gesendet"
+  // stehen (Paco-Testfund 2026-09-18, Dev-Modus mit automatischem
+  // Testdaten-Zeitstempel).
+  final DateTime _erstellungszeitpunkt = DateTime.now();
+
   // null solange die async-Initialisierung noch läuft
   TagesabschlussFinal? _abschlussVorschau;
 
@@ -344,7 +361,7 @@ class _TagesabschlussSchritt3SeiteState
         ecBelegeFotosBase64: widget.argumente.ecBelegeFotosBase64,
         ecBelegeFotosMediaTypen: widget.argumente.ecBelegeFotosMediaTypen,
       ),
-      jetzt: DateTime.now(),
+      jetzt: _erstellungszeitpunkt,
     );
     if (!mounted) return;
     setState(() => _abschlussVorschau = abschluss);

@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.111+456 · Run 456
+Version: 0.9.112+457 · Run 457
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 456)
+## Laufender Entwicklungsstand (Run 457)
+
+- Run 457 ✅ Bugfix: Verlauf zeigte "Noch nicht gesendet" trotz
+  erfolgreichem Versand, wenn createdAt der Abrechnung nach dem
+  Auto-Save noch weiterdriftete (Kommentaränderung oder automatischer
+  Testdaten-Zeitstempel-Refresh vor dem Senden) — markiereAlsGesendet()
+  fand den Verlaufseintrag dann per exaktem createdAt-Abgleich nicht
+  mehr. createdAt wird jetzt einmalig beim Seitenaufbau eingefroren.
+  Details siehe CHANGELOG.md.
 
 - Run 456 ✅ Erster Widget-Test für die Sende-Orchestrierung in
   tagesabschluss_schritt3_seite.dart (_doApiUpload()), als
