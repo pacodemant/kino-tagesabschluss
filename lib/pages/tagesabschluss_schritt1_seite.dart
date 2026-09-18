@@ -1359,7 +1359,7 @@ class _TagesabschlussSchritt1SeiteState
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: const Text('Next'),
+                  child: const Text('Weiter'),
                 ),
               ),
               const SizedBox(width: 8),

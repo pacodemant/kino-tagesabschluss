@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 467: Reiner Text-Fix (UX-Audit Fund 22): Der Button, der bei
+  offener Tastatur zum nächsten Eingabefeld springt, hieß als einziges
+  UI-Wort englisch "Next"/"next" und heißt jetzt "Weiter"
+  (tagesabschluss_schritt1_seite.dart, tagesabschluss_schritt2_seite.
+  dart, wechselgeld_pruefen_seite.dart, getraenke_auffuellen_seite.dart
+  x2). Keine Logik geändert.
 - Run 466: Schritt 2: Der Grund fürs Nicht-Weiterkommen bei offener
   Personalgetränke-Kachel ist jetzt sichtbar (UX-Audit Fund 13, statt
   des zunächst geplanten echten Deaktivierens des Buttons — das hätte

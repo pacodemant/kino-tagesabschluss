@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.121+466 · Run 466
+Version: 0.9.122+467 · Run 467
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,10 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 466)
+## Laufender Entwicklungsstand (Run 467)
+
+- Run 467 ✅ Feld-Sprung-Button "Next"/"next" heißt jetzt "Weiter"
+  (5 Stellen, reiner Text). Details siehe CHANGELOG.md.
 
 - Run 466 ✅ Schritt 2: bei geblocktem Weiter (Personalgetränke nicht
   abgehakt) scrollt die Seite nach oben und die Kachel bekommt einen

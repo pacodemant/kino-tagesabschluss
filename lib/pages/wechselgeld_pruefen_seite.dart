@@ -1080,7 +1080,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
                   foregroundColor: AppFarben.appBarRot,
                   minimumSize: const Size(0, 36),
                 ),
-                child: const Text('Next'),
+                child: const Text('Weiter'),
               ),
             ),
             const SizedBox(width: 8),

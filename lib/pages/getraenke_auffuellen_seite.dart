@@ -445,7 +445,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                         disabledBackgroundColor: Colors.grey.shade200,
                         minimumSize: const Size(130, 36),
                       ),
-                      child: const Text('next'),
+                      child: const Text('Weiter'),
                     ),
                   ),
                 ]
@@ -466,7 +466,7 @@ class _GetraenkeAuffuellenSeiteState extends State<GetraenkeAuffuellenSeite> {
                         disabledBackgroundColor: Colors.grey.shade200,
                         minimumSize: const Size(130, 36),
                       ),
-                      child: const Text('next'),
+                      child: const Text('Weiter'),
                     ),
                   ),
                   const SizedBox(width: 8),
