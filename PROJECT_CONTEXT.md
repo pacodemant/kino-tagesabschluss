@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.117+462 · Run 462
+Version: 0.9.118+463 · Run 463
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 462)
+## Laufender Entwicklungsstand (Run 463)
+
+- Run 463 ✅ Nur TODO.md: zwei UX-Audit-Punkte als Notiz erfasst
+  (Getränkeliste-Löschen ohne Rückfrage, Schauburg-Fallbackname).
+  Kein Code geändert. Details siehe CHANGELOG.md.
 
 - Run 462 ✅ AdminSession: PIN-Entsperrung gilt nur bis zum nächsten
   Tagesknick (5 Uhr, DatumsHelper-Cutoff) statt bis zum Reload; wird

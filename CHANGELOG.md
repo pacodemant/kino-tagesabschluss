@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 463: Reine Dokumentation (kein App-Verhalten geändert): zwei
+  Punkte aus der UX-Audit-Besprechung als TODO-Notiz aufgenommen
+  (Paco-Entscheidung "vorerst so lassen"): Getränkeliste löschen ohne
+  Rückfrage, hartcodierter Fallback-Kinoname "Schauburg". Beide unter
+  "Kleine Fixes" in TODO.md.
 - Run 462: Admin-Entsperrung (PIN) läuft automatisch am Tagesknick ab
   (Paco-Wunsch aus der UX-Audit-Besprechung, Fund 8):
   - services/admin_session.dart: statt einem dauerhaften bool merkt

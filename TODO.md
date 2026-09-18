@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 462 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 463 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -182,6 +182,29 @@ um Durcheinander zu vermeiden.
       Sendezeitpunkt erst unmittelbar beim Senden ergänzen/ersetzen"
       oben zusammen (beide betreffen denselben Mechanismus) — bei
       Umsetzung zusammen betrachten, nicht als zwei unabhängige Patches.
+
+- [ ] **Getränkeliste in den Einstellungen: Löschen ohne Rückfrage**
+      *(UX-Audit, Paco-Entscheidung: vorerst so lassen)*
+      `_loescheGetraenk()` in einstellungen_seite.dart entfernt einen
+      Eintrag sofort, ohne Bestätigungsdialog — anders als praktisch
+      alle anderen Lösch-Aktionen der App. Die Getränkeliste liegt
+      außerhalb des PIN-Admin-Bereichs und wirkt sich auf "Getränke
+      auffüllen" aller MA am Standort aus. Falls es im Alltag zu
+      versehentlichem Löschen kommt: Bestätigungsdialog ergänzen
+      (Muster: zeigeBestaetigungsDialog) und/oder in den PIN-Bereich
+      verschieben.
+
+- [ ] **Hardcodierter Fallback-Kinoname "Schauburg"** *(UX-Audit,
+      Paco-Entscheidung: vorerst so lassen, niedrige Priorität)*
+      wechselgeld_pruefen_seite.dart und getraenke_auffuellen_seite.dart
+      zeigen im Header `KinoRepository.nachId(kinoId)?.name ??
+      'Schauburg'`. Der Fallback greift nur bei einer kinoId, die in
+      keinem der fest hinterlegten Kinos (kino_01–kino_05, kino.dart)
+      vorkommt — im Normalbetrieb praktisch unmöglich, da die ID stets
+      aus KinoRepository stammt. Falls es je auftritt, würde der Header
+      fälschlich "Schauburg" zeigen. Optionaler Fix: neutraler
+      Platzhalter (z. B. "Standort unbekannt") statt eines echten
+      Kinonamens.
 
 ---
 
