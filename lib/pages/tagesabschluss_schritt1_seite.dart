@@ -11,7 +11,8 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_wechselgeld_entnahme_section.dart';
+// Run 467a: vorübergehend deaktiviert (siehe Kachel unten)
+// import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_wechselgeld_entnahme_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
@@ -104,7 +105,9 @@ class _TagesabschlussSchritt1SeiteState
       TextEditingController();
   final FocusNode _wechselgeldEntnahmeBetragFocusNode = FocusNode();
   final FocusNode _wechselgeldEntnahmeGrundFocusNode = FocusNode();
+  // ignore: unused_field
   bool _wechselgeldEntnahmeBetragFehlerhaft = false;
+  // ignore: unused_field
   bool _wechselgeldEntnahmeGrundFehlerhaft = false;
   // Standardmäßig zugeklappt (Paco-Wunsch Run 454c): seltener Sonderfall,
   // soll nicht zu viel Prominenz bekommen. Klappt automatisch auf, wenn
@@ -856,6 +859,7 @@ class _TagesabschlussSchritt1SeiteState
         wechselgeldEntnahmeCent: _wechselgeldEntnahmeCent,
       );
 
+  // ignore: unused_element
   Future<void> _beiWechselgeldEntnahmeBetragGeaendert(String wert) async {
     setState(() {
       _wechselgeldEntnahmeCent = TagesabschlussBerechnung.parseCentZiffern(wert);
@@ -866,6 +870,7 @@ class _TagesabschlussSchritt1SeiteState
     await _speichereEntwurf();
   }
 
+  // ignore: unused_element
   Future<void> _beiWechselgeldEntnahmeGrundGeaendert(String wert) async {
     setState(() {
       _wechselgeldEntnahmeGrund = wert;
@@ -928,6 +933,7 @@ class _TagesabschlussSchritt1SeiteState
     _wechselgeldEntnahmeAufgeklappt = false;
   }
 
+  // ignore: unused_element
   void _toggleWechselgeldEntnahme() {
     setState(() {
       _wechselgeldEntnahmeAufgeklappt = !_wechselgeldEntnahmeAufgeklappt;
@@ -1411,22 +1417,26 @@ class _TagesabschlussSchritt1SeiteState
         zusammenfassung: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Schritt1WechselgeldEntnahmeSection(
-              betragController: _wechselgeldEntnahmeBetragController,
-              grundController: _wechselgeldEntnahmeGrundController,
-              betragFocusNode: _wechselgeldEntnahmeBetragFocusNode,
-              grundFocusNode: _wechselgeldEntnahmeGrundFocusNode,
-              beiBetragGeaendert: _beiWechselgeldEntnahmeBetragGeaendert,
-              beiGrundGeaendert: _beiWechselgeldEntnahmeGrundGeaendert,
-              betragFehlerhaft: _wechselgeldEntnahmeBetragFehlerhaft,
-              grundFehlerhaft: _wechselgeldEntnahmeGrundFehlerhaft,
-              aufgeklappt: _wechselgeldEntnahmeAufgeklappt,
-              beimUmschalten: _toggleWechselgeldEntnahme,
-              betragAnzeige: _wechselgeldEntnahmeCent > 0
-                  ? _formatiereEuro(_wechselgeldEntnahmeCent)
-                  : '',
-            ),
-            const SizedBox(height: 10),
+            // Run 467a: Kachel "Entnahme aus der Wechselgeldkasse" vorübergehend
+            // ausgeblendet (wird noch gebraucht, soll aber die reale Abrechnung
+            // heute nicht irritieren). Zum Reaktivieren Block und Import wieder
+            // einkommentieren.
+            // Schritt1WechselgeldEntnahmeSection(
+            //   betragController: _wechselgeldEntnahmeBetragController,
+            //   grundController: _wechselgeldEntnahmeGrundController,
+            //   betragFocusNode: _wechselgeldEntnahmeBetragFocusNode,
+            //   grundFocusNode: _wechselgeldEntnahmeGrundFocusNode,
+            //   beiBetragGeaendert: _beiWechselgeldEntnahmeBetragGeaendert,
+            //   beiGrundGeaendert: _beiWechselgeldEntnahmeGrundGeaendert,
+            //   betragFehlerhaft: _wechselgeldEntnahmeBetragFehlerhaft,
+            //   grundFehlerhaft: _wechselgeldEntnahmeGrundFehlerhaft,
+            //   aufgeklappt: _wechselgeldEntnahmeAufgeklappt,
+            //   beimUmschalten: _toggleWechselgeldEntnahme,
+            //   betragAnzeige: _wechselgeldEntnahmeCent > 0
+            //       ? _formatiereEuro(_wechselgeldEntnahmeCent)
+            //       : '',
+            // ),
+            // const SizedBox(height: 10),
             schritt1_zusammenfassung.Schritt1Zusammenfassung(
               kassenbestandGesamt: _formatiereEuro(_kassenbestandGesamtCent),
               wechselgeldSollwert:

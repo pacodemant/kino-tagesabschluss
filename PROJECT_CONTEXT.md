@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.122+467 · Run 467
+Version: 0.9.122+467 · Run 467a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,10 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 467)
+## Laufender Entwicklungsstand (Run 467a)
+
+- Run 467a ✅ Schritt 1: Kachel "Entnahme aus der Wechselgeldkasse"
+  vorübergehend auskommentiert (nicht entfernt). Details siehe CHANGELOG.md.
 
 - Run 467 ✅ Feld-Sprung-Button "Next"/"next" heißt jetzt "Weiter"
   (5 Stellen, reiner Text). Details siehe CHANGELOG.md.

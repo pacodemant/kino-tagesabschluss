@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 467a: Schritt 1: Kachel "Entnahme aus der Wechselgeldkasse"
+  vorübergehend auskommentiert (Paco-Wunsch: reale SB-Abrechnung heute
+  soll nicht durch die neue Kachel irritieren). Widget-Aufruf samt
+  Abstand und Import in tagesabschluss_schritt1_seite.dart auskommentiert,
+  drei ungenutzte Handler/zwei Felder per "// ignore" markiert. Logik,
+  Persistenz und Section-Datei unverändert — zum Reaktivieren Block und
+  Import wieder einkommentieren.
 - Run 467: Reiner Text-Fix (UX-Audit Fund 22): Der Button, der bei
   offener Tastatur zum nächsten Eingabefeld springt, hieß als einziges
   UI-Wort englisch "Next"/"next" und heißt jetzt "Weiter"
