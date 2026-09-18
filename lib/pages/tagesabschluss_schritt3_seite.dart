@@ -230,8 +230,12 @@ class _TagesabschlussSchritt3SeiteState
   /// Seite mit der aktuellen Uhrzeit vorbefüllt (siehe
   /// _initialisierenAsync()), spiegelt dort also nur den Zeitpunkt des
   /// Seitenaufrufs wider, nicht den tatsächlichen Versand — wird hier
-  /// direkt vor dem Versand nachgezogen.
-  void _aktualisiereTestdatenZeitstempelVorVersand() {
+  /// direkt vor dem Versand nachgezogen. Speichert den aktualisierten
+  /// Kommentar zusätzlich als Entwurf (Run 455, Paco-Testfund): sonst
+  /// lädt _ladeAnmerkungEntwurf() bei Rückkehr auf diese Seite (z. B.
+  /// über Schritt 2 und zurück, die Seite wird dabei neu aufgebaut) den
+  /// alten, hier nie persistierten Zeitstempel wieder ein.
+  Future<void> _aktualisiereTestdatenZeitstempelVorVersand() async {
     if (!_devModusAktiv) return;
     if (!_testdatenZeitstempelMuster.hasMatch(_anmerkung)) return;
     final String rest =
@@ -239,6 +243,7 @@ class _TagesabschlussSchritt3SeiteState
     _anmerkung = '${_testdatenKennzeichenMitZeitstempel()}$rest';
     _anmerkungController.text = _anmerkung;
     _aktualisiereAbschlussVorschau();
+    await _speichereAnmerkungEntwurf();
   }
 
   /// Lädt einen zuvor auf dieser Seite eingegebenen, noch nicht
@@ -662,7 +667,8 @@ class _TagesabschlussSchritt3SeiteState
         return;
       }
       if (!mounted) return;
-      _aktualisiereTestdatenZeitstempelVorVersand();
+      await _aktualisiereTestdatenZeitstempelVorVersand();
+      if (!mounted) return;
       final bool apiAktiv = await FeatureFlags.apiUploadAktiv();
       if (!mounted) return;
       if (apiAktiv) {

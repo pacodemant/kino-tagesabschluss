@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 455: Testdaten-Zeitstempel wird jetzt auch im Entwurf
+  gespeichert (Paco-Testfund: nach dem Senden zurück zu Schritt 2 und
+  wieder zu Schritt 3 zeigte das Anmerkungsfeld wieder die alte
+  Öffnungszeit statt der gerade gesendeten Uhrzeit — der eigentliche
+  Versand an Flurbocash war zu diesem Zeitpunkt bereits korrekt mit
+  der Sendezeit raus, nur die spätere Anzeige beim Wiederkehren auf
+  die Seite war betroffen):
+  - tagesabschluss_schritt3_seite.dart:
+    _aktualisiereTestdatenZeitstempelVorVersand() (Run 453/453a) rief
+    nach dem Aktualisieren des Zeitstempels nie
+    _speichereAnmerkungEntwurf() auf — der neue Zeitstempel landete
+    nur im Arbeitsspeicher der Seite, nicht im lokalen Entwurf. Baut
+    die Seite danach neu auf (z. B. Schritt 2 → Schritt 3), lud
+    _ladeAnmerkungEntwurf() den alten, gespeicherten Zeitstempel
+    wieder ein. Fix: Methode ruft jetzt zusätzlich
+    _speichereAnmerkungEntwurf() auf.
 - Run 454d: Kacheltitel auf "evtl. Entnahme Wechselgeldkasse"
   geändert (Paco-Edit direkt in der Datei, hier nur übernommen/
   committet).
