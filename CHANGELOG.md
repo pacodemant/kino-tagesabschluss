@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 453a: Korrektur zu Run 453 (Paco-Testfeedback: T2/T3 schlugen
+  fehl, Zeitstempel blieb weiterhin auf Öffnungszeit stehen, auch bei
+  Flurbocash kam die Öffnungszeit an):
+  - tagesabschluss_schritt3_seite.dart: RegExp
+    `_testdatenZeitstempelMuster` erkannte den erzeugten Zeitstempel
+    nie, da `DateFormat("EEE", 'de_DE')` den Wochentag MIT Punkt
+    liefert (z. B. "Fr.", 3 Zeichen) — die RegExp erwartete aber genau
+    2 Zeichen ohne Satzzeichen (`\w{2}`). Dadurch griff die Ersetzung
+    in `_aktualisiereTestdatenZeitstempelVorVersand()` nie. Muster auf
+    `[A-Za-zÄÖÜäöüß]+\.?` für den Wochentag korrigiert, mit Dart-
+    Testskript gegen den tatsächlichen DateFormat-Output verifiziert.
 - Run 453: Testdaten-Zeitstempel im Dev-Modus wird beim tatsächlichen
   Versand aktualisiert (Paco-Testfund: das Anmerkungsfeld wurde im
   Dev-Modus beim Öffnen der Seite mit "testdaten <Zeitpunkt>" befüllt,

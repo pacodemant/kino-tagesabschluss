@@ -217,8 +217,9 @@ class _TagesabschlussSchritt3SeiteState
   /// Zeitstempel-Anfang, auch wenn danach noch eigener Text angehängt
   /// wurde — damit dieser beim Versand aktualisiert werden kann, ohne
   /// angehängten Text zu verwerfen.
-  static final RegExp _testdatenZeitstempelMuster =
-      RegExp(r'^testdaten \d{1,2}\.\d{1,2}\. \w{2} \d{2}:\d{2}');
+  static final RegExp _testdatenZeitstempelMuster = RegExp(
+    r'^testdaten \d{1,2}\.\d{1,2}\. [A-Za-zÄÖÜäöüß]+\.? \d{2}:\d{2}',
+  );
 
   /// Ersetzt den Zeitstempel im Dev-Modus-Kennzeichen durch den
   /// tatsächlichen Sendezeitpunkt. Der Zeitstempel wird beim Öffnen der
