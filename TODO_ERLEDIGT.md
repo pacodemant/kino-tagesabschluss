@@ -37,6 +37,19 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Verlauf "Noch nicht gesendet" trotz erfolgreichem Versand**
+      (Paco-Fund 2026-09-18, Runs 464/465, von Paco getestet)
+      Ursache per Sende-Protokoll (Run 464) belegt: Schritt 3 nach dem
+      Senden erneut öffnen legte per Auto-Save einen neuen (Anmerkung
+      "testdaten") bzw. ersetzten Verlaufseintrag ohne gesendetAm an,
+      obwohl die Sende-Signatur weiter passte. Fix Run 465:
+      LokalerSpeicher.markiereAlsGesendetFallsSignaturPasst() markiert
+      nach dem Auto-Save nach (Signatur passt + heute gesendet, mit
+      gespeicherter Sendezeit, neuer Key sende_bestaetigung_zeit_<kino>).
+      Abweichung/Einschränkung: die überzähligen Kopien im Testdaten-Fall
+      werden weiterhin angelegt, nur korrekt als gesendet markiert.
+      Das Sende-Protokoll (Run 464) bleibt als Diagnose erhalten.
+
 - [x] **"Belege" → "Umsätze" umbenennen** (Paco-Notiz 2026-08-30)
       Betraf als reiner Text-Fix vier Stellen:
       `tagesabschluss_schritt2_seite.dart` (`schrittTitel: 'Belege'`,

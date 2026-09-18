@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 465a: Reine Dokumentation (kein App-Verhalten geändert): Pacos
+  Test von Run 465 bestanden (Senden -> Schritt 3 erneut öffnen ->
+  Verlauf ohne "Noch nicht gesendet"; Daten ändern -> bleibt
+  ungesendet). TODO-Punkt von TODO.md nach TODO_ERLEDIGT.md verschoben.
 - Run 465: Verlauf zeigt nach erneutem Öffnen von Schritt 3 nicht mehr
   fälschlich "Noch nicht gesendet" (Paco-Testfund 2026-09-18, Ursache
   per Sende-Protokoll aus Run 464 belegt: erneutes Öffnen von Schritt 3
