@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.113+458 · Run 458
+Version: 0.9.114+459 · Run 459
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -156,7 +156,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 458)
+## Laufender Entwicklungsstand (Run 459)
+
+- Run 459 ✅ "Heutige Abrechnung zurücksetzen (Test)"-Button (Schritt
+  1-3 + Gesendet-Status unwiderruflich löschbar) aus dem Cloud-UX-Audit
+  hinter den PIN-Admin-Bereich verschoben — vorher für jede MA ohne
+  PIN erreichbar. Details siehe CHANGELOG.md.
 
 - Run 458 ✅ Unit-Test für UpdateReloadGuard (istAufSichererSeite,
   didPush/didPop/didReplace) — reine Testabdeckung, kein

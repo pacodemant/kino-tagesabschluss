@@ -1095,6 +1095,22 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
                   einstellungenSections.flurbocash,
                   einstellungenSections.belegscan,
                   einstellungenSections.devModus,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppFarben.differenzNegativ,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: _resetHeutigeAbrechnung,
+                        child: const Text(
+                          'Heutige Abrechnung zurücksetzen (Test)',
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ],
             ),
@@ -1107,18 +1123,6 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               child: const Text('App neu laden'),
             ),
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppFarben.differenzNegativ,
-                foregroundColor: Colors.white,
-              ),
-              onPressed: _resetHeutigeAbrechnung,
-              child: const Text('Heutige Abrechnung zurücksetzen (Test)'),
-            ),
-          ),
         ],
       ),
     );
@@ -1126,8 +1130,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
   /// Testphase: löscht alle heutigen Abrechnungsdaten (alle drei Schritte
   /// sowie eine bereits finalisierte Abrechnung) des aktuell gewählten
-  /// Standorts, inklusive Gesendet-Status. Absichtlich ungeschützt neben
-  /// "App neu laden" statt im PIN-Admin-Bereich, siehe Run-397-Absprache.
+  /// Standorts, inklusive Gesendet-Status. Bis Run 458 absichtlich
+  /// ungeschützt neben "App neu laden" (Run-397-Absprache); seit Run 459
+  /// hinter den PIN-Admin-Bereich verschoben, da für normale MA im
+  /// Alltag erreichbar und unwiderruflich.
   Future<void> _resetHeutigeAbrechnung() async {
     final bool? bestaetigt = await zeigeBestaetigungsDialog(
       context,

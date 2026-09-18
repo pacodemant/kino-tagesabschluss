@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 459: "Heutige Abrechnung zurücksetzen (Test)"-Button aus dem
+  UX-Audit (unwiderruflich, aber bislang für jede MA ohne PIN
+  erreichbar) hinter den PIN-Admin-Bereich verschoben:
+  - einstellungen_seite.dart: Button ist jetzt Teil der
+    `if (_devAufgeklappt) ...`-Liste in der Admin-Card statt
+    freistehend neben "App neu laden". Funktion/Bestätigungsdialog
+    unverändert, nur die Sichtbarkeit geändert.
 - Run 458: Neuer Unit-Test für UpdateReloadGuard (reine Testabdeckung,
   kein App-Verhalten geändert):
   - test/services/update_reload_guard_test.dart (neu): prüft
