@@ -37,6 +37,14 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Kupfer-Rollen aus der Oberfläche entfernen** *(Run 470)*
+      Buttons "Kupfer-Rollen hinzufügen/entfernen" und die Zeilen 1/2/5 ct
+      sind in Schritt 1 und Wechselgeldprüfung weg (kommen praktisch nie
+      in die Wechselgeldkasse). Nur Oberfläche: Modell, Verlauf,
+      Finalisieren und Konfiguration kennen die Kupfer-Rollen-IDs weiter,
+      damit alte Abrechnungen lesbar bleiben. Alte Entwürfe mit Kupfer-
+      Rollen-Werten werden beim Laden ignoriert.
+
 - [x] **Wechselgeldentnahme in der Wechselgeldprüfung** *(Run 469)*
       Abend-Prüfung: Entnahme des heutigen Abschlusses automatisch vom
       Sollwert abgezogen (Zeile + oranger Zettel-Hinweis, nur bei

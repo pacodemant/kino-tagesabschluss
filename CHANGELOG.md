@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 470: Kupfer-Rollen (1/2/5 ct) aus der Oberfläche entfernt (Paco:
+  kommen praktisch nie in die Wechselgeldkasse). Schritt 1 und
+  Wechselgeldprüfung zeigen weder die Buttons "Kupfer-Rollen hinzufügen/
+  entfernen" noch die Kupfer-Zeilen; die zugehörigen Parameter/Handler
+  in Schritt1RollenInhalt, Gruppen-Orchestrierung und
+  WechselgeldRollenSection sind entfallen. Nur Oberfläche: Modell,
+  Verlauf, Finalisieren, Stückelungsvorschlag und Konfiguration bleiben
+  unverändert. Alte Entwürfe mit Kupfer-Rollen-Werten werden beim Laden
+  übersprungen (auch bei "Rollen übernehmen"), damit sie nicht unsichtbar
+  weiterlaufen. Neuer Test in der Prüfseite. Kupfermünzen (lose) folgen
+  in Run 471.
 - Run 469b: Notiz-Hinweis in Schritt 1 (Bargeldzählung) ergänzt um
   "nach der Abrechnung": "Wechselgeldentnahme: Notiz mit Betrag und
   Grund nach der Abrechnung gut sichtbar in die Wechselgeldkasse

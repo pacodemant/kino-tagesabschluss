@@ -119,7 +119,6 @@ class _TagesabschlussSchritt1SeiteState
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
   bool _kupferLoseSichtbar = false;
-  bool _kupferRollenSichtbar = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
@@ -131,14 +130,12 @@ class _TagesabschlussSchritt1SeiteState
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
-  List<Kassenzeile> get _kupferRollen => _rollenAlle
-      .where((Kassenzeile zeile) => StueckelungKonfiguration.kupferRollenIds.contains(zeile.id))
-      .toList();
-  List<Kassenzeile> get _rollenOhneKupfer => _rollenAlle
+  // Kupfer-Rollen (1/2/5 ct) gibt es in der Oberfläche nicht mehr (Run 470,
+  // kommen praktisch nie in die Wechselgeldkasse). Modell und Konfiguration
+  // kennen sie weiter, damit alte Abrechnungen lesbar bleiben.
+  List<Kassenzeile> get _rollenSichtbar => _rollenAlle
       .where((Kassenzeile zeile) => !StueckelungKonfiguration.kupferRollenIds.contains(zeile.id))
       .toList();
-  List<Kassenzeile> get _rollenSichtbar =>
-      _kupferRollenSichtbar ? _rollenAlle : _rollenOhneKupfer;
   List<Kassenzeile> get _loseMuenzartenOhneKupfer => _loseMuenzarten
       .where((Kassenzeile zeile) => !StueckelungKonfiguration.kupferMuenzenIds.contains(zeile.id))
       .toList();
@@ -268,6 +265,9 @@ class _TagesabschlussSchritt1SeiteState
       final Object? stueckzahlenRoh = abrechnungDaten['stueckzahlen'];
       if (stueckzahlenRoh is Map<String, dynamic>) {
         for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
+          if (StueckelungKonfiguration.kupferRollenIds.contains(e.key)) {
+            continue;
+          }
           _stueckzahlen[e.key] = (e.value as num?)?.toInt() ?? 0;
         }
       }
@@ -303,8 +303,6 @@ class _TagesabschlussSchritt1SeiteState
       }
     }
 
-    final bool hatKupferRollenWerte =
-        StueckelungKonfiguration.kupferRollenIds.any((String id) => (_stueckzahlen[id] ?? 0) > 0);
     final bool hatKupferLoseWerte = StueckelungKonfiguration.kupferMuenzenIds.any(
       (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
     );
@@ -312,10 +310,6 @@ class _TagesabschlussSchritt1SeiteState
     setState(() {
       _wechselgeldSollwertCent = wechselgeld;
       _laedt = false;
-      if (hatKupferRollenWerte) {
-        _kupferRollenSichtbar = true;
-        _rollenAufgeklappt = true;
-      }
       if (hatKupferLoseWerte) {
         _kupferLoseSichtbar = true;
         _loseMuenzenAufgeklappt = true;
@@ -563,43 +557,6 @@ class _TagesabschlussSchritt1SeiteState
       for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
         _loseMuenzenNachArtCent[id] = 0;
         _loseMuenzenController[id]?.clear();
-      }
-    });
-    await _speichereEntwurf();
-  }
-
-  void _zeigeKupferRollen() {
-    setState(() {
-      _kupferRollenSichtbar = true;
-    });
-  }
-
-  Future<void> _entferneKupferRollen() async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogCtx) => AlertDialog(
-        title: const Text('Kupfer-Rollen entfernen?'),
-        content: const Text('Kupfer-Rollen wirklich entfernen?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(true),
-            child: const Text('Löschen'),
-          ),
-        ],
-      ),
-    );
-    if (bestaetigt != true || !mounted) {
-      return;
-    }
-    setState(() {
-      _kupferRollenSichtbar = false;
-      for (final String id in StueckelungKonfiguration.kupferRollenIds) {
-        _stueckzahlen[id] = 0;
-        _stueckzahlController[id]?.clear();
       }
     });
     await _speichereEntwurf();
@@ -1121,13 +1078,8 @@ class _TagesabschlussSchritt1SeiteState
     // Rollen nutzen denselben Stueckzahl-Mechanismus wie Scheine (siehe
     // StueckelungKonfiguration.alleStueckzahlZeilen = scheine + rollen).
     // Vorher fehlte diese Pruefung fuer Rollen komplett (Cloud-UX-Audit).
-    final List<Kassenzeile> leereRollen = _rollenAlle
-        .where(
-          (Kassenzeile zeile) =>
-              _stueckzahlController[zeile.id]!.text.isEmpty &&
-              (!StueckelungKonfiguration.kupferRollenIds.contains(zeile.id) ||
-                  _kupferRollenSichtbar),
-        )
+    final List<Kassenzeile> leereRollen = _rollenSichtbar
+        .where((Kassenzeile zeile) => _stueckzahlController[zeile.id]!.text.isEmpty)
         .toList();
 
     // Umschlaege sind eine optionale Liste (0 Eintraege = kein Sonderfall
@@ -1256,15 +1208,12 @@ class _TagesabschlussSchritt1SeiteState
       loseMuenzarten: _loseMuenzarten,
       loseMuenzartenOhneKupfer: _loseMuenzartenOhneKupfer,
       kupferLoseMuenzarten: _kupferLoseMuenzarten,
-      rollenOhneKupfer: _rollenOhneKupfer,
-      kupferRollen: _kupferRollen,
       rollenSichtbar: _rollenSichtbar,
       scheineAufgeklappt: _scheineAufgeklappt,
       loseMuenzenAufgeklappt: _loseMuenzenAufgeklappt,
       rollenAufgeklappt: _rollenAufgeklappt,
       umschlaegeAufgeklappt: _umschlaegeAufgeklappt,
       kupferLoseSichtbar: _kupferLoseSichtbar,
-      kupferRollenSichtbar: _kupferRollenSichtbar,
       zeigeKupferLose: _zeigeKupferLose,
       entferneKupferLose: _entferneKupferLose,
       stueckzahlen: _stueckzahlen,
@@ -1291,8 +1240,6 @@ class _TagesabschlussSchritt1SeiteState
       beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
       umschlagEntfernen: _umschlagEntfernen,
       umschlagHinzufuegen: _umschlagHinzufuegen,
-      zeigeKupferRollen: _zeigeKupferRollen,
-      entferneKupferRollen: _entferneKupferRollen,
       toggleScheine: () {
         _toggleSection(_sectionScheine);
       },

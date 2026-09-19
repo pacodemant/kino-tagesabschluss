@@ -254,4 +254,22 @@ void main() {
       await raeumeAuf(tester);
     },
   );
+
+  testWidgets(
+    'Kupfer-Rollen gibt es nicht mehr (Run 470): weder Button noch Zeilen, '
+    'die Kupfermünzen (lose) bleiben',
+    (WidgetTester tester) async {
+      await oeffne(tester, ausTagesabrechnung: false, jetzt: vormittags);
+      // Scheine sind anfangs offen ("Alle zuklappen"): erst zu-, dann alles
+      // aufklappen, damit auch die Rollen-Kachel offen ist.
+      await tester.tap(find.text('Alle zuklappen'));
+      await tester.pump();
+      await tester.tap(find.text('Alle aufklappen'));
+      await tester.pump();
+
+      expect(find.textContaining('Kupfer-Rollen'), findsNothing);
+      expect(find.text('Kupfermünzen hinzufügen'), findsOneWidget);
+      await raeumeAuf(tester);
+    },
+  );
 }

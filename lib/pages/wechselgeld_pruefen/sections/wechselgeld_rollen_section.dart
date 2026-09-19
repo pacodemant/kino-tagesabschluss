@@ -8,10 +8,7 @@ import 'package:kino_bar_app/widgets/collapsible_card_section.dart';
 class WechselgeldRollenSection extends StatelessWidget {
   const WechselgeldRollenSection({
     super.key,
-    required this.rollenOhneKupfer,
-    required this.kupferRollen,
     required this.rollenSichtbar,
-    required this.kupferRollenSichtbar,
     required this.rollenAufgeklappt,
     required this.rollenUebernommen,
     required this.stueckzahlen,
@@ -23,18 +20,13 @@ class WechselgeldRollenSection extends StatelessWidget {
     required this.textInputActionFuerSchritt1,
     required this.beiStueckzahlGeaendert,
     required this.beiEingabeAbgeschlossen,
-    required this.zeigeKupferRollen,
-    required this.entferneKupferRollen,
     required this.onToggleRollen,
     required this.onLoescheRollen,
     required this.onLadeRollenAusErsterZaehlung,
     required this.onZeigeRollenUebernehmenHilfe,
   });
 
-  final List<Kassenzeile> rollenOhneKupfer;
-  final List<Kassenzeile> kupferRollen;
   final List<Kassenzeile> rollenSichtbar;
-  final bool kupferRollenSichtbar;
   final bool rollenAufgeklappt;
   final bool rollenUebernommen;
   final Map<String, int> stueckzahlen;
@@ -48,8 +40,6 @@ class WechselgeldRollenSection extends StatelessWidget {
       textInputActionFuerSchritt1;
   final void Function(Kassenzeile zeile, String wert) beiStueckzahlGeaendert;
   final void Function(FocusNode focusNode) beiEingabeAbgeschlossen;
-  final VoidCallback zeigeKupferRollen;
-  final VoidCallback entferneKupferRollen;
   final VoidCallback onToggleRollen;
   final VoidCallback onLoescheRollen;
   final VoidCallback onLadeRollenAusErsterZaehlung;
@@ -77,15 +67,10 @@ class WechselgeldRollenSection extends StatelessWidget {
     }
 
     final Widget inhalt = schritt1_ui.Schritt1RollenInhalt(
-      rollenOhneKupfer: rollenOhneKupfer,
-      kupferRollen: kupferRollen,
-      kupferRollenSichtbar: kupferRollenSichtbar,
       zeilenEintragBuilder: zeilenEintrag,
       summeGruppe: summeGruppe,
       formatiereRollenAnzeige: (int cent) =>
           schritt1_ui.schritt1FormatiereRollenAnzeige(cent, formatiereEuro),
-      zeigeKupferRollen: zeigeKupferRollen,
-      entferneKupferRollen: entferneKupferRollen,
       rollenSichtbar: rollenSichtbar,
     );
 

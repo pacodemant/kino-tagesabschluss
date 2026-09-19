@@ -239,25 +239,15 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
 class Schritt1RollenInhalt extends StatelessWidget {
   const Schritt1RollenInhalt({
     super.key,
-    required this.rollenOhneKupfer,
-    required this.kupferRollen,
-    required this.kupferRollenSichtbar,
     required this.zeilenEintragBuilder,
     required this.summeGruppe,
     required this.formatiereRollenAnzeige,
-    required this.zeigeKupferRollen,
-    required this.entferneKupferRollen,
     required this.rollenSichtbar,
   });
 
-  final List<Kassenzeile> rollenOhneKupfer;
-  final List<Kassenzeile> kupferRollen;
-  final bool kupferRollenSichtbar;
   final Widget Function(Kassenzeile zeile) zeilenEintragBuilder;
   final int Function(List<Kassenzeile> zeilen) summeGruppe;
   final String Function(int cent) formatiereRollenAnzeige;
-  final VoidCallback zeigeKupferRollen;
-  final VoidCallback entferneKupferRollen;
   final List<Kassenzeile> rollenSichtbar;
 
   @override
@@ -265,26 +255,9 @@ class Schritt1RollenInhalt extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (final Kassenzeile zeile in rollenOhneKupfer) ...<Widget>[
+        for (final Kassenzeile zeile in rollenSichtbar) ...<Widget>[
           zeilenEintragBuilder(zeile),
           const SizedBox(height: 8),
-        ],
-        if (!kupferRollenSichtbar)
-          _KupferHinzufuegenButton(
-            label: 'Kupfer-Rollen hinzufügen',
-            onPressed: zeigeKupferRollen,
-          ),
-        if (kupferRollenSichtbar) ...<Widget>[
-          const SizedBox(height: 8),
-          _KupferEntfernenButton(
-            label: 'Kupfer-Rollen entfernen',
-            onPressed: entferneKupferRollen,
-          ),
-          const SizedBox(height: 4),
-          for (final Kassenzeile zeile in kupferRollen) ...<Widget>[
-            zeilenEintragBuilder(zeile),
-            const SizedBox(height: 8),
-          ],
         ],
         const SizedBox(height: 4),
         Text(

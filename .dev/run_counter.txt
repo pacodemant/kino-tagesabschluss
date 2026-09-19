@@ -1,3 +1,3 @@
-last_run: 469
-next_run: 470
-last_run_title: Run 469: Wechselgeldprüfung berücksichtigt die Wechselgeldentnahme (Abend automatisch, Morgen per Schalter)
+last_run: 470
+next_run: 471
+last_run_title: Run 470: Kupfer-Rollen aus der Oberfläche entfernt (Schritt 1 + Wechselgeldprüfung)

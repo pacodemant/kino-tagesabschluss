@@ -16,8 +16,6 @@ class Schritt1GruppenOrchestrierung {
   Schritt1GruppenWidgets baueGruppen({
     required List<Kassenzeile> scheine,
     required List<Kassenzeile> loseMuenzarten,
-    required List<Kassenzeile> rollenOhneKupfer,
-    required List<Kassenzeile> kupferRollen,
     required List<Kassenzeile> rollenSichtbar,
     required List<Kassenzeile> loseMuenzartenOhneKupfer,
     required List<Kassenzeile> kupferLoseMuenzarten,
@@ -26,7 +24,6 @@ class Schritt1GruppenOrchestrierung {
     required bool rollenAufgeklappt,
     required bool umschlaegeAufgeklappt,
     required bool kupferLoseSichtbar,
-    required bool kupferRollenSichtbar,
     required VoidCallback zeigeKupferLose,
     required VoidCallback entferneKupferLose,
     required Map<String, int> stueckzahlen,
@@ -57,8 +54,6 @@ class Schritt1GruppenOrchestrierung {
     required void Function(int index, String wert) beiUmschlagBetragGeaendert,
     required void Function(int index) umschlagEntfernen,
     required VoidCallback umschlagHinzufuegen,
-    required VoidCallback zeigeKupferRollen,
-    required VoidCallback entferneKupferRollen,
     required VoidCallback toggleScheine,
     required VoidCallback toggleLoseMuenzen,
     required VoidCallback toggleRollen,
@@ -126,11 +121,6 @@ class Schritt1GruppenOrchestrierung {
       aufgeklappt: rollenAufgeklappt,
       beimUmschalten: toggleRollen,
       inhalt: schritt1_ui.Schritt1RollenInhalt(
-        rollenOhneKupfer: rollenOhneKupfer,
-        kupferRollen: kupferRollen,
-        kupferRollenSichtbar: kupferRollenSichtbar,
-        zeigeKupferRollen: zeigeKupferRollen,
-        entferneKupferRollen: entferneKupferRollen,
         zeilenEintragBuilder: baueZeilenEintrag,
         summeGruppe: summeGruppe,
         formatiereRollenAnzeige: (int cent) =>

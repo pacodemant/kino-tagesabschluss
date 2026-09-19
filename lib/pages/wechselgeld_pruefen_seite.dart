@@ -122,7 +122,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
   bool _kupferLoseSichtbar = false;
-  bool _kupferRollenSichtbar = false;
   bool _umschlaegeAufgeklappt = false;
   bool _dialogGezeigt = false;
   bool _dialogPruefungGeplant = false;
@@ -133,14 +132,10 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
 
   List<Kassenzeile> get _scheine => StueckelungKonfiguration.scheine;
   List<Kassenzeile> get _rollenAlle => StueckelungKonfiguration.rollen;
-  List<Kassenzeile> get _kupferRollen => _rollenAlle
-      .where((Kassenzeile zeile) => StueckelungKonfiguration.kupferRollenIds.contains(zeile.id))
-      .toList();
-  List<Kassenzeile> get _rollenOhneKupfer => _rollenAlle
+  // Kupfer-Rollen (1/2/5 ct) gibt es in der Oberfläche nicht mehr (Run 470).
+  List<Kassenzeile> get _rollenSichtbar => _rollenAlle
       .where((Kassenzeile zeile) => !StueckelungKonfiguration.kupferRollenIds.contains(zeile.id))
       .toList();
-  List<Kassenzeile> get _rollenSichtbar =>
-      _kupferRollenSichtbar ? _rollenAlle : _rollenOhneKupfer;
   List<Kassenzeile> get _loseMuenzartenOhneKupfer => _loseMuenzarten
       .where((Kassenzeile zeile) => !StueckelungKonfiguration.kupferMuenzenIds.contains(zeile.id))
       .toList();
@@ -302,6 +297,9 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       final Object? stueckzahlenRoh = entwurf['stueckzahlen'];
       if (stueckzahlenRoh is Map<String, dynamic>) {
         for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
+          if (StueckelungKonfiguration.kupferRollenIds.contains(e.key)) {
+            continue;
+          }
           _stueckzahlen[e.key] = (e.value as num?)?.toInt() ?? 0;
         }
       }
@@ -326,8 +324,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
 
     _initialisierungHelper.sichereMindestensEinenUmschlag();
 
-    final bool hatKupferRollenWerte =
-        StueckelungKonfiguration.kupferRollenIds.any((String id) => (_stueckzahlen[id] ?? 0) > 0);
     final bool hatKupferLoseWerte = StueckelungKonfiguration.kupferMuenzenIds.any(
       (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
     );
@@ -335,9 +331,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     setState(() {
       _wechselgeldSollwertCent = geladenerSollwert;
       _laedt = false;
-      if (hatKupferRollenWerte) {
-        _kupferRollenSichtbar = true;
-      }
       if (hatKupferLoseWerte) {
         _kupferLoseSichtbar = true;
       }
@@ -610,22 +603,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
         _loseMuenzenNachArtCent[id] = 0;
         _loseMuenzenController[id]?.clear();
-      }
-    });
-  }
-
-  void _zeigeKupferRollen() {
-    setState(() {
-      _kupferRollenSichtbar = true;
-    });
-  }
-
-  void _entferneKupferRollen() {
-    setState(() {
-      _kupferRollenSichtbar = false;
-      for (final String id in StueckelungKonfiguration.kupferRollenIds) {
-        _stueckzahlen[id] = 0;
-        _stueckzahlController[id]?.clear();
       }
     });
   }
@@ -1002,6 +979,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         stueckzahlMap.entries.any(
           (MapEntry<String, dynamic> e) =>
               e.key.startsWith('roll_') &&
+              !StueckelungKonfiguration.kupferRollenIds.contains(e.key) &&
               ((e.value as num?)?.toInt() ?? 0) != 0,
         );
     if (!hatRollenDaten) {
@@ -1015,7 +993,9 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     }
     setState(() {
       for (final MapEntry<String, dynamic> e in stueckzahlMap.entries) {
-        if (e.key.startsWith('roll_') && _stueckzahlen.containsKey(e.key)) {
+        if (e.key.startsWith('roll_') &&
+            !StueckelungKonfiguration.kupferRollenIds.contains(e.key) &&
+            _stueckzahlen.containsKey(e.key)) {
           final int wert = (e.value as num?)?.toInt() ?? 0;
           _stueckzahlen[e.key] = wert;
           _stueckzahlController[e.key]?.text =
@@ -1071,15 +1051,12 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       loseMuenzarten: _loseMuenzarten,
       loseMuenzartenOhneKupfer: _loseMuenzartenOhneKupfer,
       kupferLoseMuenzarten: _kupferLoseMuenzarten,
-      rollenOhneKupfer: _rollenOhneKupfer,
-      kupferRollen: _kupferRollen,
       rollenSichtbar: _rollenSichtbar,
       scheineAufgeklappt: _scheineAufgeklappt,
       loseMuenzenAufgeklappt: _loseMuenzenAufgeklappt,
       rollenAufgeklappt: _rollenAufgeklappt,
       umschlaegeAufgeklappt: _umschlaegeAufgeklappt,
       kupferLoseSichtbar: _kupferLoseSichtbar,
-      kupferRollenSichtbar: _kupferRollenSichtbar,
       zeigeKupferLose: _zeigeKupferLose,
       entferneKupferLose: _entferneKupferLose,
       stueckzahlen: _stueckzahlen,
@@ -1106,8 +1083,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       beiUmschlagBetragGeaendert: _beiUmschlagBetragGeaendert,
       umschlagEntfernen: _umschlagEntfernen,
       umschlagHinzufuegen: _umschlagHinzufuegen,
-      zeigeKupferRollen: _zeigeKupferRollen,
-      entferneKupferRollen: _entferneKupferRollen,
       toggleScheine: () => _toggleSection(_sectionScheine),
       toggleLoseMuenzen: () => _toggleSection(_sectionLoseMuenzen),
       toggleRollen: () => _toggleSection(_sectionRollen),
@@ -1237,10 +1212,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,
         rollenGruppe: WechselgeldRollenSection(
-          rollenOhneKupfer: _rollenOhneKupfer,
-          kupferRollen: _kupferRollen,
           rollenSichtbar: _rollenSichtbar,
-          kupferRollenSichtbar: _kupferRollenSichtbar,
           rollenAufgeklappt: _rollenAufgeklappt,
           rollenUebernommen: _rollenUebernommen,
           stueckzahlen: _stueckzahlen,
@@ -1252,8 +1224,6 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
           textInputActionFuerSchritt1: _textInputAction,
           beiStueckzahlGeaendert: _beiStueckzahlGeaendert,
           beiEingabeAbgeschlossen: _beiEingabeAbgeschlossen,
-          zeigeKupferRollen: _zeigeKupferRollen,
-          entferneKupferRollen: _entferneKupferRollen,
           onToggleRollen: () => _toggleSection(_sectionRollen),
           onLoescheRollen: _loescheRollen,
           onLadeRollenAusErsterZaehlung: _ladeRollenAusErsterZaehlung,
