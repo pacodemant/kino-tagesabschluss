@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.126+471 · Run 471b
+Version: 0.9.127+472 · Run 472
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -41,6 +41,7 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
     config/                 → Asset-Textdateien (Getränkelisten, Zahlungsarten)
     .dev/                   → Entwicklungsworkflow und Run-System
     scripts/                → Entwickler-Skripte
+    scripts/e2e/            → E2E-Test der Web-App im echten Browser (Playwright)
 
 ---
 
@@ -1382,6 +1383,19 @@ Zu Beginn einer neuen Session:
 1. `.dev/run_counter.txt` lesen — einzige gültige Quelle für die Run-Nummer
 2. `git status` prüfen
 3. `flutter clean && flutter pub get` ausführen
+
+---
+
+## E2E-Test der Web-App (seit Run 472)
+
+`scripts/e2e/` spielt die gebaute Web-App in Chrome durch (Handy-Fenster):
+Abrechnung Schritt 1 bis 4 mit Wechselgeldentnahme, Wechselgeldprüfung am
+selben Tag, am nächsten Morgen (Browser-Uhr verstellt) und nach Neuladen.
+Aufruf: `flutter build web --release`, dann `cd scripts/e2e && npm install &&
+npm test`. Details, Grenzen und Klickpunkte: `scripts/e2e/README.md`. Eigene
+`package.json` (Playwright), `pubspec.yaml` bleibt unberührt. Nach größeren
+Änderungen an Abrechnung oder Wechselgeldprüfung laufen lassen; er ersetzt
+keinen Test auf einem echten Android-Gerät.
 
 ---
 

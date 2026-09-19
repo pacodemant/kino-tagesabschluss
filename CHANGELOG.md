@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 472: E2E-Test der Web-App im echten Browser (neu: scripts/e2e,
+  Playwright, eigene package.json; pubspec unberührt). Spielt die gebaute
+  Web-App in Chrome (Handy-Fenster) durch: Abrechnung Schritt 1 bis 4 mit
+  Wechselgeldentnahme (Zahlen, Senden, Stückelung), Wechselgeldprüfung am
+  selben Tag (Abend-Modus, Infokasten, "Wechselgeld stimmt!"), am nächsten
+  Morgen (Browser-Uhr verstellt, Schalter statt Automatik) und nach dem
+  Neuladen (echte IndexedDB). Jeder Schritt wird gegen den Seitentext
+  geprüft, bei Fehlern Abbruch mit Screenshot. Aufruf: flutter build web
+  --release, dann cd scripts/e2e && npm install && npm test (ca. 1,5
+  Minuten). Kein Ersatz für einen Test auf einem echten Android-Gerät.
 - Run 471b: Hilfetext der Wechselgeldentnahme (Schritt 1, Fragezeichen)
   leicht umformuliert: "Wenn Geld aus der Wechselgeldkasse entnommen
   wurde, um es morgen als Kleingeld wieder hineinzulegen. Wichtig: eine
