@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/domain/wechselgeldentnahme_regeln.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
@@ -14,6 +16,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_entnahme_section.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_rollen_section.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_zusammenfassung_section.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
@@ -94,6 +97,19 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   int _naechsteUmschlagId = 1;
 
   int _wechselgeldSollwertCent = 0;
+
+  // Wechselgeldentnahme (Run 469). Abend-Prüfung: automatisch aus dem
+  // heutigen finalen Abschluss. Morgen-Prüfung: Schalter "Notiz gefunden"
+  // mit manuell eingetragenem Betrag (im Zähl-Entwurf mitgespeichert).
+  bool _abendModus = false;
+  int _abendEntnahmeCent = 0;
+  String _abendEntnahmeGrund = '';
+  bool _morgenEntnahmeAktiv = false;
+  int _morgenEntnahmeCent = 0;
+  final TextEditingController _morgenEntnahmeBetragController =
+      TextEditingController();
+  final FocusNode _morgenEntnahmeBetragFocusNode = FocusNode();
+
   bool _laedt = true;
   bool _scheineAufgeklappt = true;
   bool _loseMuenzenAufgeklappt = false;
@@ -205,6 +221,8 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     for (final FocusNode focusNode in _umschlagBezeichnungFocusNode) {
       focusNode.dispose();
     }
+    _morgenEntnahmeBetragController.dispose();
+    _morgenEntnahmeBetragFocusNode.dispose();
     _scrollController.removeListener(_beiScrollAenderung);
     _scrollController.dispose();
     super.dispose();
@@ -233,6 +251,19 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
       entwurf = null;
     }
+    final bool abendModus = widget.ausTagesabrechnung || _istAbendZeit;
+    if (abendModus) {
+      // Wechselgeldentnahme des heutigen Abschlusses (nur Betrag > 0 wird
+      // später angezeigt/verrechnet, siehe WechselgeldentnahmeRegeln).
+      final List<TagesabschlussFinal> heute =
+          await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(
+            widget.kinoId,
+          );
+      if (heute.isNotEmpty) {
+        _abendEntnahmeCent = heute.first.wechselgeldEntnahmeCent ?? 0;
+        _abendEntnahmeGrund = heute.first.wechselgeldEntnahmeGrund ?? '';
+      }
+    }
     int geladenerSollwert =
         await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
     if (geladenerSollwert == 0) {
@@ -246,7 +277,18 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       return;
     }
 
+    _abendModus = abendModus;
     if (entwurf != null) {
+      if (!abendModus) {
+        _morgenEntnahmeCent =
+            (entwurf['wechselgeldentnahmeCent'] as num?)?.toInt() ?? 0;
+        _morgenEntnahmeAktiv = entwurf['wechselgeldentnahmeAktiv'] == true;
+        if (_morgenEntnahmeAktiv && _morgenEntnahmeCent > 0) {
+          _morgenEntnahmeBetragController.text = _formatiereEuroEingabe(
+            _morgenEntnahmeCent,
+          );
+        }
+      }
       final Object? stueckzahlenRoh = entwurf['stueckzahlen'];
       if (stueckzahlenRoh is Map<String, dynamic>) {
         for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
@@ -301,6 +343,10 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         'umschlaege': _umschlaege
             .map((UmschlagEintrag e) => e.toJson())
             .toList(),
+        // Schalter "Notiz über Wechselgeldentnahme gefunden" (nur Morgen-
+        // Prüfung relevant; der Abend-Modus ignoriert sie beim Laden).
+        'wechselgeldentnahmeAktiv': _morgenEntnahmeAktiv,
+        'wechselgeldentnahmeCent': _morgenEntnahmeCent,
         // _istAbendZeit hier mit berücksichtigen (nicht nur
         // ausTagesabrechnung): sonst würde eine frisch nach 18 Uhr
         // eigenständig eingegebene Zählung beim nächsten Öffnen fälsch-
@@ -330,8 +376,8 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     if (!mounted || _laedt) {
       return;
     }
-    final bool uebereinstimmung = _wechselgeldSollwertCent > 0 &&
-        _kassenbestandGesamtCent == _wechselgeldSollwertCent;
+    final bool uebereinstimmung = _wirksamerSollwertCent > 0 &&
+        _kassenbestandGesamtCent == _wirksamerSollwertCent;
 
     if (!uebereinstimmung) {
       if (_dialogGezeigt) {
@@ -400,7 +446,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   /// gewaehlten Ausgang (Fertig-Button, Zurueck-Pfeil, Haus-Button).
   /// Gibt true zurueck, wenn die Seite verlassen werden darf.
   Future<bool> _pruefeDifferenzUndBestaetigeVerlassen() async {
-    final int differenzCent = _kassenbestandGesamtCent - _wechselgeldSollwertCent;
+    final int differenzCent = _kassenbestandGesamtCent - _wirksamerSollwertCent;
     if (differenzCent == 0) {
       return true;
     }
@@ -846,6 +892,57 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         umschlaegeCent: _umschlagSummeCent,
       );
 
+  int get _wechselgeldentnahmeCent => WechselgeldentnahmeRegeln.wirksameEntnahmeCent(
+    abend: _abendModus,
+    abendAutomatischCent: _abendEntnahmeCent,
+    morgenAktiv: _morgenEntnahmeAktiv,
+    morgenCent: _morgenEntnahmeCent,
+  );
+
+  int get _wirksamerSollwertCent => WechselgeldentnahmeRegeln.wirksamerSollwertCent(
+    sollwertCent: _wechselgeldSollwertCent,
+    entnahmeCent: _wechselgeldentnahmeCent,
+  );
+
+  Future<void> _beiMorgenEntnahmeBetragGeaendert(String wert) async {
+    setState(() {
+      _morgenEntnahmeCent = TagesabschlussBerechnung.parseCentZiffern(wert);
+    });
+    await _speichereEntwurf();
+  }
+
+  /// Schalter "Notiz über Wechselgeldentnahme gefunden" (Morgen-Prüfung).
+  /// Ausschalten leert den Betrag (Rückfrage, wenn schon einer eingetragen
+  /// ist), damit er nicht unbemerkt in den Vergleich einfließt.
+  Future<void> _beiMorgenEntnahmeSchalter(bool an) async {
+    if (an) {
+      setState(() => _morgenEntnahmeAktiv = true);
+      await _speichereEntwurf();
+      return;
+    }
+    if (_morgenEntnahmeCent > 0) {
+      final bool? verwerfen = await zeigeBestaetigungsDialog(
+        context,
+        titel: 'Wechselgeldentnahme verwerfen?',
+        inhalt: 'Der Betrag der Wechselgeldentnahme wird gelöscht.',
+        abbrechenText: 'Behalten',
+        bestaetigenText: 'Verwerfen',
+      );
+      if (verwerfen != true || !mounted) {
+        return;
+      }
+    }
+    setState(_leereMorgenEntnahme);
+    await _speichereEntwurf();
+    _planePruefung();
+  }
+
+  void _leereMorgenEntnahme() {
+    _morgenEntnahmeAktiv = false;
+    _morgenEntnahmeCent = 0;
+    _morgenEntnahmeBetragController.clear();
+  }
+
   String _formatiereEuro(int cent) =>
       TagesabschlussFormatierung.formatiereEuro(cent);
 
@@ -874,6 +971,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         sichereMindestensEinenUmschlag: _sichereMindestensEinenUmschlag,
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
       );
+      _leereMorgenEntnahme();
       _dialogGezeigt = false;
     });
 
@@ -953,8 +1051,8 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     }
 
 
-    final bool hatUebereinstimmung = _wechselgeldSollwertCent > 0 &&
-        _kassenbestandGesamtCent == _wechselgeldSollwertCent;
+    final bool hatUebereinstimmung = _wirksamerSollwertCent > 0 &&
+        _kassenbestandGesamtCent == _wirksamerSollwertCent;
     final Color hintergrundFarbe = hatUebereinstimmung
         ? Colors.green.shade50
         : AppFarben.seitenHintergrund;
@@ -1008,8 +1106,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       rotHervorgehoben: const <FocusNode>{},
     );
 
-    final int differenzCent =
-        _kassenbestandGesamtCent - _wechselgeldSollwertCent;
+    final int differenzCent = _kassenbestandGesamtCent - _wirksamerSollwertCent;
 
     return PopScope(
       canPop: false,
@@ -1140,11 +1237,28 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
           onZeigeRollenUebernehmenHilfe: _zeigeRollenUebernehmenHilfe,
         ),
         hinweiseSection: gruppen.hinweiseSection,
-        zusammenfassung: WechselgeldZusammenfassungSection(
-          gezaehlterBetragCent: _kassenbestandGesamtCent,
-          wechselgeldSollwertCent: _wechselgeldSollwertCent,
-          differenzCent: differenzCent,
-          formatiereEuro: _formatiereEuro,
+        zusammenfassung: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            if (!_abendModus) ...<Widget>[
+              WechselgeldEntnahmeNotizSection(
+                aktiv: _morgenEntnahmeAktiv,
+                beiAktivGeaendert: _beiMorgenEntnahmeSchalter,
+                betragController: _morgenEntnahmeBetragController,
+                betragFocusNode: _morgenEntnahmeBetragFocusNode,
+                beiBetragGeaendert: _beiMorgenEntnahmeBetragGeaendert,
+              ),
+            ],
+            WechselgeldZusammenfassungSection(
+              gezaehlterBetragCent: _kassenbestandGesamtCent,
+              wechselgeldSollwertCent: _wechselgeldSollwertCent,
+              differenzCent: differenzCent,
+              formatiereEuro: _formatiereEuro,
+              wechselgeldentnahmeCent: _wechselgeldentnahmeCent,
+              wechselgeldentnahmeGrund: _abendModus ? _abendEntnahmeGrund : null,
+              zettelHinweisZeigen: _abendModus,
+            ),
+          ],
         ),
         downButtonSichtbar: _istDownButtonSichtbar(),
         scrolleNachUnten: _scrolleNachUnten,

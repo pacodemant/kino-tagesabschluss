@@ -3,6 +3,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/kompakter_schalter_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/zettel_hinweis.dart';
 
 /// Einmalige, tagesbezogene Wechselgeldentnahme (z. B. Rollengeld-
 /// Vorschuss, der am Folgetag zurückgelegt wird). Wird NICHT wie eine
@@ -108,18 +109,7 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppFarben.fokusFarbe,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Text(
-                      'Zettel mit Betrag und Grund gut sichtbar in die '
-                      'Wechselgeldkasse legen!',
-                      style: TextStyle(fontSize: 13, color: Colors.black87),
-                    ),
-                  ),
+                  const ZettelHinweis(),
                 ],
               ),
             ),

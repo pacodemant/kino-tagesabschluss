@@ -37,6 +37,14 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Wechselgeldentnahme in der Wechselgeldprüfung** *(Run 469)*
+      Abend-Prüfung: Entnahme des heutigen Abschlusses automatisch vom
+      Sollwert abgezogen (Zeile + oranger Zettel-Hinweis, nur bei
+      Betrag > 0). Morgen-Prüfung: Schalter "Notiz über Wechselgeld-
+      entnahme gefunden" mit manuellem Betrag, im Zähl-Entwurf
+      mitgespeichert. Die App übernimmt bewusst nichts automatisch vom
+      Vortag (sie kann nicht wissen, ob das Geld schon zurückliegt).
+
 - [x] **Verlauf "Noch nicht gesendet" trotz erfolgreichem Versand**
       (Paco-Fund 2026-09-18, Runs 464/465, von Paco getestet)
       Ursache per Sende-Protokoll (Run 464) belegt: Schritt 3 nach dem

@@ -39,4 +39,33 @@ class WechselgeldentnahmeRegeln {
         ? WechselgeldentnahmeFehler.grundFehlt
         : WechselgeldentnahmeFehler.betragFehlt;
   }
+
+  /// Wechselgeldentnahme, die in der Wechselgeldprüfung gilt.
+  /// Abend-Prüfung: automatisch die Entnahme des heutigen Abschlusses (die
+  /// Abrechnung hat sie gerade erfasst). Morgen-Prüfung: nur, wenn der MA
+  /// den Schalter "Notiz gefunden" aktiviert und den Betrag selbst
+  /// eingetragen hat — die App kann nicht wissen, ob das Geld schon wieder
+  /// zurückgelegt wurde. Nur Beträge > 0 zählen.
+  static int wirksameEntnahmeCent({
+    required bool abend,
+    required int abendAutomatischCent,
+    required bool morgenAktiv,
+    required int morgenCent,
+  }) {
+    final int cent = abend
+        ? abendAutomatischCent
+        : (morgenAktiv ? morgenCent : 0);
+    return cent > 0 ? cent : 0;
+  }
+
+  /// Sollwert für den Vergleich mit dem gezählten Wechselgeld: die
+  /// Wechselgeldentnahme fehlt physisch in der Kasse, senkt also den
+  /// erwarteten Bestand. Nie negativ.
+  static int wirksamerSollwertCent({
+    required int sollwertCent,
+    required int entnahmeCent,
+  }) {
+    final int rest = sollwertCent - entnahmeCent;
+    return rest > 0 ? rest : 0;
+  }
 }

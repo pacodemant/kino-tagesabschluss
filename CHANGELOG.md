@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 469: Wechselgeldprüfung berücksichtigt die Wechselgeldentnahme.
+  Abend-Prüfung (aus der Abrechnung oder ab 18 Uhr): die Entnahme des
+  heutigen finalen Abschlusses wird automatisch vom Sollwert abgezogen;
+  Zusammenfassung zeigt die Zeile "Wechselgeldentnahme (Grund)" und den
+  orangen Zettel-Hinweis (nur bei Betrag > 0). Morgen-Prüfung
+  (Startseite, vor 18 Uhr): Schalter "Notiz über Wechselgeldentnahme
+  gefunden" (Standard aus), bei "an" ein Betragsfeld; Schalterstand und
+  Betrag werden im Zähl-Entwurf mitgespeichert (neue Schlüssel
+  wechselgeldentnahmeAktiv/-Cent, alte Entwürfe bleiben lesbar). Ohne
+  Schalter wird morgens nichts abgezogen. "Wechselgeld stimmt!" braucht
+  jetzt einen wirksamen Sollwert > 0. Neuer Baustein zettel_hinweis.dart
+  (auch von Schritt 1 genutzt). Tests: Regeln (Abend/Morgen/Sollwert),
+  Seiten-Tests der Prüfseite (4 Fälle).
 - Run 468a: Wechselgeldentnahme-Schalter optisch überarbeitet (Paco-
   Wunsch): Schalter steht jetzt VOR dem Text, Text kleiner (12,5) und
   nicht mehr fett, aktiver Schalter orange statt Standardfarbe. Der
