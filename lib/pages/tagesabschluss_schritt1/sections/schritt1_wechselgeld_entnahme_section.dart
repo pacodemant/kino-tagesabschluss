@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
+import 'package:kino_bar_app/widgets/kompakter_schalter_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 
-/// Einmalige, tagesbezogene Entnahme aus der Wechselgeldkasse (z. B.
-/// Rollengeld-Vorschuss, der am Folgetag zurückgelegt wird). Wird NICHT
-/// wie eine Ausgabe behandelt, sondern gleicht rechnerisch nur den
-/// fehlenden physischen Bestand aus – siehe
-/// TagesabschlussBerechnung.barumsatzBereinigtCent. Einklappbar wie die
-/// anderen Schritt-1-Kacheln, standardmäßig zugeklappt (Paco-Wunsch:
-/// dem seltenen Sonderfall nicht zu viel Prominenz geben).
+/// Einmalige, tagesbezogene Wechselgeldentnahme (z. B. Rollengeld-
+/// Vorschuss, der am Folgetag zurückgelegt wird). Wird NICHT wie eine
+/// Ausgabe behandelt, sondern gleicht rechnerisch nur den fehlenden
+/// physischen Bestand aus – siehe
+/// TagesabschlussBerechnung.barumsatzBereinigtCent. Seit Run 468 hinter
+/// einem Schalter (Standard: aus, muss bewusst aktiviert werden); erst
+/// bei "an" erscheinen Betrag und Grund (Paco-Wunsch: dem seltenen
+/// Sonderfall keine Prominenz geben, ein Ein/Aus ist eindeutiger als
+/// leere Felder).
 class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
   const Schritt1WechselgeldEntnahmeSection({
     super.key,
+    required this.aktiv,
+    required this.beiAktivGeaendert,
     required this.betragController,
     required this.grundController,
     required this.betragFocusNode,
@@ -21,11 +26,10 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
     required this.beiGrundGeaendert,
     required this.betragFehlerhaft,
     required this.grundFehlerhaft,
-    required this.aufgeklappt,
-    required this.beimUmschalten,
-    required this.betragAnzeige,
   });
 
+  final bool aktiv;
+  final ValueChanged<bool> beiAktivGeaendert;
   final TextEditingController betragController;
   final TextEditingController grundController;
   final FocusNode betragFocusNode;
@@ -34,9 +38,6 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
   final ValueChanged<String> beiGrundGeaendert;
   final bool betragFehlerhaft;
   final bool grundFehlerhaft;
-  final bool aufgeklappt;
-  final VoidCallback beimUmschalten;
-  final String betragAnzeige;
 
   @override
   Widget build(BuildContext context) {
@@ -45,58 +46,39 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          InkWell(
-            onTap: beimUmschalten,
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: <Widget>[
-                  const Expanded(
-                    child: Text(
-                      'evtl. Entnahme Wechselgeldkasse',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+          KompakterSchalterZeile(
+            label:
+                'Es wurde Geld aus dem Wechselgeldbestand entnommen '
+                '(Wechselgeldentnahme)',
+            wert: aktiv,
+            onChanged: beiAktivGeaendert,
+            onHilfe: () => zeigeInfoDialog(
+              context,
+              titel: 'Wechselgeldentnahme',
+              inhalt: const Text.rich(
+                TextSpan(
+                  children: <InlineSpan>[
+                    TextSpan(
+                      text:
+                          'Wenn ein Betrag aus der Wechselgeldkasse '
+                          'entnommen wird, um ihn morgen als Kleingeld '
+                          'wieder hineinzulegen. ',
                     ),
-                  ),
-                  Text(
-                    betragAnzeige,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.help_outline),
-                    color: AppFarben.appBarRot,
-                    iconSize: 20,
-                    padding: const EdgeInsets.only(left: 4),
-                    constraints: const BoxConstraints(),
-                    onPressed: () => zeigeInfoDialog(
-                      context,
-                      titel: 'Entnahme Wechselgeldkasse',
-                      inhalt: const Text.rich(
-                        TextSpan(
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: 'Wenn ein Betrag entnommen wird, um ihn '
-                                  'morgen als Kleingeld wieder in die '
-                                  'Wechselgeldkasse zurückzulegen. ',
-                            ),
-                            TextSpan(
-                              text: 'Wichtig: eine gut sichtbare Notiz '
-                                  'darüber in die Wechselgeldkasse legen.',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppFarben.appBarRot,
-                              ),
-                            ),
-                          ],
-                        ),
+                    TextSpan(
+                      text:
+                          'Wichtig: eine gut sichtbare Notiz darüber in '
+                          'die Wechselgeldkasse legen.',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppFarben.appBarRot,
                       ),
                     ),
-                  ),
-                  Icon(aufgeklappt ? Icons.expand_less : Icons.expand_more),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-          if (aufgeklappt) ...<Widget>[
+          if (aktiv) ...<Widget>[
             const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.all(12),
@@ -123,6 +105,15 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                       border: const OutlineInputBorder(),
                       isDense: true,
                       errorText: grundFehlerhaft ? 'Bitte Grund angeben' : null,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Zettel mit Betrag und Grund gut sichtbar in die '
+                    'Wechselgeldkasse legen!',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppFarben.appBarRot,
                     ),
                   ),
                 ],

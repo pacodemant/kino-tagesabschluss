@@ -504,7 +504,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       ),
                       if ((a.wechselgeldEntnahmeCent ?? 0) > 0)
                         InfoZeile(
-                          label: 'Entnahme Wechselgeldkasse'
+                          label: 'Wechselgeldentnahme'
                               '${a.wechselgeldEntnahmeGrund != null && a.wechselgeldEntnahmeGrund!.isNotEmpty ? ' (${a.wechselgeldEntnahmeGrund})' : ''}',
                           wert: '+ ${_euro(a.wechselgeldEntnahmeCent!)}',
                         ),

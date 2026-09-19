@@ -35,7 +35,7 @@ class Schritt1UebersichtSection extends StatelessWidget {
             ),
             if (wechselgeldEntnahme != null)
               _UebersichtZeile(
-                label: 'Entnahme Wechselgeldkasse',
+                label: 'Wechselgeldentnahme',
                 wert: '+ $wechselgeldEntnahme',
               ),
             _UebersichtZeile(

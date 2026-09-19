@@ -278,21 +278,19 @@ class TagesabschlussFinalisierenUsecase {
     final int wechselgeldEntnahmeCent = eingabe.wechselgeldEntnahmeCent ?? 0;
     if (wechselgeldEntnahmeCent < 0) {
       throw const TagesabschlussValidierungsFehler(
-        'Entnahme aus der Wechselgeldkasse darf nicht negativ sein.',
+        'Wechselgeldentnahme darf nicht negativ sein.',
       );
     }
     final bool hatGrund =
         eingabe.wechselgeldEntnahmeGrund?.trim().isNotEmpty == true;
     if (wechselgeldEntnahmeCent > 0 && !hatGrund) {
       throw const TagesabschlussValidierungsFehler(
-        'Bitte einen Grund für die Entnahme aus der Wechselgeldkasse '
-        'angeben.',
+        'Bitte einen Grund für die Wechselgeldentnahme angeben.',
       );
     }
     if (wechselgeldEntnahmeCent == 0 && hatGrund) {
       throw const TagesabschlussValidierungsFehler(
-        'Bitte einen Betrag für die Entnahme aus der Wechselgeldkasse '
-        'angeben.',
+        'Bitte einen Betrag für die Wechselgeldentnahme angeben.',
       );
     }
   }

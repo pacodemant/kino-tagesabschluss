@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 467a · wird fortlaufend ergänzt
+Stand: September 2026 · Run 468 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -51,6 +51,21 @@ um Durcheinander zu vermeiden.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Wechselgeldentnahme in der Wechselgeldprüfung** *(Run 469)*
+      Abend-Prüfung (aus der Abrechnung oder ab 18 Uhr): Wechselgeld-
+      entnahme des heutigen finalen Abschlusses automatisch vom
+      Sollwert abziehen, Zusammenfassungszeile "Wechselgeldentnahme"
+      nur bei Betrag > 0, mit rotem Zettel-Hinweis. Morgen-Prüfung
+      (Startseite): Schalter "Notiz über Wechselgeldentnahme gefunden"
+      (Standard aus, Betrag manuell, im Zähl-Entwurf mitgespeichert)
+      mit demselben KompaktenSchalterZeile-Baustein wie Schritt 1.
+
+- [ ] **Kupfer-Optionen vereinheitlichen / Kupfer-Rollen entfernen**
+      *(nach Run 469)* Paco: Kupfer-Rollen kommen praktisch nie in die
+      Wechselgeldkasse, das Rollen-Feature dazu kann weg. Loses Kupfer
+      auf denselben kompakten Schalter umstellen (Schritt 1 +
+      Prüfseite). Vorher klären, was "entfernen" heute mit Werten macht.
 
 - [ ] **Nativer Android-Build aktuell kaputt (Gradle/AGP-Konflikt)**
       Entdeckt in Run 429a8 beim Versuch, `flutter run -d

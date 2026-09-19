@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 468: Schritt 1: Wechselgeldentnahme hinter einem Schalter statt
+  auskommentierter Kachel. Schalter "Es wurde Geld aus dem Wechselgeld-
+  bestand entnommen (Wechselgeldentnahme)" mit Fragezeichen-Hilfe,
+  Standard aus (muss bewusst aktiviert werden). Erst bei "an" erscheinen
+  Betrag + Grund und ein roter Dauerhinweis "Zettel ... in die
+  Wechselgeldkasse legen!". Ausschalten leert Betrag/Grund (Rückfrage,
+  wenn schon Werte da sind). "Weiter" ist bei aktivem Schalter ohne
+  Betrag/Grund blockiert. Schalterstand wird nicht separat gespeichert,
+  sondern beim Laden aus Betrag/Grund abgeleitet. Neuer kompakter
+  Schalter-Baustein (kompakter_schalter_zeile.dart), Regeln in
+  wechselgeldentnahme_regeln.dart (mit Test). Begriff überall
+  "Wechselgeldentnahme" (Verlauf, Übersicht, Validierungsmeldungen).
+  Prüfseiten (Wechselgeldprüfung) folgen in Run 469.
 - Run 467a: Schritt 1: Kachel "Entnahme aus der Wechselgeldkasse"
   vorübergehend auskommentiert (Paco-Wunsch: reale SB-Abrechnung heute
   soll nicht durch die neue Kachel irritieren). Widget-Aufruf samt
