@@ -108,12 +108,16 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Zettel mit Betrag und Grund gut sichtbar in die '
-                    'Wechselgeldkasse legen!',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppFarben.appBarRot,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppFarben.fokusFarbe,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Text(
+                      'Zettel mit Betrag und Grund gut sichtbar in die '
+                      'Wechselgeldkasse legen!',
+                      style: TextStyle(fontSize: 13, color: Colors.black87),
                     ),
                   ),
                 ],

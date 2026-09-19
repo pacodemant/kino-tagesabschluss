@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 468a: Wechselgeldentnahme-Schalter optisch überarbeitet (Paco-
+  Wunsch): Schalter steht jetzt VOR dem Text, Text kleiner (12,5) und
+  nicht mehr fett, aktiver Schalter orange statt Standardfarbe. Der
+  Zettel-Hinweis ist kleiner (13), nicht fett, mit orangem Hintergrund
+  und dunkler Schrift, weil er für den MA des Folgetages wichtig ist.
 - Run 468: Schritt 1: Wechselgeldentnahme hinter einem Schalter statt
   auskommentierter Kachel. Schalter "Es wurde Geld aus dem Wechselgeld-
   bestand entnommen (Wechselgeldentnahme)" mit Fragezeichen-Hilfe,

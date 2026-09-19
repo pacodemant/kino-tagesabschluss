@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
-/// Zeile mit Beschriftung, optionalem Fragezeichen-Icon (Hilfe) und einem
-/// kompakten Ein/Aus-Schalter. Der Standard-Schalter von Material 3 ist
-/// mit ca. 52 × 32 px sehr groß (siehe Einstellungen) — hier wird er per
-/// FittedBox verkleinert, damit er in der Abrechnung nicht dominiert.
+/// Zeile mit kompaktem Ein/Aus-Schalter (vorn), Beschriftung und optionalem
+/// Fragezeichen-Icon (Hilfe). Aktiv ist der Schalter orange (Führungsfarbe).
+/// Der Standard-Schalter von Material 3 ist mit ca. 52 × 32 px sehr groß
+/// (siehe Einstellungen) — hier wird er per FittedBox verkleinert, damit er in der Abrechnung nicht dominiert.
 /// Bewusst zentral, damit alle Schalter in den Abrechnungs-Seiten gleich
 /// aussehen.
 class KompakterSchalterZeile extends StatelessWidget {
@@ -31,21 +31,6 @@ class KompakterSchalterZeile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           children: <Widget>[
-            Expanded(
-              child: Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-            if (onHilfe != null)
-              IconButton(
-                icon: const Icon(Icons.help_outline),
-                color: AppFarben.appBarRot,
-                iconSize: 20,
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                constraints: const BoxConstraints(),
-                onPressed: onHilfe,
-              ),
             SizedBox(
               width: 42,
               height: 26,
@@ -54,10 +39,24 @@ class KompakterSchalterZeile extends StatelessWidget {
                 child: Switch(
                   value: wert,
                   onChanged: onChanged,
+                  activeTrackColor: AppFarben.fokusFarbe,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
             ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(label, style: const TextStyle(fontSize: 12.5)),
+            ),
+            if (onHilfe != null)
+              IconButton(
+                icon: const Icon(Icons.help_outline),
+                color: AppFarben.appBarRot,
+                iconSize: 20,
+                padding: const EdgeInsets.only(left: 6),
+                constraints: const BoxConstraints(),
+                onPressed: onHilfe,
+              ),
           ],
         ),
       ),
