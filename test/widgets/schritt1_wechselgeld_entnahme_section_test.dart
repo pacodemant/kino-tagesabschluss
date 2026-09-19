@@ -43,6 +43,7 @@ void main() {
     expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
     expect(find.byType(TextField), findsNWidgets(2));
     expect(find.textContaining('Notiz mit Betrag'), findsOneWidget);
+    expect(find.textContaining('nach der Abrechnung'), findsOneWidget);
   });
 
   testWidgets('Tippen auf den Schalter meldet den neuen Zustand', (

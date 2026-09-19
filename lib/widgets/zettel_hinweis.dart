@@ -6,7 +6,12 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 /// damit der MA des Folgetages Bescheid weiß. Zentral, damit Schritt 1 und
 /// Wechselgeldprüfung denselben Wortlaut und dieselbe Optik nutzen.
 class ZettelHinweis extends StatelessWidget {
-  const ZettelHinweis({super.key});
+  const ZettelHinweis({super.key, this.nachDerAbrechnung = false});
+
+  /// In Schritt 1 (Bargeldzählung) steht die Abrechnung noch bevor, dort
+  /// heißt es "... nach der Abrechnung ...". In der Wechselgeldprüfung
+  /// ist sie schon erfolgt, dort entfällt der Zusatz.
+  final bool nachDerAbrechnung;
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +21,11 @@ class ZettelHinweis extends StatelessWidget {
         color: AppFarben.fokusFarbe,
         borderRadius: BorderRadius.circular(6),
       ),
-      child: const Text(
-        'Wechselgeldentnahme: Notiz mit Betrag und Grund gut sichtbar in die '
-        'Wechselgeldkasse legen.',
-        style: TextStyle(fontSize: 13, color: Colors.black87),
+      child: Text(
+        'Wechselgeldentnahme: Notiz mit Betrag und Grund '
+        '${nachDerAbrechnung ? 'nach der Abrechnung ' : ''}'
+        'gut sichtbar in die Wechselgeldkasse legen.',
+        style: const TextStyle(fontSize: 13, color: Colors.black87),
       ),
     );
   }

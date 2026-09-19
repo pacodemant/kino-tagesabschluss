@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 469b: Notiz-Hinweis in Schritt 1 (Bargeldzählung) ergänzt um
+  "nach der Abrechnung": "Wechselgeldentnahme: Notiz mit Betrag und
+  Grund nach der Abrechnung gut sichtbar in die Wechselgeldkasse
+  legen." In der Wechselgeldprüfung bleibt der Wortlaut ohne Zusatz
+  (dort ist die Abrechnung schon erfolgt).
 - Run 469a: Wechselgeldprüfung, Nachbesserungen nach Pacos Test.
   (1) Abend-Erkennung: "Abend" gilt jetzt bei Aufruf aus der Abrechnung,
   im Abendzeitraum (ab 18 Uhr bis zum 5-Uhr-Knick, neu:

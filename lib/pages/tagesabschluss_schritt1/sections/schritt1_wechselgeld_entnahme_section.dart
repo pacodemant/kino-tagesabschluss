@@ -109,7 +109,7 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const ZettelHinweis(),
+                  const ZettelHinweis(nachDerAbrechnung: true),
                 ],
               ),
             ),
