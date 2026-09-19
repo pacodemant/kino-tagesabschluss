@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 471b: Hilfetext der Wechselgeldentnahme (Schritt 1, Fragezeichen)
+  leicht umformuliert: "Wenn Geld aus der Wechselgeldkasse entnommen
+  wurde, um es morgen als Kleingeld wieder hineinzulegen. Wichtig: eine
+  gut sichtbare Notiz darüber in die Wechselgeldkasse legen."
 - Run 471a: Kurzeinstieg (In-App-Hilfe) ergänzt. Schritt 1: neuer
   Absatz "Wechselgeldentnahme" (Schalter, Betrag/Grund, Pflicht-Notiz in
   die Wechselgeldkasse); der Kupfermünzen-Absatz beschreibt jetzt den

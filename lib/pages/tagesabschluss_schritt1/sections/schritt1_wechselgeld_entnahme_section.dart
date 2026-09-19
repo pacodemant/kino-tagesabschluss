@@ -61,9 +61,9 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                   children: <InlineSpan>[
                     TextSpan(
                       text:
-                          'Wenn ein Betrag aus der Wechselgeldkasse '
-                          'entnommen wird, um ihn morgen als Kleingeld '
-                          'wieder hineinzulegen. ',
+                          'Wenn Geld aus der Wechselgeldkasse entnommen '
+                          'wurde, um es morgen als Kleingeld wieder '
+                          'hineinzulegen. ',
                     ),
                     TextSpan(
                       text:
