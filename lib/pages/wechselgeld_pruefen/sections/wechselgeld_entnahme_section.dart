@@ -39,10 +39,10 @@ class WechselgeldEntnahmeNotizSection extends StatelessWidget {
               context,
               titel: 'Wechselgeldentnahme',
               inhalt: const Text(
-                'Liegt in der Wechselgeldkasse ein Zettel über eine '
+                'Liegt in der Wechselgeldkasse eine Notiz über eine '
                 'Wechselgeldentnahme des Vortags und das Geld ist noch '
                 'nicht zurückgelegt: Schalter einschalten und den Betrag '
-                'vom Zettel eintragen. Er wird beim Vergleich mit dem '
+                'von der Notiz eintragen. Er wird beim Vergleich mit dem '
                 'Sollwert berücksichtigt. Ist das Geld schon wieder in '
                 'der Kasse, bleibt der Schalter aus.',
               ),
@@ -58,7 +58,7 @@ class WechselgeldEntnahmeNotizSection extends StatelessWidget {
                 onChanged: beiBetragGeaendert,
                 schriftgroesse: 15,
                 hinweisText: '0,00 €',
-                labelText: 'Betrag laut Zettel €',
+                labelText: 'Betrag laut Notiz €',
               ),
             ),
           ],

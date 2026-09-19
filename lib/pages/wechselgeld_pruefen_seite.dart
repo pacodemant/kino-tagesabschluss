@@ -16,11 +16,13 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/scroll/schritt1_scrol
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/setup/schritt1_initialisierung_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_body_content.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_gruppen_orchestrierung.dart';
+import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_entnahme_info_kasten.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_entnahme_section.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_rollen_section.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen/sections/wechselgeld_zusammenfassung_section.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
@@ -47,6 +49,7 @@ class WechselgeldPruefenSeite extends StatefulWidget {
     super.key,
     required this.kinoId,
     this.ausTagesabrechnung = false,
+    @visibleForTesting this.jetztFuerTest,
   });
 
   static const String routenName = '/wechselgeld-pruefen';
@@ -57,6 +60,10 @@ class WechselgeldPruefenSeite extends StatefulWidget {
   /// dann wird ein evtl. noch vorhandener, unvollendeter Entwurf von der
   /// Morgen-Prüfung vor dem Laden verworfen, statt ihn anzuzeigen.
   final bool ausTagesabrechnung;
+
+  /// Nur für Tests: ersetzt die aktuelle Uhrzeit bei der Entscheidung
+  /// Morgen-/Abend-Prüfung.
+  final DateTime? jetztFuerTest;
 
   @override
   State<WechselgeldPruefenSeite> createState() =>
@@ -228,41 +235,44 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     super.dispose();
   }
 
-  // Ab 18 Uhr gilt ein Aufruf dieser Seite als Abend-Prüfung, auch wenn
-  // sie nicht über den Tagesabschluss-Flow (ausTagesabrechnung) erreicht
-  // wurde — sonst würde bei einem eigenständigen Aufruf abends noch der
-  // morgens gezählte Bestand angezeigt.
-  bool get _istAbendZeit => DateTime.now().hour >= 18;
+  // Abend-Zeitraum: ab 18 Uhr bis zum 5-Uhr-Knick des Geschäftstags (siehe
+  // DatumsHelper). Ein Aufruf in diesem Zeitraum gilt als Abend-Prüfung,
+  // auch wenn er nicht über den Tagesabschluss-Flow (ausTagesabrechnung)
+  // erreicht wurde — sonst würde bei einem eigenständigen Aufruf abends
+  // noch der morgens gezählte Bestand angezeigt.
+  bool get _istAbendZeit =>
+      DatumsHelper.istAbendzeitraum(jetzt: widget.jetztFuerTest);
 
   Future<void> _ladeInitialeDaten() async {
     Map<String, dynamic>? entwurf =
         await LokalerSpeicher.ladeWechselgeldZaehlEntwurf(widget.kinoId);
-    if ((widget.ausTagesabrechnung || _istAbendZeit) &&
-        entwurf != null &&
-        entwurf['herkunft'] != 'abend') {
-      // Abend-Prüfung (im Rahmen der Kassenabrechnung ODER ab 18 Uhr bei
-      // eigenständigem Aufruf dieser Seite): ein vorhandener Entwurf ohne
-      // "abend"-Markierung stammt von der Morgen-Prüfung (oder aus einer
-      // Version vor dieser Markierung) — der darf hier nicht auftauchen,
-      // damit abends nicht noch der alte Morgen-Bestand angezeigt wird.
-      // Ein bereits mit "abend" markierter Entwurf ist dagegen der
-      // eigene, noch nicht fertige Stand dieser Abend-Prüfung und bleibt
-      // erhalten.
+    // Finaler Abschluss des heutigen Arbeitstags (5-Uhr-Knick), falls
+    // schon abgerechnet wurde. Ist er da, ist es fachlich eine Prüfung
+    // NACH der Abrechnung (Abend-Modus), egal wie spät es ist — z. B. bei
+    // einem früh schließenden Kino oder einem Test tagsüber. Am nächsten
+    // Morgen gibt es für den neuen Arbeitstag noch keinen Abschluss, dann
+    // gilt wieder der Morgen-Modus.
+    final List<TagesabschlussFinal> heute =
+        await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(widget.kinoId);
+    final bool abendModus =
+        widget.ausTagesabrechnung || _istAbendZeit || heute.isNotEmpty;
+    if (abendModus && entwurf != null && entwurf['herkunft'] != 'abend') {
+      // Abend-Prüfung (im Rahmen der Kassenabrechnung, im Abendzeitraum
+      // bei eigenständigem Aufruf oder nach einer Abrechnung des heutigen
+      // Arbeitstags): ein vorhandener Entwurf ohne "abend"-Markierung
+      // stammt von der Morgen-Prüfung (oder aus einer Version vor dieser
+      // Markierung) — der darf hier nicht auftauchen, damit abends nicht
+      // noch der alte Morgen-Bestand angezeigt wird. Ein bereits mit
+      // "abend" markierter Entwurf ist dagegen der eigene, noch nicht
+      // fertige Stand dieser Abend-Prüfung und bleibt erhalten.
       await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
       entwurf = null;
     }
-    final bool abendModus = widget.ausTagesabrechnung || _istAbendZeit;
-    if (abendModus) {
+    if (abendModus && heute.isNotEmpty) {
       // Wechselgeldentnahme des heutigen Abschlusses (nur Betrag > 0 wird
       // später angezeigt/verrechnet, siehe WechselgeldentnahmeRegeln).
-      final List<TagesabschlussFinal> heute =
-          await LokalerSpeicher.ladeHeutigeFinaleTagesabschluesse(
-            widget.kinoId,
-          );
-      if (heute.isNotEmpty) {
-        _abendEntnahmeCent = heute.first.wechselgeldEntnahmeCent ?? 0;
-        _abendEntnahmeGrund = heute.first.wechselgeldEntnahmeGrund ?? '';
-      }
+      _abendEntnahmeCent = heute.first.wechselgeldEntnahmeCent ?? 0;
+      _abendEntnahmeGrund = heute.first.wechselgeldEntnahmeGrund ?? '';
     }
     int geladenerSollwert =
         await LokalerSpeicher.ladeWechselgeldSollwertCent(widget.kinoId);
@@ -347,13 +357,12 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         // Prüfung relevant; der Abend-Modus ignoriert sie beim Laden).
         'wechselgeldentnahmeAktiv': _morgenEntnahmeAktiv,
         'wechselgeldentnahmeCent': _morgenEntnahmeCent,
-        // _istAbendZeit hier mit berücksichtigen (nicht nur
-        // ausTagesabrechnung): sonst würde eine frisch nach 18 Uhr
-        // eigenständig eingegebene Zählung beim nächsten Öffnen fälsch-
-        // lich als "alter Morgen-Entwurf" erkannt und oben verworfen.
-        'herkunft': (widget.ausTagesabrechnung || _istAbendZeit)
-            ? 'abend'
-            : 'morgen',
+        // Der beim Laden bestimmte Modus (_abendModus) zählt, nicht nur
+        // ausTagesabrechnung: sonst würde eine frisch im Abendzeitraum
+        // bzw. nach der Abrechnung eigenständig eingegebene Zählung beim
+        // nächsten Öffnen fälschlich als "alter Morgen-Entwurf" erkannt
+        // und oben verworfen.
+        'herkunft': _abendModus ? 'abend' : 'morgen',
       },
     );
   }
@@ -1196,20 +1205,34 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
         devToolsStickySichtbar: false,
         devToolsStickyHoehe: 0,
         devToolsPanel: const SizedBox.shrink(),
-        alleZuklappenLink: Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: _toggleAlleSections,
-            style: TextButton.styleFrom(
-              foregroundColor: AppFarben.appBarRot,
-              padding: EdgeInsets.zero,
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        alleZuklappenLink: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            if (_wechselgeldentnahmeCent > 0)
+              WechselgeldEntnahmeInfoKasten(
+                entnahmeCent: _wechselgeldentnahmeCent,
+                wirksamerSollwertCent: _wirksamerSollwertCent,
+                abend: _abendModus,
+                formatiereEuro: _formatiereEuro,
+              ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: _toggleAlleSections,
+                style: TextButton.styleFrom(
+                  foregroundColor: AppFarben.appBarRot,
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: Text(
+                  _irgendeineSectionAufgeklappt
+                      ? 'Alle zuklappen'
+                      : 'Alle aufklappen',
+                ),
+              ),
             ),
-            child: Text(
-              _irgendeineSectionAufgeklappt ? 'Alle zuklappen' : 'Alle aufklappen',
-            ),
-          ),
+          ],
         ),
         scheineGruppe: gruppen.scheineGruppe,
         loseMuenzenGruppe: gruppen.loseMuenzenGruppe,

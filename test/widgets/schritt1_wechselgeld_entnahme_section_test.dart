@@ -32,17 +32,17 @@ void main() {
     expect(find.textContaining('Wechselgeldentnahme'), findsOneWidget);
     expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
     expect(find.byType(TextField), findsNothing);
-    expect(find.textContaining('Zettel'), findsNothing);
+    expect(find.textContaining('Notiz mit Betrag'), findsNothing);
   });
 
-  testWidgets('Schalter an: Betrag, Grund und roter Zettel-Hinweis sichtbar', (
+  testWidgets('Schalter an: Betrag, Grund und Notiz-Hinweis sichtbar', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(baue(aktiv: true));
 
     expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
     expect(find.byType(TextField), findsNWidgets(2));
-    expect(find.textContaining('Zettel'), findsOneWidget);
+    expect(find.textContaining('Notiz mit Betrag'), findsOneWidget);
   });
 
   testWidgets('Tippen auf den Schalter meldet den neuen Zustand', (

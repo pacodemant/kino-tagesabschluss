@@ -8,6 +8,10 @@ class DatumsHelper {
   /// (vorher 6 Uhr) — von Yannik fuer Flurbocash bestaetigt.
   static const int _geschaeftstagCutoffStunde = 5;
 
+  /// Ab dieser Uhrzeit gilt der Tag fuer die Wechselgeldpruefung als
+  /// "Abend" (bis zum Geschaeftstag-Cutoff, siehe [istAbendzeitraum]).
+  static const int _abendBeginnStunde = 18;
+
   /// [jetzt] optional fuer deterministische Tests, sonst DateTime.now().
   static DateTime logischerAbrechnungsTag({DateTime? jetzt}) {
     final DateTime now = jetzt ?? DateTime.now();
@@ -16,6 +20,15 @@ class DatumsHelper {
       return kalendertag.subtract(const Duration(days: 1));
     }
     return kalendertag;
+  }
+
+  /// Ob [jetzt] im Abendzeitraum liegt: ab 18 Uhr bis zum naechsten
+  /// Geschaeftstag-Cutoff (5 Uhr). Nachts zwischen 0 und 5 Uhr laeuft der
+  /// Geschaeftstag noch (siehe [logischerAbrechnungsTag]), zaehlt also noch
+  /// zum Abend.
+  static bool istAbendzeitraum({DateTime? jetzt}) {
+    final int stunde = (jetzt ?? DateTime.now()).hour;
+    return stunde >= _abendBeginnStunde || stunde < _geschaeftstagCutoffStunde;
   }
 
   static String isoDatum(DateTime datum) =>

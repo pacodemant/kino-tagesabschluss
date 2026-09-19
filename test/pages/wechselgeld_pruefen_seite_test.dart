@@ -60,6 +60,7 @@ void main() {
     required bool ausTagesabrechnung,
     TagesabschlussFinal? abschluss,
     Map<String, dynamic>? entwurf,
+    DateTime? jetzt,
   }) async {
     // Hohes Testfenster: die ganze Seite wird gebaut, ohne dass Felder
     // beim Scrollen halb unter der Kopfzeile verschwinden.
@@ -83,6 +84,7 @@ void main() {
         home: WechselgeldPruefenSeite(
           kinoId: 'kino_01',
           ausTagesabrechnung: ausTagesabrechnung,
+          jetztFuerTest: jetzt,
         ),
       ),
     );
@@ -116,9 +118,13 @@ void main() {
     );
   }
 
+  // Feste Test-Uhrzeiten (unabhängig von der echten Uhr).
+  final DateTime vormittags = DateTime(2026, 9, 19, 10, 0);
+  final DateTime nachts = DateTime(2026, 9, 20, 0, 40);
+
   testWidgets(
     'Abend-Prüfung mit Wechselgeldentnahme: Zeile mit Grund, Sollwert '
-    'gekürzt (Differenz −1.400 € statt −2.000 €) und oranger Zettel-Hinweis',
+    'gekürzt (Differenz −1.400 €), Infokasten oben und Notiz-Hinweis',
     (WidgetTester tester) async {
       await oeffne(
         tester,
@@ -129,14 +135,21 @@ void main() {
         ),
       );
       await zeigeZusammenfassung(tester);
+
       expect(
         find.text('Wechselgeldentnahme (Rollengeld-Vorschuss)'),
         findsOneWidget,
       );
-      expect(find.textContaining('600,00'), findsOneWidget);
-      // Differenz = 0 € gezählt − (2.000 € Sollwert − 600 € Entnahme)
-      expect(find.textContaining('1.400,00'), findsOneWidget);
-      expect(find.textContaining('Zettel mit Betrag'), findsOneWidget);
+      // Infokasten + Zusammenfassungszeile nennen den Betrag
+      expect(find.textContaining('600,00'), findsNWidgets(2));
+      // Differenz = 0 € gezählt − (2.000 € Sollwert − 600 € Entnahme);
+      // "1.400,00" steht in Infokasten und Differenz
+      expect(find.textContaining('1.400,00'), findsNWidgets(2));
+      expect(
+        find.textContaining('weil die Entnahme morgen wieder zurückgelegt'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Notiz mit Betrag und Grund'), findsOneWidget);
       // Abend: kein Morgen-Schalter
       expect(find.byType(Switch), findsNothing);
       await raeumeAuf(tester);
@@ -144,7 +157,8 @@ void main() {
   );
 
   testWidgets(
-    'Abend-Prüfung ohne Wechselgeldentnahme: keine Zeile, kein Hinweis',
+    'Abend-Prüfung ohne Wechselgeldentnahme: keine Zeile, kein Infokasten, '
+    'kein Hinweis',
     (WidgetTester tester) async {
       await oeffne(
         tester,
@@ -154,40 +168,74 @@ void main() {
       await zeigeZusammenfassung(tester);
 
       expect(find.textContaining('Wechselgeldentnahme'), findsNothing);
-      expect(find.textContaining('Zettel mit Betrag'), findsNothing);
+      expect(find.textContaining('Notiz mit Betrag'), findsNothing);
       await raeumeAuf(tester);
     },
   );
 
-  // Der Morgen-Modus gilt nur vor 18 Uhr (siehe _istAbendZeit der Seite);
-  // ab 18 Uhr würde die Seite den Morgen-Entwurf als veraltet verwerfen.
-  final String? nurVor18Uhr = DateTime.now().hour >= 18
-      ? 'Morgen-Modus nur vor 18 Uhr prüfbar'
-      : null;
-
-  testWidgets('Morgen-Prüfung: Schalter startet aus, ohne Betragsfeld und ohne '
-      'Wechselgeldentnahme-Zeile', (WidgetTester tester) async {
-    await oeffne(tester, ausTagesabrechnung: false);
-    await zeigeZusammenfassung(tester);
-
-    expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
-    expect(
-      find.text('Notiz über Wechselgeldentnahme gefunden'),
-      findsOneWidget,
-    );
-    expect(find.textContaining('Betrag laut Zettel'), findsNothing);
-    expect(find.text('Wechselgeldentnahme'), findsNothing);
-    expect(find.textContaining('Zettel mit Betrag'), findsNothing);
-    await raeumeAuf(tester);
-  }, skip: nurVor18Uhr != null);
-
   testWidgets(
-    'Morgen-Prüfung: gespeicherter Schalter samt Betrag kommt aus dem '
-    'Entwurf zurück und kürzt den Sollwert (kein Zettel-Hinweis)',
+    'Vormittags von der Startseite, aber heute schon abgerechnet: gilt als '
+    'Abend, Wechselgeldentnahme kommt automatisch (kein Morgen-Schalter)',
     (WidgetTester tester) async {
       await oeffne(
         tester,
         ausTagesabrechnung: false,
+        jetzt: vormittags,
+        abschluss: heutigerAbschluss(
+          entnahmeCent: 60000,
+          grund: 'Rollengeld-Vorschuss',
+        ),
+      );
+      await zeigeZusammenfassung(tester);
+
+      expect(
+        find.text('Wechselgeldentnahme (Rollengeld-Vorschuss)'),
+        findsOneWidget,
+      );
+      expect(find.byType(Switch), findsNothing);
+      await raeumeAuf(tester);
+    },
+  );
+
+  testWidgets(
+    '00:40 Uhr (vor dem 5-Uhr-Knick) gilt als Abend: kein Morgen-Schalter',
+    (WidgetTester tester) async {
+      await oeffne(tester, ausTagesabrechnung: false, jetzt: nachts);
+      await zeigeZusammenfassung(tester);
+
+      expect(find.byType(Switch), findsNothing);
+      await raeumeAuf(tester);
+    },
+  );
+
+  testWidgets(
+    'Morgen-Prüfung: Schalter startet aus, ohne Betragsfeld, Infokasten '
+    'und Wechselgeldentnahme-Zeile',
+    (WidgetTester tester) async {
+      await oeffne(tester, ausTagesabrechnung: false, jetzt: vormittags);
+      await zeigeZusammenfassung(tester);
+
+      expect(tester.widget<Switch>(find.byType(Switch)).value, isFalse);
+      expect(
+        find.text('Notiz über Wechselgeldentnahme gefunden'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Betrag laut Notiz'), findsNothing);
+      expect(find.text('Wechselgeldentnahme'), findsNothing);
+      expect(find.textContaining('wird berücksichtigt'), findsNothing);
+      expect(find.textContaining('Notiz mit Betrag'), findsNothing);
+      await raeumeAuf(tester);
+    },
+  );
+
+  testWidgets(
+    'Morgen-Prüfung: gespeicherter Schalter samt Betrag kommt aus dem '
+    'Entwurf zurück, kürzt den Sollwert und zeigt den Infokasten',
+    (WidgetTester tester) async {
+      await oeffne(
+        tester,
+        ausTagesabrechnung: false,
+        jetzt: vormittags,
         entwurf: <String, dynamic>{
           'herkunft': 'morgen',
           'wechselgeldentnahmeAktiv': true,
@@ -198,11 +246,12 @@ void main() {
 
       expect(tester.widget<Switch>(find.byType(Switch)).value, isTrue);
       expect(find.text('Wechselgeldentnahme'), findsOneWidget);
-      // Differenz = 0 € gezählt − (2.000 € Sollwert − 600 € Entnahme)
-      expect(find.textContaining('1.400,00'), findsOneWidget);
-      expect(find.textContaining('Zettel mit Betrag'), findsNothing);
+      // Infokasten + Differenz nennen 1.400,00
+      expect(find.textContaining('1.400,00'), findsNWidgets(2));
+      expect(find.textContaining('Bis sie zurückgelegt ist'), findsOneWidget);
+      // Der Notiz-Hinweis gehört nur zur Abend-Prüfung
+      expect(find.textContaining('Notiz mit Betrag'), findsNothing);
       await raeumeAuf(tester);
     },
-    skip: nurVor18Uhr != null,
   );
 }

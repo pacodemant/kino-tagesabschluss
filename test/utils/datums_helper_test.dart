@@ -50,9 +50,7 @@ void main() {
 
     test('behandelt den Cutoff korrekt ueber einen Jahreswechsel', () {
       expect(
-        DatumsHelper.logischerAbrechnungsTag(
-          jetzt: DateTime(2026, 1, 1, 0, 1),
-        ),
+        DatumsHelper.logischerAbrechnungsTag(jetzt: DateTime(2026, 1, 1, 0, 1)),
         DateTime(2025, 12, 31),
       );
     });
@@ -82,6 +80,29 @@ void main() {
         DatumsHelper.logischesIsoDatum(jetzt: DateTime(2026, 3, 16, 0, 1)),
         '2026-03-15',
       );
+    });
+  });
+
+  group('DatumsHelper.istAbendzeitraum', () {
+    bool abend(int stunde, [int minute = 0]) => DatumsHelper.istAbendzeitraum(
+      jetzt: DateTime(2026, 3, 16, stunde, minute),
+    );
+
+    test('ab 18:00 Uhr ist Abend', () {
+      expect(abend(17, 59), isFalse);
+      expect(abend(18), isTrue);
+      expect(abend(23, 59), isTrue);
+    });
+
+    test('nachts vor dem 5-Uhr-Knick ist noch Abend', () {
+      expect(abend(0, 40), isTrue);
+      expect(abend(4, 59), isTrue);
+    });
+
+    test('ab 5:00 Uhr bis 17:59 Uhr ist Morgen/Tag', () {
+      expect(abend(5), isFalse);
+      expect(abend(12), isFalse);
+      expect(abend(17, 59), isFalse);
     });
   });
 }

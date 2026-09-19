@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 469a: Wechselgeldprüfung, Nachbesserungen nach Pacos Test.
+  (1) Abend-Erkennung: "Abend" gilt jetzt bei Aufruf aus der Abrechnung,
+  im Abendzeitraum (ab 18 Uhr bis zum 5-Uhr-Knick, neu:
+  DatumsHelper.istAbendzeitraum) ODER wenn für den heutigen Arbeitstag
+  schon ein finaler Abschluss existiert (z. B. Test tagsüber, früh
+  schließendes Kino). Die Wechselgeldentnahme kommt dann automatisch,
+  der Morgen-Schalter entfällt; die Entscheidung gilt einmal beim Laden
+  für die ganze Seite (auch für die Entwurf-Herkunft). Am nächsten
+  Morgen (neuer Arbeitstag, kein Abschluss) gilt wieder der Morgen-
+  Modus. (2) Notiz-Hinweis neu formuliert ("Wechselgeldentnahme: Notiz
+  mit Betrag und Grund gut sichtbar in die Wechselgeldkasse legen."),
+  gilt auch in Schritt 1 (gemeinsamer Baustein). (3) Neuer Infokasten
+  ganz oben auf der Prüfseite bei berücksichtigter Wechselgeldentnahme:
+  nennt die Entnahme und "nur noch X € müssen in der Wechselgeldkasse
+  liegen" (Sollwert minus Entnahme), Wortlaut je nach Abend/Morgen.
+  (4) Die Prüfseite nimmt optional eine Test-Uhrzeit (jetztFuerTest),
+  die Seiten-Tests laufen dadurch zu jeder Uhrzeit. Stückelung
+  unverändert (nutzt den schon bereinigten Barumsatz).
 - Run 469: Wechselgeldprüfung berücksichtigt die Wechselgeldentnahme.
   Abend-Prüfung (aus der Abrechnung oder ab 18 Uhr): die Entnahme des
   heutigen finalen Abschlusses wird automatisch vom Sollwert abgezogen;
