@@ -390,15 +390,23 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                     SizedBox(height: 10),
                     _Absatz(
                       '**Kupfermünzen** kommen selten vor. Wenn das aber mal '
-                      'der Fall ist, tippt an der entsprechenden Stelle auf '
-                      '„Kupfermünzen hinzufügen" und tragt die Beträge ein. '
-                      '(Das benötigt die App später für die Stückelung des '
-                      'Bargelds für den Umschlag.)',
+                      'der Fall ist, schaltet unter den losen Münzen den '
+                      'Schalter „Kupfermünzen (1, 2, 5 ct)" ein und tragt die '
+                      'Beträge ein. (Das benötigt die App später für die '
+                      'Stückelung des Bargelds für den Umschlag.)',
                     ),
-                    SizedBox(height: 16),
-                    _Screenshot(
-                      'assets/images/hilfe/schritt1_kupfermuenzen.png',
-                      breite: 260,
+                    SizedBox(height: 10),
+                    _Absatz(
+                      '**Wechselgeldentnahme**: Habt ihr Geld aus der '
+                      'Wechselgeldkasse entnommen (z. B. einen '
+                      'Rollengeld-Vorschuss, den ihr morgen wieder '
+                      'zurücklegt), schaltet ganz unten den Schalter „Es wurde '
+                      'Geld aus dem Wechselgeldbestand entnommen" ein und '
+                      'tragt Betrag und Grund ein. Nur dann stimmt der '
+                      'errechnete Barumsatz. **Wichtig:** Legt nach der '
+                      'Abrechnung eine gut sichtbare Notiz mit Betrag und '
+                      'Grund in die Wechselgeldkasse, damit der nächste Dienst '
+                      'Bescheid weiß.',
                     ),
                     SizedBox(height: 12),
                     _Absatz(
@@ -550,7 +558,16 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                       'durch die Abrechnung swipen zu müssen. Erst aktiv '
                       'nach einer abgeschlossenen Kassenabrechnung.\n'
                       '• **Wechselgeld prüfen**: Für die Frühschicht oder die '
-                      'Überprüfung nach der Tagesabrechnung.\n'
+                      'Überprüfung nach der Tagesabrechnung. Eine bei der '
+                      'Abrechnung erfasste **Wechselgeldentnahme** rechnet die '
+                      'App nach der Abrechnung automatisch mit: oben steht '
+                      'dann, wie viel nur noch in der Wechselgeldkasse liegen '
+                      'muss. Liegt am nächsten Morgen eine Notiz über eine '
+                      'Wechselgeldentnahme in der Kasse und das Geld ist noch '
+                      'nicht zurückgelegt, schaltet „Notiz über '
+                      'Wechselgeldentnahme gefunden" ein und tragt den Betrag '
+                      'von der Notiz ein. Ist das Geld schon wieder da, bleibt '
+                      'der Schalter aus.\n'
                       '• **Getränke auffüllen**: nice-to-have, für jeden '
                       'Standort vorkonfiguriert – die Liste ist in der '
                       'Reihenfolge sortiert, wie die Getränke im Regal '

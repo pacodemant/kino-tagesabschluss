@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 471a: Kurzeinstieg (In-App-Hilfe) ergänzt. Schritt 1: neuer
+  Absatz "Wechselgeldentnahme" (Schalter, Betrag/Grund, Pflicht-Notiz in
+  die Wechselgeldkasse); der Kupfermünzen-Absatz beschreibt jetzt den
+  Schalter statt des alten Buttons. "Weitere Funktionen": der Punkt
+  "Wechselgeld prüfen" erklärt die automatische Berücksichtigung nach der
+  Abrechnung und den Morgen-Schalter "Notiz über Wechselgeldentnahme
+  gefunden". Der Kupfermünzen-Screenshot (zeigte den alten Button) ist
+  aus der Hilfe entfernt; die Bilddatei bleibt liegen, bis ein neuer
+  Screenshot da ist.
 - Run 471: Kupfermünzen (lose) auf den kompakten Schalter umgestellt.
   In Schritt 1 und Wechselgeldprüfung ersetzt der Schalter "Kupfermünzen
   (1, 2, 5 ct)" die beiden Buttons "hinzufügen/entfernen" (Baustein
