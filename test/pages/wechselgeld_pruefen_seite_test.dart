@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -7,11 +7,10 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/widgets/kompakter_schalter_zeile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  late Directory tempDir;
-
   TagesabschlussFinal heutigerAbschluss({int? entnahmeCent, String? grund}) {
     final DateTime tag = DatumsHelper.logischerAbrechnungsTag();
     return TagesabschlussFinal(
@@ -41,18 +40,15 @@ void main() {
   }
 
   setUp(() async {
-    tempDir = Directory.systemTemp.createTempSync('hive_test_');
-    Hive.init(tempDir.path);
-    await Hive.openBox('box_tagesabschluesse');
-    await Hive.openBox('box_wechselgeld_entwuerfe');
+    // Hive im Arbeitsspeicher (bytes != null): keine Datei-I/O, die im
+    // Widget-Test hängen bleiben könnte, wenn die Seite den Entwurf speichert.
+    await Hive.openBox('box_tagesabschluesse', bytes: Uint8List(0));
+    await Hive.openBox('box_wechselgeld_entwuerfe', bytes: Uint8List(0));
     SharedPreferences.setMockInitialValues(<String, Object>{});
   });
 
   tearDown(() async {
-    await Hive.deleteFromDisk();
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
+    await Hive.close();
   });
 
   Future<void> oeffne(
@@ -268,8 +264,82 @@ void main() {
       await tester.pump();
 
       expect(find.textContaining('Kupfer-Rollen'), findsNothing);
-      expect(find.text('Kupfermünzen hinzufügen'), findsOneWidget);
+      expect(find.text('Kupfermünzen (1, 2, 5 ct)'), findsOneWidget);
       await raeumeAuf(tester);
     },
   );
+
+  group('Kupfermünzen-Schalter (Run 471)', () {
+    Future<void> klappeAllesAuf(WidgetTester tester) async {
+      await tester.tap(find.text('Alle zuklappen'));
+      await tester.pump();
+      await tester.tap(find.text('Alle aufklappen'));
+      await tester.pump();
+    }
+
+    // Tippen und Speichern des Entwurfs (im Arbeitsspeicher) abwarten.
+    Future<void> tippe(WidgetTester tester, Finder finder) async {
+      await tester.tap(finder);
+      await tester.pump();
+    }
+
+    Finder kupferSchalter() => find.descendant(
+      of: find.ancestor(
+        of: find.text('Kupfermünzen (1, 2, 5 ct)'),
+        matching: find.byType(KompakterSchalterZeile),
+      ),
+      matching: find.byType(Switch),
+    );
+
+    testWidgets(
+      'ohne Werte: Schalter startet aus, "an" zeigt die Kupferzeilen, '
+      '"aus" leert ohne Rückfrage',
+      (WidgetTester tester) async {
+        await oeffne(tester, ausTagesabrechnung: false, jetzt: vormittags);
+        await klappeAllesAuf(tester);
+
+        expect(tester.widget<Switch>(kupferSchalter()).value, isFalse);
+        expect(find.textContaining('1 ct'), findsNothing);
+
+        await tippe(tester, kupferSchalter());
+        expect(tester.widget<Switch>(kupferSchalter()).value, isTrue);
+        expect(find.textContaining('1 ct'), findsWidgets);
+
+        await tippe(tester, kupferSchalter());
+        expect(find.text('Kupfermünzen verwerfen?'), findsNothing);
+        expect(tester.widget<Switch>(kupferSchalter()).value, isFalse);
+        expect(find.textContaining('1 ct'), findsNothing);
+        await raeumeAuf(tester);
+      },
+    );
+
+    testWidgets(
+      'mit eingetragenen Kupfermünzen: Schalter ist an, "aus" fragt nach; '
+      '"Behalten" ändert nichts, "Verwerfen" schaltet aus',
+      (WidgetTester tester) async {
+        await oeffne(
+          tester,
+          ausTagesabrechnung: false,
+          jetzt: vormittags,
+          entwurf: <String, dynamic>{
+            'herkunft': 'morgen',
+            'loseMuenzenNachArtCent': <String, int>{'coin_1c': 500},
+          },
+        );
+        await klappeAllesAuf(tester);
+        expect(tester.widget<Switch>(kupferSchalter()).value, isTrue);
+
+        await tippe(tester, kupferSchalter());
+        expect(find.text('Kupfermünzen verwerfen?'), findsOneWidget);
+        await tippe(tester, find.text('Behalten'));
+        expect(tester.widget<Switch>(kupferSchalter()).value, isTrue);
+
+        await tippe(tester, kupferSchalter());
+        await tippe(tester, find.text('Verwerfen'));
+        expect(tester.widget<Switch>(kupferSchalter()).value, isFalse);
+        expect(find.textContaining('1 ct'), findsNothing);
+        await raeumeAuf(tester);
+      },
+    );
+  });
 }

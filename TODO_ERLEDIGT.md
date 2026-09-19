@@ -37,6 +37,15 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Kupfermünzen (lose) auf kompakten Schalter umstellen** *(Run 471)*
+      Die Buttons "Kupfermünzen hinzufügen/entfernen" in Schritt 1 und
+      Wechselgeldprüfung sind durch den Schalter "Kupfermünzen (1, 2, 5 ct)"
+      ersetzt. Aus = Zeilen weg und Werte gelöscht; Rückfrage nur, wenn
+      schon Werte eingetragen sind (vorher in Schritt 1 immer, in der
+      Prüfseite nie). Prüfseite speichert den Entwurf jetzt auch beim
+      Ausschalten (vorher tauchten gelöschte Werte nach einem Neuladen
+      wieder auf).
+
 - [x] **Kupfer-Rollen aus der Oberfläche entfernen** *(Run 470)*
       Buttons "Kupfer-Rollen hinzufügen/entfernen" und die Zeilen 1/2/5 ct
       sind in Schritt 1 und Wechselgeldprüfung weg (kommen praktisch nie

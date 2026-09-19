@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 470 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 471 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -51,13 +51,6 @@ um Durcheinander zu vermeiden.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
-
-- [ ] **Kupfermünzen (lose) auf kompakten Schalter umstellen** *(Run 471)*
-      Die zwei Buttons "Kupfermünzen hinzufügen/entfernen" in Schritt 1
-      und Wechselgeldprüfung durch den KompakterSchalterZeile-Baustein
-      ersetzen. Aus = Zeilen weg, Werte gelöscht, Rückfrage wenn schon
-      Werte eingetragen sind (Paco: ok). Kupfer-Rollen sind seit
-      Run 470 aus der Oberfläche entfernt.
 
 - [ ] **Nativer Android-Build aktuell kaputt (Gradle/AGP-Konflikt)**
       Entdeckt in Run 429a8 beim Versuch, `flutter run -d

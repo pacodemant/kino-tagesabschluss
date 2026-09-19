@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 471: Kupfermünzen (lose) auf den kompakten Schalter umgestellt.
+  In Schritt 1 und Wechselgeldprüfung ersetzt der Schalter "Kupfermünzen
+  (1, 2, 5 ct)" die beiden Buttons "hinzufügen/entfernen" (Baustein
+  KompakterSchalterZeile). Aus = Kupferzeilen weg und Werte gelöscht;
+  Rückfrage "Kupfermünzen verwerfen?" nur, wenn schon Werte eingetragen
+  sind (Schritt 1 fragte vorher immer, die Prüfseite nie). Die
+  Prüfseite speichert den Entwurf jetzt auch beim Ausschalten und prüft
+  danach neu (vorher kamen gelöschte Kupferwerte nach einem Neuladen
+  zurück). Schalter an ohne Werte wird nicht gespeichert (nach einem
+  Neuladen aus). Tests: 2 Seiten-Tests; die Seiten-Tests nutzen jetzt
+  Hive im Arbeitsspeicher (keine Datei-I/O).
 - Run 470: Kupfer-Rollen (1/2/5 ct) aus der Oberfläche entfernt (Paco:
   kommen praktisch nie in die Wechselgeldkasse). Schritt 1 und
   Wechselgeldprüfung zeigen weder die Buttons "Kupfer-Rollen hinzufügen/

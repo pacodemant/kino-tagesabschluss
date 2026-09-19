@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/widgets/kompakter_schalter_zeile.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
-import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_umschlaege_section.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/ganzzahl_eingabefeld.dart';
@@ -206,17 +206,18 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-        if (!kupferLoseSichtbar)
-          _KupferHinzufuegenButton(
-            label: 'Kupfermünzen hinzufügen',
-            onPressed: zeigeKupferLose,
-          ),
+        KompakterSchalterZeile(
+          label: 'Kupfermünzen (1, 2, 5 ct)',
+          wert: kupferLoseSichtbar,
+          onChanged: (bool an) {
+            if (an) {
+              zeigeKupferLose();
+            } else {
+              entferneKupferLose();
+            }
+          },
+        ),
         if (kupferLoseSichtbar) ...<Widget>[
-          const SizedBox(height: 8),
-          _KupferEntfernenButton(
-            label: 'Kupfermünzen entfernen',
-            onPressed: entferneKupferLose,
-          ),
           const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
             Builder(
@@ -266,64 +267,6 @@ class Schritt1RollenInhalt extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ],
-    );
-  }
-}
-
-class _KupferHinzufuegenButton extends StatelessWidget {
-  const _KupferHinzufuegenButton({
-    required this.label,
-    required this.onPressed,
-  });
-
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: TextButton.icon(
-        style: TextButton.styleFrom(
-          foregroundColor: AppFarben.appBarRot,
-          padding: EdgeInsets.zero,
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          textStyle: const TextStyle(fontSize: 11),
-        ),
-        onPressed: onPressed,
-        icon: const Icon(Icons.add, size: 14),
-        label: Text(label),
-      ),
-    );
-  }
-}
-
-class _KupferEntfernenButton extends StatelessWidget {
-  const _KupferEntfernenButton({
-    required this.label,
-    required this.onPressed,
-  });
-
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: TextButton.icon(
-        style: TextButton.styleFrom(
-          foregroundColor: AppFarben.appBarRot,
-          padding: EdgeInsets.zero,
-          minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          textStyle: const TextStyle(fontSize: 11),
-        ),
-        onPressed: onPressed,
-        icon: const Icon(Icons.remove, size: 14),
-        label: Text(label),
-      ),
     );
   }
 }

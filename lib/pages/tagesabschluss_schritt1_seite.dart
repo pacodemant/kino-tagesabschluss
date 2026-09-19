@@ -531,26 +531,23 @@ class _TagesabschlussSchritt1SeiteState
     });
   }
 
+  /// Schalter "Kupfermünzen" aus: Werte werden gelöscht, mit Rückfrage nur,
+  /// wenn schon Kupfermünzen eingetragen sind (Run 471).
   Future<void> _entferneKupferLose() async {
-    final bool? bestaetigt = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext dialogCtx) => AlertDialog(
-        title: const Text('Kupfermünzen entfernen?'),
-        content: const Text('Kupfermünzen wirklich entfernen?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(false),
-            child: const Text('Abbrechen'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(true),
-            child: const Text('Löschen'),
-          ),
-        ],
-      ),
+    final bool hatWerte = StueckelungKonfiguration.kupferMuenzenIds.any(
+      (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
     );
-    if (bestaetigt != true || !mounted) {
-      return;
+    if (hatWerte) {
+      final bool? verwerfen = await zeigeBestaetigungsDialog(
+        context,
+        titel: 'Kupfermünzen verwerfen?',
+        inhalt: 'Die eingetragenen Kupfermünzen werden gelöscht.',
+        abbrechenText: 'Behalten',
+        bestaetigenText: 'Verwerfen',
+      );
+      if (verwerfen != true || !mounted) {
+        return;
+      }
     }
     setState(() {
       _kupferLoseSichtbar = false;
