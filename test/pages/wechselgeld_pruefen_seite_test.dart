@@ -342,4 +342,89 @@ void main() {
       },
     );
   });
+
+  group('Rollen übernehmen + Abend-Entwurf am Morgen (Run 473)', () {
+    const String linkText = 'Aus Zählung von vorhin übernehmen';
+
+    // Rollen-Kachel ist anfangs zu: erst zu-, dann alles aufklappen.
+    Future<void> klappeAllesAuf(WidgetTester tester) async {
+      await tester.tap(find.text('Alle zuklappen'));
+      await tester.pump();
+      await tester.tap(find.text('Alle aufklappen'));
+      await tester.pump();
+    }
+
+    testWidgets('Schichtbeginn (Morgen): kein Link "Aus Zählung übernehmen"', (
+      WidgetTester tester,
+    ) async {
+      await oeffne(tester, ausTagesabrechnung: false, jetzt: vormittags);
+      await klappeAllesAuf(tester);
+
+      expect(find.text(linkText), findsNothing);
+      await raeumeAuf(tester);
+    });
+
+    testWidgets(
+      'Abend-Zeit, aber noch keine Abrechnung (eigenständiger Aufruf): '
+      'kein Link',
+      (WidgetTester tester) async {
+        await oeffne(tester, ausTagesabrechnung: false, jetzt: nachts);
+        await klappeAllesAuf(tester);
+
+        expect(find.text(linkText), findsNothing);
+        await raeumeAuf(tester);
+      },
+    );
+
+    testWidgets('Aufruf aus dem Tagesabschluss: Link ist da', (
+      WidgetTester tester,
+    ) async {
+      await oeffne(tester, ausTagesabrechnung: true);
+      await klappeAllesAuf(tester);
+
+      expect(find.text(linkText), findsOneWidget);
+      await raeumeAuf(tester);
+    });
+
+    testWidgets(
+      'Eigenständiger Aufruf nach dem finalen Abschluss von heute: Link ist da',
+      (WidgetTester tester) async {
+        await oeffne(
+          tester,
+          ausTagesabrechnung: false,
+          abschluss: heutigerAbschluss(),
+        );
+        await klappeAllesAuf(tester);
+
+        expect(find.text(linkText), findsOneWidget);
+        await raeumeAuf(tester);
+      },
+    );
+
+    testWidgets(
+      'Schichtbeginn: liegengebliebener Abend-Entwurf wird verworfen, '
+      'Felder sind leer',
+      (WidgetTester tester) async {
+        await oeffne(
+          tester,
+          ausTagesabrechnung: false,
+          jetzt: vormittags,
+          entwurf: <String, dynamic>{
+            'herkunft': 'abend',
+            'loseMuenzenNachArtCent': <String, int>{'coin_1c': 500},
+          },
+        );
+        await klappeAllesAuf(tester);
+
+        // Der Abend-Entwurf hätte den Kupfer-Schalter eingeschaltet.
+        expect(find.textContaining('1 ct'), findsNothing);
+        final Map<String, dynamic>? rest = await tester
+            .runAsync<Map<String, dynamic>?>(
+              () => LokalerSpeicher.ladeWechselgeldZaehlEntwurf('kino_01'),
+            );
+        expect(rest, isNull);
+        await raeumeAuf(tester);
+      },
+    );
+  });
 }

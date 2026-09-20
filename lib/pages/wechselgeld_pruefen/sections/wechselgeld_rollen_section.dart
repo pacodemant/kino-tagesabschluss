@@ -11,6 +11,7 @@ class WechselgeldRollenSection extends StatelessWidget {
     required this.rollenSichtbar,
     required this.rollenAufgeklappt,
     required this.rollenUebernommen,
+    required this.uebernehmenMoeglich,
     required this.stueckzahlen,
     required this.stueckzahlController,
     required this.stueckzahlFocusNode,
@@ -29,6 +30,7 @@ class WechselgeldRollenSection extends StatelessWidget {
   final List<Kassenzeile> rollenSichtbar;
   final bool rollenAufgeklappt;
   final bool rollenUebernommen;
+  final bool uebernehmenMoeglich;
   final Map<String, int> stueckzahlen;
   final Map<String, TextEditingController> stueckzahlController;
   final Map<String, FocusNode> stueckzahlFocusNode;
@@ -114,7 +116,7 @@ class WechselgeldRollenSection extends StatelessWidget {
       aufgeklappt: rollenAufgeklappt,
       beimUmschalten: onToggleRollen,
       inhalt: inhalt,
-      zusatzZeile: zusatzZeile,
+      zusatzZeile: uebernehmenMoeglich ? zusatzZeile : null,
       headerText: const TextSpan(
         children: <TextSpan>[
           TextSpan(

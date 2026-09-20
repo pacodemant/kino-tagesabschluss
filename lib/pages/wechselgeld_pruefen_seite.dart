@@ -109,6 +109,12 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
   // heutigen finalen Abschluss. Morgen-Prüfung: Schalter "Notiz gefunden"
   // mit manuell eingetragenem Betrag (im Zähl-Entwurf mitgespeichert).
   bool _abendModus = false;
+  // "Aus Zählung von vorhin übernehmen" (Rollen) gibt es erst, wenn der
+  // heutige Arbeitstag abgerechnet ist: Aufruf aus dem Tagesabschluss oder
+  // finaler Abschluss vorhanden. Morgens und bei einem eigenständigen
+  // Aufruf vor der Abrechnung gibt es noch keine Zählung, die man
+  // übernehmen könnte.
+  bool _abrechnungGemacht = false;
   int _abendEntnahmeCent = 0;
   String _abendEntnahmeGrund = '';
   bool _morgenEntnahmeAktiv = false;
@@ -263,6 +269,14 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
       await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
       entwurf = null;
     }
+    if (!abendModus && entwurf != null && entwurf['herkunft'] == 'abend') {
+      // Gegenrichtung: Schichtbeginn. Ein liegengebliebener, nicht
+      // fertiger Entwurf der Abend-Prüfung darf morgens nicht in den
+      // Feldern stehen — morgens wird der neue Bestand gezählt. Entwürfe
+      // ohne Markierung (Version vor der Markierung) bleiben unangetastet.
+      await LokalerSpeicher.loescheWechselgeldZaehlEntwurf(widget.kinoId);
+      entwurf = null;
+    }
     if (abendModus && heute.isNotEmpty) {
       // Wechselgeldentnahme des heutigen Abschlusses (nur Betrag > 0 wird
       // später angezeigt/verrechnet, siehe WechselgeldentnahmeRegeln).
@@ -283,6 +297,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
     }
 
     _abendModus = abendModus;
+    _abrechnungGemacht = widget.ausTagesabrechnung || heute.isNotEmpty;
     if (entwurf != null) {
       if (!abendModus) {
         _morgenEntnahmeCent =
@@ -1234,6 +1249,7 @@ class _WechselgeldPruefenSeiteState extends State<WechselgeldPruefenSeite> {
           rollenSichtbar: _rollenSichtbar,
           rollenAufgeklappt: _rollenAufgeklappt,
           rollenUebernommen: _rollenUebernommen,
+          uebernehmenMoeglich: _abrechnungGemacht,
           stueckzahlen: _stueckzahlen,
           stueckzahlController: _stueckzahlController,
           stueckzahlFocusNode: _stueckzahlFocusNode,

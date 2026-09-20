@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 473: Wechselgeldprüfung, Schichtbeginn. (a) Der Link "Aus Zählung
+  von vorhin übernehmen" (samt Fragezeichen) erscheint nur noch, wenn der
+  heutige Arbeitstag abgerechnet ist (Aufruf aus dem Tagesabschluss oder
+  finaler Abschluss vorhanden). Morgens und bei einem eigenständigen
+  Aufruf vor der Abrechnung fehlt er, weil es noch keine Zählung gibt.
+  (b) Morgens wird ein liegengebliebener, nicht beendeter Entwurf der
+  Abend-Prüfung (herkunft "abend") verworfen, die Felder sind leer
+  (Spiegel zur bestehenden Abend-Regel aus Run 447/469a). Entwürfe ohne
+  Markierung bleiben unangetastet. 5 neue Widget-Tests.
 - Run 472: E2E-Test der Web-App im echten Browser (neu: scripts/e2e,
   Playwright, eigene package.json; pubspec unberührt). Spielt die gebaute
   Web-App in Chrome (Handy-Fenster) durch: Abrechnung Schritt 1 bis 4 mit
