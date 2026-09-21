@@ -31,6 +31,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 import 'package:kino_bar_app/widgets/beleg_scan_bestaetigen_dialog.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
@@ -407,7 +408,7 @@ class _TagesabschlussSchritt2SeiteState
     final Object? ecLabelsRoh = daten['ecBelegeLabels'];
     if (ecLabelsRoh is List<dynamic>) {
       for (final dynamic wert in ecLabelsRoh) {
-        ecBelegeLabelsListe.add(wert?.toString() ?? '');
+        ecBelegeLabelsListe.add(TidEingabe.bereinige(wert?.toString() ?? ''));
       }
     }
     while (ecBelegeLabelsListe.length < ecBelege.length) {

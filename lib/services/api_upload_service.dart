@@ -7,6 +7,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUploadService {
@@ -311,7 +312,11 @@ class ApiUploadService {
           'kontaktieren.',
         );
       }
-      final String tid = z.tid ?? abrechnung.terminalId ?? '';
+      // Leerzeichen entfernen (Run 474): auch Alt-Daten/Verlauf-Einträge mit
+      // einer per Hand getippten " 60561997" muessen beim Vergleich gegen
+      // config/terminal_ids.json und bei Flurbocash als "60561997" ankommen.
+      final String tid =
+          TidEingabe.bereinige(z.tid ?? abrechnung.terminalId ?? '');
       final String gruppenSchluessel =
           z.belegIndex != null ? 'i${z.belegIndex}' : 't$tid';
       final Map<String, int> betraege =
@@ -390,7 +395,7 @@ class ApiUploadService {
       if (belegIndizesMitZeile.contains(i)) {
         ergebnis['i$i'] = (base64: foto, mediaType: mediaType);
       } else {
-        final String tid = tids[i];
+        final String tid = TidEingabe.bereinige(tids[i]);
         if (tid.isEmpty) continue;
         ergebnis['t$tid'] = (base64: foto, mediaType: mediaType);
       }

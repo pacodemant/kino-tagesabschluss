@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.127+472 · Run 472
+Version: 0.9.129+474 · Run 474
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -36,7 +36,9 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
                               FeldNavigationHelper (Next-Button,
                               Tab/Pfeiltasten-Feldnavigation),
                               BelegFotoKomprimierung (seit Run 451,
-                              nur für die Verlaufs-Ablage)
+                              nur für die Verlaufs-Ablage),
+                              TidEingabe (seit Run 474, TID ohne
+                              Leerzeichen: Eingabesperre + Bereinigung)
     lib/config/             → FeatureFlags
     config/                 → Asset-Textdateien (Getränkelisten, Zahlungsarten)
     .dev/                   → Entwicklungsworkflow und Run-System
@@ -157,7 +159,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 468)
+## Laufender Entwicklungsstand (Run 474)
+
+- Run 474 ✅ TID-Felder ohne Leerzeichen: Eingabesperre in beiden TID-
+  Textfeldern (Schritt 2), Bereinigung in ApiUploadService (Body +
+  Foto-Zuordnung) und beim Laden des Entwurfs. Auslöser: Versand am
+  19.09. scheiterte an einer per Hand getippten TID mit Leerzeichen.
+  Wartet auf Pacos Test. Details siehe CHANGELOG.md.
 
 - Run 468 ✅ Schritt 1: Wechselgeldentnahme per Schalter (Standard aus,
   Felder erst bei "an", roter Zettel-Hinweis). Prüfseiten folgen in 469.

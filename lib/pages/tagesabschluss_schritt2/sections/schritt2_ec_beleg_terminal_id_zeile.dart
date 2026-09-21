@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 
 // Zweck: Rendert die Terminal-ID-Zeile eines EC-Belegs im 1-Beleg-Modus —
 // entweder als reine Anzeige (Read-Modus nach erfolgreichem Scan) oder als
@@ -66,6 +68,7 @@ class Schritt2EcBelegTerminalIdZeile extends StatelessWidget {
           color: focusNode.hasFocus ? Colors.black : null,
         ),
         cursorColor: focusNode.hasFocus ? Colors.black : null,
+        inputFormatters: <TextInputFormatter>[TidEingabe.formatter],
         textInputAction: textInputActionErmitteln(focusNode),
         decoration: InputDecoration(
           hintText: hintUnleserlich ? 'TID eintragen' : 'Terminal-ID',

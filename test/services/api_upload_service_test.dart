@@ -401,6 +401,71 @@ void main() {
       expect(terminal.containsKey('receipt_photo'), isFalse);
       expect(terminal.containsKey('receipt_media_type'), isFalse);
     });
+
+    test(
+        'Run 474 (Fund vom 19.09.): TID mit führendem Leerzeichen geht ohne '
+        'Leerzeichen in den Body und besteht die TID-Prüfung', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 2000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(
+              art: 'Girocard',
+              betragCent: 2000,
+              tid: ' 60561997',
+              belegIndex: 0,
+            ),
+          ],
+        ),
+      );
+
+      final List<String> tids = ApiUploadService.tidsAusSettlementsBody(body);
+      expect(tids, <String>['60561997']);
+      expect(
+        ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+          tids,
+          const Kino(id: 'kino_01', name: 'Schauburg', kuerzel: 'SB'),
+          const <String, List<String>>{
+            'SB': <String>[
+              '54017635',
+              '60561994',
+              '60561996',
+              '60561997',
+            ],
+          },
+        ),
+        isEmpty,
+      );
+    });
+
+    test(
+        'Run 474: Alt-Daten ohne belegIndex mit Leerzeichen-TID behalten ihr '
+        'Beleg-Foto (Foto-Zuordnung über die bereinigte TID)', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          ecUmsatzGesamtCent: 2000,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(
+              art: 'Girocard',
+              betragCent: 2000,
+              tid: '60561997 ',
+            ),
+          ],
+          ecBelegeLabels: <String>['60561997 '],
+          ecBelegeFotosBase64: <String>['/9j/4AAQSkZJRg=='],
+          ecBelegeFotosMediaTypen: <String>['image/jpeg'],
+        ),
+      );
+
+      final List<dynamic> settlements = body['settlements'] as List<dynamic>;
+      final Map<String, dynamic> settlement =
+          settlements.single as Map<String, dynamic>;
+      final Map<String, dynamic> terminal =
+          (settlement['terminals'] as List<dynamic>).single
+              as Map<String, dynamic>;
+      expect(terminal['tid'], '60561997');
+      expect(terminal['receipt_photo'], '/9j/4AAQSkZJRg==');
+    });
   });
 
   group('ApiUploadService.ensureBody', () {

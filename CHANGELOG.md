@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 474: TID ohne Leerzeichen. Fund vom 19.09. (Schauburg, Handy):
+  Versand scheiterte mit "TID-Pruefung fehlgeschlagen: TID 60561997 ist
+  fuer Schauburg nicht als Terminal hinterlegt", obwohl die TID in
+  config/terminal_ids.json steht. Ursache: eine per Hand getippte TID
+  mit Leerzeichen (vermutlich " 60561997") wurde in Schritt 2 roh
+  gespeichert; die Prüfungen dort trimmen (kein Rot, Weiter frei), der
+  Versand verglich aber exakt. Fix: (a) neue Helferklasse TidEingabe
+  (lib/utils/tid_eingabe.dart): Eingabesperre für Leerzeichen und
+  unsichtbare Zeichen in beiden TID-Textfeldern von Schritt 2 (1-Beleg-
+  und Mehrbeleg-Modus), Einfügen entfernt sie; (b) ApiUploadService
+  bereinigt die TID beim Bauen des Bodys und bei der Foto-Zuordnung —
+  das rettet auch bereits gespeicherte Abrechnungen und Verlauf-Einträge
+  mit Leerzeichen-TID beim erneuten Senden; (c) ein gespeicherter Entwurf
+  wird beim Laden bereinigt. Neue Unit-Tests (TidEingabe, 2 Tests in
+  api_upload_service_test.dart).
 - Run 473: Wechselgeldprüfung, Schichtbeginn. (a) Der Link "Aus Zählung
   von vorhin übernehmen" (samt Fragezeichen) erscheint nur noch, wenn der
   heutige Arbeitstag abgerechnet ist (Aufruf aus dem Tagesabschluss oder

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 
 // Zweck: Rendert die Liste der EC-Beleg-Sub-Kacheln im 2+-Beleg-Modus
 // (eine aufklappbare Kachel je Beleg mit Terminal-ID, Scan-/Löschen-
@@ -225,6 +227,9 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                       cursorColor: labelFocusNode.hasFocus
                                           ? Colors.black
                                           : null,
+                                      inputFormatters: <TextInputFormatter>[
+                                        TidEingabe.formatter,
+                                      ],
                                       decoration: InputDecoration(
                                         hintText: tidUnleserlich
                                             ? 'TID eintragen'
