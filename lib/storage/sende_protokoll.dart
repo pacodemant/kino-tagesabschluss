@@ -13,6 +13,19 @@ class SendeProtokoll {
   static const String _key = 'sende_protokoll';
   static const int maxEintraege = 30;
 
+  /// Längster Fehlertext, der ungekürzt ins Protokoll geht (Run 474a). Bis
+  /// dahin waren es 80 Zeichen — bei der TID-Prüfung ging dadurch genau der
+  /// aufschlussreiche Teil ("erwartet: ...") verloren.
+  static const int maxFehlerLaenge = 300;
+
+  /// Fehlertext fürs Protokoll, bei Überlänge auf [maxFehlerLaenge] gekürzt.
+  static String fehlerText(Object fehler) {
+    final String text = fehler.toString();
+    return text.length > maxFehlerLaenge
+        ? '${text.substring(0, maxFehlerLaenge)}…'
+        : text;
+  }
+
   /// Hängt eine Zeile an. Wirft nie — ein Fehler im Protokoll darf den
   /// eigentlichen Ablauf nicht stören.
   static Future<void> eintragen(String ereignis, {DateTime? jetzt}) async {

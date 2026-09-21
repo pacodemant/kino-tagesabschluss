@@ -104,7 +104,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     } catch (e) {
       await SendeProtokoll.eintragen(
         'Versand NICHT bestätigt (Verlauf-Detail): '
-        '${e.toString().length > 80 ? '${e.toString().substring(0, 80)}…' : e}',
+        '${SendeProtokoll.fehlerText(e)}',
       );
       // Run 448: derselbe Fix wie in tagesabschluss_schritt3_seite.dart,
       // _doApiUpload() — CORS-artiger Fehler und echter Netzwerkfehler

@@ -71,6 +71,33 @@ void main() {
       );
     });
 
+    test(
+        'fehlerText: TID-Prüfungs-Fehler (über 80 Zeichen) bleibt vollständig, '
+        'inkl. "erwartet: ..."', () {
+      final Exception fehler = Exception(
+        'TID-Pruefung fehlgeschlagen: TID " 60561997" ist fuer Schauburg '
+        'nicht als Terminal hinterlegt (erwartet: 54017635, 60561994, '
+        '60561996, 60561997). Bitte pruefen.',
+      );
+
+      final String text = SendeProtokoll.fehlerText(fehler);
+
+      expect(text, fehler.toString());
+      expect(text, contains('erwartet: 54017635, 60561994'));
+    });
+
+    test('fehlerText: kürzt erst über maxFehlerLaenge, mit Auslassungszeichen',
+        () {
+      final String genau = 'a' * SendeProtokoll.maxFehlerLaenge;
+      final String zuLang = 'a' * (SendeProtokoll.maxFehlerLaenge + 1);
+
+      expect(SendeProtokoll.fehlerText(genau), genau);
+      expect(
+        SendeProtokoll.fehlerText(zuLang),
+        '${'a' * SendeProtokoll.maxFehlerLaenge}…',
+      );
+    });
+
     test('leeren entfernt alle Einträge', () async {
       await SendeProtokoll.eintragen('x');
       await SendeProtokoll.leeren();

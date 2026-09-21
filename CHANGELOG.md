@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 474a: Sende-Protokoll kürzt Fehlertexte erst ab 300 statt 80
+  Zeichen (neu: SendeProtokoll.fehlerText, genutzt in Schritt 3 und
+  Verlauf-Detail). Anlass: beim TID-Fehler vom 19.09. war der
+  aufschlussreiche Teil "erwartet: ..." abgeschnitten. Das Popup für die
+  MA kürzt weiterhin auf 120 Zeichen. Sichtbar im PIN-Admin-Bereich der
+  Einstellungen. 2 neue Unit-Tests.
 - Run 474: TID ohne Leerzeichen. Fund vom 19.09. (Schauburg, Handy):
   Versand scheiterte mit "TID-Pruefung fehlgeschlagen: TID 60561997 ist
   fuer Schauburg nicht als Terminal hinterlegt", obwohl die TID in

@@ -627,7 +627,7 @@ class _TagesabschlussSchritt3SeiteState
     } catch (e) {
       await SendeProtokoll.eintragen(
         'Versand NICHT bestätigt (Schritt 3): '
-        '${e.toString().length > 80 ? '${e.toString().substring(0, 80)}…' : e}',
+        '${SendeProtokoll.fehlerText(e)}',
       );
       // Run 448: Weder der CORS-artige Fehler (ApiUploadService.
       // isCorsArtFehler) noch ein echter Netzwerkfehler (z. B. Flugmodus)
