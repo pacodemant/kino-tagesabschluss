@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_anmerkung_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_anfangsbestand_section.dart';
@@ -124,7 +125,7 @@ class TagesabschlussSchritt3Seite extends StatefulWidget {
   /// Abfangen). Im Normalbetrieb immer null, dann unveraendertes
   /// Verhalten (ruft ApiUploadService.upload).
   @visibleForTesting
-  final Future<Map<String, dynamic>?> Function(TagesabschlussFinal)?
+  final Future<FlurbocashUploadErgebnis> Function(TagesabschlussFinal)?
       uploadUeberschreibung;
 
   /// Nur fuer Tests: ersetzt das Speichern des lokalen Sende-Merkers
@@ -195,12 +196,13 @@ class _TagesabschlussSchritt3SeiteState
   bool _apiUploadLaeuft = false;
   bool _devModusAktiv = false;
 
-  // Server-Antwort des letzten echten settlements-Aufrufs dieser Sitzung
-  // (report_id, entered_total_cents, discrepancy_cents, ...) — null,
-  // solange in dieser Sitzung noch nicht wirklich gesendet wurde. Nur
-  // für den Dev-Tools-Button "Server-Antwort anzeigen", nicht
-  // persistiert.
-  Map<String, dynamic>? _letzteServerAntwort;
+  // Ergebnis des letzten echten Versands dieser Sitzung (Server-Antworten
+  // von ensure + settlements, seit Run 476 beide) — null, solange in
+  // dieser Sitzung noch nicht wirklich gesendet wurde. Die Antworten nur
+  // für den Dev-Tools-Button "Server-Antwort anzeigen"; die darin
+  // enthaltene Flurbocash-Zuordnung speichert
+  // _speichereLokalenSendeMerker() am Verlaufseintrag.
+  FlurbocashUploadErgebnis? _letztesUploadErgebnis;
   bool _abrechnungGesendet = false;
 
   // true = in dieser Sitzung wurde mindestens einmal ein Versand-Versuch
@@ -248,6 +250,9 @@ class _TagesabschlussSchritt3SeiteState
       final Map<String, dynamic> settlement = (body['settlements']
           as List<dynamic>).first as Map<String, dynamic>;
       settlement.remove('sent_at');
+      // Run 476: Korrektur-Nummer ist keine Dateneingabe — darf den
+      // "gesendet"-Haken-Abgleich nicht verfälschen.
+      settlement.remove('settlement_number');
       return jsonEncode(body);
     } catch (_) {
       // _terminalsListe() innerhalb von settlementsBody() wirft bei
@@ -575,6 +580,7 @@ class _TagesabschlussSchritt3SeiteState
       _abschlussVorschau!.kinoId,
       _abschlussVorschau!.createdAt,
       sendezeitpunkt,
+      zuordnung: _letztesUploadErgebnis?.zuordnung,
     );
     // Etwaigen Warn-Status aus einem früheren, nicht bestätigten Versuch
     // an diesem Tag löschen — dieser Versuch war jetzt bestätigt
@@ -582,6 +588,35 @@ class _TagesabschlussSchritt3SeiteState
     await LokalerSpeicher.loescheVersandNichtBestaetigt(
       widget.argumente.kinoId,
     );
+  }
+
+  /// Run 476: _abschlussVorschau wird bei jedem Öffnen dieser Seite neu
+  /// gebaut und kennt die vom Server bestätigte settlement_number nicht.
+  /// Die steht am gespeicherten Verlaufseintrag (beim Senden gesetzt bzw.
+  /// beim Auto-Save-"Ersetzen" vom Vorgänger übernommen) und wird hier
+  /// für den Versand wieder angehängt — dann korrigiert FC diese
+  /// Abrechnung statt eine zusätzliche anzulegen. Wartet vorher auf den
+  /// Auto-Save, damit die Übernahme beim Ersetzen schon geschrieben ist.
+  Future<TagesabschlussFinal> _abschlussMitFlurbocashZuordnung() async {
+    final TagesabschlussFinal vorschau = _abschlussVorschau!;
+    try {
+      await _autoSaveErsterLauf;
+      final FlurbocashZuordnung? zuordnung =
+          await LokalerSpeicher.ladeFlurbocashZuordnung(
+        vorschau.kinoId,
+        vorschau.createdAt,
+      );
+      if (zuordnung == null) return vorschau;
+      await SendeProtokoll.eintragen(
+        'Korrektur: FC-Abrechnung Nr. ${zuordnung.settlementNummer} '
+        '(report_id ${zuordnung.reportId}) wird überschrieben',
+      );
+      return vorschau.mitFlurbocashZuordnung(zuordnung);
+    } catch (e) {
+      // Verlauf nicht lesbar -> Versand wie bisher als neue Abrechnung.
+      debugPrint('Flurbocash-Zuordnung nicht ladbar: $e');
+      return vorschau;
+    }
   }
 
   Future<void> _doApiUpload() async {
@@ -592,8 +627,8 @@ class _TagesabschlussSchritt3SeiteState
       });
     }
     try {
-      _letzteServerAntwort = await (widget.uploadUeberschreibung ??
-          ApiUploadService.upload)(_abschlussVorschau!);
+      _letztesUploadErgebnis = await (widget.uploadUeberschreibung ??
+          ApiUploadService.upload)(await _abschlussMitFlurbocashZuordnung());
       _apiUploadErledigt = true;
       await SendeProtokoll.eintragen('Versand erfolgreich (Schritt 3)');
       // Bewusst nicht mounted-gated: diese Aufrufe persistieren den
@@ -998,16 +1033,19 @@ class _TagesabschlussSchritt3SeiteState
     );
   }
 
-  /// Zeigt die zuletzt vom echten settlements-Aufruf empfangene
-  /// Server-Antwort (report_id, entered_total_cents, discrepancy_cents,
-  /// ...) — z. B. um zu prüfen, ob Flurbocash bei mehreren
-  /// terminals[]-Einträgen gleicher TID tatsächlich beide Beträge
+  /// Zeigt die zuletzt empfangenen Server-Antworten beider Aufrufe
+  /// (ensure seit Run 476, settlements: report_id, settlement_number,
+  /// entered_total_cents, ...) — z. B. um zu prüfen, ob Flurbocash bei
+  /// mehreren terminals[]-Einträgen gleicher TID tatsächlich beide Beträge
   /// verbucht hat, ohne dafür extra die Browser-DevTools zu brauchen.
   void _zeigeServerAntwort() {
-    final Map<String, dynamic>? antwort = _letzteServerAntwort;
-    if (antwort == null) return;
+    final FlurbocashUploadErgebnis? ergebnis = _letztesUploadErgebnis;
+    if (ergebnis == null) return;
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
-    final String antwortJson = encoder.convert(antwort);
+    final String antwortJson = 'Call 1 — ensure:\n'
+        '${encoder.convert(ergebnis.ensureAntwort)}\n\n'
+        'Call 2 — settlements:\n'
+        '${encoder.convert(ergebnis.settlementsAntwort)}';
 
     showDialog<void>(
       context: context,
@@ -1237,7 +1275,8 @@ class _TagesabschlussSchritt3SeiteState
             ),
           if (_devModusAktiv)
             TextButton(
-              onPressed: _letzteServerAntwort == null ? null : _zeigeServerAntwort,
+              onPressed:
+                  _letztesUploadErgebnis == null ? null : _zeigeServerAntwort,
               child: const Text('Server-Antwort anzeigen'),
             ),
           if (_autoSaveFehler)

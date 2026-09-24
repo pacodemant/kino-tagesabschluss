@@ -6,6 +6,7 @@ import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deckt die Sende-Orchestrierung in _doApiUpload() ab — dort lagen
@@ -106,7 +107,7 @@ void main() {
           argumente: argumente(),
           autoSaveUeberschreibung: autoSaveErfolgFake,
           uploadUeberschreibung: (TagesabschlussFinal _) async =>
-              <String, dynamic>{'report_id': 1},
+              const FlurbocashUploadErgebnis(),
           lokalerSendeMerkerUeberschreibung: () async {},
         ),
       ),
@@ -152,7 +153,7 @@ void main() {
           argumente: argumente(),
           autoSaveUeberschreibung: autoSaveErfolgFake,
           uploadUeberschreibung: (TagesabschlussFinal _) async =>
-              <String, dynamic>{'report_id': 2},
+              const FlurbocashUploadErgebnis(),
           lokalerSendeMerkerUeberschreibung: () async =>
               throw Exception('QuotaExceededError (simuliert)'),
         ),

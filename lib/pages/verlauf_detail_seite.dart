@@ -35,6 +35,12 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   bool _sendet = false;
   late DateTime? _gesendetAm = widget.abschluss.gesendetAm;
 
+  // Stand dieser Abrechnung für den nächsten Versand — nach einem
+  // erfolgreichen "Erneut senden" inkl. der vom Server bestätigten
+  // settlement_number (Run 476), damit ein weiterer Versand auf dieser
+  // Seite ebenfalls korrigiert statt neu anlegt.
+  late TagesabschlussFinal _abschlussFuerVersand = widget.abschluss;
+
   // Lookup-Maps aus StueckelungKonfiguration, einmalig gebaut
   static final Map<String, Kassenzeile> _scheineLookup = <String, Kassenzeile>{
     for (final Kassenzeile z in StueckelungKonfiguration.scheine) z.id: z,
@@ -65,7 +71,14 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
     setState(() => _sendet = true);
 
     try {
-      await ApiUploadService.upload(widget.abschluss); // .serverAntwort hier ungenutzt
+      // Hat der Eintrag eine Flurbocash-Zuordnung (Run 476), korrigiert FC
+      // damit diese Abrechnung, statt eine zusätzliche anzulegen.
+      final FlurbocashUploadErgebnis ergebnis =
+          await ApiUploadService.upload(_abschlussFuerVersand);
+      if (ergebnis.zuordnung != null) {
+        _abschlussFuerVersand =
+            _abschlussFuerVersand.mitFlurbocashZuordnung(ergebnis.zuordnung);
+      }
       await SendeProtokoll.eintragen('Versand erfolgreich (Verlauf-Detail)');
       // Eigener try/catch (Run 450, analog tagesabschluss_schritt3_seite.
       // dart, _doApiUpload()): Der Versand oben war bereits erfolgreich —
@@ -76,6 +89,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
           widget.abschluss.kinoId,
           widget.abschluss.createdAt,
           DateTime.now(),
+          zuordnung: ergebnis.zuordnung,
         );
         await LokalerSpeicher.loescheVersandNichtBestaetigt(
           widget.abschluss.kinoId,

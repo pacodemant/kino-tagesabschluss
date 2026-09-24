@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:hive_ce/hive.dart';
+import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/storage_persist_service.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
@@ -265,11 +266,25 @@ class LokalerSpeicher {
       ersetzter = gleicherTag.removeLast();
     }
 
+    // Run 476: Die vom Server bestaetigte Flurbocash-Zuordnung (report_id +
+    // settlement_number) des ersetzten Eintrags wandert mit — "Ersetzen"
+    // ist fachlich eine Korrektur derselben Abrechnung. Ohne das wuerde
+    // ein erneuter Versand nach einer Aenderung in Schritt 1/2 bei
+    // Flurbocash eine zusaetzliche statt einer korrigierten Abrechnung
+    // anlegen.
+    final FlurbocashZuordnung? uebernommeneZuordnung = ersetzter == null
+        ? null
+        : TagesabschlussFinal.fromJson(ersetzter).flurbocashZuordnung;
+    final TagesabschlussFinal neuerEintrag =
+        abschluss.flurbocashZuordnung == null && uebernommeneZuordnung != null
+            ? abschluss.mitFlurbocashZuordnung(uebernommeneZuordnung)
+            : abschluss;
+
     final List<Map<String, dynamic>> aktualisiert =
         _ohneAbgelaufeneBestaetigteEintraege(<Map<String, dynamic>>[
       ...andereTage,
       ...gleicherTag,
-      _tagesabschlussJsonFuerVerlauf(abschluss),
+      _tagesabschlussJsonFuerVerlauf(neuerEintrag),
     ]);
     await box.put(key, jsonEncode(aktualisiert));
 
@@ -278,7 +293,8 @@ class LokalerSpeicher {
       final TagesabschlussFinal alt = TagesabschlussFinal.fromJson(ersetzter);
       ersetztInfo = 'Vorgänger createdAt '
           '${alt.createdAt.toIso8601String()}, war gesendet: '
-          '${alt.gesendetAm != null ? 'JA (Markierung geht verloren)' : 'nein'}';
+          '${alt.gesendetAm != null ? 'JA (Markierung geht verloren)' : 'nein'}'
+          '${uebernommeneZuordnung != null ? ', FC-Abrechnung Nr. ${uebernommeneZuordnung.settlementNummer} übernommen' : ''}';
     }
     await SendeProtokoll.eintragen(
       'Verlauf: Eintrag ersetzt (neu createdAt '
@@ -793,11 +809,16 @@ class LokalerSpeicher {
   /// existieren) als erfolgreich an Flurbocash gesendet. Liefert true, wenn
   /// ein passender Eintrag gefunden und markiert wurde (Run 464, vorher
   /// stilles void — ein fehlender Treffer blieb unsichtbar).
+  ///
+  /// [zuordnung] (Run 476): vom Server bestaetigte report_id +
+  /// settlement_number, wird am Eintrag mitgespeichert. null = eine
+  /// vorhandene Zuordnung bleibt unveraendert.
   static Future<bool> markiereAlsGesendet(
     String kinoId,
     DateTime createdAt,
-    DateTime zeitpunkt,
-  ) async {
+    DateTime zeitpunkt, {
+    FlurbocashZuordnung? zuordnung,
+  }) async {
     final Box<dynamic> box = Hive.box('box_tagesabschluesse');
     final String key = finaleTagesabschluesseKey(kinoId);
     final String? rohwert = box.get(key) as String?;
@@ -821,7 +842,11 @@ class LokalerSpeicher {
           vorhandeneCreatedAt.add(bestehend.createdAt.toIso8601String());
           if (bestehend.createdAt.isAtSameMomentAs(createdAt)) {
             gefunden = true;
-            aktualisiert.add(bestehend.mitGesendetAm(zeitpunkt).toJson());
+            TagesabschlussFinal markiert = bestehend.mitGesendetAm(zeitpunkt);
+            if (zuordnung != null) {
+              markiert = markiert.mitFlurbocashZuordnung(zuordnung);
+            }
+            aktualisiert.add(markiert.toJson());
           } else {
             aktualisiert.add(eintrag);
           }
@@ -843,12 +868,40 @@ class LokalerSpeicher {
     await SendeProtokoll.eintragen(
       gefunden
           ? 'Verlauf markieren: gefunden, als gesendet gesetzt (createdAt '
-              '${createdAt.toIso8601String()})'
+              '${createdAt.toIso8601String()}'
+              '${zuordnung != null ? ', FC-Abrechnung Nr. ${zuordnung.settlementNummer}' : ''})'
           : 'Verlauf markieren: NICHT gefunden, gesucht createdAt '
               '${createdAt.toIso8601String()}, vorhanden: '
               '${vorhandeneCreatedAt.join(', ')}',
     );
     return gefunden;
+  }
+
+  /// Lädt die Flurbocash-Zuordnung des Verlaufseintrags mit passendem
+  /// [createdAt] (Run 476) — Schritt 3 baut seine Abrechnung bei jedem
+  /// Öffnen neu auf, die vom Server bestätigte settlement_number steht
+  /// nur am gespeicherten Verlaufseintrag. null, wenn kein Eintrag
+  /// gefunden wurde oder er (noch) keine Zuordnung hat.
+  static Future<FlurbocashZuordnung?> ladeFlurbocashZuordnung(
+    String kinoId,
+    DateTime createdAt,
+  ) async {
+    final Box<dynamic> box = Hive.box('box_tagesabschluesse');
+    final String? rohwert = box.get(finaleTagesabschluesseKey(kinoId)) as String?;
+    if (rohwert == null) return null;
+    try {
+      for (final dynamic eintrag in jsonDecode(rohwert) as List<dynamic>) {
+        if (eintrag is! Map<String, dynamic>) continue;
+        final TagesabschlussFinal bestehend =
+            TagesabschlussFinal.fromJson(eintrag);
+        if (bestehend.createdAt.isAtSameMomentAs(createdAt)) {
+          return bestehend.flurbocashZuordnung;
+        }
+      }
+    } catch (_) {
+      // Verlauf nicht lesbar -> wie "keine Zuordnung" (Versand legt neu an).
+    }
+    return null;
   }
 
   /// Löscht die finale Tagesabrechnung eines bestimmten Kalendertags.

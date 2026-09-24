@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 476: Flurbocash-Korrektur per settlement_number. Anlass: Paco sah
+  in der Sandbox-Antwort (2026-09-24) settlements[0].settlement_number
+  (1. Versand -> 1, 2. Versand -> 2); bisher legte jeder Versand bei FC
+  eine zusätzliche Abrechnung an. Neu: FlurbocashZuordnung (report_id,
+  settlement_number, gesendete TIDs) als optionales Feld am
+  TagesabschlussFinal (JSON-Key "flurbocashZuordnung", abwärtskompatibel).
+  ApiUploadService.upload() liefert FlurbocashUploadErgebnis (ensure- und
+  settlements-Antwort + Zuordnung); markiereAlsGesendet() speichert die
+  Zuordnung am Verlaufseintrag. settlementsBody() schickt die Nummer mit,
+  wenn der Abschluss eine Zuordnung für dieselbe report_id hat, und
+  sendet dabei weggefallene TIDs mit 0-Beträgen (FC-Upsert).
+  ersetzeFinalenTagesabschluss() übernimmt die Zuordnung vom ersetzten
+  Eintrag; Schritt 3 lädt sie vor dem Versand per createdAt nach
+  (wartet dafür auf den Auto-Save). Verlauf "Erneut senden" nutzt sie
+  direkt. Sende-Signatur ignoriert settlement_number. Dev-Dialog
+  "Server-Antwort anzeigen" zeigt jetzt beide Antworten (ensure +
+  settlements). Nicht gelöst: Duplikat, wenn die Antwort verloren geht
+  (braucht Leseweg bei FC). 10 neue Unit-Tests.
 - Run 475: Einheitliche Betragsfelder + Wechselgeldentnahme-Texte.
   Paco-Wunsch: alle Betragsfelder sehen gleich aus (Länge + Höhe).
   Neu: BetragCentEingabefeld.standardBreite (172) und

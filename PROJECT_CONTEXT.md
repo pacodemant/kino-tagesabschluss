@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.130+475 · Run 475
+Version: 0.9.131+476 · Run 476
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,18 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 475)
+## Laufender Entwicklungsstand (Run 476)
+
+- Run 476 ✅ Flurbocash-Korrektur per `settlement_number`: die vom Server
+  bestätigte Nummer (PUT-Antwort `settlements[0].settlement_number`) wird
+  mit `report_id` und gesendeten TIDs als `FlurbocashZuordnung` am
+  Verlaufseintrag gespeichert; ein erneuter Versand desselben Abschlusses
+  (Schritt 3 nach Änderung, Verlauf "Erneut senden") schickt die Nummer
+  mit -> FC überschreibt statt neu anzulegen. "Ersetzen" im Auto-Save
+  übernimmt die Zuordnung vom Vorgänger. Weggefallene TIDs gehen mit
+  0-Beträgen mit (FC-Upsert). Nummer nur bei gleicher `report_id`.
+  Dev-Dialog "Server-Antwort anzeigen" zeigt jetzt ensure + settlements.
+  Offen: Duplikat bei verlorener Antwort (siehe fragen_yannik.md 3.1).
 
 - Run 475 ✅ Einheitliche Betragsfelder: zentrale Breite/Schrift in
   BetragCentEingabefeld (172 / 15), alle Betragsfelder der App

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
@@ -68,13 +69,12 @@ class ApiUploadService {
   /// Yannik bestaetigt — das Risiko einer falschen Referenzliste wird
   /// jetzt bewusst in Kauf genommen.
   ///
-  /// [serverAntwort] ist der geparste JSON-Body der settlements-Antwort
-  /// (report_id, entered_total_cents, discrepancy_cents, ...) — seit
-  /// Run 399a4 fuers Dev-Modus-Debugging durchgereicht, damit sich am
-  /// Server-Wert prüfen lässt, was Flurbocash tatsächlich verbucht hat
-  /// (z. B. bei mehreren terminals[]-Einträgen gleicher TID). null, falls
-  /// die Antwort kein gültiges JSON war.
-  static Future<Map<String, dynamic>?> upload(
+  /// Liefert beide Server-Antworten (ensure + settlements, seit Run 476
+  /// fuer den Dev-Modus-Dialog) und die vom Server bestaetigte
+  /// [FlurbocashZuordnung], die der Aufrufer am lokalen Verlaufseintrag
+  /// speichert — ein spaeterer Versand derselben Abrechnung korrigiert
+  /// sie dann bei Flurbocash, statt eine zusaetzliche anzulegen.
+  static Future<FlurbocashUploadErgebnis> upload(
     TagesabschlussFinal abrechnung,
   ) async {
     final ({String url, int locationId, String apiKey}) konfig =
@@ -85,15 +85,58 @@ class ApiUploadService {
       throw Exception('TID-Pruefung fehlgeschlagen: ${warnungen.join(' ')}');
     }
 
-    final int reportId = await _ensure(
+    final Map<String, dynamic> ensureAntwort = await _ensure(
       konfig.url,
       konfig.apiKey,
       konfig.locationId,
       abrechnung,
     );
+    final int reportId = (ensureAntwort['report_id'] as num).toInt();
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
-    return _settlements(konfig.url, konfig.apiKey, reportId, abrechnung);
+    final Map<String, dynamic> body =
+        settlementsBody(abrechnung, reportId: reportId);
+    final Map<String, dynamic>? settlementsAntwort =
+        await _settlements(konfig.url, konfig.apiKey, reportId, body);
+
+    return FlurbocashUploadErgebnis(
+      ensureAntwort: ensureAntwort,
+      settlementsAntwort: settlementsAntwort,
+      zuordnung: zuordnungAusAntwort(
+        reportId: reportId,
+        gesendeterBody: body,
+        antwort: settlementsAntwort,
+      ),
+    );
+  }
+
+  /// Liest die vom Server vergebene settlement_number aus der
+  /// settlements-Antwort (settlements[0].settlement_number, von Paco am
+  /// 2026-09-24 in der Sandbox bestaetigt: enthaelt nur die gerade
+  /// geschriebene Abrechnung). Fehlt sie dort, gilt die selbst
+  /// mitgeschickte Nummer (Korrektur); gibt es keine von beiden: null.
+  static FlurbocashZuordnung? zuordnungAusAntwort({
+    required int reportId,
+    required Map<String, dynamic> gesendeterBody,
+    required Map<String, dynamic>? antwort,
+  }) {
+    int? nummer;
+    final Object? settlements = antwort?['settlements'];
+    if (settlements is List && settlements.isNotEmpty) {
+      final Object? erstes = settlements.first;
+      if (erstes is Map && erstes['settlement_number'] is num) {
+        nummer = (erstes['settlement_number'] as num).toInt();
+      }
+    }
+    final Map<String, dynamic> gesendet = (gesendeterBody['settlements']
+        as List<dynamic>).first as Map<String, dynamic>;
+    nummer ??= (gesendet['settlement_number'] as num?)?.toInt();
+    if (nummer == null) return null;
+    return FlurbocashZuordnung(
+      reportId: reportId,
+      settlementNummer: nummer,
+      tids: tidsAusSettlementsBody(gesendeterBody).toSet().toList(),
+    );
   }
 
   /// Gleicht die tatsächlich zu sendenden TIDs gegen config/terminal_ids.json
@@ -199,13 +242,39 @@ class ApiUploadService {
 
   /// [jetzt] optional für Tests (sonst DateTime.now()) — bestimmt nur den
   /// mitgeschickten Sende-Zeitpunkt, keine fachliche Logik.
+  ///
+  /// Korrektur (Run 476): Hat [abrechnung] eine vom Server bestaetigte
+  /// [FlurbocashZuordnung] fuer denselben Tagesbericht ([reportId] aus
+  /// dem aktuellen ensure-Aufruf; null = nicht pruefen, z. B. fuer den
+  /// Dev-JSON-Dialog), wird deren settlement_number mitgeschickt — FC
+  /// ueberschreibt dann diese Abrechnung statt eine neue anzulegen.
+  /// Terminals, die beim letzten Versand dabei waren und jetzt fehlen,
+  /// werden mit 0-Betraegen mitgeschickt (FC aktualisiert Terminals per
+  /// Upsert, siehe EXTERNAL_API_Schauburg_de.md "Korrekturen").
   static Map<String, dynamic> settlementsBody(
     TagesabschlussFinal abrechnung, {
     DateTime? jetzt,
+    int? reportId,
   }) {
+    final FlurbocashZuordnung? zuordnung = abrechnung.flurbocashZuordnung;
+    final bool korrektur = zuordnung != null &&
+        (reportId == null || zuordnung.reportId == reportId);
+    final List<Map<String, dynamic>> terminals = _terminalsListe(abrechnung);
+    if (korrektur) {
+      final Set<String> aktuelleTids = terminals
+          .map((Map<String, dynamic> t) => t['tid'] as String)
+          .toSet();
+      for (final String tid in zuordnung.tids) {
+        if (!aktuelleTids.contains(tid)) {
+          terminals.add(_terminalEintrag(tid, const <String, int>{}, null));
+          aktuelleTids.add(tid);
+        }
+      }
+    }
     return <String, dynamic>{
       'settlements': <Map<String, dynamic>>[
         <String, dynamic>{
+          if (korrektur) 'settlement_number': zuordnung.settlementNummer,
           'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
           if (abrechnung.anmerkung != null && abrechnung.anmerkung!.isNotEmpty)
             'note': abrechnung.anmerkung,
@@ -213,13 +282,13 @@ class ApiUploadService {
           // ignoriert, kein Vertragsbruch falls FC "sent_at" (noch) nicht
           // auswertet.
           'sent_at': (jetzt ?? DateTime.now()).toIso8601String(),
-          'terminals': _terminalsListe(abrechnung),
+          'terminals': terminals,
         },
       ],
     };
   }
 
-  static Future<int> _ensure(
+  static Future<Map<String, dynamic>> _ensure(
     String baseUrl,
     String apiKey,
     int locationId,
@@ -240,16 +309,14 @@ class ApiUploadService {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
     }
     _pruefeStatus(response);
-    final Map<String, dynamic> body =
-        jsonDecode(response.body) as Map<String, dynamic>;
-    return (body['report_id'] as num).toInt();
+    return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
   static Future<Map<String, dynamic>?> _settlements(
     String baseUrl,
     String apiKey,
     int reportId,
-    TagesabschlussFinal abrechnung,
+    Map<String, dynamic> body,
   ) async {
     final Uri uri =
         Uri.parse('$baseUrl/api/daily-reports/$reportId/settlements');
@@ -261,7 +328,7 @@ class ApiUploadService {
           'Content-Type': 'application/json',
           'X-API-Key': apiKey,
         },
-        body: jsonEncode(settlementsBody(abrechnung)),
+        body: jsonEncode(body),
       );
     } catch (e) {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
@@ -482,4 +549,23 @@ class ApiUploadService {
         text.contains('networkerror') ||
         text.contains('load failed');
   }
+}
+
+/// Ergebnis eines erfolgreichen [ApiUploadService.upload] (seit Run 476).
+class FlurbocashUploadErgebnis {
+  const FlurbocashUploadErgebnis({
+    this.ensureAntwort,
+    this.settlementsAntwort,
+    this.zuordnung,
+  });
+
+  /// Geparste Antworten beider Aufrufe, nur fuer den Dev-Modus-Dialog
+  /// "Server-Antwort anzeigen". settlementsAntwort ist null, falls die
+  /// Antwort kein gueltiges JSON war.
+  final Map<String, dynamic>? ensureAntwort;
+  final Map<String, dynamic>? settlementsAntwort;
+
+  /// null, wenn der Server keine settlement_number geliefert hat (dann
+  /// wird ein spaeterer Versand wie bisher als neue Abrechnung angelegt).
+  final FlurbocashZuordnung? zuordnung;
 }

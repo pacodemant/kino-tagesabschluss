@@ -1,4 +1,5 @@
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 
 class TagesabschlussFinal {
   const TagesabschlussFinal({
@@ -48,6 +49,9 @@ class TagesabschlussFinal {
     // seit Run 399a, für ältere gespeicherte Einträge null
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
+    // Von Flurbocash bestätigte report_id + settlement_number – seit
+    // Run 476, für ältere oder nie gesendete Einträge null
+    this.flurbocashZuordnung,
   });
 
   final String kinoId;
@@ -110,9 +114,28 @@ class TagesabschlussFinal {
   // noch nicht gesendet – seit Run 387.
   final DateTime? gesendetAm;
 
+  // Vom Server bestätigte Zuordnung (report_id + settlement_number), oder
+  // null wenn noch nie bestätigt gesendet – seit Run 476. Steuert, ob ein
+  // erneuter Versand bei Flurbocash korrigiert statt neu anlegt.
+  final FlurbocashZuordnung? flurbocashZuordnung;
+
   /// Liefert eine Kopie mit gesetztem [gesendetAm]. Alle anderen Felder
   /// bleiben unverändert.
   TagesabschlussFinal mitGesendetAm(DateTime zeitpunkt) {
+    return _kopie(gesendetAm: zeitpunkt);
+  }
+
+  /// Liefert eine Kopie mit gesetzter [zuordnung]. Alle anderen Felder
+  /// bleiben unverändert.
+  TagesabschlussFinal mitFlurbocashZuordnung(FlurbocashZuordnung? zuordnung) {
+    return _kopie(flurbocashZuordnung: zuordnung, zuordnungSetzen: true);
+  }
+
+  TagesabschlussFinal _kopie({
+    DateTime? gesendetAm,
+    FlurbocashZuordnung? flurbocashZuordnung,
+    bool zuordnungSetzen = false,
+  }) {
     return TagesabschlussFinal(
       kinoId: kinoId,
       kinoName: kinoName,
@@ -151,9 +174,12 @@ class TagesabschlussFinal {
       belegNrBis: belegNrBis,
       ecUhrzeit: ecUhrzeit,
       zahlungsartenAufschluesselung: zahlungsartenAufschluesselung,
-      gesendetAm: zeitpunkt,
+      gesendetAm: gesendetAm ?? this.gesendetAm,
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
+      flurbocashZuordnung: zuordnungSetzen
+          ? flurbocashZuordnung
+          : this.flurbocashZuordnung,
     );
   }
 
@@ -215,6 +241,8 @@ class TagesabschlussFinal {
         'ecBelegeFotosBase64': ecBelegeFotosBase64,
       if (ecBelegeFotosMediaTypen != null)
         'ecBelegeFotosMediaTypen': ecBelegeFotosMediaTypen,
+      if (flurbocashZuordnung != null)
+        'flurbocashZuordnung': flurbocashZuordnung!.toJson(),
     };
   }
 
@@ -345,6 +373,8 @@ class TagesabschlussFinal {
       ),
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
+      flurbocashZuordnung:
+          FlurbocashZuordnung.fromJson(json['flurbocashZuordnung']),
     );
   }
 }

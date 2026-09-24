@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:image/image.dart' as img;
+import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -644,4 +645,113 @@ void main() {
       );
     },
   );
+
+  group('LokalerSpeicher Flurbocash-Zuordnung (Run 476)', () {
+    late Directory tempDir;
+
+    TagesabschlussFinal abschluss({
+      required DateTime createdAt,
+      FlurbocashZuordnung? zuordnung,
+    }) {
+      return TagesabschlussFinal(
+        kinoId: 'kino_01',
+        kinoName: 'Test-Kino',
+        datum: DateTime(2026, 9, 24),
+        createdAt: createdAt,
+        scheineCent: 0,
+        loseMuenzenCent: 0,
+        rollenCent: 0,
+        umschlaegeCent: 0,
+        kassenbestandGesamtCent: 0,
+        wechselgeldSollwertCent: 0,
+        barBestandAbzglWechselgeldCent: 0,
+        kinoSollCent: 0,
+        bistroSollCent: 0,
+        ausgabenCent: 0,
+        ecBelegeCent: const <int>[],
+        ecUmsatzGesamtCent: 0,
+        gesamtSollCent: 0,
+        gesamtIstCent: 0,
+        differenzGesamtCent: 0,
+        differenzAnfangsbestandCent: 0,
+        flurbocashZuordnung: zuordnung,
+      );
+    }
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      tempDir = Directory.systemTemp.createTempSync('hive_test_');
+      Hive.init(tempDir.path);
+      await Hive.openBox('box_tagesabschluesse');
+    });
+
+    tearDown(() async {
+      await Hive.deleteFromDisk();
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
+    });
+
+    test(
+        'markiereAlsGesendet mit Zuordnung -> am Eintrag gespeichert, '
+        'ladeFlurbocashZuordnung findet sie per createdAt', () async {
+      final DateTime erstellt = DateTime(2026, 9, 24, 18, 0);
+      await LokalerSpeicher.speichereFinalenTagesabschluss(
+        abschluss(createdAt: erstellt),
+      );
+
+      await LokalerSpeicher.markiereAlsGesendet(
+        'kino_01',
+        erstellt,
+        DateTime(2026, 9, 24, 18, 5),
+        zuordnung: const FlurbocashZuordnung(
+          reportId: 73,
+          settlementNummer: 2,
+          tids: <String>['54069464'],
+        ),
+      );
+
+      final FlurbocashZuordnung? geladen =
+          await LokalerSpeicher.ladeFlurbocashZuordnung('kino_01', erstellt);
+      expect(geladen?.reportId, 73);
+      expect(geladen?.settlementNummer, 2);
+      expect(geladen?.tids, <String>['54069464']);
+    });
+
+    test(
+        'ersetzeFinalenTagesabschluss übernimmt die Zuordnung des '
+        'ersetzten Eintrags (Korrektur nach Änderung in Schritt 1/2)',
+        () async {
+      await LokalerSpeicher.speichereFinalenTagesabschluss(
+        abschluss(
+          createdAt: DateTime(2026, 9, 24, 18, 0),
+          zuordnung: const FlurbocashZuordnung(
+            reportId: 73,
+            settlementNummer: 1,
+          ),
+        ),
+      );
+
+      final DateTime neu = DateTime(2026, 9, 24, 19, 0);
+      await LokalerSpeicher.ersetzeFinalenTagesabschluss(
+        abschluss(createdAt: neu),
+      );
+
+      final FlurbocashZuordnung? geladen =
+          await LokalerSpeicher.ladeFlurbocashZuordnung('kino_01', neu);
+      expect(geladen?.reportId, 73);
+      expect(geladen?.settlementNummer, 1);
+    });
+
+    test('neuer Eintrag ohne Vorgänger hat keine Zuordnung', () async {
+      final DateTime erstellt = DateTime(2026, 9, 24, 18, 0);
+      await LokalerSpeicher.speichereFinalenTagesabschluss(
+        abschluss(createdAt: erstellt),
+      );
+      expect(
+        await LokalerSpeicher.ladeFlurbocashZuordnung('kino_01', erstellt),
+        isNull,
+      );
+    });
+  });
 }

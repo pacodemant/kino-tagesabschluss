@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
@@ -698,6 +699,174 @@ void main() {
         ),
         throwsException,
       );
+    });
+  });
+
+  group('Flurbocash settlement_number (Run 476)', () {
+    TagesabschlussFinal abrechnung({FlurbocashZuordnung? zuordnung}) {
+      return TagesabschlussFinal(
+        kinoId: 'kino_01',
+        kinoName: 'Schauburg',
+        datum: DateTime(2026, 9, 24),
+        createdAt: DateTime(2026, 9, 24, 18, 0),
+        scheineCent: 10000,
+        loseMuenzenCent: 0,
+        rollenCent: 0,
+        umschlaegeCent: 0,
+        kassenbestandGesamtCent: 10000,
+        wechselgeldSollwertCent: 0,
+        barBestandAbzglWechselgeldCent: 10000,
+        kinoSollCent: 0,
+        bistroSollCent: 0,
+        ausgabenCent: 0,
+        ecBelegeCent: const <int>[2000],
+        ecUmsatzGesamtCent: 2000,
+        gesamtSollCent: 0,
+        gesamtIstCent: 0,
+        differenzGesamtCent: 0,
+        differenzAnfangsbestandCent: 0,
+        zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+          ZahlungsartErgebnis(art: 'girocard', betragCent: 2000, tid: 'A1'),
+        ],
+        flurbocashZuordnung: zuordnung,
+      );
+    }
+
+    Map<String, dynamic> settlement(Map<String, dynamic> body) =>
+        (body['settlements'] as List<dynamic>).single as Map<String, dynamic>;
+
+    test('ohne Zuordnung -> kein settlement_number (neue Abrechnung)', () {
+      final Map<String, dynamic> body =
+          ApiUploadService.settlementsBody(abrechnung(), reportId: 73);
+      expect(settlement(body).containsKey('settlement_number'), isFalse);
+    });
+
+    test('Zuordnung für denselben Tagesbericht -> settlement_number gesetzt',
+        () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          zuordnung: const FlurbocashZuordnung(
+            reportId: 73,
+            settlementNummer: 2,
+            tids: <String>['A1'],
+          ),
+        ),
+        reportId: 73,
+      );
+      expect(settlement(body)['settlement_number'], 2);
+      expect(settlement(body)['terminals'] as List<dynamic>, hasLength(1));
+    });
+
+    test(
+        'Zuordnung für anderen Tagesbericht (andere report_id) -> keine '
+        'Nummer, damit nie eine fremde Abrechnung überschrieben wird', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          zuordnung:
+              const FlurbocashZuordnung(reportId: 70, settlementNummer: 1),
+        ),
+        reportId: 73,
+      );
+      expect(settlement(body).containsKey('settlement_number'), isFalse);
+    });
+
+    test(
+        'Korrektur: beim letzten Versand gesendete, jetzt fehlende TID -> '
+        'mit 0-Beträgen mitgeschickt (FC-Upsert)', () {
+      final Map<String, dynamic> body = ApiUploadService.settlementsBody(
+        abrechnung(
+          zuordnung: const FlurbocashZuordnung(
+            reportId: 73,
+            settlementNummer: 1,
+            tids: <String>['A1', 'B2'],
+          ),
+        ),
+        reportId: 73,
+      );
+      final List<dynamic> terminals =
+          settlement(body)['terminals'] as List<dynamic>;
+      expect(terminals, hasLength(2));
+      final Map<String, dynamic> weg = terminals
+          .cast<Map<String, dynamic>>()
+          .singleWhere((Map<String, dynamic> t) => t['tid'] == 'B2');
+      for (final String art in <String>[
+        'girocard',
+        'lastschrift',
+        'mastercard',
+        'visa',
+        'maestro',
+        'vpay',
+      ]) {
+        expect(weg[art], 0);
+      }
+      expect(weg.containsKey('receipt_photo'), isFalse);
+    });
+
+    test('zuordnungAusAntwort liest settlement_number aus FC-Antwort', () {
+      final Map<String, dynamic> body =
+          ApiUploadService.settlementsBody(abrechnung(), reportId: 73);
+      // Echte Sandbox-Antwort vom 2026-09-24 (gekürzt).
+      final Map<String, dynamic> antwort = <String, dynamic>{
+        'report_id': 73,
+        'settlements': <dynamic>[
+          <String, dynamic>{'settlement_number': 2, 'cash_total': 45770},
+        ],
+        'entered_total_cents': 154700,
+      };
+      final FlurbocashZuordnung? z = ApiUploadService.zuordnungAusAntwort(
+        reportId: 73,
+        gesendeterBody: body,
+        antwort: antwort,
+      );
+      expect(z?.reportId, 73);
+      expect(z?.settlementNummer, 2);
+      expect(z?.tids, <String>['A1']);
+    });
+
+    test(
+        'zuordnungAusAntwort: Antwort ohne Nummer -> gesendete Nummer, '
+        'ohne beide -> null', () {
+      final Map<String, dynamic> korrektur = ApiUploadService.settlementsBody(
+        abrechnung(
+          zuordnung:
+              const FlurbocashZuordnung(reportId: 73, settlementNummer: 3),
+        ),
+        reportId: 73,
+      );
+      expect(
+        ApiUploadService.zuordnungAusAntwort(
+          reportId: 73,
+          gesendeterBody: korrektur,
+          antwort: <String, dynamic>{'report_id': 73},
+        )?.settlementNummer,
+        3,
+      );
+      expect(
+        ApiUploadService.zuordnungAusAntwort(
+          reportId: 73,
+          gesendeterBody:
+              ApiUploadService.settlementsBody(abrechnung(), reportId: 73),
+          antwort: null,
+        ),
+        isNull,
+      );
+    });
+
+    test('Zuordnung übersteht toJson/fromJson und mitGesendetAm', () {
+      final TagesabschlussFinal a = abrechnung(
+        zuordnung: const FlurbocashZuordnung(
+          reportId: 73,
+          settlementNummer: 2,
+          tids: <String>['A1'],
+        ),
+      );
+      final TagesabschlussFinal b = TagesabschlussFinal.fromJson(
+        jsonDecode(jsonEncode(a.toJson())) as Map<String, dynamic>,
+      ).mitGesendetAm(DateTime(2026, 9, 24, 19));
+      expect(b.flurbocashZuordnung?.reportId, 73);
+      expect(b.flurbocashZuordnung?.settlementNummer, 2);
+      expect(b.flurbocashZuordnung?.tids, <String>['A1']);
+      expect(b.gesendetAm, DateTime(2026, 9, 24, 19));
     });
   });
 }

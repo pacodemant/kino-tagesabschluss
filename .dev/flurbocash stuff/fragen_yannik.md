@@ -243,6 +243,14 @@ Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragu
 
 **Antwort erhalten (2026-08-26):** FC wird künftig die `settlement_number` in den Antworten von `POST ensure`/`PUT settlements` mit zurückgeben. Das löst die Strukturelle Lücke oben für den Regelfall: Die App kann sich die vom Server bestätigte Nummer direkt aus der eigenen Antwort merken, statt sie aus dem lokalen Zustand zu raten. Bleibt relevant für Fälle ohne diesen Anker (Datenverlust, Korrektur von einem anderen Gerät) — siehe Frage 3 unten, die dadurch aber deutlich an Dringlichkeit verliert.
 
+**Stand 2026-09-24 (Paco, Sandbox):** Die PUT-/settlements-Antwort
+enthält jetzt `settlements[0].settlement_number` (nur die gerade
+geschriebene Abrechnung, dazu `receipts[]` mit `beleg_id`/`sha256`).
+In Run 476 umgesetzt: Die App speichert die Nummer am Verlaufseintrag
+und schickt sie bei einer Korrektur mit. Ob `POST ensure` die
+vorhandenen Settlements mitliefert, zeigt seit Run 476 der
+Dev-Dialog "Server-Antwort anzeigen" (Frage 3 unten).
+
 **Verbleibende Fragen an Yannik:**
 
 1. Wenn ihr eine Abrechnung mehrfach für denselben Tag empfangt (per settlement_number überschrieben) — sieht eure Buchhaltung im Dashboard einen Unterschied zwischen **(a) der ursprünglichen Erst-Abrechnung, (b) einer inhaltlich korrigierten Abrechnung und (c) einem versehentlichen Doppel-Versand mit exakt denselben Werten**? Oder sehen alle drei Fälle im Dashboard identisch aus? (Der technische Mechanismus selbst ist uns klar — Server überschreibt in allen drei Fällen gleich, siehe oben. Es geht hier nur um die Sicht der Buchhaltung im Dashboard.)
