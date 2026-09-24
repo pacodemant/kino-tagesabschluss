@@ -7,6 +7,7 @@ import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
+import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/utils/tid_eingabe.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,10 +71,18 @@ class ApiUploadService {
   /// jetzt bewusst in Kauf genommen.
   ///
   /// Liefert beide Server-Antworten (ensure + settlements, seit Run 476
-  /// fuer den Dev-Modus-Dialog) und die vom Server bestaetigte
-  /// [FlurbocashZuordnung], die der Aufrufer am lokalen Verlaufseintrag
-  /// speichert — ein spaeterer Versand derselben Abrechnung korrigiert
-  /// sie dann bei Flurbocash, statt eine zusaetzliche anzulegen.
+  /// fuer den Dev-Modus-Dialog).
+  ///
+  /// Korrektur-Regel (Run 477): Pro Kino und Abrechnungstag gibt es EINE
+  /// Abrechnung bei Flurbocash. Die vom Server bestaetigte
+  /// settlement_number wird nach dem Versand pro Kino + Tag gemerkt
+  /// ([_tagesZuordnungKey]); jeder weitere Versand fuer denselben Tag —
+  /// aus Schritt 3 oder "Erneut senden" im Verlauf — schickt sie mit,
+  /// Flurbocash ueberschreibt dann statt eine neue Abrechnung anzulegen.
+  /// Bewusst unabhaengig von Verlauf/Auto-Save (Run 476 hing daran und
+  /// scheiterte an Testdaten-Eintraegen). Bar Tabak (2 Abrechnungen/Tag)
+  /// muss beim spaeteren Umbau pro 1./2. Abrechnung getrennt gefuehrt
+  /// werden.
   static Future<FlurbocashUploadErgebnis> upload(
     TagesabschlussFinal abrechnung,
   ) async {
@@ -94,19 +103,84 @@ class ApiUploadService {
     final int reportId = (ensureAntwort['report_id'] as num).toInt();
     await _speichereReportId(abrechnung.kinoId, abrechnung.datum, reportId);
 
+    // Gemerkte Abrechnung nur verwenden, wenn sie zum selben Tagesbericht
+    // gehoert — sonst koennte eine fremde Abrechnung ueberschrieben werden
+    // (z. B. Sandbox zurueckgesetzt, anderer Standort konfiguriert).
+    final FlurbocashZuordnung? gemerkt =
+        await ladeTagesZuordnung(abrechnung.kinoId, abrechnung.datum);
+    final FlurbocashZuordnung? korrekturVon =
+        gemerkt != null && gemerkt.reportId == reportId ? gemerkt : null;
+    if (korrekturVon != null) {
+      await SendeProtokoll.eintragen(
+        'Korrektur: FC-Abrechnung Nr. ${korrekturVon.settlementNummer} '
+        '(report_id $reportId) wird überschrieben',
+      );
+    }
+
     final Map<String, dynamic> body =
-        settlementsBody(abrechnung, reportId: reportId);
+        settlementsBody(abrechnung, korrekturVon: korrekturVon);
     final Map<String, dynamic>? settlementsAntwort =
         await _settlements(konfig.url, konfig.apiKey, reportId, body);
+
+    final FlurbocashZuordnung? zuordnung = zuordnungAusAntwort(
+      reportId: reportId,
+      gesendeterBody: body,
+      antwort: settlementsAntwort,
+    );
+    if (zuordnung != null) {
+      // Eigener try/catch: der Versand war bereits erfolgreich, ein Fehler
+      // beim lokalen Merken darf das nicht als Fehlschlag melden.
+      try {
+        await _speichereTagesZuordnung(
+          abrechnung.kinoId,
+          abrechnung.datum,
+          zuordnung,
+        );
+        await SendeProtokoll.eintragen(
+          'FC-Abrechnung Nr. ${zuordnung.settlementNummer} für '
+          '${_datumKey(abrechnung.datum)} gemerkt',
+        );
+      } catch (e) {
+        await SendeProtokoll.eintragen('FC-Abrechnung merken FEHLGESCHLAGEN: $e');
+      }
+    }
 
     return FlurbocashUploadErgebnis(
       ensureAntwort: ensureAntwort,
       settlementsAntwort: settlementsAntwort,
-      zuordnung: zuordnungAusAntwort(
-        reportId: reportId,
-        gesendeterBody: body,
-        antwort: settlementsAntwort,
-      ),
+    );
+  }
+
+  static String _tagesZuordnungKey(String kinoId, DateTime datum) =>
+      'flurbocash_settlement_${kinoId}_${_datumKey(datum)}';
+
+  /// Die fuer Kino + Abrechnungstag gemerkte, von Flurbocash bestaetigte
+  /// Abrechnung, oder null wenn fuer diesen Tag noch nie bestaetigt
+  /// gesendet wurde. Auch fuer den Hinweis "wird ersetzt" im
+  /// Bestaetigungsdialog vor dem Senden.
+  static Future<FlurbocashZuordnung?> ladeTagesZuordnung(
+    String kinoId,
+    DateTime datum,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? roh = speicher.getString(_tagesZuordnungKey(kinoId, datum));
+    if (roh == null) return null;
+    try {
+      return FlurbocashZuordnung.fromJson(jsonDecode(roh));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> _speichereTagesZuordnung(
+    String kinoId,
+    DateTime datum,
+    FlurbocashZuordnung zuordnung,
+  ) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setString(
+      _tagesZuordnungKey(kinoId, datum),
+      jsonEncode(zuordnung.toJson()),
     );
   }
 
@@ -243,28 +317,25 @@ class ApiUploadService {
   /// [jetzt] optional für Tests (sonst DateTime.now()) — bestimmt nur den
   /// mitgeschickten Sende-Zeitpunkt, keine fachliche Logik.
   ///
-  /// Korrektur (Run 476): Hat [abrechnung] eine vom Server bestaetigte
-  /// [FlurbocashZuordnung] fuer denselben Tagesbericht ([reportId] aus
-  /// dem aktuellen ensure-Aufruf; null = nicht pruefen, z. B. fuer den
-  /// Dev-JSON-Dialog), wird deren settlement_number mitgeschickt — FC
-  /// ueberschreibt dann diese Abrechnung statt eine neue anzulegen.
-  /// Terminals, die beim letzten Versand dabei waren und jetzt fehlen,
-  /// werden mit 0-Betraegen mitgeschickt (FC aktualisiert Terminals per
-  /// Upsert, siehe EXTERNAL_API_Schauburg_de.md "Korrekturen").
+  /// Korrektur (Run 477): Mit [korrekturVon] (die fuer diesen Tag
+  /// gemerkte Abrechnung, siehe [upload]) wird deren settlement_number
+  /// mitgeschickt — FC ueberschreibt dann diese Abrechnung statt eine
+  /// neue anzulegen. Terminals, die beim letzten Versand dabei waren und
+  /// jetzt fehlen (z. B. falsch gescannten Beleg geloescht), werden mit
+  /// 0-Betraegen mitgeschickt: FC aktualisiert Terminals per Upsert,
+  /// ein weggelassenes bliebe dort sonst mit den alten Betraegen stehen
+  /// (EXTERNAL_API_Schauburg_de.md, "Korrekturen").
   static Map<String, dynamic> settlementsBody(
     TagesabschlussFinal abrechnung, {
     DateTime? jetzt,
-    int? reportId,
+    FlurbocashZuordnung? korrekturVon,
   }) {
-    final FlurbocashZuordnung? zuordnung = abrechnung.flurbocashZuordnung;
-    final bool korrektur = zuordnung != null &&
-        (reportId == null || zuordnung.reportId == reportId);
     final List<Map<String, dynamic>> terminals = _terminalsListe(abrechnung);
-    if (korrektur) {
+    if (korrekturVon != null) {
       final Set<String> aktuelleTids = terminals
           .map((Map<String, dynamic> t) => t['tid'] as String)
           .toSet();
-      for (final String tid in zuordnung.tids) {
+      for (final String tid in korrekturVon.tids) {
         if (!aktuelleTids.contains(tid)) {
           terminals.add(_terminalEintrag(tid, const <String, int>{}, null));
           aktuelleTids.add(tid);
@@ -274,7 +345,8 @@ class ApiUploadService {
     return <String, dynamic>{
       'settlements': <Map<String, dynamic>>[
         <String, dynamic>{
-          if (korrektur) 'settlement_number': zuordnung.settlementNummer,
+          if (korrekturVon != null)
+            'settlement_number': korrekturVon.settlementNummer,
           'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
           if (abrechnung.anmerkung != null && abrechnung.anmerkung!.isNotEmpty)
             'note': abrechnung.anmerkung,
@@ -556,7 +628,6 @@ class FlurbocashUploadErgebnis {
   const FlurbocashUploadErgebnis({
     this.ensureAntwort,
     this.settlementsAntwort,
-    this.zuordnung,
   });
 
   /// Geparste Antworten beider Aufrufe, nur fuer den Dev-Modus-Dialog
@@ -564,8 +635,4 @@ class FlurbocashUploadErgebnis {
   /// Antwort kein gueltiges JSON war.
   final Map<String, dynamic>? ensureAntwort;
   final Map<String, dynamic>? settlementsAntwort;
-
-  /// null, wenn der Server keine settlement_number geliefert hat (dann
-  /// wird ein spaeterer Versand wie bisher als neue Abrechnung angelegt).
-  final FlurbocashZuordnung? zuordnung;
 }

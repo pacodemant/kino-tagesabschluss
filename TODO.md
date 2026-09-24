@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 476 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 477 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -363,9 +363,9 @@ um Durcheinander zu vermeiden.
       ausgeblendet, sofern er älter ist als der Haupteintrag —
       diese Filterung muss beim Umsetzen entweder mit einbezogen
       oder für Korrektur-Einträge gezielt umgangen werden.
-      Stand Run 476: Der Korrektur-Call selbst ist umgesetzt (vom
-      Server bestätigte settlement_number wird am Verlaufseintrag
-      gespeichert und beim erneuten Versand mitgeschickt, siehe
+      Stand Run 477: Der Korrektur-Call selbst ist umgesetzt (vom
+      Server bestätigte settlement_number wird pro Kino + Abrechnungstag
+      gemerkt, jeder weitere Versand des Tages überschreibt, siehe
       CHANGELOG). Offen bleiben hier: Fallback-Meldung beim 4x-Limit
       und die "Korr."-Badge-Idee.
 
@@ -390,9 +390,11 @@ um Durcheinander zu vermeiden.
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
       Erst relevant wenn BT implementiert wird.
-      Stand Run 476: Die zweite Abrechnung wird ohne Nummer gesendet,
-      FC vergibt automatisch die 2; die App merkt sich jede Nummer pro
-      Abrechnung, Korrekturen treffen die richtige.
+      Stand Run 477: Die App merkt sich EINE FC-Abrechnung pro Kino +
+      Abrechnungstag, jeder weitere Versand korrigiert sie. Für BT
+      (Mittag + Tagesende, künftig Buttons "1. Abrechnung"/"2.
+      Abrechnung", FC-Nr. 1 und die nächste) muss das beim Umbau pro
+      1./2. Abrechnung getrennt werden, sonst überschreibt die 2. die 1.
 
 ### Stapel-Scanner *(Phase D/E — wartet auf IT)*
 

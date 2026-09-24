@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
-import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_anmerkung_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_anfangsbestand_section.dart';
@@ -196,12 +195,10 @@ class _TagesabschlussSchritt3SeiteState
   bool _apiUploadLaeuft = false;
   bool _devModusAktiv = false;
 
-  // Ergebnis des letzten echten Versands dieser Sitzung (Server-Antworten
-  // von ensure + settlements, seit Run 476 beide) — null, solange in
-  // dieser Sitzung noch nicht wirklich gesendet wurde. Die Antworten nur
-  // für den Dev-Tools-Button "Server-Antwort anzeigen"; die darin
-  // enthaltene Flurbocash-Zuordnung speichert
-  // _speichereLokalenSendeMerker() am Verlaufseintrag.
+  // Server-Antworten des letzten echten Versands dieser Sitzung (ensure +
+  // settlements, seit Run 476 beide) — null, solange in dieser Sitzung
+  // noch nicht wirklich gesendet wurde. Nur für den Dev-Tools-Button
+  // "Server-Antwort anzeigen", nicht persistiert.
   FlurbocashUploadErgebnis? _letztesUploadErgebnis;
   bool _abrechnungGesendet = false;
 
@@ -250,9 +247,6 @@ class _TagesabschlussSchritt3SeiteState
       final Map<String, dynamic> settlement = (body['settlements']
           as List<dynamic>).first as Map<String, dynamic>;
       settlement.remove('sent_at');
-      // Run 476: Korrektur-Nummer ist keine Dateneingabe — darf den
-      // "gesendet"-Haken-Abgleich nicht verfälschen.
-      settlement.remove('settlement_number');
       return jsonEncode(body);
     } catch (_) {
       // _terminalsListe() innerhalb von settlementsBody() wirft bei
@@ -580,7 +574,6 @@ class _TagesabschlussSchritt3SeiteState
       _abschlussVorschau!.kinoId,
       _abschlussVorschau!.createdAt,
       sendezeitpunkt,
-      zuordnung: _letztesUploadErgebnis?.zuordnung,
     );
     // Etwaigen Warn-Status aus einem früheren, nicht bestätigten Versuch
     // an diesem Tag löschen — dieser Versuch war jetzt bestätigt
@@ -588,35 +581,6 @@ class _TagesabschlussSchritt3SeiteState
     await LokalerSpeicher.loescheVersandNichtBestaetigt(
       widget.argumente.kinoId,
     );
-  }
-
-  /// Run 476: _abschlussVorschau wird bei jedem Öffnen dieser Seite neu
-  /// gebaut und kennt die vom Server bestätigte settlement_number nicht.
-  /// Die steht am gespeicherten Verlaufseintrag (beim Senden gesetzt bzw.
-  /// beim Auto-Save-"Ersetzen" vom Vorgänger übernommen) und wird hier
-  /// für den Versand wieder angehängt — dann korrigiert FC diese
-  /// Abrechnung statt eine zusätzliche anzulegen. Wartet vorher auf den
-  /// Auto-Save, damit die Übernahme beim Ersetzen schon geschrieben ist.
-  Future<TagesabschlussFinal> _abschlussMitFlurbocashZuordnung() async {
-    final TagesabschlussFinal vorschau = _abschlussVorschau!;
-    try {
-      await _autoSaveErsterLauf;
-      final FlurbocashZuordnung? zuordnung =
-          await LokalerSpeicher.ladeFlurbocashZuordnung(
-        vorschau.kinoId,
-        vorschau.createdAt,
-      );
-      if (zuordnung == null) return vorschau;
-      await SendeProtokoll.eintragen(
-        'Korrektur: FC-Abrechnung Nr. ${zuordnung.settlementNummer} '
-        '(report_id ${zuordnung.reportId}) wird überschrieben',
-      );
-      return vorschau.mitFlurbocashZuordnung(zuordnung);
-    } catch (e) {
-      // Verlauf nicht lesbar -> Versand wie bisher als neue Abrechnung.
-      debugPrint('Flurbocash-Zuordnung nicht ladbar: $e');
-      return vorschau;
-    }
   }
 
   Future<void> _doApiUpload() async {
@@ -628,7 +592,7 @@ class _TagesabschlussSchritt3SeiteState
     }
     try {
       _letztesUploadErgebnis = await (widget.uploadUeberschreibung ??
-          ApiUploadService.upload)(await _abschlussMitFlurbocashZuordnung());
+          ApiUploadService.upload)(_abschlussVorschau!);
       _apiUploadErledigt = true;
       await SendeProtokoll.eintragen('Versand erfolgreich (Schritt 3)');
       // Bewusst nicht mounted-gated: diese Aufrufe persistieren den
@@ -732,6 +696,21 @@ class _TagesabschlussSchritt3SeiteState
     final int differenzCent = vorschau.differenzGesamtCent;
     final Color differenzFarbe =
         differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
+    // Run 477: Wurde für diesen Abrechnungstag schon bestätigt gesendet,
+    // ist dieser Versand eine Korrektur — FC überschreibt die bereits
+    // gesendete Abrechnung (siehe ApiUploadService.upload). Hinweis, damit
+    // die MA weiß, dass nichts doppelt ankommt.
+    bool istKorrektur = false;
+    try {
+      istKorrektur = await ApiUploadService.ladeTagesZuordnung(
+            vorschau.kinoId,
+            vorschau.datum,
+          ) !=
+          null;
+    } catch (_) {
+      // Nur ein Hinweistext — Versand selbst entscheidet unabhängig davon.
+    }
+    if (!mounted) return false;
     final bool? bestaetigt = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
@@ -759,6 +738,14 @@ class _TagesabschlussSchritt3SeiteState
               fett: true,
               farbe: differenzFarbe,
             ),
+            if (istKorrektur)
+              const Padding(
+                padding: EdgeInsets.only(top: 12),
+                child: Text(
+                  'Die heute bereits gesendete Abrechnung wird durch diese '
+                  'Korrektur ersetzt.',
+                ),
+              ),
           ],
         ),
         actions: <Widget>[
@@ -1001,7 +988,7 @@ class _TagesabschlussSchritt3SeiteState
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 const Text(
-                  'Call 1 — ensure:',
+                  'Call 1 / Tag anlegen (ensure):',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
@@ -1011,7 +998,7 @@ class _TagesabschlussSchritt3SeiteState
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Call 2 — settlements:',
+                  'Call 2 / Abrechnung (settlements):',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
@@ -1042,9 +1029,9 @@ class _TagesabschlussSchritt3SeiteState
     final FlurbocashUploadErgebnis? ergebnis = _letztesUploadErgebnis;
     if (ergebnis == null) return;
     const JsonEncoder encoder = JsonEncoder.withIndent('  ');
-    final String antwortJson = 'Call 1 — ensure:\n'
+    final String antwortJson = 'Call 1 / Tag anlegen (ensure):\n'
         '${encoder.convert(ergebnis.ensureAntwort)}\n\n'
-        'Call 2 — settlements:\n'
+        'Call 2 / Abrechnung (settlements):\n'
         '${encoder.convert(ergebnis.settlementsAntwort)}';
 
     showDialog<void>(

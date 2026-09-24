@@ -16,6 +16,7 @@ void main() {
       String kinoId = 'kino_01',
       DateTime? datum,
       DateTime? createdAt,
+      String? anmerkung,
     }) {
       final DateTime tag = datum ?? DateTime(2026, 3, 15);
       return TagesabschlussFinal(
@@ -39,6 +40,7 @@ void main() {
         gesamtIstCent: 0,
         differenzGesamtCent: 0,
         differenzAnfangsbestandCent: 0,
+        anmerkung: anmerkung,
       );
     }
 
@@ -80,6 +82,17 @@ void main() {
         expect(gespeichert, hasLength(1));
       },
     );
+
+    test(
+        'Testdaten-Eintrag zählt als vorhandene Abrechnung (Run 477, '
+        'vorher ausgenommen) -> zweiter Abschluss meldet bereitsVorhanden',
+        () async {
+      await usecase.ausfuehren(abschluss(anmerkung: 'testdaten 24.9. Do 19:05'));
+      final SpeichereTagesabschlussErgebnis ergebnis = await usecase.ausfuehren(
+        abschluss(createdAt: DateTime(2026, 3, 15, 23)),
+      );
+      expect(ergebnis.bereitsVorhanden, isTrue);
+    });
 
     test('ueberschreiben ersetzt den bestehenden Eintrag desselben Tages', () async {
       await usecase.ausfuehren(abschluss());

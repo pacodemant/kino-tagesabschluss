@@ -246,8 +246,9 @@ Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragu
 **Stand 2026-09-24 (Paco, Sandbox):** Die PUT-/settlements-Antwort
 enthält jetzt `settlements[0].settlement_number` (nur die gerade
 geschriebene Abrechnung, dazu `receipts[]` mit `beleg_id`/`sha256`).
-In Run 476 umgesetzt: Die App speichert die Nummer am Verlaufseintrag
-und schickt sie bei einer Korrektur mit. Ob `POST ensure` die
+Umgesetzt in Run 477 (Run 476 ersetzt): Die App merkt sich die Nummer
+pro Kino + Abrechnungstag und schickt sie bei jedem weiteren Versand
+dieses Tages mit. Ob `POST ensure` die
 vorhandenen Settlements mitliefert, zeigt seit Run 476 der
 Dev-Dialog "Server-Antwort anzeigen" (Frage 3 unten).
 

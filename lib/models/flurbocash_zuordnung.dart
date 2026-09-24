@@ -1,8 +1,9 @@
-/// Vom Flurbocash-Server bestätigte Zuordnung einer lokal gespeicherten
-/// Abrechnung (seit Run 476): [reportId] ist der Tagesbericht (Standort +
-/// Datum), [settlementNummer] die einzelne Abrechnung darin (1-4). Ein
-/// erneuter Versand mit dieser Nummer überschreibt die Abrechnung bei
-/// Flurbocash (Korrektur), statt eine zusätzliche anzulegen.
+/// Vom Flurbocash-Server bestätigte Abrechnung eines Kinos an einem
+/// Abrechnungstag (seit Run 476, seit Run 477 pro Kino + Tag gespeichert,
+/// siehe ApiUploadService): [reportId] ist der Tagesbericht (Standort +
+/// Datum), [settlementNummer] die Abrechnung darin (1-4). Jeder weitere
+/// Versand für denselben Tag schickt diese Nummer mit — Flurbocash
+/// überschreibt dann (Korrektur), statt eine zusätzliche anzulegen.
 ///
 /// [tids] sind die zuletzt gesendeten Terminal-IDs — Flurbocash
 /// aktualisiert Terminals bei einer Korrektur per Upsert, ein nicht mehr

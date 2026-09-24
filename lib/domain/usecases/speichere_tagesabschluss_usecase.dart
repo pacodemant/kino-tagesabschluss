@@ -14,9 +14,10 @@ class SpeichereTagesabschlussUsecase {
   /// Abschluss statt eines Ueberschreibens explizit als zusaetzliche
   /// Abrechnung gespeichert werden (alsZusaetzlicheAbrechnung).
   ///
-  /// Vorhandene Abschluesse mit dem Dev-Modus-Kennzeichen "testdaten" in
-  /// der Anmerkung zaehlen nicht mit: Testdaten sollen die Duplikat-
-  /// Pruefung fuer echte Abrechnungen nicht blockieren.
+  /// Abschluesse mit "testdaten" in der Anmerkung zaehlen seit Run 477
+  /// normal mit (vorher ausgenommen): Tests sollen sich wie der
+  /// Echtbetrieb verhalten, eine erneute Abrechnung desselben Tages
+  /// ersetzt also auch einen Testdaten-Eintrag.
   Future<SpeichereTagesabschlussErgebnis> ausfuehren(
     TagesabschlussFinal abschluss, {
     bool ueberschreiben = false,
@@ -31,8 +32,7 @@ class SpeichereTagesabschlussUsecase {
               DatumsHelper.istGleicherKalendertag(
                 eintrag.datum,
                 abschluss.datum,
-              ) &&
-              !_istTestdatenEintrag(eintrag),
+              ),
         )
         .length;
 
@@ -53,10 +53,6 @@ class SpeichereTagesabschlussUsecase {
 
     await LokalerSpeicher.ersetzeFinalenTagesabschluss(abschluss);
     return const SpeichereTagesabschlussErgebnis(bereitsVorhanden: false);
-  }
-
-  bool _istTestdatenEintrag(TagesabschlussFinal eintrag) {
-    return eintrag.anmerkung?.toLowerCase().contains('testdaten') ?? false;
   }
 }
 

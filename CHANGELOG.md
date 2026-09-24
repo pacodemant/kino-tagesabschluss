@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 477: Flurbocash-Korrektur neu aufgebaut. Paco-Test zu Run 476
+  (24.09., 19:05/19:07): Korrektur legte trotzdem Nr. 3 an, weil der
+  Auto-Save "testdaten"-Einträge nicht als vorhandene Abrechnung zählte,
+  einen neuen statt ersetzten Verlaufseintrag anlegte und die Nummer
+  dabei verloren ging. Neue Grundregel: pro Kino und Abrechnungstag
+  (logischer Tag) EINE Abrechnung bei FC. Die bestätigte
+  settlement_number (+ report_id + TIDs) wird nach dem Versand pro
+  Kino + Tag in SharedPreferences gemerkt
+  ("flurbocash_settlement_{kinoId}_{yyyy_mm_dd}", neben der report_id).
+  Jeder weitere Versand für denselben Tag (Schritt 3 und Verlauf
+  "Erneut senden") schickt sie mit, sofern die report_id gleich ist.
+  Die Run-476-Kette (Feld am TagesabschlussFinal, Übernahme beim
+  Ersetzen, Nachladen per createdAt) ist wieder entfernt. Die
+  "testdaten"-Ausnahme im SpeichereTagesabschlussUsecase entfällt
+  (Paco: Tests sollen sich wie der Echtbetrieb verhalten). Die
+  Bestätigungsdialoge (Schritt 3 und Verlauf) zeigen bei einer Korrektur
+  "... bereits gesendete Abrechnung ... wird ersetzt". Dev-Dialoge:
+  "Call 1 / Tag anlegen (ensure)", "Call 2 / Abrechnung (settlements)".
+  Bar Tabak (2 Abrechnungen/Tag) muss beim späteren Umbau (1./2.
+  Abrechnung-Buttons) pro Abrechnung getrennt geführt werden.
 - Run 476: Flurbocash-Korrektur per settlement_number. Anlass: Paco sah
   in der Sandbox-Antwort (2026-09-24) settlements[0].settlement_number
   (1. Versand -> 1, 2. Versand -> 2); bisher legte jeder Versand bei FC

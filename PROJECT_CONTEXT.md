@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.131+476 · Run 476
+Version: 0.9.132+477 · Run 477
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,9 +159,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 476)
+## Laufender Entwicklungsstand (Run 477)
 
-- Run 476 ✅ Flurbocash-Korrektur per `settlement_number`: die vom Server
+- Run 477 ✅ Flurbocash-Korrektur neu: pro Kino + Abrechnungstag wird die
+  von FC bestätigte `settlement_number` in SharedPreferences gemerkt
+  (`ApiUploadService.ladeTagesZuordnung`); jeder weitere Versand für
+  denselben Tag überschreibt diese Abrechnung. Unabhängig von Verlauf/
+  Auto-Save. Run-476-Kette entfernt, "testdaten"-Ausnahme im Auto-Save
+  entfernt, Korrektur-Hinweis in den Sende-Dialogen. Bar Tabak später
+  pro 1./2. Abrechnung trennen.
+
+- Run 476 (durch Run 477 ersetzt) Flurbocash-Korrektur per `settlement_number`: die vom Server
   bestätigte Nummer (PUT-Antwort `settlements[0].settlement_number`) wird
   mit `report_id` und gesendeten TIDs als `FlurbocashZuordnung` am
   Verlaufseintrag gespeichert; ein erneuter Versand desselben Abschlusses
