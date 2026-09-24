@@ -1,19 +1,74 @@
 # Fragen an Yannik — Flurbocash-Integration
 
-Stand: 26.08.2026 · zentrale Tracking-Datei für alle Fragen rund um die Flurbocash-Anbindung, inkl. bereits erhaltener Antworten. Wird laufend ergänzt/aktualisiert, sobald neue Antworten reinkommen oder neue Fragen auftauchen.
+Stand: 22.09.2026 · zentrale Tracking-Datei für alle Fragen rund um die Flurbocash-Anbindung, inkl. bereits erhaltener Antworten. Wird laufend ergänzt/aktualisiert, sobald neue Antworten reinkommen oder neue Fragen auftauchen.
 
 Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
+
+## Übersicht
+
+⏳ offen · ◐ teilweise geklärt · ✅ beantwortet · – entfällt
+
+### Noch zu klären (10)
+
+**1. Zugangsdaten & Einrichtung**
+- ⏳ [1.2 Sind die neuen TIDs bei FC hinterlegt, und wann fallen die alten weg?](#12-terminal-ids-pro-standort)
+- ◐ [1.3 Welche location_id haben GO und CO?](#13-standort-kennung-kinoidlocationid)
+- ◐ [1.8 Kann die App jetzt auf den Kino-Server umziehen?](#18-app-hosting-auf-kino-server-statt-github-pages)
+
+**2. Abrechnungsdaten & Format**
+- ◐ [2.4 Meldet FC einen Empfangszeitstempel zurück, und wie kennzeichnen wir Tests?](#24-zeitstempel-der-übertragung--testkennzeichnung-im-dashboard-dev-flag)
+
+**3. Korrektur & Duplikate**
+- ◐ [3.1 Sieht die Buchhaltung Korrekturen, und gibt es eine Abfrage für belegte settlement_numbers?](#31-korrektur-mechanismus--settlementnumber)
+- ⏳ [3.2 Wie verhindern wir, dass eine Abrechnung versehentlich doppelt übertragen wird?](#32-schutz--hinweis-bei-versehentlicher-doppel-übertragung)
+- ⏳ [3.3 Was soll passieren, wenn das Limit von 4 Abrechnungen pro Tag erreicht ist?](#33-verhalten-bei-maximum-reached-4-limit)
+
+**5. Sonstiges**
+- ⏳ [5.3 Können wir nach einem Verbindungsabbruch prüfen, was angekommen ist, und welches WLAN ist freigegeben?](#53-nachträgliche-prüfung-nach-verbindungsabbruch)
+
+**6. Vergütung & Rolle Yannik**
+- ⏳ [6.1 Wie hoch soll Yanniks Vergütung sein, und nach welchem Modell?](#61-vergütung-yannik-höhemodell)
+- ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
+
+### Erledigt (15)
+
+**1. Zugangsdaten & Einrichtung**
+- ✅ [1.1 Wird der Produktivbetrieb pro Standort oder für alle gleichzeitig gestartet?](#11-basis-url--umstieg-auf-produktivserver)
+- ✅ [1.4 Wie lautet das Passwort für den Schauburg-AP?](#14-passwort-schauburg-ap)
+- ✅ [1.5 Wer richtet die Geräte ein und pflegt sie?](#15-geräte-einrichtung--pflege)
+- ✅ [1.6 Wird die Konfiguration zentral oder pro Gerät gepflegt?](#16-konfiguration-zentral-oder-je-gerät)
+- ✅ [1.7 Wer besorgt ein Android-Testgerät?](#17-android-testgerät)
+
+**2. Abrechnungsdaten & Format**
+- ✅ [2.1 Zwei EC-Belege desselben Terminals einzeln übertragen?](#21-zwei-ec-zahlungen-am-selben-terminal-in-einer-abrechnung)
+- ✅ [2.2 Braucht FC außer Kartenumsätzen und Bargeld weitere Daten?](#22-weitere-daten-gewünscht)
+- ✅ [2.3 Dürfen Notizen, MA-Name und Sendezeitpunkt mitgeschickt werden?](#23-notizen-ma-name-sendezeitpunkt-etc)
+- ✅ [2.5 Hat die Buchhaltung die SB-Testübertragungen geprüft?](#25-validierung-der-sb-testübertragungen-aus-buchhaltungssicht)
+- ✅ [2.6 Welches Datum gilt für Nachtabrechnungen (Tageswechsel um 5 Uhr)?](#26-datum-für-nachtabrechnungen-6-uhr-knick)
+
+**4. Beleg-Foto**
+- ✅ [4.1 Muss das Belegfoto perspektivisch entzerrt werden?](#41-perspektivische-ausrichtung-nötig)
+- ✅ [4.2 In welchem Feld und Format wird das Belegfoto übertragen?](#42-base64-beleg-json-genaues-feldformat)
+- ✅ [4.3 Braucht es eine eigene Prüfmarkierung oder einen Dev-Button?](#43-prüfen-flag-für-buchhaltung--dev-button-app-intern)
+
+**5. Sonstiges**
+- – [5.1 Soll die App Mails verschicken?](#51-mailversand)
+- ✅ [5.2 Wird ein Stapelscanner für alte Belege gebraucht?](#52-stapelscanner-für-zurückliegende-belege)
 
 ---
 
 ## 1. Zugangsdaten & Einrichtung
 
-### ✅ 1.1 Basis-URL / Umstieg auf Produktivserver
+### 1.1 Basis-URL / Umstieg auf Produktivserver
 
 **Status:** beantwortet
 **Bereits klar (Paco):** Die Sandbox-Adresse (sandbox.flurbocash.c137-prime.de:666) ist nicht die Produktiv-Adresse — für den Echtbetrieb bekommen wir eine eigene URL von Yannik. Der Umstieg erfolgt, nachdem die Tests (aktuell in der SB) positiv abgeschlossen sind, nicht an einem festen Datum.
 **Frage an Yannik:** Erfolgt der Umstieg auf Produktivbetrieb standortweise nacheinander (erst SB, dann die anderen) oder für alle Standorte gleichzeitig?
+
+
 **Antwort:** je Standort
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
@@ -28,6 +83,12 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 
 **Antwort:** Noch keine Werte — Yannik schickt die bestätigten TIDs per Mail nach (Stand 2026-08-26).
 
+**Update (2026-09-07):** SB nutzt seither zusätzlich drei neue Terminals (vorerst nur Girocard, Kreditkarte weiterhin über das alte Terminal) — parallel zum alten Terminal, bis komplett umgestellt ist. config/terminal_ids.json enthält dafür bereits neue TIDs (SB: 60561994/60561996/60561997, BT: 60561992/60561993, CO: 60561995) — reine Annahmen aus den Geräten selbst, noch nicht von Yannik bestätigt.
+
+**Neue Frage (2026-09-22):** Sind die neuen TIDs (SB/BT/CO) bei euch korrekt hinterlegt, und wann können die alten TIDs entfernt werden? Für GO fehlen TID und location_id weiterhin komplett.
+
+[↑ zur Übersicht](#übersicht)
+
 ---
 
 ### 1.3 Standort-Kennung (kino_id/location_id)
@@ -38,41 +99,57 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 
 **Antwort:** Noch keine Werte — Yannik schickt die GO/CO-location_id per Mail nach (Stand 2026-08-26).
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ☑️ 1.4 Passwort Schauburg-AP
+### 1.4 Passwort Schauburg-AP
 
 **Status:** beantwortet
 **Antwort:** Keine formelle Yannik-Frage mehr — Paco findet das WLAN-Passwort jeweils vor Ort selbst heraus bzw. fragt Yannik bei Bedarf spontan über Messenger.
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ☑️ 1.5 Geräte-Einrichtung & Pflege
+### 1.5 Geräte-Einrichtung & Pflege
 
 **Status:** beantwortet
 **Antwort:** Paco richtet die Apps an den Standorten initial selbst ein. Wie spätere Änderungen laufen (neuer API-Key, neue TID), ist bereits in 1.6 beantwortet — Konfiguration erfolgt jeweils direkt am Gerät vor Ort, nicht zentral von Yannik verwaltet.
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ☑️ 1.6 Konfiguration zentral oder je Gerät
+### 1.6 Konfiguration zentral oder je Gerät
 
 **Status:** beantwortet
 **Antwort:** Am Gerät vor Ort (nicht zentral von Yannik verwaltet).
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ☑️ 1.7 Android-Testgerät
+### 1.7 Android-Testgerät
 
 **Status:** beantwortet
 **Antwort:** Yannik kauft eins.
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
 ### 1.8 App-Hosting auf Kino-Server (statt GitHub Pages)
 
-**Status:** offen
+**Status:** teilweise geklärt
 Aktuell läuft die App als PWA über GitHub Pages (Pacos privater GitHub-Account). Wann soll die App stattdessen auf einem Kino-eigenen Server liegen? Hätte Paco dann unbeschränkten Zugriff darauf (z. B. für eigenständige Deploys/Updates), oder würde das über Yannik/die IT laufen?
 **Antwort:** Noch nicht final — Yannik braucht zuerst Infos zum aktuellen Deployment, bevor er das einschätzen kann. Offene Zwischenaufgabe (Paco): klären, welche Infos genau nötig sind (z. B. Hosting-Art, Domain, Build-/Deploy-Prozess der aktuellen GitHub-Pages-Lösung) und diese an Yannik liefern.
+
+**Update (2026-09-01):** Infos an Yannik geschickt — SFTP-Upload in einen Ordner, alte Dateien werden ersetzt, HTTPS ist Pflicht; lokal generalprobt.
+
+**Neue Frage (2026-09-22):** Hat Yannik sich das inzwischen angeschaut — wie ist der Stand, ist ein Umzug auf den Kino-Server jetzt möglich?
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
@@ -80,7 +157,7 @@ Aktuell läuft die App als PWA über GitHub Pages (Pacos privater GitHub-Account
 
 ### 2.1 Zwei EC-Zahlungen am selben Terminal in einer Abrechnung
 
-**Status:** offen
+**Status:** beantwortet und umgesetzt (siehe TODO_ERLEDIGT.md, Run 399a3)
 Präzisierung der ursprünglichen Frage ("zweimal Karte gezogen"): Gemeint sind zwei EC-Zahlungsvorgänge am selben Terminal (gleiche TID) innerhalb derselben Tagesabrechnung/settlement — nicht zwei komplett getrennte Abrechnungen an einem Tag. Getrennte Abrechnungen am selben Tag regelt bereits `settlement_number` 1–4 inkl. Korrektur-Möglichkeit, siehe 3.1 (dort ist auch erklärt, wie FC generell mit mehreren Abrechnungen/Korrekturen umgeht).
 
 **Bereits bekannt (Code-Stand, TODO.md:26-40):** Die App summiert zwei EC-Belege desselben Terminals aktuell stillschweigend zu einer einzigen `terminals[]`-Zeile (`ApiUploadService._terminalsListe()`).
@@ -92,21 +169,27 @@ Präzisierung der ursprünglichen Frage ("zweimal Karte gezogen"): Gemeint sind 
 
 **Antwort:** zu 1: jeder Beleg als eigener Datensatz, zu 2: ja.
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ☑️ 2.2 Weitere Daten gewünscht?
+### 2.2 Weitere Daten gewünscht?
 
 **Status:** beantwortet
 **Antwort:** Laut FC-Vorgaben zieht sich Flurbocash die Kassenumsätze selbst aus dem Kassensystem (`EXTERNAL_API_Schauburg_de.md`: `system_total_cents` wird von Flurbocash aus den Kassensystemdaten errechnet). Die App muss zu den EC-Beleg-Kartenumsätzen (`terminals[]`) nur noch den Barumsatz (`cash_total`) übertragen. Kino-Soll, Bistro-Soll, Ausgaben und Differenz werden nicht benötigt.
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ✅ 2.3 Notizen, MA-Name, Sendezeitpunkt etc.
+### 2.3 Notizen, MA-Name, Sendezeitpunkt etc.
 
 **Status:** beantwortet
 **Antwort:** Ja, möglich. Zusätzlich erlaubt: Yannik hat generell gesagt, dass wir eigene JSON-Felder einfach hinzufügen können — solange er sie serverseitig in FC nicht implementiert hat, werden sie schlicht ignoriert (siehe auch 4.2). Plan (Paco, 2026-08-26): Name des abrechnenden Mitarbeiters, ein freies Kommentarfeld sowie Sendedatum/-uhrzeit (hilft v. a. beim Entwickeln, um die Reihenfolge der Übertragungen nachzuvollziehen) als zusätzliche Felder mitschicken.
 
 **Feldnamen:** Yannik gibt keine vor — Paco kann sie selbst wählen. Ob der Sendezeitpunkt speziell erwünscht war, ist nicht mehr sicher erinnerlich (möglicherweise nicht) — wird trotzdem mit ins JSON aufgenommen (siehe generelle Ignorieren-Regelung, 4.2).
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
@@ -117,20 +200,26 @@ Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragu
 **Antwort:** Zur Testkennzeichnung: keine separate Farbmarkierung durch FC geplant — stattdessen das Wort "test" über die Kommentarfunktion in der Abrechnung mitschicken (siehe 2.3), damit die Buchhaltung es manuell erkennt.
 **Noch offen:** Ob FC bei jeder Übertragung einen eigenen Empfangs-Zeitstempel zurückmeldet, ist damit noch nicht beantwortet.
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ✅ 2.5 Validierung der SB-Testübertragungen aus Buchhaltungssicht
+### 2.5 Validierung der SB-Testübertragungen aus Buchhaltungssicht
 
 **Status:** beantwortet
 **Antwort:** Noch nicht getestet (Stand 2026-08-26).
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ✅ 2.6 Datum für Nachtabrechnungen (6-Uhr-Knick)
+### 2.6 Datum für Nachtabrechnungen (6-Uhr-Knick)
 
 **Status:** beantwortet
 **Antwort:** Ja, logisches Geschäftsdatum — Annahme bestätigt. Aber: Der Knick liegt bei 5 Uhr, nicht bei 6 Uhr wie bisher angenommen/in der App implementiert.
 **Bug gefunden (2026-08-26):** Die App rechnet aktuell mit einem 6-Uhr-Cutoff (`DatumsHelper._geschaeftstagCutoffStunde`, lib/utils/datums_helper.dart:8) — muss auf 5 Uhr geändert werden. Für Abschlüsse zwischen 5:00 und 5:59 Uhr würde die App sonst das falsche Datum an FC senden. TODO.md-Eintrag angelegt ("Geschäftstag-Cutoff von 6 auf 5 Uhr umstellen").
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
@@ -164,6 +253,8 @@ Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragu
 
 (Ergänzt die alte Frage "Muss die App eine settlement_nummer selbst vergeben?" — durch den Doku-Fund im Kern beantwortet, siehe oben.)
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
 ### 3.2 Schutz & Hinweis bei versehentlicher Doppel-Übertragung
@@ -176,6 +267,8 @@ Wie verhindern wir am besten, dass aus Versehen zweimal dieselbe Abrechnung bei 
 Hinweis: Sobald 3.1 korrekt implementiert ist (Korrektur immer über dieselbe `settlement_number`), wird ein versehentliches doppeltes Senden für Standorte mit nur einer Abrechnung/Tag ohnehin harmlos — es überschreibt nur mit identischen Werten. Relevant bleibt die Frage v. a. für Bar Tabak (mehrere Abrechnungen/Tag).
 **Antwort:**
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
 ### 3.3 Verhalten bei "maximum reached" (4×-Limit)
@@ -184,28 +277,36 @@ Hinweis: Sobald 3.1 korrekt implementiert ist (Korrektur immer über dieselbe `s
 Was soll passieren, wenn das Limit erreicht ist? Ein Mailversand ist laut aktueller Planung nicht vorgesehen (siehe 5.1) — welcher Fallback ist stattdessen sinnvoll, z. B. ein Hinweis in der App, dass die Buchhaltung manuell informiert werden muss?
 **Antwort:**
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
 ## 4. Beleg-Foto
 
-### ✅ 4.1 Perspektivische Ausrichtung nötig?
+### 4.1 Perspektivische Ausrichtung nötig?
 
 **Status:** beantwortet
 **Antwort:** Muss nur lesbar sein, keine Entzerrung nötig.
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ✅ 4.2 base64-Beleg-JSON: genaues Feld/Format
+### 4.2 base64-Beleg-JSON: genaues Feld/Format
 
 **Status:** beantwortet
 **Antwort:** Wird als base64 direkt ins zu übertragende JSON eingebettet (kein separater Upload, unsere Entscheidung). Feldname ist unsere eigene Wahl (z. B. `beleg_foto_base64`) — Yannik hat generell erlaubt, zusätzliche Felder im JSON selbst zu benennen und mitzuschicken; bis er sie serverseitig implementiert, werden sie einfach ignoriert. Plan (Paco, 2026-08-26): dieselbe Vorgehensweise auch für Sendedatum/-uhrzeit und den Namen des abrechnenden Mitarbeiters nutzen (siehe 2.3), ggf. auch für eine eigene Referenznummer zur Abrechnung. Keine maximale Dateigröße (Yannik, 2026-08-26).
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ✅ 4.3 Prüfen-Flag für Buchhaltung + Dev-Button (App-intern)
+### 4.3 Prüfen-Flag für Buchhaltung + Dev-Button (App-intern)
 
 **Status:** beantwortet
 **Antwort:** Kein eigenes Dev-Flag/Button nötig — läuft stattdessen über die Notizen-/Kommentarfunktion (siehe 2.3).
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
@@ -216,12 +317,16 @@ Was soll passieren, wenn das Limit erreicht ist? Ein Mailversand ist laut aktuel
 **Status:** entfällt
 **Antwort:** Kein Mailversand vorgesehen — nicht benötigt (Paco-Entscheidung, 2026-08-26). Betrifft auch 3.1 (keine separate Korrektur-Meldung per Mail) und 3.3 (kein Mail-Fallback beim 4×-Limit).
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
-### ✅ 5.2 Stapelscanner für zurückliegende Belege
+### 5.2 Stapelscanner für zurückliegende Belege
 
 **Status:** beantwortet
 **Antwort:** Nein, nicht benötigt.
+
+[↑ zur Übersicht](#übersicht)
 
 ---
 
@@ -234,6 +339,8 @@ Falls die Verbindung mittendrin abbricht und wir nicht sicher wissen, ob eine Ab
 
 **Antwort:**
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
 ## 6. Vergütung & Rolle Yannik
@@ -245,9 +352,13 @@ Falls die Verbindung mittendrin abbricht und wir nicht sicher wissen, ob eine Ab
 **Notiz (2026-08-25):** Ursprünglich als "nicht an Yannik" markiert (betrifft seine eigene Rolle), Paco möchte das jetzt aber direkt an ihn richten — er ist nicht nur IT, sondern auch Chef-Sohn und Nachfolger.
 **Antwort:**
 
+[↑ zur Übersicht](#übersicht)
+
 ---
 
 ### 6.2 Risiko Scheinselbständigkeit
 
 **Status:** teilweise beantwortet — Priorität: beim nächsten Termin nachfassen
 **Antwort:** Tom sagt: kein Problem. Trotzdem vom Steuerbüro beurteilen lassen — noch nicht final. (Gleicher Kontext wie 6.1 — auch diese Frage wird jetzt direkt an Yannik gerichtet, siehe dortige Notiz.)
+
+[↑ zur Übersicht](#übersicht)

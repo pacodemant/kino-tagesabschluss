@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 474a · wird fortlaufend ergänzt
+Stand: September 2026 · Run 475 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -94,29 +94,6 @@ um Durcheinander zu vermeiden.
       blieb nach Löschen der heutigen Abrechnung stehen) — hier fehlt
       das erneute Prüfen beim Resume, nicht das Löschen der
       Sende-Signatur.
-
-- [ ] **Sonstiges-Zeilen (Schritt 1): Label-Feld breiter, Betrag-Feld
-      schmaler** Betrifft `Schritt1UmschlaegeSection`
-      (schritt1_umschlaege_section.dart, Abschnitt "Sonstiges
-      (Umschläge u.a.)"). Das Betrag-Feld (`BetragCentEingabefeld`)
-      zeigt bei Text einen "+"-Additions-Chip und einen "x"-Clear-Chip
-      im Suffix, zusätzlich ein floatendes Label "Betrag €". Alle drei
-      entfernen, damit das feste Betrag-Feld schmaler werden kann und
-      das ohnehin schon `Expanded`-Label-Feld mehr Platz bekommt.
-      `zeigeAdditionsButton` existiert bereits als Parameter (auf
-      `false` setzen reicht für den "+"-Chip); für den Clear-Chip
-      gibt es noch keinen Parameter — neuer optionaler Parameter
-      (z. B. `zeigeClearButton`, Default `true`) nötig, damit andere
-      Aufrufstellen unverändert bleiben.
-      Ursprünglich betraf dieser Punkt auch `_Schritt2AusgabenZeile`
-      (schritt2_kino_soll_ausgaben_section.dart) mit demselben Ziel
-      (Betrag-Feld schmaler). *(Run 431)* Dort stattdessen umgekehrtes
-      Problem gemeldet (Betrag-Feld bei 100er-Beträgen zu schmal) und
-      behoben: "+"-Chip entfernt (mehr interner Platz für die Ziffern
-      in der unveränderten Feldbreite), Abstand zum Papierkorb-Button
-      verkleinert — Feldbreite selbst bewusst NICHT verändert, "x"-
-      Clear-Chip bleibt. Für Ausgaben also erledigt, nicht mehr Teil
-      dieses Punkts.
 
 - [ ] **CocoaPods → Swift Package Manager migrieren (ios/)**
       KORRIGIERT (Run 398a2): Ursprüngliche Annahme "iOS wird nicht

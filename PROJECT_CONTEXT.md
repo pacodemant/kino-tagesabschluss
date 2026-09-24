@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.129+474 · Run 474a
+Version: 0.9.130+475 · Run 475
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,8 +159,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 474)
+## Laufender Entwicklungsstand (Run 475)
 
+- Run 475 ✅ Einheitliche Betragsfelder: zentrale Breite/Schrift in
+  BetragCentEingabefeld (172 / 15), alle Betragsfelder der App
+  angeglichen (außer "Differenz im Anfangsbestand"), keine schwebenden
+  Labels mehr, Sonstiges ohne "+"-Chip. Schalter "Wechselgeldentnahme"
+  mit kürzerem Text, Hilfetext ergänzt. Wartet auf Pacos Test.
 - Run 474 ✅ TID-Felder ohne Leerzeichen: Eingabesperre in beiden TID-
   Textfeldern (Schritt 2), Bereinigung in ApiUploadService (Body +
   Foto-Zuordnung) und beim Laden des Entwurfs. Auslöser: Versand am

@@ -74,7 +74,8 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                             controller: umschlagBezeichnungController[i],
                             focusNode: bezeichnungFocusNode,
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize:
+                                  BetragCentEingabefeld.standardSchriftgroesse,
                               color: hatFokus ? Colors.black : null,
                             ),
                             cursorColor: hatFokus ? Colors.black : null,
@@ -83,7 +84,10 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                             ),
                             decoration: InputDecoration(
                               hintText: 'Label (optional)',
-                              hintStyle: const TextStyle(fontSize: 15),
+                              hintStyle: const TextStyle(
+                                fontSize:
+                                    BetragCentEingabefeld.standardSchriftgroesse,
+                              ),
                               border: const OutlineInputBorder(),
                               isDense: true,
                               filled: hatFokus,
@@ -93,12 +97,22 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                                 horizontal: 8,
                                 vertical: 6,
                               ),
+                              // Run 475: kompaktes "x" wie bei den Ausgaben,
+                              // sonst wächst das Feld beim Tippen in die Höhe.
+                              suffixIconConstraints: const BoxConstraints(
+                                minWidth: 0,
+                                minHeight: 0,
+                                maxWidth: 32,
+                                maxHeight: 32,
+                              ),
                               suffixIcon:
                                   umschlagBezeichnungController[i]
                                       .text
                                       .isEmpty
                                   ? null
                                   : IconButton(
+                                      constraints: const BoxConstraints(),
+                                      padding: EdgeInsets.zero,
                                       icon: const Icon(Icons.close, size: 18),
                                       onPressed: () {
                                         umschlagBezeichnungController[i]
@@ -119,7 +133,7 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   SizedBox(
-                    width: 172,
+                    width: BetragCentEingabefeld.standardBreite,
                     child: baueFeldMitKey(
                       focusNode: betragFocusNode,
                       child: BetragCentEingabefeld(
@@ -132,10 +146,10 @@ class Schritt1UmschlaegeSection extends StatelessWidget {
                             beiEingabeAbgeschlossen(betragFocusNode),
                         onChanged: (String wert) =>
                             beiUmschlagBetragGeaendert(i, wert),
-                        schriftgroesse: 14,
                         hinweisText: '0,00 €',
-                        labelText: 'Betrag €',
                         mitKomma: mitKomma,
+                        // Run 475: kein "+"-Chip bei Sonstiges.
+                        zeigeAdditionsButton: false,
                       ),
                     ),
                   ),

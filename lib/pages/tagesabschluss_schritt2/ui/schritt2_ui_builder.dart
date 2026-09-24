@@ -48,7 +48,6 @@ class Schritt2EingabeZeile extends StatelessWidget {
         textInputAction: textInputActionErmitteln(focusNode),
         onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
         onChanged: onChanged,
-        schriftgroesse: 15,
         hinweisText: '0,00 €',
         fehlermeldungText: fehlermeldungText,
         farbeNachWert: farbeNachWert,
@@ -68,14 +67,13 @@ class Schritt2EingabeZeile extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: 190,
+            width: BetragCentEingabefeld.standardBreite,
             child: BetragCentEingabefeld(
               textController: controller,
               focusNode: focusNode,
               textInputAction: textInputActionErmitteln(focusNode),
               onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
               onChanged: onChanged,
-              schriftgroesse: 15,
               hinweisText: '0,00 €',
               fehlermeldungText: fehlermeldungText,
               farbeNachWert: farbeNachWert,
@@ -404,7 +402,7 @@ class Schritt2KartenartenZeile extends StatelessWidget {
                   ),
           ),
           SizedBox(
-            width: 104,
+            width: BetragCentEingabefeld.standardBreite,
             child: TextField(
               controller: zeile.betragController,
               focusNode: zeile.betragFocusNode,
@@ -416,7 +414,7 @@ class Schritt2KartenartenZeile extends StatelessWidget {
               textAlign: TextAlign.right,
               cursorColor: zeile.betragFocusNode.hasFocus ? Colors.black : null,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: BetragCentEingabefeld.standardSchriftgroesse,
                 color: zeile.betragFocusNode.hasFocus ? Colors.black : null,
               ),
               decoration: InputDecoration(
@@ -425,10 +423,10 @@ class Schritt2KartenartenZeile extends StatelessWidget {
                 filled: zeile.betragFocusNode.hasFocus,
                 fillColor:
                     zeile.betragFocusNode.hasFocus ? AppFarben.fokusFarbe : null,
-                border: const OutlineInputBorder(),
+                border: const OutlineInputBorder(
+                  borderSide: BorderSide(color: AppFarben.appBarRot),
+                ),
                 enabledBorder: roteBorder,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
                 suffixIconConstraints: const BoxConstraints(
                   minWidth: 0,
                   minHeight: 0,
@@ -728,7 +726,7 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 104,
+                width: editModus ? BetragCentEingabefeld.standardBreite : 104,
                 child: !editModus
                     ? Text(
                         gesamtBetragCent != null
@@ -753,7 +751,8 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
                         cursorColor: gesamtBetragHatFokus ? Colors.black : null,
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                          fontSize:
+                              BetragCentEingabefeld.standardSchriftgroesse,
                           color: gesamtBetragHatFokus ? Colors.black : null,
                         ),
                         decoration: InputDecoration(
@@ -763,15 +762,15 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
                           fillColor: gesamtBetragHatFokus
                               ? AppFarben.fokusFarbe
                               : null,
-                          border: const OutlineInputBorder(),
+                          border: const OutlineInputBorder(
+                            borderSide: BorderSide(color: AppFarben.appBarRot),
+                          ),
                           errorBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.red),
                           ),
                           focusedErrorBorder: const OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.red, width: 2),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 5),
                           errorText: gesamtBetragErrorText,
                           suffixIconConstraints: const BoxConstraints(
                             minWidth: 0,

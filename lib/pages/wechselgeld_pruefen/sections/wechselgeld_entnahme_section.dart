@@ -52,13 +52,17 @@ class WechselgeldEntnahmeNotizSection extends StatelessWidget {
             const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.all(12),
-              child: BetragCentEingabefeld(
-                textController: betragController,
-                focusNode: betragFocusNode,
-                onChanged: beiBetragGeaendert,
-                schriftgroesse: 15,
-                hinweisText: '0,00 €',
-                labelText: 'Betrag laut Notiz €',
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  width: BetragCentEingabefeld.standardBreite,
+                  child: BetragCentEingabefeld(
+                    textController: betragController,
+                    focusNode: betragFocusNode,
+                    onChanged: beiBetragGeaendert,
+                    hinweisText: 'Betrag laut Notiz',
+                  ),
+                ),
               ),
             ),
           ],

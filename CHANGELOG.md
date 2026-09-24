@@ -9,6 +9,28 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 475: Einheitliche Betragsfelder + Wechselgeldentnahme-Texte.
+  Paco-Wunsch: alle Betragsfelder sehen gleich aus (Länge + Höhe).
+  Neu: BetragCentEingabefeld.standardBreite (172) und
+  .standardSchriftgroesse (15, jetzt Default statt Pflichtparameter).
+  Breite 172 für: lose Münzen (vorher 190), Sonstiges (172), S2-SOLL-/
+  Beleg-Zeilen (190), S2-Ausgaben (155), S1-Wechselgeldentnahme und
+  Notiz-Betrag der Wechselgeldprüfung (vorher volle Breite, jetzt
+  rechtsbündig), EC-Scan-Bearbeitung Kartenart-Beträge + Gesamtbetrag
+  (104, eigenes TextField: Schrift 13 -> 15, Rahmen rot wie die
+  anderen, eigenes Padding entfernt). Anzahl-Felder (Scheine/Rollen)
+  bleiben 140 breit, Schrift 16 -> 15. "Differenz im Anfangsbestand"
+  bleibt 120 (Paco-Entscheidung). Schwebende Labels entfernt: Sonstiges
+  ohne Label, S1-Entnahme Hinweis "Betrag", Grund-Feld Hinweis "Grund,
+  z. B. Rollengeld-Vorschuss", Notiz-Betrag Hinweis "Betrag laut
+  Notiz". Sonstiges-Betrag ohne "+"-Chip ("x" bleibt). Sonstiges-Label-
+  Feld: kompaktes "x" wie bei den Ausgaben (vorher wuchs das Feld beim
+  Tippen in die Höhe). Schalter heißt nur noch "Wechselgeldentnahme",
+  Hilfetext endet mit "..., damit die Frühschicht am nächsten Tag
+  Bescheid weiß." Höhen im Browser (E2E-Screenshots) geprüft: Label-
+  und Betragsfeld bei Sonstiges gleich hoch. E2E-Szenario: Schalter-
+  Text und x-Klickpunkte (195 -> 290) angepasst. Mitcommittet: Pacos
+  AT-TID 60561998 in config/terminal_ids.json und fragen_yannik.md.
 - Run 474a: Sende-Protokoll kürzt Fehlertexte erst ab 300 statt 80
   Zeichen (neu: SendeProtokoll.fehlerText, genutzt in Schritt 3 und
   Verlauf-Detail). Anlass: beim TID-Fehler vom 19.09. war der

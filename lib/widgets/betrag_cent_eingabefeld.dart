@@ -38,11 +38,18 @@ class CentWaehrungsEingabeFormatter extends TextInputFormatter {
 }
 
 class BetragCentEingabefeld extends StatefulWidget {
+  /// Einheitliche Breite aller Betragsfelder (Run 475, Paco-Wunsch: alle
+  /// Betragsfelder sehen gleich aus, auch in Länge und Höhe).
+  static const double standardBreite = 172;
+
+  /// Einheitliche Schriftgröße aller Eingabefelder (Run 475).
+  static const double standardSchriftgroesse = 15;
+
   const BetragCentEingabefeld({
     super.key,
     required this.textController,
     required this.onChanged,
-    required this.schriftgroesse,
+    this.schriftgroesse = standardSchriftgroesse,
     required this.hinweisText,
     this.labelText,
     this.fehlermeldungText,

@@ -179,14 +179,13 @@ class _Schritt2AusgabenZeile extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           SizedBox(
-            width: 155,
+            width: BetragCentEingabefeld.standardBreite,
             child: BetragCentEingabefeld(
               textController: betragController,
               focusNode: betragFocusNode,
               textInputAction: textInputActionErmitteln(betragFocusNode),
               onSubmitted: (_) => beiEingabeAbgeschlossen(betragFocusNode),
               onChanged: onBetragGeaendert,
-              schriftgroesse: 15,
               hinweisText: '0,00 €',
               mitKomma: false,
               zeigeAdditionsButton: false,

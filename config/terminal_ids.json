@@ -2,7 +2,7 @@
   "_comment": "Terminal-IDs pro Standort. Platzhalter XXXX durch echte TIDs von Yannik ersetzen. Alt/Neu-Zuordnung (Stand 2026-09-01), waehrend der Umstellungsphase sind alte UND neue TIDs gueltig (Paco entfernt die alten manuell, sobald alle Standorte auf neue Terminals umgestellt sind): SB: 54017635 = alte TID, 60561994/60561996/60561997 = neue TID. BT: 54069493/54017664 = alte TID, 60561992/60561993 = neue TID. CO: 60561995 = neue TID, 54017639 = alte TID.",
   "AT": {
     "name": "Atlantis",
-    "terminal_ids": ["54069464"]
+    "terminal_ids": ["54069464", "60561998"]
   },
   "SB": {
     "name": "Schauburg",

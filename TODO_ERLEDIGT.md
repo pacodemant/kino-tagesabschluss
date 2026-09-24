@@ -37,6 +37,33 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
+- [x] **Sonstiges-Zeilen (Schritt 1): Label-Feld breiter, Betrag-Feld
+      schmaler** Betrifft `Schritt1UmschlaegeSection`
+      (schritt1_umschlaege_section.dart, Abschnitt "Sonstiges
+      (Umschläge u.a.)"). Das Betrag-Feld (`BetragCentEingabefeld`)
+      zeigt bei Text einen "+"-Additions-Chip und einen "x"-Clear-Chip
+      im Suffix, zusätzlich ein floatendes Label "Betrag €". Alle drei
+      entfernen, damit das feste Betrag-Feld schmaler werden kann und
+      das ohnehin schon `Expanded`-Label-Feld mehr Platz bekommt.
+      `zeigeAdditionsButton` existiert bereits als Parameter (auf
+      `false` setzen reicht für den "+"-Chip); für den Clear-Chip
+      gibt es noch keinen Parameter — neuer optionaler Parameter
+      (z. B. `zeigeClearButton`, Default `true`) nötig, damit andere
+      Aufrufstellen unverändert bleiben.
+      Ursprünglich betraf dieser Punkt auch `_Schritt2AusgabenZeile`
+      (schritt2_kino_soll_ausgaben_section.dart) mit demselben Ziel
+      (Betrag-Feld schmaler). *(Run 431)* Dort stattdessen umgekehrtes
+      Problem gemeldet (Betrag-Feld bei 100er-Beträgen zu schmal) und
+      behoben: "+"-Chip entfernt (mehr interner Platz für die Ziffern
+      in der unveränderten Feldbreite), Abstand zum Papierkorb-Button
+      verkleinert — Feldbreite selbst bewusst NICHT verändert, "x"-
+      Clear-Chip bleibt. Für Ausgaben also erledigt, nicht mehr Teil
+      dieses Punkts.
+      *(Run 475)* ABWEICHEND erledigt: Paco hat stattdessen einheitliche
+      Betragsfelder entschieden (alle 172 breit, gleiche Höhe). Label
+      "Betrag €" und "+"-Chip bei Sonstiges entfernt; der "x"-Chip
+      bleibt, das Feld wird NICHT schmaler (bleibt 172).
+
 - [x] **Kupfermünzen (lose) auf kompakten Schalter umstellen** *(Run 471)*
       Die Buttons "Kupfermünzen hinzufügen/entfernen" in Schritt 1 und
       Wechselgeldprüfung sind durch den Schalter "Kupfermünzen (1, 2, 5 ct)"

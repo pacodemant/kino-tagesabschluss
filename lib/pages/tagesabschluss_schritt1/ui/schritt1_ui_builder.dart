@@ -98,7 +98,7 @@ class Schritt1ZeilenEintrag extends StatelessWidget {
             child: GanzzahlEingabefeld(
               textController: controller,
               focusNode: focusNode,
-              schriftgroesse: 16,
+              schriftgroesse: BetragCentEingabefeld.standardSchriftgroesse,
               textInputAction: textInputActionFuerSchritt1(focusNode),
               onChanged: (String wert) => beiStueckzahlGeaendert(zeile, wert),
               onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
@@ -173,7 +173,7 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         SizedBox(
-          width: 190,
+          width: BetragCentEingabefeld.standardBreite,
           child: baueFeldMitKey(
             focusNode: focusNode,
             child: BetragCentEingabefeld(
@@ -183,7 +183,6 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
               onSubmitted: (_) => beiEingabeAbgeschlossen(focusNode),
               onChanged: (String wert) =>
                   beiLoseMuenzartBetragGeaendert(zeile.id, wert),
-              schriftgroesse: 15,
               hinweisText: '0,00 €',
               istHervorgehoben: rotHervorgehoben.contains(focusNode),
               nennwertCent: zeile.einzelwertCent,

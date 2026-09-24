@@ -48,9 +48,7 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           KompakterSchalterZeile(
-            label:
-                'Es wurde Geld aus dem Wechselgeldbestand entnommen '
-                '(Wechselgeldentnahme)',
+            label: 'Wechselgeldentnahme',
             wert: aktiv,
             onChanged: beiAktivGeaendert,
             onHilfe: () => zeigeInfoDialog(
@@ -68,7 +66,8 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
                     TextSpan(
                       text:
                           'Wichtig: eine gut sichtbare Notiz darüber in '
-                          'die Wechselgeldkasse legen.',
+                          'die Wechselgeldkasse legen, damit die '
+                          'Frühschicht am nächsten Tag Bescheid weiß.',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppFarben.appBarRot,
@@ -86,23 +85,29 @@ class Schritt1WechselgeldEntnahmeSection extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  BetragCentEingabefeld(
-                    textController: betragController,
-                    focusNode: betragFocusNode,
-                    onChanged: beiBetragGeaendert,
-                    schriftgroesse: 15,
-                    hinweisText: '0,00 €',
-                    labelText: 'Betrag €',
-                    istHervorgehoben: betragFehlerhaft,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: SizedBox(
+                      width: BetragCentEingabefeld.standardBreite,
+                      child: BetragCentEingabefeld(
+                        textController: betragController,
+                        focusNode: betragFocusNode,
+                        onChanged: beiBetragGeaendert,
+                        hinweisText: 'Betrag',
+                        istHervorgehoben: betragFehlerhaft,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: grundController,
                     focusNode: grundFocusNode,
                     onChanged: beiGrundGeaendert,
+                    style: const TextStyle(
+                      fontSize: BetragCentEingabefeld.standardSchriftgroesse,
+                    ),
                     decoration: InputDecoration(
-                      labelText: 'Grund',
-                      hintText: 'z. B. Rollengeld-Vorschuss',
+                      hintText: 'Grund, z. B. Rollengeld-Vorschuss',
                       border: const OutlineInputBorder(),
                       isDense: true,
                       errorText: grundFehlerhaft ? 'Bitte Grund angeben' : null,

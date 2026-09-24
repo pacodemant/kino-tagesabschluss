@@ -18,10 +18,10 @@ const L = require('./lib');
 // Knoten an). Gelten für das feste Fenster 390×844 aus lib.js. Stimmt ein
 // Punkt nicht mehr (Layout geändert), schlägt die folgende Prüfung fehl.
 const KLICK = {
-  entnahmeBetrag: [195, 420],  // Schritt 1, ganz unten gescrollt, Schalter an
+  entnahmeBetrag: [290, 420],  // Schritt 1, ganz unten gescrollt, Schalter an
   entnahmeGrund: [195, 455],
   ecGesamt: [308, 705],        // Schritt 2, EC-Belege manuell, Feld "Gesamt"
-  morgenBetrag: [195, 630],    // Prüfseite oben, Schalter "Notiz gefunden" an
+  morgenBetrag: [290, 630],    // Prüfseite oben, Schalter "Notiz gefunden" an
 };
 
 async function oeffneWechselgeldPruefen(page) {
@@ -51,7 +51,7 @@ module.exports = async function szenario({ page, ctx }) {
   }
   await page.keyboard.press('Escape');
   await L.scrolleNachUnten(page);
-  await L.klickeEnthaelt(page, 'Es wurde Geld aus dem Wechselgeldbestand');
+  await L.klickeEnthaelt(page, 'Wechselgeldentnahme');
   await L.scrolleNachUnten(page);
   await page.mouse.click(...KLICK.entnahmeBetrag);
   await page.waitForTimeout(500);
