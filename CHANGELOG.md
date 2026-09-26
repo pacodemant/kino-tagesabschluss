@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 478: Korrektur für die MA sichtbar gemacht (Paco-Wunsch nach
+  Retest Run 477 am 26.09., T1-T3 ok). Wurde für den Abrechnungstag
+  schon bestätigt an FC gesendet und sind die Daten seitdem geändert,
+  heißt der Button in Schritt 3 "Korrektur an Büro senden" (sonst
+  unverändert "Abrechnung an Büro senden"). Das Erfolgs-Popup heißt bei
+  einer Korrektur "Korrektur gesendet" ("... ersetzt die zuvor gesendete
+  Abrechnung"), in Schritt 3 und im Verlauf "Erneut senden".
+  FlurbocashUploadErgebnis.warKorrektur. Fallback: Lehnt FC die
+  Korrektur mit "settlement N does not exist" ab (Paco kann in FC
+  Abrechnungen löschen, außer Nr. 1), sendet upload() einmal ohne
+  Nummer neu und merkt sich die neue Nummer (Sende-Protokoll-Zeile).
+  Doku: "6-Uhr-Knick" -> "5-Uhr-Knick" (TODO.md, fragen_yannik.md,
+  PROJECT_CONTEXT.md; der Code nutzt seit Run 402 einheitlich 5 Uhr).
+  TODO: "Hinweis, wenn nicht alle Terminals erfasst wurden" (erst nach
+  der Terminal-Einrichtung). 2 neue Tests.
 - Run 477: Flurbocash-Korrektur neu aufgebaut. Paco-Test zu Run 476
   (24.09., 19:05/19:07): Korrektur legte trotzdem Nr. 3 an, weil der
   Auto-Save "testdaten"-Einträge nicht als vorhandene Abrechnung zählte,

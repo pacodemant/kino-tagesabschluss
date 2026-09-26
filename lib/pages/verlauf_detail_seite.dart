@@ -85,7 +85,8 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       // Wurde für diesen Abrechnungstag schon bestätigt gesendet,
       // korrigiert FC die vorhandene Abrechnung (Run 477, siehe
       // ApiUploadService.upload).
-      await ApiUploadService.upload(widget.abschluss);
+      final FlurbocashUploadErgebnis ergebnis =
+          await ApiUploadService.upload(widget.abschluss);
       await SendeProtokoll.eintragen('Versand erfolgreich (Verlauf-Detail)');
       // Eigener try/catch (Run 450, analog tagesabschluss_schritt3_seite.
       // dart, _doApiUpload()): Der Versand oben war bereits erfolgreich —
@@ -114,10 +115,16 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
         // analog tagesabschluss_schritt3_seite.dart, _doApiUpload()).
         await zeigeInfoDialog(
           context,
-          titel: 'Abrechnung gesendet',
-          inhalt: const Text(
-            'Die Abrechnung wurde erfolgreich an die Zentrale '
-            '(Flurbocash) übertragen.',
+          titel: ergebnis.warKorrektur
+              ? 'Korrektur gesendet'
+              : 'Abrechnung gesendet',
+          inhalt: Text(
+            ergebnis.warKorrektur
+                ? 'Die Korrektur wurde erfolgreich an die Zentrale '
+                    '(Flurbocash) übertragen und ersetzt die zuvor '
+                    'gesendete Abrechnung.'
+                : 'Die Abrechnung wurde erfolgreich an die Zentrale '
+                    '(Flurbocash) übertragen.',
           ),
         );
       }

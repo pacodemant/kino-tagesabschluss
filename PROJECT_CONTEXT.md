@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.132+477 · Run 477
+Version: 0.9.133+478 · Run 478
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 477)
+## Laufender Entwicklungsstand (Run 478)
+
+- Run 478 ✅ Korrektur sichtbar für die MA: Button "Korrektur an Büro
+  senden" und Popup "Korrektur gesendet", sobald für den Abrechnungstag
+  schon bestätigt gesendet wurde (auch Verlauf "Erneut senden"). Fallback:
+  Antwortet FC "settlement N does not exist" (in FC gelöscht), wird ohne
+  Nummer neu angelegt und die neue Nummer gemerkt. Doku einheitlich
+  "5-Uhr-Knick"; TODO "Hinweis bei fehlenden Terminals" angelegt.
 
 - Run 477 ✅ Flurbocash-Korrektur neu: pro Kino + Abrechnungstag wird die
   von FC bestätigte `settlement_number` in SharedPreferences gemerkt
@@ -1405,7 +1412,8 @@ Aktuelle Phase: **BelegScan & EC-Kachel (Phase A, Runs 275–280) + Flurbocash-I
   Verlauf-Button, öffnet die neue Seite.
 
 Blockiert (wartet auf IT / Yannik): Basis-URL (Sandbox bekannt,
-Produktiv-URL offen), TID-Bestätigung, 6-Uhr-Knick-Absprache.
+Produktiv-URL offen), TID-Bestätigung (5-Uhr-Knick seit Run 402
+geklärt).
 
 ---
 

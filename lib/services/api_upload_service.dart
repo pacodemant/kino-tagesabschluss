@@ -117,10 +117,29 @@ class ApiUploadService {
       );
     }
 
-    final Map<String, dynamic> body =
+    Map<String, dynamic> body =
         settlementsBody(abrechnung, korrekturVon: korrekturVon);
-    final Map<String, dynamic>? settlementsAntwort =
-        await _settlements(konfig.url, konfig.apiKey, reportId, body);
+    Map<String, dynamic>? settlementsAntwort;
+    bool warKorrektur = korrekturVon != null;
+    try {
+      settlementsAntwort =
+          await _settlements(konfig.url, konfig.apiKey, reportId, body);
+    } catch (e) {
+      // Run 478: Die gemerkte Abrechnung gibt es bei FC nicht mehr (z. B.
+      // in FC geloescht — moeglich ausser fuer Nr. 1). Ohne diesen
+      // Fallback kaeme die MA fuer diesen Tag nicht mehr weiter. Dann wie
+      // ein Erstversand ohne Nummer neu anlegen, die neue Nummer wird
+      // unten gemerkt.
+      if (korrekturVon == null || !istUnbekannteSettlementNummer(e)) rethrow;
+      await SendeProtokoll.eintragen(
+        'FC-Abrechnung Nr. ${korrekturVon.settlementNummer} existiert '
+        'nicht mehr -> wird neu angelegt',
+      );
+      body = settlementsBody(abrechnung);
+      warKorrektur = false;
+      settlementsAntwort =
+          await _settlements(konfig.url, konfig.apiKey, reportId, body);
+    }
 
     final FlurbocashZuordnung? zuordnung = zuordnungAusAntwort(
       reportId: reportId,
@@ -148,7 +167,18 @@ class ApiUploadService {
     return FlurbocashUploadErgebnis(
       ensureAntwort: ensureAntwort,
       settlementsAntwort: settlementsAntwort,
+      warKorrektur: warKorrektur,
     );
+  }
+
+  /// Erkennt die FC-Ablehnung einer Korrektur, deren settlement_number
+  /// es nicht (mehr) gibt: 400 "settlement N does not exist; omit
+  /// settlement_number to create a new settlement"
+  /// (EXTERNAL_API_Schauburg_de.md). Der Text steckt in der von
+  /// [_pruefeStatus] geworfenen Exception.
+  static bool istUnbekannteSettlementNummer(Object e) {
+    final String text = e.toString().toLowerCase();
+    return text.contains('settlement') && text.contains('does not exist');
   }
 
   static String _tagesZuordnungKey(String kinoId, DateTime datum) =>
@@ -628,7 +658,13 @@ class FlurbocashUploadErgebnis {
   const FlurbocashUploadErgebnis({
     this.ensureAntwort,
     this.settlementsAntwort,
+    this.warKorrektur = false,
   });
+
+  /// true, wenn eine bereits gesendete Abrechnung des Tages bei FC
+  /// ueberschrieben wurde (Run 478) — steuert "Korrektur gesendet" statt
+  /// "Abrechnung gesendet" in der Erfolgsmeldung.
+  final bool warKorrektur;
 
   /// Geparste Antworten beider Aufrufe, nur fuer den Dev-Modus-Dialog
   /// "Server-Antwort anzeigen". settlementsAntwort ist null, falls die

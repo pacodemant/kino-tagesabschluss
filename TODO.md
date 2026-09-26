@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 477 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 478 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -76,7 +76,7 @@ um Durcheinander zu vermeiden.
       Run 329/329a). Siehe auch Roadmap-Punkt "Offline-Hinweis"
       weiter unten (allgemeiner Banner app-weit, anderer Ort/Umfang).
 
-- [ ] **Gesendet-Haken verschwindet nicht über den 6-Uhr-Knick, wenn
+- [ ] **Gesendet-Haken verschwindet nicht über den 5-Uhr-Knick, wenn
       App im Hintergrund bleibt** Der grüne Haken auf dem
       "Kassenabrechnung"-Button im Startmenü wird nur bei
       `initState()` und `didPopNext()` (Rückkehr von einer anderen
@@ -84,7 +84,7 @@ um Durcheinander zu vermeiden.
       startmenue_seite.dart) — es gibt keinen
       AppLifecycleState-Listener für den Fall, dass die App nur in
       den Hintergrund geschickt ("weggewischt", nicht beendet) und
-      über den 6-Uhr-Knick hinweg wieder in den Vordergrund geholt
+      über den 5-Uhr-Knick hinweg wieder in den Vordergrund geholt
       wird, ohne dass zwischendurch navigiert wurde. Die Prüfung
       selbst berücksichtigt den logischen Tag korrekt
       (`DatumsHelper.logischesIsoDatum()`), sie wird in diesem Fall
@@ -366,8 +366,11 @@ um Durcheinander zu vermeiden.
       Stand Run 477: Der Korrektur-Call selbst ist umgesetzt (vom
       Server bestätigte settlement_number wird pro Kino + Abrechnungstag
       gemerkt, jeder weitere Versand des Tages überschreibt, siehe
-      CHANGELOG). Offen bleiben hier: Fallback-Meldung beim 4x-Limit
-      und die "Korr."-Badge-Idee.
+      CHANGELOG). Run 478: Button/Popup heißen bei einer Korrektur
+      "Korrektur an Büro senden"/"Korrektur gesendet"; wurde die
+      gemerkte Abrechnung in FC gelöscht, legt die App automatisch neu
+      an. Offen bleiben hier: Fallback-Meldung beim 4x-Limit und die
+      "Korr."-Badge-Idee.
 
 - [ ] **Mechanismus für Verbindungsabbruch waehrend des Uebertragens**
       (Paco-Notiz 2026-08-30) Fall: Verbindung geht ausgerechnet
@@ -817,13 +820,14 @@ um Durcheinander zu vermeiden.
       komplett) — App bleibt bei einem Init-Fehler (z. B. Hive.
       openBox) aktuell ohne Diagnose oder Nutzer-Feedback stehen.
       Klärungsbedürftig vor Run-Vergabe (ebenfalls aus der Analyse):
-      6-Uhr-Knick beim Finalisieren — tagesabschluss_finalisieren_
+      5-Uhr-Knick beim Finalisieren — tagesabschluss_finalisieren_
       usecase.dart setzt das gespeicherte Abschluss-Datum aus
-      DateTime.now() ohne den 6-Uhr-Knick, während Schritt 3 die
+      DateTime.now() ohne den 5-Uhr-Knick, während Schritt 3 die
       Anzeige korrekt über logischerAbrechnungsTag() bildet
-      (Abweichung möglich bei Abschluss zwischen 00:00 und 05:59
+      (Abweichung möglich bei Abschluss zwischen 00:00 und 04:59
       Uhr); soll finalisieren() exakt wie die Anzeige umgestellt
-      werden? — lokaler_speicher.dart Datenverlust bei Schreibfehler
+      werden? (Run 478 geprüft: finalisieren() nutzt inzwischen
+      logischerAbrechnungsTag(), dieser Teil ist erledigt.) — lokaler_speicher.dart Datenverlust bei Schreibfehler
       — schlägt das Schreiben der Tagesabschluss-Historie fehl
       (catch(_)), wird die komplette bisherige Historie eines Kinos
       aktuell stillschweigend durch nur den neuen Eintrag ersetzt;
@@ -979,6 +983,14 @@ um Durcheinander zu vermeiden.
 ### EC-Umsatz
 - [ ] EC-Betrag > Gesamt-Soll — harter Fehler
       *(Run 317: weggelassen — im Ziffern-Modus kein realistisches Risiko.)*
+- [ ] **Hinweis, wenn nicht alle Terminals erfasst wurden** (Paco,
+      2026-09-25) Vor dem Senden einen Hinweistext zeigen, wenn für
+      den Standort nicht alle Terminals gescannt bzw. eingegeben
+      wurden (Abgleich z. B. gegen config/terminal_ids.json). Erst
+      umsetzen, wenn die Einrichtung der neuen Terminals
+      abgeschlossen ist. Bis dahin muss die MA bei einer zu großen
+      Differenz selbst prüfen, ob sie an alle Kassenschnitte gedacht
+      hat.
 
 ### Differenz / Kassenstand
 - [ ] Differenz Soll/Ist überschreitet Schwellwert (± 50 €) — Bestätigung

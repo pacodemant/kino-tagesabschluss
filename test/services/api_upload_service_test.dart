@@ -877,5 +877,32 @@ void main() {
         isNull,
       );
     });
+
+    test(
+        'istUnbekannteSettlementNummer (Run 478): nur FC-Text "settlement N '
+        'does not exist" -> true', () {
+      expect(
+        ApiUploadService.istUnbekannteSettlementNummer(
+          Exception(
+            'Übertragung fehlgeschlagen: Ungültige Daten oder Terminal-ID '
+            'unbekannt. (settlement 2 does not exist; omit '
+            'settlement_number to create a new settlement)',
+          ),
+        ),
+        isTrue,
+      );
+      expect(
+        ApiUploadService.istUnbekannteSettlementNummer(
+          Exception('(maximum of 4 settlements per day reached)'),
+        ),
+        isFalse,
+      );
+      expect(
+        ApiUploadService.istUnbekannteSettlementNummer(
+          Exception('(unknown tid)'),
+        ),
+        isFalse,
+      );
+    });
   });
 }

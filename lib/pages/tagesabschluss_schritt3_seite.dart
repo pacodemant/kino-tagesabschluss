@@ -202,6 +202,18 @@ class _TagesabschlussSchritt3SeiteState
   FlurbocashUploadErgebnis? _letztesUploadErgebnis;
   bool _abrechnungGesendet = false;
 
+  // true = für diesen Kino + Abrechnungstag wurde schon bestätigt an FC
+  // gesendet (Run 478) — ein weiterer Versand ist dann eine Korrektur,
+  // der Button heißt "Korrektur an Büro senden".
+  bool _tagBereitsGesendet = false;
+
+  /// Beschriftung des Sende-Buttons, auch in den Fehlermeldungen
+  /// zitiert. "Korrektur", wenn heute schon gesendet wurde und die Daten
+  /// seitdem geändert sind (sonst grüner Haken, kein erneuter Versand).
+  String get _sendenButtonText => _tagBereitsGesendet && !_abrechnungGesendet
+      ? 'Korrektur an Büro senden'
+      : 'Abrechnung an Büro senden';
+
   // true = in dieser Sitzung wurde mindestens einmal ein Versand-Versuch
   // gestartet (_doApiUpload()), unabhängig vom Ergebnis. Anders als
   // _abrechnungGesendet/_apiUploadErledigt (beide bleiben bei einem
@@ -374,12 +386,28 @@ class _TagesabschlussSchritt3SeiteState
     _speichereAnmerkungEntwurf();
   }
 
+  /// Liest, ob für diesen Abrechnungstag schon bestätigt gesendet wurde
+  /// (siehe [_tagBereitsGesendet]). Fehler -> bleibt false (nur Text).
+  Future<void> _aktualisiereTagBereitsGesendet() async {
+    try {
+      final bool gesendet = await ApiUploadService.ladeTagesZuordnung(
+            widget.argumente.kinoId,
+            DatumsHelper.logischerAbrechnungsTag(jetzt: _erstellungszeitpunkt),
+          ) !=
+          null;
+      if (mounted) setState(() => _tagBereitsGesendet = gesendet);
+    } catch (_) {
+      // Nur die Button-Beschriftung, der Versand entscheidet selbst.
+    }
+  }
+
   Future<void> _initialisierenAsync() async {
     final bool devModusAktiv = await DevModus.istAktiv();
     if (!mounted) return;
     setState(() => _devModusAktiv = devModusAktiv);
     await _ladeAnmerkungEntwurf();
     if (!mounted) return;
+    _aktualisiereTagBereitsGesendet();
     if (devModusAktiv && _anmerkung.trim().isEmpty) {
       _anmerkung = _testdatenKennzeichenMitZeitstempel();
       _anmerkungController.text = _anmerkung;
@@ -610,16 +638,24 @@ class _TagesabschlussSchritt3SeiteState
         );
       }
       if (mounted) {
-        setState(() => _abrechnungGesendet = true);
+        setState(() {
+          _abrechnungGesendet = true;
+          _tagBereitsGesendet = true;
+        });
         // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,
         // TODO.md "Sendebestätigung ... als Popup statt Snackbar") —
         // kann nicht übersehen/weggewischt werden wie eine SnackBar.
+        final bool korrektur = _letztesUploadErgebnis?.warKorrektur ?? false;
         await zeigeInfoDialog(
           context,
-          titel: 'Abrechnung gesendet',
-          inhalt: const Text(
-            'Die Abrechnung wurde erfolgreich an die Zentrale '
-            '(Flurbocash) übertragen.',
+          titel: korrektur ? 'Korrektur gesendet' : 'Abrechnung gesendet',
+          inhalt: Text(
+            korrektur
+                ? 'Die Korrektur wurde erfolgreich an die Zentrale '
+                    '(Flurbocash) übertragen und ersetzt die zuvor '
+                    'gesendete Abrechnung.'
+                : 'Die Abrechnung wurde erfolgreich an die Zentrale '
+                    '(Flurbocash) übertragen.',
           ),
         );
       }
@@ -659,7 +695,7 @@ class _TagesabschlussSchritt3SeiteState
               '(Flurbocash) übertragen werden — vermutlich gab es gerade '
               'keine Internetverbindung. Deine Eingaben sind gespeichert '
               'und gehen nicht verloren. Bitte später noch einmal auf '
-              '"Abrechnung an Büro senden" tippen.';
+              '"$_sendenButtonText" tippen.';
         } else {
           final String fehler = e.toString();
           final String anzeige =
@@ -668,7 +704,7 @@ class _TagesabschlussSchritt3SeiteState
               'Die Abrechnung konnte nicht an die Zentrale (Flurbocash) '
               'übertragen werden. Deine Eingaben sind gespeichert und '
               'gehen nicht verloren. Bitte später noch einmal auf '
-              '"Abrechnung an Büro senden" tippen.\n\n'
+              '"$_sendenButtonText" tippen.\n\n'
               'Fehlermeldung (fürs Büro): $anzeige';
         }
         // Popup statt SnackBar (analog Run 437 bei Erfolg) — Paco-Wunsch,
@@ -1232,7 +1268,7 @@ class _TagesabschlussSchritt3SeiteState
                   Text(
                     _autoSaveLaeuft
                         ? 'Wird gespeichert...'
-                        : 'Abrechnung an Büro senden',
+                        : _sendenButtonText,
                   ),
                   const SizedBox(width: 8),
                   Icon(

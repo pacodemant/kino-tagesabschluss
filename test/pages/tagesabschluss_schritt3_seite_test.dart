@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.da
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deckt die Sende-Orchestrierung in _doApiUpload() ab — dort lagen
@@ -166,4 +168,52 @@ void main() {
     expect(find.text('Abrechnung gesendet'), findsOneWidget);
     expect(find.text('Versand nicht bestätigt'), findsNothing);
   });
+
+  testWidgets(
+      'Korrektur (Run 478): heute schon gesendet -> Button "Korrektur an '
+      'Büro senden", Hinweis im Dialog, Popup "Korrektur gesendet"',
+      (WidgetTester tester) async {
+    final DateTime tag = DatumsHelper.logischerAbrechnungsTag();
+    final String datum = '${tag.year}_'
+        '${tag.month.toString().padLeft(2, '0')}_'
+        '${tag.day.toString().padLeft(2, '0')}';
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'dev_api_upload_aktiv': true,
+      'flurbocash_settlement_test_kino_schritt3_$datum': jsonEncode(
+        <String, dynamic>{'reportId': 77, 'settlementNummer': 1},
+      ),
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TagesabschlussSchritt3Seite(
+          argumente: argumente(),
+          autoSaveUeberschreibung: autoSaveErfolgFake,
+          uploadUeberschreibung: (TagesabschlussFinal _) async =>
+              const FlurbocashUploadErgebnis(warKorrektur: true),
+          lokalerSendeMerkerUeberschreibung: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Korrektur an Büro senden'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Korrektur an Büro senden'));
+    await tester.pumpAndSettle();
+    expect(
+      find.textContaining('durch diese Korrektur ersetzt'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Senden'));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(find.text('Korrektur gesendet'), findsOneWidget);
+    expect(find.text('Abrechnung gesendet'), findsNothing);
+  });
 }
+
