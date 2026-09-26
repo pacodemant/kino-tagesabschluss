@@ -14,6 +14,7 @@ import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
+import 'package:kino_bar_app/widgets/korrigiert_badge.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
@@ -34,6 +35,21 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   bool _loescht = false;
   bool _sendet = false;
   late DateTime? _gesendetAm = widget.abschluss.gesendetAm;
+
+  // Für diesen Abrechnungstag wurde eine Korrektur an Flurbocash gesendet
+  // (Run 479, "Korrigiert"-Badge).
+  bool _korrigiert = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ApiUploadService.tagWurdeKorrigiert(
+      widget.abschluss.kinoId,
+      widget.abschluss.datum,
+    ).then((bool korrigiert) {
+      if (mounted && korrigiert) setState(() => _korrigiert = true);
+    });
+  }
 
   // Lookup-Maps aus StueckelungKonfiguration, einmalig gebaut
   static final Map<String, Kassenzeile> _scheineLookup = <String, Kassenzeile>{
@@ -110,7 +126,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
       }
 
       if (mounted) {
-        setState(() => _gesendetAm = DateTime.now());
+        setState(() {
+          _gesendetAm = DateTime.now();
+          if (ergebnis.warKorrektur) _korrigiert = true;
+        });
         // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,
         // analog tagesabschluss_schritt3_seite.dart, _doApiUpload()).
         await zeigeInfoDialog(
@@ -454,6 +473,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                   if (_gesendetAm == null) ...<Widget>[
                     const SizedBox(width: 8),
                     const NichtGesendetBadge(),
+                  ],
+                  if (_gesendetAm != null && _korrigiert) ...<Widget>[
+                    const SizedBox(width: 8),
+                    const KorrigiertBadge(),
                   ],
                 ],
               ),

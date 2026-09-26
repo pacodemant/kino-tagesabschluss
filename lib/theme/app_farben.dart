@@ -20,6 +20,10 @@ class AppFarben {
   // für einen Warnhinweis statt einer Handlungsaufforderung.
   static const Color nichtGesendetBadgeHintergrund = Color(0xFF757575); // grey.shade600
 
+  // "Korrigiert"-Badge (Verlauf, Run 479) – reine Info, daher weder Orange
+  // (Führungsfarbe) noch Rot (Heute), ruhiges Blaugrau.
+  static const Color korrigiertBadgeHintergrund = Color(0xFF546E7A); // blueGrey.shade600
+
   // DEV-Tools-Panel-Hintergrund (Schritt 1 + Schritt 2)
   static const Color devToolsHintergrund = Color(0xFFFFF8E1);
 

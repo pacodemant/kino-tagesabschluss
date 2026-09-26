@@ -150,10 +150,18 @@ class ApiUploadService {
       // Eigener try/catch: der Versand war bereits erfolgreich, ein Fehler
       // beim lokalen Merken darf das nicht als Fehlschlag melden.
       try {
+        // korrigiert: Für diesen Tag wurde schon einmal bestätigt
+        // gesendet — auch im Fallback oben (gemerkte Abrechnung in FC
+        // gelöscht), aus Sicht der MA ist es trotzdem eine Korrektur.
         await _speichereTagesZuordnung(
           abrechnung.kinoId,
           abrechnung.datum,
-          zuordnung,
+          FlurbocashZuordnung(
+            reportId: zuordnung.reportId,
+            settlementNummer: zuordnung.settlementNummer,
+            tids: zuordnung.tids,
+            korrigiert: korrekturVon != null,
+          ),
         );
         await SendeProtokoll.eintragen(
           'FC-Abrechnung Nr. ${zuordnung.settlementNummer} für '
@@ -199,6 +207,17 @@ class ApiUploadService {
       return FlurbocashZuordnung.fromJson(jsonDecode(roh));
     } catch (_) {
       return null;
+    }
+  }
+
+  /// true, wenn für Kino + Abrechnungstag schon eine Korrektur an FC
+  /// gesendet wurde (Run 479, "Korrigiert"-Badge im Verlauf). Fehler beim
+  /// Lesen -> false (reine Anzeige).
+  static Future<bool> tagWurdeKorrigiert(String kinoId, DateTime datum) async {
+    try {
+      return (await ladeTagesZuordnung(kinoId, datum))?.korrigiert ?? false;
+    } catch (_) {
+      return false;
     }
   }
 

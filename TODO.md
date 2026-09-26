@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: September 2026 · Run 478 · wird fortlaufend ergänzt
+Stand: September 2026 · Run 479 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -369,8 +369,11 @@ um Durcheinander zu vermeiden.
       CHANGELOG). Run 478: Button/Popup heißen bei einer Korrektur
       "Korrektur an Büro senden"/"Korrektur gesendet"; wurde die
       gemerkte Abrechnung in FC gelöscht, legt die App automatisch neu
-      an. Offen bleiben hier: Fallback-Meldung beim 4x-Limit und die
-      "Korr."-Badge-Idee.
+      an. Run 479: "Korr."-Idee in vereinfachter Form umgesetzt
+      (Paco-Entscheidung 2026-09-26): kein zusätzlicher Verlaufseintrag,
+      sondern ein Badge "Korrigiert" am einen Eintrag des Tages; das
+      Original bleibt lokal nicht erhalten. Offen bleibt hier nur noch
+      die Fallback-Meldung beim 4x-Limit.
 
 - [ ] **Mechanismus für Verbindungsabbruch waehrend des Uebertragens**
       (Paco-Notiz 2026-08-30) Fall: Verbindung geht ausgerechnet

@@ -9,22 +9,28 @@
 /// aktualisiert Terminals bei einer Korrektur per Upsert, ein nicht mehr
 /// mitgesendetes Terminal bliebe dort sonst mit den alten Beträgen
 /// stehen (siehe ApiUploadService.settlementsBody).
+///
+/// [korrigiert] (Run 479): true, sobald für diesen Tag mindestens eine
+/// Korrektur gesendet wurde — steuert das "Korrigiert"-Badge im Verlauf.
 class FlurbocashZuordnung {
   const FlurbocashZuordnung({
     required this.reportId,
     required this.settlementNummer,
     this.tids = const <String>[],
+    this.korrigiert = false,
   });
 
   final int reportId;
   final int settlementNummer;
   final List<String> tids;
+  final bool korrigiert;
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'reportId': reportId,
       'settlementNummer': settlementNummer,
       'tids': tids,
+      if (korrigiert) 'korrigiert': true,
     };
   }
 
@@ -40,6 +46,7 @@ class FlurbocashZuordnung {
       reportId: reportId.toInt(),
       settlementNummer: nummer.toInt(),
       tids: tidsRoh is List ? tidsRoh.whereType<String>().toList() : <String>[],
+      korrigiert: json['korrigiert'] == true,
     );
   }
 }

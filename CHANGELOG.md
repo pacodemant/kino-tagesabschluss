@@ -9,6 +9,18 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 479: Badge "Korrigiert" im Verlauf (Paco-Entscheidung Variante 1
+  statt eines zusätzlichen Verlaufseintrags pro Korrektur). Die pro
+  Kino + Abrechnungstag gemerkte FlurbocashZuordnung bekommt das Flag
+  `korrigiert`, gesetzt bei jedem Versand, für den der Tag schon eine
+  bestätigte Abrechnung hatte (auch im Fallback "does not exist").
+  Anzeige in Verlauf-Liste und -Detail neben "Heute", nur bei gesendeten
+  Einträgen (sonst "Noch nicht gesendet"). Neue Farbe
+  AppFarben.korrigiertBadgeHintergrund (Blaugrau), neues Widget
+  KorrigiertBadge. Verlaufsliste: Titelzeile als Wrap statt Row, damit
+  drei Badges auf schmalen Handys umbrechen statt überzulaufen. Nur
+  Korrekturen ab r479 werden markiert (ältere hatten das Flag noch
+  nicht). 2 neue Tests.
 - Run 478: Korrektur für die MA sichtbar gemacht (Paco-Wunsch nach
   Retest Run 477 am 26.09., T1-T3 ok). Wurde für den Abrechnungstag
   schon bestätigt an FC gesendet und sind die Daten seitdem geändert,

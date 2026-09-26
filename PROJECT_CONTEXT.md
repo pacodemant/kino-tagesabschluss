@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.133+478 · Run 478
+Version: 0.9.134+479 · Run 479
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 478)
+## Laufender Entwicklungsstand (Run 479)
+
+- Run 479 ✅ Badge "Korrigiert" in Verlauf-Liste und -Detail, wenn für den
+  Abrechnungstag eine Korrektur an FC gesendet wurde (Flag `korrigiert`
+  in der per Kino + Tag gemerkten `FlurbocashZuordnung`). Nur bei
+  gesendeten Einträgen. Verlaufsliste: Titelzeile als Wrap statt Row.
 
 - Run 478 ✅ Korrektur sichtbar für die MA: Button "Korrektur an Büro
   senden" und Popup "Korrektur gesendet", sobald für den Abrechnungstag

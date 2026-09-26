@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Erzeugt echte, dekodierbare PNG-Bytes (1x1 Pixel) zur Laufzeit —
 /// keine hartkodierten Fake-Bytes, damit Image.memory im Test denselben
@@ -166,4 +167,40 @@ void main() {
     expect(find.byType(InteractiveViewer), findsOneWidget);
     expect(find.text('12345'), findsWidgets); // AppBar-Titel der Vollbild-Seite
   });
+
+  testWidgets(
+      '"Korrigiert"-Badge (Run 479): nur wenn der Tag korrigiert UND der '
+      'Eintrag gesendet ist', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'flurbocash_settlement_kino_01_2026_08_26': jsonEncode(
+        <String, dynamic>{
+          'reportId': 70,
+          'settlementNummer': 1,
+          'korrigiert': true,
+        },
+      ),
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: VerlaufDetailSeite(
+          abschluss: abschluss(gesendetAm: DateTime(2026, 8, 26, 22, 5)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Korrigiert'), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: VerlaufDetailSeite(
+          key: UniqueKey(),
+          abschluss: abschluss(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Korrigiert'), findsNothing);
+    expect(find.text('Noch nicht gesendet'), findsOneWidget);
+  });
 }
+

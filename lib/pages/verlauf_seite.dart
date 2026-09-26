@@ -5,9 +5,11 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/services/admin_session.dart';
+import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
+import 'package:kino_bar_app/widgets/korrigiert_badge.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -25,6 +27,9 @@ class VerlaufSeite extends StatefulWidget {
 
 class _VerlaufSeiteState extends State<VerlaufSeite> {
   List<TagesabschlussFinal> _abschluesse = <TagesabschlussFinal>[];
+  // ISO-Daten der Abrechnungstage, für die eine Korrektur an Flurbocash
+  // gesendet wurde (Run 479, "Korrigiert"-Badge).
+  Set<String> _korrigierteTage = <String>{};
   bool _geladen = false;
 
   String get _kinoName {
@@ -46,11 +51,18 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
         await LokalerSpeicher.ladeFinaleTagesabschluesseNeuesteProTag(
       widget.kinoId,
     );
+    final Set<String> korrigierteTage = <String>{};
+    for (final TagesabschlussFinal a in abschluesse) {
+      if (await ApiUploadService.tagWurdeKorrigiert(a.kinoId, a.datum)) {
+        korrigierteTage.add(DatumsHelper.isoDatum(a.datum));
+      }
+    }
     if (!mounted) {
       return;
     }
     setState(() {
       _abschluesse = abschluesse;
+      _korrigierteTage = korrigierteTage;
       _geladen = true;
     });
   }
@@ -109,17 +121,23 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                               style: const TextStyle(fontSize: 12),
                             )
                           : null,
-                      title: Row(
+                      // Wrap statt Row (Run 479): mit dem dritten Badge
+                      // ("Korrigiert") reicht die Breite auf schmalen
+                      // Handys sonst nicht, Badges rutschen in Zeile 2.
+                      title: Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: <Widget>[
                           Text(_deutschesDatum(eintrag.datum)),
-                          if (istHeute) ...<Widget>[
-                            const SizedBox(width: 8),
-                            const HeuteBadge(),
-                          ],
-                          if (eintrag.gesendetAm == null) ...<Widget>[
-                            const SizedBox(width: 8),
+                          if (istHeute) const HeuteBadge(),
+                          if (eintrag.gesendetAm == null)
                             const NichtGesendetBadge(),
-                          ],
+                          if (eintrag.gesendetAm != null &&
+                              _korrigierteTage.contains(
+                                DatumsHelper.isoDatum(eintrag.datum),
+                              ))
+                            const KorrigiertBadge(),
                         ],
                       ),
                       trailing: Row(

@@ -904,5 +904,44 @@ void main() {
         isFalse,
       );
     });
+
+    test(
+        'tagWurdeKorrigiert (Run 479): true nur bei gespeichertem '
+        'korrigiert-Flag, Flag übersteht toJson/fromJson', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'flurbocash_settlement_kino_01_2026_09_26': jsonEncode(
+          const FlurbocashZuordnung(
+            reportId: 77,
+            settlementNummer: 1,
+            korrigiert: true,
+          ).toJson(),
+        ),
+        'flurbocash_settlement_kino_01_2026_09_27': jsonEncode(
+          const FlurbocashZuordnung(reportId: 78, settlementNummer: 1)
+              .toJson(),
+        ),
+      });
+      expect(
+        await ApiUploadService.tagWurdeKorrigiert(
+          'kino_01',
+          DateTime(2026, 9, 26),
+        ),
+        isTrue,
+      );
+      expect(
+        await ApiUploadService.tagWurdeKorrigiert(
+          'kino_01',
+          DateTime(2026, 9, 27),
+        ),
+        isFalse,
+      );
+      expect(
+        await ApiUploadService.tagWurdeKorrigiert(
+          'kino_01',
+          DateTime(2026, 9, 28),
+        ),
+        isFalse,
+      );
+    });
   });
 }
