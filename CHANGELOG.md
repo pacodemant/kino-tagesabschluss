@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 480: Hinweis bei FC-Antwort ohne Abrechnungsnummer. Antwortet
+  Flurbocash mit 2xx, liefert aber keine settlement_number (kein JSON,
+  204, geänderte Antwortstruktur), gilt der Versand weiterhin als
+  erfolgreich. Bewusst kein Fehler, denn ein erneutes Senden ohne
+  gemerkte Nummer würde bei FC eine zweite Abrechnung anlegen. Neu:
+  eine Zeile im Sende-Protokoll und im Erfolgs-Popup (Schritt 3 und
+  Verlauf-Detail) der Hinweis, eine spätere Korrektur für den Tag mit
+  der IT abzustimmen. FlurbocashUploadErgebnis.ohneAbrechnungsnummer.
+  fragen_yannik.md 2.4: Frage nach verlässlicher Empfangsbestätigung
+  (2xx erst nach Speichern, Nummer immer in der Antwort) ergänzt.
+  1 neuer Widget-Test, 1 bestehender um Negativ-Prüfung erweitert.
 - Run 479: Badge "Korrigiert" im Verlauf (Paco-Entscheidung Variante 1
   statt eines zusätzlichen Verlaufseintrags pro Korrektur). Die pro
   Kino + Abrechnungstag gemerkte FlurbocashZuordnung bekommt das Flag

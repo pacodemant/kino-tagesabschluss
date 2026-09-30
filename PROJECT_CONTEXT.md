@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.134+479 · Run 479
+Version: 0.9.135+480 · Run 480
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 479)
+## Laufender Entwicklungsstand (Run 480)
+
+- Run 480 Antwortet FC mit 2xx, aber ohne `settlement_number`, gilt der
+  Versand weiter als gesendet (kein Fehler, sonst Duplikat beim
+  Neusenden). Erfolgs-Popup + Sende-Protokoll weisen darauf hin, dass
+  eine spätere Korrektur mit der IT abzustimmen ist
+  (`FlurbocashUploadErgebnis.ohneAbrechnungsnummer`).
 
 - Run 479 ✅ Badge "Korrigiert" in Verlauf-Liste und -Detail, wenn für den
   Abrechnungstag eine Korrektur an FC gesendet wurde (Flag `korrigiert`

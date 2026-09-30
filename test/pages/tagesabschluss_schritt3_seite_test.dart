@@ -167,6 +167,37 @@ void main() {
 
     expect(find.text('Abrechnung gesendet'), findsOneWidget);
     expect(find.text('Versand nicht bestätigt'), findsNothing);
+    expect(
+      find.textContaining('keine Abrechnungsnummer'),
+      findsNothing,
+    );
+  });
+
+  testWidgets(
+      'Ohne Abrechnungsnummer (Run 480): 2xx ohne settlement_number -> '
+      'trotzdem "gesendet", Popup mit IT-Hinweis',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TagesabschlussSchritt3Seite(
+          argumente: argumente(),
+          autoSaveUeberschreibung: autoSaveErfolgFake,
+          uploadUeberschreibung: (TagesabschlussFinal _) async =>
+              const FlurbocashUploadErgebnis(ohneAbrechnungsnummer: true),
+          lokalerSendeMerkerUeberschreibung: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await sendeVersuchen(tester);
+
+    expect(find.text('Abrechnung gesendet'), findsOneWidget);
+    expect(
+      find.textContaining('keine Abrechnungsnummer zurückgemeldet'),
+      findsOneWidget,
+    );
+    expect(find.text('Versand nicht bestätigt'), findsNothing);
   });
 
   testWidgets(

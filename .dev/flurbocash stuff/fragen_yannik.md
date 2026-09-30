@@ -11,28 +11,34 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 ### Noch zu klären (10)
 
 **1. Zugangsdaten & Einrichtung**
+
 - ⏳ [1.2 Sind die neuen TIDs bei FC hinterlegt, und wann fallen die alten weg?](#12-terminal-ids-pro-standort)
 - ◐ [1.3 Welche location_id haben GO und CO?](#13-standort-kennung-kinoidlocationid)
 - ◐ [1.8 Kann die App jetzt auf den Kino-Server umziehen?](#18-app-hosting-auf-kino-server-statt-github-pages)
 
 **2. Abrechnungsdaten & Format**
-- ◐ [2.4 Meldet FC einen Empfangszeitstempel zurück, und wie kennzeichnen wir Tests?](#24-zeitstempel-der-übertragung--testkennzeichnung-im-dashboard-dev-flag)
+
+- ◐ [2.4 Ist eure Antwort eine verlässliche Empfangsbestätigung (inkl. Zeitstempel), und wie kennzeichnen wir Tests?](#24-zeitstempel-der-übertragung--testkennzeichnung-im-dashboard-dev-flag)
 
 **3. Korrektur & Duplikate**
+
 - ◐ [3.1 Sieht die Buchhaltung Korrekturen, und gibt es eine Abfrage für belegte settlement_numbers?](#31-korrektur-mechanismus--settlementnumber)
 - ⏳ [3.2 Wie verhindern wir, dass eine Abrechnung versehentlich doppelt übertragen wird?](#32-schutz--hinweis-bei-versehentlicher-doppel-übertragung)
 - ⏳ [3.3 Was soll passieren, wenn das Limit von 4 Abrechnungen pro Tag erreicht ist?](#33-verhalten-bei-maximum-reached-4-limit)
 
 **5. Sonstiges**
+
 - ⏳ [5.3 Können wir nach einem Verbindungsabbruch prüfen, was angekommen ist, und welches WLAN ist freigegeben?](#53-nachträgliche-prüfung-nach-verbindungsabbruch)
 
 **6. Vergütung & Rolle Yannik**
+
 - ⏳ [6.1 Wie hoch soll Yanniks Vergütung sein, und nach welchem Modell?](#61-vergütung-yannik-höhemodell)
 - ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
 
 ### Erledigt (15)
 
 **1. Zugangsdaten & Einrichtung**
+
 - ✅ [1.1 Wird der Produktivbetrieb pro Standort oder für alle gleichzeitig gestartet?](#11-basis-url--umstieg-auf-produktivserver)
 - ✅ [1.4 Wie lautet das Passwort für den Schauburg-AP?](#14-passwort-schauburg-ap)
 - ✅ [1.5 Wer richtet die Geräte ein und pflegt sie?](#15-geräte-einrichtung--pflege)
@@ -40,6 +46,7 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 - ✅ [1.7 Wer besorgt ein Android-Testgerät?](#17-android-testgerät)
 
 **2. Abrechnungsdaten & Format**
+
 - ✅ [2.1 Zwei EC-Belege desselben Terminals einzeln übertragen?](#21-zwei-ec-zahlungen-am-selben-terminal-in-einer-abrechnung)
 - ✅ [2.2 Braucht FC außer Kartenumsätzen und Bargeld weitere Daten?](#22-weitere-daten-gewünscht)
 - ✅ [2.3 Dürfen Notizen, MA-Name und Sendezeitpunkt mitgeschickt werden?](#23-notizen-ma-name-sendezeitpunkt-etc)
@@ -47,11 +54,13 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 - ✅ [2.6 Welches Datum gilt für Nachtabrechnungen (Tageswechsel um 5 Uhr)?](#26-datum-für-nachtabrechnungen-6-uhr-knick)
 
 **4. Beleg-Foto**
+
 - ✅ [4.1 Muss das Belegfoto perspektivisch entzerrt werden?](#41-perspektivische-ausrichtung-nötig)
 - ✅ [4.2 In welchem Feld und Format wird das Belegfoto übertragen?](#42-base64-beleg-json-genaues-feldformat)
 - ✅ [4.3 Braucht es eine eigene Prüfmarkierung oder einen Dev-Button?](#43-prüfen-flag-für-buchhaltung--dev-button-app-intern)
 
 **5. Sonstiges**
+
 - – [5.1 Soll die App Mails verschicken?](#51-mailversand)
 - ✅ [5.2 Wird ein Stapelscanner für alte Belege gebraucht?](#52-stapelscanner-für-zurückliegende-belege)
 
@@ -64,7 +73,6 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 **Status:** beantwortet
 **Bereits klar (Paco):** Die Sandbox-Adresse (sandbox.flurbocash.c137-prime.de:666) ist nicht die Produktiv-Adresse — für den Echtbetrieb bekommen wir eine eigene URL von Yannik. Der Umstieg erfolgt, nachdem die Tests (aktuell in der SB) positiv abgeschlossen sind, nicht an einem festen Datum.
 **Frage an Yannik:** Erfolgt der Umstieg auf Produktivbetrieb standortweise nacheinander (erst SB, dann die anderen) oder für alle Standorte gleichzeitig?
-
 
 **Antwort:** je Standort
 
@@ -197,8 +205,16 @@ Präzisierung der ursprünglichen Frage ("zweimal Karte gezogen"): Gemeint sind 
 
 **Status:** teilweise geklärt
 Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragung mitschicken (hilft bei der Fehlersuche)? Wichtiger: Könnt ihr im Flurbocash-Dashboard testweise gesendete Abrechnungen aus der SB (wo wir aktuell testen) farblich von echten unterscheidbar machen? Zweck: Die Buchhaltung erkennt auf einen Blick, welche Übertragungen echt und zu prüfen sind und welche sie ignorieren kann — und wir können während der Entwicklung frei in der echten Umgebung testen, ohne echte Daten zu verfälschen oder die Buchhaltung zu verwirren.
+
+
 **Antwort:** Zur Testkennzeichnung: keine separate Farbmarkierung durch FC geplant — stattdessen das Wort "test" über die Kommentarfunktion in der Abrechnung mitschicken (siehe 2.3), damit die Buchhaltung es manuell erkennt.
 **Noch offen:** Ob FC bei jeder Übertragung einen eigenen Empfangs-Zeitstempel zurückmeldet, ist damit noch nicht beantwortet.
+
+**Frage an Yannik (Empfangsbestätigung, ergänzt 2026-09-30):** Die App wertet eure Antwort auf PUT settlements als Empfangsbestätigung: Erst bei 2xx zeigt sie "gesendet", und sie merkt sich die settlement_number aus der Antwort, damit eine spätere Korrektur die richtige Abrechnung überschreibt. Könnt ihr dafür bestätigen:
+(a) 2xx kommt erst, wenn die Abrechnung wirklich gespeichert ist, nicht schon beim Eingang?
+(b) Die Antwort ist immer JSON und enthält die vergebene settlement_number an der jetzigen Stelle (settlements[0].settlement_number)?
+(c) Könnt ihr darin zusätzlich einen Empfangszeitstempel mitschicken (siehe oben)?
+Falls ihr daran später etwas ändert, gebt uns bitte vorher Bescheid — sonst gehen Korrekturen unbemerkt ins Leere. (App-Seite seit Run 480: Fehlt die Nummer, gilt die Abrechnung trotzdem als gesendet, die MA bekommt aber einen Hinweis, eine Korrektur mit der IT abzustimmen.)
 
 [↑ zur Übersicht](#übersicht)
 

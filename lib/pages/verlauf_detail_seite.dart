@@ -138,12 +138,16 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
               ? 'Korrektur gesendet'
               : 'Abrechnung gesendet',
           inhalt: Text(
-            ergebnis.warKorrektur
+            (ergebnis.warKorrektur
                 ? 'Die Korrektur wurde erfolgreich an die Zentrale '
                     '(Flurbocash) übertragen und ersetzt die zuvor '
                     'gesendete Abrechnung.'
                 : 'Die Abrechnung wurde erfolgreich an die Zentrale '
-                    '(Flurbocash) übertragen.',
+                    '(Flurbocash) übertragen.')
+                + (ergebnis.ohneAbrechnungsnummer
+                    ? '\n\n'
+                        '${FlurbocashUploadErgebnis.ohneAbrechnungsnummerHinweis}'
+                    : ''),
           ),
         );
       }

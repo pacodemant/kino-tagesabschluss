@@ -650,12 +650,16 @@ class _TagesabschlussSchritt3SeiteState
           context,
           titel: korrektur ? 'Korrektur gesendet' : 'Abrechnung gesendet',
           inhalt: Text(
-            korrektur
+            (korrektur
                 ? 'Die Korrektur wurde erfolgreich an die Zentrale '
                     '(Flurbocash) übertragen und ersetzt die zuvor '
                     'gesendete Abrechnung.'
                 : 'Die Abrechnung wurde erfolgreich an die Zentrale '
-                    '(Flurbocash) übertragen.',
+                    '(Flurbocash) übertragen.')
+                + ((_letztesUploadErgebnis?.ohneAbrechnungsnummer ?? false)
+                    ? '\n\n'
+                        '${FlurbocashUploadErgebnis.ohneAbrechnungsnummerHinweis}'
+                    : ''),
           ),
         );
       }

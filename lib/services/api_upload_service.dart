@@ -170,12 +170,22 @@ class ApiUploadService {
       } catch (e) {
         await SendeProtokoll.eintragen('FC-Abrechnung merken FEHLGESCHLAGEN: $e');
       }
+    } else {
+      // Run 480: 2xx ohne erkennbare settlement_number (kein JSON, 204,
+      // geaenderte Antwortstruktur). FC hat trotzdem gespeichert, deshalb
+      // bewusst KEIN Fehler — ein Fehler fuehrte zum erneuten Senden
+      // ohne Nummer und damit zu einer zweiten FC-Abrechnung. Stattdessen
+      // Hinweis, dass eine spaetere Korrektur nicht ueberschreiben kann.
+      await SendeProtokoll.eintragen(
+        'FC hat keine Abrechnungsnummer zurückgemeldet -> nichts gemerkt',
+      );
     }
 
     return FlurbocashUploadErgebnis(
       ensureAntwort: ensureAntwort,
       settlementsAntwort: settlementsAntwort,
       warKorrektur: warKorrektur,
+      ohneAbrechnungsnummer: zuordnung == null,
     );
   }
 
@@ -678,12 +688,24 @@ class FlurbocashUploadErgebnis {
     this.ensureAntwort,
     this.settlementsAntwort,
     this.warKorrektur = false,
+    this.ohneAbrechnungsnummer = false,
   });
+
+  /// Zusatz fuer das Erfolgs-Popup, wenn [ohneAbrechnungsnummer] (Run 480).
+  static const String ohneAbrechnungsnummerHinweis =
+      'Hinweis: Flurbocash hat keine Abrechnungsnummer zurückgemeldet. '
+      'Eine spätere Korrektur für diesen Tag bitte vorher mit der IT '
+      'abstimmen.';
 
   /// true, wenn eine bereits gesendete Abrechnung des Tages bei FC
   /// ueberschrieben wurde (Run 478) — steuert "Korrektur gesendet" statt
   /// "Abrechnung gesendet" in der Erfolgsmeldung.
   final bool warKorrektur;
+
+  /// true, wenn FC mit 2xx geantwortet hat, aber keine settlement_number
+  /// ermittelt werden konnte (Run 480). Versand gilt trotzdem als
+  /// erfolgreich, die Abrechnung ist aber nicht fuer Korrekturen gemerkt.
+  final bool ohneAbrechnungsnummer;
 
   /// Geparste Antworten beider Aufrufe, nur fuer den Dev-Modus-Dialog
   /// "Server-Antwort anzeigen". settlementsAntwort ist null, falls die
