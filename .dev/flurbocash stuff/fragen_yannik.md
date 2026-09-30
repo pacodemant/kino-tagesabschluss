@@ -28,7 +28,7 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 
 **5. Sonstiges**
 
-- ⏳ [5.3 Können wir nach einem Verbindungsabbruch prüfen, was angekommen ist, und welches WLAN ist freigegeben?](#53-nachträgliche-prüfung-nach-verbindungsabbruch)
+- ⏳ [5.3 Welches WLAN ist für die Kasse freigegeben? (Prüf-Teil zurückgestellt)](#53-nachträgliche-prüfung-nach-verbindungsabbruch)
 
 **6. Vergütung & Rolle Yannik**
 
@@ -279,7 +279,7 @@ Dev-Dialog "Server-Antwort anzeigen" (Frage 3 unten).
 1. *(Zur Info an FC, keine App-Abhängigkeit — siehe Hinweis unten)* Wenn ihr eine Abrechnung mehrfach für denselben Tag empfangt (per settlement_number überschrieben) — sieht eure Buchhaltung im Dashboard einen Unterschied zwischen **(a) der ursprünglichen Erst-Abrechnung, (b) einer inhaltlich korrigierten Abrechnung und (c) einem versehentlichen Doppel-Versand mit exakt denselben Werten**? Oder sehen alle drei Fälle im Dashboard identisch aus? (Der technische Mechanismus selbst ist uns klar — Server überschreibt in allen drei Fällen gleich, siehe oben. Es geht hier nur um die Sicht der Buchhaltung im Dashboard.)
 2. *(Zur Info an FC)* Falls kein Unterschied sichtbar ist: wäre ein "zuletzt geändert"-Hinweis im Dashboard o. Ä. möglich? (Eine separate Meldung per Mail ist nicht vorgesehen, siehe 5.1.)
 3. Gibt es (oder plant ihr) eine Möglichkeit, VOR dem Senden abzufragen, welche settlement_numbers für einen Tagesbericht bereits belegt sind und mit welchen Werten? Ohne das muss die App blind auf ihren eigenen lokalen Zustand vertrauen, der nachweislich nicht immer zuverlässig ist (siehe oben). Hängt mit 5.3 zusammen (dort geht es um denselben fehlenden Leseweg, dort im Kontext Verbindungsabbruch).
-4. Wann/wodurch wird ein Tagesbericht bei euch als `finalized` markiert (`POST ensure` liefert dann `finalized: true`, keine weiteren Schreibzugriffe/Korrekturen mehr möglich)? Automatisch nach einer bestimmten Zeit, oder manuell durch die Buchhaltung? Relevant, weil eine späte Korrektur sonst plötzlich mit `400` abgelehnt werden könnte, ohne dass wir das vorher wissen — hängt auch mit 2.6 (5-Uhr-Knick) zusammen, falls die Finalisierung an der Kalendertag-Grenze hängt.
+4. *(Zurückgestellt, Paco 2026-09-30: für App/MA nicht nötig — Korrekturen kommen am selben Abend, die App erkennt den Zustand selbst über `finalized: true` in der ensure-Antwort bzw. die 400; ob die Buchhaltung danach korrigieren kann, ist Sache zwischen Buchhaltung und FC. Bessere MA-Meldung bei Bedarf ohne Yannik umsetzbar.)* Wann/wodurch wird ein Tagesbericht bei euch als `finalized` markiert (`POST ensure` liefert dann `finalized: true`, keine weiteren Schreibzugriffe/Korrekturen mehr möglich)? Automatisch nach einer bestimmten Zeit, oder manuell durch die Buchhaltung? Relevant, weil eine späte Korrektur sonst plötzlich mit `400` abgelehnt werden könnte, ohne dass wir das vorher wissen — hängt auch mit 2.6 (5-Uhr-Knick) zusammen, falls die Finalisierung an der Kalendertag-Grenze hängt.
 5. Alternative zum Nummern-Tracking: Könnte die App bei einer Korrektur stattdessen nur ein Flag senden (z. B. `is_correction: true` oder `overwrite_last: true`), damit FC selbst die zuletzt für den Tag eingereichte Abrechnung überschreibt — ohne dass die App die genaue `settlement_number` kennen muss? Laut aktueller Doku ist das nicht vorgesehen (der Client muss die Nummer explizit angeben, siehe Verifiziert oben), aber vielleicht gibt es das doch oder ihr könntet es ergänzen.
 
 **Hinweis zu 1./2. (Paco, 2026-09-30):** Wie Korrekturen im Dashboard erscheinen, liegt in der Verantwortung von FC, nicht der App. Die App schickt die richtige settlement_number und `sent_at` mit, ob FC das anzeigt, entscheidet Yannik. Realistisch sind Korrekturen ohnehin kurz nach dem Erstversand (selber Abend), also vor der Bearbeitung durch die Buchhaltung. Späte Korrekturen begrenzt FC selbst über `finalized` (Frage 4, für die App relevant).
@@ -365,7 +365,8 @@ Was soll passieren, wenn das Limit erreicht ist? Ein Mailversand ist laut aktuel
 
 ### 5.3 Nachträgliche Prüfung nach Verbindungsabbruch
 
-**Status:** offen
+**Status:** Prüf-Teil zurückgestellt (Paco, 2026-09-30), WLAN-Teil offen
+**Zurückgestellt, weil:** Betrifft nur den seltenen Fall "Abrechnung angekommen, Antwort verloren". Folge ist höchstens ein Duplikat bei FC (in FC löschbar, außer Nr. 1), für die MA ändert sich nichts (einfach nochmal senden). Erst nachfragen, wenn Duplikate in der Praxis auffallen. Vorher prüfen (Dev-Modus "Server-Antwort anzeigen", seit Run 476), ob die ensure-Antwort vorhandene Settlements schon mitliefert, dann könnte die App das selbst lösen.
 Falls die Verbindung mittendrin abbricht und wir nicht sicher wissen, ob eine Abrechnung angekommen ist — können wir das nachträglich bei euch prüfen? Kontext: WLAN-Probleme am Standort sind bekannt (Gäste-WLAN blockiert den Kassen-Port), kein rein theoretischer Fall. Bestätigt (2026-08-25): Die aktuelle API-Doku kennt nur `POST ensure` und `PUT settlements`, keinen Leseweg (GET) — hängt inhaltlich mit 3.1 (Frage 3) zusammen.
 
 **Zusätzliche Frage:** Das Gäste-WLAN wird für den Kassenbetrieb ohnehin nicht genutzt (sperrt den Kassen-Port). Welches WLAN ist stattdessen an den einzelnen Standorten (SB, GO, AT, CO, BT) für den Flurbocash-Zugriff vorgesehen/freigegeben?
