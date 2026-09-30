@@ -18,7 +18,7 @@ Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
 
 **2. Abrechnungsdaten & Format**
 
-- ◐ [2.4 Ist eure Antwort eine verlässliche Empfangsbestätigung (inkl. Zeitstempel), und wie kennzeichnen wir Tests?](#24-zeitstempel-der-übertragung--testkennzeichnung-im-dashboard-dev-flag)
+- ◐ [2.4 Ist eure Antwort eine verlässliche Empfangsbestätigung, und wie kennzeichnen wir Tests?](#24-zeitstempel-der-übertragung--testkennzeichnung-im-dashboard-dev-flag)
 
 **3. Korrektur & Duplikate**
 
@@ -208,12 +208,11 @@ Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragu
 
 
 **Antwort:** Zur Testkennzeichnung: keine separate Farbmarkierung durch FC geplant — stattdessen das Wort "test" über die Kommentarfunktion in der Abrechnung mitschicken (siehe 2.3), damit die Buchhaltung es manuell erkennt.
-**Noch offen:** Ob FC bei jeder Übertragung einen eigenen Empfangs-Zeitstempel zurückmeldet, ist damit noch nicht beantwortet.
+**Entfällt (Paco, 2026-09-30):** Zeitstempel der Übertragung — die App schickt selbst `sent_at` (Gerätezeit) mit, ein Empfangs-Zeitstempel vom Server wird nicht gebraucht (keine App-Logik würde ihn nutzen). Ob `sent_at` im Dashboard sichtbar ist, siehe 3.1 Frage 2.
 
 **Frage an Yannik (Empfangsbestätigung, ergänzt 2026-09-30):** Die App wertet eure Antwort auf PUT settlements als Empfangsbestätigung: Erst bei 2xx zeigt sie "gesendet", und sie merkt sich die settlement_number aus der Antwort, damit eine spätere Korrektur die richtige Abrechnung überschreibt. Könnt ihr dafür bestätigen:
 (a) 2xx kommt erst, wenn die Abrechnung wirklich gespeichert ist, nicht schon beim Eingang?
 (b) Die Antwort ist immer JSON und enthält die vergebene settlement_number an der jetzigen Stelle (settlements[0].settlement_number)?
-(c) Könnt ihr darin zusätzlich einen Empfangszeitstempel mitschicken (siehe oben)?
 Falls ihr daran später etwas ändert, gebt uns bitte vorher Bescheid — sonst gehen Korrekturen unbemerkt ins Leere. (App-Seite seit Run 480: Fehlt die Nummer, gilt die Abrechnung trotzdem als gesendet, die MA bekommt aber einen Hinweis, eine Korrektur mit der IT abzustimmen.)
 
 [↑ zur Übersicht](#übersicht)
@@ -271,7 +270,7 @@ Dev-Dialog "Server-Antwort anzeigen" (Frage 3 unten).
 **Verbleibende Fragen an Yannik:**
 
 1. Wenn ihr eine Abrechnung mehrfach für denselben Tag empfangt (per settlement_number überschrieben) — sieht eure Buchhaltung im Dashboard einen Unterschied zwischen **(a) der ursprünglichen Erst-Abrechnung, (b) einer inhaltlich korrigierten Abrechnung und (c) einem versehentlichen Doppel-Versand mit exakt denselben Werten**? Oder sehen alle drei Fälle im Dashboard identisch aus? (Der technische Mechanismus selbst ist uns klar — Server überschreibt in allen drei Fällen gleich, siehe oben. Es geht hier nur um die Sicht der Buchhaltung im Dashboard.)
-2. Falls kein Unterschied sichtbar ist: wäre ein "zuletzt geändert"-Hinweis im Dashboard o. Ä. möglich? (Eine separate Meldung per Mail ist nicht vorgesehen, siehe 5.1.)
+2. Falls kein Unterschied sichtbar ist: wäre ein "zuletzt geändert"-Hinweis im Dashboard o. Ä. möglich? (Eine separate Meldung per Mail ist nicht vorgesehen, siehe 5.1.) Ergänzung (2026-09-30): Die App schickt bei jedem Versand das Feld `sent_at` (Sendezeitpunkt) mit — wird das im Dashboard angezeigt, oder könnte es angezeigt werden? Dann sähe die Buchhaltung, ob eine Korrektur erst nach ihrer Prüfung kam.
 3. Gibt es (oder plant ihr) eine Möglichkeit, VOR dem Senden abzufragen, welche settlement_numbers für einen Tagesbericht bereits belegt sind und mit welchen Werten? Ohne das muss die App blind auf ihren eigenen lokalen Zustand vertrauen, der nachweislich nicht immer zuverlässig ist (siehe oben). Hängt mit 5.3 zusammen (dort geht es um denselben fehlenden Leseweg, dort im Kontext Verbindungsabbruch).
 4. Wann/wodurch wird ein Tagesbericht bei euch als `finalized` markiert (`POST ensure` liefert dann `finalized: true`, keine weiteren Schreibzugriffe/Korrekturen mehr möglich)? Automatisch nach einer bestimmten Zeit, oder manuell durch die Buchhaltung? Relevant, weil eine späte Korrektur sonst plötzlich mit `400` abgelehnt werden könnte, ohne dass wir das vorher wissen — hängt auch mit 2.6 (5-Uhr-Knick) zusammen, falls die Finalisierung an der Kalendertag-Grenze hängt.
 5. Alternative zum Nummern-Tracking: Könnte die App bei einer Korrektur stattdessen nur ein Flag senden (z. B. `is_correction: true` oder `overwrite_last: true`), damit FC selbst die zuletzt für den Tag eingereichte Abrechnung überschreibt — ohne dass die App die genaue `settlement_number` kennen muss? Laut aktueller Doku ist das nicht vorgesehen (der Client muss die Nummer explizit angeben, siehe Verifiziert oben), aber vielleicht gibt es das doch oder ihr könntet es ergänzen.
