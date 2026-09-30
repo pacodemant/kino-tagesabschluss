@@ -282,6 +282,8 @@ void main() {
     );
     await tester.tap(find.text('Korrektur an Büro senden'));
     await tester.pumpAndSettle();
+    expect(find.text('Korrektur senden?'), findsOneWidget);
+    expect(find.text('Abrechnung senden?'), findsNothing);
     expect(
       find.textContaining('durch diese Korrektur ersetzt'),
       findsOneWidget,

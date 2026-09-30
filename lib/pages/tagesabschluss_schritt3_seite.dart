@@ -754,7 +754,7 @@ class _TagesabschlussSchritt3SeiteState
     final bool? bestaetigt = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) => AlertDialog(
-        title: const Text('Abrechnung senden?'),
+        title: Text(istKorrektur ? 'Korrektur senden?' : 'Abrechnung senden?'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[

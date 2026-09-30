@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 482a: Bestätigungsdialog vor dem Senden heißt bei einer
+  Korrektur "Korrektur senden?" statt "Abrechnung senden?" (Schritt 3)
+  bzw. statt "Erneut senden?" (Verlauf-Detail). Paco-Wunsch. Der
+  Korrektur-Test aus Run 478 prüft den Titel mit.
 - Run 482: Hinweis im Dialog "Du hast die Abrechnung bereits
   gesendet." (Schritt 3). Auslöser: Paco hat nach dem Senden
   Bistro-SOLL um 10 ct geändert und konnte nicht erneut senden. Das

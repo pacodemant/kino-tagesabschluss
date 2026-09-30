@@ -84,7 +84,7 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
 
     final bool? bestaetigt = await zeigeBestaetigungsDialog(
       context,
-      titel: 'Erneut senden?',
+      titel: istKorrektur ? 'Korrektur senden?' : 'Erneut senden?',
       inhalt: istKorrektur
           ? 'Diese Abrechnung erneut an die Zentrale senden? Die bereits '
               'gesendete Abrechnung dieses Tages wird dadurch ersetzt.'
