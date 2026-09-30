@@ -157,6 +157,13 @@ Aktuell läuft die App als PWA über GitHub Pages (Pacos privater GitHub-Account
 
 **Neue Frage (2026-09-22):** Hat Yannik sich das inzwischen angeschaut — wie ist der Stand, ist ein Umzug auf den Kino-Server jetzt möglich?
 
+**Ergänzung (2026-09-30), gesammelte Nachricht an Yannik vorbereitet:** Zusätzlich zu SFTP/Ordner/HTTPS (01.09.) neu:
+- **Adresse/Pfad:** Domain + ggf. Unterordner vor dem ersten Upload nötig (wird beim Build als `--base-href` fest eingetragen, aktuell `/kino-tagesabschluss/`).
+- **CORS:** FC-API erlaubt derzeit nur `https://pacodemant.github.io` (`access-control-allow-origin`). Neue App-Adresse muss auf Sandbox UND Produktivservern ergänzt werden, sonst blockiert der Browser jeden Upload (entfällt bei gleicher Adresse wie die API).
+- **WLAN:** App-Adresse muss aus dem Kassen-WLAN der Standorte erreichbar sein (Gäste-WLAN sperrt z. B. Port 666), idealerweise Port 443.
+- Optional: kein langes Browser-Caching für index.html, flutter_bootstrap.js, main.dart.js (`Cache-Control: no-cache`).
+- Zur Info (Paco-Aufgabe): Durch die neue Adresse ist localStorage getrennt, d. h. alle Handys müssen die App neu installieren und neu einrichten (API-Key, TIDs, Verlauf weg). Vorher sicherstellen, dass alle Abrechnungen bestätigt gesendet sind.
+
 [↑ zur Übersicht](#übersicht)
 
 ---
