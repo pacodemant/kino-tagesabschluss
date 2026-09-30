@@ -201,6 +201,54 @@ void main() {
   });
 
   testWidgets(
+      'Bereits gesendet (Run 482): erneuter Tipp nach Versand -> Dialog '
+      'mit "nochmal senden ist nicht nötig", kein zweiter Upload',
+      (WidgetTester tester) async {
+    int uploads = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TagesabschlussSchritt3Seite(
+          argumente: argumente(),
+          autoSaveUeberschreibung: autoSaveErfolgFake,
+          uploadUeberschreibung: (TagesabschlussFinal _) async {
+            uploads++;
+            return const FlurbocashUploadErgebnis();
+          },
+          lokalerSendeMerkerUeberschreibung: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await sendeVersuchen(tester);
+    await tester.tap(find.text('Verstanden'));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    // Folgedialog "Was möchtest du als nächstes tun?" per Tipp neben den
+    // Dialog schließen (barrierDismissible).
+    await tester.tapAt(const Offset(5, 5));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    await tester.tap(find.text('Abrechnung an Büro senden'));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(
+      find.text('Du hast die Abrechnung bereits gesendet.'),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('nochmal senden ist nicht nötig'),
+      findsOneWidget,
+    );
+    expect(uploads, 1);
+  });
+
+  testWidgets(
       'Korrektur (Run 478): heute schon gesendet -> Button "Korrektur an '
       'Büro senden", Hinweis im Dialog, Popup "Korrektur gesendet"',
       (WidgetTester tester) async {

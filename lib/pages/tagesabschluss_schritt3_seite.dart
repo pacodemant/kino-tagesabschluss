@@ -899,8 +899,16 @@ class _TagesabschlussSchritt3SeiteState
                 ? 'Du hast die Abrechnung bereits gesendet.'
                 : 'Was möchtest du als nächstes tun?',
           ),
+          // Run 482: Beruhigender Satz, falls die MA nach dem Senden noch
+          // etwas geändert hat, das FC nicht betrifft (z. B. SOLL-Werte,
+          // Signatur unverändert) — sie soll nicht glauben, ihre
+          // Änderung sei verloren. Sendepflichtige Änderungen landen gar
+          // nicht hier, sondern bei "Korrektur an Büro senden".
           content: bereitsGesendetVorKlick
-              ? const Text('Was möchtest du als nächstes tun?')
+              ? const Text(
+                  'Deine Änderungen sind gespeichert – nochmal senden ist '
+                  'nicht nötig.\n\nWas möchtest du als nächstes tun?',
+                )
               : null,
           actions: <Widget>[
             if (kino?.hatWechselgeld == true)

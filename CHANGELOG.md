@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 482: Hinweis im Dialog "Du hast die Abrechnung bereits
+  gesendet." (Schritt 3). Auslöser: Paco hat nach dem Senden
+  Bistro-SOLL um 10 ct geändert und konnte nicht erneut senden. Das
+  ist korrekt, denn SOLL-Werte gehen nicht an Flurbocash und die
+  Sende-Signatur bleibt gleich. Die MA erfuhr aber nicht, dass nichts
+  zu tun ist. Neuer Satz vor "Was möchtest du als nächstes tun?":
+  "Deine Änderungen sind gespeichert – nochmal senden ist nicht
+  nötig." Bewusst ohne Aufzählung der gesendeten Felder
+  (Paco-Entscheidung: zu verwirrend für MA). 1 neuer Widget-Test
+  (zweiter Tipp nach dem Versand -> Hinweis, kein zweiter Upload).
 - Run 481 (tests): 3 seit 28.09. fehlschlagende Tests repariert
   (sende_nachmarkieren_test.dart 2x, sende_protokoll_test.dart
   "ersetze ..."). Ursache: festes Testdatum 18.09.2026 bei gesendeten

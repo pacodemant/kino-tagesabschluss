@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.136+481 · Run 481
+Version: 0.9.137+482 · Run 482
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 481)
+## Laufender Entwicklungsstand (Run 482)
+
+- Run 482 Dialog "Du hast die Abrechnung bereits gesendet." zeigt
+  zusätzlich "Deine Änderungen sind gespeichert – nochmal senden ist
+  nicht nötig." (Paco-Fund: Bistro-SOLL geändert, geht nicht an FC,
+  Signatur unverändert -> MA war verunsichert).
 
 - Run 481 (tests) Verlaufs-Tests mit festem Datum 18.09.2026 auf den
   heutigen Tag umgestellt; sie scheiterten seit 28.09. an der
