@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 481 (tests): 3 seit 28.09. fehlschlagende Tests repariert
+  (sende_nachmarkieren_test.dart 2x, sende_protokoll_test.dart
+  "ersetze ..."). Ursache: festes Testdatum 18.09.2026 bei gesendeten
+  Verlaufseinträgen. Die Verlauf-Aufbewahrung (Run 451/452, 10 Tage ab
+  DateTime.now()) entfernte diese Einträge, sobald das Datum zu alt
+  war. Die Tests laufen jetzt auf dem heutigen Tag (_tag/_am/_iso).
+  Der reine Formattest für das SendeProtokoll behält sein festes
+  Datum. Kein App-Code geändert, App-Verhalten war korrekt.
 - Run 480: Hinweis bei FC-Antwort ohne Abrechnungsnummer. Antwortet
   Flurbocash mit 2xx, liefert aber keine settlement_number (kein JSON,
   204, geänderte Antwortstruktur), gilt der Versand weiterhin als

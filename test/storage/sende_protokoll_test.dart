@@ -1,11 +1,19 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart' show DateUtils;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Run 481: Testtag relativ zu heute statt fest 18.09.2026 — sonst
+// entfernt die Verlauf-Aufbewahrung (10 Tage, Run 451/452) die
+// gesendeten Testeinträge, sobald das feste Datum zu alt ist.
+final DateTime _tag = DateUtils.dateOnly(DateTime.now());
+DateTime _am(int stunde, int minute, [int sekunde = 0]) =>
+    DateTime(_tag.year, _tag.month, _tag.day, stunde, minute, sekunde);
 
 TagesabschlussFinal _abschluss({
   required DateTime createdAt,
@@ -14,7 +22,7 @@ TagesabschlussFinal _abschluss({
   return TagesabschlussFinal(
     kinoId: 'kino_01',
     kinoName: 'Test-Kino',
-    datum: DateTime(2026, 9, 18),
+    datum: _tag,
     createdAt: createdAt,
     scheineCent: 0,
     loseMuenzenCent: 0,
@@ -146,14 +154,14 @@ void main() {
     test(
       'markiereAlsGesendet: Treffer -> true und Protokoll "gefunden"',
       () async {
-        final DateTime createdAt = DateTime(2026, 9, 18, 14, 0, 0);
+        final DateTime createdAt = _am(14, 0, 0);
         await LokalerSpeicher.speichereFinalenTagesabschluss(
           _abschluss(createdAt: createdAt),
         );
         final bool ok = await LokalerSpeicher.markiereAlsGesendet(
           'kino_01',
           createdAt,
-          DateTime(2026, 9, 18, 14, 5),
+          _am(14, 5),
         );
         expect(ok, isTrue);
         final List<String> zeilen = await SendeProtokoll.laden();
@@ -165,25 +173,25 @@ void main() {
       'markiereAlsGesendet: kein Treffer -> false und "NICHT gefunden" mit vorhandenen createdAt',
       () async {
         await LokalerSpeicher.speichereFinalenTagesabschluss(
-          _abschluss(createdAt: DateTime(2026, 9, 18, 14, 0, 0)),
+          _abschluss(createdAt: _am(14, 0, 0)),
         );
         final bool ok = await LokalerSpeicher.markiereAlsGesendet(
           'kino_01',
-          DateTime(2026, 9, 18, 15, 0, 0),
-          DateTime(2026, 9, 18, 15, 5),
+          _am(15, 0, 0),
+          _am(15, 5),
         );
         expect(ok, isFalse);
         final String letzte = (await SendeProtokoll.laden()).last;
         expect(letzte, contains('NICHT gefunden'));
-        expect(letzte, contains('2026-09-18T14:00:00'));
+        expect(letzte, contains(_am(14, 0).toIso8601String()));
       },
     );
 
     test('markiereAlsGesendet: leerer Verlauf -> false', () async {
       final bool ok = await LokalerSpeicher.markiereAlsGesendet(
         'kino_01',
-        DateTime(2026, 9, 18),
-        DateTime(2026, 9, 18),
+        _tag,
+        _tag,
       );
       expect(ok, isFalse);
     });
@@ -193,12 +201,12 @@ void main() {
       () async {
         await LokalerSpeicher.speichereFinalenTagesabschluss(
           _abschluss(
-            createdAt: DateTime(2026, 9, 18, 14, 0, 0),
-            gesendetAm: DateTime(2026, 9, 18, 14, 5),
+            createdAt: _am(14, 0, 0),
+            gesendetAm: _am(14, 5),
           ),
         );
         await LokalerSpeicher.ersetzeFinalenTagesabschluss(
-          _abschluss(createdAt: DateTime(2026, 9, 18, 16, 0, 0)),
+          _abschluss(createdAt: _am(16, 0, 0)),
         );
         final String letzte = (await SendeProtokoll.laden()).last;
         expect(letzte, contains('Eintrag ersetzt'));

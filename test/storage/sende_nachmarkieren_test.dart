@@ -1,16 +1,28 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart' show DateUtils;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
+import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+// Run 481: Testtag relativ zu heute statt fest 18.09.2026 — sonst
+// entfernt die Verlauf-Aufbewahrung (10 Tage, Run 451/452) die
+// gesendeten Testeinträge, sobald das feste Datum zu alt ist.
+final DateTime _tag = DateUtils.dateOnly(DateTime.now());
+DateTime _am(int stunde, int minute, [int sekunde = 0]) =>
+    DateTime(_tag.year, _tag.month, _tag.day, stunde, minute, sekunde);
+final String _iso = DatumsHelper.isoDatum(_tag);
+final String _isoVortag =
+    DatumsHelper.isoDatum(_tag.subtract(const Duration(days: 1)));
 
 TagesabschlussFinal _abschluss(DateTime createdAt) {
   return TagesabschlussFinal(
     kinoId: 'kino_01',
     kinoName: 'Test-Kino',
-    datum: DateTime(2026, 9, 18),
+    datum: _tag,
     createdAt: createdAt,
     scheineCent: 0,
     loseMuenzenCent: 0,
@@ -34,8 +46,8 @@ TagesabschlussFinal _abschluss(DateTime createdAt) {
 void main() {
   group('LokalerSpeicher.markiereAlsGesendetFallsSignaturPasst (Run 465)', () {
     late Directory tempDir;
-    final DateTime gesendetUm = DateTime(2026, 9, 18, 19, 31, 46);
-    final DateTime kopieCreatedAt = DateTime(2026, 9, 18, 19, 33, 5);
+    final DateTime gesendetUm = _am(19, 31, 46);
+    final DateTime kopieCreatedAt = _am(19, 33, 5);
 
     Future<DateTime?> gesendetAmDerKopie() async {
       final List<TagesabschlussFinal> alle =
@@ -71,7 +83,7 @@ void main() {
         await LokalerSpeicher.speichereSendeBestaetigung(
           'kino_01',
           'SIG',
-          isoDatum: '2026-09-18',
+          isoDatum: _iso,
           zeitpunkt: gesendetUm,
         );
         final bool ok =
@@ -79,7 +91,7 @@ void main() {
               kinoId: 'kino_01',
               createdAt: kopieCreatedAt,
               aktuelleSignatur: 'SIG',
-              heutigesIsoDatum: '2026-09-18',
+              heutigesIsoDatum: _iso,
             );
         expect(ok, isTrue);
         expect(await gesendetAmDerKopie(), gesendetUm);
@@ -92,7 +104,7 @@ void main() {
         await LokalerSpeicher.speichereSendeBestaetigung(
           'kino_01',
           'SIG',
-          isoDatum: '2026-09-18',
+          isoDatum: _iso,
           zeitpunkt: gesendetUm,
         );
         final bool ok =
@@ -100,7 +112,7 @@ void main() {
               kinoId: 'kino_01',
               createdAt: kopieCreatedAt,
               aktuelleSignatur: 'ANDERE',
-              heutigesIsoDatum: '2026-09-18',
+              heutigesIsoDatum: _iso,
             );
         expect(ok, isFalse);
         expect(await gesendetAmDerKopie(), isNull);
@@ -111,7 +123,7 @@ void main() {
       await LokalerSpeicher.speichereSendeBestaetigung(
         'kino_01',
         'SIG',
-        isoDatum: '2026-09-17',
+        isoDatum: _isoVortag,
         zeitpunkt: gesendetUm,
       );
       final bool ok =
@@ -119,7 +131,7 @@ void main() {
             kinoId: 'kino_01',
             createdAt: kopieCreatedAt,
             aktuelleSignatur: 'SIG',
-            heutigesIsoDatum: '2026-09-18',
+            heutigesIsoDatum: _iso,
           );
       expect(ok, isFalse);
       expect(await gesendetAmDerKopie(), isNull);
@@ -131,7 +143,7 @@ void main() {
             kinoId: 'kino_01',
             createdAt: kopieCreatedAt,
             aktuelleSignatur: 'SIG',
-            heutigesIsoDatum: '2026-09-18',
+            heutigesIsoDatum: _iso,
           );
       expect(ok, isFalse);
     });
@@ -142,15 +154,15 @@ void main() {
         await LokalerSpeicher.speichereSendeBestaetigung(
           'kino_01',
           'SIG',
-          isoDatum: '2026-09-18',
+          isoDatum: _iso,
         );
-        final DateTime jetzt = DateTime(2026, 9, 18, 20, 0);
+        final DateTime jetzt = _am(20, 0);
         final bool ok =
             await LokalerSpeicher.markiereAlsGesendetFallsSignaturPasst(
               kinoId: 'kino_01',
               createdAt: kopieCreatedAt,
               aktuelleSignatur: 'SIG',
-              heutigesIsoDatum: '2026-09-18',
+              heutigesIsoDatum: _iso,
               jetzt: jetzt,
             );
         expect(ok, isTrue);
@@ -162,15 +174,15 @@ void main() {
       await LokalerSpeicher.speichereSendeBestaetigung(
         'kino_01',
         'SIG',
-        isoDatum: '2026-09-18',
+        isoDatum: _iso,
         zeitpunkt: gesendetUm,
       );
       final bool ok =
           await LokalerSpeicher.markiereAlsGesendetFallsSignaturPasst(
             kinoId: 'kino_01',
-            createdAt: DateTime(2026, 9, 18, 23, 0),
+            createdAt: _am(23, 0),
             aktuelleSignatur: 'SIG',
-            heutigesIsoDatum: '2026-09-18',
+            heutigesIsoDatum: _iso,
           );
       expect(ok, isFalse);
     });
@@ -181,7 +193,7 @@ void main() {
         await LokalerSpeicher.speichereSendeBestaetigung(
           'kino_01',
           'SIG',
-          isoDatum: '2026-09-18',
+          isoDatum: _iso,
           zeitpunkt: gesendetUm,
         );
         expect(
@@ -191,7 +203,7 @@ void main() {
         await LokalerSpeicher.speichereSendeBestaetigung(
           'kino_01',
           'SIG2',
-          isoDatum: '2026-09-18',
+          isoDatum: _iso,
         );
         expect(
           await LokalerSpeicher.ladeSendeBestaetigungZeit('kino_01'),
@@ -200,7 +212,7 @@ void main() {
         await LokalerSpeicher.speichereSendeBestaetigung(
           'kino_01',
           'SIG3',
-          isoDatum: '2026-09-18',
+          isoDatum: _iso,
           zeitpunkt: gesendetUm,
         );
         await LokalerSpeicher.loescheSendeBestaetigung('kino_01');
