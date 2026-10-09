@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.137+482 · Run 482a
+Version: 0.9.138+483 · Run 483
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,15 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 482)
+## Laufender Entwicklungsstand (Run 483)
+
+- Run 483 Bugfix: Kartenart-Beträge im Schritt-2-Entwurf werden nach
+  Namen gespeichert (`zahlungsartBetraegeNachName`, Helfer
+  `Schritt2ZahlungsartEntwurf`) statt nach Position. Vorher verrutschten
+  sie beim Neuaufbau von Schritt 2 nach einem Scan (Beleg-Reihenfolge
+  != Config-Reihenfolge), am 06.10.2026 live bei FC: MasterCard ->
+  Lastschrift, Visa -> MasterCard. Das alte Positions-Format wird nur
+  noch für Belege ohne Scan übernommen.
 
 - Run 482 Dialog "Du hast die Abrechnung bereits gesendet." zeigt
   zusätzlich "Deine Änderungen sind gespeichert – nochmal senden ist

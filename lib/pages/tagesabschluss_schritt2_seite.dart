@@ -9,6 +9,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_zahlungsart_entwurf.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/ausgaben_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_sub_kacheln.dart';
@@ -571,60 +572,54 @@ class _TagesabschlussSchritt2SeiteState
       }
     }
 
-    // Zahlungsarten-Tabelle pro Beleg wiederherstellen
-    final Object? betragRoh = daten['zahlungsartBetragCentWerte'];
-    if (mounted && betragRoh is List<dynamic>) {
-      // Neues Format: List<List<dynamic>>  –  altes Format: List<dynamic> (nur Beleg 0)
-      final bool isNeuesFormat =
-          betragRoh.isNotEmpty && betragRoh.first is List<dynamic>;
-      if (isNeuesFormat) {
-        setState(() {
-          for (int b = 0; b < _zahlungsartZeilen.length && b < betragRoh.length; b++) {
-            final List<dynamic> bBetrag = betragRoh[b] as List<dynamic>;
-            for (int i = 0;
-                i < _zahlungsartZeilen[b].length && i < bBetrag.length;
-                i++) {
-              _zahlungsartZeilen[b][i].betragCentWert = (bBetrag[i] as num?)?.toInt();
-            }
-            _wendeZahlungsartZustandNachLadenAn(b);
-          }
-        });
-        for (int b = 0; b < _zahlungsartZeilen.length && b < betragRoh.length; b++) {
-          final List<dynamic> bBetrag = betragRoh[b] as List<dynamic>;
-          for (int i = 0;
-              i < _zahlungsartZeilen[b].length && i < bBetrag.length;
-              i++) {
-            final int? betrag = _zahlungsartZeilen[b][i].betragCentWert;
-            if (betrag != null) {
-              _setzeControllerText(
-                _zahlungsartZeilen[b][i].betragController,
-                TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
-              );
-            }
-          }
+    // Zahlungsarten-Tabelle pro Beleg wiederherstellen. Seit Run 483 nach
+    // Kartenart-Namen (siehe Schritt2ZahlungsartEntwurf), das alte
+    // Positions-Format nur noch als abgesicherter Fallback.
+    final Object? nachNameRoh = daten[Schritt2ZahlungsartEntwurf.entwurfKey];
+    final Object? betragRoh = daten[Schritt2ZahlungsartEntwurf.altEntwurfKey];
+    if (!mounted) return;
+    if (nachNameRoh is List<dynamic>) {
+      setState(() {
+        for (int b = 0;
+            b < _zahlungsartZeilen.length && b < nachNameRoh.length;
+            b++) {
+          final Object? bRoh = nachNameRoh[b];
+          if (bRoh is! List<dynamic>) continue;
+          _zahlungsartZeilen[b] = Schritt2ZahlungsartEntwurf.wiederherstellen(
+            _zahlungsartZeilen[b],
+            bRoh,
+          );
+          _wendeZahlungsartZustandNachLadenAn(b);
         }
-      } else {
-        // Altes Format: flache Liste → nur Beleg 0
-        if (_zahlungsartZeilen.isNotEmpty) {
-          setState(() {
-            for (int i = 0;
-                i < _zahlungsartZeilen[0].length && i < betragRoh.length;
-                i++) {
-              _zahlungsartZeilen[0][i].betragCentWert = (betragRoh[i] as num?)?.toInt();
-            }
-            _wendeZahlungsartZustandNachLadenAn(0);
-          });
-          for (int i = 0;
-              i < _zahlungsartZeilen[0].length && i < betragRoh.length;
-              i++) {
-            final int? betrag = _zahlungsartZeilen[0][i].betragCentWert;
-            if (betrag != null) {
-              _setzeControllerText(
-                _zahlungsartZeilen[0][i].betragController,
-                TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
-              );
-            }
-          }
+      });
+    } else if (betragRoh is List<dynamic> && betragRoh.isNotEmpty) {
+      // Neues Format: List<List<dynamic>>  –  altes Format: List<dynamic> (nur Beleg 0)
+      final List<List<dynamic>> proBeleg = betragRoh.first is List<dynamic>
+          ? betragRoh.whereType<List<dynamic>>().toList()
+          : <List<dynamic>>[betragRoh];
+      setState(() {
+        for (int b = 0;
+            b < _zahlungsartZeilen.length && b < proBeleg.length;
+            b++) {
+          final bool uebernommen =
+              Schritt2ZahlungsartEntwurf.wiederherstellenAltformat(
+            _zahlungsartZeilen[b],
+            proBeleg[b],
+            scanHatStattgefunden:
+                b < _scanHatStattgefunden.length && _scanHatStattgefunden[b],
+          );
+          if (uebernommen) _wendeZahlungsartZustandNachLadenAn(b);
+        }
+      });
+    }
+    for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen) {
+      for (final ZahlungsartZeile zeile in belegZeilen) {
+        final int? betrag = zeile.betragCentWert;
+        if (betrag != null) {
+          _setzeControllerText(
+            zeile.betragController,
+            TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
+          );
         }
       }
     }
@@ -657,13 +652,8 @@ class _TagesabschlussSchritt2SeiteState
         'scanBelegNrBis': _scanBelegNrBis,
         'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
         'personalgetraenkeGebot': _personalgetraenkeGebot,
-        'zahlungsartBetragCentWerte': <List<int?>>[
-          for (final List<ZahlungsartZeile> belegZeilen in _zahlungsartZeilen)
-            belegZeilen
-                .where((ZahlungsartZeile z) => !z.istUnbekannt)
-                .map((ZahlungsartZeile z) => z.betragCentWert)
-                .toList(),
-        ],
+        Schritt2ZahlungsartEntwurf.entwurfKey:
+            Schritt2ZahlungsartEntwurf.zumSpeichern(_zahlungsartZeilen),
       },
     );
   }

@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 483: Bugfix verrutschte Kartenart-Beträge. Auslöser: Yannik sah
+  am 06.10.2026 bei allen drei Terminals MasterCard im Feld Lastschrift
+  und Visa im Feld MasterCard, die Summe stimmte. Ursache (seit Run
+  274f): Der Schritt-2-Entwurf speicherte die Kartenart-Beträge nur als
+  Positionsliste. Nach dem Scan stehen die Zeilen in Beleg-Reihenfolge,
+  beim Neuaufbau von Schritt 2 (zurück zu Schritt 1 und wieder vor,
+  Schrittleisten-Sprung, PWA-Reload) wieder in Config-Reihenfolge, und
+  die Beträge wurden nach Position zugewiesen. KI und FC waren nicht
+  beteiligt. Neu: Speichern als {name, betragCent} pro Beleg unter
+  `zahlungsartBetraegeNachName`, inkl. Reihenfolge
+  (Schritt2ZahlungsartEntwurf). Das alte Format
+  `zahlungsartBetragCentWerte` wird nur noch gelesen und nur für Belege
+  ohne Scan übernommen, sonst verworfen. 4 neue Unit-Tests.
+
 - Run 482a: Bestätigungsdialog vor dem Senden heißt bei einer
   Korrektur "Korrektur senden?" statt "Abrechnung senden?" (Schritt 3)
   bzw. statt "Erneut senden?" (Verlauf-Detail). Paco-Wunsch. Der
