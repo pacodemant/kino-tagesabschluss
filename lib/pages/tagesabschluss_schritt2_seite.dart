@@ -2010,15 +2010,6 @@ class _TagesabschlussSchritt2SeiteState
         .toList();
   }
 
-  /// true, wenn eine "unbekannte Kartenart"-Zeile bereits diesen Namen
-  /// zugeordnet bekommen hat — der "+"-Chip für diesen Namen soll dann
-  /// verschwinden, da die Kartenart schon erfasst ist.
-  bool _kartenartBereitsAlsUnbekannteZugeordnet(String name, int belegIndex) {
-    if (belegIndex >= _zahlungsartZeilen.length) return false;
-    return _zahlungsartZeilen[belegIndex]
-        .any((ZahlungsartZeile z) => z.istUnbekannt && z.name == name);
-  }
-
   void _sortiereZahlungsartenNachBeleg(
       List<ZahlungsartErgebnis> belegArten, int belegIndex) {
     if (belegIndex >= _zahlungsartZeilen.length) return;
@@ -2525,8 +2516,6 @@ class _TagesabschlussSchritt2SeiteState
           _istZeileImplausibel(z, belegIndex),
       dropdownOptionenFuerZeile: (int i) =>
           _dropdownOptionenFuerUnbekannte(i, belegIndex),
-      istBereitsAlsUnbekannteZugeordnet: (String name) =>
-          _kartenartBereitsAlsUnbekannteZugeordnet(name, belegIndex),
       onZeileNameGeaendert: (ZahlungsartZeile zeile, String? wert) {
         setState(() {
           zeile.name = wert ?? '';
@@ -2539,11 +2528,6 @@ class _TagesabschlussSchritt2SeiteState
           zeile.betragCentWert = _parsiereBetragCent(wert);
         });
         _speichereEntwurf();
-      },
-      onZeileAktivieren: (ZahlungsartZeile zeile) {
-        setState(() {
-          zeile.zustand = ZeilenZustand.editing;
-        });
       },
       onGesamtBetragGeaendert: (String wert) {
         setState(() {

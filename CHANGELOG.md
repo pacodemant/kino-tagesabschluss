@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 483c: "+"-Chips zum Hinzufügen nicht gescannter Kartenarten
+  (z. B. "+ Maestro") unter der Kartenarten-Tabelle entfernt, in beiden
+  Modi. Weitere Kartenarten trägt man über "Belegdaten bearbeiten" ein,
+  das alle Zeilen editierbar macht. Paco-Wunsch: EC-Kachel
+  übersichtlicher.
+
 - Run 483b: Link "Belegdaten bearbeiten" stand in den EC-Unterkacheln
   doppelt (Unterkachel + Kartenarten-Tabelle). In den Unterkacheln
   bleibt nur der Unterkachel-Link (schaltet zusätzlich die TID frei).

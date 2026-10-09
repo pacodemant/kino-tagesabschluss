@@ -541,8 +541,7 @@ class Schritt2KartenartenEditButton extends StatelessWidget {
 }
 
 // Zweck: Rendert die komplette Kartenarten-Tabelle eines EC-Belegs
-// (Kartenart-Zeilen, "+"-Chips fuer noch nicht zugeordnete gescannte Arten,
-// Gesamt-Betrag-Zeile mit Plausibilitaets-Hinweisen, Bearbeiten-Button).
+// (Kartenart-Zeilen, Gesamt-Betrag-Zeile mit Plausibilitaets-Hinweisen, Bearbeiten-Button).
 class Schritt2ZahlungsartenTabelle extends StatelessWidget {
   const Schritt2ZahlungsartenTabelle({
     super.key,
@@ -562,10 +561,8 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
     required this.zeigeKartenartenEditButton,
     required this.istZeileImplausibel,
     required this.dropdownOptionenFuerZeile,
-    required this.istBereitsAlsUnbekannteZugeordnet,
     required this.onZeileNameGeaendert,
     required this.onZeileBetragGeaendert,
-    required this.onZeileAktivieren,
     required this.onGesamtBetragGeaendert,
     required this.onEditButtonToggle,
   });
@@ -586,10 +583,8 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
   final bool zeigeKartenartenEditButton;
   final bool Function(ZahlungsartZeile zeile) istZeileImplausibel;
   final List<String> Function(int zeileIndex) dropdownOptionenFuerZeile;
-  final bool Function(String name) istBereitsAlsUnbekannteZugeordnet;
   final void Function(ZahlungsartZeile zeile, String? wert) onZeileNameGeaendert;
   final void Function(ZahlungsartZeile zeile, String wert) onZeileBetragGeaendert;
-  final void Function(ZahlungsartZeile zeile) onZeileAktivieren;
   final ValueChanged<String> onGesamtBetragGeaendert;
   final VoidCallback onEditButtonToggle;
 
@@ -645,38 +640,6 @@ class Schritt2ZahlungsartenTabelle extends StatelessWidget {
                       zeile: zeilen[i],
                       istImplausibel: istZeileImplausibel(zeilen[i]),
                     ),
-          if (wurdeGescannt &&
-              zeilen.any((ZahlungsartZeile z) =>
-                  z.zustand == ZeilenZustand.hidden &&
-                  !istBereitsAlsUnbekannteZugeordnet(z.name)))
-            Padding(
-              padding: const EdgeInsets.only(bottom: 6),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: <Widget>[
-                  for (final ZahlungsartZeile zeile in zeilen)
-                    if (zeile.zustand == ZeilenZustand.hidden &&
-                        !istBereitsAlsUnbekannteZugeordnet(zeile.name))
-                      TextButton.icon(
-                        onPressed: () => onZeileAktivieren(zeile),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 0),
-                          minimumSize: const Size(0, 24),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        icon: const Icon(Icons.add, size: 14),
-                        label: Text(
-                          zeile.name,
-                          style: const TextStyle(
-                              fontSize: 12,
-                              decoration: TextDecoration.underline),
-                        ),
-                      ),
-                ],
-              ),
-            ),
           const Divider(height: 10),
           Row(
             children: <Widget>[
