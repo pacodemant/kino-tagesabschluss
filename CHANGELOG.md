@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 483a: Titelzeile der EC-Unterkacheln in Schritt 2 heißt jetzt
+  "#3 · TID 60561997" statt "Beleg 3 · Terminal: 6056…". Die TID wurde
+  vorher wegen Platzmangel abgeschnitten (Paco-Fund). Ohne TID bleibt
+  "Beleg 3".
+
 - Run 483: Bugfix verrutschte Kartenart-Beträge. Auslöser: Yannik sah
   am 06.10.2026 bei allen drei Terminals MasterCard im Feld Lastschrift
   und Visa im Feld MasterCard, die Summe stimmte. Ursache (seit Run

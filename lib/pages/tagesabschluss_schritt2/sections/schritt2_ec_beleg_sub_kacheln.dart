@@ -288,8 +288,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                       Expanded(
                                         child: Text(
                                           _labelIstLesbarUndBefuellt
-                                              ? 'Beleg ${belegIndex + 1} · '
-                                                  'Terminal: $label'
+                                              ? '#${belegIndex + 1} · TID $label'
                                               : 'Beleg ${belegIndex + 1}',
                                           style: TextStyle(
                                             fontSize: 13,

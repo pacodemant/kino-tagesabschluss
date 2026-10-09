@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.138+483 · Run 483
+Version: 0.9.138+483 · Run 483a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.

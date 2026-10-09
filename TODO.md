@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 483 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 483a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
