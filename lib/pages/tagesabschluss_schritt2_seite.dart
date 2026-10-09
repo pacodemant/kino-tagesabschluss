@@ -2449,7 +2449,14 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
-  Widget _baueZahlungsartenTabelle(int belegIndex) {
+  /// [zeigeEditButton]: false in den Unterkacheln (Mehrbeleg-Modus), dort
+  /// hat jede Unterkachel ihren eigenen Link "Belegdaten bearbeiten", der
+  /// zusaetzlich die TID freischaltet (Run 483b, vorher stand der Link
+  /// dort doppelt).
+  Widget _baueZahlungsartenTabelle(
+    int belegIndex, {
+    bool zeigeEditButton = true,
+  }) {
     if (belegIndex >= _zahlungsartZeilen.length) return const SizedBox.shrink();
     final List<ZahlungsartZeile> zeilen = _zahlungsartZeilen[belegIndex];
     final bool editModus = zeilen.any((ZahlungsartZeile z) => z.zustand == ZeilenZustand.editing);
@@ -2511,8 +2518,9 @@ class _TagesabschlussSchritt2SeiteState
       // Vorher nur bei genau einem Beleg sichtbar (_ecBelegController.length
       // <= 1) — dadurch gab es im 2+-Beleg-Modus für keinen Beleg mehr einen
       // Weg, die Kartenarten-Zeilen manuell zu befüllen (Paco-Feedback).
-      // Jetzt immer sichtbar, unabhängig von der Belegzahl.
-      zeigeKartenartenEditButton: true,
+      // Jetzt immer sichtbar, unabhängig von der Belegzahl — seit Run 483b
+      // ausser in den Unterkacheln, die einen eigenen Link haben.
+      zeigeKartenartenEditButton: zeigeEditButton,
       istZeileImplausibel: (ZahlungsartZeile z) =>
           _istZeileImplausibel(z, belegIndex),
       dropdownOptionenFuerZeile: (int i) =>
@@ -2624,7 +2632,8 @@ class _TagesabschlussSchritt2SeiteState
             onBestaetigtEntfernen: _ecBelegEntfernen,
             hatZahlungsartZeilen: _hatZahlungsartZeilenFuerBeleg,
             hatScanStattgefunden: _hatScanStattgefundenFuerBeleg,
-            baueZahlungsartenTabelle: _baueZahlungsartenTabelle,
+            baueZahlungsartenTabelle: (int i) =>
+                _baueZahlungsartenTabelle(i, zeigeEditButton: false),
             baueMetadatenBlock: _baueMetadatenBlock,
             onManuellBearbeitenAktivieren: _manuellBearbeitenAktivieren,
             onFertig: _ecUnterkachelFertig,
