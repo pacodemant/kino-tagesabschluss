@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
@@ -86,6 +87,26 @@ class BelegScanService {
       '  den Summen-Abgleich für "hinweis" einbezogen werden. Kein Trinkgeld-\n'
       '  Posten auf dem Beleg: trinkgeld_cent auf null setzen.';
 
+  /// Nur fuer Tests: ersetzt den echten Netzwerk-Call (http.post) durch
+  /// eine Fake-Funktion, damit Fehlerfaelle in scan() (kein Netz,
+  /// HTTP-Fehlercode, unlesbare Antwort) ohne echtes Netzwerk simulierbar
+  /// sind — http.post ist sonst direkt aufgerufen, es gibt keine Stelle
+  /// zum Abfangen. Im Normalbetrieb immer null, dann unveraendertes
+  /// Verhalten.
+  @visibleForTesting
+  static Future<http.Response> Function(
+    Uri url,
+    Map<String, String> headers,
+    String body,
+  )? httpPostUeberschreibung;
+
+  static Future<http.Response> _echterHttpPost(
+    Uri url,
+    Map<String, String> headers,
+    String body,
+  ) =>
+      http.post(url, headers: headers, body: body);
+
   /// Scannt [bild] per KI. Liefert neben dem geparsten [BelegScanErgebnis]
   /// auch das bereits für den KI-Call kodierte Foto (base64 + media_type)
   /// zurück, damit es ohne erneutes Einlesen an Flurbocash mitgeschickt
@@ -128,12 +149,12 @@ class BelegScanService {
     }
     final http.Response response;
     try {
-      response = await http.post(
+      response = await (httpPostUeberschreibung ?? _echterHttpPost)(
         Uri.parse(workerUrl),
-        headers: <String, String>{
+        <String, String>{
           'content-type': 'application/json',
         },
-        body: jsonEncode(requestBody),
+        jsonEncode(requestBody),
       );
     } catch (_) {
       throw BelegScanException(

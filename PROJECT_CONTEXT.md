@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.138+483 · Run 483c
+Version: 0.9.139+484 · Run 484
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,17 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 483)
+## Laufender Entwicklungsstand (Run 484)
+
+- Run 484 ✅ Neue Tests für BelegScanService.scan() (7 Fehlerpfade:
+  fehlende Service-URL, Erfolgsfall inkl. Markdown-Codeblock,
+  Netzwerkfehler, HTTP-Fehlercode, nicht erkennbares/kaputtes JSON).
+  Dafür ein neuer, im Normalbetrieb immer null-er Test-Seam
+  httpPostUeberschreibung, da http.post() sonst direkt aufgerufen
+  wird. Reine Testabdeckung, kein App-Verhalten geändert. Damit sind
+  alle drei ursprünglich vorgeschlagenen Testabdeckungs-Runs (Schritt
+  3-Sendelogik, UpdateReloadGuard, Beleg-Scan) umgesetzt. Details
+  siehe CHANGELOG.md.
 
 - Run 483 Bugfix: Kartenart-Beträge im Schritt-2-Entwurf werden nach
   Namen gespeichert (`zahlungsartBetraegeNachName`, Helfer

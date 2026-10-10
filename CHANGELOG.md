@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 484: Neue Tests für BelegScanService.scan() (reine
+  Testabdeckung, kein App-Verhalten geändert):
+  - test/services/beleg_scan_service_test.dart (neu): 7 Tests für die
+    Fehlerpfade des EC-Beleg-Scans — fehlende Service-URL, Erfolgsfall
+    (inkl. Markdown-Codeblock ```json ... ``` um die KI-Antwort),
+    Netzwerkfehler ("Keine Internetverbindung"), HTTP-Fehlercode,
+    Antwort ohne erkennbares JSON und kaputtes JSON innerhalb der
+    Antwort.
+  - beleg_scan_service.dart: da `scan()` direkt `http.post` aufruft
+    (keine Stelle zum Abfangen im Test), neuer statischer, im
+    Normalbetrieb immer `null`er Test-Seam
+    `httpPostUeberschreibung` (analog zu den Run-456-Seams in
+    tagesabschluss_schritt3_seite.dart) plus die kleine private
+    Wrapper-Methode `_echterHttpPost()` für den unveränderten
+    Normalbetrieb.
 - Run 483c: "+"-Chips zum Hinzufügen nicht gescannter Kartenarten
   (z. B. "+ Maestro") unter der Kartenarten-Tabelle entfernt, in beiden
   Modi. Weitere Kartenarten trägt man über "Belegdaten bearbeiten" ein,
