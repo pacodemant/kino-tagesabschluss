@@ -95,6 +95,7 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 - – [5.3a Nachträgliche Prüfung nach Verbindungsabbruch?](#53a-prüfung-nach-verbindungsabbruch)
 
 ---
+
 ---
 
 # Teil 1: Offene Fragen
@@ -106,13 +107,14 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 **Hintergrund:** Alte und neue TIDs gelten in der App während der
 Umstellung parallel (config/terminal_ids.json).
 
-| Standort | alte TID           | neue TID                                   | bestätigt |
-|----------|--------------------|--------------------------------------------|-----------|
-| SB       | 54017635           | 60561994, 60561996, 60561997               | nein      |
-| AT       | 54069464           | 60561998                                   | ja        |
-| CO       | 54017639           | 60561995                                   | ja        |
-| BT       | 54069493, 54017664 | 60561992, 60561993                         | ja        |
-| GO       | –                  | 60561999, 60562000, 60562001, 60562002     | ja        |
+
+| Standort | alte TID           | neue TID                               | bestätigt |
+| -------- | ------------------ | -------------------------------------- | ---------- |
+| SB       | 54017635           | 60561994, 60561996, 60561997           | nein       |
+| AT       | 54069464           | 60561998                               | ja         |
+| CO       | 54017639           | 60561995                               | ja         |
+| BT       | 54069493, 54017664 | 60561992, 60561993                     | ja         |
+| GO       | –                 | 60561999, 60562000, 60562001, 60562002 | ja         |
 
 SB (07.09.): Die neuen Terminals können vorerst nur Girocard, Kreditkarte
 läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.
@@ -472,12 +474,14 @@ als Ausweichweg ist nicht vorgesehen (5.1).
    als `finalized` markiert (dann keine Schreibzugriffe mehr)?
 3. Reicht der Umschlag als Papier-Nachweis, bis die Abrechnung
    nachgesendet ist, oder braucht es mehr?
+4. Sollen die MA die Möglichkeit haben, auf dem Umschlag so etwas wie "Übertragung fehlgeschlagen" auswählen können, damit die Buchhaltung weiß, dass sie hier genauer hinschauen soll?
 
 > **Antwort:** *noch offen*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
+
 ---
 
 # Teil 2: Beantwortete Fragen
@@ -509,8 +513,9 @@ gleichzeitig?
 
 > **Antwort (Mail Yannik, 14.10.):** Unterschiedlich in Sandbox und Live:
 >
+>
 > | Standort | Sandbox | Live |
-> |----------|---------|------|
+> | -------- | ------- | ---- |
 > | GO       | 5       | 3    |
 > | CO       | 6       | 5    |
 >
