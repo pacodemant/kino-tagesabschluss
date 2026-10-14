@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.139+484 · Run 484
+Version: 0.9.140+485 · Run 485
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,16 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 484)
+## Laufender Entwicklungsstand (Run 485)
+
+- Run 485 GO-TIDs von Yannik (Mail 14.10.2026) in
+  config/terminal_ids.json eingetragen (60561999, 60562000, 60562001,
+  60562002), Platzhalter "XXXX" entfernt. Neue TIDs von AT/BT/CO
+  bestätigt, alte TIDs bleiben bis zum stabilen Betrieb an allen
+  Standorten. location_id unterscheidet sich zwischen Sandbox und
+  Live (GO 5/3, CO 6/5) und wird weiter pro Gerät in den
+  Einstellungen eingetragen; Live-Werte für SB/AT/BT offen
+  (fragen_yannik.md 1.10).
 
 - Run 484 ✅ Neue Tests für BelegScanService.scan() (7 Fehlerpfade:
   fehlende Service-URL, Erfolgsfall inkl. Markdown-Codeblock,

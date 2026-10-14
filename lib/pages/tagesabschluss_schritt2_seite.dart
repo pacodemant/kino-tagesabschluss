@@ -1302,8 +1302,8 @@ class _TagesabschlussSchritt2SeiteState
   /// TODO.md "Auto-Fill: konfigurierte TID pro Standort"): der erste
   /// Eintrag der Liste gilt als die aktive TID, weitere Eintraege sind
   /// Ersatz-/Zukunftsgeraete. Leerer String, wenn kein Standort/keine TID
-  /// hinterlegt ist (z.B. Gondel-Platzhalter "XXXX" bleibt unveraendert
-  /// stehen, da dort noch keine echte TID vorliegt).
+  /// hinterlegt ist (ein Platzhalter wie "XXXX" bleibt unveraendert
+  /// stehen, solange fuer einen Standort noch keine echte TID vorliegt).
   Future<String> _autoFillAktiveTid() async {
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
     final Map<String, List<String>> konfiguration =

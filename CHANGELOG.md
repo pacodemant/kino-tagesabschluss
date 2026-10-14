@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 485: Neue Zugangsdaten aus Yanniks Mail vom 14.10.2026.
+  - config/terminal_ids.json: GO bekommt die vier TIDs 60561999,
+    60562000, 60562001, 60562002 (vorher Platzhalter "XXXX"). Damit
+    füllt Schritt 2 in der Gondel die TID automatisch vor und der
+    TID-Abgleich beim Senden greift. Neue TIDs von AT/BT/CO von
+    Yannik bestätigt; alte TIDs bleiben bewusst drin, bis die App an
+    allen Standorten korrekt läuft (Paco-Entscheidung).
+  - terminal_ids_config_service_test.dart: Platzhalter-Testfall heißt
+    nicht mehr "GO", sondern nutzt ein künstliches Kürzel "XY" (der
+    Test baut seine Map selbst, prüft weiter dasselbe Verhalten).
+  - tagesabschluss_schritt2_seite.dart: nur Doc-Kommentar, der die
+    Gondel als Platzhalter-Beispiel nannte.
+  - .dev/flurbocash stuff/fragen_yannik.md: 1.2 bis auf SB beantwortet,
+    1.3 beantwortet (location_id GO Sandbox 5/Live 3, CO Sandbox 6/
+    Live 5), neue offene Frage 1.10 (Live-location_ids und Live-Keys
+    für SB/AT/BT).
+  - API-Keys für GO und CO nur in secrets/api_keys.txt (gitignored),
+    nicht im Repo.
+
 - Run 484: Neue Tests für BelegScanService.scan() (reine
   Testabdeckung, kein App-Verhalten geändert):
   - test/services/beleg_scan_service_test.dart (neu): 7 Tests für die

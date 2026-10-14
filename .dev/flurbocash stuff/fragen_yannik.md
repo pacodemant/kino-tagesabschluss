@@ -1,6 +1,6 @@
 # Fragen an Yannik
 
-Stand: 14.10.2026 · zentrale Tracking-Datei für alle Fragen an Yannik:
+Stand: 14.10.2026 (Run 485) · zentrale Tracking-Datei für alle Fragen an Yannik:
 Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 **So ist die Datei aufgebaut:**
@@ -36,10 +36,10 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 **C. Terminals & Standortdaten**
 
-- ⏳ [1.2 Neue TIDs bei FC hinterlegt? Wann fallen die alten weg? TID für GO?](#12-terminal-ids-pro-standort)
+- ◐ [1.2 Sind die SB-TIDs bei FC hinterlegt?](#12-terminal-ids-pro-standort)
 - ⏳ [1.9 Terminal-Nummern fest mit den TIDs koppeln?](#19-terminal-nummern-fest-mit-tids-koppeln) *(neu)*
 - ⏳ [2.7 SB: Kartenumsatz zum Kino-SOLL addieren — bleibt das so?](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren) *(neu)*
-- ◐ [1.3 Welche location_id haben GO und CO?](#13-standort-kennung-location_id)
+- ⏳ [1.10 Wie lauten die Live-location_ids und Live-Keys für SB, AT und BT?](#110-live-zugangsdaten-für-sb-at-bt) *(neu)*
 - ⏳ [5.3 Welches WLAN ist an den Standorten für die Kasse freigegeben?](#53-wlan-für-den-kassenbetrieb)
 
 **D. Server & Schnittstelle**
@@ -55,11 +55,12 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 - ⏳ [6.3 Ich brauche wieder einen Vorschuss.](#63-vorschuss) *(neu)*
 - ⏳ [6.4 Kaffee-Flat, während ich in der BT an der App arbeite?](#64-kaffee-flat-in-der-bt) *(neu)*
 
-## Inhalt: Beantwortete Fragen (21)
+## Inhalt: Beantwortete Fragen (22)
 
 **1. Zugangsdaten & Einrichtung**
 
 - ✅ [1.1 Produktivbetrieb pro Standort oder alle gleichzeitig?](#11-umstieg-auf-produktivbetrieb)
+- ✅ [1.3 Welche location_id haben GO und CO?](#13-standort-kennung-location_id)
 - ✅ [1.4 Passwort Schauburg-AP?](#14-passwort-schauburg-ap)
 - ✅ [1.5 Wer richtet die Geräte ein und pflegt sie?](#15-geräte-einrichtung--pflege)
 - ✅ [1.6 Konfiguration zentral oder je Gerät?](#16-konfiguration-zentral-oder-je-gerät)
@@ -100,19 +101,18 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 ### 1.2 Terminal-IDs pro Standort
 
-⏳ offen
+◐ teilweise geklärt — nur SB offen
 
 **Hintergrund:** Alte und neue TIDs gelten in der App während der
-Umstellung parallel (config/terminal_ids.json). Keine davon ist bisher von
-Yannik bestätigt, alles nur von den Geräten abgelesen.
+Umstellung parallel (config/terminal_ids.json).
 
-| Standort | alte TID           | neue TID                     |
-|----------|--------------------|------------------------------|
-| SB       | 54017635           | 60561994, 60561996, 60561997 |
-| AT       | 54069464           | 60561998                     |
-| CO       | 54017639           | 60561995                     |
-| BT       | 54069493, 54017664 | 60561992, 60561993           |
-| GO       | –                  | – (fehlt)                    |
+| Standort | alte TID           | neue TID                                   | bestätigt |
+|----------|--------------------|--------------------------------------------|-----------|
+| SB       | 54017635           | 60561994, 60561996, 60561997               | nein      |
+| AT       | 54069464           | 60561998                                   | ja        |
+| CO       | 54017639           | 60561995                                   | ja        |
+| BT       | 54069493, 54017664 | 60561992, 60561993                         | ja        |
+| GO       | –                  | 60561999, 60562000, 60562001, 60562002     | ja        |
 
 SB (07.09.): Die neuen Terminals können vorerst nur Girocard, Kreditkarte
 läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.
@@ -122,23 +122,37 @@ läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.
 1. Sind die neuen TIDs bei FC korrekt hinterlegt?
 2. Wann können die alten TIDs entfernt werden?
 3. Welche TID hat GO?
+4. *(Rest)* Sind die SB-TIDs (alt und neu) bei FC korrekt hinterlegt?
 
-> **Antwort:** *noch offen* — bisheriger Stand (26.08.): Yannik schickt die
-> bestätigten TIDs per Mail nach, bisher nicht angekommen.
+> **Antwort (Mail Yannik, 14.10.):** Zu 1 und 3: Neue TIDs für AT, BT, CO
+> und GO bestätigt, siehe Tabelle. GO in der App eingetragen (Run 485).
+> Zu 2 (Paco, 14.10.): Die alten TIDs bleiben in der App, bis sie an
+> allen Standorten korrekt läuft — keine Frage an Yannik mehr.
+> Zu 4: *noch offen* — SB kam in der Mail nicht vor.
 
 [↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
-### 1.3 Standort-Kennung (location_id)
+### 1.10 Live-Zugangsdaten für SB, AT, BT
 
-◐ teilweise geklärt
+⏳ offen *(neu, 14.10.)*
 
-**Frage:** Welche location_id haben GO und CO?
+**Hintergrund:** Die location_id ist nicht in Sandbox und Livesystem
+gleich (laut Yannik nicht mehr einfach änderbar). Für GO und CO kennen wir
+beide Werte (1.3). Die bisherigen Werte für SB (1), AT (3) und BT (4) sind
+vermutlich Sandbox-Werte — AT kann live nicht die 3 sein, die hat dort GO.
+Die location_id wird pro Gerät in den Einstellungen eingetragen, nicht im
+Code. Ein falscher Wert beim Live-Umstieg würde die Abrechnung beim
+falschen Kino verbuchen.
 
-> **Antwort (teilweise, Mail 12.07.):** SB = 1, AT = 3, BT = 4.
-> GO und CO *noch offen* — Yannik wollte sie per Mail nachschicken
-> (Stand 26.08.).
+**Frage:**
+
+1. Wie lauten die Live-location_ids für SB, AT und BT?
+2. Gibt es für das Livesystem eigene API-Keys pro Standort, und eine
+   eigene URL (1.1)?
+
+> **Antwort:** *noch offen*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-17)
 
@@ -384,7 +398,7 @@ arbeite?
 ⏳ offen *(neu, 14.10.)*
 
 **Hintergrund:** Der Umstieg erfolgt je Standort (1.1). Ein Termin hängt
-an Punkten, die nicht in Pacos Hand liegen (TIDs und location_ids 1.2/1.3,
+an Punkten, die nicht in Pacos Hand liegen (Live-Zugangsdaten 1.10,
 Server-Umzug 1.8).
 
 **Frage:** Wollen wir eine Deadline benennen? Falls ja: für den
@@ -403,10 +417,10 @@ Produktivstart aller Standorte oder je Standort?
 **Hintergrund:** SB läuft bereits im Testbetrieb. Gründe für die
 vorgeschlagene Reihenfolge, zum Gegenprüfen:
 
-- GO: TID und location_id fehlen noch komplett (1.2/1.3).
+- GO und CO: TIDs, location_id und Sandbox-Key seit 14.10. vorhanden
+  (1.2/1.3), Geräte können eingerichtet werden.
 - BT: zwei Abrechnungen pro Tag (Mittag + Tagesende), stößt am ehesten an
   das 4×-Limit (3.3).
-- CO: location_id fehlt noch (1.3).
 
 **Frage:** Nächste Schritte: erst CO und AT, dann GO, dann BT?
 
@@ -483,7 +497,28 @@ gleichzeitig?
 
 > **Antwort:** Je Standort.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+
+---
+
+### 1.3 Standort-Kennung (location_id)
+
+✅ beantwortet
+
+**Frage:** Welche location_id haben GO und CO?
+
+> **Antwort (Mail Yannik, 14.10.):** Unterschiedlich in Sandbox und Live:
+>
+> | Standort | Sandbox | Live |
+> |----------|---------|------|
+> | GO       | 5       | 3    |
+> | CO       | 6       | 5    |
+>
+> Zum Vergleich (Mail 12.07.): SB = 1, AT = 3, BT = 4, vermutlich Sandbox.
+> Live-Werte dafür siehe 1.10. Die API-Keys stehen in
+> secrets/api_keys.txt (nicht im Git).
+
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -496,7 +531,7 @@ gleichzeitig?
 > **Antwort:** Keine formelle Frage mehr — Paco klärt das jeweils vor Ort
 > bzw. fragt Yannik spontan per Messenger.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -509,7 +544,7 @@ gleichzeitig?
 > **Antwort:** Paco richtet die Apps an den Standorten initial selbst ein.
 > Spätere Änderungen (API-Key, TID) direkt am Gerät, siehe 1.6.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -521,7 +556,7 @@ gleichzeitig?
 
 > **Antwort:** Am Gerät vor Ort, nicht zentral von Yannik verwaltet.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -533,7 +568,7 @@ gleichzeitig?
 
 > **Antwort:** Yannik kauft eins.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -553,7 +588,7 @@ einer `terminals[]`-Zeile zusammengefasst.
 > **Antwort:** Ja, jeder Beleg als eigener Datensatz, und FC verarbeitet
 > das korrekt.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -567,7 +602,7 @@ einer `terminals[]`-Zeile zusammengefasst.
 > Kassensystem. Die App schickt nur `terminals[]` und `cash_total`.
 > Kino-SOLL, Bistro-SOLL, Ausgaben und Differenz werden nicht gebraucht.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -580,7 +615,7 @@ einer `terminals[]`-Zeile zusammengefasst.
 > **Antwort:** Ja. Eigene JSON-Felder sind generell erlaubt, Feldnamen
 > frei wählbar. FC ignoriert sie, bis sie serverseitig implementiert sind.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -596,7 +631,7 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 > Ein Server-Zeitstempel entfällt (Paco, 30.09.): Die App schickt selbst
 > `sent_at` mit. (Empfangsbestätigung siehe 2.4 bei den offenen Fragen.)
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -608,7 +643,7 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 
 > **Antwort:** Noch nicht getestet (Stand 26.08.).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -622,7 +657,7 @@ Geschäftsdatum?
 > **Antwort:** Ja, logisches Geschäftsdatum. Der Tageswechsel liegt aber
 > bei 5 Uhr, nicht bei 6 Uhr. In der App umgestellt.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -640,7 +675,7 @@ erfährt sie, welche settlement_number vergeben wurde?
 > Inhalt). FC liefert die vergebene Nummer in der PUT-Antwort mit
 > (`settlements[0].settlement_number`).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -656,7 +691,7 @@ Abrechnung, Korrektur und versehentlichem Doppel-Versand? Wäre ein
 > settlement_number und `sent_at`, ob und wie FC das anzeigt, entscheidet
 > Yannik. Korrekturen kommen ohnehin meist am selben Abend.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -670,7 +705,7 @@ Abrechnung, Korrektur und versehentlichem Doppel-Versand? Wäre ein
 > am selben Abend, die App erkennt `finalized: true` bzw. die 400 selbst.
 > Taucht im Ausfall-Kontext wieder auf, siehe 8.2.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -688,7 +723,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > (Run 477). Falls doch Yanniks Einschätzung gewünscht: zurück zu den
 > offenen Fragen.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -702,7 +737,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 
 > **Antwort:** Nein, muss nur lesbar sein.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -715,7 +750,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > **Antwort:** base64 direkt im JSON, Feldname frei wählbar (z. B.
 > `beleg_foto_base64`). Keine maximale Dateigröße (Yannik, 26.08.).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -727,7 +762,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 
 > **Antwort:** Nein, läuft über das Kommentarfeld (2.3).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -742,7 +777,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > **Antwort (Paco, 26.08.):** Nein. Auch kein Mail-Fallback bei
 > Korrektur, 4×-Limit oder FC-Ausfall.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -754,7 +789,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 
 > **Antwort:** Nein.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
 ---
 
@@ -770,4 +805,4 @@ angekommen ist, wenn die Verbindung mittendrin abbricht?
 > (löschbar außer Nr. 1). Erst nachfragen, wenn Duplikate in der Praxis
 > auffallen.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-21)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)

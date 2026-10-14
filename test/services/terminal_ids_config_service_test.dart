@@ -6,7 +6,7 @@ void main() {
     final Map<String, List<String>> konfiguration = <String, List<String>>{
       'SB': <String>['54017635', '60561994', '60561996', '60561997'],
       'CO': <String>['60561995'],
-      'GO': <String>['XXXX'],
+      'XY': <String>['XXXX'],
       'AT': <String>[],
     };
 
@@ -28,11 +28,11 @@ void main() {
     });
 
     test(
-      'Standort mit nur einem Platzhalter (GO, noch keine echte TID) '
+      'Standort mit nur einem Platzhalter (noch keine echte TID) '
       'liefert den Platzhalter unveraendert',
       () {
         expect(
-          TerminalIdsConfigService.aktiveTid('GO', konfiguration),
+          TerminalIdsConfigService.aktiveTid('XY', konfiguration),
           'XXXX',
         );
       },
