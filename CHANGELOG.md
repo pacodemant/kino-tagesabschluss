@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 485c: fragen_yannik.md mit den übrigen 16 Yannik-Mails
+  abgeglichen (Juni 2024 bis August 2026): 5.3 für SB beantwortet
+  (WLAN "Schauburg-AP", 15.07.); 2.9 Trinkgeld als konkrete Fragen an
+  Yannik formuliert (Terminals abschalten? Auszahlung? an FC mit/ohne
+  Trinkgeld? Abgleich Kassen-SOLL?); 2.1 Hinweis, dass sich das Verhalten
+  in der Sandbox selbst testen lässt; Hintergrund zu 2.2, 6.3 und 6.4
+  ergänzt. CineVille-, Freikarten- und Betriebsrundmails ohne App-Bezug.
+
 - Run 485b: fragen_yannik.md mit Yanniks Mails aus der Mail App
   abgeglichen (Thread "Start in SB", 26.08.–09.10.):
   - Datum korrigiert: Die Mail mit TIDs/IDs/Keys ist vom 08.10., nicht

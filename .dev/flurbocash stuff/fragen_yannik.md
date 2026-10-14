@@ -1,6 +1,6 @@
 # Fragen an Yannik
 
-Stand: 14.10.2026 (Run 485b) · zentrale Tracking-Datei für alle Fragen an Yannik:
+Stand: 14.10.2026 (Run 485c) · zentrale Tracking-Datei für alle Fragen an Yannik:
 Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 **So ist die Datei aufgebaut:**
@@ -39,7 +39,7 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 - ⏳ [1.9 Terminal-Nummern fest mit den TIDs koppeln?](#19-terminal-nummern-fest-mit-tids-koppeln) *(neu)*
 - ⏳ [2.7 SB: Kartenumsatz zum Kino-SOLL addieren — bleibt das so?](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren) *(neu)*
 - ⏳ [1.10 Wie lauten die Live-location_ids und Live-Keys für SB, AT und BT?](#110-live-zugangsdaten-für-sb-at-bt) *(neu)*
-- ⏳ [5.3 Welches WLAN ist an den Standorten für die Kasse freigegeben?](#53-wlan-für-den-kassenbetrieb)
+- ◐ [5.3 Welches WLAN ist an GO, AT, CO, BT für die Kasse freigegeben?](#53-wlan-für-den-kassenbetrieb)
 
 **D. Server & Schnittstelle**
 
@@ -252,6 +252,12 @@ Falls die zweite Aussage gilt und FC den zweiten Eintrag auf den ersten
 schreibt (Upsert pro TID), gingen die Beträge des ersten Kassenschnitts
 verloren.
 
+**Vorab selbst prüfbar:** Mit dem Sandbox-Zugang zum FC-Webinterface (Mail
+16.06., Zugangsdaten dort) und dem Kassenschnitt-Button in der FC-Oberfläche
+(Mail 08.09.) lässt sich testen: eine Abrechnung mit zwei Belegen gleicher
+TID senden und nachsehen, ob FC beide Beträge und beide Fotos speichert.
+Dann ist die Frage womöglich schon vor dem Termin beantwortet.
+
 **Frage:** Was passiert bei FC, wenn in einer Abrechnung zwei Einträge mit
 derselben TID ankommen — werden beide gespeichert, oder überschreibt der
 zweite den ersten? Falls nur einer geht: Soll die App die Beträge
@@ -308,9 +314,23 @@ per Karte, das Trinkgeld steht dann als eigener Posten auf dem
 Kassenschnitt. Die App erkennt es beim Scan und zeigt es nur an. Es
 fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 
-**Frage:** Sollen die Terminals überhaupt Trinkgeld annehmen? Falls ja:
-Wie wird Kartentrinkgeld verbucht, und muss die App damit etwas tun
-(z. B. an FC schicken oder vom Kartenumsatz abziehen)?
+**Frage:** Wie möchtest du Trinkgeld per Karte haben?
+
+1. **Grundsatz:** Sollen Gäste an den Terminals überhaupt Trinkgeld per
+   Karte geben können?
+   - Falls **nein:** Wer schaltet die Trinkgeld-Abfrage an den neuen
+     Terminals ab, und an welchen Standorten ist sie aktiv?
+   - Falls **ja:** weiter mit 2–4.
+2. **Auszahlung:** Wie kommt das Kartentrinkgeld zum Team — abends bar aus
+   der Kasse, oder später über die Lohnabrechnung? Bei Barauszahlung fehlt
+   der Betrag im gezählten Bargeld; die App müsste ihn dann als Entnahme
+   kennen, sonst entsteht eine Differenz.
+3. **Flurbocash:** Sollen die Kartenbeträge an FC so gehen, wie sie auf dem
+   Kassenschnitt stehen, oder ohne Trinkgeld? Soll das Trinkgeld als
+   eigenes Feld mitgehen (z. B. `tip_total`)?
+4. **Kassen-SOLL:** Trinkgeld ist kein Umsatz der Kasse. Ist dir das bei
+   deinem Abgleich Kartenumsatz gegen Kassensystem schon aufgefallen, bzw.
+   wie soll eine solche Abweichung erklärt werden?
 
 > **Antwort:** *noch offen*
 
@@ -365,7 +385,7 @@ Abrechnung?
 
 ### 5.3 WLAN für den Kassenbetrieb
 
-⏳ offen
+◐ teilweise geklärt — SB bekannt
 
 **Hintergrund:** Das Gäste-WLAN sperrt den Kassen-Port (666) und wird für
 den Kassenbetrieb nicht genutzt. Hängt mit 1.8 zusammen (die App-Adresse
@@ -374,7 +394,10 @@ muss aus diesem WLAN erreichbar sein).
 **Frage:** Welches WLAN ist an den einzelnen Standorten (SB, GO, AT, CO,
 BT) für den Flurbocash-Zugriff vorgesehen bzw. freigegeben?
 
-> **Antwort:** *noch offen*
+> **Antwort (teilweise, Mail Yannik 15.07.):** SB: „Du musst in das
+> Schauburg-AP Netz. Nicht Bremer Filmkunsttheater. Die Daten sind in dem
+> SB Handy gespeichert.“ Eine Änderung des öffentlichen WLANs lehnte er
+> ab. GO, AT, CO, BT *noch offen*.
 
 [↑ zum Inhalt](#inhalt-offene-fragen-18)
 
@@ -417,6 +440,9 @@ Steuerbüro es inzwischen beurteilt?
 
 ⏳ offen *(neu, 14.10.)*
 
+**Hintergrund:** Der letzte Vorschuss ging per Mail klar („Vorschuss geht
+klar“, 15.07.) und wurde bar ausgezahlt („Cash only“, 16.07.).
+
 **Frage:** Ich brauche wieder einen Vorschuss. Wie hoch, ab wann, und wie
 wird er mit der Vergütung (6.1) verrechnet?
 
@@ -429,6 +455,11 @@ wird er mit der Vergütung (6.1) verrechnet?
 ### 6.4 Kaffee-Flat in der BT
 
 ⏳ offen *(neu, 14.10.)*
+
+**Hintergrund:** Es gilt die Getränkeregelung für Mitarbeitende
+(Rundmail 14.04.2026, unterschriebene Kenntnisnahme). Eine Kaffee-Flat wäre
+eine Ausnahme davon, solange ich in der BT nicht im Dienst bin, sondern an
+der App arbeite.
 
 **Frage:** Ist eine Kaffee-Flat möglich, während ich in der BT an der App
 arbeite?
@@ -660,6 +691,8 @@ weg, und welche TID hat GO?
 > **Antwort:** Nein. FC holt sich die Kassenumsätze selbst aus dem
 > Kassensystem. Die App schickt nur `terminals[]` und `cash_total`.
 > Kino-SOLL, Bistro-SOLL, Ausgaben und Differenz werden nicht gebraucht.
+> Ergänzung (Mail 14.07.): „Deine Seite macht nur IST. Soll kommt erst
+> 12 Stunden später aus den Kassen direkt.“
 
 [↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
