@@ -141,9 +141,22 @@ läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.
 ⏳ offen *(neu, 14.10.)*
 
 **Hintergrund:** Die location_id ist nicht in Sandbox und Livesystem
-gleich (laut Yannik nicht mehr einfach änderbar). Für GO und CO kennen wir
-beide Werte (1.3). Die bisherigen Werte für SB (1), AT (3) und BT (4) sind
-vermutlich Sandbox-Werte — AT kann live nicht die 3 sein, die hat dort GO.
+gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
+(**?** = fehlt noch):
+
+| Standort | Sandbox-ID       | Live-ID | Live-Key |
+| -------- | ---------------- | ------- | -------- |
+| SB       | 1 *(vermutlich)* | **?**   | **?**    |
+| AT       | 3 *(vermutlich)* | **?**   | **?**    |
+| BT       | 4 *(vermutlich)* | **?**   | **?**    |
+| GO       | 5                | 3       | **?**    |
+| CO       | 6                | 5       | **?**    |
+
+Quellen: SB/AT/BT aus der Mail vom 12.07. (damals ohne Unterscheidung
+Sandbox/Live, aber AT kann live nicht die 3 sein, die hat dort GO), GO/CO
+aus der Mail vom 14.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
+(nicht im Git).
+
 Die location_id wird pro Gerät in den Einstellungen eingetragen, nicht im
 Code. Ein falscher Wert beim Live-Umstieg würde die Abrechnung beim
 falschen Kino verbuchen.
@@ -511,17 +524,10 @@ gleichzeitig?
 
 **Frage:** Welche location_id haben GO und CO?
 
-> **Antwort (Mail Yannik, 14.10.):** Unterschiedlich in Sandbox und Live:
->
->
-> | Standort | Sandbox | Live |
-> | -------- | ------- | ---- |
-> | GO       | 5       | 3    |
-> | CO       | 6       | 5    |
->
-> Zum Vergleich (Mail 12.07.): SB = 1, AT = 3, BT = 4, vermutlich Sandbox.
-> Live-Werte dafür siehe 1.10. Die API-Keys stehen in
-> secrets/api_keys.txt (nicht im Git).
+> **Antwort (Mail Yannik, 14.10.):** GO: Sandbox 5, Live 3.
+> CO: Sandbox 6, Live 5. Die Werte unterscheiden sich also zwischen
+> Sandbox und Live. Gesamttabelle aller Standorte siehe
+> [1.10](#110-live-zugangsdaten-für-sb-at-bt).
 
 [↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
 
