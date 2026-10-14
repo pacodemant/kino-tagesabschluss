@@ -9,7 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
-- Run 485: Neue Zugangsdaten aus Yanniks Mail vom 14.10.2026.
+- Run 485b: fragen_yannik.md mit Yanniks Mails aus der Mail App
+  abgeglichen (Thread "Start in SB", 26.08.–09.10.):
+  - Datum korrigiert: Die Mail mit TIDs/IDs/Keys ist vom 08.10., nicht
+    vom 14.10. (auch in CHANGELOG Run 485, PROJECT_CONTEXT,
+    config/terminal_ids.json-Kommentar).
+  - 1.2 (SB-TIDs "sind drin", 02.10.) und 2.4 (2xx erst nach dem
+    Speichern, settlement_number immer dabei, Upsert) beantwortet.
+  - 2.1 wieder offen: Mail 27.08. "Pro TID und Settlement kann es nur
+    einen Kassenschnitt geben" widerspricht der Antwort vom 26.08.
+  - Neu 2.8: 500 "settlement data was saved, but archiving the receipt
+    photo failed" ohne settlement_number. Code geprüft: App wertet jede
+    500 als Fehlschlag (api_upload_service.dart:639), erneutes Senden
+    beim Erstversand legt dann eine zweite FC-Abrechnung an.
+  - Neu 2.9: Trinkgeld auf dem Kassenschnitt (Yannik: "dürften keine
+    auftauchen").
+  - 1.8 um Yanniks Vorschläge ergänzt (GitHub-Release oder
+    Container-Image statt SFTP, Adresse [appname].c137-prime.de),
+    2.5/7.1/8.1 um Aussagen aus den Mails ergänzt.
+
+- Run 485: Neue Zugangsdaten aus Yanniks Mail vom 08.10.2026.
   - config/terminal_ids.json: GO bekommt die vier TIDs 60561999,
     60562000, 60562001, 60562002 (vorher Platzhalter "XXXX"). Damit
     füllt Schritt 2 in der Gondel die TID automatisch vor und der

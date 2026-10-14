@@ -161,7 +161,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ## Laufender Entwicklungsstand (Run 485)
 
-- Run 485 GO-TIDs von Yannik (Mail 14.10.2026) in
+- Run 485 GO-TIDs von Yannik (Mail 08.10.2026) in
   config/terminal_ids.json eingetragen (60561999, 60562000, 60562001,
   60562002), Platzhalter "XXXX" entfernt. Neue TIDs von AT/BT/CO
   bestätigt, alte TIDs bleiben bis zum stabilen Betrieb an allen

@@ -1,6 +1,6 @@
 # Fragen an Yannik
 
-Stand: 14.10.2026 (Run 485) · zentrale Tracking-Datei für alle Fragen an Yannik:
+Stand: 14.10.2026 (Run 485b) · zentrale Tracking-Datei für alle Fragen an Yannik:
 Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 **So ist die Datei aufgebaut:**
@@ -19,7 +19,7 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 ---
 
-## Inhalt: Offene Fragen (17)
+## Inhalt: Offene Fragen (18)
 
 In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
@@ -36,7 +36,6 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 **C. Terminals & Standortdaten**
 
-- ◐ [1.2 Sind die SB-TIDs bei FC hinterlegt?](#12-terminal-ids-pro-standort)
 - ⏳ [1.9 Terminal-Nummern fest mit den TIDs koppeln?](#19-terminal-nummern-fest-mit-tids-koppeln) *(neu)*
 - ⏳ [2.7 SB: Kartenumsatz zum Kino-SOLL addieren — bleibt das so?](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren) *(neu)*
 - ⏳ [1.10 Wie lauten die Live-location_ids und Live-Keys für SB, AT und BT?](#110-live-zugangsdaten-für-sb-at-bt) *(neu)*
@@ -45,7 +44,9 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 **D. Server & Schnittstelle**
 
 - ◐ [1.8 Kann die App jetzt auf den Kino-Server umziehen?](#18-app-hosting-auf-kino-server-statt-github-pages)
-- ◐ [2.4 Ist eure Antwort eine verlässliche Empfangsbestätigung?](#24-empfangsbestätigung)
+- ⏳ [2.8 Foto-Archivierung scheitert: 500 ohne Nummer — erst archivieren oder so lassen?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer) *(neu)*
+- ◐ [2.1 Zwei Kassenschnitte gleicher TID: speichert FC beide?](#21-zwei-ec-belege-am-selben-terminal) *(wieder offen)*
+- ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — Missverständnis?](#29-trinkgeld-auf-dem-kassenschnitt) *(neu)*
 - ◐ [3.1 Abfrage, welche settlement_numbers schon belegt sind?](#31-leseweg-für-belegte-settlement_numbers) *(niedrige Priorität)*
 
 **E. Vergütung & Persönliches**
@@ -55,11 +56,12 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 - ⏳ [6.3 Ich brauche wieder einen Vorschuss.](#63-vorschuss) *(neu)*
 - ⏳ [6.4 Kaffee-Flat, während ich in der BT an der App arbeite?](#64-kaffee-flat-in-der-bt) *(neu)*
 
-## Inhalt: Beantwortete Fragen (22)
+## Inhalt: Beantwortete Fragen (23)
 
 **1. Zugangsdaten & Einrichtung**
 
 - ✅ [1.1 Produktivbetrieb pro Standort oder alle gleichzeitig?](#11-umstieg-auf-produktivbetrieb)
+- ✅ [1.2 Neue TIDs bei FC hinterlegt, TID für GO?](#12-terminal-ids-pro-standort)
 - ✅ [1.3 Welche location_id haben GO und CO?](#13-standort-kennung-location_id)
 - ✅ [1.4 Passwort Schauburg-AP?](#14-passwort-schauburg-ap)
 - ✅ [1.5 Wer richtet die Geräte ein und pflegt sie?](#15-geräte-einrichtung--pflege)
@@ -68,9 +70,9 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 **2. Abrechnungsdaten & Format**
 
-- ✅ [2.1 Zwei EC-Belege desselben Terminals einzeln übertragen?](#21-zwei-ec-belege-am-selben-terminal)
 - ✅ [2.2 Braucht FC außer Kartenumsätzen und Bargeld weitere Daten?](#22-weitere-daten-gewünscht)
 - ✅ [2.3 Dürfen Notizen, MA-Name und Sendezeitpunkt mitgeschickt werden?](#23-notizen-ma-name-sendezeitpunkt)
+- ✅ [2.4 Ist eure Antwort eine verlässliche Empfangsbestätigung?](#24-empfangsbestätigung)
 - ✅ [2.4a Wie kennzeichnen wir Testübertragungen im Dashboard?](#24a-testkennzeichnung-im-dashboard)
 - ✅ [2.5 Hat die Buchhaltung die SB-Testübertragungen geprüft?](#25-validierung-der-sb-testübertragungen)
 - ✅ [2.6 Welches Datum gilt für Nachtabrechnungen?](#26-datum-für-nachtabrechnungen-5-uhr-knick)
@@ -100,42 +102,6 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 # Teil 1: Offene Fragen
 
-### 1.2 Terminal-IDs pro Standort
-
-◐ teilweise geklärt — nur SB offen
-
-**Hintergrund:** Alte und neue TIDs gelten in der App während der
-Umstellung parallel (config/terminal_ids.json).
-
-
-| Standort | alte TID           | neue TID                               | bestätigt |
-| -------- | ------------------ | -------------------------------------- | ---------- |
-| SB       | 54017635           | 60561994, 60561996, 60561997           | nein       |
-| AT       | 54069464           | 60561998                               | ja         |
-| CO       | 54017639           | 60561995                               | ja         |
-| BT       | 54069493, 54017664 | 60561992, 60561993                     | ja         |
-| GO       | –                 | 60561999, 60562000, 60562001, 60562002 | ja         |
-
-SB (07.09.): Die neuen Terminals können vorerst nur Girocard, Kreditkarte
-läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.
-
-**Frage:**
-
-1. Sind die neuen TIDs bei FC korrekt hinterlegt?
-2. Wann können die alten TIDs entfernt werden?
-3. Welche TID hat GO?
-4. *(Rest)* Sind die SB-TIDs (alt und neu) bei FC korrekt hinterlegt?
-
-> **Antwort (Mail Yannik, 14.10.):** Zu 1 und 3: Neue TIDs für AT, BT, CO
-> und GO bestätigt, siehe Tabelle. GO in der App eingetragen (Run 485).
-> Zu 2 (Paco, 14.10.): Die alten TIDs bleiben in der App, bis sie an
-> allen Standorten korrekt läuft — keine Frage an Yannik mehr.
-> Zu 4: *noch offen* — SB kam in der Mail nicht vor.
-
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
-
----
-
 ### 1.10 Live-Zugangsdaten für SB, AT, BT
 
 ⏳ offen *(neu, 14.10.)*
@@ -154,7 +120,7 @@ gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
 
 Quellen: SB/AT/BT aus der Mail vom 12.07. (damals ohne Unterscheidung
 Sandbox/Live, aber AT kann live nicht die 3 sein, die hat dort GO), GO/CO
-aus der Mail vom 14.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
+aus der Mail vom 08.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
 (nicht im Git).
 
 Die location_id wird pro Gerät in den Einstellungen eingetragen, nicht im
@@ -169,7 +135,7 @@ falschen Kino verbuchen.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -202,10 +168,20 @@ bestätigt gesendet sind.
 **Frage:** Hast du dir das angeschaut? Ist der Umzug jetzt möglich, und
 habe ich dann selbst Zugriff für Updates?
 
-> **Antwort:** *noch offen* — bisheriger Stand: Yannik brauchte erst Infos
-> zum aktuellen Deployment (am 01.09. geliefert).
+> **Antwort (Mail Yannik, 02.10.):** Lieber kein SFTP („kein Loch in
+> meine Firewall“). Zwei Vorschläge, Schnittstelle jeweils GitHub:
+> (a) Release als GitHub-Release (lokal oder per CI gebaut), sein Server
+> holt sich nachts automatisch neue Versionen; (b) CI baut ein
+> Container-Image, er startet es per podman. HTTPS über Caddy ist kein
+> Problem. Adresse frei wählbar: `[appname].c137-prime.de`.
+>
+> *Noch offen (Paco):* Variante wählen — (a) liegt am nächsten am
+> bisherigen manuellen Ablauf (lokal bauen, nur hochladen) — und den
+> App-Namen festlegen. Rückfragen an Yannik: Kommt ein dringendes Update
+> bei „nachts“ erst am Folgetag an, oder geht es auch sofort? Wird CORS
+> für die neue Adresse ergänzt?
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -228,36 +204,7 @@ die MA verständlich.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
-
----
-
-### 2.4 Empfangsbestätigung
-
-◐ teilweise geklärt
-
-**Hintergrund:** Die App wertet eure Antwort auf PUT settlements als
-Empfangsbestätigung: Erst bei 2xx zeigt sie „gesendet“, und sie merkt sich
-die settlement_number aus der Antwort, damit eine spätere Korrektur die
-richtige Abrechnung überschreibt (seit Run 477). Fehlt die Nummer, gilt
-die Abrechnung trotzdem als gesendet, die MA bekommt aber einen Hinweis,
-eine Korrektur mit der IT abzustimmen (seit Run 480).
-
-**Frage:** Könnt ihr bestätigen:
-
-- (a) 2xx kommt erst, wenn die Abrechnung wirklich gespeichert ist, nicht
-  schon beim Eingang?
-- (b) Die Antwort ist immer JSON und enthält die vergebene
-  settlement_number an der jetzigen Stelle
-  (`settlements[0].settlement_number`)?
-
-Falls sich daran später etwas ändert, bitte vorher Bescheid geben, sonst
-gehen Korrekturen unbemerkt ins Leere.
-
-> **Antwort:** *noch offen* — beobachtet (Sandbox, 24.09.): (b) ist
-> derzeit so, aber nicht von Yannik bestätigt.
-
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -283,7 +230,91 @@ auf den Umschlag eintragen. Warum, ist mir nicht klar.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
+
+---
+
+### 2.1 Zwei EC-Belege am selben Terminal
+
+◐ wieder offen — widersprüchliche Aussagen *(14.10.)*
+
+**Hintergrund:** Gemeint sind zwei Kassenschnitte desselben Terminals
+(gleiche TID) innerhalb derselben Abrechnung. Die App schickt sie seit
+Run 399a3 als zwei getrennte `terminals[]`-Einträge mit gleicher TID.
+
+- 26.08. (Termin): „Jeder Beleg als eigener Datensatz“, FC verarbeitet das
+  korrekt.
+- 27.08. (Mail): „Pro TID und Settlement kann es nur einen Kassenschnitt
+  geben.“ Dazu bat Yannik um zwei JSONs; am 08.09. wusste er nicht mehr,
+  worum es dabei ging.
+
+Falls die zweite Aussage gilt und FC den zweiten Eintrag auf den ersten
+schreibt (Upsert pro TID), gingen die Beträge des ersten Kassenschnitts
+verloren.
+
+**Frage:** Was passiert bei FC, wenn in einer Abrechnung zwei Einträge mit
+derselben TID ankommen — werden beide gespeichert, oder überschreibt der
+zweite den ersten? Falls nur einer geht: Soll die App die Beträge
+summieren, und welches Belegfoto wird dann mitgeschickt?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
+
+---
+
+### 2.8 Belegfoto-Archivierung scheitert (500 ohne Nummer)
+
+⏳ offen *(neu, aus Mail 02.10.)*
+
+**Hintergrund (Yannik, 02.10.):** Werden die Werte gespeichert, aber die
+Archivierung des Belegfotos scheitert, antwortet FC mit 500 „settlement
+data was saved, but archiving the receipt photo … failed“ — ohne
+settlement_number. Yannik bietet zwei Optionen an:
+
+1. Reihenfolge umdrehen: erst archivieren, dann speichern. Eine 500
+   bedeutet dann immer „nichts gespeichert“.
+2. So lassen: Die Werte sind sicher, das Foto trägt das Büro nach.
+
+**Was die App heute macht (Code geprüft):** Jede 500 gilt als Fehlschlag
+(„Serverfehler bei Flurbocash. Bitte später erneut versuchen.“,
+api_upload_service.dart:639), es wird keine Nummer gemerkt. Beim
+Erstversand des Tages schickt die MA dann erneut — ohne Nummer — und FC
+legt eine **zweite Abrechnung** an. Scheitert das Foto wiederholt, kommt
+pro Versuch eine weitere dazu, bis das 4×-Limit greift (3.3). Bei einer
+Korrektur (Nummer bekannt) ist es harmlos, dort wird überschrieben.
+
+**Frage:** Option 1 oder 2? Aus App-Sicht ist Option 1 am einfachsten:
+erneutes Senden ist dann immer sicher, die App muss nichts ändern.
+Option 2 geht nur, wenn FC auch in diesem Fall die settlement_number
+mitschickt (oder einen eigenen Statuscode), damit die App „Werte gesendet,
+Foto fehlt“ erkennen und sich die Nummer merken kann.
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
+
+---
+
+### 2.9 Trinkgeld auf dem Kassenschnitt
+
+⏳ offen *(neu, aus Mail 02.10.)*
+
+**Hintergrund:** Ich hatte geschrieben: „Trinkgelder auf dem
+Kassenschnitt kann die App jetzt auch.“ Yannik: „Auf dem Kassenschnitt
+dürften keine Trinkgelder auftauchen. o.O“
+Gemeint war Run 452: Die neuen Terminals erlauben eine Trinkgeld-Eingabe
+per Karte, das Trinkgeld steht dann als eigener Posten auf dem
+Kassenschnitt. Die App erkennt es beim Scan und zeigt es nur an. Es
+fließt nicht in Schritt 2 und wird nicht an FC geschickt.
+
+**Frage:** Sollen die Terminals überhaupt Trinkgeld annehmen? Falls ja:
+Wie wird Kartentrinkgeld verbucht, und muss die App damit etwas tun
+(z. B. an FC schicken oder vom Kartenumsatz abziehen)?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -309,7 +340,7 @@ selbst die zuletzt eingereichte Abrechnung des Tages überschreibt?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -328,7 +359,7 @@ Abrechnung?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -345,7 +376,7 @@ BT) für den Flurbocash-Zugriff vorgesehen bzw. freigegeben?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -364,7 +395,7 @@ vergleichen.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -378,7 +409,7 @@ Steuerbüro es inzwischen beurteilt?
 > **Antwort (teilweise):** Tom sagt: kein Problem. Beurteilung durch das
 > Steuerbüro *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -391,7 +422,7 @@ wird er mit der Vergütung (6.1) verrechnet?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -404,7 +435,7 @@ arbeite?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -414,14 +445,16 @@ arbeite?
 
 **Hintergrund:** Der Umstieg erfolgt je Standort (1.1). Ein Termin hängt
 an Punkten, die nicht in Pacos Hand liegen (Live-Zugangsdaten 1.10,
-Server-Umzug 1.8).
+Server-Umzug 1.8). Yannik (08.09.): Eine verpflichtende Einführung ist für
+ihn ok, vorher aber mit Mello sprechen, und die Schauburg müsste dann an
+das echte Flurbocash senden statt an die Sandbox.
 
 **Frage:** Wollen wir eine Deadline benennen? Falls ja: für den
 Produktivstart aller Standorte oder je Standort?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -432,7 +465,7 @@ Produktivstart aller Standorte oder je Standort?
 **Hintergrund:** SB läuft bereits im Testbetrieb. Gründe für die
 vorgeschlagene Reihenfolge, zum Gegenprüfen:
 
-- GO und CO: TIDs, location_id und Sandbox-Key seit 14.10. vorhanden
+- GO und CO: TIDs, location_id und Sandbox-Key seit 08.10. vorhanden
   (1.2/1.3), Geräte können eingerichtet werden.
 - BT: zwei Abrechnungen pro Tag (Mittag + Tagesende), stößt am ehesten an
   das 4×-Limit (3.3).
@@ -441,7 +474,7 @@ vorgeschlagene Reihenfolge, zum Gegenprüfen:
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -462,11 +495,13 @@ Werte dann selbst ab.
    die Buchhaltung kennzeichnen (z. B. im Kommentarfeld, wie „test“ bei
    2.4a)?
 3. Wäre ein zweiter KI-Anbieter als Ausweichlösung gewünscht? Hängt mit
-   dem geplanten eigenen Anthropic-Account des Kinos zusammen.
+   dem geplanten eigenen Anthropic-Account des Kinos zusammen — Yannik
+   (10.09.): „Wir haben keine Claude API. Kann ich mich am WE
+   drumkümmern.“ Stand?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -491,7 +526,7 @@ als Ausweichweg ist nicht vorgesehen (5.1).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-18)
 
 ---
 
@@ -514,7 +549,38 @@ gleichzeitig?
 
 > **Antwort:** Je Standort.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
+
+---
+
+### 1.2 Terminal-IDs pro Standort
+
+✅ beantwortet
+
+**Hintergrund:** Alte und neue TIDs gelten in der App während der
+Umstellung parallel (config/terminal_ids.json).
+
+| Standort | alte TID           | neue TID                               | bestätigt |
+| -------- | ------------------ | -------------------------------------- | --------- |
+| SB       | 54017635           | 60561994, 60561996, 60561997           | ja        |
+| AT       | 54069464           | 60561998                               | ja        |
+| CO       | 54017639           | 60561995                               | ja        |
+| BT       | 54069493, 54017664 | 60561992, 60561993                     | ja        |
+| GO       | –                  | 60561999, 60562000, 60562001, 60562002 | ja        |
+
+SB (07.09.): Die neuen Terminals können vorerst nur Girocard, Kreditkarte
+läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.
+
+**Frage:** Sind die neuen TIDs bei FC hinterlegt, wann fallen die alten
+weg, und welche TID hat GO?
+
+> **Antwort (Mails Yannik):** Neue TIDs genannt am 26.08. (SB, BT, CO).
+> „Schauburg sind drin“ (02.10.). AT, BT, CO und GO bestätigt (08.10.),
+> GO in der App eingetragen (Run 485).
+> Alte TIDs (Paco, 14.10.): bleiben in der App, bis sie an allen
+> Standorten korrekt läuft.
+
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -524,12 +590,12 @@ gleichzeitig?
 
 **Frage:** Welche location_id haben GO und CO?
 
-> **Antwort (Mail Yannik, 14.10.):** GO: Sandbox 5, Live 3.
+> **Antwort (Mail Yannik, 08.10.):** GO: Sandbox 5, Live 3.
 > CO: Sandbox 6, Live 5. Die Werte unterscheiden sich also zwischen
 > Sandbox und Live. Gesamttabelle aller Standorte siehe
 > [1.10](#110-live-zugangsdaten-für-sb-at-bt).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -542,7 +608,7 @@ gleichzeitig?
 > **Antwort:** Keine formelle Frage mehr — Paco klärt das jeweils vor Ort
 > bzw. fragt Yannik spontan per Messenger.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -555,7 +621,7 @@ gleichzeitig?
 > **Antwort:** Paco richtet die Apps an den Standorten initial selbst ein.
 > Spätere Änderungen (API-Key, TID) direkt am Gerät, siehe 1.6.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -567,7 +633,7 @@ gleichzeitig?
 
 > **Antwort:** Am Gerät vor Ort, nicht zentral von Yannik verwaltet.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -579,29 +645,11 @@ gleichzeitig?
 
 > **Antwort:** Yannik kauft eins.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
 ## 2. Abrechnungsdaten & Format
-
-### 2.1 Zwei EC-Belege am selben Terminal
-
-✅ beantwortet und umgesetzt (Run 399a3)
-
-**Hintergrund:** Gemeint sind zwei EC-Zahlungsvorgänge am selben Terminal
-(gleiche TID) innerhalb derselben Abrechnung. Die App hatte sie früher zu
-einer `terminals[]`-Zeile zusammengefasst.
-
-**Frage:** Sollen beide Belege einzeln übertragen werden (zwei
-`terminals[]`-Einträge mit gleicher TID), und verarbeitet FC das korrekt?
-
-> **Antwort:** Ja, jeder Beleg als eigener Datensatz, und FC verarbeitet
-> das korrekt.
-
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
-
----
 
 ### 2.2 Weitere Daten gewünscht?
 
@@ -613,7 +661,7 @@ einer `terminals[]`-Zeile zusammengefasst.
 > Kassensystem. Die App schickt nur `terminals[]` und `cash_total`.
 > Kino-SOLL, Bistro-SOLL, Ausgaben und Differenz werden nicht gebraucht.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -626,7 +674,29 @@ einer `terminals[]`-Zeile zusammengefasst.
 > **Antwort:** Ja. Eigene JSON-Felder sind generell erlaubt, Feldnamen
 > frei wählbar. FC ignoriert sie, bis sie serverseitig implementiert sind.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
+
+---
+
+### 2.4 Empfangsbestätigung
+
+✅ beantwortet — mit einer Ausnahme, siehe 2.8
+
+**Hintergrund:** Die App wertet eure Antwort auf PUT settlements als
+Empfangsbestätigung: Erst bei 2xx zeigt sie „gesendet“, und sie merkt sich
+die settlement_number aus der Antwort, damit eine spätere Korrektur die
+richtige Abrechnung überschreibt (seit Run 477).
+
+**Frage:** Kommt 2xx erst, wenn die Abrechnung wirklich gespeichert ist,
+und enthält die Antwort immer die settlement_number?
+
+> **Antwort (Mail Yannik, 02.10.):** „settlement_number kommt immer mit.
+> Und ja, 2xx kommt erst nach dem Speichern.“ Korrekturen: „Flurbocash
+> arbeitet mit Upsert.“ Ausnahme: Scheitert die Archivierung des
+> Belegfotos, kommt eine 500 ohne settlement_number, obwohl die Werte
+> gespeichert sind — offen als 2.8.
+
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -640,9 +710,9 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 > **Antwort:** Keine Farbmarkierung — stattdessen „test“ ins
 > Kommentarfeld schreiben, die Buchhaltung erkennt es manuell.
 > Ein Server-Zeitstempel entfällt (Paco, 30.09.): Die App schickt selbst
-> `sent_at` mit. (Empfangsbestätigung siehe 2.4 bei den offenen Fragen.)
+> `sent_at` mit. (Empfangsbestätigung siehe 2.4.)
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -652,9 +722,10 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 
 **Frage:** Hat die Buchhaltung die SB-Testübertragungen geprüft?
 
-> **Antwort:** Noch nicht getestet (Stand 26.08.).
+> **Antwort:** Stand 26.08.: noch nicht getestet. Mail Yannik 08.09.:
+> „Die Daten für die SB sehen korrekt aus. Stichprobenartig getestet.“
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -668,7 +739,7 @@ Geschäftsdatum?
 > **Antwort:** Ja, logisches Geschäftsdatum. Der Tageswechsel liegt aber
 > bei 5 Uhr, nicht bei 6 Uhr. In der App umgestellt.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -686,7 +757,7 @@ erfährt sie, welche settlement_number vergeben wurde?
 > Inhalt). FC liefert die vergebene Nummer in der PUT-Antwort mit
 > (`settlements[0].settlement_number`).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -702,7 +773,7 @@ Abrechnung, Korrektur und versehentlichem Doppel-Versand? Wäre ein
 > settlement_number und `sent_at`, ob und wie FC das anzeigt, entscheidet
 > Yannik. Korrekturen kommen ohnehin meist am selben Abend.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -716,7 +787,7 @@ Abrechnung, Korrektur und versehentlichem Doppel-Versand? Wäre ein
 > am selben Abend, die App erkennt `finalized: true` bzw. die 400 selbst.
 > Taucht im Ausfall-Kontext wieder auf, siehe 8.2.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -734,7 +805,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > (Run 477). Falls doch Yanniks Einschätzung gewünscht: zurück zu den
 > offenen Fragen.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -748,7 +819,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 
 > **Antwort:** Nein, muss nur lesbar sein.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -761,7 +832,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > **Antwort:** base64 direkt im JSON, Feldname frei wählbar (z. B.
 > `beleg_foto_base64`). Keine maximale Dateigröße (Yannik, 26.08.).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -773,7 +844,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 
 > **Antwort:** Nein, läuft über das Kommentarfeld (2.3).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -788,7 +859,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > **Antwort (Paco, 26.08.):** Nein. Auch kein Mail-Fallback bei
 > Korrektur, 4×-Limit oder FC-Ausfall.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -800,7 +871,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 
 > **Antwort:** Nein.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 
 ---
 
@@ -816,4 +887,4 @@ angekommen ist, wenn die Verbindung mittendrin abbricht?
 > (löschbar außer Nr. 1). Erst nachfragen, wenn Duplikate in der Praxis
 > auffallen.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-22)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
