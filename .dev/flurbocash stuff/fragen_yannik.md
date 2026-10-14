@@ -1,398 +1,445 @@
-# Fragen an Yannik — Flurbocash-Integration
+# Fragen an Yannik
 
-Stand: 22.09.2026 · zentrale Tracking-Datei für alle Fragen rund um die Flurbocash-Anbindung, inkl. bereits erhaltener Antworten. Wird laufend ergänzt/aktualisiert, sobald neue Antworten reinkommen oder neue Fragen auftauchen.
+Stand: 14.10.2026 (Termin nach drei Wochen Pause) · zentrale Tracking-Datei
+für alle Fragen an Yannik: Flurbocash-Anbindung, Projektplanung, Vergütung
+und Persönliches. Wird laufend ergänzt, sobald Antworten reinkommen oder
+neue Fragen auftauchen.
 
-Status-Werte: `offen` · `teilweise geklärt` · `beantwortet` · `entfällt`
+Aufbau: Oben die **Agenda** (alle offenen Fragen, eine Zeile pro Frage, nach
+Gesprächsreihenfolge sortiert), darunter die **Details zu den offenen
+Punkten**, ganz unten das **Archiv** der erledigten Punkte (einzeilig). Die
+Nummern (1.2, 3.1 …) bleiben stabil, weil TODO.md, PROJECT_CONTEXT.md und
+CHANGELOG.md darauf verweisen. Die ausführlichen alten Fassungen erledigter
+Punkte stehen im Git-Verlauf (zuletzt vollständig in Run 484).
 
-## Übersicht
-
-⏳ offen · ◐ teilweise geklärt · ✅ beantwortet · – entfällt
-
-### Noch zu klären (10)
-
-**1. Zugangsdaten & Einrichtung**
-
-- ⏳ [1.2 Sind die neuen TIDs bei FC hinterlegt, und wann fallen die alten weg?](#12-terminal-ids-pro-standort)
-- ◐ [1.3 Welche location_id haben GO und CO?](#13-standort-kennung-kinoidlocationid)
-- ◐ [1.8 Kann die App jetzt auf den Kino-Server umziehen?](#18-app-hosting-auf-kino-server-statt-github-pages)
-
-**2. Abrechnungsdaten & Format**
-
-- ◐ [2.4 Ist eure Antwort eine verlässliche Empfangsbestätigung, und wie kennzeichnen wir Tests?](#24-zeitstempel-der-übertragung--testkennzeichnung-im-dashboard-dev-flag)
-
-**3. Korrektur & Duplikate**
-
-- ◐ [3.1 Sieht die Buchhaltung Korrekturen, und gibt es eine Abfrage für belegte settlement_numbers?](#31-korrektur-mechanismus--settlementnumber)
-- ⏳ [3.2 Wie verhindern wir, dass eine Abrechnung versehentlich doppelt übertragen wird?](#32-schutz--hinweis-bei-versehentlicher-doppel-übertragung)
-- ⏳ [3.3 Was soll passieren, wenn das Limit von 4 Abrechnungen pro Tag erreicht ist?](#33-verhalten-bei-maximum-reached-4-limit)
-
-**5. Sonstiges**
-
-- ⏳ [5.3 Welches WLAN ist für die Kasse freigegeben? (Prüf-Teil zurückgestellt)](#53-nachträgliche-prüfung-nach-verbindungsabbruch)
-
-**6. Vergütung & Rolle Yannik**
-
-- ⏳ [6.1 Wie hoch soll Yanniks Vergütung sein, und nach welchem Modell?](#61-vergütung-yannik-höhemodell)
-- ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
-
-### Erledigt (15)
-
-**1. Zugangsdaten & Einrichtung**
-
-- ✅ [1.1 Wird der Produktivbetrieb pro Standort oder für alle gleichzeitig gestartet?](#11-basis-url--umstieg-auf-produktivserver)
-- ✅ [1.4 Wie lautet das Passwort für den Schauburg-AP?](#14-passwort-schauburg-ap)
-- ✅ [1.5 Wer richtet die Geräte ein und pflegt sie?](#15-geräte-einrichtung--pflege)
-- ✅ [1.6 Wird die Konfiguration zentral oder pro Gerät gepflegt?](#16-konfiguration-zentral-oder-je-gerät)
-- ✅ [1.7 Wer besorgt ein Android-Testgerät?](#17-android-testgerät)
-
-**2. Abrechnungsdaten & Format**
-
-- ✅ [2.1 Zwei EC-Belege desselben Terminals einzeln übertragen?](#21-zwei-ec-zahlungen-am-selben-terminal-in-einer-abrechnung)
-- ✅ [2.2 Braucht FC außer Kartenumsätzen und Bargeld weitere Daten?](#22-weitere-daten-gewünscht)
-- ✅ [2.3 Dürfen Notizen, MA-Name und Sendezeitpunkt mitgeschickt werden?](#23-notizen-ma-name-sendezeitpunkt-etc)
-- ✅ [2.5 Hat die Buchhaltung die SB-Testübertragungen geprüft?](#25-validierung-der-sb-testübertragungen-aus-buchhaltungssicht)
-- ✅ [2.6 Welches Datum gilt für Nachtabrechnungen (Tageswechsel um 5 Uhr)?](#26-datum-für-nachtabrechnungen-6-uhr-knick)
-
-**4. Beleg-Foto**
-
-- ✅ [4.1 Muss das Belegfoto perspektivisch entzerrt werden?](#41-perspektivische-ausrichtung-nötig)
-- ✅ [4.2 In welchem Feld und Format wird das Belegfoto übertragen?](#42-base64-beleg-json-genaues-feldformat)
-- ✅ [4.3 Braucht es eine eigene Prüfmarkierung oder einen Dev-Button?](#43-prüfen-flag-für-buchhaltung--dev-button-app-intern)
-
-**5. Sonstiges**
-
-- – [5.1 Soll die App Mails verschicken?](#51-mailversand)
-- ✅ [5.2 Wird ein Stapelscanner für alte Belege gebraucht?](#52-stapelscanner-für-zurückliegende-belege)
+⏳ offen · ◐ teilweise geklärt · ✅ beantwortet · – entfällt/zurückgestellt
 
 ---
 
-## 1. Zugangsdaten & Einrichtung
+## Agenda 14.10.2026
 
-### 1.1 Basis-URL / Umstieg auf Produktivserver
+**A. Projektplanung** *(neu)*
 
-**Status:** beantwortet
-**Bereits klar (Paco):** Die Sandbox-Adresse (sandbox.flurbocash.c137-prime.de:666) ist nicht die Produktiv-Adresse — für den Echtbetrieb bekommen wir eine eigene URL von Yannik. Der Umstieg erfolgt, nachdem die Tests (aktuell in der SB) positiv abgeschlossen sind, nicht an einem festen Datum.
-**Frage an Yannik:** Erfolgt der Umstieg auf Produktivbetrieb standortweise nacheinander (erst SB, dann die anderen) oder für alle Standorte gleichzeitig?
+- ⏳ [7.1](#71-deadline) Wollen wir eine Deadline benennen?
+- ⏳ [7.2](#72-reihenfolge-der-standorte) Nächste Schritte: erst CO und AT, dann GO, dann BT?
 
-**Antwort:** je Standort
+**B. Ausfälle im Betrieb** *(neu)*
 
-[↑ zur Übersicht](#übersicht)
+- ⏳ [8.1](#81-ki-für-beleg-scan-offline) Was soll die App tun, wenn die KI für den Beleg-Scan offline ist?
+- ⏳ [8.2](#82-flurbocash-nicht-erreichbar) Was soll passieren, wenn FC down ist und die Abrechnung nicht gesendet werden kann?
+- ⏳ [3.3](#33-verhalten-bei-maximum-reached-4-limit) Was soll passieren, wenn das Limit von 4 Abrechnungen pro Tag erreicht ist?
+
+**C. Terminals & Standortdaten**
+
+- ⏳ [1.2](#12-terminal-ids-pro-standort) Sind die neuen TIDs bei FC hinterlegt, wann fallen die alten weg, und welche TID hat GO?
+- ⏳ [1.9](#19-terminal-nummern-fest-mit-tids-koppeln) Die Terminals haben neben der TID eigene Nummern. Koppeln wir die fest mit den TIDs? *(neu)*
+- ⏳ [2.7](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren) SB-Sonderfall: Kartenumsatz des angeschlossenen Terminals zum Kino-SOLL addieren — bleibt das so? *(neu)*
+- ◐ [1.3](#13-standort-kennung-location_id) Welche location_id haben GO und CO?
+- ⏳ [5.3](#53-wlan-für-den-kassenbetrieb) Welches WLAN ist an den einzelnen Standorten für die Kasse freigegeben?
+
+**D. Server & Schnittstelle**
+
+- ◐ [1.8](#18-app-hosting-auf-kino-server-statt-github-pages) Kann die App jetzt auf den Kino-Server umziehen?
+- ◐ [2.4](#24-empfangsbestätigung) Ist eure Antwort eine verlässliche Empfangsbestätigung?
+- ◐ [3.1](#31-leseweg-für-belegte-settlement_numbers) Gibt es eine Abfrage, welche settlement_numbers für einen Tag schon belegt sind? *(niedrige Priorität)*
+
+**E. Vergütung & Persönliches**
+
+- ⏳ [6.1](#61-vergütung-yannik-höhemodell) Wie hoch soll die Vergütung sein, und nach welchem Modell?
+- ◐ [6.2](#62-risiko-scheinselbständigkeit) Besteht ein Risiko der Scheinselbständigkeit? (Steuerbüro)
+- ⏳ [6.3](#63-vorschuss) Ich brauche wieder einen Vorschuss. *(neu)*
+- ⏳ [6.4](#64-kaffee-flat-in-der-bt) Kaffee-Flat, während ich in der BT an der App arbeite? *(neu)*
 
 ---
+
+## Details zu den offenen Punkten
 
 ### 1.2 Terminal-IDs pro Standort
 
 **Status:** offen
 
-- FC schon auf die neuen TIDs umgestellt?
-- wie lauten die neuen TIDs?
+**Fragen:**
 
-**Bereits bekannt (Code-Stand, config/terminal_ids.json):** Aktuell im Code hinterlegte Annahmen — SB: 54017635, AT: 54069464, CO: 54017639, BT: 54069493 + 54017664. Keine davon ist bisher von Yannik bestätigt. Für GO ist noch gar kein Wert eingetragen (Platzhalter "XXXX").
+1. Sind die neuen TIDs bei FC korrekt hinterlegt?
+2. Wann können die alten TIDs entfernt werden?
+3. Welche TID hat GO? (In der App steht dort noch der Platzhalter "XXXX".)
 
-**Antwort:** Noch keine Werte — Yannik schickt die bestätigten TIDs per Mail nach (Stand 2026-08-26).
+**Stand App (config/terminal_ids.json):** Alte und neue TIDs gelten
+während der Umstellung parallel. Keine davon ist bisher von Yannik
+bestätigt, alles nur von den Geräten abgelesen.
 
-**Update (2026-09-07):** SB nutzt seither zusätzlich drei neue Terminals (vorerst nur Girocard, Kreditkarte weiterhin über das alte Terminal) — parallel zum alten Terminal, bis komplett umgestellt ist. config/terminal_ids.json enthält dafür bereits neue TIDs (SB: 60561994/60561996/60561997, BT: 60561992/60561993, CO: 60561995) — reine Annahmen aus den Geräten selbst, noch nicht von Yannik bestätigt.
+| Standort | alte TID           | neue TID                     |
+|----------|--------------------|------------------------------|
+| SB       | 54017635           | 60561994, 60561996, 60561997 |
+| AT       | 54069464           | 60561998                     |
+| CO       | 54017639           | 60561995                     |
+| BT       | 54069493, 54017664 | 60561992, 60561993           |
+| GO       | –                  | – (fehlt)                    |
 
-**Neue Frage (2026-09-22):** Sind die neuen TIDs (SB/BT/CO) bei euch korrekt hinterlegt, und wann können die alten TIDs entfernt werden? Für GO fehlen TID und location_id weiterhin komplett.
+Hintergrund SB (07.09.): Die neuen Terminals können vorerst nur Girocard,
+Kreditkarte läuft weiter über das alte Terminal. Davon hängt auch die
+geplante Prüfung "alle erwarteten Terminal-Belege gescannt?" ab (TODO.md,
+zurückgestellt), siehe auch 1.9 und 2.7.
 
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
-### 1.3 Standort-Kennung (kino_id/location_id)
+### 1.3 Standort-Kennung (location_id)
 
 **Status:** teilweise geklärt
-**Antwort:** Feldname bereits bekannt aus `EXTERNAL_API_Schauburg_de.md`: `location_id` (Integer, Teil des Request-Body von `POST /api/daily-reports/ensure`). Werte teilweise bekannt (Mail Yannik, 2026-07-12, siehe TODO_ERLEDIGT.md): Schauburg (SB) = 1, Atlantis (AT) = 3, Bar Tabak (BT) = 4.
-**Noch offen:** Wie lauten die location_id-Werte für GO und CO?
+**Bekannt (Mail Yannik, 12.07.):** SB = 1, AT = 3, BT = 4.
+**Offen:** location_id für GO und CO. Yannik wollte sie per Mail
+nachschicken (Stand 26.08.), bisher nicht angekommen.
 
-**Antwort:** Noch keine Werte — Yannik schickt die GO/CO-location_id per Mail nach (Stand 2026-08-26).
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 1.4 Passwort Schauburg-AP
-
-**Status:** beantwortet
-**Antwort:** Keine formelle Yannik-Frage mehr — Paco findet das WLAN-Passwort jeweils vor Ort selbst heraus bzw. fragt Yannik bei Bedarf spontan über Messenger.
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 1.5 Geräte-Einrichtung & Pflege
-
-**Status:** beantwortet
-**Antwort:** Paco richtet die Apps an den Standorten initial selbst ein. Wie spätere Änderungen laufen (neuer API-Key, neue TID), ist bereits in 1.6 beantwortet — Konfiguration erfolgt jeweils direkt am Gerät vor Ort, nicht zentral von Yannik verwaltet.
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 1.6 Konfiguration zentral oder je Gerät
-
-**Status:** beantwortet
-**Antwort:** Am Gerät vor Ort (nicht zentral von Yannik verwaltet).
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 1.7 Android-Testgerät
-
-**Status:** beantwortet
-**Antwort:** Yannik kauft eins.
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
 ### 1.8 App-Hosting auf Kino-Server (statt GitHub Pages)
 
 **Status:** teilweise geklärt
-Aktuell läuft die App als PWA über GitHub Pages (Pacos privater GitHub-Account). Wann soll die App stattdessen auf einem Kino-eigenen Server liegen? Hätte Paco dann unbeschränkten Zugriff darauf (z. B. für eigenständige Deploys/Updates), oder würde das über Yannik/die IT laufen?
-**Antwort:** Noch nicht final — Yannik braucht zuerst Infos zum aktuellen Deployment, bevor er das einschätzen kann. Offene Zwischenaufgabe (Paco): klären, welche Infos genau nötig sind (z. B. Hosting-Art, Domain, Build-/Deploy-Prozess der aktuellen GitHub-Pages-Lösung) und diese an Yannik liefern.
+Die App läuft als PWA über GitHub Pages (Pacos privater Account). Infos an
+Yannik am 01.09.: SFTP-Upload in einen Ordner, alte Dateien werden ersetzt,
+HTTPS ist Pflicht; lokal generalprobt.
 
-**Update (2026-09-01):** Infos an Yannik geschickt — SFTP-Upload in einen Ordner, alte Dateien werden ersetzt, HTTPS ist Pflicht; lokal generalprobt.
+**Frage:** Hast du dir das angeschaut? Ist der Umzug jetzt möglich, und
+habe ich dann selbst Zugriff für Updates?
 
-**Neue Frage (2026-09-22):** Hat Yannik sich das inzwischen angeschaut — wie ist der Stand, ist ein Umzug auf den Kino-Server jetzt möglich?
+**Was du vor dem ersten Upload brauchst bzw. beachten musst (30.09.):**
 
-**Ergänzung (2026-09-30), gesammelte Nachricht an Yannik vorbereitet:** Zusätzlich zu SFTP/Ordner/HTTPS (01.09.) neu:
-- **Adresse/Pfad:** Domain + ggf. Unterordner vor dem ersten Upload nötig (wird beim Build als `--base-href` fest eingetragen, aktuell `/kino-tagesabschluss/`).
-- **CORS:** FC-API erlaubt derzeit nur `https://pacodemant.github.io` (`access-control-allow-origin`). Neue App-Adresse muss auf Sandbox UND Produktivservern ergänzt werden, sonst blockiert der Browser jeden Upload (entfällt bei gleicher Adresse wie die API).
-- **WLAN:** App-Adresse muss aus dem Kassen-WLAN der Standorte erreichbar sein (Gäste-WLAN sperrt z. B. Port 666), idealerweise Port 443.
-- Optional: kein langes Browser-Caching für index.html, flutter_bootstrap.js, main.dart.js (`Cache-Control: no-cache`).
-- Zur Info (Paco-Aufgabe): Durch die neue Adresse ist localStorage getrennt, d. h. alle Handys müssen die App neu installieren und neu einrichten (API-Key, TIDs, Verlauf weg). Vorher sicherstellen, dass alle Abrechnungen bestätigt gesendet sind.
+- **Adresse/Pfad:** Domain und ggf. Unterordner. Wird beim Build fest als
+  `--base-href` eingetragen (aktuell `/kino-tagesabschluss/`).
+- **CORS:** Die FC-API erlaubt derzeit nur `https://pacodemant.github.io`.
+  Die neue App-Adresse muss auf Sandbox UND Produktivservern ergänzt
+  werden, sonst blockiert der Browser jeden Upload (entfällt bei gleicher
+  Adresse wie die API).
+- **WLAN:** Die App-Adresse muss aus dem Kassen-WLAN erreichbar sein
+  (Gäste-WLAN sperrt z. B. Port 666), idealerweise Port 443.
+- Optional: kein langes Browser-Caching für index.html,
+  flutter_bootstrap.js und main.dart.js (`Cache-Control: no-cache`).
 
-[↑ zur Übersicht](#übersicht)
+**Zur Info (Paco-Aufgabe):** Durch die neue Adresse ist der Speicher der
+App getrennt. Alle Handys müssen die App neu installieren und neu
+einrichten (API-Key, TIDs, Verlauf weg). Vorher sicherstellen, dass alle
+Abrechnungen bestätigt gesendet sind.
 
----
-
-## ✅ 2. Abrechnungsdaten & Format
-
-### 2.1 Zwei EC-Zahlungen am selben Terminal in einer Abrechnung
-
-**Status:** beantwortet und umgesetzt (siehe TODO_ERLEDIGT.md, Run 399a3)
-Präzisierung der ursprünglichen Frage ("zweimal Karte gezogen"): Gemeint sind zwei EC-Zahlungsvorgänge am selben Terminal (gleiche TID) innerhalb derselben Tagesabrechnung/settlement — nicht zwei komplett getrennte Abrechnungen an einem Tag. Getrennte Abrechnungen am selben Tag regelt bereits `settlement_number` 1–4 inkl. Korrektur-Möglichkeit, siehe 3.1 (dort ist auch erklärt, wie FC generell mit mehreren Abrechnungen/Korrekturen umgeht).
-
-**Bereits bekannt (Code-Stand, TODO.md:26-40):** Die App summiert zwei EC-Belege desselben Terminals aktuell stillschweigend zu einer einzigen `terminals[]`-Zeile (`ApiUploadService._terminalsListe()`).
-
-**Fragen an Yannik:**
-
-1. Sollen die beiden Belege stattdessen einzeln aufgeschlüsselt übertragen werden — also zwei `terminals[]`-Einträge mit identischer TID innerhalb desselben settlements-Eintrags? `EXTERNAL_API_Schauburg_de.md` sagt dazu nichts.
-2. Falls ja: Verarbeitet/akzeptiert Flurbocash mehrere `terminals[]`-Einträge mit derselben TID in einem einzigen Aufruf korrekt (beide Beträge werden erfasst), oder zählt nur der letzte Eintrag?
-
-**Antwort:** zu 1: jeder Beleg als eigener Datensatz, zu 2: ja.
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
-### 2.2 Weitere Daten gewünscht?
+### 1.9 Terminal-Nummern fest mit TIDs koppeln
 
-**Status:** beantwortet
-**Antwort:** Laut FC-Vorgaben zieht sich Flurbocash die Kassenumsätze selbst aus dem Kassensystem (`EXTERNAL_API_Schauburg_de.md`: `system_total_cents` wird von Flurbocash aus den Kassensystemdaten errechnet). Die App muss zu den EC-Beleg-Kartenumsätzen (`terminals[]`) nur noch den Barumsatz (`cash_total`) übertragen. Kino-Soll, Bistro-Soll, Ausgaben und Differenz werden nicht benötigt.
+**Status:** offen *(neu, 14.10.)*
+Die Terminals haben neben der TID noch eine eigene Gerätenummer. Wollen wir
+diese fest mit den TIDs koppeln?
 
-[↑ zur Übersicht](#übersicht)
+**Wofür das gut wäre:** Die MA kennt das Gerät eher an seiner Nummer als an
+der achtstelligen TID. Die App könnte dann z. B. "Terminal 2 (TID …)"
+anzeigen, und ein Hinweis wie "Beleg von Terminal 3 fehlt noch" wäre für
+die MA verständlich.
 
----
+**Klären:** Sind die Nummern dauerhaft fest an die Geräte vergeben (auch
+bei Tausch/Reparatur)? Wer pflegt die Zuordnung, wenn sich etwas ändert?
 
-### 2.3 Notizen, MA-Name, Sendezeitpunkt etc.
-
-**Status:** beantwortet
-**Antwort:** Ja, möglich. Zusätzlich erlaubt: Yannik hat generell gesagt, dass wir eigene JSON-Felder einfach hinzufügen können — solange er sie serverseitig in FC nicht implementiert hat, werden sie schlicht ignoriert (siehe auch 4.2). Plan (Paco, 2026-08-26): Name des abrechnenden Mitarbeiters, ein freies Kommentarfeld sowie Sendedatum/-uhrzeit (hilft v. a. beim Entwickeln, um die Reihenfolge der Übertragungen nachzuvollziehen) als zusätzliche Felder mitschicken.
-
-**Feldnamen:** Yannik gibt keine vor — Paco kann sie selbst wählen. Ob der Sendezeitpunkt speziell erwünscht war, ist nicht mehr sicher erinnerlich (möglicherweise nicht) — wird trotzdem mit ins JSON aufgenommen (siehe generelle Ignorieren-Regelung, 4.2).
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
-### 2.4 Zeitstempel der Übertragung + Testkennzeichnung im Dashboard (dev-Flag)
+### 2.4 Empfangsbestätigung
 
 **Status:** teilweise geklärt
-Könntet ihr uns bei jeder Übertragung zusätzlich Datum/Uhrzeit der Übertragung mitschicken (hilft bei der Fehlersuche)? Wichtiger: Könnt ihr im Flurbocash-Dashboard testweise gesendete Abrechnungen aus der SB (wo wir aktuell testen) farblich von echten unterscheidbar machen? Zweck: Die Buchhaltung erkennt auf einen Blick, welche Übertragungen echt und zu prüfen sind und welche sie ignorieren kann — und wir können während der Entwicklung frei in der echten Umgebung testen, ohne echte Daten zu verfälschen oder die Buchhaltung zu verwirren.
+Die App wertet eure Antwort auf PUT settlements als Empfangsbestätigung:
+Erst bei 2xx zeigt sie "gesendet", und sie merkt sich die settlement_number
+aus der Antwort, damit eine spätere Korrektur die richtige Abrechnung
+überschreibt (seit Run 477).
 
+**Bitte bestätigen:**
 
-**Antwort:** Zur Testkennzeichnung: keine separate Farbmarkierung durch FC geplant — stattdessen das Wort "test" über die Kommentarfunktion in der Abrechnung mitschicken (siehe 2.3), damit die Buchhaltung es manuell erkennt.
-**Entfällt (Paco, 2026-09-30):** Zeitstempel der Übertragung — die App schickt selbst `sent_at` (Gerätezeit) mit, ein Empfangs-Zeitstempel vom Server wird nicht gebraucht (keine App-Logik würde ihn nutzen). Ob `sent_at` im Dashboard sichtbar ist, siehe 3.1 Frage 2.
+- (a) 2xx kommt erst, wenn die Abrechnung wirklich gespeichert ist, nicht
+  schon beim Eingang?
+- (b) Die Antwort ist immer JSON und enthält die vergebene
+  settlement_number an der jetzigen Stelle
+  (`settlements[0].settlement_number`)? In der Sandbox ist das seit 24.09.
+  so.
 
-**Frage an Yannik (Empfangsbestätigung, ergänzt 2026-09-30):** Die App wertet eure Antwort auf PUT settlements als Empfangsbestätigung: Erst bei 2xx zeigt sie "gesendet", und sie merkt sich die settlement_number aus der Antwort, damit eine spätere Korrektur die richtige Abrechnung überschreibt. Könnt ihr dafür bestätigen:
-(a) 2xx kommt erst, wenn die Abrechnung wirklich gespeichert ist, nicht schon beim Eingang?
-(b) Die Antwort ist immer JSON und enthält die vergebene settlement_number an der jetzigen Stelle (settlements[0].settlement_number)?
-Falls ihr daran später etwas ändert, gebt uns bitte vorher Bescheid — sonst gehen Korrekturen unbemerkt ins Leere. (App-Seite seit Run 480: Fehlt die Nummer, gilt die Abrechnung trotzdem als gesendet, die MA bekommt aber einen Hinweis, eine Korrektur mit der IT abzustimmen.)
+Falls sich daran später etwas ändert, bitte vorher Bescheid geben, sonst
+gehen Korrekturen unbemerkt ins Leere. (Fehlt die Nummer, gilt die
+Abrechnung trotzdem als gesendet, die MA bekommt aber einen Hinweis, eine
+Korrektur mit der IT abzustimmen — seit Run 480.)
 
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 2.5 Validierung der SB-Testübertragungen aus Buchhaltungssicht
-
-**Status:** beantwortet
-**Antwort:** Noch nicht getestet (Stand 2026-08-26).
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 2.6 Datum für Nachtabrechnungen (5-Uhr-Knick)
-
-**Status:** beantwortet
-**Antwort:** Ja, logisches Geschäftsdatum — Annahme bestätigt. Aber: Der Knick liegt bei 5 Uhr, nicht bei 6 Uhr wie bisher angenommen/in der App implementiert.
-**Bug gefunden (2026-08-26):** Die App rechnet aktuell mit einem 6-Uhr-Cutoff (`DatumsHelper._geschaeftstagCutoffStunde`, lib/utils/datums_helper.dart:8) — muss auf 5 Uhr geändert werden. Für Abschlüsse zwischen 5:00 und 5:59 Uhr würde die App sonst das falsche Datum an FC senden. TODO.md-Eintrag angelegt ("Geschäftstag-Cutoff von 6 auf 5 Uhr umstellen").
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
-## 3. Korrektur & Duplikate
+### 2.7 SB-Sonderfall: Kartenumsatz zum Kino-SOLL addieren
 
-### 3.1 Korrektur-Mechanismus / settlement_number
+**Status:** offen *(neu, 14.10.)*
+Eines der drei neuen SB-Terminals hat Yannik direkt ans Kinokassen-System
+angeschlossen, sodass man den Betrag nicht mehr eintippen muss. Seitdem
+muss man den Kartenumsatz dieses Terminals und den Kinokarten-Umsatz
+addieren und das Ergebnis als Kino-SOLL in die App bzw. auf den Umschlag
+eintragen. Warum, ist mir nicht klar.
 
-**Status:** teilweise geklärt
-**Antwort:** Mechanismus bekannt — settlement_number weglassen = neue Abrechnung, Wert 1–4 = bestehende überschreiben. Noch offen: Sichtbarkeit von Korrekturen im Buchhaltungs-Dashboard, und ob es einen Leseweg gibt, um vorhandene settlement_numbers vor dem Senden abzufragen.
+**Fragen:**
 
-**Bereits bekannt (aus EXTERNAL_API_Schauburg_de.md:64-67):** `settlement_number` ist optional.
+1. Warum ist das so?
+2. Ist das ein vorübergehender Workaround, bis das behoben ist, oder
+   bleibt das dauerhaft?
+3. Falls dauerhaft: Soll die App das selbst rechnen (Kartenumsatz des
+   angeschlossenen Terminals aus dem Beleg-Scan automatisch zum Kino-SOLL
+   addieren)? Dann bräuchte ich die TID des angeschlossenen Terminals.
+4. Kommen weitere angeschlossene Terminals dazu (andere Standorte)?
 
-- Weglassen → neue Abrechnung, Server vergibt automatisch die nächste freie Nummer (1, dann 2, ...). Max. 4/Tag, danach `400` "maximum of 4 settlements per day reached".
-- Wert 1–4 explizit setzen → überschreibt genau diese bestehende Abrechnung an Ort und Stelle (= Korrektur). Zielnummer muss bereits existieren, sonst `400`.
-
-**Verifiziert (2026-08-26, gegen die englische Originaldatei EXTERNAL_API_Schauburg.md, nicht nur die deutsche Übersetzung):** Kein Übersetzungsfehler — beide Fassungen sagen identisch dasselbe. Zitat Original: "Set it to 1–4 to overwrite that existing settlement (correction)." Das heißt: Der **Client** muss die `settlement_number` explizit mitschicken, um eine Korrektur auszulösen — FC erkennt eine Korrektur nicht selbstständig am Inhalt (z. B. gleiche TID/gleicher Tag). Ein Korrektur-Modus ganz ohne Nummer ist laut Doku nicht vorgesehen. Das verschärft die Strukturelle Lücke unten: Die App muss diese Nummer korrekt kennen, kennt sie aber aktuell nicht zuverlässig.
-
-**Bug im eigenen Code gefunden (2026-08-25):** Die App sendet `settlement_number` aktuell nie — weder beim Erstversand noch bei "Erneut senden" (lib/services/api_upload_service.dart:165-174, lib/pages/verlauf_detail_seite.dart:49-96 ruft denselben Pfad ohne Unterscheidung auf). Jedes "Erneut senden" legt dadurch vermutlich eine zusätzliche Abrechnung an statt zu korrigieren, bis die 4er-Grenze erreicht ist. Fix (kein Yannik-Thema, intern umzusetzen): Erstversand weiter ohne `settlement_number` (wird automatisch Nummer 1, solange nur eine Abrechnung/Tag), "Erneut senden" künftig mit `settlement_number: 1` explizit.
-
-**Strukturelle Lücke erkannt (2026-08-25, Rückfrage von Paco):** Weder die Antwort von `POST ensure` (EXTERNAL_API_Schauburg_de.md:45-51) noch die von `PUT settlements` (EXTERNAL_API_Schauburg_de.md:112-121) enthält das Feld `settlement_number` — der Server bestätigt also nie, welche Nummer er tatsächlich vergeben hat. Die App muss die "nächste logische Nummer" rein aus dem eigenen lokalen Zustand ableiten (Sende-Signatur/grüner Haken), ohne Möglichkeit zur Gegenprüfung. Das wird brüchig, sobald dieser lokale Zustand nicht mehr stimmt — bekannte Fälle: der offene Bug "Gesendet-Haken verschwindet nicht über den 5-Uhr-Knick" (TODO.md:75-92), Safaris 7-Tage-Löschung von localStorage/IndexedDB (TODO.md:176-180), oder eine Korrektur von einem anderen Gerät als dem Erstversand.
-
-**Antwort erhalten (2026-08-26):** FC wird künftig die `settlement_number` in den Antworten von `POST ensure`/`PUT settlements` mit zurückgeben. Das löst die Strukturelle Lücke oben für den Regelfall: Die App kann sich die vom Server bestätigte Nummer direkt aus der eigenen Antwort merken, statt sie aus dem lokalen Zustand zu raten. Bleibt relevant für Fälle ohne diesen Anker (Datenverlust, Korrektur von einem anderen Gerät) — siehe Frage 3 unten, die dadurch aber deutlich an Dringlichkeit verliert.
-
-**Stand 2026-09-24 (Paco, Sandbox):** Die PUT-/settlements-Antwort
-enthält jetzt `settlements[0].settlement_number` (nur die gerade
-geschriebene Abrechnung, dazu `receipts[]` mit `beleg_id`/`sha256`).
-Umgesetzt in Run 477 (Run 476 ersetzt): Die App merkt sich die Nummer
-pro Kino + Abrechnungstag und schickt sie bei jedem weiteren Versand
-dieses Tages mit. Ob `POST ensure` die
-vorhandenen Settlements mitliefert, zeigt seit Run 476 der
-Dev-Dialog "Server-Antwort anzeigen" (Frage 3 unten).
-
-**Verbleibende Fragen an Yannik:**
-
-1. *(Zur Info an FC, keine App-Abhängigkeit — siehe Hinweis unten)* Wenn ihr eine Abrechnung mehrfach für denselben Tag empfangt (per settlement_number überschrieben) — sieht eure Buchhaltung im Dashboard einen Unterschied zwischen **(a) der ursprünglichen Erst-Abrechnung, (b) einer inhaltlich korrigierten Abrechnung und (c) einem versehentlichen Doppel-Versand mit exakt denselben Werten**? Oder sehen alle drei Fälle im Dashboard identisch aus? (Der technische Mechanismus selbst ist uns klar — Server überschreibt in allen drei Fällen gleich, siehe oben. Es geht hier nur um die Sicht der Buchhaltung im Dashboard.)
-2. *(Zur Info an FC)* Falls kein Unterschied sichtbar ist: wäre ein "zuletzt geändert"-Hinweis im Dashboard o. Ä. möglich? (Eine separate Meldung per Mail ist nicht vorgesehen, siehe 5.1.)
-3. Gibt es (oder plant ihr) eine Möglichkeit, VOR dem Senden abzufragen, welche settlement_numbers für einen Tagesbericht bereits belegt sind und mit welchen Werten? Ohne das muss die App blind auf ihren eigenen lokalen Zustand vertrauen, der nachweislich nicht immer zuverlässig ist (siehe oben). Hängt mit 5.3 zusammen (dort geht es um denselben fehlenden Leseweg, dort im Kontext Verbindungsabbruch).
-4. *(Zurückgestellt, Paco 2026-09-30: für App/MA nicht nötig — Korrekturen kommen am selben Abend, die App erkennt den Zustand selbst über `finalized: true` in der ensure-Antwort bzw. die 400; ob die Buchhaltung danach korrigieren kann, ist Sache zwischen Buchhaltung und FC. Bessere MA-Meldung bei Bedarf ohne Yannik umsetzbar.)* Wann/wodurch wird ein Tagesbericht bei euch als `finalized` markiert (`POST ensure` liefert dann `finalized: true`, keine weiteren Schreibzugriffe/Korrekturen mehr möglich)? Automatisch nach einer bestimmten Zeit, oder manuell durch die Buchhaltung? Relevant, weil eine späte Korrektur sonst plötzlich mit `400` abgelehnt werden könnte, ohne dass wir das vorher wissen — hängt auch mit 2.6 (5-Uhr-Knick) zusammen, falls die Finalisierung an der Kalendertag-Grenze hängt.
-5. Alternative zum Nummern-Tracking: Könnte die App bei einer Korrektur stattdessen nur ein Flag senden (z. B. `is_correction: true` oder `overwrite_last: true`), damit FC selbst die zuletzt für den Tag eingereichte Abrechnung überschreibt — ohne dass die App die genaue `settlement_number` kennen muss? Laut aktueller Doku ist das nicht vorgesehen (der Client muss die Nummer explizit angeben, siehe Verifiziert oben), aber vielleicht gibt es das doch oder ihr könntet es ergänzen.
-
-**Hinweis zu 1./2. (Paco, 2026-09-30):** Wie Korrekturen im Dashboard erscheinen, liegt in der Verantwortung von FC, nicht der App. Die App schickt die richtige settlement_number und `sent_at` mit, ob FC das anzeigt, entscheidet Yannik. Realistisch sind Korrekturen ohnehin kurz nach dem Erstversand (selber Abend), also vor der Bearbeitung durch die Buchhaltung. Späte Korrekturen begrenzt FC selbst über `finalized` (Frage 4, für die App relevant).
-
-(Ergänzt die alte Frage "Muss die App eine settlement_nummer selbst vergeben?" — durch den Doku-Fund im Kern beantwortet, siehe oben.)
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
-### 3.2 Schutz & Hinweis bei versehentlicher Doppel-Übertragung
+### 3.1 Leseweg für belegte settlement_numbers
 
-**Status:** offen
-Zusammengeführt aus den vorherigen, eng zusammengehörenden Fragen "Popup-Hinweis" und "technischer Schutz" — beide behandeln denselben Fall aus zwei Blickwinkeln (UI bzw. Erkennungsmechanismus).
+**Status:** teilweise geklärt — für den Regelfall gelöst, Rest niedrige
+Priorität
+**Stand:** FC liefert die vergebene settlement_number in der PUT-Antwort.
+Die App merkt sich die Nummer pro Kino und Abrechnungstag und schickt sie
+bei jedem weiteren Versand dieses Tages mit (Run 477). Korrekturen
+überschreiben damit die richtige Abrechnung.
 
-Wie verhindern wir am besten, dass aus Versehen zweimal dieselbe Abrechnung bei euch landet (Doppel-Tap, Verbindungsabbruch)? Unsere Idee: Die App vergleicht vor dem Senden eine Signatur der Daten mit der zuletzt gesendeten Version und zeigt dem Mitarbeiter in dem Fall ein Popup "Du hast das schon geschickt — als Korrektur werten?" Aus unserer Sicht sinnvoll, würden aber trotzdem Yanniks Einschätzung dazu hören wollen.
+**Verbleibende Frage:** Gibt es (oder plant ihr) eine Möglichkeit, VOR dem
+Senden abzufragen, welche settlement_numbers für einen Tag schon belegt
+sind? Nur relevant, wenn die App ihren lokalen Merker verloren hat
+(Datenverlust, Korrektur von einem anderen Gerät, Neuinstallation beim
+Server-Umzug 1.8).
+Vorher selbst prüfen (Dev-Modus "Server-Antwort anzeigen", seit Run 476),
+ob die ensure-Antwort die vorhandenen Settlements schon mitliefert — dann
+erübrigt sich die Frage.
 
-Hinweis: Sobald 3.1 korrekt implementiert ist (Korrektur immer über dieselbe `settlement_number`), wird ein versehentliches doppeltes Senden für Standorte mit nur einer Abrechnung/Tag ohnehin harmlos — es überschreibt nur mit identischen Werten. Relevant bleibt die Frage v. a. für Bar Tabak (mehrere Abrechnungen/Tag).
-**Antwort:**
+**Alternative, falls kein Leseweg möglich:** Ein Flag wie
+`overwrite_last: true`, mit dem FC selbst die zuletzt eingereichte
+Abrechnung des Tages überschreibt, ohne dass die App die Nummer kennen
+muss. Laut Doku derzeit nicht vorgesehen.
 
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
 ### 3.3 Verhalten bei "maximum reached" (4×-Limit)
 
 **Status:** offen
-Was soll passieren, wenn das Limit erreicht ist? Ein Mailversand ist laut aktueller Planung nicht vorgesehen (siehe 5.1) — welcher Fallback ist stattdessen sinnvoll, z. B. ein Hinweis in der App, dass die Buchhaltung manuell informiert werden muss?
-**Antwort:**
+Ab der 5. Abrechnung pro Tag antwortet FC mit `400` "maximum of 4
+settlements per day reached". Ein Mailversand ist nicht vorgesehen (5.1).
+Praktisch relevant v. a. für BT (zwei Abrechnungen pro Tag plus
+Korrekturen).
 
-[↑ zur Übersicht](#übersicht)
+**Frage:** Was soll die MA in dem Fall tun? Z. B. Hinweis in der App
+"Bitte Büro/IT informieren", oder löscht FC/die Buchhaltung dann eine
+Abrechnung? (Abrechnungen lassen sich in FC löschen, außer Nr. 1.)
 
----
-
-## 4. Beleg-Foto
-
-### 4.1 Perspektivische Ausrichtung nötig?
-
-**Status:** beantwortet
-**Antwort:** Muss nur lesbar sein, keine Entzerrung nötig.
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
-### 4.2 base64-Beleg-JSON: genaues Feld/Format
+### 5.3 WLAN für den Kassenbetrieb
 
-**Status:** beantwortet
-**Antwort:** Wird als base64 direkt ins zu übertragende JSON eingebettet (kein separater Upload, unsere Entscheidung). Feldname ist unsere eigene Wahl (z. B. `beleg_foto_base64`) — Yannik hat generell erlaubt, zusätzliche Felder im JSON selbst zu benennen und mitzuschicken; bis er sie serverseitig implementiert, werden sie einfach ignoriert. Plan (Paco, 2026-08-26): dieselbe Vorgehensweise auch für Sendedatum/-uhrzeit und den Namen des abrechnenden Mitarbeiters nutzen (siehe 2.3), ggf. auch für eine eigene Referenznummer zur Abrechnung. Keine maximale Dateigröße (Yannik, 2026-08-26).
+**Status:** offen
+Das Gäste-WLAN sperrt den Kassen-Port (666) und wird für den Kassenbetrieb
+nicht genutzt. Welches WLAN ist an den einzelnen Standorten (SB, GO, AT,
+CO, BT) für den Flurbocash-Zugriff vorgesehen bzw. freigegeben? Hängt mit
+1.8 zusammen (App-Adresse muss aus diesem WLAN erreichbar sein).
 
-[↑ zur Übersicht](#übersicht)
+(Der zweite Teil von 5.3, die nachträgliche Prüfung nach einem
+Verbindungsabbruch, ist zurückgestellt, siehe Archiv.)
 
----
-
-### 4.3 Prüfen-Flag für Buchhaltung + Dev-Button (App-intern)
-
-**Status:** beantwortet
-**Antwort:** Kein eigenes Dev-Flag/Button nötig — läuft stattdessen über die Notizen-/Kommentarfunktion (siehe 2.3).
-
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
-
-## 5. Sonstiges
-
-### 5.1 Mailversand
-
-**Status:** entfällt
-**Antwort:** Kein Mailversand vorgesehen — nicht benötigt (Paco-Entscheidung, 2026-08-26). Betrifft auch 3.1 (keine separate Korrektur-Meldung per Mail) und 3.3 (kein Mail-Fallback beim 4×-Limit).
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 5.2 Stapelscanner für zurückliegende Belege
-
-**Status:** beantwortet
-**Antwort:** Nein, nicht benötigt.
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-### 5.3 Nachträgliche Prüfung nach Verbindungsabbruch
-
-**Status:** Prüf-Teil zurückgestellt (Paco, 2026-09-30), WLAN-Teil offen
-**Zurückgestellt, weil:** Betrifft nur den seltenen Fall "Abrechnung angekommen, Antwort verloren". Folge ist höchstens ein Duplikat bei FC (in FC löschbar, außer Nr. 1), für die MA ändert sich nichts (einfach nochmal senden). Erst nachfragen, wenn Duplikate in der Praxis auffallen. Vorher prüfen (Dev-Modus "Server-Antwort anzeigen", seit Run 476), ob die ensure-Antwort vorhandene Settlements schon mitliefert, dann könnte die App das selbst lösen.
-Falls die Verbindung mittendrin abbricht und wir nicht sicher wissen, ob eine Abrechnung angekommen ist — können wir das nachträglich bei euch prüfen? Kontext: WLAN-Probleme am Standort sind bekannt (Gäste-WLAN blockiert den Kassen-Port), kein rein theoretischer Fall. Bestätigt (2026-08-25): Die aktuelle API-Doku kennt nur `POST ensure` und `PUT settlements`, keinen Leseweg (GET) — hängt inhaltlich mit 3.1 (Frage 3) zusammen.
-
-**Zusätzliche Frage:** Das Gäste-WLAN wird für den Kassenbetrieb ohnehin nicht genutzt (sperrt den Kassen-Port). Welches WLAN ist stattdessen an den einzelnen Standorten (SB, GO, AT, CO, BT) für den Flurbocash-Zugriff vorgesehen/freigegeben?
-
-**Antwort:**
-
-[↑ zur Übersicht](#übersicht)
-
----
-
-## 6. Vergütung & Rolle Yannik
 
 ### 6.1 Vergütung Yannik (Höhe/Modell)
 
-**Status:** offen — soll beim nächsten Termin aktiv angesprochen werden, nicht nur beiläufig
-**Vorschlag Paco:** Vergütung am Einsparpotential orientieren, das die App-Automatisierung gegenüber der bisherigen Abrechnungsweise bringt. Um das statt auf Annahmen/Schätzungen zu verlassen genau zu beziffern: alte und neue Abrechnungsweise per Stoppuhr miteinander vergleichen.
-**Notiz (2026-08-25):** Ursprünglich als "nicht an Yannik" markiert (betrifft seine eigene Rolle), Paco möchte das jetzt aber direkt an ihn richten — er ist nicht nur IT, sondern auch Chef-Sohn und Nachfolger.
-**Antwort:**
+**Status:** offen — beim Termin aktiv ansprechen, nicht nur beiläufig
+**Vorschlag Paco:** Vergütung am Einsparpotential orientieren, das die App
+gegenüber der bisherigen Abrechnungsweise bringt. Um nicht auf Schätzungen
+angewiesen zu sein: alte und neue Abrechnungsweise per Stoppuhr
+vergleichen.
+**Notiz:** Direkt an Yannik gerichtet — er ist nicht nur IT, sondern auch
+Chef-Sohn und Nachfolger.
 
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
 
 ---
 
 ### 6.2 Risiko Scheinselbständigkeit
 
-**Status:** teilweise beantwortet — Priorität: beim nächsten Termin nachfassen
-**Antwort:** Tom sagt: kein Problem. Trotzdem vom Steuerbüro beurteilen lassen — noch nicht final. (Gleicher Kontext wie 6.1 — auch diese Frage wird jetzt direkt an Yannik gerichtet, siehe dortige Notiz.)
+**Status:** teilweise geklärt — beim Termin nachfassen
+**Stand:** Tom sagt: kein Problem. Trotzdem vom Steuerbüro beurteilen
+lassen — noch nicht passiert. Hat Yannik das Steuerbüro inzwischen
+gefragt?
 
-[↑ zur Übersicht](#übersicht)
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+### 6.3 Vorschuss
+
+**Status:** offen *(neu, 14.10.)*
+Ich brauche wieder einen Vorschuss. Vorher klären: Höhe und ggf. ab wann,
+und wie er mit der Vergütung (6.1) verrechnet wird.
+
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+### 6.4 Kaffee-Flat in der BT
+
+**Status:** offen *(neu, 14.10.)*
+Ist eine Kaffee-Flat möglich, während ich in der BT an der App arbeite?
+
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+### 7.1 Deadline
+
+**Status:** offen *(neu, 14.10.)*
+Wollen wir eine Deadline benennen? Falls ja: für was genau — Produktivstart
+aller Standorte, oder je Standort (Umstieg erfolgt je Standort, siehe 1.1
+im Archiv)? Hängt an Punkten, die nicht in Pacos Hand liegen (TIDs und
+location_ids 1.2/1.3, Server-Umzug 1.8).
+
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+### 7.2 Reihenfolge der Standorte
+
+**Status:** offen *(neu, 14.10.)*
+Vorschlag für die nächsten Schritte: erst CO und AT, dann GO, dann BT? (SB
+läuft bereits im Testbetrieb.)
+
+**Gründe für diese Reihenfolge, zum Gegenprüfen:**
+
+- GO: TID und location_id fehlen noch komplett (1.2/1.3).
+- BT: Sonderfall mit zwei Abrechnungen pro Tag (Mittag + Tagesende),
+  stößt am ehesten an das 4×-Limit (3.3).
+- CO: location_id fehlt noch (1.3).
+
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+### 8.1 KI für Beleg-Scan offline
+
+**Status:** offen *(neu, 14.10.)*
+Der KI-Dienst für den Beleg-Scan ist leider nicht selten nicht erreichbar.
+Was soll die App dann tun?
+
+**Aktuell:** Die App zeigt die Fehlermeldung und den Hinweis "Beleg kann
+auch manuell eingegeben werden." Die MA tippt die Werte dann selbst ab.
+
+**Fragen:**
+
+1. Reicht die manuelle Eingabe als Notlösung, oder ist das für die
+   Buchhaltung zu fehleranfällig?
+2. Soll die App eine Abrechnung mit manuell eingetragenen Belegdaten
+   für die Buchhaltung kennzeichnen (z. B. im Kommentarfeld, wie "test"
+   bei 2.4)?
+3. Wäre ein zweiter KI-Anbieter als Ausweichlösung gewünscht? Hängt mit
+   dem geplanten eigenen Anthropic-Account des Kinos zusammen.
+
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+### 8.2 Flurbocash nicht erreichbar
+
+**Status:** offen *(neu, 14.10.)*
+Was soll passieren, wenn FC down ist und die Abrechnung nicht gesendet
+werden kann?
+
+**Aktuell:** Die App zeigt eine Fehlermeldung. Die Abrechnung bleibt
+lokal gespeichert, steht im Verlauf als "nicht gesendet", und die MA kann
+später erneut senden (seit Run 448 zuverlässig). Ein Mailversand als
+Ausweichweg ist nicht vorgesehen (5.1).
+
+**Fragen:**
+
+1. Reicht "später erneut senden"? Wer kümmert sich darum, wenn die MA
+   nach Schichtende nach Hause geht — die nächste Schicht, das Büro?
+2. Wie lange darf eine Abrechnung nachträglich ankommen, bevor FC den Tag
+   als `finalized` markiert (dann keine Schreibzugriffe mehr)?
+3. Reicht der Umschlag als Papier-Nachweis, bis die Abrechnung
+   nachgesendet ist, oder braucht es mehr?
+
+[↑ zur Agenda](#agenda-14102026)
+
+---
+
+## Archiv: erledigt, entfallen, zurückgestellt
+
+**1. Zugangsdaten & Einrichtung**
+
+- ✅ **1.1** Produktivbetrieb pro Standort oder alle gleichzeitig? → Je
+  Standort. Eigene Produktiv-URL von Yannik, Umstieg nach erfolgreichen
+  Tests (SB).
+- ✅ **1.4** Passwort Schauburg-AP → Keine formelle Frage mehr, Paco klärt
+  vor Ort bzw. per Messenger.
+- ✅ **1.5** Wer richtet die Geräte ein? → Paco, initial an den Standorten.
+- ✅ **1.6** Konfiguration zentral oder je Gerät? → Am Gerät vor Ort.
+- ✅ **1.7** Android-Testgerät? → Yannik kauft eins.
+
+**2. Abrechnungsdaten & Format**
+
+- ✅ **2.1** Zwei EC-Belege desselben Terminals? → Jeder Beleg als eigener
+  `terminals[]`-Eintrag, FC verarbeitet das korrekt. Umgesetzt (Run 399a3).
+- ✅ **2.2** Weitere Daten nötig? → Nein. FC holt die Kassenumsätze selbst,
+  die App schickt nur `terminals[]` und `cash_total`. Kino-/Bistro-SOLL,
+  Ausgaben und Differenz werden nicht gebraucht.
+- ✅ **2.3** Notizen, MA-Name, Sendezeitpunkt mitschicken? → Ja. Eigene
+  JSON-Felder sind generell erlaubt (Namen frei wählbar) und werden
+  ignoriert, bis FC sie implementiert.
+- ✅ **2.4 (Testkennzeichnung)** Tests im Dashboard markieren? → Keine
+  Farbmarkierung, stattdessen "test" ins Kommentarfeld. Server-Zeitstempel
+  entfällt, die App schickt selbst `sent_at`. (Empfangsbestätigung siehe
+  2.4 oben, noch offen.)
+- ✅ **2.5** Buchhaltung hat SB-Testübertragungen geprüft? → Stand 26.08.
+  noch nicht getestet; als Frage abgeschlossen.
+- ✅ **2.6** Datum für Nachtabrechnungen? → Logisches Geschäftsdatum,
+  Tageswechsel um 5 Uhr (nicht 6). In der App umgestellt.
+
+**3. Korrektur & Duplikate**
+
+- ✅ **3.1 Mechanismus** → settlement_number weglassen = neue Abrechnung,
+  1–4 = bestehende überschreiben. FC liefert die Nummer in der
+  PUT-Antwort, die App nutzt sie seit Run 477.
+- – **3.1 Dashboard-Sicht (Fragen 1/2)** Sieht die Buchhaltung, ob eine
+  Abrechnung korrigiert wurde? → Nur zur Info an FC, keine
+  App-Abhängigkeit. Die App schickt settlement_number und `sent_at`, die
+  Anzeige entscheidet FC.
+- – **3.1 finalized (Frage 4)** → Zurückgestellt (30.09.): Korrekturen
+  kommen am selben Abend, die App erkennt `finalized: true` bzw. die 400
+  selbst. Taucht im Ausfall-Kontext wieder auf, siehe 8.2.
+- – **3.2** Schutz vor versehentlicher Doppel-Übertragung → App-seitig
+  gelöst: Die App erkennt anhand der Sende-Signatur, dass schon gesendet
+  wurde, und zeigt den Dialog "Du hast die Abrechnung bereits gesendet"
+  (Hinweis ergänzt in Run 482). Ein erneuter Versand überschreibt per
+  settlement_number dieselbe Abrechnung (Run 477), statt eine neue
+  anzulegen. *(Beim Aufräumen am 14.10. ins Archiv verschoben — falls doch
+  Yanniks Einschätzung gewünscht, zurück in die Agenda.)*
+
+**4. Beleg-Foto**
+
+- ✅ **4.1** Perspektivisch entzerren? → Nein, muss nur lesbar sein.
+- ✅ **4.2** Feld/Format für das Belegfoto? → base64 direkt im JSON,
+  Feldname frei wählbar, keine maximale Dateigröße.
+- ✅ **4.3** Eigenes Prüfen-Flag oder Dev-Button? → Nein, läuft über das
+  Kommentarfeld (2.3).
+
+**5. Sonstiges**
+
+- – **5.1** Mailversand? → Entfällt (Paco-Entscheidung 26.08.). Auch kein
+  Mail-Fallback bei Korrektur, 4×-Limit oder FC-Ausfall.
+- ✅ **5.2** Stapelscanner für alte Belege? → Nicht benötigt.
+- – **5.3 Prüfung nach Verbindungsabbruch** → Zurückgestellt (30.09.):
+  Betrifft nur "Abrechnung angekommen, Antwort verloren". Folge ist
+  höchstens ein Duplikat bei FC (löschbar außer Nr. 1). Erst nachfragen,
+  wenn Duplikate in der Praxis auffallen. (WLAN-Teil weiter offen, siehe
+  5.3 oben.)
