@@ -1,6 +1,6 @@
 # Fragen an Yannik
 
-Stand: 14.10.2026 (Run 485c) · zentrale Tracking-Datei für alle Fragen an Yannik:
+Stand: 14.10.2026 (Run 485d) · zentrale Tracking-Datei für alle Fragen an Yannik:
 Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 **So ist die Datei aufgebaut:**
@@ -19,7 +19,7 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 ---
 
-## Inhalt: Offene Fragen (18)
+## Inhalt: Offene Fragen (24)
 
 In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
@@ -27,6 +27,8 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 - ⏳ [7.1 Wollen wir eine Deadline benennen?](#71-deadline) *(neu)*
 - ⏳ [7.2 Nächste Schritte: erst CO und AT, dann GO, dann BT?](#72-reihenfolge-der-standorte) *(neu)*
+- ⏳ [7.3 Wer schult die MA, wer ist vor Ort Ansprechpartner?](#73-einführung-schulung-und-ansprechpartner) *(neu)*
+- ⏳ [7.4 Wie soll die App heißen?](#74-name-der-app) *(neu)*
 
 **B. Ausfälle im Betrieb**
 
@@ -39,13 +41,16 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 - ⏳ [1.9 Terminal-Nummern fest mit den TIDs koppeln?](#19-terminal-nummern-fest-mit-tids-koppeln) *(neu)*
 - ⏳ [2.7 SB: Kartenumsatz zum Kino-SOLL addieren — bleibt das so?](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren) *(neu)*
 - ⏳ [1.10 Wie lauten die Live-location_ids und Live-Keys für SB, AT und BT?](#110-live-zugangsdaten-für-sb-at-bt) *(neu)*
+- ⏳ [2.11 Wie erscheinen Stornos am Terminal auf dem Kassenschnitt?](#211-storno-am-terminal) *(aus 21.06.)*
+- ⏳ [1.11 Android-Testgerät da? Bessere Kameras für die Kassen-Handys?](#111-geräte-an-den-kassen-kamera-android-testgerät) *(neu)*
 - ◐ [5.3 Welches WLAN ist an GO, AT, CO, BT für die Kasse freigegeben?](#53-wlan-für-den-kassenbetrieb)
 
 **D. Server & Schnittstelle**
 
 - ◐ [1.8 Kann die App jetzt auf den Kino-Server umziehen?](#18-app-hosting-auf-kino-server-statt-github-pages)
 - ⏳ [2.8 Foto-Archivierung scheitert: 500 ohne Nummer — erst archivieren oder so lassen?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer) *(neu)*
-- ◐ [2.1 Zwei Kassenschnitte gleicher TID: speichert FC beide?](#21-zwei-ec-belege-am-selben-terminal) *(wieder offen)*
+- ⏳ [2.1 Nur ein Eintrag pro TID — wie gehen mehrere Kassenschnitte und Fotos mit?](#21-zwei-ec-belege-am-selben-terminal) **dringend**
+- ⏳ [2.10 BT: zwei Abrechnungen pro Tag — Nr. 1 und 2, Kassenschnitt zurückgesetzt?](#210-bt-zwei-abrechnungen-pro-tag) *(neu)*
 - ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — Missverständnis?](#29-trinkgeld-auf-dem-kassenschnitt) *(neu)*
 - ◐ [3.1 Abfrage, welche settlement_numbers schon belegt sind?](#31-leseweg-für-belegte-settlement_numbers) *(niedrige Priorität)*
 
@@ -55,6 +60,7 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 - ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
 - ⏳ [6.3 Ich brauche wieder einen Vorschuss.](#63-vorschuss) *(neu)*
 - ⏳ [6.4 Kaffee-Flat, während ich in der BT an der App arbeite?](#64-kaffee-flat-in-der-bt) *(neu)*
+- ⏳ [6.5 Wer bekommt Zugriff auf Code und Repository, wenn ich ausfalle?](#65-übergabe-und-ausfallsicherheit) *(neu)*
 
 ## Inhalt: Beantwortete Fragen (23)
 
@@ -135,7 +141,29 @@ falschen Kino verbuchen.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
+
+---
+
+### 1.11 Geräte an den Kassen (Kamera, Android-Testgerät)
+
+⏳ offen *(neu, 14.10.)*
+
+**Hintergrund:** Die Fotos der Tickethandys sind deutlich schlechter als
+vom iPhone (meine Mail 10.09.); Yannik (02.10.): „Die Lichtempfindlichkeit
+der Kamera ist totaler Scheiß. Wenn das Bild nicht gut ausgeleuchtet ist,
+ist die Qualität Mist.“ Das Android-Testgerät wollte Yannik kaufen (1.7).
+
+**Frage:**
+
+1. Ist das Android-Testgerät inzwischen da?
+2. Gibt es Pläne, die Kassen-Handys zu ersetzen? Falls ja: auf die
+   Kamera achten (Lichtempfindlichkeit, Schärfe bei Nahaufnahmen).
+3. Alternativ: Licht an der Kasse verbessern (Lampe beim Fotografieren)?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -181,7 +209,7 @@ habe ich dann selbst Zugriff für Updates?
 > bei „nachts“ erst am Folgetag an, oder geht es auch sofort? Wird CORS
 > für die neue Adresse ergänzt?
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -204,7 +232,7 @@ die MA verständlich.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -230,13 +258,13 @@ auf den Umschlag eintragen. Warum, ist mir nicht klar.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
 ### 2.1 Zwei EC-Belege am selben Terminal
 
-◐ wieder offen — widersprüchliche Aussagen *(14.10.)*
+⏳ offen — **dringend**, möglicher Datenverlust *(14.10.)*
 
 **Hintergrund:** Gemeint sind zwei Kassenschnitte desselben Terminals
 (gleiche TID) innerhalb derselben Abrechnung. Die App schickt sie seit
@@ -244,13 +272,17 @@ Run 399a3 als zwei getrennte `terminals[]`-Einträge mit gleicher TID.
 
 - 26.08. (Termin): „Jeder Beleg als eigener Datensatz“, FC verarbeitet das
   korrekt.
-- 27.08. (Mail): „Pro TID und Settlement kann es nur einen Kassenschnitt
-  geben.“ Dazu bat Yannik um zwei JSONs; am 08.09. wusste er nicht mehr,
-  worum es dabei ging.
+- 27.08. (meine Mail): „Kann es sein, dass FC bei mehreren EC-Belegen mit
+  gleicher TID die ersten durch den jeweils letzten im JSON ersetzt? Ich
+  sehe im Dashboard immer nur einen Beleg.“
+- 27.08. (Yannik, Antwort darauf): „Pro TID und Settlement kann es nur
+  einen Kassenschnitt geben.“ Dazu bat er um zwei JSONs; was er damit
+  meinte, konnte er am 08.09. nicht mehr sagen.
 
-Falls die zweite Aussage gilt und FC den zweiten Eintrag auf den ersten
-schreibt (Upsert pro TID), gingen die Beträge des ersten Kassenschnitts
-verloren.
+Damit ist ziemlich sicher: FC behält pro TID nur den letzten Eintrag, die
+Beträge der vorherigen Kassenschnitte derselben TID gehen verloren. Die
+App schickt seit Run 399a3 trotzdem getrennte Einträge (TODO.md, Punkt
+„Mehrere Kassenschnitte gleicher TID“).
 
 **Vorab selbst prüfbar:** Mit dem Sandbox-Zugang zum FC-Webinterface (Mail
 16.06., Zugangsdaten dort) und dem Kassenschnitt-Button in der FC-Oberfläche
@@ -258,14 +290,19 @@ verloren.
 TID senden und nachsehen, ob FC beide Beträge und beide Fotos speichert.
 Dann ist die Frage womöglich schon vor dem Termin beantwortet.
 
-**Frage:** Was passiert bei FC, wenn in einer Abrechnung zwei Einträge mit
-derselben TID ankommen — werden beide gespeichert, oder überschreibt der
-zweite den ersten? Falls nur einer geht: Soll die App die Beträge
-summieren, und welches Belegfoto wird dann mitgeschickt?
+**Frage:**
+
+1. Bestätigst du: pro TID und Abrechnung nur ein Eintrag?
+2. Dann summiert die App die Beträge mehrerer Kassenschnitte derselben TID
+   zu einem Eintrag. Wie sollen dann die mehreren Belegfotos mitgehen —
+   als Liste in einem Eintrag (z. B. `receipt_photos: [...]`), oder reicht
+   eins?
+3. Wann kommt das in der Praxis vor (z. B. Zwischenschnitt am Terminal,
+   Terminal-Neustart), und soll die MA das überhaupt so machen?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -298,7 +335,7 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -334,7 +371,49 @@ fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
+
+---
+
+### 2.10 BT: zwei Abrechnungen pro Tag
+
+⏳ offen *(neu, 14.10.)*
+
+**Hintergrund:** In der BT wird mittags und am Tagesende abgerechnet, an
+denselben Terminals. Geplant ist: Mittag = FC-Abrechnung Nr. 1, Tagesende
+= nächste Nummer. Hängt an 2.1 (nur ein Eintrag pro TID und Abrechnung)
+und 3.3 (4×-Limit).
+
+**Frage:**
+
+1. Passt das so: zwei getrennte Abrechnungen pro Tag (Nr. 1 und 2)?
+2. Enthält der Kassenschnitt am Tagesende nur die Umsätze seit Mittag
+   (Terminal-Kassenschnitt setzt zurück)? Sonst würden die Mittagsumsätze
+   doppelt gezählt.
+3. Bargeld: Wird mittags das Bargeld komplett abgerechnet, und abends nur
+   der Rest seitdem?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
+
+---
+
+### 2.11 Storno am Terminal
+
+⏳ offen *(aus meiner Mail 21.06., Antwort nicht dokumentiert)*
+
+**Hintergrund:** Am Terminal kann man stornieren, z. B. wenn
+versehentlich 1,20 statt 12,00 € eingegeben wurde. Die Frage hatte ich am
+21.06. gestellt; eine Antwort ist nicht überliefert (evtl. mündlich).
+
+**Frage:** Wie erscheinen Stornos auf dem Kassenschnitt (als eigener
+Posten, oder schon verrechnet), und muss die App bzw. die MA dabei etwas
+beachten?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -360,7 +439,7 @@ selbst die zuletzt eingereichte Abrechnung des Tages überschreibt?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -379,7 +458,7 @@ Abrechnung?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -399,7 +478,7 @@ BT) für den Flurbocash-Zugriff vorgesehen bzw. freigegeben?
 > SB Handy gespeichert.“ Eine Änderung des öffentlichen WLANs lehnte er
 > ab. GO, AT, CO, BT *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -418,7 +497,7 @@ vergleichen.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -432,7 +511,7 @@ Steuerbüro es inzwischen beurteilt?
 > **Antwort (teilweise):** Tom sagt: kein Problem. Beurteilung durch das
 > Steuerbüro *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -448,7 +527,7 @@ wird er mit der Vergütung (6.1) verrechnet?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -466,7 +545,30 @@ arbeite?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
+
+---
+
+### 6.5 Übergabe und Ausfallsicherheit
+
+⏳ offen *(neu, 14.10.)*
+
+**Hintergrund:** Die App liegt in meinem privaten GitHub-Konto, gebaut und
+gewartet wird sie nur von mir. Mit dem Server-Umzug über GitHub (1.8)
+hängt der Betrieb noch stärker daran. Entwürfe für Lizenzvertrag,
+Preisblatt und Übergabe liegen vor (.dev/verkauf/).
+
+**Frage:**
+
+1. Was passiert, wenn ich ausfalle oder aufhöre — wer bekommt Zugriff auf
+   Code und Repository?
+2. Soll das Repository in ein Konto des Kinos umziehen?
+3. Wollen wir das zusammen mit der Vergütung (6.1) in einer Vereinbarung
+   regeln (Lizenz/Übergabe)?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -485,7 +587,7 @@ Produktivstart aller Standorte oder je Standort?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -505,7 +607,47 @@ vorgeschlagene Reihenfolge, zum Gegenprüfen:
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
+
+---
+
+### 7.3 Einführung, Schulung und Ansprechpartner
+
+⏳ offen *(neu, 14.10.)*
+
+**Hintergrund:** In der SB war ich bei den ersten Abrechnungen dabei;
+einige MA haben trotz App manuell abgerechnet (meine Mail 31.08.). Die
+Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
+
+**Frage:**
+
+1. Wer schult die MA an den neuen Standorten — ich vor Ort, Mello, die
+   Leitung des Standorts?
+2. Wer ist an den Standorten Ansprechpartner, wenn die App klemmt und ich
+   nicht erreichbar bin?
+3. Wie wird die Pflicht zur App-Abrechnung bekannt gemacht (Rundmail von
+   dir, wie bei anderen betrieblichen Regelungen)?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
+
+---
+
+### 7.4 Name der App
+
+⏳ offen *(aus meiner Mail 21.06., Antwort nicht dokumentiert)*
+
+**Hintergrund:** Ich hatte gefragt, ob die App einen an „Flurbocash“
+angelehnten Namen bekommen soll (z. B. „FlurboClose“). Wird jetzt
+konkret, weil die Server-Adresse `[appname].c137-prime.de` einen Namen
+braucht (1.8).
+
+**Frage:** Wie soll die App heißen?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -528,11 +670,12 @@ Werte dann selbst ab.
 3. Wäre ein zweiter KI-Anbieter als Ausweichlösung gewünscht? Hängt mit
    dem geplanten eigenen Anthropic-Account des Kinos zusammen — Yannik
    (10.09.): „Wir haben keine Claude API. Kann ich mich am WE
-   drumkümmern.“ Stand?
+   drumkümmern.“ Stand? Bis dahin laufen die Scans über mein eigenes
+   API-Kontingent (ca. 1–2 Cent pro Scan) — wer trägt diese Kosten?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -557,7 +700,7 @@ als Ausweichweg ist nicht vorgesehen (5.1).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-18)
+[↑ zum Inhalt](#inhalt-offene-fragen-24)
 
 ---
 
@@ -757,6 +900,8 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 
 > **Antwort:** Stand 26.08.: noch nicht getestet. Mail Yannik 08.09.:
 > „Die Daten für die SB sehen korrekt aus. Stichprobenartig getestet.“
+> Die realen AT-Abrechnungen vom 18. und 19.07. (meine Mail 19.07.) sind
+> nicht ausdrücklich geprüft worden.
 
 [↑ zum Inhalt](#inhalt-beantwortete-fragen-23)
 

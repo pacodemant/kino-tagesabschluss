@@ -9,6 +9,21 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 485d: Pacos gesendete Mails an Yannik (Juni–Oktober 2026)
+  mit fragen_yannik.md abgeglichen:
+  - 2.1 dringend: Paco hatte am 27.08. selbst beobachtet, dass FC bei
+    mehreren Belegen gleicher TID nur einen zeigt; Yannik: nur ein
+    Kassenschnitt pro TID und Settlement. Neues TODO "Mehrere
+    Kassenschnitte gleicher TID — Datenverlust bei FC".
+  - Neue Fragen: 1.11 Geräte/Kamera/Android-Testgerät, 2.10 BT mit
+    zwei Abrechnungen, 2.11 Storno am Terminal (aus 21.06.), 6.5
+    Übergabe/Ausfallsicherheit, 7.3 Schulung/Ansprechpartner, 7.4
+    App-Name (aus 21.06.). 8.1 um die Frage der Scan-Kosten ergänzt.
+  - Neues TODO: Wechselgeldbestand für den Folgetag unverständlich
+    (Rückmeldung Yannik 02.10.).
+  - TODO.md: "Registrierte TIDs" und "Konfiguration der Geräte" waren
+    beantwortet -> nach TODO_ERLEDIGT.md verschoben.
+
 - Run 485c: fragen_yannik.md mit den übrigen 16 Yannik-Mails
   abgeglichen (Juni 2024 bis August 2026): 5.3 für SB beantwortet
   (WLAN "Schauburg-AP", 15.07.); 2.9 Trinkgeld als konkrete Fragen an

@@ -8,6 +8,20 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🔴 Blockiert — wartet auf IT (Yannik)
 
+- [x] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in
+      Flurbocash für welchen Standort hinterlegt?
+      Beantwortet (Mails Yannik 26.08., 02.10. und 08.10.2026): neue
+      TIDs aller fünf Standorte bestätigt, GO in Run 485 eingetragen.
+      Alte TIDs bleiben bis zum stabilen Betrieb an allen Standorten in
+      config/terminal_ids.json (Paco, 14.10.2026).
+      *(Run 485d)*
+
+- [x] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT
+      oder MA? Wer pflegt Änderungen (neuer API-Key, neue TID)?
+      Beantwortet (fragen_yannik.md 1.5/1.6): Paco richtet die Geräte
+      initial ein, Änderungen direkt am Gerät vor Ort, nicht zentral.
+      War in TODO.md nur noch nicht ausgetragen. *(Run 485d)*
+
 - [x] **location_id pro Standort** Welche interne Flurbocash-ID hat jeder Standort?
       (Schauburg, Gondel, Atlantis, Cinema Ostertor, Bar Tabak)
       Teilweise beantwortet (Mail Yannik, 2026-07-12): Schauburg = 1,

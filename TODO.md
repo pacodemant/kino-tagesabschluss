@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 485 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 485d · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -24,13 +24,18 @@ um Durcheinander zu vermeiden.
       (wird aktuell für alle Tests genutzt). Ob das auch die
       Produktiv-URL ist oder Yannik später eine andere gibt: offen.
 
-- [ ] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in Flurbocash
-      für welchen Standort hinterlegt?
-      Für SB steht aktuell "54017635" in config/terminal_ids.json — bisher
-      nur Annahme, von Yannik noch nicht bestätigt (Stand 2026-07-12).
-      Siehe auch "TID-Whitelist konfigurierbar + Abgleich beim Scannen"
-      weiter unten (UI/Prüf-Logik dafür, unabhängig von dieser
-      Datenklärung).
+- [ ] **Mehrere Kassenschnitte gleicher TID — Datenverlust bei FC**
+      WARTEND auf `.dev/flurbocash stuff/fragen_yannik.md` 2.1
+      (dringend). Paco sah am 27.08.2026 im FC-Dashboard bei mehreren
+      EC-Belegen gleicher TID nur einen Beleg; Yannik antwortete:
+      "Pro TID und Settlement kann es nur einen Kassenschnitt geben."
+      Die App schickt seit Run 399a3 trotzdem je Beleg einen eigenen
+      `terminals[]`-Eintrag (`ApiUploadService._terminalsListe()`,
+      Gruppierung nach `belegIndex`) — FC behält dann vermutlich nur
+      den letzten, die Beträge der übrigen fehlen. Vorab selbst in der
+      Sandbox prüfen (zwei Belege gleicher TID senden, im
+      FC-Webinterface nachsehen). Falls bestätigt: wieder pro TID
+      summieren; offen ist, wie mehrere Fotos derselben TID mitgehen.
 
 - [ ] **Weitere Abrechnungsfelder** Kino-Soll, Bistro-Soll, Ausgaben,
       Differenz werden laut Yannik NICHT benötigt (Flurbocash zieht
@@ -41,9 +46,6 @@ um Durcheinander zu vermeiden.
       `sent_at`, seit Run 399a umgesetzt), aber bisher nicht in
       `settlementsBody()` ergänzt.
 
-- [ ] **Konfiguration der Geräte** Wer richtet die Smartphones ein — IT oder MA?
-      Wer pflegt Änderungen (neuer API-Key, neue TID)?
-
 - [ ] **Stapel-Scanner: Übertragungsformat** Wie sollen gesammelte EC-Belege
       an Flurbocash gehen — einzeln (je ein 2-Call-Flow) oder als Batch?
       Separater Endpunkt oder derselbe wie die Tagesabrechnung?
@@ -51,6 +53,14 @@ um Durcheinander zu vermeiden.
 ---
 
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Wechselgeldbestand für den Folgetag: Schritt unverständlich**
+      Rückmeldung Yannik (Mail 02.10.2026) nach seiner eigenen
+      Abrechnung mit der App: "Die Bestimmung des Wechselgeldbestands
+      für den Folgetag hab ich nicht verstanden, aber ansonsten war es
+      selbsterklärend." Vor einer Umsetzung klären, an welcher Stelle
+      genau er hängen geblieben ist (Erklärtext, Hilfe-Text,
+      Kurzanleitung oder Ablauf), dann gezielt nachbessern.
 
 - [ ] **Nativer Android-Build aktuell kaputt (Gradle/AGP-Konflikt)**
       Entdeckt in Run 429a8 beim Versuch, `flutter run -d
