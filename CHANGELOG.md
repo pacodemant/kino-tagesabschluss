@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 486a (tests): Widget-Tests für Run 486 mit simulierten SB-
+  Terminalbelegen (60561994 300 €, 60561996 200 €, 60561997 250 €,
+  Kino SOLL 1.000 €, Bistro 500 €, bar 1.000 €) statt Scan:
+  Schritt 3, Übertrag-Seite und Verlauf-Detail zeigen Kino Soll
+  1.250 € + "davon Karte Kinokasse 250 €", Differenz 0,00 € (ohne
+  Einstellung +250 €); Einstellung eines anderen Kinos wirkt nicht;
+  alter Eintrag ohne Feld unverändert. Kein App-Code geändert.
+
 - Run 486: Kartenumsatz der Kinokasse im Kino SOLL des Übertrags.
   Hintergrund SB: Ein Terminal hängt direkt am Kino-Kassensystem, das
   damit bezahlte Tickets nicht im Ticket-Umsatz ausweist. Bisher
