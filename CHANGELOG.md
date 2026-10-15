@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 486: Kartenumsatz der Kinokasse im Kino SOLL des Übertrags.
+  Hintergrund SB: Ein Terminal hängt direkt am Kino-Kassensystem, das
+  damit bezahlte Tickets nicht im Ticket-Umsatz ausweist. Bisher
+  musste der MA dessen Kartenumsatz selbst zum Kino SOLL addieren.
+  - Neue Einstellung "TID Kinokasse" (Flurbocash-Bereich, pro Kino,
+    Key `kinokasse_tid_<kinoId>`, leer = aus). TID bewusst nicht im
+    Code (Yannik).
+  - Schritt 2 unverändert: Kino SOLL = Ticket-Umsatz wie bisher.
+  - Beim Finalisieren: Summe der EC-Belege mit dieser TID ->
+    neues Feld `kinokasseKarteCent` (JSON, alte Einträge 0, also
+    kein rückwirkender Effekt). Geht ins Gesamt SOLL und damit in die
+    Differenz ein. Getter `kinoSollUebertragCent` = Kino SOLL +
+    Kinokasse.
+  - Anzeige Schritt 3, "Übertrag auf Umschlag" und Verlauf-Detail:
+    Kino Soll inkl. Kinokasse, darunter grau "davon Karte Kinokasse"
+    (nur wenn > 0).
+  - Flurbocash unberührt (Kino SOLL wird nicht gesendet).
+  - Tests: Summe/Gesamt SOLL/Differenz, mehrere Belege gleicher TID,
+    fremde TID, leere Einstellung, JSON neu/alt.
+
 - Run 485d: Pacos gesendete Mails an Yannik (Juni–Oktober 2026)
   mit fragen_yannik.md abgeglichen:
   - 2.1 dringend: Paco hatte am 27.08. selbst beobachtet, dass FC bei

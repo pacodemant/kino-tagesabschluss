@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.140+485 · Run 485
+Version: 0.9.141+486 · Run 486
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,14 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 485)
+## Laufender Entwicklungsstand (Run 486)
+
+- Run 486 Kartenumsatz der Kinokasse (SB: Terminal direkt am Kino-
+  Kassensystem) kommt im Übertrag automatisch zum Kino SOLL und ins
+  Gesamt SOLL/Differenz. TID als Einstellung pro Kino ("TID
+  Kinokasse", Flurbocash-Bereich), nicht im Code. Schritt 2 bleibt
+  Ticket-Umsatz. Neues Feld `kinokasseKarteCent` am Tagesabschluss
+  (alte Einträge 0). Details siehe CHANGELOG.md.
 
 - Run 485 GO-TIDs von Yannik (Mail 08.10.2026) in
   config/terminal_ids.json eingetragen (60561999, 60562000, 60562001,

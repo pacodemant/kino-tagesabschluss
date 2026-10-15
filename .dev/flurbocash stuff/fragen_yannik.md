@@ -64,7 +64,7 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 
 ## Inhalt: Beantwortete Fragen (23)
 
-**1. Zugangsdaten & Einrichtung**
+**1. Zugangsdaten & Einrichtungpacodemant@icloud.com**
 
 - ✅ [1.1 Produktivbetrieb pro Standort oder alle gleichzeitig?](#11-umstieg-auf-produktivbetrieb)
 - ✅ [1.2 Neue TIDs bei FC hinterlegt, TID für GO?](#12-terminal-ids-pro-standort)
@@ -116,13 +116,14 @@ In Gesprächsreihenfolge für den Termin am 14.10.2026.
 gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
 (**?** = fehlt noch):
 
-| Standort | Sandbox-ID       | Live-ID | Live-Key |
-| -------- | ---------------- | ------- | -------- |
-| SB       | 1 *(vermutlich)* | **?**   | **?**    |
-| AT       | 3 *(vermutlich)* | **?**   | **?**    |
-| BT       | 4 *(vermutlich)* | **?**   | **?**    |
-| GO       | 5                | 3       | **?**    |
-| CO       | 6                | 5       | **?**    |
+
+| Standort | Sandbox-ID      | Live-ID | Live-Key |
+| -------- | --------------- | ------- | -------- |
+| SB       | 1*(vermutlich)* | **?**   | **?**    |
+| AT       | 3*(vermutlich)* | **?**   | **?**    |
+| BT       | 4*(vermutlich)* | **?**   | **?**    |
+| GO       | 5               | 3       | **?**    |
+| CO       | 6               | 5       | **?**    |
 
 Quellen: SB/AT/BT aus der Mail vom 12.07. (damals ohne Unterscheidung
 Sandbox/Live, aber AT kann live nicht die 3 sein, die hat dort GO), GO/CO
@@ -161,7 +162,7 @@ ist die Qualität Mist.“ Das Android-Testgerät wollte Yannik kaufen (1.7).
    Kamera achten (Lichtempfindlichkeit, Schärfe bei Nahaufnahmen).
 3. Alternativ: Licht an der Kasse verbessern (Lampe beim Fotografieren)?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *nualität der Belege genügt, ignorieren.*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -230,7 +231,7 @@ die MA verständlich.
    Reparatur)?
 3. Wer pflegt die Zuordnung, wenn sich etwas ändert?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *nein*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -256,7 +257,7 @@ auf den Umschlag eintragen. Warum, ist mir nicht klar.
    addieren)? Dann bräuchte ich die TID des angeschlossenen Terminals.
 4. Kommen an anderen Standorten weitere angeschlossene Terminals dazu?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *in App einbauen, Terminal an der Kasse nur für Kinotickets & Co., nicht für Bistro, keine manuelle Eingabe an diesem Gerät möglich.*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -300,7 +301,7 @@ Dann ist die Frage womöglich schon vor dem Termin beantwortet.
 3. Wann kommt das in der Praxis vor (z. B. Zwischenschnitt am Terminal,
    Terminal-Neustart), und soll die MA das überhaupt so machen?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *ignorieren, kommt zu selten vor*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -333,7 +334,7 @@ Option 2 geht nur, wenn FC auch in diesem Fall die settlement_number
 mitschickt (oder einen eigenen Statuscode), damit die App „Werte gesendet,
 Foto fehlt“ erkennen und sich die Nummer merken kann.
 
-> **Antwort:** *noch offen*
+> **Antwort:** *option 1*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -411,7 +412,7 @@ versehentlich 1,20 statt 12,00 € eingegeben wurde. Die Frage hatte ich am
 Posten, oder schon verrechnet), und muss die App bzw. die MA dabei etwas
 beachten?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *ignorieren, kommt selten vor*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -456,7 +457,7 @@ Tag plus Korrekturen). Abrechnungen lassen sich in FC löschen, außer Nr. 1.
 „Bitte Büro/IT informieren“, oder löscht FC/die Buchhaltung dann eine
 Abrechnung?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *ignorieren*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -585,7 +586,7 @@ das echte Flurbocash senden statt an die Sandbox.
 **Frage:** Wollen wir eine Deadline benennen? Falls ja: für den
 Produktivstart aller Standorte oder je Standort?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *2.11.26 für SB, CO und AT, dann wird auch in FC direkt übertragen.*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -645,7 +646,7 @@ braucht (1.8).
 
 **Frage:** Wie soll die App heißen?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *kassenabrechnung*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -673,7 +674,7 @@ Werte dann selbst ab.
    drumkümmern.“ Stand? Bis dahin laufen die Scans über mein eigenes
    API-Kontingent (ca. 1–2 Cent pro Scan) — wer trägt diese Kosten?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *MA muss manuell eingeben*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -698,7 +699,7 @@ als Ausweichweg ist nicht vorgesehen (5.1).
    nachgesendet ist, oder braucht es mehr?
 4. Sollen die MA die Möglichkeit haben, auf dem Umschlag so etwas wie "Übertragung fehlgeschlagen" auswählen können, damit die Buchhaltung weiß, dass sie hier genauer hinschauen soll?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *im Verlauf suchen und am nächsten Tag senden*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-24)
 
@@ -734,13 +735,14 @@ gleichzeitig?
 **Hintergrund:** Alte und neue TIDs gelten in der App während der
 Umstellung parallel (config/terminal_ids.json).
 
+
 | Standort | alte TID           | neue TID                               | bestätigt |
-| -------- | ------------------ | -------------------------------------- | --------- |
-| SB       | 54017635           | 60561994, 60561996, 60561997           | ja        |
-| AT       | 54069464           | 60561998                               | ja        |
-| CO       | 54017639           | 60561995                               | ja        |
-| BT       | 54069493, 54017664 | 60561992, 60561993                     | ja        |
-| GO       | –                  | 60561999, 60562000, 60562001, 60562002 | ja        |
+| -------- | ------------------ | -------------------------------------- | ---------- |
+| SB       | 54017635           | 60561994, 60561996, 60561997           | ja         |
+| AT       | 54069464           | 60561998                               | ja         |
+| CO       | 54017639           | 60561995                               | ja         |
+| BT       | 54069493, 54017664 | 60561992, 60561993                     | ja         |
+| GO       | –                 | 60561999, 60562000, 60562001, 60562002 | ja         |
 
 SB (07.09.): Die neuen Terminals können vorerst nur Girocard, Kreditkarte
 läuft weiter über das alte Terminal. Siehe auch 1.9 und 2.7.

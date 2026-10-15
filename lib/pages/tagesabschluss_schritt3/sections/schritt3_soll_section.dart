@@ -7,13 +7,16 @@ class Schritt3SollSection extends StatelessWidget {
   const Schritt3SollSection({
     super.key,
     required this.kinoSollCent,
+    this.kinokasseKarteCent = 0,
     required this.bistroSollCent,
     required this.zeigeBistroSoll,
     required this.ausgabenCent,
     required this.gesamtSollCent,
   });
 
+  // Kino SOLL fuer den Uebertrag, inkl. kinokasseKarteCent (Run 486).
   final int kinoSollCent;
+  final int kinokasseKarteCent;
   final int bistroSollCent;
   final bool zeigeBistroSoll;
   final int ausgabenCent;
@@ -32,6 +35,8 @@ class Schritt3SollSection extends StatelessWidget {
           wert: TagesabschlussFormatierung.formatiereEuro(kinoSollCent),
           stil: InfoZeileStil.fuehrungslinie,
         ),
+        if (kinokasseKarteCent != 0)
+          KinokasseKarteHinweis(kinokasseKarteCent: kinokasseKarteCent),
         if (zeigeBistroSoll)
           InfoZeile(
             label: '+ Bistro Soll',
@@ -50,6 +55,37 @@ class Schritt3SollSection extends StatelessWidget {
           stil: InfoZeileStil.fuehrungslinie,
         ),
       ],
+    );
+  }
+}
+
+/// Kleine graue "davon"-Zeile unter dem Kino Soll (Run 486): macht
+/// sichtbar, warum das Kino Soll im Uebertrag vom in Schritt 2
+/// eingegebenen Wert abweicht. Auch von uebertrag_umschlag_seite.dart und
+/// verlauf_detail_seite.dart genutzt.
+class KinokasseKarteHinweis extends StatelessWidget {
+  const KinokasseKarteHinweis({super.key, required this.kinokasseKarteCent});
+
+  final int kinokasseKarteCent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, bottom: 4),
+      child: Row(
+        children: <Widget>[
+          const Expanded(
+            child: Text(
+              'davon Karte Kinokasse',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ),
+          Text(
+            TagesabschlussFormatierung.formatiereEuro(kinokasseKarteCent),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+        ],
+      ),
     );
   }
 }

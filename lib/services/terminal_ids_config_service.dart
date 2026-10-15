@@ -1,12 +1,24 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Laedt die pro Standort registrierten Flurbocash-Terminal-IDs aus
 /// config/terminal_ids.json. Liefert eine Map von Kino-Kuerzel (z.B. "SB")
 /// auf die Liste der dort erlaubten TIDs.
 class TerminalIdsConfigService {
   static const String _assetPath = 'config/terminal_ids.json';
+
+  /// SharedPreferences-Key der TID des Terminals, das direkt am Kino-
+  /// Kassensystem haengt (Run 486, bisher nur SB). Pro Kino wie
+  /// location_id, bewusst nicht im Code/Asset (Yannik: keine TIDs im
+  /// Code). Leer/nicht gesetzt = kein solches Terminal.
+  static String kinokasseTidPrefKey(String kinoId) => 'kinokasse_tid_$kinoId';
+
+  static Future<String> ladeKinokasseTid(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getString(kinokasseTidPrefKey(kinoId))?.trim() ?? '';
+  }
 
   static Future<Map<String, List<String>>> laden() async {
     final String inhalt = await rootBundle.loadString(_assetPath);

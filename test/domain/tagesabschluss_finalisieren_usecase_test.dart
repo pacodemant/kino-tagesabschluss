@@ -24,6 +24,7 @@ void main() {
       String? anmerkung,
       int? wechselgeldEntnahmeCent,
       String? wechselgeldEntnahmeGrund,
+      String? kinokasseTid,
     }) {
       return TagesabschlussFinalisierenEingabe(
         kinoId: kinoId,
@@ -49,6 +50,7 @@ void main() {
         anmerkung: anmerkung,
         wechselgeldEntnahmeCent: wechselgeldEntnahmeCent,
         wechselgeldEntnahmeGrund: wechselgeldEntnahmeGrund,
+        kinokasseTid: kinokasseTid,
       );
     }
 
@@ -308,6 +310,101 @@ void main() {
 
       expect(ergebnis.ecBelegeFotosBase64, <String>['/9j/4AAQSkZJRg==']);
       expect(ergebnis.ecBelegeFotosMediaTypen, <String>['image/jpeg']);
+    });
+
+    group('Kartenumsatz Kinokasse (Run 486)', () {
+      test('Beleg der Kinokassen-TID kommt zum Kino SOLL und ins Gesamt '
+          'SOLL, Differenz entsprechend kleiner', () {
+        final TagesabschlussFinal ohne = usecase.finalisieren(
+          eingabe: eingabe(
+            ecBelegeLabels: <String>['60561994', '60561997'],
+          ),
+        );
+        final TagesabschlussFinal mit = usecase.finalisieren(
+          eingabe: eingabe(
+            ecBelegeLabels: <String>['60561994', '60561997'],
+            kinokasseTid: '60561997',
+          ),
+        );
+
+        expect(ohne.kinokasseKarteCent, 0);
+        expect(mit.kinokasseKarteCent, 1500);
+        // Eingegebenes Kino SOLL bleibt der Ticket-Umsatz
+        expect(mit.kinoSollCent, 5000);
+        expect(mit.kinoSollUebertragCent, 6500);
+        expect(mit.gesamtSollCent, ohne.gesamtSollCent + 1500);
+        expect(mit.gesamtIstCent, ohne.gesamtIstCent);
+        expect(mit.differenzGesamtCent, ohne.differenzGesamtCent - 1500);
+      });
+
+      test('mehrere Belege derselben TID werden summiert, TID mit '
+          'Leerzeichen zählt trotzdem', () {
+        final TagesabschlussFinal ergebnis = usecase.finalisieren(
+          eingabe: eingabe(
+            ecBelegeCent: <int>[1000, 200, 300],
+            ecBelegeLabels: <String>['60561997', '60561996', ' 60561997'],
+            kinokasseTid: '60561997 ',
+          ),
+        );
+
+        expect(ergebnis.kinokasseKarteCent, 1300);
+      });
+
+      test('fremde TID, leere Einstellung oder fehlende Labels -> 0', () {
+        expect(
+          usecase
+              .finalisieren(
+                eingabe: eingabe(
+                  ecBelegeLabels: <String>['60561994', '60561996'],
+                  kinokasseTid: '60561997',
+                ),
+              )
+              .kinokasseKarteCent,
+          0,
+        );
+        expect(
+          usecase
+              .finalisieren(
+                eingabe: eingabe(
+                  ecBelegeLabels: <String>['60561997', ''],
+                  kinokasseTid: '',
+                ),
+              )
+              .kinokasseKarteCent,
+          0,
+        );
+        expect(
+          usecase
+              .finalisieren(eingabe: eingabe(kinokasseTid: '60561997'))
+              .kinokasseKarteCent,
+          0,
+        );
+      });
+
+      test('JSON: Feld wird gespeichert und gelesen, alte Einträge ohne '
+          'Feld -> 0', () {
+        final TagesabschlussFinal mit = usecase.finalisieren(
+          eingabe: eingabe(
+            ecBelegeLabels: <String>['60561994', '60561997'],
+            kinokasseTid: '60561997',
+          ),
+        );
+        final TagesabschlussFinal gelesen =
+            TagesabschlussFinal.fromJson(mit.toJson());
+        expect(gelesen.kinokasseKarteCent, 1500);
+        expect(gelesen.kinoSollUebertragCent, 6500);
+        expect(gelesen.gesamtSollCent, mit.gesamtSollCent);
+        expect(
+          gelesen.mitGesendetAm(DateTime(2026, 10, 15)).kinokasseKarteCent,
+          1500,
+        );
+
+        final Map<String, dynamic> altJson = mit.toJson()
+          ..remove('kinokasseKarteCent');
+        final TagesabschlussFinal alt = TagesabschlussFinal.fromJson(altJson);
+        expect(alt.kinokasseKarteCent, 0);
+        expect(alt.kinoSollUebertragCent, 5000);
+      });
     });
   });
 }

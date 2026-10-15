@@ -8,6 +8,7 @@ import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
 import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
@@ -590,8 +591,12 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     children: <Widget>[
                       InfoZeile(
                         label: hatBistro ? 'Kino SOLL' : 'Gesamt SOLL',
-                        wert: _euro(a.kinoSollCent),
+                        wert: _euro(a.kinoSollUebertragCent),
                       ),
+                      if (a.kinokasseKarteCent != 0)
+                        KinokasseKarteHinweis(
+                          kinokasseKarteCent: a.kinokasseKarteCent,
+                        ),
                       if (hatBistro)
                         InfoZeile(label: 'Bistro SOLL', wert: _euro(a.bistroSollCent)),
                       InfoZeile(label: 'Ausgaben', wert: _euro(a.ausgabenCent)),

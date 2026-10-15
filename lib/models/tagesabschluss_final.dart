@@ -48,6 +48,10 @@ class TagesabschlussFinal {
     // seit Run 399a, für ältere gespeicherte Einträge null
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
+    // Kartenumsatz des am Kino-Kassensystem angeschlossenen Terminals,
+    // im Kino SOLL fuer den Uebertrag enthalten – seit Run 486, fuer
+    // aeltere gespeicherte Einträge 0
+    this.kinokasseKarteCent = 0,
   });
 
   final String kinoId;
@@ -63,6 +67,8 @@ class TagesabschlussFinal {
   final int wechselgeldSollwertCent;
   final int barBestandAbzglWechselgeldCent;
 
+  // Kino SOLL wie in Schritt 2 eingegeben (nur Ticket-Umsatz). Fuer
+  // Uebertrag/Umschlag gilt kinoSollUebertragCent (Run 486).
   final int kinoSollCent;
   final int bistroSollCent;
   final int ausgabenCent;
@@ -105,6 +111,14 @@ class TagesabschlussFinal {
   // ecBelegeLabels (gleicher Index = gleicher Beleg/TID) – seit Run 399a.
   final List<String>? ecBelegeFotosBase64;
   final List<String>? ecBelegeFotosMediaTypen;
+
+  // Kartenumsatz des am Kino-Kassensystem angeschlossenen Terminals –
+  // seit Run 486, steckt bereits in gesamtSollCent.
+  final int kinokasseKarteCent;
+
+  /// Kino SOLL fuer Uebertrag/Umschlag: Ticket-Umsatz + Kartenumsatz des
+  /// am Kino-Kassensystem angeschlossenen Terminals (Run 486).
+  int get kinoSollUebertragCent => kinoSollCent + kinokasseKarteCent;
 
   // Zeitpunkt des erfolgreichen Uploads an Flurbocash, oder null wenn
   // noch nicht gesendet – seit Run 387.
@@ -154,6 +168,7 @@ class TagesabschlussFinal {
       gesendetAm: zeitpunkt,
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
+      kinokasseKarteCent: kinokasseKarteCent,
     );
   }
 
@@ -215,6 +230,7 @@ class TagesabschlussFinal {
         'ecBelegeFotosBase64': ecBelegeFotosBase64,
       if (ecBelegeFotosMediaTypen != null)
         'ecBelegeFotosMediaTypen': ecBelegeFotosMediaTypen,
+      if (kinokasseKarteCent != 0) 'kinokasseKarteCent': kinokasseKarteCent,
     };
   }
 
@@ -345,6 +361,7 @@ class TagesabschlussFinal {
       ),
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
+      kinokasseKarteCent: (json['kinokasseKarteCent'] as num?)?.toInt() ?? 0,
     );
   }
 }

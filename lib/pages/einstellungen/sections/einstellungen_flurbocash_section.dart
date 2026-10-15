@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 
 class EinstellungenFlurbocashSection extends StatelessWidget {
   const EinstellungenFlurbocashSection({
@@ -15,6 +16,8 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
     required this.flurbocashApiKeyController,
     required this.flurbocashApiKeyFocusNode,
     required this.onFlurbocashApiKeyGeaendert,
+    required this.kinokasseTidController,
+    required this.onKinokasseTidGeaendert,
   });
 
   final bool apiUploadAktiv;
@@ -27,6 +30,8 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
   final TextEditingController flurbocashApiKeyController;
   final FocusNode flurbocashApiKeyFocusNode;
   final VoidCallback onFlurbocashApiKeyGeaendert;
+  final TextEditingController kinokasseTidController;
+  final VoidCallback onKinokasseTidGeaendert;
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +89,23 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
                     onChanged: (_) => onFlurbocashApiKeyGeaendert(),
                     onEditingComplete: () =>
                         flurbocashApiKeyFocusNode.unfocus(),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: kinokasseTidController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      TidEingabe.formatter,
+                    ],
+                    decoration: const InputDecoration(
+                      labelText: 'TID Kinokasse',
+                      helperText: 'Terminal am Kino-Kassensystem – dessen '
+                          'Kartenumsatz kommt im Übertrag zum Kino Soll. '
+                          'Leer = keins.',
+                      helperMaxLines: 3,
+                      isDense: true,
+                    ),
+                    onChanged: (_) => onKinokasseTidGeaendert(),
                   ),
                 ],
               ),

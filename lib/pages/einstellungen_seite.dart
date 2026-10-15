@@ -15,10 +15,12 @@ import 'package:kino_bar_app/services/getraenke_config_service.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/pwa_install_service.dart';
 import 'package:kino_bar_app/services/sw_update_service.dart';
+import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/widgets/hinweis_snackbar.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
@@ -120,6 +122,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   final TextEditingController _anthropicApiKeyCtrl = TextEditingController();
   final TextEditingController _locationIdCtrl = TextEditingController();
   final TextEditingController _flurbocashApiKeyCtrl = TextEditingController();
+  final TextEditingController _kinokasseTidCtrl = TextEditingController();
   late final FocusNode _neuesGetraenkFocus;
   late final FocusNode _locationIdFocus;
   late final FocusNode _flurbocashApiKeyFocus;
@@ -177,6 +180,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _locationIdFocus.dispose();
     _flurbocashApiKeyCtrl.dispose();
     _flurbocashApiKeyFocus.dispose();
+    _kinokasseTidCtrl.dispose();
     super.dispose();
   }
 
@@ -247,6 +251,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String? overrideApiKey = speicher.getString(
       ApiUploadService.apiKeyPrefKey(_aktiveKinoId),
     );
+    final String kinokasseTid = speicher.getString(
+          TerminalIdsConfigService.kinokasseTidPrefKey(_aktiveKinoId),
+        ) ??
+        '';
     final String? standortModus = await LokalerSpeicher.ladeStandortModus();
     final bool adminStatusHaltenAktiv =
         speicher.getBool('admin_status_halten_aktiv') ?? false;
@@ -256,6 +264,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     _anthropicApiKeyCtrl.text = anthropicApiKey;
     _locationIdCtrl.text = overrideLocationId ?? '';
     _flurbocashApiKeyCtrl.text = overrideApiKey ?? '';
+    _kinokasseTidCtrl.text = kinokasseTid;
 
     setState(() {
       _apiUploadAktiv = apiUploadAktiv;
@@ -383,6 +392,18 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String wert = _locationIdCtrl.text.trim();
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String key = ApiUploadService.locationIdPrefKey(_aktiveKinoId);
+    if (wert.isEmpty) {
+      await speicher.remove(key);
+    } else {
+      await speicher.setString(key, wert);
+    }
+  }
+
+  Future<void> _speichereKinokasseTid() async {
+    final String wert = TidEingabe.bereinige(_kinokasseTidCtrl.text);
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String key =
+        TerminalIdsConfigService.kinokasseTidPrefKey(_aktiveKinoId);
     if (wert.isEmpty) {
       await speicher.remove(key);
     } else {
@@ -1025,6 +1046,8 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       flurbocashApiKeyController: _flurbocashApiKeyCtrl,
       flurbocashApiKeyFocusNode: _flurbocashApiKeyFocus,
       onFlurbocashApiKeyGeaendert: _speichereFlurbocashApiKey,
+      kinokasseTidController: _kinokasseTidCtrl,
+      onKinokasseTidGeaendert: _speichereKinokasseTid,
       devModusAktiv: _devModusAktiv,
       onDevModusGeaendert: _onDevModusGeaendert,
       testwertAufgeklappt: _testwertAufgeklappt,

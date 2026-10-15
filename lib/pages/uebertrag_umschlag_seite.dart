@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
@@ -92,9 +93,13 @@ class UebertragUmschlagSeite extends StatelessWidget {
                 children: <Widget>[
                   InfoZeile(
                     label: hatBistro ? '+ Kino Soll' : '+ Gesamt SOLL',
-                    wert: _euro(abschluss.kinoSollCent),
+                    wert: _euro(abschluss.kinoSollUebertragCent),
                     stil: InfoZeileStil.fuehrungslinie,
                   ),
+                  if (abschluss.kinokasseKarteCent != 0)
+                    KinokasseKarteHinweis(
+                      kinokasseKarteCent: abschluss.kinokasseKarteCent,
+                    ),
                   if (hatBistro)
                     InfoZeile(
                       label: '+ Bistro Soll',

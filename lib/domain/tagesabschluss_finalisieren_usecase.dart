@@ -40,6 +40,8 @@ class TagesabschlussFinalisierenEingabe {
     this.zahlungsartenAufschluesselung,
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
+    // TID des am Kino-Kassensystem angeschlossenen Terminals (Run 486)
+    this.kinokasseTid,
   });
 
   final String kinoId;
@@ -80,6 +82,9 @@ class TagesabschlussFinalisierenEingabe {
   // EC-Belegfotos (base64 + media_type) je Beleg-Index aus Schritt 2
   final List<String>? ecBelegeFotosBase64;
   final List<String>? ecBelegeFotosMediaTypen;
+  // TID des am Kino-Kassensystem angeschlossenen Terminals (Einstellung
+  // pro Kino, Run 486) – dessen Kartenumsatz kommt zum Kino SOLL dazu.
+  final String? kinokasseTid;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -128,10 +133,17 @@ class TagesabschlussFinalisierenUsecase {
       eingabe.ecBelegeCent,
     );
 
+    final int kinokasseKarteCent = TagesabschlussBerechnung.kinokasseKarteCent(
+      ecBelegeCent: eingabe.ecBelegeCent,
+      ecBelegeLabels: eingabe.ecBelegeLabels,
+      kinokasseTid: eingabe.kinokasseTid,
+    );
+
     final int gesamtSollCent = TagesabschlussBerechnung.gesamtSollCent(
       kinoSollCent: eingabe.kinoSollCent,
       bistroSollCent: eingabe.bistroSollCent,
       ausgabenCent: eingabe.ausgabenCent,
+      kinokasseKarteCent: kinokasseKarteCent,
     );
 
     final int gesamtIstCent = TagesabschlussBerechnung.gesamtIstCent(
@@ -252,6 +264,7 @@ class TagesabschlussFinalisierenUsecase {
               eingabe.ecBelegeFotosMediaTypen!.isNotEmpty
           ? List<String>.from(eingabe.ecBelegeFotosMediaTypen!)
           : null,
+      kinokasseKarteCent: kinokasseKarteCent,
     );
   }
 

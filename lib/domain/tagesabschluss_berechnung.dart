@@ -1,4 +1,5 @@
 import 'package:kino_bar_app/models/kassenzeile.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 
 class TagesabschlussBerechnung {
   const TagesabschlussBerechnung._();
@@ -97,12 +98,37 @@ class TagesabschlussBerechnung {
         wechselgeldSollwertCent;
   }
 
+  /// Kino-SOLL fuer Uebertrag/Umschlag (Run 486): Das Kino-Kassensystem
+  /// weist mit dem direkt angeschlossenen Terminal bezahlte Tickets nicht
+  /// im Ticket-Umsatz aus, den der MA in Schritt 2 als Kino SOLL eintraegt.
+  /// Deren Kartenumsatz ([kinokasseKarteCent]) gehoert daher zusaetzlich
+  /// ins Kino SOLL.
   static int gesamtSollCent({
     required int kinoSollCent,
     required int bistroSollCent,
     required int ausgabenCent,
+    int kinokasseKarteCent = 0,
   }) {
-    return kinoSollCent + bistroSollCent - ausgabenCent;
+    return kinoSollCent + kinokasseKarteCent + bistroSollCent - ausgabenCent;
+  }
+
+  /// Summe der EC-Belege, deren TID ([ecBelegeLabels], gleicher Index wie
+  /// [ecBelegeCent]) der TID des am Kino-Kassensystem angeschlossenen
+  /// Terminals entspricht. Leere [kinokasseTid] = 0.
+  static int kinokasseKarteCent({
+    required List<int> ecBelegeCent,
+    required List<String>? ecBelegeLabels,
+    required String? kinokasseTid,
+  }) {
+    final String tid = TidEingabe.bereinige(kinokasseTid ?? '');
+    if (tid.isEmpty || ecBelegeLabels == null) return 0;
+    int summe = 0;
+    for (int i = 0; i < ecBelegeCent.length && i < ecBelegeLabels.length; i++) {
+      if (TidEingabe.bereinige(ecBelegeLabels[i]) == tid) {
+        summe += ecBelegeCent[i];
+      }
+    }
+    return summe;
   }
 
   static int gesamtIstCent({
