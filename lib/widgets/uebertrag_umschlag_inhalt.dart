@@ -43,6 +43,12 @@ class UebertragUmschlagInhalt {
   ) {
     final List<int> belege = a.ecBelegeCent;
     final int summe = belege.fold(0, (int s, int b) => s + b);
+    // Run 492: bestätigt "heute keine Umsätze".
+    final Set<String> keine = <String>{...?a.keineUmsaetzeTids};
+    String mitKeine(String info, String tid, int cent) =>
+        cent == 0 && keine.contains(tid)
+        ? '${info.isEmpty ? '' : '$info · '}keine Umsätze'
+        : info;
     if (belege.isEmpty || summe != a.ecUmsatzGesamtCent) {
       return <UmschlagEcZeile>[
         UmschlagEcZeile('+ EC IST', a.ecUmsatzGesamtCent),
@@ -63,7 +69,11 @@ class UebertragUmschlagInhalt {
           UmschlagEcZeile(
             '+ EC${i + 1} IST',
             belege[i],
-            labels[i].isEmpty ? '' : 'TID ${labels[i]}',
+            mitKeine(
+              labels[i].isEmpty ? '' : 'TID ${labels[i]}',
+              labels[i],
+              belege[i],
+            ),
           ),
       ];
     }
@@ -83,7 +93,11 @@ class UebertragUmschlagInhalt {
         UmschlagEcZeile(
           '+ EC${p + 1} IST',
           cent,
-          '${t.nummer.isEmpty ? '' : 'Gerät ${t.nummer} · '}TID ${t.tid}',
+          mitKeine(
+            '${t.nummer.isEmpty ? '' : 'Gerät ${t.nummer} · '}TID ${t.tid}',
+            t.tid,
+            cent,
+          ),
         ),
       );
     }

@@ -9,6 +9,26 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 492: Alle eingetragenen Terminals sind Pflicht, Knopf "heute
+  keine Umsätze" (ersetzt den Hinweis "Weiter ohne Beleg" aus Run 490).
+  - Schritt 2: unter jedem Geräte-Feld ohne Beleg der Knopf "heute
+    keine Umsätze" (an/aus, auch im Ein-Feld-Modus). Aktiv: Kachel grün,
+    Titel "... keine Umsätze", Gesamtbetrag 0,00. Pflicht erfüllt durch
+    Betrag ODER Knopf.
+  - Weiter: fehlt beides, Sperre "Beleg fehlt" mit Geräteliste, nur OK;
+    betroffene Kacheln werden aufgeklappt. Gelöschtes Geräte-Feld wird
+    wieder angelegt. Ohne eingetragene TIDs keine Prüfung.
+  - Neues Feld `keineUmsaetzeTids` (Entwurf, Schritt-3-Argumente,
+    Usecase, TagesabschlussFinal-JSON; alte Einträge null). Der Usecase
+    behält nur TIDs mit 0 € (später doch erfasster Beleg gilt).
+  - Flurbocash: diese Terminals mit 0-Beträgen + "no_sales": true
+    (freies Feld, Yannik sieht die Prüfung).
+  - Umschlag/Schritt 3/Verlauf: "+ EC2 IST 0,00 €", grau "... · keine
+    Umsätze".
+  - Tests: Usecase-Filter, JSON neu/alt, Settlement-Body, Umschlag,
+    Knopf. Im Browser: Sperre nennt alle 3 Geräte, nach "keine
+    Umsätze" weiter, Schritt 3 + JSON (no_sales) geprüft.
+
 - Run 491c: Schritt 3 zeigt bei SB die Felder des neuen SB-Umschlags
   (EC1–EC3 je Terminal mit Gesamtbetrag, BAR IST, Differenz, Datum),
   gleiche Quelle wie Übertrag-Seite und Verlauf

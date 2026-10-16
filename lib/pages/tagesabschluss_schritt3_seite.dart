@@ -67,6 +67,7 @@ class TagesabschlussSchritt3Argumente {
     this.zahlungsartenAufschluesselung,
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
+    this.keineUmsaetzeTids,
     this.zielSchrittBeimSprung,
   });
 
@@ -99,6 +100,8 @@ class TagesabschlussSchritt3Argumente {
   final List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung;
   final List<String>? ecBelegeFotosBase64;
   final List<String>? ecBelegeFotosMediaTypen;
+  // TIDs mit "heute keine Umsätze" aus Schritt 2 (Run 492)
+  final List<String>? keineUmsaetzeTids;
   /// Nur beim AppBar-Schritt-Sprung von Schritt 1/2 zu Schritt 4 gesetzt
   /// (Wert 4): sobald diese Seite aufgebaut ist, springt sie automatisch
   /// weiter zu Schritt 4 — ohne eigenes Gate, da "Barumsatz f. Umschlag
@@ -383,6 +386,7 @@ class _TagesabschlussSchritt3SeiteState
         anmerkung: _anmerkung.trim().isEmpty ? null : _anmerkung.trim(),
         ecBelegeFotosBase64: widget.argumente.ecBelegeFotosBase64,
         ecBelegeFotosMediaTypen: widget.argumente.ecBelegeFotosMediaTypen,
+        keineUmsaetzeTids: widget.argumente.keineUmsaetzeTids,
         kinokasseTid: _kinokasseTid,
       ),
       jetzt: _erstellungszeitpunkt,

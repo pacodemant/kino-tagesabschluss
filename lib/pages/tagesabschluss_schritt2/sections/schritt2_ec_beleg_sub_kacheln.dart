@@ -21,6 +21,9 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
     required this.labelFocusNode,
     required this.labels,
     this.geraeteNummer,
+    this.keineUmsaetzeMoeglich,
+    this.keineUmsaetzeAktiv,
+    this.onKeineUmsaetzeToggle,
     required this.betraegeCent,
     required this.tidUnleserlich,
     required this.scanLaeuft,
@@ -47,6 +50,11 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
 
   /// Gerätenummer zur TID aus den Einstellungen (Run 490), null = keine.
   final String? Function(String label)? geraeteNummer;
+
+  /// "heute keine Umsätze" je Beleg (Run 492).
+  final bool Function(int belegIndex)? keineUmsaetzeMoeglich;
+  final bool Function(int belegIndex)? keineUmsaetzeAktiv;
+  final void Function(int belegIndex)? onKeineUmsaetzeToggle;
   final List<int> betraegeCent;
   final bool Function(int belegIndex) tidUnleserlich;
   final bool scanLaeuft;
@@ -79,6 +87,9 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
               labelFocusNode: labelFocusNode[i],
               label: labels[i],
               geraeteNummer: geraeteNummer?.call(labels[i]),
+              keineUmsaetzeMoeglich: keineUmsaetzeMoeglich?.call(i) ?? false,
+              keineUmsaetzeAktiv: keineUmsaetzeAktiv?.call(i) ?? false,
+              onKeineUmsaetzeToggle: () => onKeineUmsaetzeToggle?.call(i),
               betragCent: betraegeCent[i],
               tidUnleserlich: tidUnleserlich(i),
               scanLaeuft: scanLaeuft,
@@ -109,6 +120,9 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
     required this.labelFocusNode,
     required this.label,
     this.geraeteNummer,
+    this.keineUmsaetzeMoeglich = false,
+    this.keineUmsaetzeAktiv = false,
+    this.onKeineUmsaetzeToggle,
     required this.betragCent,
     required this.tidUnleserlich,
     required this.scanLaeuft,
@@ -132,6 +146,9 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
   final FocusNode labelFocusNode;
   final String label;
   final String? geraeteNummer;
+  final bool keineUmsaetzeMoeglich;
+  final bool keineUmsaetzeAktiv;
+  final VoidCallback? onKeineUmsaetzeToggle;
   final int betragCent;
   final bool tidUnleserlich;
   final bool scanLaeuft;
@@ -152,7 +169,9 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
   /// hat, also vollständig und ohne offene Fehler eingelesen wurde —
   /// steuert die dezente Erfolgs-Markierung (Häkchen + Kartenrand).
   bool get _erfolgreichGescannt =>
-      betragCent > 0 && !tidUnleserlich && _labelIstLesbarUndBefuellt;
+      (betragCent > 0 || keineUmsaetzeAktiv) &&
+      !tidUnleserlich &&
+      _labelIstLesbarUndBefuellt;
 
   Future<void> _beiLoeschenGedrueckt(BuildContext context) async {
     final bool? ok = await showDialog<bool>(
@@ -313,6 +332,19 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                     ],
                                   )),
                     ),
+                    if (keineUmsaetzeAktiv && betragCent == 0) ...<Widget>[
+                      const SizedBox(width: 8),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Text(
+                          'keine Umsätze',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
                     if (betragCent > 0) ...<Widget>[
                       const SizedBox(width: 8),
                       Padding(
@@ -374,6 +406,19 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                 ),
               ),
             ),
+            // "heute keine Umsätze" (Run 492): immer sichtbar, solange kein
+            // Beleg erfasst ist — auch bei zugeklappter Kachel.
+            if (keineUmsaetzeMoeglich)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 4),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Schritt2KeineUmsaetzeKnopf(
+                    aktiv: keineUmsaetzeAktiv,
+                    onTap: onKeineUmsaetzeToggle ?? () {},
+                  ),
+                ),
+              ),
             // Sub-Kachel-Body
             if (aufgeklappt) ...<Widget>[
               const Divider(height: 1),
@@ -468,6 +513,36 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Knopf "heute keine Umsätze" (Run 492): Pflicht ist erfüllt, wenn je
+/// Terminal ein Betrag erfasst ODER dieser Knopf aktiviert ist. Erneutes
+/// Antippen nimmt es zurück. Auch im Ein-Beleg-Modus genutzt.
+class Schritt2KeineUmsaetzeKnopf extends StatelessWidget {
+  const Schritt2KeineUmsaetzeKnopf({
+    super.key,
+    required this.aktiv,
+    required this.onTap,
+  });
+
+  final bool aktiv;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onTap,
+      style: TextButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        foregroundColor: aktiv ? Colors.green.shade700 : AppFarben.appBarRot,
+      ),
+      icon: Icon(
+        aktiv ? Icons.check_box : Icons.check_box_outline_blank,
+        size: 18,
+      ),
+      label: const Text('heute keine Umsätze'),
     );
   }
 }

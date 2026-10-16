@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.146+491 · Run 491
+Version: 0.9.147+492 · Run 492
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,10 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 491)
+## Laufender Entwicklungsstand (Run 492)
+
+- Run 492 Alle eingetragenen Terminals Pflicht: Betrag oder "heute
+  keine Umsätze"; letztere gehen mit 0 € + "no_sales" an Flurbocash.
 
 - Run 491 Dev-Auto-Fill verteilt EC auf die eingetragenen Terminals
   (TIDs aus Einstellungen), KK-Anteil aus dem Kino SOLL, Kasse geht auf.

@@ -1,4 +1,5 @@
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
+import 'package:kino_bar_app/utils/tid_eingabe.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
@@ -42,6 +43,8 @@ class TagesabschlussFinalisierenEingabe {
     this.ecBelegeFotosMediaTypen,
     // TID des am Kino-Kassensystem angeschlossenen Terminals (Run 486)
     this.kinokasseTid,
+    // TIDs mit "heute keine Umsätze" (Run 492)
+    this.keineUmsaetzeTids,
   });
 
   final String kinoId;
@@ -85,6 +88,7 @@ class TagesabschlussFinalisierenEingabe {
   // TID des am Kino-Kassensystem angeschlossenen Terminals (Einstellung
   // pro Kino, Run 486) – dessen Kartenumsatz kommt zum Kino SOLL dazu.
   final String? kinokasseTid;
+  final List<String>? keineUmsaetzeTids;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -265,7 +269,30 @@ class TagesabschlussFinalisierenUsecase {
           ? List<String>.from(eingabe.ecBelegeFotosMediaTypen!)
           : null,
       kinokasseKarteCent: kinokasseKarteCent,
+      keineUmsaetzeTids: _keineUmsaetzeTidsOhneBetrag(eingabe),
     );
+  }
+
+  /// Nur TIDs, für die tatsächlich 0 € erfasst sind (Run 492) — wurde
+  /// nach "keine Umsätze" doch ein Beleg erfasst, gilt der Beleg.
+  static List<String>? _keineUmsaetzeTidsOhneBetrag(
+    TagesabschlussFinalisierenEingabe eingabe,
+  ) {
+    final List<String>? tids = eingabe.keineUmsaetzeTids;
+    if (tids == null || tids.isEmpty) return null;
+    final List<String> labels = eingabe.ecBelegeLabels ?? const <String>[];
+    final List<String> ergebnis = <String>[
+      for (final String roh in tids)
+        if (TidEingabe.bereinige(roh).isNotEmpty &&
+            !<int>[
+              for (int i = 0; i < eingabe.ecBelegeCent.length; i++)
+                if (i < labels.length &&
+                    TidEingabe.bereinige(labels[i]) == TidEingabe.bereinige(roh))
+                  eingabe.ecBelegeCent[i],
+            ].any((int c) => c != 0))
+          TidEingabe.bereinige(roh),
+    ];
+    return ergebnis.isEmpty ? null : ergebnis;
   }
 
   /// Prueft nur minimale Pflichtbedingungen ohne optionale Felder zu erzwingen.

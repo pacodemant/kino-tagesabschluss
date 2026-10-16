@@ -52,6 +52,9 @@ class TagesabschlussFinal {
     // im Kino SOLL fuer den Uebertrag enthalten – seit Run 486, fuer
     // aeltere gespeicherte Einträge 0
     this.kinokasseKarteCent = 0,
+    // TIDs, für die der MA "heute keine Umsätze" bestätigt hat – seit
+    // Run 492, für ältere gespeicherte Einträge null
+    this.keineUmsaetzeTids,
   });
 
   final String kinoId;
@@ -120,6 +123,10 @@ class TagesabschlussFinal {
   /// am Kino-Kassensystem angeschlossenen Terminals (Run 486).
   int get kinoSollUebertragCent => kinoSollCent + kinokasseKarteCent;
 
+  // Terminals mit bestätigt "heute keine Umsätze" (Run 492): gehen mit
+  // 0-Beträgen an Flurbocash, damit sichtbar ist, dass geprüft wurde.
+  final List<String>? keineUmsaetzeTids;
+
   // Zeitpunkt des erfolgreichen Uploads an Flurbocash, oder null wenn
   // noch nicht gesendet – seit Run 387.
   final DateTime? gesendetAm;
@@ -169,6 +176,7 @@ class TagesabschlussFinal {
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       kinokasseKarteCent: kinokasseKarteCent,
+      keineUmsaetzeTids: keineUmsaetzeTids,
     );
   }
 
@@ -231,6 +239,8 @@ class TagesabschlussFinal {
       if (ecBelegeFotosMediaTypen != null)
         'ecBelegeFotosMediaTypen': ecBelegeFotosMediaTypen,
       if (kinokasseKarteCent != 0) 'kinokasseKarteCent': kinokasseKarteCent,
+      if (keineUmsaetzeTids != null && keineUmsaetzeTids!.isNotEmpty)
+        'keineUmsaetzeTids': keineUmsaetzeTids,
     };
   }
 
@@ -362,6 +372,11 @@ class TagesabschlussFinal {
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       kinokasseKarteCent: (json['kinokasseKarteCent'] as num?)?.toInt() ?? 0,
+      keineUmsaetzeTids: json['keineUmsaetzeTids'] is List
+          ? (json['keineUmsaetzeTids'] as List<dynamic>)
+              .whereType<String>()
+              .toList()
+          : null,
     );
   }
 }
