@@ -20,8 +20,57 @@ class ApiUploadService {
   /// Einzige Quelle fuer den SharedPreferences-Key der Flurbocash-
   /// Location-ID eines Kinos (seit Run 421 zentralisiert, vorher an
   /// mehreren Stellen als rohes String-Literal dupliziert).
-  static String locationIdPrefKey(String kinoId) =>
-      'flurbocash_location_id_$kinoId';
+  /// Seit Run 493 getrennt nach Umgebung: der bisherige Key gilt für die
+  /// Sandbox (bestehende Geräte-Einträge sind Sandbox-Werte), Live hat
+  /// einen eigenen Key — so kann ein alter Sandbox-Override beim
+  /// Umschalten nicht versehentlich ans Livesystem gehen.
+  static String locationIdPrefKey(String kinoId, {bool live = false}) => live
+      ? 'flurbocash_location_id_live_$kinoId'
+      : 'flurbocash_location_id_$kinoId';
+
+  /// Geräteweiter Schalter "Flurbocash-Livesystem" (Run 493, Standard aus
+  /// = Sandbox). Bestimmt, welche location_id aus dem Kino-Modell bzw.
+  /// welcher Override verwendet wird.
+  static const String liveModusPrefKey = 'flurbocash_live_modus';
+
+  static Future<bool> ladeLiveModus() async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    return speicher.getBool(liveModusPrefKey) ?? false;
+  }
+
+  static Future<void> speichereLiveModus(bool live) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setBool(liveModusPrefKey, live);
+  }
+
+  /// Standard-location_id eines Kinos aus dem Modell für die Umgebung.
+  static int? standardLocationId(Kino? kino, {required bool live}) =>
+      live ? kino?.fcLocationIdLive : kino?.fcLocationIdSandbox;
+
+  /// Reihenfolge: Override aus den Einstellungen > Wert aus dem
+  /// Kino-Modell > null (= nicht senden). Ein ungültiger/leerer Override
+  /// zählt als nicht gesetzt.
+  static int? loeseLocationIdAuf({
+    required String? override,
+    required Kino? kino,
+    required bool live,
+  }) {
+    final int? ueberschrieben =
+        override == null ? null : int.tryParse(override.trim());
+    if (ueberschrieben != null && ueberschrieben > 0) return ueberschrieben;
+    return standardLocationId(kino, live: live);
+  }
+
+  /// Aktuell gültige location_id für [kinoId] (null = keine bekannt).
+  static Future<int?> ladeLocationId(String kinoId) async {
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final bool live = speicher.getBool(liveModusPrefKey) ?? false;
+    return loeseLocationIdAuf(
+      override: speicher.getString(locationIdPrefKey(kinoId, live: live)),
+      kino: KinoRepository.nachId(kinoId),
+      live: live,
+    );
+  }
 
   /// Einzige Quelle fuer den SharedPreferences-Key des Flurbocash-API-Keys
   /// eines Kinos (seit Run 421 zentralisiert, siehe [locationIdPrefKey]).
@@ -346,12 +395,16 @@ class ApiUploadService {
       );
     }
 
-    final String? locationIdStr =
-        speicher.getString(locationIdPrefKey(kinoId));
-    final int locationId =
-        (locationIdStr != null && locationIdStr.isNotEmpty)
-            ? (int.tryParse(locationIdStr) ?? 0)
-            : 0;
+    final int? locationId = await ladeLocationId(kinoId);
+    if (locationId == null) {
+      final bool live = await ladeLiveModus();
+      final String name = KinoRepository.nachId(kinoId)?.name ?? kinoId;
+      throw Exception(
+        'Keine Flurbocash-location_id für $name '
+        '(${live ? 'Livesystem' : 'Sandbox'}) hinterlegt. Bitte in den '
+        'Einstellungen eintragen.',
+      );
+    }
 
     final String? perKinoKey = speicher.getString(apiKeyPrefKey(kinoId));
     final String apiKey = (perKinoKey != null && perKinoKey.isNotEmpty)

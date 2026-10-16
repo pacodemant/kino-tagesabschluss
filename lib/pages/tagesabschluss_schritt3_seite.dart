@@ -28,7 +28,6 @@ import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/startmenue_seite.dart';
 import 'package:kino_bar_app/pages/stueckelung_vorschlag_seite.dart';
@@ -1008,14 +1007,8 @@ class _TagesabschlussSchritt3SeiteState
   }
 
   Future<void> _zeigeFlurbocashJson() async {
-    final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String? locationIdStr = speicher.getString(
-      ApiUploadService.locationIdPrefKey(widget.argumente.kinoId),
-    );
     final int locationId =
-        (locationIdStr != null && locationIdStr.isNotEmpty)
-            ? (int.tryParse(locationIdStr) ?? 0)
-            : 0;
+        await ApiUploadService.ladeLocationId(widget.argumente.kinoId) ?? 0;
 
     if (!mounted) {
       return;

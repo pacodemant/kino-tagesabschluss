@@ -119,20 +119,21 @@ gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
 
 | Standort | Sandbox-ID      | Live-ID | Live-Key |
 | -------- | --------------- | ------- | -------- |
-| SB       | 1*(vermutlich)* | **?**   | **?**    |
-| AT       | 3*(vermutlich)* | **?**   | **?**    |
-| BT       | 4*(vermutlich)* | **?**   | **?**    |
+| SB       | 1               | **?**   | **?**    |
+| AT       | 3               | **?**   | **?**    |
+| BT       | 4               | **?**   | **?**    |
 | GO       | 5               | 3       | **?**    |
 | CO       | 6               | 5       | **?**    |
 
-Quellen: SB/AT/BT aus der Mail vom 12.07. (damals ohne Unterscheidung
-Sandbox/Live, aber AT kann live nicht die 3 sein, die hat dort GO), GO/CO
-aus der Mail vom 08.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
+Quellen: SB/AT/BT aus der Mail vom 16.06. (Sandbox-Zugang, nur Sandbox-
+IDs; AT kann live nicht die 3 sein, die hat dort GO), GO/CO aus der Mail
+vom 08.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
 (nicht im Git).
 
-Die location_id wird pro Gerät in den Einstellungen eingetragen, nicht im
-Code. Ein falscher Wert beim Live-Umstieg würde die Abrechnung beim
-falschen Kino verbuchen.
+Seit Run 493 stehen die bekannten IDs im Code (kino.dart), ein Schalter
+"Livesystem" wählt die Umgebung, das Einstellungsfeld ist Override je
+Umgebung. Fehlende Live-IDs (SB/AT/BT) blockieren den Versand, bis sie
+im Code oder als Override stehen.
 
 **Frage:**
 

@@ -495,6 +495,80 @@ void main() {
     });
   });
 
+  group('ApiUploadService location_id (Run 493)', () {
+    test('Modell: Sandbox- und Live-IDs laut Yannik-Mails', () {
+      int? id(String kinoId, bool live) => ApiUploadService.standardLocationId(
+        KinoRepository.nachId(kinoId),
+        live: live,
+      );
+      expect(id('kino_01', false), 1); // SB
+      expect(id('kino_03', false), 3); // AT
+      expect(id('kino_05', false), 4); // BT
+      expect(id('kino_02', false), 5); // GO
+      expect(id('kino_04', false), 6); // CO
+      expect(id('kino_02', true), 3);
+      expect(id('kino_04', true), 5);
+      expect(id('kino_01', true), isNull);
+      expect(id('kino_03', true), isNull);
+      expect(id('kino_05', true), isNull);
+    });
+
+    test('Override > Modell > null, ungültiger Override zählt nicht', () {
+      final Kino? go = KinoRepository.nachId('kino_02');
+      final Kino? sb = KinoRepository.nachId('kino_01');
+      expect(
+        ApiUploadService.loeseLocationIdAuf(
+          override: '9',
+          kino: go,
+          live: true,
+        ),
+        9,
+      );
+      expect(
+        ApiUploadService.loeseLocationIdAuf(override: '', kino: go, live: true),
+        3,
+      );
+      expect(
+        ApiUploadService.loeseLocationIdAuf(
+          override: '0',
+          kino: go,
+          live: false,
+        ),
+        5,
+      );
+      expect(
+        ApiUploadService.loeseLocationIdAuf(
+          override: null,
+          kino: sb,
+          live: true,
+        ),
+        isNull,
+      );
+    });
+
+    test('Sandbox-Override wirkt im Livemodus nicht', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'flurbocash_location_id_kino_01': '1',
+        ApiUploadService.liveModusPrefKey: true,
+      });
+      expect(await ApiUploadService.ladeLocationId('kino_01'), isNull);
+      expect(await ApiUploadService.ladeLocationId('kino_04'), 5);
+
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'flurbocash_location_id_kino_01': '1',
+        'flurbocash_location_id_live_kino_01': '7',
+        ApiUploadService.liveModusPrefKey: true,
+      });
+      expect(await ApiUploadService.ladeLocationId('kino_01'), 7);
+    });
+
+    test('ohne Schalter gilt Sandbox', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      expect(await ApiUploadService.ladeLiveModus(), isFalse);
+      expect(await ApiUploadService.ladeLocationId('kino_04'), 6);
+    });
+  });
+
   group('ApiUploadService.pruefeTerminalIdsGegenKonfiguration', () {
     const Kino schauburg = Kino(id: 'kino_01', name: 'Schauburg', kuerzel: 'SB');
     // Seit Run 488: die in den Einstellungen des Geräts eingetragenen TIDs.

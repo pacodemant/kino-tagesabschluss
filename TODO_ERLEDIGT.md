@@ -431,6 +431,12 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
+- [x] **location_id ins Kino-Modell** *(Run 493)* Umgesetzt als zwei
+      Felder (Sandbox/Live) plus Admin-Schalter "Livesystem"; das
+      Einstellungsfeld bleibt als Override je Umgebung. Live-IDs für
+      SB/AT/BT fehlen noch (fragen_yannik.md 1.10), bis dahin dort nur
+      per Override.
+
 - [x] **0-EUR-Terminal-Upload ohne Fehlermeldung** In
       `api_upload_service.dart` (`_terminalsListe()`) wurde bei
       leerer `zahlungsartenAufschluesselung` bisher immer ein

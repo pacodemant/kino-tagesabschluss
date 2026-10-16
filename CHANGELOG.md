@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 493: Flurbocash-location_id fest im Kino-Modell, getrennt nach
+  Sandbox/Live (`Kino.fcLocationIdSandbox`/`fcLocationIdLive`; Sandbox
+  SB 1, AT 3, BT 4, GO 5, CO 6; Live GO 3, CO 5, SB/AT/BT noch offen).
+  Neuer Admin-Schalter "Livesystem" in der Flurbocash-Kachel (Standard
+  aus = Sandbox, Key `flurbocash_live_modus`). Das location_id-Feld ist
+  jetzt ein optionaler Override je Umgebung (Sandbox: bisheriger Key,
+  Live: neuer Key `flurbocash_location_id_live_<kinoId>`), damit ein
+  alter Sandbox-Wert nicht ans Livesystem geht. Ohne gültige ID wird
+  der Versand mit klarer Meldung blockiert statt location_id 0 zu
+  senden. Interne App-IDs (kino_0x) bewusst unverändert. Unit-Tests.
+
 - Run 492d: Kachel "Personalgetränke gebont? / Artikel gestundet? /
   Kellnerportemonnaie" von Schritt 2 als erste Kachel nach Schritt 1
   (Bargeld) verschoben, Wirkung gleich: "Umsätze eingeben" grau und

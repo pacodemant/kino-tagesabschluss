@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 492 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 493 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -330,8 +330,6 @@ um Durcheinander zu vermeiden.
       nur Pacos private Testumgebung.)*
 
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
-
-- [ ] **location_id ins Kino-Modell** Neues Feld in `kino.dart`. Wert kommt von IT.
 
 - [ ] **"Erneut senden" → Korrektur-Call + Max-4-Fehlermeldung**
       `settlement_number: 1` statt neuem Eintrag. Bei `400 "maximum reached"`:

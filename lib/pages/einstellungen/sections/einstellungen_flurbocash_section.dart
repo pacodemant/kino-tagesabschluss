@@ -9,6 +9,9 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
     required this.onApiUploadGeaendert,
     required this.apiUploadUrlController,
     required this.onApiUploadUrlGeaendert,
+    required this.flurbocashLive,
+    required this.onFlurbocashLiveGeaendert,
+    required this.locationIdStandard,
     required this.locationIdController,
     required this.locationIdFocusNode,
     required this.onLocationIdGeaendert,
@@ -21,6 +24,15 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
   final ValueChanged<bool> onApiUploadGeaendert;
   final TextEditingController apiUploadUrlController;
   final VoidCallback onApiUploadUrlGeaendert;
+
+  /// Run 493: Sandbox (aus) oder Livesystem (an). Wählt die
+  /// Standard-location_id aus dem Kino-Modell und den passenden Override.
+  final bool flurbocashLive;
+  final ValueChanged<bool> onFlurbocashLiveGeaendert;
+
+  /// Standard-location_id des aktiven Kinos für die gewählte Umgebung
+  /// (null = keine im Code hinterlegt, dann ist das Feld Pflicht).
+  final int? locationIdStandard;
   final TextEditingController locationIdController;
   final FocusNode locationIdFocusNode;
   final VoidCallback onLocationIdGeaendert;
@@ -44,6 +56,18 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
           ),
           if (apiUploadAktiv) ...<Widget>[
             const Divider(height: 1),
+            SwitchListTile(
+              title: const Text('Livesystem'),
+              subtitle: Text(
+                flurbocashLive
+                    ? 'Abrechnungen gehen an das echte Flurbocash'
+                    : 'Aus = Sandbox (Testsystem)',
+              ),
+              value: flurbocashLive,
+              onChanged: onFlurbocashLiveGeaendert,
+              activeThumbColor: AppFarben.appBarRot,
+            ),
+            const Divider(height: 1),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
               child: Column(
@@ -66,8 +90,16 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
                     inputFormatters: <TextInputFormatter>[
                       FilteringTextInputFormatter.digitsOnly,
                     ],
-                    decoration: const InputDecoration(
-                      labelText: 'location_id',
+                    decoration: InputDecoration(
+                      labelText: flurbocashLive
+                          ? 'location_id (Live)'
+                          : 'location_id (Sandbox)',
+                      hintText: locationIdStandard != null
+                          ? 'leer = Standard $locationIdStandard'
+                          : 'kein Standard hinterlegt – bitte eintragen',
+                      helperText: locationIdStandard != null
+                          ? 'Standard: $locationIdStandard'
+                          : null,
                       isDense: true,
                     ),
                     onChanged: (_) => onLocationIdGeaendert(),

@@ -91,6 +91,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   String _aktiveKinoId = 'kino_01';
   bool _geladen = false;
   bool _apiUploadAktiv = false;
+  bool _flurbocashLive = false;
   bool _wechselgeldAufgeklappt = false;
   bool _getraenkelisteAufgeklappt = false;
   bool _devAufgeklappt = false;
@@ -242,8 +243,9 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString(BelegScanService.belegScanUrlPrefKey) ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
+    final bool flurbocashLive = await ApiUploadService.ladeLiveModus();
     final String? overrideLocationId = speicher.getString(
-      ApiUploadService.locationIdPrefKey(_aktiveKinoId),
+      ApiUploadService.locationIdPrefKey(_aktiveKinoId, live: flurbocashLive),
     );
     final String? overrideApiKey = speicher.getString(
       ApiUploadService.apiKeyPrefKey(_aktiveKinoId),
@@ -260,6 +262,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
 
     setState(() {
       _apiUploadAktiv = apiUploadAktiv;
+      _flurbocashLive = flurbocashLive;
       _devModusAktiv = devModusAktiv;
       _getraenkeliste = getraenkeliste;
       _geladen = true;
@@ -360,6 +363,17 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     });
   }
 
+  Future<void> _onFlurbocashLiveGeaendert(bool live) async {
+    await ApiUploadService.speichereLiveModus(live);
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    final String? override = speicher.getString(
+      ApiUploadService.locationIdPrefKey(_aktiveKinoId, live: live),
+    );
+    if (!mounted) return;
+    _locationIdCtrl.text = override ?? '';
+    setState(() => _flurbocashLive = live);
+  }
+
   Future<void> _speichereApiUploadKonfig() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString(
@@ -383,7 +397,10 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Future<void> _speichereLocationId() async {
     final String wert = _locationIdCtrl.text.trim();
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String key = ApiUploadService.locationIdPrefKey(_aktiveKinoId);
+    final String key = ApiUploadService.locationIdPrefKey(
+      _aktiveKinoId,
+      live: _flurbocashLive,
+    );
     if (wert.isEmpty) {
       await speicher.remove(key);
     } else {
@@ -1020,6 +1037,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       onApiUploadGeaendert: _onApiUploadGeaendert,
       apiUploadUrlController: _apiUploadUrlCtrl,
       onApiUploadUrlGeaendert: _speichereApiUploadKonfig,
+      flurbocashLive: _flurbocashLive,
+      onFlurbocashLiveGeaendert: _onFlurbocashLiveGeaendert,
+      locationIdStandard: ApiUploadService.standardLocationId(
+        KinoRepository.nachId(_aktiveKinoId),
+        live: _flurbocashLive,
+      ),
       locationIdController: _locationIdCtrl,
       locationIdFocusNode: _locationIdFocus,
       onLocationIdGeaendert: _speichereLocationId,
