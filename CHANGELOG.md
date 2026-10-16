@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 491a: EC-Belege in Schritt 2 von Beleg 1 an oben (vorher neuester
+  oben), also Platz 1 der Kachel "TIDs" zuerst — bewusst nicht nach
+  Geräte-Nr. sortiert (Zuordnung Nr. -> Gerät steht noch nicht fest;
+  Paco-Vorschlag SB: KK-Gerät = Nr. 1). Knopf "+ Weiteren Kassenschnitt
+  hinzufügen" steht jetzt unter der Liste, neuer Beleg direkt darüber.
+
 - Run 491: Dev-Auto-Fill Schritt 2 für mehrere Terminals.
   - EC-Testsumme wird auf alle in der Kachel "TIDs" eingetragenen
     Terminals verteilt (je Beleg als Girocard, Rest-Cent an Beleg 1),

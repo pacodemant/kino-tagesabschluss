@@ -198,15 +198,17 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
                         ),
                       ),
                     ),
+                  belegInhalt,
+                  // Seit Run 491a unter der Liste: Belege stehen von 1 an
+                  // oben, ein neuer Beleg erscheint direkt über dem Knopf.
                   if (hatEcBelege)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.only(top: 8),
                       child: OutlinedButton(
                         onPressed: scanLaeuft ? null : onEcBelegHinzufuegen,
                         child: const Text('+ Weiteren Kassenschnitt hinzufügen'),
                       ),
                     ),
-                  belegInhalt,
                 ],
               ),
             ),

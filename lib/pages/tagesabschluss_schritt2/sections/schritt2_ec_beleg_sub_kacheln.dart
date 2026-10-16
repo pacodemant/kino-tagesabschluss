@@ -65,7 +65,8 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        for (int i = belegAnzahl - 1; i >= 0; i--)
+        // Run 491a: Beleg 1 (= Platz 1 in "TIDs") oben, nicht nach Nr.
+        for (int i = 0; i < belegAnzahl; i++)
           KeyedSubtree(
             key: ValueKey<int>(belegIds[i]),
             child: _Schritt2EcBelegSubKachel(
