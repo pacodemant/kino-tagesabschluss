@@ -9,6 +9,25 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 489: "Übertrag auf Umschlag" für SB im Layout des neuen SB-
+  Umschlags (Foto Paco 2026-10-16), auf der Übertrag-Seite und in der
+  Verlauf-Kachel. Andere Standorte unverändert (eigene Umschläge).
+  - Neue gemeinsame Quelle lib/widgets/uebertrag_umschlag_inhalt.dart
+    (Rahmen: Differenz im Anfangsbestand | KINO/BISTRO SOLL, Ausgaben,
+    Gesamt SOLL | EC1–EC3 IST, BAR IST, Gesamt IST | Differenz | Name,
+    Datum). Seite = je Rahmen eine Card, Kachel = Trennlinien.
+  - EC1, EC2, … nach Platz der Terminals in der Kachel "TIDs" (nicht
+    nach Scan-Reihenfolge), Summe aller Belege der TID, 0,00 € wenn
+    keiner; darunter grau "Gerät <Nr.> · TID …". Beleg mit nicht
+    eingetragener TID -> Zusatzzeile "+ EC IST". Ohne Terminals:
+    Beleg-Reihenfolge; Summe passt nicht (alt): Sammelzeile.
+  - Verlauf-Kachel bei Nicht-SB jetzt wie deren Übertrag-Seite (eine
+    EC-Zeile) statt EC je Beleg aus Run 487.
+  - Im Browser geprüft (Belege in Reihenfolge KK, 1, 2 gescannt ->
+    EC1 = Gerät 1). Tests: Zuordnung nach Platz, fehlender Beleg = 0,
+    fremde TID, ohne Terminals, Seite SB und AT; zwei Run-486-Tests an
+    das SB-Layout angepasst.
+
 - Run 488: TIDs nur noch in den Einstellungen (Yannik: keine TIDs im
   Code). config/terminal_ids.json und Asset-Eintrag entfernt.
   - Neue Kachel "TIDs" im Admin-Bereich (pro Kino): bis zu 4 Terminals

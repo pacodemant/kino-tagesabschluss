@@ -135,7 +135,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('1.250,00 €'), findsOneWidget);
     expect(find.text('davon Karte Kinokasse'), findsOneWidget);
-    expect(find.text('250,00 €'), findsOneWidget);
+    // Seit Run 489 SB-Umschlag: "davon"-Zeile + EC-Zeile des KK-Terminals
+    // (einziges eingetragenes Terminal in diesem Test).
+    expect(find.text('250,00 €'), findsNWidgets(2));
     expect(find.text('0,00 €'), findsWidgets);
 
     // Verlauf-Detail, Kachel "Umsätze" aufklappen
@@ -214,6 +216,8 @@ void main() {
     // Kino Soll und bar IST sind hier beide 1.000,00 €
     expect(find.text('1.000,00 €'), findsNWidgets(2));
     expect(find.text('1.500,00 €'), findsOneWidget);
+    // SB-Umschlag (Run 489) hat mehr Zeilen, Differenz liegt tiefer.
+    await tester.scrollUntilVisible(find.text('+250,00 €'), 200);
     expect(find.text('+250,00 €'), findsOneWidget);
     expect(find.text('davon Karte Kinokasse'), findsNothing);
   });

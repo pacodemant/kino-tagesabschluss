@@ -1,40 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
-import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
+import 'package:kino_bar_app/models/terminal_eintrag.dart';
+import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
-import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 
 /// Zeigt die "Übertrag auf Umschlag"-Werte eines bereits abgeschlossenen
-/// Tagesabschlusses nachträglich an — gleiches Karten-Layout wie
-/// tagesabschluss_schritt3_seite.dart, aber rein lesend: kein Auto-Save,
+/// Tagesabschlusses nachträglich an — rein lesend: kein Auto-Save,
 /// kein "Kassenabrechnung senden", kein Schritt-Slider. Erreichbar über den
-/// "Übertrag auf Umschlag"-Button auf der Kino-Startseite.
-class UebertragUmschlagSeite extends StatelessWidget {
+/// "Übertrag auf Umschlag"-Button auf der Kino-Startseite. Inhalt seit
+/// Run 489 aus [UebertragUmschlagInhalt] (SB im Layout des SB-Umschlags,
+/// EC je Terminal), je Rahmen eine Card.
+class UebertragUmschlagSeite extends StatefulWidget {
   const UebertragUmschlagSeite({super.key, required this.abschluss});
 
   static const String routenName = '/uebertrag-umschlag';
 
   final TagesabschlussFinal abschluss;
 
-  String _euro(int cent) => TagesabschlussFormatierung.formatiereEuro(cent);
+  @override
+  State<UebertragUmschlagSeite> createState() => _UebertragUmschlagSeiteState();
+}
 
-  String _euroMitVorzeichen(int cent) =>
-      TagesabschlussFormatierung.formatiereEuroMitVorzeichen(cent);
+class _UebertragUmschlagSeiteState extends State<UebertragUmschlagSeite> {
+  List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
 
-  String _deutschesDatum(DateTime zeit) =>
-      TagesabschlussFormatierung.deutschesDatum(zeit);
+  @override
+  void initState() {
+    super.initState();
+    TerminalIdsConfigService.ladeTerminals(widget.abschluss.kinoId).then((
+      List<TerminalEintrag> terminals,
+    ) {
+      if (mounted) setState(() => _terminals = terminals);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final int differenzCent = abschluss.differenzGesamtCent;
-    final Color differenzFarbe =
-        differenzCent >= 0 ? Colors.green.shade700 : Colors.red.shade700;
-    final bool hatBistro =
-        KinoRepository.nachId(abschluss.kinoId)?.hatBistro ?? true;
+    final TagesabschlussFinal abschluss = widget.abschluss;
 
     return TagesabschlussScaffold(
       backgroundColor: AppFarben.seitenHintergrund,
@@ -58,7 +64,7 @@ class UebertragUmschlagSeite extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  _deutschesDatum(abschluss.datum),
+                  TagesabschlussFormatierung.deutschesDatum(abschluss.datum),
                   style: GoogleFonts.caveat(
                     fontSize: 26,
                     fontWeight: FontWeight.w500,
@@ -68,104 +74,17 @@ class UebertragUmschlagSeite extends StatelessWidget {
               ],
             ),
           ),
-          // Rahmen 1 – Differenz Anfangsbestand
-          Card(
-            margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: <Widget>[
-                  InfoZeile(
-                    label: 'Differenz Anfangsbestand',
-                    wert: _euro(abschluss.differenzAnfangsbestandCent),
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                ],
+          for (final List<Widget> zeilen in UebertragUmschlagInhalt.rahmen(
+            abschluss,
+            _terminals,
+          ))
+            Card(
+              margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(children: zeilen),
               ),
             ),
-          ),
-          // Rahmen 2 – SOLL
-          Card(
-            margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: <Widget>[
-                  InfoZeile(
-                    label: hatBistro ? '+ Kino Soll' : '+ Gesamt SOLL',
-                    wert: _euro(abschluss.kinoSollUebertragCent),
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                  if (abschluss.kinokasseKarteCent != 0)
-                    KinokasseKarteHinweis(
-                      kinokasseKarteCent: abschluss.kinokasseKarteCent,
-                    ),
-                  if (hatBistro)
-                    InfoZeile(
-                      label: '+ Bistro Soll',
-                      wert: _euro(abschluss.bistroSollCent),
-                      stil: InfoZeileStil.fuehrungslinie,
-                    ),
-                  InfoZeile(
-                    label: '- Ausgaben',
-                    wert: _euro(abschluss.ausgabenCent),
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                  InfoZeile(
-                    label: '= Gesamt Soll',
-                    wert: _euro(abschluss.gesamtSollCent),
-                    fett: true,
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Rahmen 3 – IST
-          Card(
-            margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: <Widget>[
-                  InfoZeile(
-                    label: '+ EC IST',
-                    wert: _euro(abschluss.ecUmsatzGesamtCent),
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                  InfoZeile(
-                    label: '+ bar IST',
-                    wert: _euro(abschluss.barBestandAbzglWechselgeldCent),
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                  InfoZeile(
-                    label: '= Gesamt IST',
-                    wert: _euro(abschluss.gesamtIstCent),
-                    fett: true,
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Rahmen 4 – Differenz
-          Card(
-            margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: <Widget>[
-                  InfoZeile(
-                    label: 'Differenz\nKassenabrechnung',
-                    wert: _euroMitVorzeichen(differenzCent),
-                    fett: true,
-                    farbe: differenzFarbe,
-                    stil: InfoZeileStil.fuehrungslinie,
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

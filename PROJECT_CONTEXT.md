@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.143+488 · Run 488
+Version: 0.9.144+489 · Run 489
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 488)
+## Laufender Entwicklungsstand (Run 489)
+
+- Run 489 SB-Umschlag-Layout (EC1–EC3 nach TID-Platz, Name, Datum) auf
+  Übertrag-Seite und Verlauf-Kachel, gemeinsame Quelle
+  `UebertragUmschlagInhalt`. Andere Standorte unverändert.
 
 - Run 488 TIDs pro Gerät in den Einstellungen (Kachel "TIDs": Nr.,
   TID, KK-Häkchen), config/terminal_ids.json entfernt. Ohne
