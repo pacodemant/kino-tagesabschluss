@@ -402,6 +402,12 @@ class _TagesabschlussSchritt1SeiteState
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
         gespeicherteDaten: gespeicherteDaten,
       );
+      // Run 491b: Testdaten enthalten Kupfermünzen -> Bereich einblenden.
+      if (StueckelungKonfiguration.kupferMuenzenIds.any(
+        (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
+      )) {
+        _kupferLoseSichtbar = true;
+      }
     });
     await _speichereEntwurf();
   }

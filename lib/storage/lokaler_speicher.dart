@@ -592,13 +592,13 @@ class LokalerSpeicher {
           'stueckzahlen': <String, dynamic>{
             'note_100': 0, 'note_50': 8, 'note_20': 7, 'note_10': 30,
             'note_5': 14,
-            'roll_2e': 1, 'roll_1e': 1, 'roll_50c': 1, 'roll_20c': 0,
+            'roll_2e': 1, 'roll_1e': 1, 'roll_50c': 1, 'roll_20c': 1,
             'roll_10c': 1, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
           },
           'loseMuenzenNachArtCent': <String, dynamic>{
             'coin_2e': 1400, 'coin_1e': 1800, 'coin_50c': 700,
             'coin_20c': 680, 'coin_10c': 290,
-            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+            'coin_5c': 150, 'coin_2c': 80, 'coin_1c': 30,
           },
           'umschlaege': <dynamic>[
             <String, dynamic>{'label': '', 'amountCents': 0},
@@ -617,7 +617,7 @@ class LokalerSpeicher {
           'loseMuenzenNachArtCent': <String, dynamic>{
             'coin_2e': 2200, 'coin_1e': 2900, 'coin_50c': 1550,
             'coin_20c': 360, 'coin_10c': 390,
-            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+            'coin_5c': 150, 'coin_2c': 80, 'coin_1c': 30,
           },
           'umschlaege': <dynamic>[
             <String, dynamic>{'label': '', 'amountCents': 0},
@@ -630,13 +630,13 @@ class LokalerSpeicher {
           'stueckzahlen': <String, dynamic>{
             'note_100': 1, 'note_50': 13, 'note_20': 17, 'note_10': 65,
             'note_5': 20,
-            'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 0, 'roll_20c': 0,
-            'roll_10c': 0, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
+            'roll_2e': 5, 'roll_1e': 8, 'roll_50c': 1, 'roll_20c': 1,
+            'roll_10c': 1, 'roll_5c': 0, 'roll_2c': 0, 'roll_1c': 0,
           },
           'loseMuenzenNachArtCent': <String, dynamic>{
             'coin_2e': 6400, 'coin_1e': 5400, 'coin_50c': 1900,
             'coin_20c': 1340, 'coin_10c': 390,
-            'coin_5c': 0, 'coin_2c': 0, 'coin_1c': 0,
+            'coin_5c': 150, 'coin_2c': 80, 'coin_1c': 30,
           },
           'umschlaege': <dynamic>[
             <String, dynamic>{'label': 'Couverts', 'amountCents': 380},
@@ -673,7 +673,7 @@ class LokalerSpeicher {
       case 'kino_03':
         return <String, dynamic>{
           'kinoSollCent': 69000,
-          'bistroSollCent': 24930,
+          'bistroSollCent': 25990, // +10,60 Rolle/Kupfer (491b)
           'ausgabenCent': 0,
           'ecBelegCent': 38160,
           'differenzAnfangsbestandCent': 0,
@@ -682,7 +682,7 @@ class LokalerSpeicher {
         };
       case 'kino_04':
         return <String, dynamic>{
-          'kinoSollCent': 22350,
+          'kinoSollCent': 22610, // +2,60 Kupfer (491b)
           'bistroSollCent': 0,
           'ausgabenCent': 0,
           'ecBelegCent': 7750,
@@ -693,7 +693,7 @@ class LokalerSpeicher {
       default:
         return <String, dynamic>{
           'kinoSollCent': 110000,
-          'bistroSollCent': 52630,
+          'bistroSollCent': 56090, // +34,60 Rollen/Kupfer (491b)
           'ausgabenCent': 0,
           'ecBelegCent': 57820,
           'differenzAnfangsbestandCent': 0,

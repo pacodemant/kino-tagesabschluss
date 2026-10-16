@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 491b: Dev-Testdaten Schritt 1 vollständiger: kleine Rollen (50/20/
+  10 ct) und Kupfermünzen (5 ct 1,50 €, 2 ct 0,80 €, 1 ct 0,30 € =
+  2,60 €, durch 10 ct teilbar) befüllt, Kupfer-Bereich wird beim
+  Auto-Fill eingeblendet -> kein Dialog "Eingaben unvollständig" mehr.
+  Mehrbetrag im Soll ausgeglichen (SB/GO/BT Bistro +34,60, AT Bistro
+  +10,60, CO Kino +2,60), Kasse geht weiter auf. Beide Kopien der
+  Testwerte (einstellungen_seite.dart, lokaler_speicher.dart). Geräte
+  mit gespeicherten Dev-Werten: "Standard-Testwerte übernehmen".
+  Im Browser geprüft (SB: Differenz 0,00 €).
+
 - Run 491a: EC-Belege in Schritt 2 von Beleg 1 an oben (vorher neuester
   oben), also Platz 1 der Kachel "TIDs" zuerst — bewusst nicht nach
   Geräte-Nr. sortiert (Zuordnung Nr. -> Gerät steht noch nicht fest;
