@@ -17,6 +17,11 @@ class ApiUploadService {
 
   static const String apiUploadUrlPrefKey = 'api_upload_url';
 
+  /// Upload-URL je Umgebung (Run 493a): Sandbox = bisheriger Key
+  /// [apiUploadUrlPrefKey], Live = eigener Key, ohne Code-Fallback.
+  static String uploadUrlPrefKey({required bool live}) =>
+      live ? 'api_upload_url_live' : apiUploadUrlPrefKey;
+
   /// Einzige Quelle fuer den SharedPreferences-Key der Flurbocash-
   /// Location-ID eines Kinos (seit Run 421 zentralisiert, vorher an
   /// mehreren Stellen als rohes String-Literal dupliziert).
@@ -388,16 +393,18 @@ class ApiUploadService {
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
 
-    final String baseUrl = speicher.getString(apiUploadUrlPrefKey) ?? '';
+    final bool live = speicher.getBool(liveModusPrefKey) ?? false;
+    final String baseUrl =
+        speicher.getString(uploadUrlPrefKey(live: live)) ?? '';
     if (baseUrl.isEmpty) {
       throw Exception(
-        'Keine Flurbocash-URL konfiguriert. Bitte Upload-URL in den Einstellungen eintragen.',
+        'Keine Flurbocash-URL (${live ? 'Livesystem' : 'Sandbox'}) '
+        'konfiguriert. Bitte Upload-URL in den Einstellungen eintragen.',
       );
     }
 
     final int? locationId = await ladeLocationId(kinoId);
     if (locationId == null) {
-      final bool live = await ladeLiveModus();
       final String name = KinoRepository.nachId(kinoId)?.name ?? kinoId;
       throw Exception(
         'Keine Flurbocash-location_id für $name '

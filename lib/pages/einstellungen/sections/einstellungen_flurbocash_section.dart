@@ -75,8 +75,10 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
                 children: <Widget>[
                   TextField(
                     controller: apiUploadUrlController,
-                    decoration: const InputDecoration(
-                      labelText: 'Upload-URL',
+                    decoration: InputDecoration(
+                      labelText: flurbocashLive
+                          ? 'Upload-URL (Live)'
+                          : 'Upload-URL (Sandbox)',
                       hintText: 'https://...',
                       isDense: true,
                     ),

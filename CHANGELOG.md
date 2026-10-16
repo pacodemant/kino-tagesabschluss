@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 493a: Schalter "Livesystem" wählt auch die Flurbocash-Upload-URL
+  (Sandbox: bisheriger Key `api_upload_url`, Live: neuer Key
+  `api_upload_url_live`, ohne Code-Fallback, derzeit leer). Feld heißt
+  "Upload-URL (Sandbox)"/"(Live)" und wechselt beim Umschalten den
+  Inhalt. Fehlermeldung nennt die Umgebung. Unit-Test.
+
 - Run 493: Flurbocash-location_id fest im Kino-Modell, getrennt nach
   Sandbox/Live (`Kino.fcLocationIdSandbox`/`fcLocationIdLive`; Sandbox
   SB 1, AT 3, BT 4, GO 5, CO 6; Live GO 3, CO 5, SB/AT/BT noch offen).

@@ -237,13 +237,15 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
       _getraenkeController.add(TextEditingController(text: name));
     }
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final String apiUploadUrl =
-        speicher.getString(ApiUploadService.apiUploadUrlPrefKey) ?? '';
     final String belegScanUrl =
         speicher.getString(BelegScanService.belegScanUrlPrefKey) ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
     final bool flurbocashLive = await ApiUploadService.ladeLiveModus();
+    final String apiUploadUrl = speicher.getString(
+          ApiUploadService.uploadUrlPrefKey(live: flurbocashLive),
+        ) ??
+        '';
     final String? overrideLocationId = speicher.getString(
       ApiUploadService.locationIdPrefKey(_aktiveKinoId, live: flurbocashLive),
     );
@@ -369,7 +371,12 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
     final String? override = speicher.getString(
       ApiUploadService.locationIdPrefKey(_aktiveKinoId, live: live),
     );
+    final String url = speicher.getString(
+          ApiUploadService.uploadUrlPrefKey(live: live),
+        ) ??
+        '';
     if (!mounted) return;
+    _apiUploadUrlCtrl.text = url;
     _locationIdCtrl.text = override ?? '';
     setState(() => _flurbocashLive = live);
   }
@@ -377,7 +384,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   Future<void> _speichereApiUploadKonfig() async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     await speicher.setString(
-      ApiUploadService.apiUploadUrlPrefKey,
+      ApiUploadService.uploadUrlPrefKey(live: _flurbocashLive),
       _apiUploadUrlCtrl.text.trim(),
     );
   }

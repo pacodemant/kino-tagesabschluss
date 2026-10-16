@@ -562,6 +562,48 @@ void main() {
       expect(await ApiUploadService.ladeLocationId('kino_01'), 7);
     });
 
+    test('Live ohne Live-URL: Upload bricht vor dem Netzwerk ab (493a)',
+        () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        ApiUploadService.apiUploadUrlPrefKey: 'https://sandbox.example',
+        ApiUploadService.liveModusPrefKey: true,
+      });
+      expect(ApiUploadService.uploadUrlPrefKey(live: false), 'api_upload_url');
+      expect(
+        ApiUploadService.uploadUrlPrefKey(live: true),
+        'api_upload_url_live',
+      );
+      await expectLater(
+        ApiUploadService.upload(
+          TagesabschlussFinal(
+            kinoId: 'kino_04',
+            kinoName: 'Cinema Ostertor',
+            datum: DateTime(2026, 10, 16),
+            createdAt: DateTime(2026, 10, 16, 23, 0),
+            scheineCent: 0,
+            loseMuenzenCent: 0,
+            rollenCent: 0,
+            umschlaegeCent: 0,
+            kassenbestandGesamtCent: 0,
+            wechselgeldSollwertCent: 0,
+            barBestandAbzglWechselgeldCent: 0,
+            kinoSollCent: 0,
+            bistroSollCent: 0,
+            ausgabenCent: 0,
+            ecBelegeCent: const <int>[],
+            ecUmsatzGesamtCent: 0,
+            gesamtSollCent: 0,
+            gesamtIstCent: 0,
+            differenzGesamtCent: 0,
+            differenzAnfangsbestandCent: 0,
+          ),
+        ),
+        throwsA(
+          predicate((Object e) => e.toString().contains('Livesystem')),
+        ),
+      );
+    });
+
     test('ohne Schalter gilt Sandbox', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
       expect(await ApiUploadService.ladeLiveModus(), isFalse);
