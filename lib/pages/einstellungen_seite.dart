@@ -241,7 +241,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
         speicher.getString(BelegScanService.belegScanUrlPrefKey) ?? '';
     final String anthropicApiKey =
         speicher.getString('anthropic_api_key') ?? '';
-    final bool flurbocashLive = await ApiUploadService.ladeLiveModus();
+    final bool flurbocashLive = await ApiUploadService.ladeLiveModus(_aktiveKinoId);
     final String apiUploadUrl = speicher.getString(
           ApiUploadService.uploadUrlPrefKey(live: flurbocashLive),
         ) ??
@@ -366,7 +366,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
   }
 
   Future<void> _onFlurbocashLiveGeaendert(bool live) async {
-    await ApiUploadService.speichereLiveModus(live);
+    await ApiUploadService.speichereLiveModus(_aktiveKinoId, live);
     final SharedPreferences speicher = await SharedPreferences.getInstance();
     final String? override = speicher.getString(
       ApiUploadService.locationIdPrefKey(_aktiveKinoId, live: live),

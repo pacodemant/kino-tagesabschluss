@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.148+493 · Run 493a
+Version: 0.9.148+493 · Run 493b
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -166,7 +166,8 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 - Run 493 FC-location_id im Kino-Modell (Sandbox/Live getrennt),
   Admin-Schalter "Livesystem", Einstellungsfeld = Override je Umgebung,
   ohne ID kein Versand. Live-IDs SB/AT/BT noch offen. 493a: Schalter
-  wählt auch die Upload-URL (Live-URL noch leer).
+  wählt auch die Upload-URL (Live-URL noch leer). 493b: Schalter je
+  Kino (Umstieg erfolgt standortweise).
 
 - Run 492 Alle eingetragenen Terminals Pflicht: Betrag oder "heute
   keine Umsätze"; letztere gehen mit 0 € + "no_sales" an Flurbocash.

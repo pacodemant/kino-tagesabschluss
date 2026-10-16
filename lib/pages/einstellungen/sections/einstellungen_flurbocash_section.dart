@@ -9,6 +9,7 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
     required this.onApiUploadGeaendert,
     required this.apiUploadUrlController,
     required this.onApiUploadUrlGeaendert,
+    required this.kinoKuerzel,
     required this.flurbocashLive,
     required this.onFlurbocashLiveGeaendert,
     required this.locationIdStandard,
@@ -25,7 +26,9 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
   final TextEditingController apiUploadUrlController;
   final VoidCallback onApiUploadUrlGeaendert;
 
-  /// Run 493: Sandbox (aus) oder Livesystem (an). Wählt die
+  final String kinoKuerzel;
+
+  /// Run 493: Sandbox (aus) oder Livesystem (an), seit 493b je Kino. Wählt die
   /// Standard-location_id aus dem Kino-Modell und den passenden Override.
   final bool flurbocashLive;
   final ValueChanged<bool> onFlurbocashLiveGeaendert;
@@ -57,7 +60,7 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
           if (apiUploadAktiv) ...<Widget>[
             const Divider(height: 1),
             SwitchListTile(
-              title: const Text('Livesystem'),
+              title: Text('Livesystem ($kinoKuerzel)'),
               subtitle: Text(
                 flurbocashLive
                     ? 'Abrechnungen gehen an das echte Flurbocash'

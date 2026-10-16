@@ -90,6 +90,7 @@ class EinstellungenGruppenOrchestrierung {
         onApiUploadGeaendert: onApiUploadGeaendert,
         apiUploadUrlController: apiUploadUrlController,
         onApiUploadUrlGeaendert: onApiUploadUrlGeaendert,
+        kinoKuerzel: kinoKuerzel,
         flurbocashLive: flurbocashLive,
         onFlurbocashLiveGeaendert: onFlurbocashLiveGeaendert,
         locationIdStandard: locationIdStandard,

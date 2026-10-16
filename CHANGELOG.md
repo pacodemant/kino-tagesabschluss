@@ -9,6 +9,12 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 493b: Schalter "Livesystem" je Kino statt geräteweit (Key
+  `flurbocash_live_modus_<kinoId>`, ersetzt den erst in Run 493
+  eingeführten `flurbocash_live_modus`), da der Umstieg laut Yannik je
+  Standort erfolgt. Titel zeigt das Kürzel, z. B. "Livesystem (CO)".
+  Wirkt auf Upload-URL und location_id. Unit-Tests angepasst/ergänzt.
+
 - Run 493a: Schalter "Livesystem" wählt auch die Flurbocash-Upload-URL
   (Sandbox: bisheriger Key `api_upload_url`, Live: neuer Key
   `api_upload_url_live`, ohne Code-Fallback, derzeit leer). Feld heißt

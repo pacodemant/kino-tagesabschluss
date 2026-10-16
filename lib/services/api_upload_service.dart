@@ -33,19 +33,21 @@ class ApiUploadService {
       ? 'flurbocash_location_id_live_$kinoId'
       : 'flurbocash_location_id_$kinoId';
 
-  /// Geräteweiter Schalter "Flurbocash-Livesystem" (Run 493, Standard aus
-  /// = Sandbox). Bestimmt, welche location_id aus dem Kino-Modell bzw.
-  /// welcher Override verwendet wird.
-  static const String liveModusPrefKey = 'flurbocash_live_modus';
+  /// Schalter "Flurbocash-Livesystem" je Kino (Run 493, seit 493b pro
+  /// Standort statt geräteweit, weil der Umstieg laut Yannik je Standort
+  /// erfolgt; Standard aus = Sandbox). Bestimmt Upload-URL, location_id
+  /// aus dem Kino-Modell und den verwendeten Override.
+  static String liveModusPrefKey(String kinoId) =>
+      'flurbocash_live_modus_$kinoId';
 
-  static Future<bool> ladeLiveModus() async {
+  static Future<bool> ladeLiveModus(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    return speicher.getBool(liveModusPrefKey) ?? false;
+    return speicher.getBool(liveModusPrefKey(kinoId)) ?? false;
   }
 
-  static Future<void> speichereLiveModus(bool live) async {
+  static Future<void> speichereLiveModus(String kinoId, bool live) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    await speicher.setBool(liveModusPrefKey, live);
+    await speicher.setBool(liveModusPrefKey(kinoId), live);
   }
 
   /// Standard-location_id eines Kinos aus dem Modell für die Umgebung.
@@ -69,7 +71,7 @@ class ApiUploadService {
   /// Aktuell gültige location_id für [kinoId] (null = keine bekannt).
   static Future<int?> ladeLocationId(String kinoId) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
-    final bool live = speicher.getBool(liveModusPrefKey) ?? false;
+    final bool live = speicher.getBool(liveModusPrefKey(kinoId)) ?? false;
     return loeseLocationIdAuf(
       override: speicher.getString(locationIdPrefKey(kinoId, live: live)),
       kino: KinoRepository.nachId(kinoId),
@@ -393,7 +395,7 @@ class ApiUploadService {
   ) async {
     final SharedPreferences speicher = await SharedPreferences.getInstance();
 
-    final bool live = speicher.getBool(liveModusPrefKey) ?? false;
+    final bool live = speicher.getBool(liveModusPrefKey(kinoId)) ?? false;
     final String baseUrl =
         speicher.getString(uploadUrlPrefKey(live: live)) ?? '';
     if (baseUrl.isEmpty) {

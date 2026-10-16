@@ -549,7 +549,8 @@ void main() {
     test('Sandbox-Override wirkt im Livemodus nicht', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{
         'flurbocash_location_id_kino_01': '1',
-        ApiUploadService.liveModusPrefKey: true,
+        ApiUploadService.liveModusPrefKey('kino_01'): true,
+        ApiUploadService.liveModusPrefKey('kino_04'): true,
       });
       expect(await ApiUploadService.ladeLocationId('kino_01'), isNull);
       expect(await ApiUploadService.ladeLocationId('kino_04'), 5);
@@ -557,7 +558,7 @@ void main() {
       SharedPreferences.setMockInitialValues(<String, Object>{
         'flurbocash_location_id_kino_01': '1',
         'flurbocash_location_id_live_kino_01': '7',
-        ApiUploadService.liveModusPrefKey: true,
+        ApiUploadService.liveModusPrefKey('kino_01'): true,
       });
       expect(await ApiUploadService.ladeLocationId('kino_01'), 7);
     });
@@ -566,7 +567,7 @@ void main() {
         () async {
       SharedPreferences.setMockInitialValues(<String, Object>{
         ApiUploadService.apiUploadUrlPrefKey: 'https://sandbox.example',
-        ApiUploadService.liveModusPrefKey: true,
+        ApiUploadService.liveModusPrefKey('kino_04'): true,
       });
       expect(ApiUploadService.uploadUrlPrefKey(live: false), 'api_upload_url');
       expect(
@@ -604,9 +605,20 @@ void main() {
       );
     });
 
+    test('Schalter gilt je Kino (493b): CO live, GO bleibt Sandbox',
+        () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        ApiUploadService.liveModusPrefKey('kino_04'): true,
+      });
+      expect(await ApiUploadService.ladeLiveModus('kino_04'), isTrue);
+      expect(await ApiUploadService.ladeLiveModus('kino_02'), isFalse);
+      expect(await ApiUploadService.ladeLocationId('kino_04'), 5); // Live
+      expect(await ApiUploadService.ladeLocationId('kino_02'), 5); // Sandbox
+    });
+
     test('ohne Schalter gilt Sandbox', () async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
-      expect(await ApiUploadService.ladeLiveModus(), isFalse);
+      expect(await ApiUploadService.ladeLiveModus('kino_04'), isFalse);
       expect(await ApiUploadService.ladeLocationId('kino_04'), 6);
     });
   });
