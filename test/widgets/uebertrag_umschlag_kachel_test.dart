@@ -78,7 +78,7 @@ void main() {
         findsOneWidget,
       ); // Kino SOLL inkl. Kinokasse
       expect(find.text('Kim'), findsOneWidget);
-      expect(find.text('15.10.2026'), findsOneWidget);
+      expect(find.text('Datum'), findsNothing); // Run 492b
     },
   );
 
@@ -143,8 +143,8 @@ void main() {
       expect(find.text('+ EC2 IST'), findsOneWidget);
       expect(find.textContaining('TID'), findsNothing);
 
-      await tester.scrollUntilVisible(find.text('Datum'), 100);
-      expect(find.text('20.09.2026'), findsNWidgets(2)); // AppBar + Kachel
+      await tester.scrollUntilVisible(find.text('Differenz'), 100);
+      expect(find.text('Datum'), findsNothing); // Run 492b
       expect(find.text('Name'), findsNothing);
       expect(tester.takeException(), isNull);
     },

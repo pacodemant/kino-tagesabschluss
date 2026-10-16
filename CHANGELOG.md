@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 492b: Zeile "Datum" im SB-Umschlag-Inhalt entfernt (steht schon im
+  Kopf der Übertrag-Seite/Schritt 3 bzw. in der Verlauf-Titelleiste).
+  Name-Rahmen nur noch, wenn ein Name vorhanden ist. Tests angepasst.
+
 - Run 492a: Dev-Auto-Fill mit realistischeren Belegen: EC-Testsumme
   nach Gewichten 9:5:3(:2) auf die Terminals verteilt (SB: 306,12 /
   170,05 / 102,03 € statt 3x ~192,7 €) und je Beleg ein anderer

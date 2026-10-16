@@ -121,7 +121,8 @@ void main() {
     expect(find.text('+ KINO SOLL'), findsOneWidget);
     expect(find.text('+ EC1 IST'), findsOneWidget);
     expect(find.text('Gerät 1 · TID 60561994'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('Datum'), 200);
+    await tester.scrollUntilVisible(find.text('Name'), 200);
+    expect(find.text('Datum'), findsNothing); // seit Run 492b nur im Kopf
     expect(find.text('Name'), findsOneWidget);
     expect(find.text('Kim'), findsOneWidget);
   });

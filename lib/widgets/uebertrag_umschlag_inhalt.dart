@@ -215,10 +215,8 @@ class UebertragUmschlagInhalt {
         _zeile('= Gesamt IST', _euro(a.gesamtIstCent), fett: true),
       ],
       <Widget>[differenz],
-      <Widget>[
-        if (name != null) _zeile('Name', name),
-        _zeile('Datum', TagesabschlussFormatierung.deutschesDatum(a.datum)),
-      ],
+      // Datum steht schon im Kopf bzw. in der Titelleiste (Run 492b).
+      if (name != null) <Widget>[_zeile('Name', name)],
     ];
   }
 }
