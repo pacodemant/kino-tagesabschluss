@@ -181,10 +181,6 @@ class _TagesabschlussSchritt2SeiteState
   int _bistroSollCent = 0;
   int _differenzAnfangsbestandCent = 0;
   final List<int> _ecBelegeCent = <int>[];
-  bool _personalgetraenkeGebot = false;
-  // Rot hervorheben, sobald "Weiter" wegen der offenen Personalgetraenke-
-  // Kachel geblockt wurde (nicht persistiert).
-  bool _personalgetraenkeHinweisAktiv = false;
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
   int? _scanBelegIndex;
@@ -193,9 +189,8 @@ class _TagesabschlussSchritt2SeiteState
   /// Ob widget.kinoId ein eigenes Bistro-SOLL hat (seit Run 424 aus
   /// Kino.hatBistro; vorher als kinoId=='kino_04'-Vergleich an 4
   /// Stellen in dieser Datei dupliziert). Betrifft NUR das Bistro-SOLL
-  /// -Feld — die Personalgetraenke-Kachel weiter unten ist eine
-  /// eigene, seit Run 372a bewusst separate Regel fuer kino_04 und
-  /// bleibt unveraendert.
+  /// -Feld (die Personalgetraenke-Kachel steht seit Run 492d in
+  /// Schritt 1).
   bool get _hatBistro => KinoRepository.nachId(widget.kinoId)?.hatBistro ?? true;
   bool _validierungAusgeloest = false;
   bool _kinoSollBeruehrt = false;
@@ -669,7 +664,6 @@ class _TagesabschlussSchritt2SeiteState
           ecBelegeLabelsListe[0].isNotEmpty) {
         _ecKachelAufgeklappt = true;
       }
-      _personalgetraenkeGebot = (daten['personalgetraenkeGebot'] as bool?) ?? false;
       _keineUmsaetzeTids
         ..clear()
         ..addAll(
@@ -817,7 +811,6 @@ class _TagesabschlussSchritt2SeiteState
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
         'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
-        'personalgetraenkeGebot': _personalgetraenkeGebot,
         'keineUmsaetzeTids': _keineUmsaetzeTids.toList(),
         Schritt2ZahlungsartEntwurf.entwurfKey:
             Schritt2ZahlungsartEntwurf.zumSpeichern(_zahlungsartZeilen),
@@ -888,14 +881,6 @@ class _TagesabschlussSchritt2SeiteState
   void _weitererBelegLinkGedrueckt() {
     setState(() => _ecKachelAufgeklappt = true);
     _ecBelegHinzufuegen();
-  }
-
-  void _beiPersonalgetraenkeGeaendert(bool? v) {
-    setState(() {
-      _personalgetraenkeGebot = v ?? false;
-      if (_personalgetraenkeGebot) _personalgetraenkeHinweisAktiv = false;
-    });
-    _speichereEntwurf();
   }
 
   String _kopfDatumUhrzeit() {
@@ -1517,8 +1502,6 @@ class _TagesabschlussSchritt2SeiteState
       _kinoSollCent = kinoSoll;
       _bistroSollCent = bistroSoll;
       _differenzAnfangsbestandCent = differenz;
-      _personalgetraenkeGebot = true;
-      _personalgetraenkeHinweisAktiv = false;
 
       _setzeEcBelegAnzahl(anteile.length);
       for (int i = 0; i < anteile.length; i++) {
@@ -2921,9 +2904,6 @@ class _TagesabschlussSchritt2SeiteState
         _gruppenOrchestrierung.baueSections(
       kinoName: widget.kinoName,
       kopfDatumUhrzeit: _kopfDatumUhrzeit(),
-      personalgetraenkeGebot: _personalgetraenkeGebot,
-      personalgetraenkeHervorgehoben: _personalgetraenkeHinweisAktiv,
-      beiPersonalgetraenkeGeaendert: _beiPersonalgetraenkeGeaendert,
       differenzAnfangsbestandEingabeZeile: _baueEingabeZeile(
         label: 'Differenz im Anfangsbestand',
         controller: _differenzAnfangsbestandController,
@@ -3063,30 +3043,9 @@ class _TagesabschlussSchritt2SeiteState
             ],
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  if (widget.kinoId != 'kino_04' && !_personalgetraenkeGebot) {
-                    setState(() => _personalgetraenkeHinweisAktiv = true);
-                    if (_scrollController.hasClients) {
-                      _scrollController.animateTo(
-                        0,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOutCubic,
-                      );
-                    }
-                    zeigeHinweisSnackBar(
-                      context,
-                      'Personalgetränke gebont?',
-                    );
-                    return;
-                  }
-                  _weiterZuSchritt3();
-                },
-                style: (widget.kinoId == 'kino_04' || _personalgetraenkeGebot)
-                    ? AppFarben.footerButtonStyle
-                    : ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade600,
-                        foregroundColor: Colors.grey.shade300,
-                      ),
+                // Personalgetränke-Blockade seit Run 492d in Schritt 1.
+                onPressed: () => _weiterZuSchritt3(),
+                style: AppFarben.footerButtonStyle,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
@@ -3107,9 +3066,6 @@ class _TagesabschlussSchritt2SeiteState
         scrollController: _scrollController,
         devToolsBereich: devToolsBereich,
         kopfSection: sections.kopf,
-        personalgetraenkeSection: widget.kinoId == 'kino_04'
-            ? const SizedBox.shrink()
-            : sections.personalgetraenke,
         differenzAnfangsbestandSection: sections.differenzAnfangsbestand,
         kinoSollUndAusgabenBereich: sections.kinoSollUndAusgaben,
         ecBelegeBereich: ecBelegeBereich,

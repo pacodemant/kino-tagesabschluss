@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_differenz_anfangsbestand_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kino_soll_ausgaben_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_kopf_section.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_personalgetraenke_section.dart';
 
 // Zweck: Kapselt den Gruppen-/Wrapper-Aufbau fuer Schritt 2, analog zu
 // schritt1_gruppen_orchestrierung.dart. Wird in den naechsten Sub-Runs
@@ -13,9 +12,6 @@ class Schritt2GruppenOrchestrierung {
   Schritt2SectionWidgets baueSections({
     required String kinoName,
     required String kopfDatumUhrzeit,
-    required bool personalgetraenkeGebot,
-    required bool personalgetraenkeHervorgehoben,
-    required ValueChanged<bool?> beiPersonalgetraenkeGeaendert,
     required Widget differenzAnfangsbestandEingabeZeile,
     required VoidCallback vorzeichenToggleDifferenz,
     required Widget kinoSollEingabeZeile,
@@ -38,11 +34,6 @@ class Schritt2GruppenOrchestrierung {
       kopf: Schritt2KopfSection(
         kinoName: kinoName,
         datumUhrzeit: kopfDatumUhrzeit,
-      ),
-      personalgetraenke: Schritt2PersonalgetraenkeSection(
-        gebont: personalgetraenkeGebot,
-        hervorgehoben: personalgetraenkeHervorgehoben,
-        onChanged: beiPersonalgetraenkeGeaendert,
       ),
       differenzAnfangsbestand: Schritt2DifferenzAnfangsbestandSection(
         eingabeZeile: differenzAnfangsbestandEingabeZeile,
@@ -72,13 +63,11 @@ class Schritt2GruppenOrchestrierung {
 class Schritt2SectionWidgets {
   const Schritt2SectionWidgets({
     required this.kopf,
-    required this.personalgetraenke,
     required this.differenzAnfangsbestand,
     required this.kinoSollUndAusgaben,
   });
 
   final Widget kopf;
-  final Widget personalgetraenke;
   final Widget differenzAnfangsbestand;
   final Widget kinoSollUndAusgaben;
 }

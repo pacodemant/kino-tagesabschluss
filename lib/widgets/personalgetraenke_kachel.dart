@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
-class Schritt2PersonalgetraenkeSection extends StatelessWidget {
-  const Schritt2PersonalgetraenkeSection({
+/// Kachel "Personalgetränke gebont? / Artikel gestundet? / Kellner-
+/// portemonnaie" — seit Run 492d als erste Kachel auf der Bargeld-Seite
+/// (Schritt 1, vorher Schritt 2), blockiert dort "Umsätze eingeben"
+/// bis abgehakt. Nicht bei CO (Run 372a).
+class PersonalgetraenkeKachel extends StatelessWidget {
+  const PersonalgetraenkeKachel({
     super.key,
     required this.gebont,
     required this.onChanged,

@@ -16,6 +16,7 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_wec
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
+import 'package:kino_bar_app/widgets/personalgetraenke_kachel.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
@@ -118,11 +119,26 @@ class _TagesabschlussSchritt1SeiteState
   bool _scheineAufgeklappt = true;
   bool _loseMuenzenAufgeklappt = false;
   bool _rollenAufgeklappt = false;
-  bool _kupferLoseSichtbar = false;
   bool _umschlaegeAufgeklappt = false;
   bool _devToolsOffen = false;
   bool _devModusAktiv = false;
   final ScrollController _scrollController = ScrollController();
+
+  // Personalgetränke-Kachel (seit Run 492d hier statt in Schritt 2):
+  // blockiert "Umsätze eingeben", bis abgehakt. Nicht bei CO (Run 372a).
+  bool _personalgetraenkeGebot = false;
+  // Rot hervorheben, sobald "Umsätze eingeben" deswegen geblockt wurde
+  // (nicht persistiert).
+  bool _personalgetraenkeHinweisAktiv = false;
+  bool get _zeigePersonalgetraenke => widget.kinoId != 'kino_04';
+
+  void _beiPersonalgetraenkeGeaendert(bool? v) {
+    setState(() {
+      _personalgetraenkeGebot = v ?? false;
+      if (_personalgetraenkeGebot) _personalgetraenkeHinweisAktiv = false;
+    });
+    _speichereEntwurf();
+  }
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
   final Set<FocusNode> _rotHervorgehoben = <FocusNode>{};
@@ -262,6 +278,8 @@ class _TagesabschlussSchritt1SeiteState
     }
 
     if (abrechnungDaten != null) {
+      _personalgetraenkeGebot =
+          (abrechnungDaten['personalgetraenkeGebot'] as bool?) ?? false;
       final Object? stueckzahlenRoh = abrechnungDaten['stueckzahlen'];
       if (stueckzahlenRoh is Map<String, dynamic>) {
         for (final MapEntry<String, dynamic> e in stueckzahlenRoh.entries) {
@@ -311,7 +329,6 @@ class _TagesabschlussSchritt1SeiteState
       _wechselgeldSollwertCent = wechselgeld;
       _laedt = false;
       if (hatKupferLoseWerte) {
-        _kupferLoseSichtbar = true;
         _loseMuenzenAufgeklappt = true;
       }
       _wechselgeldEntnahmeAktiv = WechselgeldentnahmeRegeln.aktivAusEntwurf(
@@ -402,12 +419,8 @@ class _TagesabschlussSchritt1SeiteState
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
         gespeicherteDaten: gespeicherteDaten,
       );
-      // Run 491b: Testdaten enthalten Kupfermünzen -> Bereich einblenden.
-      if (StueckelungKonfiguration.kupferMuenzenIds.any(
-        (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
-      )) {
-        _kupferLoseSichtbar = true;
-      }
+      _personalgetraenkeGebot = true;
+      _personalgetraenkeHinweisAktiv = false;
     });
     await _speichereEntwurf();
   }
@@ -443,6 +456,7 @@ class _TagesabschlussSchritt1SeiteState
       'wechselgeldEntnahmeCent': _wechselgeldEntnahmeCent,
       'wechselgeldEntnahmeGrund': _wechselgeldEntnahmeGrund,
       'barBestandCent': _barumsatzBereinigtCent,
+      'personalgetraenkeGebot': _personalgetraenkeGebot,
     });
   }
 
@@ -530,41 +544,6 @@ class _TagesabschlussSchritt1SeiteState
     await _speichereEntwurf();
   }
 
-  // Setzt die Sichtbarkeit der Kupfer-Rollen ohne Layout-/Logikaenderung.
-  void _zeigeKupferLose() {
-    setState(() {
-      _kupferLoseSichtbar = true;
-    });
-  }
-
-  /// Schalter "Kupfermünzen" aus: Werte werden gelöscht, mit Rückfrage nur,
-  /// wenn schon Kupfermünzen eingetragen sind (Run 471).
-  Future<void> _entferneKupferLose() async {
-    final bool hatWerte = StueckelungKonfiguration.kupferMuenzenIds.any(
-      (String id) => (_loseMuenzenNachArtCent[id] ?? 0) > 0,
-    );
-    if (hatWerte) {
-      final bool? verwerfen = await zeigeBestaetigungsDialog(
-        context,
-        titel: 'Kupfermünzen verwerfen?',
-        inhalt: 'Die eingetragenen Kupfermünzen werden gelöscht.',
-        abbrechenText: 'Behalten',
-        bestaetigenText: 'Verwerfen',
-      );
-      if (verwerfen != true || !mounted) {
-        return;
-      }
-    }
-    setState(() {
-      _kupferLoseSichtbar = false;
-      for (final String id in StueckelungKonfiguration.kupferMuenzenIds) {
-        _loseMuenzenNachArtCent[id] = 0;
-        _loseMuenzenController[id]?.clear();
-      }
-    });
-    await _speichereEntwurf();
-  }
-
   int _parseCentZiffern(String wert) =>
       TagesabschlussBerechnung.parseCentZiffern(wert);
 
@@ -572,8 +551,7 @@ class _TagesabschlussSchritt1SeiteState
       _stateController.fokusReihenfolge(
         scheine: _scheine,
         stueckzahlFocusNode: _stueckzahlFocusNode,
-        loseMuenzarten:
-            _kupferLoseSichtbar ? _loseMuenzarten : _loseMuenzartenOhneKupfer,
+        loseMuenzarten: _loseMuenzarten,
         loseMuenzenFocusNode: _loseMuenzenFocusNode,
         rollenSichtbar: _rollenSichtbar,
         umschlaege: _umschlaege,
@@ -1072,9 +1050,7 @@ class _TagesabschlussSchritt1SeiteState
     final List<Kassenzeile> leereMuenzen = _loseMuenzarten
         .where(
           (Kassenzeile zeile) =>
-              _loseMuenzenController[zeile.id]!.text.isEmpty &&
-              (!StueckelungKonfiguration.kupferMuenzenIds.contains(zeile.id) ||
-                  _kupferLoseSichtbar),
+              _loseMuenzenController[zeile.id]!.text.isEmpty,
         )
         .toList();
 
@@ -1216,9 +1192,6 @@ class _TagesabschlussSchritt1SeiteState
       loseMuenzenAufgeklappt: _loseMuenzenAufgeklappt,
       rollenAufgeklappt: _rollenAufgeklappt,
       umschlaegeAufgeklappt: _umschlaegeAufgeklappt,
-      kupferLoseSichtbar: _kupferLoseSichtbar,
-      zeigeKupferLose: _zeigeKupferLose,
-      entferneKupferLose: _entferneKupferLose,
       stueckzahlen: _stueckzahlen,
       stueckzahlController: _stueckzahlController,
       stueckzahlFocusNode: _stueckzahlFocusNode,
@@ -1346,8 +1319,27 @@ class _TagesabschlussSchritt1SeiteState
             ],
             Expanded(
               child: ElevatedButton(
-                onPressed: _pruefeEingabenUndWeiterZuSchritt2,
-                style: AppFarben.footerButtonStyle,
+                onPressed: () {
+                  if (_zeigePersonalgetraenke && !_personalgetraenkeGebot) {
+                    setState(() => _personalgetraenkeHinweisAktiv = true);
+                    if (_scrollController.hasClients) {
+                      _scrollController.animateTo(
+                        0,
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOutCubic,
+                      );
+                    }
+                    zeigeHinweisSnackBar(context, 'Personalgetränke gebont?');
+                    return;
+                  }
+                  _pruefeEingabenUndWeiterZuSchritt2();
+                },
+                style: (!_zeigePersonalgetraenke || _personalgetraenkeGebot)
+                    ? AppFarben.footerButtonStyle
+                    : ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.grey.shade300,
+                      ),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
@@ -1369,6 +1361,16 @@ class _TagesabschlussSchritt1SeiteState
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
         devToolsPanel: _baueDevToolsPanel(),
+        personalgetraenkeSection: _zeigePersonalgetraenke
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: PersonalgetraenkeKachel(
+                  gebont: _personalgetraenkeGebot,
+                  hervorgehoben: _personalgetraenkeHinweisAktiv,
+                  onChanged: _beiPersonalgetraenkeGeaendert,
+                ),
+              )
+            : null,
         alleZuklappenLink: Align(
           alignment: Alignment.centerRight,
           child: TextButton(

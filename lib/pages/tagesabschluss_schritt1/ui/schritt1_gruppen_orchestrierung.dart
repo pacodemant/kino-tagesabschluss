@@ -23,9 +23,11 @@ class Schritt1GruppenOrchestrierung {
     required bool loseMuenzenAufgeklappt,
     required bool rollenAufgeklappt,
     required bool umschlaegeAufgeklappt,
-    required bool kupferLoseSichtbar,
-    required VoidCallback zeigeKupferLose,
-    required VoidCallback entferneKupferLose,
+    // Kupfer-Schalter nur für "Wechselgeld prüfen"; Bargeld-Seite zeigt
+    // Kupfer seit Run 492c immer (Parameter weglassen).
+    bool kupferLoseSichtbar = true,
+    VoidCallback? zeigeKupferLose,
+    VoidCallback? entferneKupferLose,
     required Map<String, int> stueckzahlen,
     required Map<String, TextEditingController> stueckzahlController,
     required Map<String, FocusNode> stueckzahlFocusNode,

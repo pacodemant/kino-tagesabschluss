@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_personalgetraenke_section.dart';
+import 'package:kino_bar_app/widgets/personalgetraenke_kachel.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 Widget _baue({required bool gebont, required bool hervorgehoben}) {
   return MaterialApp(
     home: Scaffold(
-      body: Schritt2PersonalgetraenkeSection(
+      body: PersonalgetraenkeKachel(
         gebont: gebont,
         hervorgehoben: hervorgehoben,
         onChanged: (_) {},

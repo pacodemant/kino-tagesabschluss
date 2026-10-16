@@ -14,7 +14,6 @@ class Schritt2BodyContent extends StatelessWidget {
     required this.scrollController,
     required this.devToolsBereich,
     required this.kopfSection,
-    required this.personalgetraenkeSection,
     required this.differenzAnfangsbestandSection,
     required this.kinoSollUndAusgabenBereich,
     required this.ecBelegeBereich,
@@ -26,7 +25,6 @@ class Schritt2BodyContent extends StatelessWidget {
   final ScrollController scrollController;
   final Widget devToolsBereich;
   final Widget kopfSection;
-  final Widget personalgetraenkeSection;
   final Widget differenzAnfangsbestandSection;
   final Widget kinoSollUndAusgabenBereich;
   final List<Widget> ecBelegeBereich;
@@ -48,8 +46,6 @@ class Schritt2BodyContent extends StatelessWidget {
         children: <Widget>[
           devToolsBereich,
           kopfSection,
-          const SizedBox(height: 12),
-          personalgetraenkeSection,
           const SizedBox(height: 12),
           differenzAnfangsbestandSection,
           const SizedBox(height: 10),

@@ -126,9 +126,9 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
     super.key,
     required this.loseMuenzartenOhneKupfer,
     required this.kupferLoseMuenzarten,
-    required this.kupferLoseSichtbar,
-    required this.zeigeKupferLose,
-    required this.entferneKupferLose,
+    this.kupferLoseSichtbar = true,
+    this.zeigeKupferLose,
+    this.entferneKupferLose,
     required this.loseMuenzenFocusNode,
     required this.loseMuenzenController,
     required this.baueFeldMitKey,
@@ -143,9 +143,13 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
 
   final List<Kassenzeile> loseMuenzartenOhneKupfer;
   final List<Kassenzeile> kupferLoseMuenzarten;
+
+  /// Kupfer-Schalter nur, wenn [zeigeKupferLose] gesetzt ist (Seite
+  /// "Wechselgeld prüfen"). Die Bargeld-Seite zeigt Kupfer seit Run 492c
+  /// immer, ohne Schalter.
   final bool kupferLoseSichtbar;
-  final VoidCallback zeigeKupferLose;
-  final VoidCallback entferneKupferLose;
+  final VoidCallback? zeigeKupferLose;
+  final VoidCallback? entferneKupferLose;
   final Map<String, FocusNode> loseMuenzenFocusNode;
   final Map<String, TextEditingController> loseMuenzenController;
   final Schritt1FeldMitKeyBuilder baueFeldMitKey;
@@ -205,19 +209,20 @@ class Schritt1LoseMuenzenInhalt extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-        KompakterSchalterZeile(
-          label: 'Kupfermünzen (1, 2, 5 ct)',
-          wert: kupferLoseSichtbar,
-          onChanged: (bool an) {
-            if (an) {
-              zeigeKupferLose();
-            } else {
-              entferneKupferLose();
-            }
-          },
-        ),
+        if (zeigeKupferLose != null)
+          KompakterSchalterZeile(
+            label: 'Kupfermünzen (1, 2, 5 ct)',
+            wert: kupferLoseSichtbar,
+            onChanged: (bool an) {
+              if (an) {
+                zeigeKupferLose!();
+              } else {
+                entferneKupferLose?.call();
+              }
+            },
+          ),
         if (kupferLoseSichtbar) ...<Widget>[
-          const SizedBox(height: 4),
+          if (zeigeKupferLose != null) const SizedBox(height: 4),
           for (final Kassenzeile zeile in kupferLoseMuenzarten) ...<Widget>[
             Builder(
               builder: (BuildContext ctx) => _baueMuenzzeile(ctx, zeile),

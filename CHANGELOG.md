@@ -9,6 +9,20 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 492d: Kachel "Personalgetränke gebont? / Artikel gestundet? /
+  Kellnerportemonnaie" von Schritt 2 als erste Kachel nach Schritt 1
+  (Bargeld) verschoben, Wirkung gleich: "Umsätze eingeben" grau und
+  gesperrt bis abgehakt (roter Rahmen + Meldung), nicht bei CO. Schritt 2
+  ohne Kachel und ohne diese Sperre. Haken jetzt im Schritt-1-Entwurf
+  (`personalgetraenkeGebot`), Dev-Auto-Fill Schritt 1 setzt ihn. Widget
+  nach lib/widgets/personalgetraenke_kachel.dart (PersonalgetraenkeKachel),
+  Test mitverschoben. Im Browser geprüft.
+
+- Run 492c: Bargeld-Seite ohne Schalter "Kupfermünzen", 5/2/1-ct-Felder
+  immer sichtbar (leere zählen jetzt im Dialog "Eingaben unvollständig"
+  mit). "Wechselgeld prüfen" behält seinen Schalter (Parameter im
+  gemeinsamen Widget optional). Im Browser geprüft.
+
 - Run 492b: Zeile "Datum" im SB-Umschlag-Inhalt entfernt (steht schon im
   Kopf der Übertrag-Seite/Schritt 3 bzw. in der Verlauf-Titelleiste).
   Name-Rahmen nur noch, wenn ein Name vorhanden ist. Tests angepasst.
