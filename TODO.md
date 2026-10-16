@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 486a · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 488 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -287,7 +287,7 @@ um Durcheinander zu vermeiden.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
-- [ ] **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
+- [x] **(erledigt Run 488)** **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
       `config/terminal_ids.json`) ist seit Run 399 umgesetzt, seit
       Run 399a6 direkt im Bestätigungs-Popup nach dem BelegScan in
       Schritt 2 sichtbar statt erst beim Upload in Schritt 3 — der MA
@@ -307,7 +307,7 @@ um Durcheinander zu vermeiden.
       blockierend ist, hat eine falsche/unvollständige Referenzliste
       ein höheres Gewicht als vorher).
 
-- [ ] **TIDs aus der App raus in die Einstellungen** Yannik (14.10.):
+- [x] **(erledigt Run 488)** **TIDs aus der App raus in die Einstellungen** Yannik (14.10.):
       TIDs dürfen nicht im Code stehen. `config/terminal_ids.json` wird
       als Asset ausgeliefert (in der PWA öffentlich abrufbar). Klären,
       ob er das auch meint; dann alle TIDs pro Gerät/Standort in die

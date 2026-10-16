@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.142+487 · Run 487
+Version: 0.9.143+488 · Run 488
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -118,7 +118,9 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 - `AbrechnungSpeicher` — Entwürfe mit 4-Uhr-Datum-Logik persistieren
 - `GetraenkeConfigService` / `WechselgeldConfigService` — Asset-Konfig laden & cachen
 - `ZahlungsartenConfigService` — Kartenarten aus `config/zahlungsarten.txt`
-- `TerminalIdsConfigService` — TIDs pro Standort aus `config/terminal_ids.json`
+- `TerminalIdsConfigService` — Terminals pro Standort (TID, Nr., KK), seit
+  Run 488 aus den Einstellungen (Key `terminals_<kinoId>`), vorher
+  `config/terminal_ids.json`
   (seit Run 399, Warnungs-Abgleich in `ApiUploadService.upload()`;
   seit Run 399a6 zusätzlich im Bestätigungs-Popup direkt nach dem
   BelegScan in Schritt 2, siehe `beleg_scan_bestaetigen_dialog.dart`)
@@ -140,8 +142,8 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
   seit Run 318. Ersetzt NICHT das gleichnamig klingende, in Run 307
   entfernte `BelegScanGegenpruefDialog` (anderer Zweck). Seit Run
   399a6 optionaler Parameter `tidKonfigWarnung`: zeigt eine rote
-  Warnzeile bei der TID, wenn diese laut
-  `config/terminal_ids.json` für den Standort nicht erwartet wird.
+  Warnzeile bei der TID, wenn diese laut den eingetragenen TIDs
+  (seit Run 488 Einstellungen) für den Standort nicht erwartet wird.
 - `HeuteBadge` / `NichtGesendetBadge` — Verlauf-Badges (heutiger Tag
   bzw. noch nicht an Flurbocash gesendet, seit Run 387)
 
@@ -159,7 +161,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 487)
+## Laufender Entwicklungsstand (Run 488)
+
+- Run 488 TIDs pro Gerät in den Einstellungen (Kachel "TIDs": Nr.,
+  TID, KK-Häkchen), config/terminal_ids.json entfernt. Ohne
+  eingetragene TIDs keine TID-Prüfung. Details siehe CHANGELOG.md.
 
 - Run 487 Verlauf-Detail mit Kachel "Übertrag auf Umschlag" (Werte
   wie auf dem Papier-Umschlag, EC je Beleg), auch für vergangene Tage.

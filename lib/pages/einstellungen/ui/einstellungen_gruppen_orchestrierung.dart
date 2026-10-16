@@ -45,8 +45,6 @@ class EinstellungenGruppenOrchestrierung {
     required TextEditingController flurbocashApiKeyController,
     required FocusNode flurbocashApiKeyFocusNode,
     required VoidCallback onFlurbocashApiKeyGeaendert,
-    required TextEditingController kinokasseTidController,
-    required VoidCallback onKinokasseTidGeaendert,
     required bool devModusAktiv,
     required ValueChanged<bool> onDevModusGeaendert,
     required bool testwertAufgeklappt,
@@ -95,8 +93,6 @@ class EinstellungenGruppenOrchestrierung {
         flurbocashApiKeyController: flurbocashApiKeyController,
         flurbocashApiKeyFocusNode: flurbocashApiKeyFocusNode,
         onFlurbocashApiKeyGeaendert: onFlurbocashApiKeyGeaendert,
-        kinokasseTidController: kinokasseTidController,
-        onKinokasseTidGeaendert: onKinokasseTidGeaendert,
       ),
       devModus: EinstellungenDevModusSection(
         devModusAktiv: devModusAktiv,

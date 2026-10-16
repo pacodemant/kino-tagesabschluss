@@ -60,7 +60,7 @@ class ApiUploadService {
   };
 
   /// Wirft, falls eine der zu sendenden TIDs nicht zu
-  /// config/terminal_ids.json passt (siehe [_pruefeTerminalIds]) — bewusste
+  /// den eingetragenen TIDs passt (siehe [_pruefeTerminalIds]) — bewusste
   /// Paco-Entscheidung (2026-09-01): die TID ist eindeutig, eine falsche
   /// Ziffer soll den Versand verhindern statt nur eine Warnung zu zeigen.
   /// Wirft VOR dem eigentlichen Netzwerk-Versand (_ensure()/_settlements()),
@@ -272,8 +272,8 @@ class ApiUploadService {
     );
   }
 
-  /// Gleicht die tatsächlich zu sendenden TIDs gegen config/terminal_ids.json
-  /// ab. Bewusst NICHT blockierend (siehe pruefeTerminalIdsGegenKonfiguration):
+  /// Gleicht die tatsächlich zu sendenden TIDs gegen die in den
+  /// Einstellungen eingetragenen TIDs des Standorts ab (Run 488). Bewusst NICHT blockierend (siehe pruefeTerminalIdsGegenKonfiguration):
   /// solange Yannik die TIDs nicht bestaetigt hat, darf eine falsche
   /// Referenzliste keine echten Abrechnungen verhindern.
   static Future<List<String>> _pruefeTerminalIds(
@@ -284,9 +284,9 @@ class ApiUploadService {
     if (tids.isEmpty) return const <String>[];
 
     final Kino? kino = KinoRepository.nachId(abrechnung.kinoId);
-    final Map<String, List<String>> konfiguration =
-        await TerminalIdsConfigService.laden();
-    return pruefeTerminalIdsGegenKonfiguration(tids, kino, konfiguration);
+    final List<String> erlaubte =
+        await TerminalIdsConfigService.ladeTids(abrechnung.kinoId);
+    return pruefeTerminalIdsGegenKonfiguration(tids, kino, erlaubte);
   }
 
   /// Extrahiert alle TIDs aus einem bereits gebauten settlementsBody().
@@ -302,19 +302,19 @@ class ApiUploadService {
     return tids;
   }
 
-  /// Reine, testbare Pruefung ohne Asset-Zugriff: liefert eine Warnmeldung
-  /// pro TID, die leer ist oder nicht zu den fuer [kino] registrierten TIDs
-  /// aus config/terminal_ids.json passt. Wirft bewusst NICHT — die
+  /// Reine, testbare Pruefung ohne Speicherzugriff: liefert eine
+  /// Warnmeldung pro TID, die leer ist oder nicht zu den fuer [kino] in den
+  /// Einstellungen eingetragenen TIDs ([erlaubte]) passt. Leere [erlaubte]
+  /// = Geraet noch nicht konfiguriert -> keine Abgleich-Warnung (Run 488),
+  /// damit nach der Umstellung nicht jedes Geraet blockiert. Wirft bewusst NICHT — die
   /// Referenzliste ist laut TODO.md noch unbestaetigt, ein Fehlalarm darf
   /// den Versand nicht verhindern.
   static List<String> pruefeTerminalIdsGegenKonfiguration(
     List<String> verwendeteTids,
     Kino? kino,
-    Map<String, List<String>> konfiguration,
+    List<String> erlaubte,
   ) {
     if (kino == null) return const <String>[];
-    final List<String> erlaubte =
-        konfiguration[kino.kuerzel] ?? const <String>[];
     final List<String> warnungen = <String>[];
     for (final String tid in verwendeteTids) {
       if (tid.isEmpty) {
@@ -324,12 +324,10 @@ class ApiUploadService {
         );
         continue;
       }
-      if (!erlaubte.contains(tid)) {
-        final String erwartetText =
-            erlaubte.isEmpty ? 'keine TID hinterlegt' : erlaubte.join(', ');
+      if (erlaubte.isNotEmpty && !erlaubte.contains(tid)) {
         warnungen.add(
           'TID "$tid" ist fuer ${kino.name} nicht als Terminal hinterlegt '
-          '(erwartet: $erwartetText). Bitte pruefen.',
+          '(erwartet: ${erlaubte.join(', ')}). Bitte pruefen.',
         );
       }
     }
@@ -512,7 +510,7 @@ class ApiUploadService {
       }
       // Leerzeichen entfernen (Run 474): auch Alt-Daten/Verlauf-Einträge mit
       // einer per Hand getippten " 60561997" muessen beim Vergleich gegen
-      // config/terminal_ids.json und bei Flurbocash als "60561997" ankommen.
+      // die eingetragenen TIDs und bei Flurbocash als "60561997" ankommen.
       final String tid =
           TidEingabe.bereinige(z.tid ?? abrechnung.terminalId ?? '');
       final String gruppenSchluessel =

@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 488: TIDs nur noch in den Einstellungen (Yannik: keine TIDs im
+  Code). config/terminal_ids.json und Asset-Eintrag entfernt.
+  - Neue Kachel "TIDs" im Admin-Bereich (pro Kino): bis zu 4 Terminals
+    mit Nr. (einstellig, Aufkleber am Gerät), TID und Häkchen "KK"
+    (an der Kinokasse, höchstens eins). Key `terminals_<kinoId>`
+    (JSON-Liste tid/nummer/kinokasse), jede Änderung sofort gespeichert.
+  - Feld "TID Kinokasse" (Run 486) aus dem Flurbocash-Bereich entfernt;
+    ein vorhandener Wert erscheint automatisch als KK-Terminal, der
+    Alt-Key `kinokasse_tid_<kinoId>` wird beim ersten Speichern gelöscht.
+  - TID-Prüfung (Scan-Popup, Weiter Schritt 2, Senden) und Dev-Auto-Fill
+    nutzen die eingetragenen TIDs. Neu: Gerät ohne eingetragene TIDs
+    prüft nicht (vorher blockierte eine leere Liste) — sonst wäre nach
+    dem Update jedes Gerät bis zur Einrichtung blockiert. Leere TID
+    trotz EC-Umsatz wird weiterhin abgelehnt.
+  - Tests: Speichern/Laden, pro Kino, Migration Alt-Key, max. 4,
+    Kachel-Eingabe + KK exklusiv, Prüfung ohne Konfiguration.
+
 - Run 487: Verlauf-Detail bekommt die Kachel "Übertrag auf Umschlag"
   (zugeklappt, unter "Ergebnis"), damit ein vergessener Übertrag auch
   für vergangene Tage nachgetragen werden kann.

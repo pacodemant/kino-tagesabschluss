@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 // Zweck: Einzige Quelle für die Regel "eine Terminal-ID (TID) enthält keine
 // Leerzeichen". Auslöser (Run 474): Ein per Hand getipptes " 60561997"
 // passierte die getrimmten Prüfungen in Schritt 2 unauffällig, scheiterte
-// aber beim Senden am exakten Vergleich gegen config/terminal_ids.json.
+// aber beim Senden am exakten Vergleich gegen die hinterlegten TIDs.
 class TidEingabe {
   const TidEingabe._();
 

@@ -427,14 +427,7 @@ void main() {
         ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
           tids,
           const Kino(id: 'kino_01', name: 'Schauburg', kuerzel: 'SB'),
-          const <String, List<String>>{
-            'SB': <String>[
-              '54017635',
-              '60561994',
-              '60561996',
-              '60561997',
-            ],
-          },
+          const <String>['60561994', '60561996', '60561997'],
         ),
         isEmpty,
       );
@@ -504,10 +497,8 @@ void main() {
 
   group('ApiUploadService.pruefeTerminalIdsGegenKonfiguration', () {
     const Kino schauburg = Kino(id: 'kino_01', name: 'Schauburg', kuerzel: 'SB');
-    const Map<String, List<String>> konfiguration = <String, List<String>>{
-      'SB': <String>['54017635'],
-      'CO': <String>['54017639'],
-    };
+    // Seit Run 488: die in den Einstellungen des Geräts eingetragenen TIDs.
+    const List<String> konfiguration = <String>['54017635'];
 
     test('bekannte, registrierte TID → keine Warnung', () {
       expect(
@@ -549,18 +540,27 @@ void main() {
       expect(warnungen, hasLength(1));
     });
 
-    test('Kino ohne hinterlegte TIDs (z.B. Platzhalter "XXXX") → Warnung',
-        () {
+    test(
+        'Gerät ohne eingetragene TIDs (Run 488, noch nicht konfiguriert) '
+        '→ keine Abgleich-Warnung, damit nach der Umstellung nichts '
+        'blockiert; leere TID trotz EC-Umsatz warnt weiterhin', () {
       const Kino gondel = Kino(id: 'kino_02', name: 'Gondel', kuerzel: 'GO');
-      final List<String> warnungen =
-          ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
-        <String>['12345'],
-        gondel,
-        konfiguration,
+      expect(
+        ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+          <String>['12345'],
+          gondel,
+          const <String>[],
+        ),
+        isEmpty,
       );
-
-      expect(warnungen, hasLength(1));
-      expect(warnungen.single, contains('keine TID'));
+      expect(
+        ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
+          <String>[''],
+          gondel,
+          const <String>[],
+        ),
+        hasLength(1),
+      );
     });
 
     test('unbekanntes Kino (kino == null) → keine Warnung statt Absturz',

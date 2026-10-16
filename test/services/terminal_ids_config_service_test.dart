@@ -1,57 +1,111 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   group('TerminalIdsConfigService.aktiveTid', () {
-    final Map<String, List<String>> konfiguration = <String, List<String>>{
-      'SB': <String>['54017635', '60561994', '60561996', '60561997'],
-      'CO': <String>['60561995'],
-      'XY': <String>['XXXX'],
-      'AT': <String>[],
-    };
-
-    test(
-      'Standort mit mehreren TIDs (SB) liefert die erste als aktive TID',
-      () {
-        expect(
-          TerminalIdsConfigService.aktiveTid('SB', konfiguration),
-          '54017635',
-        );
-      },
-    );
-
-    test('Standort mit genau einer TID (CO) liefert diese TID', () {
+    test('erste eingetragene TID gilt als aktiv', () {
       expect(
-        TerminalIdsConfigService.aktiveTid('CO', konfiguration),
-        '60561995',
+        TerminalIdsConfigService.aktiveTid(<String>[
+          '60561994',
+          '60561996',
+          '60561997',
+        ]),
+        '60561994',
       );
     });
 
-    test(
-      'Standort mit nur einem Platzhalter (noch keine echte TID) '
-      'liefert den Platzhalter unveraendert',
-      () {
-        expect(
-          TerminalIdsConfigService.aktiveTid('XY', konfiguration),
-          'XXXX',
-        );
-      },
-    );
+    test('keine TID eingetragen -> leer', () {
+      expect(TerminalIdsConfigService.aktiveTid(const <String>[]), '');
+    });
+  });
 
-    test('Standort mit leerer TID-Liste liefert einen leeren String', () {
-      expect(TerminalIdsConfigService.aktiveTid('AT', konfiguration), '');
+  group('TerminalIdsConfigService Speicher (Run 488)', () {
+    test('Speichern und Laden: Nummer und KK bleiben erhalten, leere Plätze '
+        'und Leerzeichen in der TID fallen weg', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      await TerminalIdsConfigService.speichereTerminals(
+        'kino_01',
+        const <TerminalEintrag>[
+          TerminalEintrag(tid: '60561994', nummer: '1'),
+          TerminalEintrag(tid: ''),
+          TerminalEintrag(tid: ' 60561997', nummer: '3', kinokasse: true),
+          TerminalEintrag(tid: '60561996', nummer: '2'),
+        ],
+      );
+
+      final List<TerminalEintrag> geladen =
+          await TerminalIdsConfigService.ladeTerminals('kino_01');
+      expect(geladen.map((TerminalEintrag t) => t.tid), <String>[
+        '60561994',
+        '60561997',
+        '60561996',
+      ]);
+      expect(geladen.map((TerminalEintrag t) => t.nummer), <String>[
+        '1',
+        '3',
+        '2',
+      ]);
+      expect(
+        await TerminalIdsConfigService.ladeKinokasseTid('kino_01'),
+        '60561997',
+      );
+      expect(await TerminalIdsConfigService.ladeTids('kino_01'), <String>[
+        '60561994',
+        '60561997',
+        '60561996',
+      ]);
     });
 
-    test(
-      'unbekanntes oder fehlendes Kuerzel (z.B. Kino nicht gefunden) '
-      'liefert einen leeren String statt zu werfen',
-      () {
-        expect(
-          TerminalIdsConfigService.aktiveTid('ZZ', konfiguration),
-          '',
-        );
-        expect(TerminalIdsConfigService.aktiveTid(null, konfiguration), '');
-      },
-    );
+    test('Einstellung gilt pro Kino', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      await TerminalIdsConfigService.speichereTerminals(
+        'kino_03',
+        const <TerminalEintrag>[TerminalEintrag(tid: '60561998')],
+      );
+      expect(await TerminalIdsConfigService.ladeTids('kino_01'), isEmpty);
+    });
+
+    test('Gerät mit "TID Kinokasse" aus Run 486 -> wird als KK-Terminal '
+        'übernommen; erstes Speichern entfernt den Alt-Key', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        TerminalIdsConfigService.kinokasseTidPrefKey('kino_01'): '60561997',
+      });
+
+      final List<TerminalEintrag> migriert =
+          await TerminalIdsConfigService.ladeTerminals('kino_01');
+      expect(migriert, hasLength(1));
+      expect(migriert.single.tid, '60561997');
+      expect(migriert.single.kinokasse, isTrue);
+
+      await TerminalIdsConfigService.speichereTerminals('kino_01', migriert);
+      final SharedPreferences speicher = await SharedPreferences.getInstance();
+      expect(
+        speicher.containsKey(
+          TerminalIdsConfigService.kinokasseTidPrefKey('kino_01'),
+        ),
+        isFalse,
+      );
+      expect(
+        await TerminalIdsConfigService.ladeKinokasseTid('kino_01'),
+        '60561997',
+      );
+    });
+
+    test('mehr als vier Einträge -> nur die ersten vier', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      await TerminalIdsConfigService.speichereTerminals(
+        'kino_01',
+        const <TerminalEintrag>[
+          TerminalEintrag(tid: '1'),
+          TerminalEintrag(tid: '2'),
+          TerminalEintrag(tid: '3'),
+          TerminalEintrag(tid: '4'),
+          TerminalEintrag(tid: '5'),
+        ],
+      );
+      expect(await TerminalIdsConfigService.ladeTids('kino_01'), hasLength(4));
+    });
   });
 }

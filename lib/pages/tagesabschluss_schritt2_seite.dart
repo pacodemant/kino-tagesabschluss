@@ -225,9 +225,10 @@ class _TagesabschlussSchritt2SeiteState
   bool _ecKachelAufgeklappt = false;
 
   /// Einmal beim Seitenaufbau geladen, damit sich eine TID reaktiv (ohne
-  /// erneuten Async-Aufruf bei jedem build()) gegen config/terminal_ids.json
-  /// prüfen lässt — siehe _tidPasstNichtZurKonfiguration().
-  Map<String, List<String>>? _terminalIdsKonfiguration;
+  /// erneuten Async-Aufruf bei jedem build()) gegen die in den
+  /// Einstellungen eingetragenen TIDs (Run 488) prüfen lässt — siehe
+  /// _tidPasstNichtZurKonfiguration().
+  List<String>? _erlaubteTids;
 
   @override
   void initState() {
@@ -242,10 +243,10 @@ class _TagesabschlussSchritt2SeiteState
         _devModusAktiv = aktiv;
       });
     });
-    TerminalIdsConfigService.laden().then((Map<String, List<String>> konfig) {
+    TerminalIdsConfigService.ladeTids(widget.kinoId).then((List<String> tids) {
       if (mounted) {
         setState(() {
-          _terminalIdsKonfiguration = konfig;
+          _erlaubteTids = tids;
         });
       }
     });
@@ -1297,18 +1298,17 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
-  /// Liefert die fuer widget.kinoId aktive TID aus config/terminal_ids.json
-  /// fuers Auto-Fill — Konvention (Paco-Entscheidung 2026-08-30, siehe
+  /// Liefert die fuer widget.kinoId aktive TID aus den Einstellungen
+  /// (Run 488) fuers Auto-Fill — Konvention (Paco-Entscheidung 2026-08-30, siehe
   /// TODO.md "Auto-Fill: konfigurierte TID pro Standort"): der erste
   /// Eintrag der Liste gilt als die aktive TID, weitere Eintraege sind
   /// Ersatz-/Zukunftsgeraete. Leerer String, wenn kein Standort/keine TID
   /// hinterlegt ist (ein Platzhalter wie "XXXX" bleibt unveraendert
   /// stehen, solange fuer einen Standort noch keine echte TID vorliegt).
   Future<String> _autoFillAktiveTid() async {
-    final Kino? kino = KinoRepository.nachId(widget.kinoId);
-    final Map<String, List<String>> konfiguration =
-        await TerminalIdsConfigService.laden();
-    return TerminalIdsConfigService.aktiveTid(kino?.kuerzel, konfiguration);
+    return TerminalIdsConfigService.aktiveTid(
+      await TerminalIdsConfigService.ladeTids(widget.kinoId),
+    );
   }
 
   Future<void> _autoFillDev() async {
@@ -1735,22 +1735,20 @@ class _TagesabschlussSchritt2SeiteState
     return value.trim();
   }
 
-  /// Gleicht eine gescannte TID gegen config/terminal_ids.json ab — dieselbe,
+  /// Gleicht eine gescannte TID gegen die eingetragenen TIDs ab — dieselbe,
   /// bewusst nicht blockierende Prüf-Logik wie beim Upload in Schritt 3
   /// (ApiUploadService.pruefeTerminalIdsGegenKonfiguration).
   Future<List<String>> _pruefeTidGegenKonfiguration(String tid) async {
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
-    final Map<String, List<String>> konfiguration =
-        await TerminalIdsConfigService.laden();
     return ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
       <String>[tid],
       kino,
-      konfiguration,
+      await TerminalIdsConfigService.ladeTids(widget.kinoId),
     );
   }
 
   /// Prüft die vom Scan erkannte TID noch VOR dem Bestätigungs-Popup gegen
-  /// config/terminal_ids.json, damit der MA eine Abweichung schon dort
+  /// die eingetragenen TIDs, damit der MA eine Abweichung schon dort
   /// sieht (siehe TODO.md "TID-Whitelist editierbar + Prüfung beim
   /// Scannen") statt erst am Ende der Abrechnung. Liefert null, wenn die
   /// TID nicht lesbar war (dafür markiert das Popup die TID bereits eigen-
@@ -1764,17 +1762,17 @@ class _TagesabschlussSchritt2SeiteState
   }
 
   /// true, wenn [tid] nicht leer ist, aber nicht zu den fuer diesen Standort
-  /// in config/terminal_ids.json hinterlegten TIDs passt — synchron, da
-  /// _terminalIdsKonfiguration bereits in initState() geladen wird. Nutzt
+  /// in den Einstellungen eingetragenen TIDs passt — synchron, da
+  /// _erlaubteTids bereits in initState() geladen wird. Nutzt
   /// dieselbe, bereits getestete Pruef-Logik wie beim Scan/Weiter/Senden.
   bool _tidPasstNichtZurKonfiguration(String tid) {
     final String bereinigt = tid.trim();
-    if (bereinigt.isEmpty || _terminalIdsKonfiguration == null) return false;
+    if (bereinigt.isEmpty || _erlaubteTids == null) return false;
     final Kino? kino = KinoRepository.nachId(widget.kinoId);
     return ApiUploadService.pruefeTerminalIdsGegenKonfiguration(
       <String>[bereinigt],
       kino,
-      _terminalIdsKonfiguration!,
+      _erlaubteTids!,
     ).isNotEmpty;
   }
 
