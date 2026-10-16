@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.141+486 · Run 486
+Version: 0.9.142+487 · Run 487
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -159,7 +159,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 486)
+## Laufender Entwicklungsstand (Run 487)
+
+- Run 487 Verlauf-Detail mit Kachel "Übertrag auf Umschlag" (Werte
+  wie auf dem Papier-Umschlag, EC je Beleg), auch für vergangene Tage.
+  Rein lesend, kein Speicher-Eingriff.
 
 - Run 486 Kartenumsatz der Kinokasse (SB: Terminal direkt am Kino-
   Kassensystem) kommt im Übertrag automatisch zum Kino SOLL und ins

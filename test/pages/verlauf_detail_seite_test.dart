@@ -88,6 +88,9 @@ void main() {
       MaterialApp(home: VerlaufDetailSeite(abschluss: abschluss())),
     );
     await tester.pumpAndSettle();
+    // Seit Run 487 (Übertrag-Kachel) liegt der Button unterhalb der
+    // Testfläche — die ListView baut ihn erst nach dem Scrollen.
+    await tester.scrollUntilVisible(find.text('Jetzt senden'), 200);
 
     expect(find.text('Jetzt senden'), findsOneWidget);
     expect(find.text('Erneut senden'), findsNothing);
@@ -104,6 +107,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // Seit Run 487 (Übertrag-Kachel) liegt der Button unterhalb der
+    // Testfläche — die ListView baut ihn erst nach dem Scrollen.
+    await tester.scrollUntilVisible(find.text('Erneut senden'), 200);
 
     expect(find.text('Erneut senden'), findsOneWidget);
     expect(find.text('Jetzt senden'), findsNothing);

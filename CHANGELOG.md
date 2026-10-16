@@ -9,6 +9,22 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 487: Verlauf-Detail bekommt die Kachel "Übertrag auf Umschlag"
+  (zugeklappt, unter "Ergebnis"), damit ein vergessener Übertrag auch
+  für vergangene Tage nachgetragen werden kann.
+  - Neues Widget lib/widgets/uebertrag_umschlag_kachel.dart, rein
+    lesend, Reihenfolge wie auf dem Papier-Umschlag: Differenz im
+    Anfangsbestand, KINO/BISTRO SOLL, Ausgaben, Gesamt SOLL, EC IST je
+    Beleg (EC1, EC2, …, TID grau darunter), BAR IST, Gesamt IST,
+    Differenz, Name, Datum.
+  - Fallback: passen die Einzelbelege nicht zur gespeicherten EC-Summe
+    (alte Einträge), eine Sammelzeile "+ EC IST".
+  - Kein Speicher-/JSON-Eingriff. Im Browser mit eingespielten
+    Verlaufsdaten von vor Run 274, vor Run 486 und aktuell geprüft.
+  - Tests: EC1–3 mit TID, Fallback, alter JSON-Eintrag in der echten
+    Verlauf-Detailseite; 2 Sende-Button-Tests scrollen jetzt zum
+    Button (liegt unter der neuen Kachel).
+
 - Run 486a (tests): Widget-Tests für Run 486 mit simulierten SB-
   Terminalbelegen (60561994 300 €, 60561996 200 €, 60561997 250 €,
   Kino SOLL 1.000 €, Bistro 500 €, bar 1.000 €) statt Scan:

@@ -20,6 +20,7 @@ import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_kachel.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
   const VerlaufDetailSeite({super.key, required this.abschluss});
@@ -653,6 +654,11 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 4),
+
+                // Abschnitt 4 – Übertrag auf Umschlag (Run 487)
+                UebertragUmschlagKachel(abschluss: a),
 
                 const SizedBox(height: 24),
                 SizedBox(
