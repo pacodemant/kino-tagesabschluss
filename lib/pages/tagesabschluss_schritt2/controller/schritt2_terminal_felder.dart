@@ -42,4 +42,15 @@ class Schritt2TerminalFelder {
     }
     return belegIndex;
   }
+
+  /// Dev-Auto-Fill (Run 491): verteilt die EC-Testsumme gleichmäßig auf
+  /// [anzahl] Terminals, der Rest-Cent geht an das erste. Mindestens ein
+  /// Anteil, auch ohne eingetragene Terminals.
+  static List<int> devAufteilung(int gesamtCent, int anzahl) {
+    final int n = anzahl < 1 ? 1 : anzahl;
+    final int basis = gesamtCent ~/ n;
+    return <int>[
+      for (int i = 0; i < n; i++) i == 0 ? gesamtCent - basis * (n - 1) : basis,
+    ];
+  }
 }

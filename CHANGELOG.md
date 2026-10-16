@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 491: Dev-Auto-Fill Schritt 2 für mehrere Terminals.
+  - EC-Testsumme wird auf alle in der Kachel "TIDs" eingetragenen
+    Terminals verteilt (je Beleg als Girocard, Rest-Cent an Beleg 1),
+    TIDs nur aus den Einstellungen (keine TIDs im Code). Ohne bzw. mit
+    einem Terminal wie bisher ein Beleg inkl. Kartenarten-Aufteilung.
+  - KK-Anteil wird vom Kino SOLL abgezogen (Ticket-Umsatz enthält ihn
+    nicht, Run 486) -> Test-Kasse geht weiter auf.
+  - Häkchen "Personalgetränke gebont?" wird mitgesetzt.
+  - Einstellungen-Feld heißt jetzt "EC gesamt (auf TIDs verteilt)".
+  - Im Browser geprüft (SB, 3 Terminals): 3 Belege / 578,20 €, Kino
+    Soll 1.100,00 inkl. Kinokasse 192,73, Differenz 0,00 €.
+    Unit-Test für die Aufteilung.
+
 - Run 490: Eingabe nach Terminal-Anzahl des Standorts.
   - Kino.anzahlTerminals (SB 3, AT 1, CO 1, BT/GO vorerst 4, Paco
     2026-10-16: in SB/AT/CO nur noch neue Geräte). Kachel "TIDs" zeigt

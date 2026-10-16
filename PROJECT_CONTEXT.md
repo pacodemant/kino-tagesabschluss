@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.145+490 · Run 490
+Version: 0.9.146+491 · Run 491
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,10 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 490)
+## Laufender Entwicklungsstand (Run 491)
+
+- Run 491 Dev-Auto-Fill verteilt EC auf die eingetragenen Terminals
+  (TIDs aus Einstellungen), KK-Anteil aus dem Kino SOLL, Kasse geht auf.
 
 - Run 490 Schritt 2: ein EC-Feld je eingetragenem Terminal (TID
   vorausgefüllt, "Gerät <Nr.>"), Scan landet im Feld seiner TID,

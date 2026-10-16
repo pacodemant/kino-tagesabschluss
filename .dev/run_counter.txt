@@ -1,3 +1,3 @@
-last_run: 490
-next_run: 491
-last_run_title: Run 490: EC-Feld je Terminal in Schritt 2, Hinweis bei fehlendem Beleg
+last_run: 491
+next_run: 492
+last_run_title: Run 491: Dev-Auto-Fill verteilt EC auf alle eingetragenen Terminals

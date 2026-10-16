@@ -865,7 +865,7 @@ class _EinstellungenSeiteState extends State<EinstellungenSeite> {
               onChanged: _speichereAutoFillSchritt2,
             ),
             _baueCentZeile(
-              label: 'EC-Beleg',
+              label: 'EC gesamt (auf TIDs verteilt)',
               controller: _s2EcBelegCtrl,
               onChanged: _speichereAutoFillSchritt2,
             ),

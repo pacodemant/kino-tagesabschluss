@@ -1395,23 +1395,12 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
-  /// Liefert die fuer widget.kinoId aktive TID aus den Einstellungen
-  /// (Run 488) fuers Auto-Fill — Konvention (Paco-Entscheidung 2026-08-30, siehe
-  /// TODO.md "Auto-Fill: konfigurierte TID pro Standort"): der erste
-  /// Eintrag der Liste gilt als die aktive TID, weitere Eintraege sind
-  /// Ersatz-/Zukunftsgeraete. Leerer String, wenn kein Standort/keine TID
-  /// hinterlegt ist (ein Platzhalter wie "XXXX" bleibt unveraendert
-  /// stehen, solange fuer einen Standort noch keine echte TID vorliegt).
-  Future<String> _autoFillAktiveTid() async {
-    return TerminalIdsConfigService.aktiveTid(
-      await TerminalIdsConfigService.ladeTids(widget.kinoId),
-    );
-  }
-
   Future<void> _autoFillDev() async {
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeAutoFillSchritt2(widget.kinoId);
-    final String aktiveTid = await _autoFillAktiveTid();
+    // TIDs aus den Einstellungen, nie aus dem Code (Run 491, Yannik).
+    final List<TerminalEintrag> terminals =
+        await TerminalIdsConfigService.ladeTerminals(widget.kinoId);
     // Ohne dieses Warten kann der Zahlungsarten-Namensabgleich unten ins
     // Leere laufen, wenn der Asset-Fetch aus initState() (im Web ein
     // HTTP-Request) beim Tippen auf Auto-Fill noch nicht fertig ist —
@@ -1425,7 +1414,7 @@ class _TagesabschlussSchritt2SeiteState
     if (!mounted) {
       return;
     }
-    final int kinoSoll =
+    final int kinoSollGesamt =
         (daten?['kinoSollCent'] as num?)?.toInt() ?? 0;
     final int bistroSoll =
         (daten?['bistroSollCent'] as num?)?.toInt() ?? 0;
@@ -1436,15 +1425,40 @@ class _TagesabschlussSchritt2SeiteState
     final int differenz =
         (daten?['differenzAnfangsbestandCent'] as num?)?.toInt() ?? 0;
 
+    // Run 491: EC-Testsumme auf alle eingetragenen Terminals verteilen. Der
+    // Anteil des KK-Terminals steckt nicht im Ticket-Umsatz (Run 486) und
+    // wird daher vom Kino SOLL abgezogen, damit die Test-Kasse aufgeht.
+    final List<int> anteile = Schritt2TerminalFelder.devAufteilung(
+      ecBeleg,
+      terminals.length,
+    );
+    int kkAnteil = 0;
+    for (int i = 0; i < terminals.length; i++) {
+      if (terminals[i].kinokasse) kkAnteil += anteile[i];
+    }
+    final int kinoSoll = kinoSollGesamt - kkAnteil;
+
     setState(() {
       _kinoSollCent = kinoSoll;
       _bistroSollCent = bistroSoll;
       _differenzAnfangsbestandCent = differenz;
+      _personalgetraenkeGebot = true;
+      _personalgetraenkeHinweisAktiv = false;
 
-      _setzeEcBelegAnzahl(1);
-      _ecBelegeCent[0] = ecBeleg;
-      _ecBelegLabels[0] = aktiveTid;
-      _kartenartenGesamtBetragCent[0] = ecBeleg;
+      _setzeEcBelegAnzahl(anteile.length);
+      for (int i = 0; i < anteile.length; i++) {
+        final String tid = i < terminals.length ? terminals[i].tid : '';
+        final String betragText = anteile[i] != 0
+            ? TagesabschlussFormatierung.formatiereEuroEingabe(anteile[i])
+            : '';
+        _ecBelegeCent[i] = anteile[i];
+        _ecBelegLabels[i] = tid;
+        _kartenartenGesamtBetragCent[i] = anteile[i];
+        _setzeControllerText(_ecBelegController[i], betragText);
+        _setzeControllerText(_ecBelegLabelController[i], tid);
+        _setzeControllerText(_kartenartenGesamtBetragController[i], betragText);
+        if (anteile.length > 1) _ecUnterkachelAufgeklappt[i] = false;
+      }
       _kartenartenGesamt1Beruehrt = true;
       _ecBelegLabel1Beruehrt = true;
 
@@ -1472,21 +1486,24 @@ class _TagesabschlussSchritt2SeiteState
       );
       _setzeControllerText(_ausgaben[0].labelController, '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
-      _setzeControllerText(
-        _ecBelegController[0],
-        ecBeleg != 0
-            ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
-            : '',
-      );
-      _setzeControllerText(_ecBelegLabelController[0], aktiveTid);
-      _setzeControllerText(
-        _kartenartenGesamtBetragController[0],
-        ecBeleg != 0
-            ? TagesabschlussFormatierung.formatiereEuroEingabe(ecBeleg)
-            : '',
-      );
-      // Zahlungsarten aus Auto-Fill-Daten
-      if (_zahlungsartZeilen.isNotEmpty) {
+      // Mehrere Terminals: je Beleg der ganze Anteil als Girocard.
+      if (anteile.length > 1) {
+        for (int i = 0; i < anteile.length && i < _zahlungsartZeilen.length; i++) {
+          if (_zahlungsartZeilen[i].isEmpty) continue;
+          final int idx = _zahlungsartZeilen[i]
+              .indexWhere((ZahlungsartZeile z) => z.name == 'Girocard');
+          final ZahlungsartZeile zeile =
+              _zahlungsartZeilen[i][idx >= 0 ? idx : 0];
+          zeile.betragCentWert = anteile[i];
+          zeile.zustand = ZeilenZustand.shown;
+          _setzeControllerText(
+            zeile.betragController,
+            TagesabschlussFormatierung.formatiereEuroEingabe(anteile[i]),
+          );
+        }
+      }
+      // Ein Beleg: Zahlungsarten aus Auto-Fill-Daten (wie bisher)
+      if (anteile.length == 1 && _zahlungsartZeilen.isNotEmpty) {
         final List<dynamic>? zahlungsartenNamen =
             daten?['zahlungsartenNamen'] as List<dynamic>?;
         final List<dynamic>? zahlungsartenBetragCent =
