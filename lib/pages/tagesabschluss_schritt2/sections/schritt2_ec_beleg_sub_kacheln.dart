@@ -20,6 +20,7 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
     required this.labelController,
     required this.labelFocusNode,
     required this.labels,
+    this.geraeteNummer,
     required this.betraegeCent,
     required this.tidUnleserlich,
     required this.scanLaeuft,
@@ -43,6 +44,9 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
   final List<TextEditingController> labelController;
   final List<FocusNode> labelFocusNode;
   final List<String> labels;
+
+  /// Gerätenummer zur TID aus den Einstellungen (Run 490), null = keine.
+  final String? Function(String label)? geraeteNummer;
   final List<int> betraegeCent;
   final bool Function(int belegIndex) tidUnleserlich;
   final bool scanLaeuft;
@@ -73,6 +77,7 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
               labelController: labelController[i],
               labelFocusNode: labelFocusNode[i],
               label: labels[i],
+              geraeteNummer: geraeteNummer?.call(labels[i]),
               betragCent: betraegeCent[i],
               tidUnleserlich: tidUnleserlich(i),
               scanLaeuft: scanLaeuft,
@@ -102,6 +107,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
     required this.labelController,
     required this.labelFocusNode,
     required this.label,
+    this.geraeteNummer,
     required this.betragCent,
     required this.tidUnleserlich,
     required this.scanLaeuft,
@@ -124,6 +130,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
   final TextEditingController labelController;
   final FocusNode labelFocusNode;
   final String label;
+  final String? geraeteNummer;
   final int betragCent;
   final bool tidUnleserlich;
   final bool scanLaeuft;
@@ -288,7 +295,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                       Expanded(
                                         child: Text(
                                           _labelIstLesbarUndBefuellt
-                                              ? '#${belegIndex + 1} · TID $label'
+                                              ? '${geraeteNummer != null ? 'Gerät $geraeteNummer' : '#${belegIndex + 1}'} · TID $label'
                                               : 'Beleg ${belegIndex + 1}',
                                           style: TextStyle(
                                             fontSize: 13,

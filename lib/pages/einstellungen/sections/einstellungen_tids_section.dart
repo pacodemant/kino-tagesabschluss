@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/tid_eingabe.dart';
 
-/// Kachel "TIDs" (Run 488): bis zu vier Kartenterminals des Standorts mit
+/// Kachel "TIDs" (Run 488): Kartenterminals des Standorts (Zeilen je
+/// Standort seit Run 490, höchstens vier) mit
 /// Geräte-Nummer und "KK connected"-Markierung, pro Gerät gespeichert.
 /// Lädt und speichert selbst (jede Änderung sofort), damit die
 /// Einstellungen-Seite keine Controller dafür durchreichen muss.
@@ -35,6 +37,19 @@ class _EinstellungenTidsSectionState extends State<EinstellungenTidsSection> {
 
   // Platz-Index des "KK connected"-Terminals, null = keins.
   int? _kinokassePlatz;
+
+  // Anzahl gespeicherter Einträge beim Laden — bleiben sichtbar, auch wenn
+  // der Standort weniger Terminals hat (Run 490).
+  int _geladeneAnzahl = 0;
+
+  /// Sichtbare Zeilen: Terminals des Standorts ([Kino.anzahlTerminals]),
+  /// mindestens die bereits gespeicherten, höchstens [_plaetze].
+  int get _sichtbareZeilen {
+    final int standort =
+        KinoRepository.nachId(widget.kinoId)?.anzahlTerminals ?? _plaetze;
+    return (standort > _geladeneAnzahl ? standort : _geladeneAnzahl)
+        .clamp(1, _plaetze);
+  }
   bool _aufgeklappt = false;
 
   @override
@@ -59,6 +74,7 @@ class _EinstellungenTidsSectionState extends State<EinstellungenTidsSection> {
         await TerminalIdsConfigService.ladeTerminals(widget.kinoId);
     if (!mounted) return;
     setState(() {
+      _geladeneAnzahl = terminals.length;
       for (int i = 0; i < terminals.length && i < _plaetze; i++) {
         _tidCtrl[i].text = terminals[i].tid;
         _nummerCtrl[i].text = terminals[i].nummer;
@@ -179,7 +195,7 @@ class _EinstellungenTidsSectionState extends State<EinstellungenTidsSection> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  for (int i = 0; i < _plaetze; i++) _zeile(i),
+                  for (int i = 0; i < _sichtbareZeilen; i++) _zeile(i),
                   Text(
                     'Nr. = Nummer auf dem Gerät. KK = Gerät hängt an der '
                     'Kinokasse ("KK connected"), dessen Kartenumsatz kommt '

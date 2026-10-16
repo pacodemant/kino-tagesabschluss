@@ -8,8 +8,10 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_fokus_helper.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_zahlungsart_entwurf.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_terminal_felder.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/ausgaben_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/models/zahlungsart_zeile.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_beleg_sub_kacheln.dart';
@@ -230,6 +232,11 @@ class _TagesabschlussSchritt2SeiteState
   /// _tidPasstNichtZurKonfiguration().
   List<String>? _erlaubteTids;
 
+  /// Terminals des Standorts aus den Einstellungen (Run 490): ein EC-Feld
+  /// je Gerät bei neuer Abrechnung, Gerätenummer im Beleg-Titel, Scan
+  /// landet im Feld seiner TID, Hinweis bei fehlendem Beleg.
+  List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
+
   @override
   void initState() {
     super.initState();
@@ -243,10 +250,14 @@ class _TagesabschlussSchritt2SeiteState
         _devModusAktiv = aktiv;
       });
     });
-    TerminalIdsConfigService.ladeTids(widget.kinoId).then((List<String> tids) {
+    TerminalIdsConfigService.ladeTerminals(widget.kinoId).then((
+      List<TerminalEintrag> terminals,
+    ) {
       if (mounted) {
         setState(() {
-          _erlaubteTids = tids;
+          _terminals = terminals;
+          _erlaubteTids =
+              terminals.map((TerminalEintrag t) => t.tid).toList();
         });
       }
     });
@@ -377,16 +388,100 @@ class _TagesabschlussSchritt2SeiteState
     }
   }
 
+  /// Neue Abrechnung ohne Entwurf von heute (Run 490): ein EC-Feld je in
+  /// den Einstellungen eingetragenem Terminal, TID vorausgefüllt. Ohne
+  /// Terminals bleibt es bei einem leeren Feld wie bisher.
+  Future<void> _bereiteTerminalFelderVor() async {
+    final List<TerminalEintrag> terminals =
+        await TerminalIdsConfigService.ladeTerminals(widget.kinoId);
+    if (!mounted || terminals.isEmpty) return;
+    setState(() {
+      _terminals = terminals;
+      _erlaubteTids = terminals.map((TerminalEintrag t) => t.tid).toList();
+      _setzeEcBelegAnzahl(terminals.length);
+      for (int i = 0; i < terminals.length; i++) {
+        _ecBelegLabels[i] = terminals[i].tid;
+        _setzeControllerText(_ecBelegLabelController[i], terminals[i].tid);
+        // Zugeklappt: Scannen geht direkt über den Kamera-Knopf im Titel.
+        if (terminals.length > 1) _ecUnterkachelAufgeklappt[i] = false;
+      }
+    });
+  }
+
+  /// Gerätenummer zur TID [label] aus den Einstellungen, sonst null.
+  String? _geraeteNummer(String label) {
+    final String tid = TidEingabe.bereinige(label);
+    for (final TerminalEintrag t in _terminals) {
+      if (t.tid == tid && t.nummer.isNotEmpty) return t.nummer;
+    }
+    return null;
+  }
+
+  /// Siehe [Schritt2TerminalFelder.istLeererTerminalPlatz] (Run 490).
+  bool _istLeererTerminalPlatz(int j) =>
+      Schritt2TerminalFelder.istLeererTerminalPlatz(
+        terminals: _terminals,
+        feldAnzahl: _ecBelegController.length,
+        label: _ecBelegLabels[j],
+        betragCent: _ecBelegeCent[j],
+        gescannt: j < _scanHatStattgefunden.length && _scanHatStattgefunden[j],
+        gesamtBetragText: _kartenartenGesamtBetragController[j].text,
+      );
+
+  /// Hinweis vor Schritt 3 (Run 490, Paco: nur Hinweis, nicht blockieren),
+  /// wenn für eingetragene Terminals kein Beleg erfasst ist. "Weiter ohne
+  /// Beleg" entfernt diese leeren Felder, damit sie weder als Pflichtfeld
+  /// blockieren noch als 0-€-Terminal mitgehen. Sind ALLE Felder leer,
+  /// greifen die bisherigen Prüfungen unverändert.
+  Future<bool> _bestaetigeFehlendeTerminalBelege() async {
+    final List<int> leer = <int>[
+      for (int j = 0; j < _ecBelegController.length; j++)
+        if (_istLeererTerminalPlatz(j)) j,
+    ];
+    if (leer.isEmpty || leer.length == _ecBelegController.length) return true;
+    final String geraete = leer.map((int j) {
+      final String? nr = _geraeteNummer(_ecBelegLabels[j]);
+      return '${nr == null ? '' : 'Gerät $nr · '}TID ${_ecBelegLabels[j]}';
+    }).join('\n');
+    final bool? ohne = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: const Text('Beleg fehlt'),
+        content: Text(
+          'Kein Beleg erfasst für:\n$geraete\n\n'
+          'Hatte das Gerät heute keinen Kartenumsatz?',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Beleg erfassen'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Weiter ohne Beleg'),
+          ),
+        ],
+      ),
+    );
+    if (ohne != true || !mounted) return false;
+    for (final int j in leer.reversed) {
+      _ecBelegEntfernen(j);
+    }
+    return true;
+  }
+
   Future<void> _ladeEntwurf() async {
     final Map<String, dynamic>? daten =
         await LokalerSpeicher.ladeSchritt2Entwurf(widget.kinoId);
     if (daten == null || !mounted) {
       if (mounted) setState(() { _laedt = false; });
+      await _bereiteTerminalFelderVor();
       return;
     }
     final String? gespeichertesDatum = daten['isoDatum'] as String?;
     if (gespeichertesDatum != DatumsHelper.logischesIsoDatum()) {
       setState(() { _laedt = false; });
+      await _bereiteTerminalFelderVor();
       return;
     }
 
@@ -746,6 +841,8 @@ class _TagesabschlussSchritt2SeiteState
   /// unverändert, auch beim Sprung — bricht der MA einen Dialog ab, bleibt
   /// er auf dieser (echten, ausfüllbaren) Seite stehen.
   Future<void> _weiterZuSchritt3({int? zielSchrittBeimSprung}) async {
+    if (!await _bestaetigeFehlendeTerminalBelege()) return;
+    if (!mounted) return;
     if (!await _pruefePflichtfelderVorSchritt3()) {
       return;
     }
@@ -1584,6 +1681,12 @@ class _TagesabschlussSchritt2SeiteState
           return;
         }
         final BelegScanErgebnis geprueftes = ergebnis;
+        belegIndex = Schritt2TerminalFelder.zielIndex(
+          gescannteTid: geprueftes.terminalId,
+          belegIndex: belegIndex,
+          labels: _ecBelegLabels,
+          istLeer: _istLeererTerminalPlatz,
+        );
         final List<BelegScanZeilenVorschau> vorschauZeilen =
             _baueScanVorschauZeilen(geprueftes, belegIndex);
         final String? tidKonfigWarnung =
@@ -2558,7 +2661,11 @@ class _TagesabschlussSchritt2SeiteState
     final int ecGesamtCent = TagesabschlussBerechnung.summeCentBetraege(_ecBelegeCent);
     final bool hatEcBelege = _scanHatStattgefunden.any((bool b) => b) || ecGesamtCent > 0;
     final int belegeWithData = List.generate(_ecBelegController.length, (int j) => j)
-        .where((int j) => _ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty)
+        .where(
+          (int j) =>
+              (_ecBelegeCent[j] > 0 || _ecBelegLabels[j].isNotEmpty) &&
+              !_istLeererTerminalPlatz(j),
+        )
         .length;
     final bool ecBeleg0ZeigeReadModus =
         _scanHatStattgefunden.isNotEmpty &&
@@ -2606,6 +2713,7 @@ class _TagesabschlussSchritt2SeiteState
             labelController: _ecBelegLabelController,
             labelFocusNode: _ecBelegLabelFocusNode,
             labels: _ecBelegLabels,
+            geraeteNummer: _geraeteNummer,
             betraegeCent: _ecBelegeCent,
             tidUnleserlich: _subKachelTidUnleserlich,
             scanLaeuft: _scanLaeuft,

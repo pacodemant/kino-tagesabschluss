@@ -9,6 +9,24 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 490: Eingabe nach Terminal-Anzahl des Standorts.
+  - Kino.anzahlTerminals (SB 3, AT 1, CO 1, BT/GO vorerst 4, Paco
+    2026-10-16: in SB/AT/CO nur noch neue Geräte). Kachel "TIDs" zeigt
+    so viele Zeilen (mindestens die schon gespeicherten).
+  - Schritt 2, neue Abrechnung ohne Entwurf von heute: ein EC-Feld je
+    eingetragenem Terminal, TID vorausgefüllt, im Mehrbeleg-Modus
+    zugeklappt; Titel "Gerät <Nr.> · TID …" statt "#<i> · TID …".
+  - Scan: Beleg landet im noch leeren Feld seiner TID, egal welches
+    Feld angetippt war (sonst wie bisher im angetippten Feld).
+  - Weiter: fehlt der Beleg eines Geräts, Hinweis "Beleg fehlt" mit
+    "Beleg erfassen" / "Weiter ohne Beleg" (Paco: nur Hinweis). Weiter
+    ohne entfernt die leeren Felder (sonst Pflichtfeld-Fehler bzw.
+    0-€-Terminal). Kopfzeile zählt leere Geräte-Felder nicht mit.
+  - Regeln in schritt2_terminal_felder.dart (Unit-Tests). Im Browser
+    geprüft: 3 Felder, Betrag nur bei Gerät 1, Hinweis nennt Gerät 2
+    und 3, Schritt 3 mit EC 300 €. Scan-Zuordnung nur per Unit-Test
+    (Kamera im Browser nicht auslösbar).
+
 - Run 489: "Übertrag auf Umschlag" für SB im Layout des neuen SB-
   Umschlags (Foto Paco 2026-10-16), auf der Übertrag-Seite und in der
   Verlauf-Kachel. Andere Standorte unverändert (eigene Umschläge).

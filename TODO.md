@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 489 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 490 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -314,7 +314,7 @@ um Durcheinander zu vermeiden.
       Einstellungen (TID-Prüfung + Auto-Fill Schritt 2 umstellen). Die
       Kinokassen-TID ist seit Run 486 schon eine Einstellung.
 
-- [ ] **SB: alle drei Terminal-Belege Pflicht** (aus Run 486) Weil der
+- [x] **(erledigt Run 490: nur Hinweis, Paco 2026-10-16)** **SB: alle drei Terminal-Belege Pflicht** (aus Run 486) Weil der
       Kartenumsatz der Kinokasse ins Kino SOLL einfließt, darf deren
       Beleg nicht fehlen. Pflicht für alle 3 SB-Geräte plus Hintertür,
       falls ein Beleg technisch nicht zu ziehen ist — Paco überlegt noch.

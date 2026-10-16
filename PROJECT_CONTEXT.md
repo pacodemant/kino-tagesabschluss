@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.144+489 · Run 489
+Version: 0.9.145+490 · Run 490
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 489)
+## Laufender Entwicklungsstand (Run 490)
+
+- Run 490 Schritt 2: ein EC-Feld je eingetragenem Terminal (TID
+  vorausgefüllt, "Gerät <Nr.>"), Scan landet im Feld seiner TID,
+  Hinweis bei fehlendem Beleg. Kino.anzahlTerminals für die Kachel
+  "TIDs".
 
 - Run 489 SB-Umschlag-Layout (EC1–EC3 nach TID-Platz, Name, Datum) auf
   Übertrag-Seite und Verlauf-Kachel, gemeinsame Quelle
