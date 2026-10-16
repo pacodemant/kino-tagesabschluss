@@ -5,12 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce/hive.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_differenz_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
 import 'package:kino_bar_app/pages/uebertrag_umschlag_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_detail_seite.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
+import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Simuliert einen SB-Abend mit drei Terminal-Belegen (Run 486a), statt
@@ -93,12 +93,13 @@ void main() {
     return gespeichert!;
   }
 
-  String sektionText(WidgetTester tester, Type sektion) {
-    final Iterable<Text> texte = tester.widgetList<Text>(
-      find.descendant(of: find.byType(sektion), matching: find.byType(Text)),
-    );
-    return texte.map((Text t) => t.data).join(' | ');
-  }
+  /// Wert der InfoZeile mit [label] (Schritt 3 zeigt SB seit Run 491c im
+  /// Umschlag-Layout, nicht mehr in den Schritt3-Sections).
+  String zeilenWert(WidgetTester tester, String label) => tester
+      .widget<InfoZeile>(
+        find.byWidgetPredicate((Widget w) => w is InfoZeile && w.label == label),
+      )
+      .wert;
 
   testWidgets(
       'Test 1+3: TID Kinokasse gesetzt -> Schritt 3, Übertrag-Seite und '
@@ -110,12 +111,12 @@ void main() {
     });
     final TagesabschlussFinal abschluss = await schritt3Aufbauen(tester);
 
-    // Schritt 3
-    final String soll = sektionText(tester, Schritt3SollSection);
-    expect(soll, contains('+ Kino Soll | 1.250,00 €'));
-    expect(soll, contains('davon Karte Kinokasse | 250,00 €'));
-    expect(soll, contains('= Gesamt Soll | 1.750,00 €'));
-    expect(sektionText(tester, Schritt3DifferenzSection), contains('0,00 €'));
+    // Schritt 3 (SB-Umschlag-Layout seit Run 491c)
+    expect(zeilenWert(tester, '+ KINO SOLL'), '1.250,00 €');
+    expect(find.text('davon Karte Kinokasse'), findsOneWidget);
+    expect(zeilenWert(tester, '= Gesamt SOLL'), '1.750,00 €');
+    expect(zeilenWert(tester, 'Differenz'), '0,00 €');
+    expect(find.byType(Schritt3SollSection), findsNothing);
 
     // Gespeicherter Verlaufseintrag
     expect(abschluss.kinoSollCent, 100000);
@@ -170,8 +171,7 @@ void main() {
     setUpMitPrefs(<String, Object>{});
     final TagesabschlussFinal abschluss = await schritt3Aufbauen(tester);
 
-    final String soll = sektionText(tester, Schritt3SollSection);
-    expect(soll, contains('+ Kino Soll | 1.000,00 €'));
+    expect(zeilenWert(tester, '+ KINO SOLL'), '1.000,00 €');
     expect(find.text('davon Karte Kinokasse'), findsNothing);
     expect(abschluss.kinokasseKarteCent, 0);
     expect(abschluss.differenzGesamtCent, 25000);

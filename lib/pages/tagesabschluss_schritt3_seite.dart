@@ -20,7 +20,9 @@ import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.da
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
+import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
@@ -199,6 +201,9 @@ class _TagesabschlussSchritt3SeiteState
   // TID des am Kino-Kassensystem angeschlossenen Terminals (Einstellung,
   // Run 486) – leer, solange nicht geladen oder nicht konfiguriert.
   String _kinokasseTid = '';
+
+  // Terminals aus den Einstellungen: EC1–EC3 im SB-Umschlag (Run 491c).
+  List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
 
   // Server-Antworten des letzten echten Versands dieser Sitzung (ensure +
   // settlements, seit Run 476 beide) — null, solange in dieser Sitzung
@@ -411,6 +416,9 @@ class _TagesabschlussSchritt3SeiteState
     final bool devModusAktiv = await DevModus.istAktiv();
     if (!mounted) return;
     setState(() => _devModusAktiv = devModusAktiv);
+    _terminals = await TerminalIdsConfigService.ladeTerminals(
+      widget.argumente.kinoId,
+    );
     _kinokasseTid = await TerminalIdsConfigService.ladeKinokasseTid(
       widget.argumente.kinoId,
     );
@@ -1245,6 +1253,21 @@ class _TagesabschlussSchritt3SeiteState
             kinoName: widget.argumente.kinoName,
             datum: _deutschesDatum(DatumsHelper.logischerAbrechnungsTag()),
           ),
+          // SB: Felder wie auf dem neuen SB-Umschlag, EC je Terminal
+          // (Run 491c, gleiche Quelle wie Übertrag-Seite und Verlauf).
+          if (UebertragUmschlagInhalt.hatSbUmschlag(widget.argumente.kinoId))
+            for (final List<Widget> zeilen in UebertragUmschlagInhalt.rahmen(
+              vorschau,
+              _terminals,
+            ))
+              Card(
+                margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(children: zeilen),
+                ),
+              )
+          else ...<Widget>[
           Schritt3DifferenzAnfangsbestandSection(
             differenzAnfangsbestandCent:
                 vorschau.differenzAnfangsbestandCent,
@@ -1268,6 +1291,7 @@ class _TagesabschlussSchritt3SeiteState
             differenzCent: differenzCent,
             differenzFarbe: differenzFarbe,
           ),
+          ],
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Schritt3AnmerkungSection(

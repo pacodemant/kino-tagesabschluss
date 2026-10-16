@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 491c: Schritt 3 zeigt bei SB die Felder des neuen SB-Umschlags
+  (EC1–EC3 je Terminal mit Gesamtbetrag, BAR IST, Differenz, Datum),
+  gleiche Quelle wie Übertrag-Seite und Verlauf
+  (UebertragUmschlagInhalt). Andere Standorte unverändert. Name fehlt
+  in Schritt 3 (steht dort noch nicht fest). Zwei Run-486-Tests auf
+  das neue Layout umgestellt. Im Browser geprüft (Dev-Daten SB:
+  EC1 192,74 / EC2 192,73 / EC3 192,73, Differenz 0,00 €).
+
 - Run 491b: Dev-Testdaten Schritt 1 vollständiger: kleine Rollen (50/20/
   10 ct) und Kupfermünzen (5 ct 1,50 €, 2 ct 0,80 €, 1 ct 0,30 € =
   2,60 €, durch 10 ct teilbar) befüllt, Kupfer-Bereich wird beim
