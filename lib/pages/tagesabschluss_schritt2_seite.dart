@@ -1561,20 +1561,21 @@ class _TagesabschlussSchritt2SeiteState
       );
       _setzeControllerText(_ausgaben[0].labelController, '');
       _setzeControllerText(_differenzAnfangsbestandController, '');
-      // Mehrere Terminals: je Beleg der ganze Anteil als Girocard.
+      // Mehrere Terminals: je Beleg ein anderer Kartenmix (Run 492a).
       if (anteile.length > 1) {
         for (int i = 0; i < anteile.length && i < _zahlungsartZeilen.length; i++) {
-          if (_zahlungsartZeilen[i].isEmpty) continue;
-          final int idx = _zahlungsartZeilen[i]
-              .indexWhere((ZahlungsartZeile z) => z.name == 'Girocard');
-          final ZahlungsartZeile zeile =
-              _zahlungsartZeilen[i][idx >= 0 ? idx : 0];
-          zeile.betragCentWert = anteile[i];
-          zeile.zustand = ZeilenZustand.shown;
-          _setzeControllerText(
-            zeile.betragController,
-            TagesabschlussFormatierung.formatiereEuroEingabe(anteile[i]),
-          );
+          final Map<String, int> karten =
+              Schritt2TerminalFelder.devKartenAufteilung(anteile[i], i);
+          for (final ZahlungsartZeile zeile in _zahlungsartZeilen[i]) {
+            final int? betrag = karten[zeile.name];
+            if (betrag == null || betrag == 0) continue;
+            zeile.betragCentWert = betrag;
+            zeile.zustand = ZeilenZustand.shown;
+            _setzeControllerText(
+              zeile.betragController,
+              TagesabschlussFormatierung.formatiereEuroEingabe(betrag),
+            );
+          }
         }
       }
       // Ein Beleg: Zahlungsarten aus Auto-Fill-Daten (wie bisher)

@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 492a: Dev-Auto-Fill mit realistischeren Belegen: EC-Testsumme
+  nach Gewichten 9:5:3(:2) auf die Terminals verteilt (SB: 306,12 /
+  170,05 / 102,03 € statt 3x ~192,7 €) und je Beleg ein anderer
+  Kartenmix (Girocard+MasterCard+Visa, Girocard+Maestro,
+  Girocard+Visa+V Pay, Girocard+SEPA Lastschrift; Rest-Cent an
+  Girocard). Unit-Tests angepasst/ergänzt, im Browser geprüft.
+
 - Run 492: Alle eingetragenen Terminals sind Pflicht, Knopf "heute
   keine Umsätze" (ersetzt den Hinweis "Weiter ohne Beleg" aus Run 490).
   - Schritt 2: unter jedem Geräte-Feld ohne Beleg der Knopf "heute

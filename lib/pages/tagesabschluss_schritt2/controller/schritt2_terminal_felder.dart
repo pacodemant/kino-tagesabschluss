@@ -43,14 +43,41 @@ class Schritt2TerminalFelder {
     return belegIndex;
   }
 
-  /// Dev-Auto-Fill (Run 491): verteilt die EC-Testsumme gleichmäßig auf
-  /// [anzahl] Terminals, der Rest-Cent geht an das erste. Mindestens ein
-  /// Anteil, auch ohne eingetragene Terminals.
+  /// Dev-Auto-Fill (Run 491, ungleich seit 492a): verteilt die EC-
+  /// Testsumme nach festen, deutlich verschiedenen Gewichten auf [anzahl]
+  /// Terminals, der Rest-Cent geht an das erste. Mindestens ein Anteil,
+  /// auch ohne eingetragene Terminals.
   static List<int> devAufteilung(int gesamtCent, int anzahl) {
+    const List<int> gewichte = <int>[9, 5, 3, 2];
     final int n = anzahl < 1 ? 1 : anzahl;
-    final int basis = gesamtCent ~/ n;
-    return <int>[
-      for (int i = 0; i < n; i++) i == 0 ? gesamtCent - basis * (n - 1) : basis,
+    final List<int> g = <int>[
+      for (int i = 0; i < n; i++) gewichte[i % gewichte.length],
     ];
+    final int summeGewichte = g.fold(0, (int s, int x) => s + x);
+    final List<int> anteile = <int>[
+      for (int i = 0; i < n; i++) gesamtCent * g[i] ~/ summeGewichte,
+    ];
+    final int rest = gesamtCent - anteile.fold(0, (int s, int x) => s + x);
+    anteile[0] += rest;
+    return anteile;
+  }
+
+  /// Dev-Auto-Fill (Run 492a): je Beleg ein anderer Kartenmix (Prozent),
+  /// der Rest-Cent geht an Girocard, Summe = [betragCent].
+  static Map<String, int> devKartenAufteilung(int betragCent, int belegIndex) {
+    const List<Map<String, int>> muster = <Map<String, int>>[
+      <String, int>{'Girocard': 60, 'MasterCard': 25, 'Visa': 15},
+      <String, int>{'Girocard': 70, 'Maestro': 30},
+      <String, int>{'Girocard': 45, 'Visa': 35, 'V Pay': 20},
+      <String, int>{'Girocard': 80, 'SEPA Lastschrift': 20},
+    ];
+    final Map<String, int> prozent = muster[belegIndex % muster.length];
+    final Map<String, int> ergebnis = <String, int>{
+      for (final MapEntry<String, int> e in prozent.entries)
+        if (e.key != 'Girocard') e.key: betragCent * e.value ~/ 100,
+    };
+    ergebnis['Girocard'] =
+        betragCent - ergebnis.values.fold(0, (int s, int x) => s + x);
+    return ergebnis;
   }
 }
