@@ -103,7 +103,7 @@ void main() {
 
   testWidgets(
       'Test 1+3: TID Kinokasse gesetzt -> Schritt 3, Übertrag-Seite und '
-      'Verlauf zeigen Kino Soll 1.250,00 inkl. "davon Karte Kinokasse '
+      'Verlauf zeigen Kino Soll 1.250,00 inkl. "davon Kartenterminal 60561997 '
       '250,00", Kasse geht auf (Differenz 0,00)',
       (WidgetTester tester) async {
     setUpMitPrefs(<String, Object>{
@@ -112,8 +112,8 @@ void main() {
     final TagesabschlussFinal abschluss = await schritt3Aufbauen(tester);
 
     // Schritt 3 (SB-Umschlag-Layout seit Run 491c)
-    expect(zeilenWert(tester, '+ KINO SOLL'), '1.250,00 €');
-    expect(find.text('davon Karte Kinokasse'), findsOneWidget);
+    expect(zeilenWert(tester, '+ Kino SOLL (f. Umschlag)'), '1.250,00 €');
+    expect(find.text('davon Kartenterminal 60561997'), findsOneWidget);
     expect(zeilenWert(tester, '= Gesamt SOLL'), '1.750,00 €');
     expect(zeilenWert(tester, 'Differenz'), '0,00 €');
     expect(find.byType(Schritt3SollSection), findsNothing);
@@ -135,7 +135,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('1.250,00 €'), findsOneWidget);
-    expect(find.text('davon Karte Kinokasse'), findsOneWidget);
+    expect(find.text('davon Kartenterminal 60561997'), findsOneWidget);
     // Seit Run 489 SB-Umschlag: "davon"-Zeile + EC-Zeile des KK-Terminals
     // (einziges eingetragenes Terminal in diesem Test).
     expect(find.text('250,00 €'), findsNWidgets(2));
@@ -150,7 +150,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Kino SOLL'), findsOneWidget);
     expect(find.text('1.250,00 €'), findsOneWidget);
-    expect(find.text('davon Karte Kinokasse'), findsOneWidget);
+    expect(find.text('davon Kartenterminal 60561997'), findsOneWidget);
   });
 
   testWidgets(
@@ -171,8 +171,8 @@ void main() {
     setUpMitPrefs(<String, Object>{});
     final TagesabschlussFinal abschluss = await schritt3Aufbauen(tester);
 
-    expect(zeilenWert(tester, '+ KINO SOLL'), '1.000,00 €');
-    expect(find.text('davon Karte Kinokasse'), findsNothing);
+    expect(zeilenWert(tester, '+ Kino SOLL (f. Umschlag)'), '1.000,00 €');
+    expect(find.textContaining('davon Karte'), findsNothing);
     expect(abschluss.kinokasseKarteCent, 0);
     expect(abschluss.differenzGesamtCent, 25000);
   });
@@ -185,7 +185,7 @@ void main() {
     });
     final TagesabschlussFinal abschluss = await schritt3Aufbauen(tester);
     expect(abschluss.kinokasseKarteCent, 0);
-    expect(find.text('davon Karte Kinokasse'), findsNothing);
+    expect(find.textContaining('davon Karte'), findsNothing);
   });
 
   testWidgets(
@@ -219,6 +219,6 @@ void main() {
     // SB-Umschlag (Run 489) hat mehr Zeilen, Differenz liegt tiefer.
     await tester.scrollUntilVisible(find.text('+250,00 €'), 200);
     expect(find.text('+250,00 €'), findsOneWidget);
-    expect(find.text('davon Karte Kinokasse'), findsNothing);
+    expect(find.textContaining('davon Karte'), findsNothing);
   });
 }

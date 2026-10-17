@@ -64,9 +64,18 @@ class Schritt3SollSection extends StatelessWidget {
 /// eingegebenen Wert abweicht. Auch von uebertrag_umschlag_seite.dart und
 /// verlauf_detail_seite.dart genutzt.
 class KinokasseKarteHinweis extends StatelessWidget {
-  const KinokasseKarteHinweis({super.key, required this.kinokasseKarteCent});
+  const KinokasseKarteHinweis({
+    super.key,
+    required this.kinokasseKarteCent,
+    this.terminalTid,
+  });
 
   final int kinokasseKarteCent;
+
+  /// SB (Run 493c): TID des KK-Terminals aus den Einstellungen, Text dann
+  /// "davon Kartenterminal TID" ('' = keins markiert). null = bisheriger
+  /// Text für die übrigen Standorte.
+  final String? terminalTid;
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +83,12 @@ class KinokasseKarteHinweis extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16, bottom: 4),
       child: Row(
         children: <Widget>[
-          const Expanded(
+          Expanded(
             child: Text(
-              'davon Karte Kinokasse',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              terminalTid == null
+                  ? 'davon Karte Kinokasse'
+                  : 'davon Kartenterminal $terminalTid'.trimRight(),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ),
           Text(

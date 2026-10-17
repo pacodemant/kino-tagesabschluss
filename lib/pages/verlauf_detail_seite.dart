@@ -6,11 +6,13 @@ import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
 import 'package:kino_bar_app/models/kino.dart';
+import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
 import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
+import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
@@ -20,6 +22,7 @@ import 'package:kino_bar_app/widgets/info_zeile.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/widgets/nicht_gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 import 'package:kino_bar_app/widgets/uebertrag_umschlag_kachel.dart';
 
 class VerlaufDetailSeite extends StatefulWidget {
@@ -42,9 +45,19 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
   // (Run 479, "Korrigiert"-Badge).
   bool _korrigiert = false;
 
+  // SB: für die TID in "davon Kartenterminal" (Run 493c).
+  List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
+
   @override
   void initState() {
     super.initState();
+    if (UebertragUmschlagInhalt.hatSbUmschlag(widget.abschluss.kinoId)) {
+      TerminalIdsConfigService.ladeTerminals(widget.abschluss.kinoId).then((
+        List<TerminalEintrag> terminals,
+      ) {
+        if (mounted) setState(() => _terminals = terminals);
+      });
+    }
     ApiUploadService.tagWurdeKorrigiert(
       widget.abschluss.kinoId,
       widget.abschluss.datum,
@@ -597,6 +610,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                       if (a.kinokasseKarteCent != 0)
                         KinokasseKarteHinweis(
                           kinokasseKarteCent: a.kinokasseKarteCent,
+                          terminalTid:
+                              UebertragUmschlagInhalt.hatSbUmschlag(a.kinoId)
+                              ? UebertragUmschlagInhalt.kinokasseTid(_terminals)
+                              : null,
                         ),
                       if (hatBistro)
                         InfoZeile(label: 'Bistro SOLL', wert: _euro(a.bistroSollCent)),

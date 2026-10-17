@@ -11,6 +11,7 @@ class InfoZeile extends StatelessWidget {
     this.fett = false,
     this.farbe,
     this.stil = InfoZeileStil.unterstrichen,
+    this.zusatz = '',
   });
 
   final String label;
@@ -18,6 +19,10 @@ class InfoZeile extends StatelessWidget {
   final bool fett;
   final Color? farbe;
   final InfoZeileStil stil;
+
+  /// Kleiner grauer Text direkt hinter dem Label (nur Stil
+  /// fuehrungslinie, z. B. Gerät/TID auf dem SB-Umschlag, Run 493c).
+  final String zusatz;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +51,16 @@ class InfoZeile extends StatelessWidget {
           child: Row(
             children: <Widget>[
               Text(label, style: TextStyle(fontWeight: gewicht)),
+              if (zusatz.isNotEmpty) ...<Widget>[
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    zusatz,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
               const SizedBox(width: 4),
               const Expanded(
                 child: CustomPaint(painter: _FuehrungsLiniePainter()),

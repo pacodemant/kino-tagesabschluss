@@ -116,29 +116,29 @@ class UebertragUmschlagInhalt {
     return zeilen;
   }
 
+  /// TID des Terminals mit KK-Häkchen ('' = keins markiert), Run 493c.
+  static String kinokasseTid(List<TerminalEintrag> terminals) {
+    for (final TerminalEintrag t in terminals) {
+      if (t.kinokasse) return t.tid;
+    }
+    return '';
+  }
+
   static String _euro(int cent) =>
       TagesabschlussFormatierung.formatiereEuro(cent);
 
-  static Widget _zeile(String label, String wert, {bool fett = false}) =>
-      InfoZeile(
-        label: label,
-        wert: wert,
-        fett: fett,
-        stil: InfoZeileStil.fuehrungslinie,
-      );
-
-  static Widget _grauZeile(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 16, bottom: 4),
-        child: Text(
-          text,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-      ),
-    );
-  }
+  static Widget _zeile(
+    String label,
+    String wert, {
+    bool fett = false,
+    String zusatz = '',
+  }) => InfoZeile(
+    label: label,
+    wert: wert,
+    fett: fett,
+    stil: InfoZeileStil.fuehrungslinie,
+    zusatz: zusatz,
+  );
 
   /// Inhalt in Rahmen gegliedert (je Rahmen eine Liste von Zeilen).
   static List<List<Widget>> rahmen(
@@ -199,18 +199,20 @@ class UebertragUmschlagInhalt {
         ),
       ],
       <Widget>[
-        _zeile('+ KINO SOLL', _euro(a.kinoSollUebertragCent)),
+        _zeile('+ Kino SOLL (f. Umschlag)', _euro(a.kinoSollUebertragCent)),
         if (a.kinokasseKarteCent != 0)
-          KinokasseKarteHinweis(kinokasseKarteCent: a.kinokasseKarteCent),
+          KinokasseKarteHinweis(
+            kinokasseKarteCent: a.kinokasseKarteCent,
+            terminalTid: kinokasseTid(terminals),
+          ),
         _zeile('+ BISTRO SOLL', _euro(a.bistroSollCent)),
         _zeile('- Ausgaben', _euro(a.ausgabenCent)),
         _zeile('= Gesamt SOLL', _euro(a.gesamtSollCent), fett: true),
       ],
       <Widget>[
-        for (final UmschlagEcZeile z in ecZeilenSb(a, terminals)) ...<Widget>[
-          _zeile(z.label, _euro(z.cent)),
-          if (z.info.isNotEmpty) _grauZeile(z.info),
-        ],
+        // Gerät/TID in derselben Zeile wie "EC1 IST" (Run 493c).
+        for (final UmschlagEcZeile z in ecZeilenSb(a, terminals))
+          _zeile(z.label, _euro(z.cent), zusatz: z.info),
         _zeile('+ BAR IST', _euro(a.barBestandAbzglWechselgeldCent)),
         _zeile('= Gesamt IST', _euro(a.gesamtIstCent), fett: true),
       ],

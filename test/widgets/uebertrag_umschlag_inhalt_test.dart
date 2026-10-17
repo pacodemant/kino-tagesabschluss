@@ -118,7 +118,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('+ KINO SOLL'), findsOneWidget);
+    expect(find.text('+ Kino SOLL (f. Umschlag)'), findsOneWidget);
     expect(find.text('+ EC1 IST'), findsOneWidget);
     expect(find.text('Gerät 1 · TID 60561994'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('Name'), 200);

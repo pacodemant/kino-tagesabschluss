@@ -27,6 +27,7 @@ import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/services/zahlungsarten_config_service.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
@@ -2915,7 +2916,12 @@ class _TagesabschlussSchritt2SeiteState
       ),
       vorzeichenToggleDifferenz: _vorzeichenToggleDifferenz,
       kinoSollEingabeZeile: _baueEingabeZeile(
-        label: _hatBistro ? 'Kino SOLL' : 'Gesamt SOLL',
+        // SB: "(KK)" = Kinokasse (Run 493c).
+        label: !_hatBistro
+            ? 'Gesamt SOLL'
+            : UebertragUmschlagInhalt.hatSbUmschlag(widget.kinoId)
+            ? 'Kino SOLL (KK)'
+            : 'Kino SOLL',
         controller: _kinoSollController,
         focusNode: _kinoSollFocusNode,
         fehlermeldungText: _pflichtfeldFehlertext(
