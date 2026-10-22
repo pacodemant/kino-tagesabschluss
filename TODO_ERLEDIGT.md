@@ -429,6 +429,46 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       aus editierbaren Einstellungen-Feldern. Diese zwei Teilaspekte
       bleiben als eigener, kleinerer Punkt in TODO.md offen. *(Run 399)*
 
+- [x] **(erledigt Run 488)** **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
+      `config/terminal_ids.json`) ist seit Run 399 umgesetzt, seit
+      Run 399a6 direkt im Bestätigungs-Popup nach dem BelegScan in
+      Schritt 2 sichtbar statt erst beim Upload in Schritt 3 — der MA
+      sieht eine Abweichung damit sofort. Seit Run 414 ist der Abgleich
+      an allen drei Stellen (Scan-Popup, Weiter-Button Schritt 2→3,
+      Senden) blockierend statt nur ein weicher Hinweis (Paco-
+      Entscheidung: TID ist eindeutig, falsche Ziffer wird abgelehnt).
+      Im Scan-Popup bleibt "übernehmen" bei Abweichung aktiv (Run 414a,
+      Korrektur zu Run 414), übernimmt dabei aber bewusst nicht die
+      erkannte falsche TID — Feld bleibt leer, zeigt automatisch den
+      "TID unleserlich"-Zustand (rot) und wird fokussiert, MA trägt die
+      TID manuell nach.
+      Weiterhin offen: eigene, editierbare Felder pro Standort in den
+      Einstellungen statt der statischen JSON-Datei (siehe auch
+      blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte
+      bis auf SB von Yannik noch nicht bestätigt; da der Abgleich jetzt
+      blockierend ist, hat eine falsche/unvollständige Referenzliste
+      ein höheres Gewicht als vorher).
+
+- [x] **(erledigt Run 488)** **TIDs aus der App raus in die Einstellungen** Yannik (14.10.):
+      TIDs dürfen nicht im Code stehen. `config/terminal_ids.json` wird
+      als Asset ausgeliefert (in der PWA öffentlich abrufbar). Klären,
+      ob er das auch meint; dann alle TIDs pro Gerät/Standort in die
+      Einstellungen (TID-Prüfung + Auto-Fill Schritt 2 umstellen). Die
+      Kinokassen-TID ist seit Run 486 schon eine Einstellung.
+
+- [x] **(erledigt Run 490/492: Pflicht + "heute keine Umsätze", Paco 2026-10-16)** **SB: alle drei Terminal-Belege Pflicht** (aus Run 486) Weil der
+      Kartenumsatz der Kinokasse ins Kino SOLL einfließt, darf deren
+      Beleg nicht fehlen. Pflicht für alle 3 SB-Geräte plus Hintertür,
+      falls ein Beleg technisch nicht zu ziehen ist — Paco überlegt noch.
+      Verschoben aus TODO.md im Analyse-Run Handnotizen (Run 493d,
+      2026-10-22) — die drei Punkte waren schon als erledigt markiert,
+      standen aber noch in TODO.md. Nachgeprüft: config/terminal_ids.json
+      ist gelöscht und nicht mehr in pubspec.yaml gelistet, TIDs kommen
+      nur noch aus den Geräte-Einstellungen (Key `terminals_<kinoId>`,
+      terminal_ids_config_service.dart); der Alt-Key der
+      Kinokassen-TID (Run 486) wird weiter gelesen, damit vor Ort
+      eingegebene Werte erhalten bleiben.
+
 ### Flurbocash API-Integration *(Phase E — wartet auf IT)*
 
 - [x] **location_id ins Kino-Modell** *(Run 493)* Umgesetzt als zwei

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 493b · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 493d · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -52,7 +52,149 @@ um Durcheinander zu vermeiden.
 
 ---
 
+## 🟠 Sendestatus & Belegfotos (Analyse Handnotizen, Run 493d)
+
+Aus dem Abgleich von Pacos Handnotizen (2026-10-22). Die Punkte hängen
+zusammen und sollten in dieser Reihenfolge angegangen werden; der erste
+ist vermutlich die gemeinsame Ursache für "rotes Icon trotz Senden" und
+"Badges unzuverlässig". Nachstellung: test/analyse/
+handnotizen_sendestatus_test.dart (hält das IST-Verhalten fest; nach
+einem Fix den jeweiligen Test auf das neue Soll umdrehen).
+
+- [ ] **Sende-Signatur enthält Belegfotos in voller Auflösung →
+      Speicher voll → Gesendet-Status geht verloren** (Notiz 8/12)
+      BESTEHT. `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart)
+      ist `settlementsBody()` ohne `sent_at` — inklusive
+      `receipt_photo` (unkomprimiert, `ImagePicker().pickImage()` ohne
+      `maxWidth`/`imageQuality`). Sie wird per SharedPreferences als
+      `sende_bestaetigung_<kinoId>` gespeichert, im Browser also im
+      localStorage (ca. 5 MB je Origin). Bei 1–3 Handyfotos (je
+      mehrere MB Base64) ist das voll — genau der QuotaExceededError
+      vom 16.09. (`flutter.sende_bestaetigung_kino_01`). Run 450 hat
+      den Fehler nur abgefangen, nicht die Ursache behoben.
+      Folge in `_speichereLokalenSendeMerker()`: der erste Schreib-
+      vorgang wirft, alle folgenden laufen nicht mehr — kein
+      Sendedatum (Startseite ohne grünen Haken), kein `gesendetAm` im
+      Verlauf ("Nicht gesendet"-Badge), roter Merker aus einem
+      früheren Fehlversuch wird nicht gelöscht (Startseite rot), nach
+      erneutem Öffnen von Schritt 3 grau + "Korrektur an Büro senden".
+      Im Moment des Sendens sieht die MA trotzdem "Abrechnung
+      gesendet" (Status nur im Arbeitsspeicher). Erklärt auch den
+      Eindruck "iOS und Android verhalten sich unterschiedlich":
+      Fotogröße hängt von der Kamera ab, Speichergrenze vom Browser —
+      plattformabhängigen Code gibt es in der Statuslogik nicht
+      (einziges kIsWeb: main.dart:42).
+      Lösungsidee: Signatur ohne Fotos bilden (z. B. nur Hash/Länge je
+      Foto) und Fotos beim Aufnehmen verkleinern (siehe Punkt
+      "Langsamer Seitenwechsel" unten). Testnachweis: Test "Notiz 8/12"
+      (Signatur-Quelle > 3 × Fotogröße).
+
+- [ ] **Gesendet-Status aus einer Quelle statt vier** (Notiz 8/12)
+      BESTEHT. Heute bestimmen vier getrennt gespeicherte Merker den
+      Status: (1) `sende_bestaetigung_datum_<kinoId>` → grüner Haken
+      Startseite; (2) `versand_nicht_bestaetigt_datum_<kinoId>` → rotes
+      Icon Startseite/Schritt 3; (3) `gesendetAm` im Verlaufseintrag →
+      "Nicht gesendet"-Badge Verlauf/Verlauf-Detail; (4) FC-Zuordnung
+      `flurbocash_settlement_<kino>_<datum>` → Button-Text "Korrektur"
+      und "Korrigiert"-Badge. Sie werden an verschiedenen Stellen
+      gesetzt und können auseinanderlaufen. Konkrete Lücke: "Erneut
+      senden" im Verlauf-Detail (verlauf_detail_seite.dart,
+      `_erneuthSenden()`) setzt (3) und löscht (2), schreibt aber (1)
+      nie — nach erfolgreichem Senden von dort zeigt die Startseite
+      keinen grünen Haken. Umgekehrt setzt ein Fehlversuch für einen
+      ALTEN Verlaufseintrag (2) mit dem HEUTIGEN Datum → Startseite
+      rot, obwohl es um einen anderen Tag geht. Zum Neuladen nach dem
+      Senden: Startseite lädt nur in initState()/didPopNext() (siehe
+      Punkt "5-Uhr-Knick" unten), Verlauf-Liste lädt nach Rückkehr neu
+      (Run 396). Gewünscht (Paco): Logik zentral für alle Standorte —
+      ist sie bereits (alles je kinoId, keine Standort-Sonderwege),
+      aber verteilt auf drei Seiten statt einem Status-Service.
+      Vorschlag: ein `SendeStatusService` mit einer Funktion
+      `statusFuer(kinoId, tag)` → nie versucht / läuft / gesendet /
+      nicht bestätigt / Korrektur offen; Startseite, Schritt 3,
+      Verlauf und Verlauf-Detail lesen nur noch daraus. Verwandt:
+      "Grünes 'gesendet'-Badge im Verlauf" (Abschnitt Verlauf).
+
+- [ ] **Rotes Icon schon während des Sendens** (Notiz 1) BESTEHT.
+      `_doApiUpload()` setzt zu Beginn `_uploadVersucht = true`; der
+      Getter `_sendenNichtBestaetigt` (= versucht und noch nicht
+      gesendet) ist damit während des laufenden Uploads wahr → Icon
+      `Icons.error` rot (tagesabschluss_schritt3_seite.dart, Icon im
+      Senden-Button). Gewünscht: während des Sendens ein
+      Fortschritts-Kreis (Vorbild: verlauf_detail_seite.dart hat das
+      schon, "Wird gesendet..."), rot erst bei Fehlschlag. Fix klein:
+      Bedingung um `!_apiUploadLaeuft` ergänzen + Kreis anzeigen.
+      Testnachweis: Test "Notiz 1".
+
+- [ ] **Kommentar nach dem Senden ändern → keine Korrektur möglich**
+      (Notiz 9) BESTEHT, Teilaspekt. Wird nach erfolgreichem Senden
+      auf derselben Schritt-3-Seite noch der Kommentar geändert (geht
+      als `note` an FC), bleibt `_apiUploadErledigt` true: Button zeigt
+      weiter "Abrechnung an Büro senden" + grünen Haken, Antippen
+      zeigt "Du hast die Abrechnung bereits gesendet." — die Korrektur
+      geht nicht raus. Testnachweis: Test "Notiz 9". Ursache: der
+      Signatur-Vergleich läuft nur beim Öffnen der Seite, nicht nach
+      Änderungen auf der Seite. Hinweis: Änderungen an Werten, die FC
+      gar nicht bekommt (Kino-/Bistro-SOLL, Ausgaben, Differenz im
+      Anfangsbestand), führen bewusst zu "bereits gesendet" (Run 482)
+      — evtl. war das Pacos Beobachtung, siehe Frage im Bericht.
+      Zusätzlich wird nach einem verlorenen Sende-Merker (erster Punkt
+      oben) fälschlich "Korrektur an Büro senden" angeboten.
+
+- [ ] **Langsamer Seitenwechsel nach dem Scannen** (Notiz 7) BESTEHT
+      (Ursache wahrscheinlich, Browser-Zeit nicht gemessen). Die
+      Weitergabe per Seitenargument kostet kaum etwas (Dart übergibt
+      Listen per Referenz). Teuer ist, was mit den Fotos passiert:
+      (a) Schritt 2 schreibt bei JEDER Feldänderung den kompletten
+      Entwurf inkl. aller Fotos als JSON nach Hive
+      (`_speichereEntwurf()`, ~20 Aufrufer); (b) beim Öffnen von
+      Schritt 3 komprimiert der Auto-Save jedes Foto in reinem Dart
+      (`BelegFotoKomprimierung`, Paket `image`) auf dem einzigen
+      Browser-Thread — gemessen in der Dart-VM ~1,1 s je 12-MP-Foto
+      (Test-Rauschbild, 7 MB Base64), im Browser vermutlich deutlich
+      langsamer; jedes erneute Öffnen von Schritt 3 komprimiert
+      erneut; (c) Signatur (jsonEncode inkl. Fotos) beim Öffnen und
+      Senden. Bilddaten liegen: Arbeitsspeicher Schritt 2/3,
+      Hive-Entwurf Schritt 2 (Original), Verlauf (komprimiert),
+      localStorage-Signatur (Original). Grundsatzfrage zentraler
+      Speicher: Die Daten SIND schon zentral (AbrechnungSpeicher für
+      Schritt 1, Schritt-2-Entwurf in Hive) — das Problem ist nicht
+      der Ort, sondern Originalgröße + wiederholtes Serialisieren.
+      Vorschlag: Foto direkt beim Aufnehmen verkleinern
+      (`pickImage(maxWidth: ~2000, imageQuality: ~80)`, erledigt der
+      Browser/das OS schnell), Fotos einmalig separat speichern (eigener
+      Hive-Key je Foto, nicht im Entwurf), Signatur ohne Fotos.
+      ENTSCHEIDUNG NÖTIG: Run 451 legte fest "an FC in voller
+      Auflösung" — reicht FC auch ein lesbares, verkleinertes Foto?
+
+---
+
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
+
+- [ ] **Weiteres Terminal: Beträge erst nach "Fertig" → "Belegdaten
+      bearbeiten" eingebbar** (Notiz 11) BESTEHT (im Code nachgewiesen,
+      kein automatischer Test — Seiten-Test für Schritt 2 wäre sehr
+      aufwendig). `_ecBelegHinzufuegen()` (tagesabschluss_schritt2_
+      seite.dart) setzt nur `_ecUnterkachelEditModus` = true (TID-Feld
+      + Link "Fertig."), die neuen Kartenart-Zeilen bleiben aber im
+      Zustand `ZeilenZustand.hidden` und werden in
+      `Schritt2ZahlungsartenTabelle` gar nicht gezeichnet. Erst
+      `_manuellBearbeitenAktivieren()` (Link "Belegdaten bearbeiten")
+      setzt sie auf `editing`. Betrifft auch Felder, die
+      `_pruefeAlleTerminalsErfasst()` ("Beleg fehlt") nachträglich
+      anlegt. Fix: beim Hinzufügen die Zeilen gleich auf `editing`
+      setzen (wie `_manuellBearbeitenAktivieren`).
+
+- [ ] **Echte TIDs in Code-Kommentar und Unit-Tests** (Notiz 10, Rest)
+      Im App-Code steht keine TID mehr, die im Betrieb greift. Übrig:
+      ein Kommentar mit echter SB-TID (api_upload_service.dart:586,
+      wird beim Web-Build entfernt, steht aber im Repo) und echte TIDs
+      als Beispielwerte in test/ (api_upload_service_test.dart,
+      kinokasse_karte_uebertrag_test.dart, tid_eingabe_test.dart,
+      terminal_ids_config_service_test.dart). Laut Memo sind Beispiel-
+      TIDs in Tests ok — ENTSCHEIDUNG: durch erfundene Werte (z. B.
+      12345678) ersetzen? Die gelöschte config/terminal_ids.json steht
+      zudem weiter in der Git-Historie.
 
 - [ ] **Wechselgeldbestand für den Folgetag: Schritt unverständlich**
       Rückmeldung Yannik (Mail 02.10.2026) nach seiner eigenen
@@ -285,39 +427,33 @@ um Durcheinander zu vermeiden.
       Problem zeigen (z. B. über Rücklaufquote fehlerhafter Scans) —
       aktuell kein konkreter Auslöser/Beleg dafür bekannt.
 
+- [ ] **Datumsprüfung der EC-Belegscans** (Notiz 2) ENTSCHEIDUNG
+      NÖTIG. Gibt es bisher nicht: Der Scan liefert `datum` (Prompt in
+      beleg_scan_service.dart), das Bestätigungs-Popup zeigt es nur an
+      (beleg_scan_bestaetigen_dialog.dart:61), ein Vergleich mit dem
+      Abrechnungstag findet nirgends statt. Dazu speichert Schritt 2
+      Datum/Uhrzeit/Beleg-Nr. nur EINMAL pro Abrechnung
+      (`_scanDatum` usw.), nicht je Beleg. Einschätzung: sinnvoll als
+      weicher Hinweis im Scan-Popup ("Beleg ist vom 20.10., heute ist
+      der 22.10. — richtiger Kassenschnitt?"), weil ein
+      Vortags-Kassenschnitt sonst unbemerkt doppelt gezählt wird.
+      Zu beachten: 5-Uhr-Knick (Kassenschnitt kurz nach Mitternacht
+      trägt das Folgedatum = logischer Abrechnungstag +1 ist ok),
+      KI liest Datum evtl. nicht (null → keine Prüfung). Nicht
+      blockierend vorschlagen. Paco entscheidet: weicher Hinweis ja/nein.
+
+- [ ] **EC-Terminal ohne Umsatz: muss es einen Beleg drucken?**
+      (Notiz 3) OFFENE FACHFRAGE, nicht von der App zu beantworten —
+      mit Steuerberatung/Buchhaltung klären (fiskalisch). App-Stand
+      (Run 492, siehe TODO_ERLEDIGT.md): Je eingetragenem Terminal ist
+      Pflicht: Betrag ODER Knopf "heute keine Umsätze" (geht als
+      `no_sales: true` mit 0-Beträgen an FC). Die App erzwingt NICHT,
+      dass ein Beleg gescannt/fotografiert wird — manuelle Eingabe
+      ohne Foto reicht. Falls die Antwort lautet "jeder Umsatz braucht
+      einen Beleg": zusätzlich Foto-Pflicht bei Betrag > 0 einführen
+      (eigene Entscheidung).
+
 ### Einstellungen & Konfiguration *(Phase C)*
-
-- [x] **(erledigt Run 488)** **TID-Whitelist editierbar** Der eigentliche Abgleich (TID gegen
-      `config/terminal_ids.json`) ist seit Run 399 umgesetzt, seit
-      Run 399a6 direkt im Bestätigungs-Popup nach dem BelegScan in
-      Schritt 2 sichtbar statt erst beim Upload in Schritt 3 — der MA
-      sieht eine Abweichung damit sofort. Seit Run 414 ist der Abgleich
-      an allen drei Stellen (Scan-Popup, Weiter-Button Schritt 2→3,
-      Senden) blockierend statt nur ein weicher Hinweis (Paco-
-      Entscheidung: TID ist eindeutig, falsche Ziffer wird abgelehnt).
-      Im Scan-Popup bleibt "übernehmen" bei Abweichung aktiv (Run 414a,
-      Korrektur zu Run 414), übernimmt dabei aber bewusst nicht die
-      erkannte falsche TID — Feld bleibt leer, zeigt automatisch den
-      "TID unleserlich"-Zustand (rot) und wird fokussiert, MA trägt die
-      TID manuell nach.
-      Weiterhin offen: eigene, editierbare Felder pro Standort in den
-      Einstellungen statt der statischen JSON-Datei (siehe auch
-      blockierten Punkt "Registrierte TIDs pro Standort" oben — Werte
-      bis auf SB von Yannik noch nicht bestätigt; da der Abgleich jetzt
-      blockierend ist, hat eine falsche/unvollständige Referenzliste
-      ein höheres Gewicht als vorher).
-
-- [x] **(erledigt Run 488)** **TIDs aus der App raus in die Einstellungen** Yannik (14.10.):
-      TIDs dürfen nicht im Code stehen. `config/terminal_ids.json` wird
-      als Asset ausgeliefert (in der PWA öffentlich abrufbar). Klären,
-      ob er das auch meint; dann alle TIDs pro Gerät/Standort in die
-      Einstellungen (TID-Prüfung + Auto-Fill Schritt 2 umstellen). Die
-      Kinokassen-TID ist seit Run 486 schon eine Einstellung.
-
-- [x] **(erledigt Run 490/492: Pflicht + "heute keine Umsätze", Paco 2026-10-16)** **SB: alle drei Terminal-Belege Pflicht** (aus Run 486) Weil der
-      Kartenumsatz der Kinokasse ins Kino SOLL einfließt, darf deren
-      Beleg nicht fehlen. Pflicht für alle 3 SB-Geräte plus Hintertür,
-      falls ein Beleg technisch nicht zu ziehen ist — Paco überlegt noch.
 
 - [ ] **Kino SOLL: MA-Hinweis in Schritt 2?** (aus Run 486) Ob/wie MA
       erfahren, dass die App den Kartenumsatz der Kinokasse selbst
@@ -416,6 +552,28 @@ um Durcheinander zu vermeiden.
       serverseitig eine zusaetzliche statt einer korrigierten
       Abrechnung anlegen — nicht isoliert von der "Erneut senden"-Frage
       oben zu loesen.
+      Erweitert um Notiz 6 (Analyse Run 493d): Verhalten, wenn KI-Scan-
+      oder FC-API nicht erreichbar sind — ENTSCHEIDUNG NÖTIG. IST:
+      KI-Scan (Schritt 2, `_starteEcBelegScan()`): kein Netz → SnackBar
+      "Kein Internet – Scan nicht möglich."; Fehler/HTTP-Code →
+      SnackBar mit Meldung + "Beleg kann auch manuell eingegeben
+      werden." (bei HTTP-Fehlern samt rohem Server-Text); kein Absturz.
+      FC (Schritt 3/Verlauf): Popup "Versand nicht bestätigt", Daten
+      bleiben gespeichert, rotes Icon, erneut senden möglich; kein
+      Absturz. LÜCKE bei beiden: kein Timeout (`http.post`/`http.put`
+      ohne `.timeout()` in beleg_scan_service.dart und
+      api_upload_service.dart) — antwortet ein Server gar nicht, bleibt
+      "In Arbeit …" bzw. der Ladebalken mit gesperrtem Senden-Button
+      unbegrenzt stehen (Endlosladen, nur per Browser-Abbruch beendet).
+      Vorschläge: (a) Timeout ~30 s Scan / ~45 s FC mit klarer Meldung;
+      (b) Scan: Hinweis "manuell eingeben" (gibt es schon) + Foto
+      trotzdem behalten, damit es an FC mitgeht; (c) FC: Meldung "Bitte
+      später erneut senden, Daten sind gespeichert" + Startseite rot
+      (gibt es schon) + Anweisung an MA, wen sie informiert (Paco
+      festlegen); kein automatisches Wiederholen ohne
+      settlement_number-Sicherheit (Doppel-Abrechnung). Zusammen mit
+      "Offline-Hinweis bei BelegScan konkretisieren" (Kleine Fixes)
+      umsetzen.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
@@ -562,6 +720,27 @@ um Durcheinander zu vermeiden.
       Bulk-Lösch-Methode für alle Einträge eines Kinos fehlt noch.
 
 ### Weitere Features
+
+- [ ] **Löschen-Button oben rechts: Auswahl "diese Seite" / "ganze
+      Abrechnung"** (Notiz 5) Paco-Wunsch: Antippen öffnet eine Auswahl
+      mit (1) "Diese Seite leeren und neu eingeben" und (2) "Heutige
+      Abrechnung löschen und neu starten" — (2) springt danach direkt
+      zur Bargeld-Seite (Schritt 1). IST je Seite:
+      Schritt 1 Bargeld: "Löschen" mit Rückfrage, leert nur Schritt 1
+      (Personalgetränke-Haken bleibt vermutlich stehen — beim Umbau
+      prüfen). Schritt 2 Umsätze: mit Rückfrage, leert Schritt 2 und
+      löscht den Entwurf; die vorbelegten Terminal-Felder (Run 490)
+      verschwinden dabei, erst "Weiter" legt sie wieder an. Schritt 3
+      und Schritt 4: kein Löschen-Button. Wechselgeld prüfen: mit
+      Rückfrage, leert die Zählung. Getränke auffüllen: "Löschen" leert
+      SOFORT ohne Rückfrage. Eine Komplett-Löschung gibt es nur als
+      "Heutige Abrechnung zurücksetzen (Test)" im PIN-Admin-Bereich
+      (einstellungen_seite.dart, `_resetHeutigeAbrechnung()`) — diese
+      Logik wäre für (2) wiederverwendbar (löscht Schritt 1–3,
+      heutigen Verlaufseintrag, Gesendet-Status; FC-Zuordnung bleibt
+      bewusst, siehe Memo). Vor Umsetzung klären: (2) auch auf Schritt
+      3/4 und nach dem Senden anbieten (dann nur lokal, FC behält die
+      gesendete Abrechnung)? Wechselgeld/Getränke nur Option (1)?
 
 - [ ] **Gondel-Abrechnung (kino_02)** Workflow wie Schauburg,
       Wechselgeld 1.400 €.
@@ -726,6 +905,34 @@ um Durcheinander zu vermeiden.
       einfachen Sub-Run im bisherigen Muster. Auf Paco-Wunsch
       zurückgestellt (Run 364a) — bei Bedarf später als eigenständiges
       Vorhaben aufgreifen.
+
+- [ ] **Zu verschachtelter Code / Datenstruktur** (Notiz 4, Analyse
+      Run 493d — nur Befund, kein Umbau). Gemessen als maximale
+      Einrücktiefe (≈ Verschachtelungsebenen), Datei (Zeilen):
+      1) schritt2_ec_beleg_sub_kacheln.dart (548) — Tiefe 27 bei Zeile
+         326 (Kopfzeile der Unterkachel, Widget-Baum in Widget-Baum).
+      2) schritt1_gruppen_orchestrierung.dart (351) — Tiefe 25.
+      3) schritt1_umschlaege_section.dart (212) — Tiefe 22.
+      4) stueckelung_vorschlag_seite.dart (748) — Tiefe 19.
+      5) schritt2_ui_builder.dart (796) — Tiefe 18.
+      Größte Einzeldatei bleibt tagesabschluss_schritt2_seite.dart
+      (3085 Zeilen, Tiefe 14).
+      Datenstruktur: Schritt 2 hält die EC-Belege als rund 20
+      parallele Listen gleicher Länge (`_ecBelegeCent`,
+      `_ecBelegLabels`, `_ecBelegFotosBase64`, `_ecUnterkachel…`,
+      `_metadaten…`, `_kartenartenGesamt…`, dazu
+      `List<List<ZahlungsartZeile>>`), ~450 Zugriffe in der Datei —
+      jede Hinzufügen/Löschen-Stelle muss alle Listen synchron
+      halten (Fehlerquelle, vgl. Notiz 11). TagesabschlussFinal hat
+      ~48 Felder, an 4 Stellen von Hand synchron.
+      Vorschlag: (a) eine Klasse `EcBeleg` je Kassenschnitt (TID,
+      Betrag, Foto, Zeilen, Bearbeiten-Zustand) statt paralleler Listen
+      — entspricht dem bereits geplanten "Run 2" der Ausgaben-Serie
+      (Run 429, siehe Duplikat-Audit unten); (b) tiefe Widget-Bäume in
+      kleine benannte Widgets zerlegen (Kopfzeile, Betragszeile,
+      Aktionszeile), Bedingungen vorab in lokale Variablen statt
+      verschachtelter `? :`; (c) Statuslogik in einen Service (siehe
+      "Gesendet-Status aus einer Quelle"). (a) ist ein Architektur-Run.
 
 - [ ] **Duplikat-/Abstraktions-Audit** (Run 373 gestartet, Serie läuft).
       Umfassende Analyse auf Duplikate/Teilduplikate und unnötige
