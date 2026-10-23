@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 493d · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 493d2 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -57,9 +57,10 @@ um Durcheinander zu vermeiden.
 Aus dem Abgleich von Pacos Handnotizen (2026-10-22). Die Punkte hängen
 zusammen und sollten in dieser Reihenfolge angegangen werden; der erste
 ist vermutlich die gemeinsame Ursache für "rotes Icon trotz Senden" und
-"Badges unzuverlässig". Nachstellung: test/analyse/
-handnotizen_sendestatus_test.dart (hält das IST-Verhalten fest; nach
-einem Fix den jeweiligen Test auf das neue Soll umdrehen).
+"Badges unzuverlässig". Die Befunde zu Notiz 1, 8/12 und 9 wurden in
+Run 493d per Widget-/Unit-Test bestätigt (Testdatei danach auf
+Paco-Wunsch wieder gelöscht, Run 493d2) — beim Fix jeweils einen
+Regressionstest neu schreiben.
 
 - [ ] **Sende-Signatur enthält Belegfotos in voller Auflösung →
       Speicher voll → Gesendet-Status geht verloren** (Notiz 8/12)
@@ -84,10 +85,15 @@ einem Fix den jeweiligen Test auf das neue Soll umdrehen).
       Fotogröße hängt von der Kamera ab, Speichergrenze vom Browser —
       plattformabhängigen Code gibt es in der Statuslogik nicht
       (einziges kIsWeb: main.dart:42).
-      Lösungsidee: Signatur ohne Fotos bilden (z. B. nur Hash/Länge je
-      Foto) und Fotos beim Aufnehmen verkleinern (siehe Punkt
-      "Langsamer Seitenwechsel" unten). Testnachweis: Test "Notiz 8/12"
-      (Signatur-Quelle > 3 × Fotogröße).
+      Lösungsidee: Signatur ohne Fotos bilden und Fotos beim Aufnehmen
+      verkleinern (siehe Punkt "Langsamer Seitenwechsel" unten).
+      ENTSCHIEDEN (Paco, 2026-10-23): Belegfoto muss NICHT in die
+      Signatur einfließen. Offen: ob die Signatur überhaupt noch
+      gebraucht wird, seit FC per settlement_number überschreibt —
+      Einschätzung siehe Bericht Run 493d2: Schutz vor Doppel-
+      Abrechnung übernimmt jetzt die settlement_number, übrig bleibt
+      nur die Anzeige "seit dem Senden geändert → Korrektur nötig";
+      dafür reicht ein kleiner Vergleichswert ohne Fotos.
 
 - [ ] **Gesendet-Status aus einer Quelle statt vier** (Notiz 8/12)
       BESTEHT. Heute bestimmen vier getrennt gespeicherte Merker den
@@ -124,7 +130,6 @@ einem Fix den jeweiligen Test auf das neue Soll umdrehen).
       Fortschritts-Kreis (Vorbild: verlauf_detail_seite.dart hat das
       schon, "Wird gesendet..."), rot erst bei Fehlschlag. Fix klein:
       Bedingung um `!_apiUploadLaeuft` ergänzen + Kreis anzeigen.
-      Testnachweis: Test "Notiz 1".
 
 - [ ] **Kommentar nach dem Senden ändern → keine Korrektur möglich**
       (Notiz 9) BESTEHT, Teilaspekt. Wird nach erfolgreichem Senden
@@ -132,12 +137,13 @@ einem Fix den jeweiligen Test auf das neue Soll umdrehen).
       als `note` an FC), bleibt `_apiUploadErledigt` true: Button zeigt
       weiter "Abrechnung an Büro senden" + grünen Haken, Antippen
       zeigt "Du hast die Abrechnung bereits gesendet." — die Korrektur
-      geht nicht raus. Testnachweis: Test "Notiz 9". Ursache: der
+      geht nicht raus (per Widget-Test bestätigt). Ursache: der
       Signatur-Vergleich läuft nur beim Öffnen der Seite, nicht nach
       Änderungen auf der Seite. Hinweis: Änderungen an Werten, die FC
       gar nicht bekommt (Kino-/Bistro-SOLL, Ausgaben, Differenz im
       Anfangsbestand), führen bewusst zu "bereits gesendet" (Run 482)
-      — evtl. war das Pacos Beobachtung, siehe Frage im Bericht.
+      — evtl. war das Pacos Beobachtung; Paco erinnert sich nicht mehr
+      (2026-10-23), der Kommentar-Fall bleibt trotzdem ein echter Bug.
       Zusätzlich wird nach einem verlorenen Sende-Merker (erster Punkt
       oben) fälschlich "Korrektur an Büro senden" angeboten.
 
@@ -164,8 +170,9 @@ einem Fix den jeweiligen Test auf das neue Soll umdrehen).
       (`pickImage(maxWidth: ~2000, imageQuality: ~80)`, erledigt der
       Browser/das OS schnell), Fotos einmalig separat speichern (eigener
       Hive-Key je Foto, nicht im Entwurf), Signatur ohne Fotos.
-      ENTSCHEIDUNG NÖTIG: Run 451 legte fest "an FC in voller
-      Auflösung" — reicht FC auch ein lesbares, verkleinertes Foto?
+      ENTSCHIEDEN (Paco, 2026-10-23): ein lesbares, verkleinertes Foto
+      genügt (ersetzt die Run-451-Vorgabe "an FC in voller Auflösung");
+      falls Yannik doch volle Auflösung braucht, später anpassen.
 
 ---
 
@@ -452,6 +459,12 @@ einem Fix den jeweiligen Test auf das neue Soll umdrehen).
       ohne Foto reicht. Falls die Antwort lautet "jeder Umsatz braucht
       einen Beleg": zusätzlich Foto-Pflicht bei Betrag > 0 einführen
       (eigene Entscheidung).
+      ENTSCHIEDEN (Paco, 2026-10-23): Auch bei 0 Umsatz wird ein Beleg
+      benötigt. Damit passt der Knopf "heute keine Umsätze" (Pflicht
+      ohne Foto) nicht mehr — offen: Knopf entfernen und stattdessen
+      den 0-€-Kassenschnitt scannen, oder Knopf behalten und ein Foto
+      verlangen? Beim Umbau prüfen, ob ein gescannter 0-€-Beleg (keine
+      Kartenart-Zeilen) überhaupt als Terminal an FC geht.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
@@ -738,9 +751,12 @@ einem Fix den jeweiligen Test auf das neue Soll umdrehen).
       (einstellungen_seite.dart, `_resetHeutigeAbrechnung()`) — diese
       Logik wäre für (2) wiederverwendbar (löscht Schritt 1–3,
       heutigen Verlaufseintrag, Gesendet-Status; FC-Zuordnung bleibt
-      bewusst, siehe Memo). Vor Umsetzung klären: (2) auch auf Schritt
-      3/4 und nach dem Senden anbieten (dann nur lokal, FC behält die
-      gesendete Abrechnung)? Wechselgeld/Getränke nur Option (1)?
+      bewusst, siehe Memo).
+      ENTSCHIEDEN (Paco, 2026-10-23): Auswahl (1)/(2) in allen Schritten
+      der Abrechnung; bei Wechselgeld prüfen und Getränke auffüllen
+      keine Auswahl, nur eine Bestätigung "… löschen?" als Popup
+      (Getränke hat bisher gar keine). Noch zu klären: Verhalten von
+      (2) nach dem Senden (lokal löschen, FC behält die Abrechnung).
 
 - [ ] **Gondel-Abrechnung (kino_02)** Workflow wie Schauburg,
       Wechselgeld 1.400 €.
