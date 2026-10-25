@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 493d2 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 494 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -94,6 +94,11 @@ Regressionstest neu schreiben.
       Abrechnung übernimmt jetzt die settlement_number, übrig bleibt
       nur die Anzeige "seit dem Senden geändert → Korrektur nötig";
       dafür reicht ein kleiner Vergleichswert ohne Fotos.
+      ENTSCHIEDEN (Paco, 2026-10-25): Variante B — Signatur durch einen
+      kurzen Vergleichswert (Fingerabdruck) der an FC gehenden Zahlen +
+      Kommentar ersetzen, ohne Fotos. Die Erinnerung "geändert →
+      Korrektur senden" bleibt. Nächster Fix-Run (geplant Run 495),
+      zusammen mit dem Verkleinern der Fotos beim Aufnehmen.
 
 - [ ] **Gesendet-Status aus einer Quelle statt vier** (Notiz 8/12)
       BESTEHT. Heute bestimmen vier getrennt gespeicherte Merker den
@@ -176,6 +181,187 @@ Regressionstest neu schreiben.
 
 ---
 
+## 🟠 Audit Run 494: versteckte Problemstellen (2026-10-25)
+
+Systematische Suche nach Mustern, die im Alltag nicht auffallen
+müssen. Schwere: HOCH / MITTEL / NIEDRIG. Bereits oben erfasste Funde
+(Signatur mit Fotos, vier Status-Quellen, fehlende Timeouts bei Scan/
+FC, parallele EC-Listen in Schritt 2) hier nur verwiesen.
+
+### A — Sensible Daten im öffentlichen Repo
+
+- [ ] **A1 HOCH: Belegscan-Worker frei benutzbar?** Die Worker-Adresse
+      (kartenzahlungsbelegscan…workers.dev) steht in der Git-Historie
+      (Runs 313i–334, Code-Fallback vor Run 334). Die App schickt an
+      den Worker keinen Schlüssel (beleg_scan_service.dart, nur
+      content-type). Prüft der Worker selbst nichts, kann jeder, der
+      die Adresse findet, über ihn Claude-Anfragen auf Pacos
+      Anthropic-Konto stellen. Nicht verifiziert (Worker-Code liegt
+      nicht im Repo, nichts an den Worker gesendet). Wichtig: Eine
+      Web-App ohne eigenen Server kann kein Geheimnis verbergen — ein
+      Schlüssel in der App wäre ebenfalls öffentlich. Sofort ohne
+      Code möglich: Ausgabenlimit im Anthropic-Konto setzen,
+      Rate-Limit + Herkunftsprüfung (Origin) im Worker, ggf. Worker
+      unter neuem Namen anlegen.
+
+- [ ] **A2 HOCH: Echte Belege und TIDs öffentlich** In .dev/
+      kassenberichte dummies/img/ liegen echte Kassenschnitt-Fotos
+      (Stichprobe IMG_3606.JPG: Atlantis, TID lesbar, Umsätze, Datum);
+      dazu "Schauburgs TID Dummys"-Screenshots. Außerdem stehen alle
+      TIDs in der Git-Historie (gelöschte config/terminal_ids.json,
+      Run-488-Bericht/CHANGELOG-Stände). Fix: Dateien aus dem Repo
+      nehmen (lokal behalten, .gitignore). ENTSCHEIDUNG: Git-Historie
+      bereinigen (Neuschreiben + Force-Push, betrifft alle Klone) oder
+      nur künftig sauber halten? Ggf. mit Yannik klären, wie kritisch
+      öffentlich bekannte TIDs sind.
+
+- [ ] **A3 MITTEL: Admin-PIN im Code** `1929` fest in
+      einstellungen_seite.dart:436 und in CHANGELOG.md,
+      PROJECT_CONTEXT.md, TODO_ERLEDIGT.md — öffentlich und in der
+      ausgelieferten Web-App lesbar. Eine PIN ohne Server ist nur
+      Schutz gegen versehentliches Bedienen, nie echte Sicherheit.
+      Paco-Idee (2026-10-25): Start-PIN im Code, beim ersten Öffnen
+      Pflicht, eine eigene Geräte-PIN zu vergeben (nur lokal
+      gespeichert). OFFEN: Rücksetzweg bei vergessener PIN, ohne dass
+      TIDs/API-Keys verloren gehen (z. B. Generalschlüssel nur bei
+      Paco).
+
+- [ ] **A4 NIEDRIG: Weitere Spuren** Sandbox-Adresse von FC in
+      TODO.md/Doku, Anfang eines FC-API-Keys ("fck_2a843e19...") in
+      einer alten Doku-Fassung (Run 274l). Ohne vollständigen Key
+      wertlos, beim Aufräumen von A2 mit erledigen.
+
+### B — Fehler, die abgefangen und verschluckt werden
+
+- [ ] **B1 MITTEL: Verlauf unlesbar → Historie still verloren**
+      Der Verlauf eines Kinos ist EIN Text in Hive. Ist er nicht
+      lesbar, starten speichereFinalenTagesabschluss()/
+      ersetzeFinalenTagesabschluss() (lokaler_speicher.dart:146/252)
+      ohne Meldung mit leerer Liste neu — alle bisherigen Einträge sind
+      weg; ladeFinaleTagesabschluesse() (:313) zeigt einfach einen
+      leeren Verlauf. Präzisiert den älteren Punkt "Datenverlust bei
+      Schreibfehler" im Duplikat-Audit (Ursache ist ein Lesefehler,
+      nicht ein Schreibfehler). Fix: kaputten Stand sichern statt
+      überschreiben, Hinweis anzeigen; besser C2 (ein Eintrag je Key).
+
+- [ ] **B2 MITTEL: Speichern ohne Rückmeldung** Schritt 2 ruft
+      `_speichereEntwurf()` an ~20 Stellen ohne `await` und ohne
+      Fehlerbehandlung auf, Schritt 3 ebenso den Kommentar-Entwurf.
+      Schlägt das Speichern fehl, erfährt es niemand; nach einem
+      Neuladen fehlen Eingaben. Verstärkt dadurch, dass main.dart keine
+      globale Fehlerbehandlung hat (bekannter Punkt "387 main.dart" im
+      Duplikat-Audit).
+
+- [ ] **B3 NIEDRIG: Unlesbare TID-Liste schaltet Prüfungen ab**
+      terminal_ids_config_service.dart:33 liefert bei kaputtem Inhalt
+      eine leere Liste → keine TID-Prüfung, keine Pflicht-Terminals,
+      Einstellungen zeigen leere Felder (nächstes Speichern
+      überschreibt). Fix: Hinweis in Einstellungen/Schritt 2.
+
+- [ ] **B4 NIEDRIG: FC-Zuordnung verloren → neue statt korrigierte
+      Abrechnung** Ist `flurbocash_settlement_…` unlesbar (:274) oder
+      scheitert das Speichern nach dem Senden (:226, nur Protokoll),
+      legt der nächste Versand bei FC eine weitere Abrechnung an statt
+      zu korrigieren (max. 4/Tag). Bei vollem localStorage (siehe
+      Signatur-Punkt) realistisch. Fix mit dem Signatur-Run prüfen.
+
+- [ ] **B5 NIEDRIG: Schritt-1-Entwurf unlesbar → leere Seite ohne
+      Hinweis** (abrechnung_speicher.dart:33).
+
+### C — Daten im falschen/ungünstigen Speicher
+
+- [ ] **C2 MITTEL: Ganzer Verlauf als ein Text** Jedes Speichern,
+      Als-gesendet-Markieren, Löschen und der App-Start
+      (bereinigeAlteTagesabschluesse für jedes Kino) liest, zerlegt und
+      schreibt den kompletten Verlauf samt (komprimierter) Fotos —
+      bei bis zu 30 Tagen mehrere MB. Kostet Zeit beim Start und nach
+      Schritt 3; ein Fehler trifft alles (B1). Fix: ein Hive-Eintrag
+      je Abrechnung (Migration der Alt-Daten nötig).
+
+- [ ] **C3 NIEDRIG: Täglich wachsende Merker** `flurbocash_settlement_
+      <kino>_<datum>` und `flurbocash_report_id_<kino>_<datum>`
+      (SharedPreferences) werden nie gelöscht; die report_id wird nur
+      geschrieben, nie gelesen (toter Wert). Klein, aber unbegrenzt.
+      Fix: report_id-Merker streichen, alte Zuordnungen nach z. B. 30
+      Tagen löschen.
+
+- [ ] **C4 MITTEL: Zwei widersprüchliche Aufbewahrungsregeln**
+      `bereinigeAlteTagesabschluesse()` (beim App-Start, main.dart)
+      löscht ALLE Verlaufseinträge älter als 30 Tage — auch nicht
+      gesendete. Das widerspricht der Paco-Entscheidung aus Run 452
+      ("nicht bestätigte bleiben unabhängig vom Alter erhalten",
+      umgesetzt nur in der 10-Tage-Regel beim Speichern). Wechselwirkung
+      mit dem Signatur-Fehler: Einträge mit Fotos bekommen oft kein
+      gesendetAm, die 10-Tage-Regel greift dann nicht. ENTSCHEIDUNG:
+      Gilt "ungesendet nie löschen" weiter (dann 30-Tage-Regel
+      anpassen) oder soll nach 30 Tagen alles weg (Datenschutz)?
+      Beide Funktionen sind ungetestet.
+
+### D — Netzwerk ohne Zeitlimit
+
+- [ ] **D2 HOCH: App-Start hängt am Internet** main.dart wartet VOR
+      `runApp()` nacheinander auf bis zu vier Abrufe von
+      raw.githubusercontent.com (Getränkelisten SB/AT/CO + Wechselgeld,
+      `initOnAppStart()`), bei jedem Start — auch wenn nur auf Updates
+      geprüft wird — und ohne Zeitlimit
+      (remote_config_service_basis.dart:118). Langsames oder hängendes
+      Netz (schwaches WLAN, Captive Portal) = weißer Bildschirm bzw.
+      App startet gar nicht. Fix klein: Abrufe nach dem Start im
+      Hintergrund, parallel, mit Timeout.
+
+### E — Gleiche Regel/Status an mehreren Stellen
+
+- [ ] **E2 NIEDRIG: Wechselgeld-Sollwert-Regel dreifach** "Einstellung,
+      sonst Remote-Datei" ist in einstellungen_seite.dart,
+      wechselgeld_pruefen_seite.dart und tagesabschluss_schritt1_seite.
+      dart kopiert; die Remote-Datei wird über den Kinonamen statt die
+      ID zugeordnet; der Wert 0 kann nicht bewusst eingestellt werden
+      (0 = "nimm die Datei").
+
+- [ ] **E3 NIEDRIG: "Erstes Öffnen heute" ohne 5-Uhr-Knick**
+      istErstesSchritt1OeffnenHeute() (lokaler_speicher.dart:929) nutzt
+      das Kalenderdatum statt des Abrechnungstags — zwischen 0 und 5 Uhr
+      klappt Schritt 1 nochmal alle Gruppen auf. Nur Optik.
+
+### F — Listen, die von Hand synchron gehalten werden
+
+- [ ] **F2 MITTEL: Umschläge in Schritt 1 und Wechselgeld prüfen** Je
+      6 parallele Listen (Einträge, 2× Controller, 2× FocusNode, IDs),
+      Code in beiden Seiten doppelt.
+
+- [ ] **F3 MITTEL: Gespeichertes Datenmodell** TagesabschlussFinal
+      speichert EC-Belege als 4 Listen nach Position (ecBelegeCent,
+      ecBelegeLabels, ecBelegeFotosBase64, ecBelegeFotosMediaTypen) plus
+      Kartenarten per `belegIndex`, Ausgaben als 2 Listen. Weil
+      gespeichert, braucht ein Umbau eine Migration alter
+      Verlaufseinträge — zusammen mit der EcBeleg-Klasse (Notiz 4)
+      planen.
+
+### G — Wichtige Pfade ohne Test
+
+Messung (flutter test --coverage, 2026-10-25): 35 % der Zeilen in
+lib/ werden von Tests ausgeführt; die 289 Tests prüfen vor allem
+Rechen- und Hilfslogik.
+
+- [ ] **G1 HOCH: Der eigentliche Sendeablauf ist ungetestet**
+      `ApiUploadService.upload()` (Erstversand, Korrektur per
+      settlement_number, Fallback "Abrechnung existiert nicht mehr",
+      Zuordnung merken) läuft in keinem Test (2 von 33 Zeilen),
+      `_ensure()`, `_settlements()`, `_pruefeStatus()` (Fehlertexte je
+      HTTP-Code) gar nicht — weil `http.post/put` direkt aufgerufen
+      wird. Fix: Einstieg für einen Test-HTTP-Client schaffen, dann
+      Tests für alle Fälle. Sollte VOR dem Umbau des Sendestatus
+      kommen.
+
+- [ ] **G2 MITTEL: Ganze Seiten ohne Test** Startseite (grüner/roter
+      Haken), Verlauf-Liste, Einstellungen (TID/API-Key-Eingabe, Reset),
+      Schritt 1 und 2 laufen in keinem Test (0 %), main.dart 14 %,
+      Remote-Config 0 %. In lokaler_speicher.dart ungetestet u. a.
+      loescheFinalenTagesabschluss() und bereinigeAlteTagesabschluesse()
+      (siehe C4).
+
+---
+
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
 - [ ] **Weiteres Terminal: Beträge erst nach "Fertig" → "Belegdaten
@@ -199,9 +385,12 @@ Regressionstest neu schreiben.
       als Beispielwerte in test/ (api_upload_service_test.dart,
       kinokasse_karte_uebertrag_test.dart, tid_eingabe_test.dart,
       terminal_ids_config_service_test.dart). Laut Memo sind Beispiel-
-      TIDs in Tests ok — ENTSCHEIDUNG: durch erfundene Werte (z. B.
-      12345678) ersetzen? Die gelöschte config/terminal_ids.json steht
-      zudem weiter in der Git-Historie.
+      TIDs in Tests ok — ENTSCHIEDEN (Paco, 2026-10-25): Repo ist
+      öffentlich (Pflicht für den PWA-Build); TIDs, API-Keys und andere
+      sensible Daten gehören grundsätzlich nicht in Code oder Repo →
+      durch erfundene Werte ersetzen. Die gelöschte
+      config/terminal_ids.json steht zudem weiter in der Git-Historie.
+      Weitere Funde dazu siehe Abschnitt "Audit Run 494" (A1, A2).
 
 - [ ] **Wechselgeldbestand für den Folgetag: Schritt unverständlich**
       Rückmeldung Yannik (Mail 02.10.2026) nach seiner eigenen
@@ -446,8 +635,10 @@ Regressionstest neu schreiben.
       Vortags-Kassenschnitt sonst unbemerkt doppelt gezählt wird.
       Zu beachten: 5-Uhr-Knick (Kassenschnitt kurz nach Mitternacht
       trägt das Folgedatum = logischer Abrechnungstag +1 ist ok),
-      KI liest Datum evtl. nicht (null → keine Prüfung). Nicht
-      blockierend vorschlagen. Paco entscheidet: weicher Hinweis ja/nein.
+      KI liest Datum evtl. nicht (null → keine Prüfung).
+      ENTSCHIEDEN (Paco, 2026-10-25): umsetzen als weicher Hinweis im
+      Scan-Popup — MA kann ignorieren, manuell korrigieren oder das
+      Foto wiederholen.
 
 - [ ] **EC-Terminal ohne Umsatz: muss es einen Beleg drucken?**
       (Notiz 3) OFFENE FACHFRAGE, nicht von der App zu beantworten —
@@ -465,6 +656,8 @@ Regressionstest neu schreiben.
       den 0-€-Kassenschnitt scannen, oder Knopf behalten und ein Foto
       verlangen? Beim Umbau prüfen, ob ein gescannter 0-€-Beleg (keine
       Kartenart-Zeilen) überhaupt als Terminal an FC geht.
+      ENTSCHIEDEN (Paco, 2026-10-25): Knopf "heute keine Umsätze"
+      entfällt; auch bei 0 € wird der Kassenschnitt gescannt.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 
@@ -587,6 +780,15 @@ Regressionstest neu schreiben.
       settlement_number-Sicherheit (Doppel-Abrechnung). Zusammen mit
       "Offline-Hinweis bei BelegScan konkretisieren" (Kleine Fixes)
       umsetzen.
+      ENTSCHIEDEN (Paco, 2026-10-25): Bei Timeout/Ausfall hängt die App
+      selbst einen Vermerk an den Kommentar an (ohne den Text der MA zu
+      überschreiben), Wortlaut freigegeben:
+      Scan: "Belegscan um HH:MM nicht erreichbar – Kartenzahlungen
+      manuell eingegeben."
+      FC: "Erster Sendeversuch um HH:MM fehlgeschlagen (keine Antwort
+      vom Server), später erneut gesendet."
+      Hinweis: Der FC-Vermerk erreicht FC erst mit dem nächsten
+      erfolgreichen Senden.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.
@@ -755,8 +957,9 @@ Regressionstest neu schreiben.
       ENTSCHIEDEN (Paco, 2026-10-23): Auswahl (1)/(2) in allen Schritten
       der Abrechnung; bei Wechselgeld prüfen und Getränke auffüllen
       keine Auswahl, nur eine Bestätigung "… löschen?" als Popup
-      (Getränke hat bisher gar keine). Noch zu klären: Verhalten von
-      (2) nach dem Senden (lokal löschen, FC behält die Abrechnung).
+      (Getränke hat bisher gar keine). Bestätigt (Paco, 2026-10-25).
+      Noch zu klären: Verhalten von (2) nach dem Senden (lokal löschen,
+      FC behält die Abrechnung).
 
 - [ ] **Gondel-Abrechnung (kino_02)** Workflow wie Schauburg,
       Wechselgeld 1.400 €.

@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 494: Audit nach versteckten Problemstellen (nur Analyse, kein
+  App-Code). Neuer TODO-Abschnitt "Audit Run 494" (A–G: sensible Daten
+  im Repo, verschluckte Fehler, Speicher, Netzwerk ohne Zeitlimit,
+  doppelte Regeln, parallele Listen, Testabdeckung 35 %). Dazu
+  Paco-Entscheidungen zu den Handnotizen (Signatur Variante B,
+  Datumshinweis, kein "heute keine Umsätze", Löschen-Auswahl,
+  Kommentar-Vermerk bei Ausfall, keine TIDs/Keys im Repo). Run 493d/
+  493d2: Handnotizen-Analyse, Testdatei wieder entfernt.
+
 - Run 493b: Schalter "Livesystem" je Kino statt geräteweit (Key
   `flurbocash_live_modus_<kinoId>`, ersetzt den erst in Run 493
   eingeführten `flurbocash_live_modus`), da der Umstieg laut Yannik je
