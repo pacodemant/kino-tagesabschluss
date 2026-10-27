@@ -725,15 +725,19 @@ void main() {
     });
   });
 
-  group('ApiUploadService.settlementsBody als Sende-Signatur (Run 401)', () {
-    // tagesabschluss_schritt3_seite.dart leitet die "gesendet"-Signatur aus
-    // settlementsBody() ab (ohne sent_at) — die Tests hier sichern genau
-    // die Eigenschaften, auf die sich dieser Vergleich verlässt.
+  group('ApiUploadService.sendeSignatur (Run 401, ohne Fotos seit Run 495)',
+      () {
+    // tagesabschluss_schritt3_seite.dart nutzt ApiUploadService.
+    // sendeSignatur() für den "gesendet"-Vergleich — die Tests hier sichern
+    // genau die Eigenschaften, auf die sich dieser Vergleich verlässt.
     TagesabschlussFinal abrechnung({
       int barBestandAbzglWechselgeldCent = 10000,
       int differenzAnfangsbestandCent = 0,
       int ecUmsatzGesamtCent = 0,
       List<ZahlungsartErgebnis>? zahlungsartenAufschluesselung,
+      String? anmerkung,
+      List<String>? ecBelegeLabels,
+      List<String>? ecBelegeFotosBase64,
     }) {
       return TagesabschlussFinal(
         kinoId: 'kino_01',
@@ -757,18 +761,57 @@ void main() {
         differenzGesamtCent: 0,
         differenzAnfangsbestandCent: differenzAnfangsbestandCent,
         zahlungsartenAufschluesselung: zahlungsartenAufschluesselung,
+        anmerkung: anmerkung,
+        ecBelegeLabels: ecBelegeLabels,
+        ecBelegeFotosBase64: ecBelegeFotosBase64,
       );
     }
 
-    String signatur(TagesabschlussFinal a, {DateTime? jetzt}) {
-      final Map<String, dynamic> body =
-          ApiUploadService.settlementsBody(a, jetzt: jetzt);
-      final Map<String, dynamic> settlement =
-          (body['settlements'] as List<dynamic>).first
-              as Map<String, dynamic>;
-      settlement.remove('sent_at');
-      return jsonEncode(body);
-    }
+    String signatur(TagesabschlussFinal a, {DateTime? jetzt}) =>
+        ApiUploadService.sendeSignatur(a, jetzt: jetzt);
+
+    TagesabschlussFinal mitFoto(String? foto, {int betragCent = 2000}) =>
+        abrechnung(
+          ecUmsatzGesamtCent: betragCent,
+          zahlungsartenAufschluesselung: <ZahlungsartErgebnis>[
+            ZahlungsartErgebnis(
+              art: 'Girocard',
+              betragCent: betragCent,
+              tid: '12345',
+            ),
+          ],
+          ecBelegeLabels: <String>['12345'],
+          ecBelegeFotosBase64: foto == null ? null : <String>[foto],
+        );
+
+    test(
+        'Belegfoto steckt nicht in der Signatur (localStorage-Überlauf, '
+        'Run 495), geht aber weiterhin an Flurbocash', () {
+      const String foto = '/9j/4AAQSkZJRg==';
+      final String s = signatur(mitFoto(foto));
+      expect(s.contains('receipt_photo'), isFalse);
+      expect(s.contains('receipt_media_type'), isFalse);
+      expect(s.contains(foto), isFalse);
+      expect(
+        jsonEncode(ApiUploadService.settlementsBody(mitFoto(foto))),
+        contains(foto),
+      );
+    });
+
+    test(
+        'anderes oder fehlendes Foto bei gleichen Zahlen → gleiche '
+        'Signatur (keine "Korrektur nötig"-Meldung)', () {
+      expect(signatur(mitFoto('AAAA')), signatur(mitFoto('BBBB')));
+      expect(signatur(mitFoto('AAAA')), signatur(mitFoto(null)));
+    });
+
+    test('Kommentar geändert → Signatur ändert sich (geht als note an FC)',
+        () {
+      expect(
+        signatur(abrechnung(anmerkung: 'alt')),
+        isNot(signatur(abrechnung(anmerkung: 'neu'))),
+      );
+    });
 
     test(
         'gleiche Daten, unterschiedlicher Sendezeitpunkt → identische '

@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 494 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 495 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -61,44 +61,6 @@ ist vermutlich die gemeinsame Ursache für "rotes Icon trotz Senden" und
 Run 493d per Widget-/Unit-Test bestätigt (Testdatei danach auf
 Paco-Wunsch wieder gelöscht, Run 493d2) — beim Fix jeweils einen
 Regressionstest neu schreiben.
-
-- [ ] **Sende-Signatur enthält Belegfotos in voller Auflösung →
-      Speicher voll → Gesendet-Status geht verloren** (Notiz 8/12)
-      BESTEHT. `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart)
-      ist `settlementsBody()` ohne `sent_at` — inklusive
-      `receipt_photo` (unkomprimiert, `ImagePicker().pickImage()` ohne
-      `maxWidth`/`imageQuality`). Sie wird per SharedPreferences als
-      `sende_bestaetigung_<kinoId>` gespeichert, im Browser also im
-      localStorage (ca. 5 MB je Origin). Bei 1–3 Handyfotos (je
-      mehrere MB Base64) ist das voll — genau der QuotaExceededError
-      vom 16.09. (`flutter.sende_bestaetigung_kino_01`). Run 450 hat
-      den Fehler nur abgefangen, nicht die Ursache behoben.
-      Folge in `_speichereLokalenSendeMerker()`: der erste Schreib-
-      vorgang wirft, alle folgenden laufen nicht mehr — kein
-      Sendedatum (Startseite ohne grünen Haken), kein `gesendetAm` im
-      Verlauf ("Nicht gesendet"-Badge), roter Merker aus einem
-      früheren Fehlversuch wird nicht gelöscht (Startseite rot), nach
-      erneutem Öffnen von Schritt 3 grau + "Korrektur an Büro senden".
-      Im Moment des Sendens sieht die MA trotzdem "Abrechnung
-      gesendet" (Status nur im Arbeitsspeicher). Erklärt auch den
-      Eindruck "iOS und Android verhalten sich unterschiedlich":
-      Fotogröße hängt von der Kamera ab, Speichergrenze vom Browser —
-      plattformabhängigen Code gibt es in der Statuslogik nicht
-      (einziges kIsWeb: main.dart:42).
-      Lösungsidee: Signatur ohne Fotos bilden und Fotos beim Aufnehmen
-      verkleinern (siehe Punkt "Langsamer Seitenwechsel" unten).
-      ENTSCHIEDEN (Paco, 2026-10-23): Belegfoto muss NICHT in die
-      Signatur einfließen. Offen: ob die Signatur überhaupt noch
-      gebraucht wird, seit FC per settlement_number überschreibt —
-      Einschätzung siehe Bericht Run 493d2: Schutz vor Doppel-
-      Abrechnung übernimmt jetzt die settlement_number, übrig bleibt
-      nur die Anzeige "seit dem Senden geändert → Korrektur nötig";
-      dafür reicht ein kleiner Vergleichswert ohne Fotos.
-      ENTSCHIEDEN (Paco, 2026-10-25): Variante B — Signatur durch einen
-      kurzen Vergleichswert (Fingerabdruck) der an FC gehenden Zahlen +
-      Kommentar ersetzen, ohne Fotos. Die Erinnerung "geändert →
-      Korrektur senden" bleibt. Nächster Fix-Run (geplant Run 495),
-      zusammen mit dem Verkleinern der Fotos beim Aufnehmen.
 
 - [ ] **Gesendet-Status aus einer Quelle statt vier** (Notiz 8/12)
       BESTEHT. Heute bestimmen vier getrennt gespeicherte Merker den
@@ -178,6 +140,11 @@ Regressionstest neu schreiben.
       ENTSCHIEDEN (Paco, 2026-10-23): ein lesbares, verkleinertes Foto
       genügt (ersetzt die Run-451-Vorgabe "an FC in voller Auflösung");
       falls Yannik doch volle Auflösung braucht, später anpassen.
+      TEILWEISE ERLEDIGT (Run 495): Foto wird bei der Aufnahme auf max.
+      2000 px / JPEG 85 verkleinert (BelegFotoKomprimierung.aufnahme*),
+      Signatur ohne Fotos. Offen: Yannik fragen, ob die Auflösung genügt
+      (Paco); Fotos separat statt im Entwurf speichern nur, falls es
+      nach Test auf Android noch spürbar langsam ist.
 
 ---
 

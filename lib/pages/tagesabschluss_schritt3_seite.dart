@@ -257,21 +257,16 @@ class _TagesabschlussSchritt3SeiteState
   /// bekommen würde — bewusst NICHT die komplette Schritt-1/2-Eingabe
   /// (die enthält viele Felder, die FC nie sieht, z. B. Differenz im
   /// Anfangsbestand, Kino-/Bistro-SOLL, Stückzahlen). Direkt aus
-  /// ApiUploadService.settlementsBody() abgeleitet (abzüglich `sent_at`,
-  /// das ist immer "jetzt" und darf einen Vergleich nie verfälschen),
-  /// damit Signatur und tatsächlich gesendete Daten strukturell nicht
-  /// auseinanderlaufen können. Dient dem Vergleich mit der zuletzt
-  /// gespeicherten Sende-Bestätigung, um den "gesendet"-Haken bei einer
-  /// fachlich relevanten nachträglichen Änderung automatisch wieder
-  /// auszublenden.
+  /// ApiUploadService.settlementsBody() abgeleitet (abzüglich `sent_at`
+  /// und seit Run 495 ohne Belegfotos, siehe
+  /// ApiUploadService.sendeSignatur()), damit Signatur und tatsächlich
+  /// gesendete Daten strukturell nicht auseinanderlaufen können. Dient
+  /// dem Vergleich mit der zuletzt gespeicherten Sende-Bestätigung, um
+  /// den "gesendet"-Haken bei einer fachlich relevanten nachträglichen
+  /// Änderung automatisch wieder auszublenden.
   String _sendeSignatur() {
     try {
-      final Map<String, dynamic> body =
-          ApiUploadService.settlementsBody(_abschlussVorschau!);
-      final Map<String, dynamic> settlement = (body['settlements']
-          as List<dynamic>).first as Map<String, dynamic>;
-      settlement.remove('sent_at');
-      return jsonEncode(body);
+      return ApiUploadService.sendeSignatur(_abschlussVorschau!);
     } catch (_) {
       // _terminalsListe() innerhalb von settlementsBody() wirft bei
       // unvollständigen/inkonsistenten EC-Daten bewusst eine Exception

@@ -32,6 +32,7 @@ import 'package:kino_bar_app/widgets/dev_tools_panel.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/utils/beleg_foto_komprimierung.dart';
 import 'package:kino_bar_app/utils/controller_dispose_mixin.dart';
 import 'package:kino_bar_app/utils/feld_navigation_helper.dart';
 import 'package:kino_bar_app/utils/schritt_auswahl_bottom_sheet_helper.dart';
@@ -1706,8 +1707,12 @@ class _TagesabschlussSchritt2SeiteState
     bool wiederholen;
     do {
       wiederholen = false;
-      final XFile? bild =
-          await ImagePicker().pickImage(source: ImageSource.camera);
+      final XFile? bild = await ImagePicker().pickImage(
+        source: ImageSource.camera,
+        maxWidth: BelegFotoKomprimierung.aufnahmeMaxKantenlaengePixel,
+        maxHeight: BelegFotoKomprimierung.aufnahmeMaxKantenlaengePixel,
+        imageQuality: BelegFotoKomprimierung.aufnahmeJpegQualitaet,
+      );
       if (bild == null) return;
       setState(() => _scanBelegIndex = belegIndex);
       BelegScanErgebnis? originalErgebnis;

@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 495: App-Geschwindigkeit, Teil 1. Belegfoto wird bei der
+  Aufnahme verkleinert (pickImage maxWidth/maxHeight 2000, imageQuality
+  85; Konstanten in BelegFotoKomprimierung), statt mehrere MB groß durch
+  Scan, Entwurf, Signatur und Versand zu laufen. Sende-Signatur ohne
+  Belegfotos (neu: ApiUploadService.sendeSignatur()), behebt den
+  localStorage-Überlauf (QuotaExceededError), durch den der
+  Gesendet-Status verloren ging. Unit-Tests ergänzt.
+
 - Run 494: Audit nach versteckten Problemstellen (nur Analyse, kein
   App-Code). Neuer TODO-Abschnitt "Audit Run 494" (A–G: sensible Daten
   im Repo, verschluckte Fehler, Speicher, Netzwerk ohne Zeitlimit,

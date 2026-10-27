@@ -490,6 +490,31 @@ class ApiUploadService {
     };
   }
 
+  /// Vergleichswert ("Signatur") dessen, was Flurbocash bei einem Versand
+  /// bekommen würde: [settlementsBody] ohne `sent_at` (immer "jetzt")
+  /// und seit Run 495 ohne Belegfotos (`receipt_photo`/
+  /// `receipt_media_type`). Die Signatur wird im localStorage gespeichert
+  /// (ca. 5 MB je Origin); mit Fotos lief der über (QuotaExceededError),
+  /// und der Gesendet-Status ging verloren. Ein anderes Foto bei gleichen
+  /// Zahlen ist fachlich keine Korrektur (Paco-Entscheidung 2026-10-23,
+  /// Variante B 2026-10-25). Wirft wie [settlementsBody] bei
+  /// unvollständigen EC-Daten.
+  static String sendeSignatur(
+    TagesabschlussFinal abrechnung, {
+    DateTime? jetzt,
+  }) {
+    final Map<String, dynamic> body = settlementsBody(abrechnung, jetzt: jetzt);
+    final Map<String, dynamic> settlement =
+        (body['settlements'] as List<dynamic>).first as Map<String, dynamic>;
+    settlement.remove('sent_at');
+    for (final dynamic terminal in settlement['terminals'] as List<dynamic>) {
+      (terminal as Map<String, dynamic>)
+        ..remove('receipt_photo')
+        ..remove('receipt_media_type');
+    }
+    return jsonEncode(body);
+  }
+
   static Future<Map<String, dynamic>> _ensure(
     String baseUrl,
     String apiKey,

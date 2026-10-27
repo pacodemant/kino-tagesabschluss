@@ -49,6 +49,56 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ---
 
+## 🟠 Sendestatus & Belegfotos (Analyse Handnotizen, Run 493d)
+
+- [x] **Sende-Signatur enthält Belegfotos in voller Auflösung →
+      Speicher voll → Gesendet-Status geht verloren** (Notiz 8/12)
+      BESTEHT. `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart)
+      ist `settlementsBody()` ohne `sent_at` — inklusive
+      `receipt_photo` (unkomprimiert, `ImagePicker().pickImage()` ohne
+      `maxWidth`/`imageQuality`). Sie wird per SharedPreferences als
+      `sende_bestaetigung_<kinoId>` gespeichert, im Browser also im
+      localStorage (ca. 5 MB je Origin). Bei 1–3 Handyfotos (je
+      mehrere MB Base64) ist das voll — genau der QuotaExceededError
+      vom 16.09. (`flutter.sende_bestaetigung_kino_01`). Run 450 hat
+      den Fehler nur abgefangen, nicht die Ursache behoben.
+      Folge in `_speichereLokalenSendeMerker()`: der erste Schreib-
+      vorgang wirft, alle folgenden laufen nicht mehr — kein
+      Sendedatum (Startseite ohne grünen Haken), kein `gesendetAm` im
+      Verlauf ("Nicht gesendet"-Badge), roter Merker aus einem
+      früheren Fehlversuch wird nicht gelöscht (Startseite rot), nach
+      erneutem Öffnen von Schritt 3 grau + "Korrektur an Büro senden".
+      Im Moment des Sendens sieht die MA trotzdem "Abrechnung
+      gesendet" (Status nur im Arbeitsspeicher). Erklärt auch den
+      Eindruck "iOS und Android verhalten sich unterschiedlich":
+      Fotogröße hängt von der Kamera ab, Speichergrenze vom Browser —
+      plattformabhängigen Code gibt es in der Statuslogik nicht
+      (einziges kIsWeb: main.dart:42).
+      Lösungsidee: Signatur ohne Fotos bilden und Fotos beim Aufnehmen
+      verkleinern (siehe Punkt "Langsamer Seitenwechsel" unten).
+      ENTSCHIEDEN (Paco, 2026-10-23): Belegfoto muss NICHT in die
+      Signatur einfließen. Offen: ob die Signatur überhaupt noch
+      gebraucht wird, seit FC per settlement_number überschreibt —
+      Einschätzung siehe Bericht Run 493d2: Schutz vor Doppel-
+      Abrechnung übernimmt jetzt die settlement_number, übrig bleibt
+      nur die Anzeige "seit dem Senden geändert → Korrektur nötig";
+      dafür reicht ein kleiner Vergleichswert ohne Fotos.
+      ENTSCHIEDEN (Paco, 2026-10-25): Variante B — Signatur durch einen
+      kurzen Vergleichswert (Fingerabdruck) der an FC gehenden Zahlen +
+      Kommentar ersetzen, ohne Fotos. Die Erinnerung "geändert →
+      Korrektur senden" bleibt. Nächster Fix-Run (geplant Run 495),
+      zusammen mit dem Verkleinern der Fotos beim Aufnehmen.
+      ERLEDIGT (Run 495): ApiUploadService.sendeSignatur() = settlements-
+      Body ohne sent_at und ohne receipt_photo/receipt_media_type (kein
+      Hash, keine neue Dependency); Fotos zusätzlich bei der Aufnahme
+      verkleinert. Altes Signaturformat wird bewusst nicht mitgeprüft
+      (Paco): am Update-Tag kann ein bereits gesendeter Tag beim
+      erneuten Öffnen von Schritt 3 einmalig "Korrektur" anbieten,
+      harmlos dank settlement_number. Unit-Tests in
+      api_upload_service_test.dart. *(Run 495)*
+
+---
+
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
 - [x] **Sonstiges-Zeilen (Schritt 1): Label-Feld breiter, Betrag-Feld

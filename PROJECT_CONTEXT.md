@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.148+493 · Run 494
+Version: 0.9.149+495 · Run 495
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -91,7 +91,7 @@ Zwei Ebenen, kein Backend:
 
 | Box / Key-Präfix              | Inhalt                              |
 |-------------------------------|-------------------------------------|
-| `box_tagesabschluesse`        | Finale Tagesabschlüsse (Hive) — Belegfotos werden beim Speichern für die Ablage komprimiert (Run 451), Original bleibt nur im in-memory-Objekt für Versand/Belegscan; Einträge >10 Tage werden gelöscht, sobald sie bestätigt gesendet sind |
+| `box_tagesabschluesse`        | Finale Tagesabschlüsse (Hive) — Belegfotos werden beim Speichern für die Ablage komprimiert (Run 451), Original (seit Run 495 bei der Aufnahme auf max. 2000 px verkleinert) bleibt nur im in-memory-Objekt für Versand/Belegscan; Einträge >10 Tage werden gelöscht, sobald sie bestätigt gesendet sind |
 | `box_abrechnung_entwuerfe`    | Schritt-1-Entwürfe (Hive)           |
 | `box_schritt2_entwuerfe`      | Schritt-2-Entwürfe (Hive)           |
 | `box_getraenke_mengen`        | Getränke-Mengen (Hive)              |
@@ -161,7 +161,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 493)
+## Laufender Entwicklungsstand (Run 495)
+
+- Run 495 Belegfoto wird schon bei der Aufnahme verkleinert (max.
+  2000 px, JPEG 85, macht Browser/OS); diese Fassung geht an Belegscan
+  und Flurbocash. Sende-Signatur ohne Fotos
+  (ApiUploadService.sendeSignatur()), dadurch kein localStorage-
+  Überlauf mehr beim Speichern des Gesendet-Status.
 
 - Run 493 FC-location_id im Kino-Modell (Sandbox/Live getrennt),
   Admin-Schalter "Livesystem", Einstellungsfeld = Override je Umgebung,
