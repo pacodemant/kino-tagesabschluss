@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 495 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 495a · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -606,25 +606,6 @@ Rechen- und Hilfslogik.
       ENTSCHIEDEN (Paco, 2026-10-25): umsetzen als weicher Hinweis im
       Scan-Popup — MA kann ignorieren, manuell korrigieren oder das
       Foto wiederholen.
-
-- [ ] **EC-Terminal ohne Umsatz: muss es einen Beleg drucken?**
-      (Notiz 3) OFFENE FACHFRAGE, nicht von der App zu beantworten —
-      mit Steuerberatung/Buchhaltung klären (fiskalisch). App-Stand
-      (Run 492, siehe TODO_ERLEDIGT.md): Je eingetragenem Terminal ist
-      Pflicht: Betrag ODER Knopf "heute keine Umsätze" (geht als
-      `no_sales: true` mit 0-Beträgen an FC). Die App erzwingt NICHT,
-      dass ein Beleg gescannt/fotografiert wird — manuelle Eingabe
-      ohne Foto reicht. Falls die Antwort lautet "jeder Umsatz braucht
-      einen Beleg": zusätzlich Foto-Pflicht bei Betrag > 0 einführen
-      (eigene Entscheidung).
-      ENTSCHIEDEN (Paco, 2026-10-23): Auch bei 0 Umsatz wird ein Beleg
-      benötigt. Damit passt der Knopf "heute keine Umsätze" (Pflicht
-      ohne Foto) nicht mehr — offen: Knopf entfernen und stattdessen
-      den 0-€-Kassenschnitt scannen, oder Knopf behalten und ein Foto
-      verlangen? Beim Umbau prüfen, ob ein gescannter 0-€-Beleg (keine
-      Kartenart-Zeilen) überhaupt als Terminal an FC geht.
-      ENTSCHIEDEN (Paco, 2026-10-25): Knopf "heute keine Umsätze"
-      entfällt; auch bei 0 € wird der Kassenschnitt gescannt.
 
 ### Einstellungen & Konfiguration *(Phase C)*
 

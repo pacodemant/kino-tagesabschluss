@@ -398,6 +398,34 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
       auf den Summen-Abgleich (kein Freitext, keine visuellen
       Einschätzungen). *(geprüft Run 319b)*
 
+- [x] **EC-Terminal ohne Umsatz: muss es einen Beleg drucken?**
+      (Notiz 3) OFFENE FACHFRAGE, nicht von der App zu beantworten —
+      mit Steuerberatung/Buchhaltung klären (fiskalisch). App-Stand
+      (Run 492, siehe TODO_ERLEDIGT.md): Je eingetragenem Terminal ist
+      Pflicht: Betrag ODER Knopf "heute keine Umsätze" (geht als
+      `no_sales: true` mit 0-Beträgen an FC). Die App erzwingt NICHT,
+      dass ein Beleg gescannt/fotografiert wird — manuelle Eingabe
+      ohne Foto reicht. Falls die Antwort lautet "jeder Umsatz braucht
+      einen Beleg": zusätzlich Foto-Pflicht bei Betrag > 0 einführen
+      (eigene Entscheidung).
+      ENTSCHIEDEN (Paco, 2026-10-23): Auch bei 0 Umsatz wird ein Beleg
+      benötigt. Damit passt der Knopf "heute keine Umsätze" (Pflicht
+      ohne Foto) nicht mehr — offen: Knopf entfernen und stattdessen
+      den 0-€-Kassenschnitt scannen, oder Knopf behalten und ein Foto
+      verlangen? Beim Umbau prüfen, ob ein gescannter 0-€-Beleg (keine
+      Kartenart-Zeilen) überhaupt als Terminal an FC geht.
+      ENTSCHIEDEN (Paco, 2026-10-25): Knopf "heute keine Umsätze"
+      entfällt; auch bei 0 € wird der Kassenschnitt gescannt.
+      ERLEDIGT (Run 495a): Knopf entfernt. "Keine Umsätze" gilt jetzt,
+      wenn für das Terminal 0,00 € als EC-Gesamtbetrag erfasst ist —
+      gescannt (geht mit Foto + no_sales an FC; vorher hätte ein
+      gescannter 0-€-Bon FC gar nicht erreicht) oder, wenn der Scan
+      nicht geht, von Hand (Paco 2026-10-27). Bei Handeingabe hängt
+      Schritt 3 automatisch "TID xxx: Beleg konnte nicht gescannt
+      werden – 0,00 € von Hand eingetragen." an den Kommentar an.
+      Schritt-2-Entwurf speichert keineUmsaetzeTids nicht mehr (wird
+      abgeleitet). *(Run 495a)*
+
 ### Personalgetränke-Kachel *(Schritt 2)*
 
 - [x] **Hinweiszeilen in Personalgetränke-Kachel** *(Run 422)* Ergebnis

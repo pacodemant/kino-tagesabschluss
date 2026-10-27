@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.149+495 · Run 495
+Version: 0.9.149+495 · Run 495a
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -167,7 +167,9 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
   2000 px, JPEG 85, macht Browser/OS); diese Fassung geht an Belegscan
   und Flurbocash. Sende-Signatur ohne Fotos
   (ApiUploadService.sendeSignatur()), dadurch kein localStorage-
-  Überlauf mehr beim Speichern des Gesendet-Status.
+  Überlauf mehr beim Speichern des Gesendet-Status. 495a: Knopf
+  "heute keine Umsätze" entfernt; 0,00 € als EC-Gesamtbetrag (gescannt
+  oder von Hand mit Kommentar-Vermerk) gilt als "keine Umsätze".
 
 - Run 493 FC-location_id im Kino-Modell (Sandbox/Live getrennt),
   Admin-Schalter "Livesystem", Einstellungsfeld = Override je Umgebung,

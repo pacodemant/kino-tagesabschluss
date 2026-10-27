@@ -450,14 +450,17 @@ class ApiUploadService {
     FlurbocashZuordnung? korrekturVon,
   }) {
     final List<Map<String, dynamic>> terminals = _terminalsListe(abrechnung);
-    // Run 492: Terminals mit bestätigt "heute keine Umsätze" mit 0-Beträgen
-    // mitsenden, damit Flurbocash sieht, dass sie geprüft wurden.
+    // Run 492: Terminals mit "keine Umsätze" (seit Run 495a: Beleg mit
+    // 0,00 €) mit 0-Beträgen mitsenden, damit Flurbocash sieht, dass sie
+    // geprüft wurden — seit Run 495a mit dem gescannten 0-€-Beleg.
     // "no_sales" ist ein freies Zusatzfeld (Yannik: unbekannte Felder
     // werden ignoriert, bis er sie auswertet).
+    final Map<String, ({String base64, String mediaType})> fotos =
+        _fotoProGruppe(abrechnung);
     for (final String tid in abrechnung.keineUmsaetzeTids ?? const <String>[]) {
       if (terminals.any((Map<String, dynamic> t) => t['tid'] == tid)) continue;
       terminals.add(<String, dynamic>{
-        ..._terminalEintrag(tid, const <String, int>{}, null),
+        ..._terminalEintrag(tid, const <String, int>{}, fotos['t$tid']),
         'no_sales': true,
       });
     }

@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 495a: Knopf "heute keine Umsätze" entfernt (Paco 2026-10-25:
+  auch bei 0 € wird der Kassenschnitt gescannt). Ein Terminal gilt als
+  "keine Umsätze", wenn 0,00 € als EC-Gesamtbetrag erfasst ist; der
+  gescannte 0-€-Beleg geht jetzt mit Foto und no_sales an Flurbocash.
+  Geht der Scan nicht, 0,00 € von Hand eintragen — Schritt 3 vermerkt
+  das automatisch im Kommentar. Pflicht-Hinweis angepasst, Tests.
+
 - Run 495: App-Geschwindigkeit, Teil 1. Belegfoto wird bei der
   Aufnahme verkleinert (pickImage maxWidth/maxHeight 2000, imageQuality
   85; Konstanten in BelegFotoKomprimierung), statt mehrere MB groß durch

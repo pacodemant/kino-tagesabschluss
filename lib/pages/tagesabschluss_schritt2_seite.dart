@@ -234,10 +234,6 @@ class _TagesabschlussSchritt2SeiteState
   /// landet im Feld seiner TID, Hinweis bei fehlendem Beleg.
   List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
 
-  /// TIDs, für die der MA "heute keine Umsätze" angetippt hat (Run 492).
-  /// Gilt nur, solange das Feld dieser TID 0 € hat.
-  final Set<String> _keineUmsaetzeTids = <String>{};
-
   @override
   void initState() {
     super.initState();
@@ -429,53 +425,40 @@ class _TagesabschlussSchritt2SeiteState
         gesamtBetragText: _kartenartenGesamtBetragController[j].text,
       );
 
-  /// "heute keine Umsätze" ist für Feld [j] aktiv (Run 492).
+  /// Feld [j] gilt als "keine Umsätze" (Run 492): TID eingetragen und
+  /// EC-Gesamtbetrag ausdrücklich 0,00 € — gescannt oder, wenn der Scan
+  /// nicht ging, von Hand eingetragen. Seit Run 495a ohne eigenen Knopf
+  /// (Paco 2026-10-25: auch bei 0 € wird der Kassenschnitt gescannt).
   bool _keineUmsaetzeAktiv(int j) {
     final String tid = TidEingabe.bereinige(_ecBelegLabels[j]);
     return tid.isNotEmpty &&
-        _keineUmsaetzeTids.contains(tid) &&
-        _ecBelegeCent[j] == 0;
+        _ecBelegeCent[j] == 0 &&
+        j < _kartenartenGesamtBetragCent.length &&
+        _kartenartenGesamtBetragCent[j] == 0;
   }
 
-  /// Knopf "heute keine Umsätze" anbieten: Feld eines eingetragenen
-  /// Terminals ohne Betrag und ohne Scan.
-  bool _keineUmsaetzeMoeglich(int j) {
+  /// Feld [j] eines eingetragenen Terminals hat weder Betrag noch
+  /// 0,00 € → Beleg fehlt (Pflicht vor Schritt 3).
+  bool _terminalBelegFehlt(int j) {
     final String tid = TidEingabe.bereinige(_ecBelegLabels[j]);
     return tid.isNotEmpty &&
         _terminals.any((TerminalEintrag t) => t.tid == tid) &&
         _ecBelegeCent[j] == 0 &&
-        !(j < _scanHatStattgefunden.length && _scanHatStattgefunden[j]);
+        !_keineUmsaetzeAktiv(j);
   }
 
-  void _toggleKeineUmsaetze(int j) {
-    final String tid = TidEingabe.bereinige(_ecBelegLabels[j]);
-    if (tid.isEmpty) return;
-    setState(() {
-      _letzteAenderung = DateTime.now();
-      if (_keineUmsaetzeTids.remove(tid)) {
-        // Zurückgenommen: vorbelegtes "0,00" wieder leeren.
-        _kartenartenGesamtBetragCent[j] = null;
-        _setzeControllerText(_kartenartenGesamtBetragController[j], '');
-      } else {
-        _keineUmsaetzeTids.add(tid);
-        // "0,00" erfüllt das Pflichtfeld EC-Gesamtbetrag.
-        _kartenartenGesamtBetragCent[j] = 0;
-        _setzeControllerText(
-          _kartenartenGesamtBetragController[j],
-          TagesabschlussFormatierung.formatiereEuroEingabe(0),
-        );
-        if (j < _ecUnterkachelAufgeklappt.length &&
-            _ecBelegController.length > 1) {
-          _ecUnterkachelAufgeklappt[j] = false;
-        }
-      }
-    });
-    _speichereEntwurf();
-  }
+  /// "keine Umsätze"-TIDs, deren 0,00 € von Hand statt per Scan kamen —
+  /// Schritt 3 vermerkt sie im Kommentar (Run 495a).
+  List<String> _nichtGescannteKeineUmsaetzeTids() => <String>[
+        for (int j = 0; j < _ecBelegLabels.length; j++)
+          if (_keineUmsaetzeAktiv(j) &&
+              !(j < _scanHatStattgefunden.length && _scanHatStattgefunden[j]))
+            TidEingabe.bereinige(_ecBelegLabels[j]),
+      ];
 
   /// Pflicht vor Schritt 3 (Run 492, Paco: alle Terminals Pflicht): jedes
-  /// eingetragene Terminal braucht einen Betrag oder "heute keine
-  /// Umsätze". Fehlt das Feld eines Terminals (gelöscht), wird es wieder
+  /// eingetragene Terminal braucht einen Betrag oder 0,00 € (seit Run
+  /// 495a statt Knopf "heute keine Umsätze"). Fehlt das Feld eines Terminals (gelöscht), wird es wieder
   /// angelegt. Ohne eingetragene Terminals keine Prüfung.
   Future<bool> _pruefeAlleTerminalsErfasst() async {
     if (_terminals.isEmpty) return true;
@@ -497,7 +480,7 @@ class _TagesabschlussSchritt2SeiteState
     }
     final List<int> offen = <int>[
       for (int j = 0; j < _ecBelegController.length; j++)
-        if (_keineUmsaetzeMoeglich(j) && !_keineUmsaetzeAktiv(j)) j,
+        if (_terminalBelegFehlt(j)) j,
     ];
     if (offen.isEmpty) return true;
     setState(() {
@@ -518,7 +501,9 @@ class _TagesabschlussSchritt2SeiteState
         title: const Text('Beleg fehlt'),
         content: Text(
           'Kein Beleg erfasst für:\n$geraete\n\n'
-          'Bitte den Beleg erfassen oder „heute keine Umsätze“ antippen.',
+          'Bitte für jedes Terminal den Kassenschnitt scannen – auch '
+          'ohne Umsatz. Geht der Scan nicht, 0,00 € als EC-Gesamtbetrag '
+          'eintragen.',
         ),
         actions: <Widget>[
           ElevatedButton(
@@ -666,12 +651,6 @@ class _TagesabschlussSchritt2SeiteState
           ecBelegeLabelsListe[0].isNotEmpty) {
         _ecKachelAufgeklappt = true;
       }
-      _keineUmsaetzeTids
-        ..clear()
-        ..addAll(
-          (daten['keineUmsaetzeTids'] as List<dynamic>? ?? const <dynamic>[])
-              .whereType<String>(),
-        );
     });
 
     if (kinoSollCent != 0) {
@@ -813,7 +792,6 @@ class _TagesabschlussSchritt2SeiteState
         'scanBelegNrVon': _scanBelegNrVon,
         'scanBelegNrBis': _scanBelegNrBis,
         'kartenartenGesamtBetragCent': List<int?>.from(_kartenartenGesamtBetragCent),
-        'keineUmsaetzeTids': _keineUmsaetzeTids.toList(),
         Schritt2ZahlungsartEntwurf.entwurfKey:
             Schritt2ZahlungsartEntwurf.zumSpeichern(_zahlungsartZeilen),
       },
@@ -996,6 +974,7 @@ class _TagesabschlussSchritt2SeiteState
         for (int j = 0; j < _ecBelegLabels.length; j++)
           if (_keineUmsaetzeAktiv(j)) TidEingabe.bereinige(_ecBelegLabels[j]),
       ],
+      nichtGescannteKeineUmsaetzeTids: _nichtGescannteKeineUmsaetzeTids(),
       terminalId: _scanTerminalId,
       belegNrVon: _scanBelegNrVon,
       belegNrBis: _scanBelegNrBis,
@@ -1642,7 +1621,6 @@ class _TagesabschlussSchritt2SeiteState
   Future<void> _leereAlleFelder() async {
     FocusScope.of(context).unfocus();
     setState(() {
-      _keineUmsaetzeTids.clear();
       _kinoSollCent = 0;
       _bistroSollCent = 0;
       _differenzAnfangsbestandCent = 0;
@@ -2780,14 +2758,6 @@ class _TagesabschlussSchritt2SeiteState
                 onChanged: _beiEcBelegLabel1Geaendert,
                 onLoeschen: _ecBelegLabel1Loeschen,
               ),
-              if (_keineUmsaetzeMoeglich(0))
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Schritt2KeineUmsaetzeKnopf(
-                    aktiv: _keineUmsaetzeAktiv(0),
-                    onTap: () => _toggleKeineUmsaetze(0),
-                  ),
-                ),
               if (_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0])
                 _baueMetadatenBlock(0),
               if (_zahlungsartZeilen.isNotEmpty &&
@@ -2806,9 +2776,7 @@ class _TagesabschlussSchritt2SeiteState
             labelFocusNode: _ecBelegLabelFocusNode,
             labels: _ecBelegLabels,
             geraeteNummer: _geraeteNummer,
-            keineUmsaetzeMoeglich: _keineUmsaetzeMoeglich,
             keineUmsaetzeAktiv: _keineUmsaetzeAktiv,
-            onKeineUmsaetzeToggle: _toggleKeineUmsaetze,
             betraegeCent: _ecBelegeCent,
             tidUnleserlich: _subKachelTidUnleserlich,
             scanLaeuft: _scanLaeuft,
