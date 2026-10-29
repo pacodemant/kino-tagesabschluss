@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 495a · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 496 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -143,8 +143,18 @@ Regressionstest neu schreiben.
       TEILWEISE ERLEDIGT (Run 495): Foto wird bei der Aufnahme auf max.
       2000 px / JPEG 85 verkleinert (BelegFotoKomprimierung.aufnahme*),
       Signatur ohne Fotos. Offen: Yannik fragen, ob die Auflösung genügt
-      (Paco); Fotos separat statt im Entwurf speichern nur, falls es
-      nach Test auf Android noch spürbar langsam ist.
+      (Paco).
+      WEITER ERLEDIGT (Run 496, Paco 2026-10-29 vor Ort: "immer noch
+      spürbar langsam"): Fotos liegen unter eigenem Hive-Key
+      (`entwurf_schritt2_fotos_<kinoId>`) und werden nur bei Änderung
+      geschrieben; der Entwurf pro Tastendruck ist ~1 KB statt MB.
+      Messung (Chromium, CPU 4x gedrosselt, 3 Scans, Handyfoto
+      3000x4000/3,3 MB, Mittel je Tastendruck in Schritt 2):
+      r494 ~900 ms, r495a ~265 ms, r496 ~115 ms.
+      Noch offen: (b) oben — Schritt 3 komprimiert die Fotos für den
+      Verlauf bei jedem Öffnen erneut in reinem Dart (einmaliger
+      Hänger beim Seitenwechsel 2→3); nur angehen, falls auf Android
+      weiterhin störend.
 
 ---
 

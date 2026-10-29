@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 496: App-Geschwindigkeit, Teil 2. Schritt-2-Entwurf speichert die
+  Belegfotos unter eigenem Key (`entwurf_schritt2_fotos_<kinoId>`) und
+  nur, wenn sich ein Foto geändert hat; bisher wurden bei jedem
+  Tastendruck alle Fotos mitgeschrieben. Alte Entwürfe bleiben lesbar.
+  Messung (CPU 4x gedrosselt, 3 Scans): je Tastendruck r494 ~900 ms,
+  r495a ~265 ms, r496 ~115 ms. Update-Prüfung (version.json) ohne
+  24-h-Drossel, bei jedem Zurückkehren aus dem Hintergrund, plus eine
+  Nachprüfung nach 5 s; Reload weiterhin nur auf Startmenü/Kinoauswahl.
+  Unit-Tests ergänzt.
+
 - Run 495a: Knopf "heute keine Umsätze" entfernt (Paco 2026-10-25:
   auch bei 0 € wird der Kassenschnitt gescannt). Ein Terminal gilt als
   "keine Umsätze", wenn 0,00 € als EC-Gesamtbetrag erfasst ist; der

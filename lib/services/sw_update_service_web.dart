@@ -7,7 +7,7 @@ external JSBoolean? get _jsSwUpdateReady;
 external void _reloadPage();
 
 /// Prueft EINMALIG, ob laut JS-Seite (web/index.html, _checkForUpdate(),
-/// dort bereits auf max. 1x/Tag gedrosselt und nur beim Laden/Wieder-
+/// seit Run 496 ohne Tagesdrossel, nur beim Wieder-
 /// sichtbarwerden ausgeloest) ein Update bereitsteht, und ruft dann
 /// [onUpdate] auf. Kein Dauer-Timer mehr (Run 435 — vorher 20s-Polling,
 /// konnte dadurch auch spaetabends mitten in einer laufenden Abrechnung

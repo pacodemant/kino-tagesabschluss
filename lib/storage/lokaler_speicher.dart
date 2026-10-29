@@ -377,36 +377,95 @@ class LokalerSpeicher {
     await speicher.setBool('linkshaender_modus', wert);
   }
 
+  /// Feld im Schritt-2-Entwurf mit den Belegfotos (Base64, je Beleg-Index).
+  static const String _schritt2FotosFeld = 'ecBelegeFotosBase64';
+
+  /// Zuletzt geschriebene Fotoliste je Kino — erspart das erneute
+  /// Schreiben unveränderter Fotos (Run 496).
+  static final Map<String, List<String>> _schritt2FotosGeschrieben =
+      <String, List<String>>{};
+
   /// Speichert den Schritt-2-Entwurf fuer ein Kino.
+  ///
+  /// Seit Run 496 liegen die Belegfotos unter einem eigenen Key
+  /// ([schritt2FotosKey]) und werden nur geschrieben, wenn sich die
+  /// Fotoliste geändert hat. Schritt 2 speichert den Entwurf bei jedem
+  /// Tastendruck; vorher wurden dabei jedes Mal alle Fotos (mehrere MB)
+  /// neu kodiert und geschrieben — auf Android spürbar langsam.
   static Future<void> speichereSchritt2Entwurf(
     String kinoId,
     Map<String, dynamic> daten,
   ) async {
+    final Map<String, dynamic> ohneFotos = Map<String, dynamic>.of(daten);
+    final Object? fotosRoh = ohneFotos.remove(_schritt2FotosFeld);
+    if (fotosRoh is List) {
+      final List<String> fotos =
+          fotosRoh.map((dynamic f) => f?.toString() ?? '').toList();
+      if (!_gleicheFotos(_schritt2FotosGeschrieben[kinoId], fotos)) {
+        _schritt2FotosGeschrieben[kinoId] = fotos;
+        await _speichereJson(
+          'box_schritt2_entwuerfe',
+          schritt2FotosKey(kinoId),
+          fotos,
+        );
+      }
+    }
     await _speichereJson(
       'box_schritt2_entwuerfe',
       schritt2EntwurfKey(kinoId),
-      daten,
+      ohneFotos,
     );
   }
 
+  /// Vergleich per [identical] je Eintrag: Schritt 2 reicht unveränderte
+  /// Fotos als dieselben String-Objekte weiter, ein inhaltlicher
+  /// Vergleich mehrerer MB ist dafür nicht nötig.
+  static bool _gleicheFotos(List<String>? alt, List<String> neu) {
+    if (alt == null || alt.length != neu.length) return false;
+    for (int i = 0; i < neu.length; i++) {
+      if (!identical(alt[i], neu[i])) return false;
+    }
+    return true;
+  }
+
   /// Laedt den Schritt-2-Entwurf fuer ein Kino, oder null wenn keiner vorhanden.
+  /// Die separat gespeicherten Fotos (Run 496) werden wieder unter
+  /// 'ecBelegeFotosBase64' eingesetzt; ältere Entwürfe mit Fotos im
+  /// Entwurf selbst bleiben lesbar.
   static Future<Map<String, dynamic>?> ladeSchritt2Entwurf(
     String kinoId,
   ) async {
-    return _ladeJson(
+    final Map<String, dynamic>? entwurf = await _ladeJson(
       'box_schritt2_entwuerfe',
       schritt2EntwurfKey(kinoId),
       (dynamic v) => v as Map<String, dynamic>,
     );
+    if (entwurf == null) return null;
+    final List<String>? fotos = await _ladeJson(
+      'box_schritt2_entwuerfe',
+      schritt2FotosKey(kinoId),
+      (dynamic v) =>
+          (v as List<dynamic>).map((dynamic f) => f?.toString() ?? '').toList(),
+    );
+    if (fotos != null) {
+      entwurf[_schritt2FotosFeld] = fotos;
+      _schritt2FotosGeschrieben[kinoId] = fotos;
+    }
+    return entwurf;
   }
 
   static String schritt2EntwurfKey(String kinoId) =>
       'entwurf_schritt2_$kinoId';
 
-  /// Löscht den Schritt-2-Entwurf für ein Kino.
+  static String schritt2FotosKey(String kinoId) =>
+      'entwurf_schritt2_fotos_$kinoId';
+
+  /// Löscht den Schritt-2-Entwurf für ein Kino (inkl. Fotos).
   static Future<void> loescheSchritt2Entwurf(String kinoId) async {
     final Box<dynamic> box = Hive.box('box_schritt2_entwuerfe');
     await box.delete(schritt2EntwurfKey(kinoId));
+    await box.delete(schritt2FotosKey(kinoId));
+    _schritt2FotosGeschrieben.remove(kinoId);
   }
 
   /// Speichert den Schritt-3-Entwurf (aktuell nur der Kommentar/die

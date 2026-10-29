@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.149+495 · Run 495a
+Version: 0.9.150+496 · Run 496
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -93,7 +93,7 @@ Zwei Ebenen, kein Backend:
 |-------------------------------|-------------------------------------|
 | `box_tagesabschluesse`        | Finale Tagesabschlüsse (Hive) — Belegfotos werden beim Speichern für die Ablage komprimiert (Run 451), Original (seit Run 495 bei der Aufnahme auf max. 2000 px verkleinert) bleibt nur im in-memory-Objekt für Versand/Belegscan; Einträge >10 Tage werden gelöscht, sobald sie bestätigt gesendet sind |
 | `box_abrechnung_entwuerfe`    | Schritt-1-Entwürfe (Hive)           |
-| `box_schritt2_entwuerfe`      | Schritt-2-Entwürfe (Hive)           |
+| `box_schritt2_entwuerfe`      | Schritt-2-Entwürfe (Hive); Belegfotos seit Run 496 separat unter `entwurf_schritt2_fotos_<kinoId>` |
 | `box_getraenke_mengen`        | Getränke-Mengen (Hive)              |
 | `box_wechselgeld_entwuerfe`   | Wechselgeld-Entwürfe (Hive)         |
 | `box_getraenkeliste`          | Getränkeliste (Hive)                |
@@ -161,7 +161,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 495)
+## Laufender Entwicklungsstand (Run 496)
+
+- Run 496 Belegfotos des Schritt-2-Entwurfs unter eigenem Hive-Key
+  (`entwurf_schritt2_fotos_<kinoId>`), nur bei Änderung geschrieben —
+  vorher bei jedem Tastendruck mit. Update-Prüfung (version.json) ohne
+  24-h-Drossel, bei jedem Zurückkehren + Nachprüfung nach 5 s.
 
 - Run 495 Belegfoto wird schon bei der Aufnahme verkleinert (max.
   2000 px, JPEG 85, macht Browser/OS); diese Fassung geht an Belegscan
@@ -684,7 +689,7 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 - Run 412 ✅ Update-Reload passiert nicht mehr mitten in einer offenen
   Abrechnung: neuer `UpdateReloadGuard` (NavigatorObserver) lädt nur
   neu, wenn Kinoauswahl oder Startmenü sichtbar ist. Prüf-Häufigkeit
-  (Start/Vordergrund, max. 1x/24h) aus Run 411 unverändert. Details
+  (Start/Vordergrund; bis Run 496 max. 1x/24h) aus Run 411 unverändert. Details
   siehe CHANGELOG.md.
 
 - Run 411 ✅ Update-Erkennung (`web/index.html`) auf `version.json`-

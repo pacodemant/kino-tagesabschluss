@@ -644,4 +644,110 @@ void main() {
       );
     },
   );
+
+  group('LokalerSpeicher Schritt-2-Entwurf: Fotos getrennt (Run 496)', () {
+    late Directory tempDir;
+    late Box<dynamic> box;
+    const String kinoId = 'kino_01';
+
+    Map<String, dynamic> entwurf(int kinoSollCent, List<String> fotos) =>
+        <String, dynamic>{
+          'kinoId': kinoId,
+          'kinoSollCent': kinoSollCent,
+          'ecBelegeFotosBase64': fotos,
+          'ecBelegeFotosMediaTypen': <String>['image/jpeg', 'image/jpeg'],
+        };
+
+    setUp(() async {
+      tempDir = Directory.systemTemp.createTempSync('hive_test_');
+      Hive.init(tempDir.path);
+      box = await Hive.openBox('box_schritt2_entwuerfe');
+      await LokalerSpeicher.loescheSchritt2Entwurf(kinoId);
+    });
+
+    tearDown(() async {
+      await Hive.deleteFromDisk();
+      if (tempDir.existsSync()) {
+        tempDir.deleteSync(recursive: true);
+      }
+    });
+
+    test('Entwurf selbst enthaelt keine Fotos, Laden setzt sie wieder ein',
+        () async {
+      final List<String> fotos = <String>['FOTO_A' * 1000, ''];
+      await LokalerSpeicher.speichereSchritt2Entwurf(
+        kinoId,
+        entwurf(1000, fotos),
+      );
+
+      final String roh =
+          box.get(LokalerSpeicher.schritt2EntwurfKey(kinoId)) as String;
+      expect(roh.contains('FOTO_A'), isFalse);
+      expect(roh.contains('ecBelegeFotosMediaTypen'), isTrue);
+
+      final Map<String, dynamic>? geladen =
+          await LokalerSpeicher.ladeSchritt2Entwurf(kinoId);
+      expect(geladen?['kinoSollCent'], 1000);
+      expect(geladen?['ecBelegeFotosBase64'], fotos);
+    });
+
+    test('unveraenderte Fotos werden beim naechsten Speichern nicht neu '
+        'geschrieben, ein neues Foto schon', () async {
+      final List<String> fotos = <String>['FOTO_A', ''];
+      await LokalerSpeicher.speichereSchritt2Entwurf(
+        kinoId,
+        entwurf(1000, fotos),
+      );
+      // Fotos-Key von aussen ueberschreiben: bleibt er beim naechsten
+      // Speichern mit denselben Fotos stehen, wurde nicht neu geschrieben.
+      await box.put(LokalerSpeicher.schritt2FotosKey(kinoId), '["MARKER"]');
+
+      await LokalerSpeicher.speichereSchritt2Entwurf(
+        kinoId,
+        entwurf(2000, List<String>.from(fotos)),
+      );
+      expect(box.get(LokalerSpeicher.schritt2FotosKey(kinoId)), '["MARKER"]');
+
+      await LokalerSpeicher.speichereSchritt2Entwurf(
+        kinoId,
+        entwurf(2000, <String>['FOTO_A', 'FOTO_B']),
+      );
+      final Map<String, dynamic>? geladen =
+          await LokalerSpeicher.ladeSchritt2Entwurf(kinoId);
+      expect(geladen?['kinoSollCent'], 2000);
+      expect(geladen?['ecBelegeFotosBase64'], <String>['FOTO_A', 'FOTO_B']);
+    });
+
+    test('alter Entwurf mit Fotos im Entwurf selbst bleibt lesbar', () async {
+      await box.put(
+        LokalerSpeicher.schritt2EntwurfKey(kinoId),
+        jsonEncode(entwurf(1000, <String>['ALT_FOTO'])),
+      );
+
+      final Map<String, dynamic>? geladen =
+          await LokalerSpeicher.ladeSchritt2Entwurf(kinoId);
+      expect(geladen?['ecBelegeFotosBase64'], <String>['ALT_FOTO']);
+    });
+
+    test('Loeschen entfernt Entwurf und Fotos; danach werden gleiche Fotos '
+        'wieder geschrieben', () async {
+      final List<String> fotos = <String>['FOTO_A'];
+      await LokalerSpeicher.speichereSchritt2Entwurf(
+        kinoId,
+        entwurf(1000, fotos),
+      );
+      await LokalerSpeicher.loescheSchritt2Entwurf(kinoId);
+      expect(box.get(LokalerSpeicher.schritt2EntwurfKey(kinoId)), isNull);
+      expect(box.get(LokalerSpeicher.schritt2FotosKey(kinoId)), isNull);
+      expect(await LokalerSpeicher.ladeSchritt2Entwurf(kinoId), isNull);
+
+      await LokalerSpeicher.speichereSchritt2Entwurf(
+        kinoId,
+        entwurf(1000, fotos),
+      );
+      final Map<String, dynamic>? geladen =
+          await LokalerSpeicher.ladeSchritt2Entwurf(kinoId);
+      expect(geladen?['ecBelegeFotosBase64'], fotos);
+    });
+  });
 }

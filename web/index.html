@@ -128,12 +128,11 @@
     // github.com/flutter/flutter/issues/156910) — die SW-Datei ändert
     // sich nie mehr zwischen Builds, ein Vergleich darüber würde also
     // nie mehr anschlagen. Stattdessen wird die kleine version.json
-    // verglichen, höchstens 1x pro Tag, ausgelöst beim Laden und beim
-    // Zurückkehren aus dem Hintergrund (PWA hat keine Tabs, daher hier
-    // aktiv nachfragen statt auf einen neuen Seitenaufbau zu warten).
+    // verglichen, bei jedem Zurückkehren aus dem Hintergrund (PWA hat
+    // keine Tabs, daher hier aktiv nachfragen statt auf einen neuen
+    // Seitenaufbau zu warten). Bis Run 496 höchstens 1x pro Tag — ein
+    // Deploy am Nachmittag kam dadurch am selben Abend nicht an.
     var _currentBuildNumber = null;
-    var _lastUpdateCheckKey = 'kbg_last_update_check';
-    var _oneDayMs = 24 * 60 * 60 * 1000;
 
     function _fetchBuildNumber() {
       return fetch('version.json', { cache: 'no-store' })
@@ -144,9 +143,6 @@
 
     function _checkForUpdate() {
       if (!navigator.onLine) return;
-      var last = parseInt(localStorage.getItem(_lastUpdateCheckKey) || '0', 10);
-      if (Date.now() - last < _oneDayMs) return;
-      localStorage.setItem(_lastUpdateCheckKey, String(Date.now()));
       _fetchBuildNumber().then(function(remote) {
         if (remote && _currentBuildNumber && remote !== _currentBuildNumber) {
           _swUpdateReady = true;

@@ -16,10 +16,17 @@ class UpdateLifecycleWatcher extends WidgetsBindingObserver {
     _pruefen();
   }
 
+  /// Wartezeit bis zur zweiten Pruefung nach dem Zurueckkehren (Run 496):
+  /// web/index.html fragt version.json erst beim Sichtbarwerden ab, die
+  /// Antwort kommt also nach dem ersten _pruefen() an. Ohne Nachpruefung
+  /// griffe ein erkanntes Update erst beim naechsten Zurueckkehren.
+  static const Duration nachpruefungNach = Duration(seconds: 5);
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _pruefen();
+      Future<void>.delayed(nachpruefungNach, _pruefen);
     }
   }
 
