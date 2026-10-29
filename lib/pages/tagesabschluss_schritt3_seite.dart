@@ -397,27 +397,6 @@ class _TagesabschlussSchritt3SeiteState
     setState(() => _abschlussVorschau = abschluss);
   }
 
-  /// Hinweis unter der Differenz bei "Kein Beleg möglich" (Run 498),
-  /// sonst null.
-  String? _keinBelegHinweis() {
-    final List<String> tids =
-        widget.argumente.keinBelegMoeglichTids ?? const <String>[];
-    if (tids.isEmpty) return null;
-    final List<String> geraete = <String>[
-      for (final String tid in tids)
-        () {
-          for (final TerminalEintrag t in _terminals) {
-            if (t.tid == tid && t.nummer.isNotEmpty) {
-              return 'Gerät ${t.nummer} (TID $tid)';
-            }
-          }
-          return 'TID $tid';
-        }(),
-    ];
-    return 'Kein Beleg für ${geraete.join(', ')}: Die Differenz kann '
-        '${tids.length == 1 ? 'dessen' : 'deren'} Kartenumsatz enthalten.';
-  }
-
   void _beiAnmerkungGeaendert(String wert) {
     _anmerkung = wert;
     _aktualisiereAbschlussVorschau();
@@ -1311,7 +1290,10 @@ class _TagesabschlussSchritt3SeiteState
           Schritt3DifferenzSection(
             differenzCent: differenzCent,
             differenzFarbe: differenzFarbe,
-            hinweis: _keinBelegHinweis(),
+            hinweis: UebertragUmschlagInhalt.keinBelegHinweis(
+              vorschau,
+              _terminals,
+            ),
           ),
           ],
           Padding(

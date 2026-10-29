@@ -33,10 +33,15 @@ void main() {
     if (tempDir.existsSync()) tempDir.deleteSync(recursive: true);
   });
 
-  setUp(() async {
-    await Hive.box('box_schritt2_entwuerfe').clear();
+  // Jeder Test bekommt einen eigenen Standort (frischer Entwurf). Ein
+  // box.clear() zwischen den Tests hinge an offenen Schreibvorgängen.
+  int testNr = 0;
+  String kinoId = '';
+
+  setUp(() {
+    kinoId = 'kino_t${testNr++}';
     SharedPreferences.setMockInitialValues(<String, Object>{
-      'terminals_kino_01': jsonEncode(<Map<String, dynamic>>[
+      'terminals_$kinoId': jsonEncode(<Map<String, dynamic>>[
         <String, dynamic>{'tid': '11111111', 'nummer': '1'},
         <String, dynamic>{'tid': '22222222', 'nummer': '2'},
         <String, dynamic>{'tid': '33333333', 'nummer': '3'},
@@ -58,9 +63,9 @@ void main() {
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: TagesabschlussSchritt2Seite(
-          kinoId: 'kino_01',
+          kinoId: kinoId,
           kinoName: 'Schauburg',
           scheineCent: 0,
           loseMuenzenCent: 0,
@@ -78,7 +83,7 @@ void main() {
 
   Future<Map<String, dynamic>?> ladeEntwurf(WidgetTester tester) async =>
       tester.runAsync<Map<String, dynamic>?>(
-        () => LokalerSpeicher.ladeSchritt2Entwurf('kino_01'),
+        () => LokalerSpeicher.ladeSchritt2Entwurf(kinoId),
       );
 
   Future<void> tippeWeiter(WidgetTester tester) async {
@@ -137,6 +142,9 @@ void main() {
     // Nächste Prüfung (Kino-Soll ist Pflichtfeld) hält die Seite an.
     await tester.tap(find.text('Ändern'));
     await warte(tester);
+    // Run 499: die Weiter-Prüfung klappt keine Unterkachel auf (nur die
+    // EC-Kachel selbst zeigt "aufgeklappt").
+    expect(find.byIcon(Icons.expand_less), findsOneWidget);
 
     expect(find.text('Kein Beleg möglich'), findsNWidgets(3));
     expect(find.text('Aufheben'), findsNWidgets(3));
@@ -169,6 +177,24 @@ void main() {
     expect(
       find.byKey(const ValueKey<String>('kein_beleg_22222222')),
       findsNothing,
+    );
+  });
+
+  testWidgets('"manuell eingeben" schließt den Dialog und öffnet nur dieses '
+      'Terminal zur Eingabe (Run 499)', (WidgetTester tester) async {
+    await starteSeite(tester);
+    final int felderVorher = find.byType(TextField).evaluate().length;
+    await tippeWeiter(tester);
+    await tester.tap(find.byKey(const ValueKey<String>('manuell_22222222')));
+    await warte(tester);
+
+    expect(find.text('Beleg fehlt'), findsNothing);
+    expect(find.byIcon(Icons.expand_less), findsNWidgets(2));
+    expect(find.byType(TextField).evaluate().length, greaterThan(felderVorher));
+    expect(FocusManager.instance.primaryFocus?.context, isNotNull);
+    expect(
+      (await ladeEntwurf(tester))?['keinBelegMoeglichTids'] ?? <dynamic>[],
+      isEmpty,
     );
   });
 }

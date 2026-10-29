@@ -380,13 +380,8 @@ class _TagesabschlussSchritt2SeiteState
     for (final ZahlungsartZeile zeile in zeilen) {
       zeile.zustand = ZeilenZustand.editing;
     }
-    _ecKachelAufgeklappt = true;
-    if (belegIndex < _ecUnterkachelAufgeklappt.length) {
-      _ecUnterkachelAufgeklappt[belegIndex] = true;
-    }
-    if (belegIndex < _ecUnterkachelEditModus.length) {
-      _ecUnterkachelEditModus[belegIndex] = true;
-    }
+    // Run 499: Unterkachel bleibt zu, die Weiter-Prüfung öffnet sie bei
+    // Bedarf.
   }
 
   /// Neue Abrechnung ohne Entwurf von heute (Run 490): ein EC-Feld je in
@@ -534,7 +529,8 @@ class _TagesabschlussSchritt2SeiteState
       for (final int j in offen) TidEingabe.bereinige(_ecBelegLabels[j]),
     ];
     final Set<String> angehakt = <String>{};
-    final bool? weiter = await showDialog<bool>(
+    // true = weiter, String = "manuell eingeben" für diese TID (Run 499).
+    final Object? weiter = await showDialog<Object>(
       context: context,
       builder: (BuildContext ctx) => StatefulBuilder(
         builder: (BuildContext ctx, StateSetter setDialogState) =>
@@ -556,6 +552,19 @@ class _TagesabschlussSchritt2SeiteState
                   Text(
                     '${_geraeteNummer(tid) == null ? '' : 'Gerät ${_geraeteNummer(tid)} · '}TID $tid',
                     style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      key: ValueKey<String>('manuell_$tid'),
+                      onPressed: () => Navigator.of(ctx).pop(tid),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(0, 32),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      child: const Text('manuell eingeben'),
+                    ),
                   ),
                   CheckboxListTile(
                     key: ValueKey<String>('kein_beleg_$tid'),
@@ -591,7 +600,19 @@ class _TagesabschlussSchritt2SeiteState
         ),
       ),
     );
-    if (weiter != true || !mounted) return false;
+    if (!mounted) return false;
+    if (weiter is String) {
+      final int j = offen[offeneTids.indexOf(weiter)];
+      setState(() => _oeffneBelegZurBearbeitung(j));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || j >= _kartenartenGesamtBetragFocusNode.length) return;
+        final FocusNode fokus = _kartenartenGesamtBetragFocusNode[j];
+        FocusScope.of(context).requestFocus(fokus);
+        _macheFehlerfeldSichtbar(fokus);
+      });
+      return false;
+    }
+    if (weiter != true) return false;
     setState(() {
       _keinBelegMoeglichTids.addAll(offeneTids);
       _letzteAenderung = DateTime.now();
@@ -700,10 +721,8 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegLabels[i] = ecBelegeLabelsListe[i];
         _ecBelegFotosBase64[i] = ecBelegeFotosBase64Liste[i];
         _ecBelegFotosMediaTypen[i] = ecBelegeFotosMediaTypenListe[i];
-        // Run 497: Unterkacheln mit TID nach dem Laden zugeklappt.
-        if (ecBelege.length > 1 && ecBelegeLabelsListe[i].isNotEmpty) {
-          _ecUnterkachelAufgeklappt[i] = false;
-        }
+        // Run 497/499: Unterkacheln nach dem Laden zugeklappt.
+        if (ecBelege.length > 1) _ecUnterkachelAufgeklappt[i] = false;
       }
       for (int i = 0; i < ausgabenBetraege.length; i++) {
         _ausgaben[i].betragCent = ausgabenBetraege[i];
@@ -1093,25 +1112,26 @@ class _TagesabschlussSchritt2SeiteState
     _weiterZuSchritt3(zielSchrittBeimSprung: zielSchrittNr == 4 ? 4 : null);
   }
 
-  Future<bool> _pruefePflichtfelderVorSchritt3() async {
-    setState(() {
-      _validierungAusgeloest = true;
-      if (!_ecKachelAufgeklappt) _ecKachelAufgeklappt = true;
-      for (int i = 0; i < _ecBelegController.length; i++) {
-        if (_keinBelegMoeglichAktiv(i)) continue;
-        if (i < _ecUnterkachelAufgeklappt.length) {
-          _ecUnterkachelAufgeklappt[i] = true;
-        }
-        if (i < _ecUnterkachelEditModus.length) {
-          _ecUnterkachelEditModus[i] = true;
-        }
-        if (i < _zahlungsartZeilen.length) {
-          for (final ZahlungsartZeile zeile in _zahlungsartZeilen[i]) {
-            zeile.zustand = ZeilenZustand.editing;
-          }
-        }
+  /// Öffnet Beleg [i] zum Bearbeiten (Kachel, Unterkachel, Kartenarten)
+  /// — seit Run 499 nur noch für den Beleg mit gefundenem Fehler bzw. auf
+  /// Wunsch ("manuell eingeben"), sonst bleiben Unterkacheln zu.
+  void _oeffneBelegZurBearbeitung(int i) {
+    _ecKachelAufgeklappt = true;
+    if (i < _ecUnterkachelAufgeklappt.length) {
+      _ecUnterkachelAufgeklappt[i] = true;
+    }
+    if (i < _ecUnterkachelEditModus.length) {
+      _ecUnterkachelEditModus[i] = true;
+    }
+    if (i < _zahlungsartZeilen.length) {
+      for (final ZahlungsartZeile zeile in _zahlungsartZeilen[i]) {
+        zeile.zustand = ZeilenZustand.editing;
       }
-    });
+    }
+  }
+
+  Future<bool> _pruefePflichtfelderVorSchritt3() async {
+    setState(() => _validierungAusgeloest = true);
 
     // V3: Ausgaben mit Label aber Betrag = 0
     for (int i = 0; i < _ausgaben.length; i++) {
@@ -1174,6 +1194,13 @@ class _TagesabschlussSchritt2SeiteState
       String bezeichnung
     }) feld in pflichtfelder) {
       if (feld.controller.text.trim().isEmpty) {
+        final int labelIndex = _ecBelegLabelController.indexOf(feld.controller);
+        final int belegIndex = labelIndex >= 0
+            ? labelIndex
+            : _kartenartenGesamtBetragController.indexOf(feld.controller);
+        if (belegIndex >= 0) {
+          setState(() => _oeffneBelegZurBearbeitung(belegIndex));
+        }
         await _zeigeValidierungsfehlerUndFokussiere(
           fokusNode: feld.fokus,
           feldBezeichnung: feld.bezeichnung,
@@ -1345,6 +1372,64 @@ class _TagesabschlussSchritt2SeiteState
       _kartenartenGesamtBetragFocusNode.add(neuerKartenartenGesamtBetragFn);
       _metadatenAufgeklappt.add(false);
       _metadatenNurAnzeige.add(false);
+    });
+    _speichereEntwurf();
+  }
+
+  /// Mülleimer einer Unterkachel (Run 499): Beleg eines eingetragenen
+  /// Terminals wird auf den Anfangszustand zurückgesetzt (TID bleibt),
+  /// zusätzliche Belege werden wie bisher entfernt.
+  void _ecBelegEntfernenOderZuruecksetzen(int index) {
+    if (index < 0 || index >= _ecBelegController.length) return;
+    final String tid = TidEingabe.bereinige(_ecBelegLabels[index]);
+    final bool istTerminal =
+        _terminals.any((TerminalEintrag t) => t.tid == tid);
+    final int gleicheTid = _ecBelegLabels
+        .where((String l) => TidEingabe.bereinige(l) == tid)
+        .length;
+    if (!istTerminal || gleicheTid > 1) {
+      _ecBelegEntfernen(index);
+      return;
+    }
+    setState(() {
+      _letzteAenderung = DateTime.now();
+      _keinBelegMoeglichTids.remove(tid);
+      _ecBelegeCent[index] = 0;
+      _setzeControllerText(_ecBelegController[index], '');
+      if (index < _ecBelegFotosBase64.length) _ecBelegFotosBase64[index] = '';
+      if (index < _ecBelegFotosMediaTypen.length) {
+        _ecBelegFotosMediaTypen[index] = '';
+      }
+      if (index < _ecBelegScanGescannt.length) {
+        _ecBelegScanGescannt[index] = false;
+      }
+      if (index < _scanHatStattgefunden.length) {
+        _scanHatStattgefunden[index] = false;
+      }
+      _bereinigUnbekannteZeilen(index);
+      if (index < _zahlungsartZeilen.length) {
+        for (final ZahlungsartZeile zeile in _zahlungsartZeilen[index]) {
+          zeile.reset();
+        }
+      }
+      if (index < _kartenartenGesamtBetragCent.length) {
+        _kartenartenGesamtBetragCent[index] = null;
+      }
+      if (index < _kartenartenGesamtBetragController.length) {
+        _setzeControllerText(_kartenartenGesamtBetragController[index], '');
+      }
+      if (index < _metadatenAufgeklappt.length) {
+        _metadatenAufgeklappt[index] = false;
+      }
+      if (index < _metadatenNurAnzeige.length) {
+        _metadatenNurAnzeige[index] = false;
+      }
+      if (index < _ecUnterkachelEditModus.length) {
+        _ecUnterkachelEditModus[index] = false;
+      }
+      if (index < _ecUnterkachelAufgeklappt.length) {
+        _ecUnterkachelAufgeklappt[index] = false;
+      }
     });
     _speichereEntwurf();
   }
@@ -1908,11 +1993,11 @@ class _TagesabschlussSchritt2SeiteState
           if (belegIndex < _ecBelegScanGescannt.length) {
             _ecBelegScanGescannt[belegIndex] = true;
           }
-          // Run 497: nach dem Scan zugeklappt (Ergebnis stand im Dialog
-          // "Scan-Ergebnis prüfen"), außer die TID muss korrigiert werden.
+          // Run 497/499: nach dem Scan zugeklappt (Ergebnis stand im
+          // Dialog "Scan-Ergebnis prüfen"); Fehler zeigt der rote Titel,
+          // die Weiter-Prüfung öffnet die Unterkachel bei Bedarf.
           if (belegIndex < _ecUnterkachelAufgeklappt.length) {
-            _ecUnterkachelAufgeklappt[belegIndex] =
-                _ecBelegHatTidProblem(belegIndex);
+            _ecUnterkachelAufgeklappt[belegIndex] = false;
           }
           _scanDatum = _feldWertOderNull(geprueftes.datum);
           _scanUhrzeit = _feldWertOderNull(geprueftes.uhrzeit);
@@ -1933,9 +2018,6 @@ class _TagesabschlussSchritt2SeiteState
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis, belegIndex);
           if (hatUnlesbareDaten || tidKonfigWarnung != null) {
-            if (belegIndex < _ecUnterkachelAufgeklappt.length) {
-              _ecUnterkachelAufgeklappt[belegIndex] = true;
-            }
             if (belegIndex < _ecUnterkachelEditModus.length) {
               _ecUnterkachelEditModus[belegIndex] = true;
             }
@@ -2905,7 +2987,7 @@ class _TagesabschlussSchritt2SeiteState
             scanLaeuft: _scanLaeuft,
             onScanStarten: (int i) => _starteEcBelegScan(belegIndex: i),
             onTidGeaendert: _beiSubKachelTidGeaendert,
-            onBestaetigtEntfernen: _ecBelegEntfernen,
+            onBestaetigtEntfernen: _ecBelegEntfernenOderZuruecksetzen,
             hatZahlungsartZeilen: _hatZahlungsartZeilenFuerBeleg,
             hatScanStattgefunden: _hatScanStattgefundenFuerBeleg,
             baueZahlungsartenTabelle: (int i) =>

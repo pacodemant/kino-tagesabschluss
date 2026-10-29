@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_info_card.dart';
-import 'package:kino_bar_app/theme/app_farben.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 
 class Schritt3DifferenzSection extends StatelessWidget {
@@ -31,18 +31,7 @@ class Schritt3DifferenzSection extends StatelessWidget {
           farbe: differenzFarbe,
           stil: InfoZeileStil.fuehrungslinie,
         ),
-        if (hinweis != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 6),
-            child: Text(
-              hinweis!,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppFarben.fokusFarbe,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+        if (hinweis != null) UebertragUmschlagInhalt.hinweisText(hinweis!),
       ],
     );
   }

@@ -4,6 +4,7 @@ import 'package:kino_bar_app/models/kino.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt3/sections/schritt3_soll_section.dart';
+import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/utils/tid_eingabe.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
 
@@ -43,12 +44,19 @@ class UebertragUmschlagInhalt {
   ) {
     final List<int> belege = a.ecBelegeCent;
     final int summe = belege.fold(0, (int s, int b) => s + b);
-    // Run 492: bestätigt "heute keine Umsätze".
+    // Run 492: bestätigt "heute keine Umsätze"; Run 499: "kein Beleg".
     final Set<String> keine = <String>{...?a.keineUmsaetzeTids};
-    String mitKeine(String info, String tid, int cent) =>
-        cent == 0 && keine.contains(tid)
-        ? '${info.isEmpty ? '' : '$info · '}keine Umsätze'
-        : info;
+    final Set<String> keinBeleg = <String>{...?a.keinBelegMoeglichTids};
+    String mitKeine(String info, String tid, int cent) {
+      if (cent != 0) return info;
+      final String zusatz = keine.contains(tid)
+          ? 'keine Umsätze'
+          : keinBeleg.contains(tid)
+              ? 'kein Beleg'
+              : '';
+      if (zusatz.isEmpty) return info;
+      return '${info.isEmpty ? '' : '$info · '}$zusatz';
+    }
     if (belege.isEmpty || summe != a.ecUmsatzGesamtCent) {
       return <UmschlagEcZeile>[
         UmschlagEcZeile('+ EC IST', a.ecUmsatzGesamtCent),
@@ -116,6 +124,42 @@ class UebertragUmschlagInhalt {
     return zeilen;
   }
 
+  /// Hinweis unter der Differenz bei "Kein Beleg möglich" (Run 498/499),
+  /// sonst null.
+  static String? keinBelegHinweis(
+    TagesabschlussFinal a,
+    List<TerminalEintrag> terminals,
+  ) {
+    final List<String> tids = a.keinBelegMoeglichTids ?? const <String>[];
+    if (tids.isEmpty) return null;
+    final List<String> geraete = <String>[
+      for (final String tid in tids)
+        () {
+          for (final TerminalEintrag t in terminals) {
+            if (t.tid == tid && t.nummer.isNotEmpty) {
+              return 'Gerät ${t.nummer} (TID $tid)';
+            }
+          }
+          return 'TID $tid';
+        }(),
+    ];
+    return 'Kein Beleg für ${geraete.join(', ')}: Die Differenz kann '
+        'deshalb höher ausfallen.';
+  }
+
+  /// Hinweistext unter der Differenz (orange, Run 499).
+  static Widget hinweisText(String text) => Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 13,
+            color: AppFarben.fokusFarbe,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+
   /// TID des Terminals mit KK-Häkchen ('' = keins markiert), Run 493c.
   static String kinokasseTid(List<TerminalEintrag> terminals) {
     for (final TerminalEintrag t in terminals) {
@@ -158,6 +202,11 @@ class UebertragUmschlagInhalt {
           : Colors.red.shade700,
       stil: InfoZeileStil.fuehrungslinie,
     );
+    final String? hinweis = keinBelegHinweis(a, terminals);
+    final List<Widget> differenzRahmen = <Widget>[
+      differenz,
+      if (hinweis != null) hinweisText(hinweis),
+    ];
 
     if (!sb) {
       return <List<Widget>>[
@@ -183,7 +232,7 @@ class UebertragUmschlagInhalt {
           _zeile('+ bar IST', _euro(a.barBestandAbzglWechselgeldCent)),
           _zeile('= Gesamt IST', _euro(a.gesamtIstCent), fett: true),
         ],
-        <Widget>[differenz],
+        differenzRahmen,
       ];
     }
 
@@ -216,7 +265,7 @@ class UebertragUmschlagInhalt {
         _zeile('+ BAR IST', _euro(a.barBestandAbzglWechselgeldCent)),
         _zeile('= Gesamt IST', _euro(a.gesamtIstCent), fett: true),
       ],
-      <Widget>[differenz],
+      differenzRahmen,
       // Datum steht schon im Kopf bzw. in der Titelleiste (Run 492b).
       if (name != null) <Widget>[_zeile('Name', name)],
     ];

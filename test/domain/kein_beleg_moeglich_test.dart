@@ -4,8 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
+import 'package:kino_bar_app/models/terminal_eintrag.dart';
 import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_terminal_felder.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
+import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 import 'package:kino_bar_app/models/flurbocash_zuordnung.dart';
 
 /// Run 498: "Kein Beleg möglich" — Terminal konnte keinen Kassenschnitt
@@ -131,5 +133,30 @@ void main() {
     final TagesabschlussFinal altGeladen = TagesabschlussFinal.fromJson(alt);
     expect(altGeladen.keinBelegMoeglichTids, isNull);
     expect(altGeladen.sendeVermerke, isNull);
+  });
+
+  const List<TerminalEintrag> terminals = <TerminalEintrag>[
+    TerminalEintrag(tid: '60561994', nummer: '1'),
+    TerminalEintrag(tid: '60561996', nummer: '2'),
+  ];
+
+  test('Umschlag: EC-Zeile 0,00 € mit Zusatz "kein Beleg" (Run 499)', () {
+    final List<UmschlagEcZeile> zeilen =
+        UebertragUmschlagInhalt.ecZeilenSb(finalisiere(), terminals);
+    expect(zeilen[0].info, 'Gerät 1 · TID 60561994');
+    expect(zeilen[1].cent, 0);
+    expect(zeilen[1].info, 'Gerät 2 · TID 60561996 · kein Beleg');
+  });
+
+  test('Hinweis unter der Differenz (Run 499, auch für SB)', () {
+    expect(
+      UebertragUmschlagInhalt.keinBelegHinweis(finalisiere(), terminals),
+      'Kein Beleg für Gerät 2 (TID 60561996): Die Differenz kann deshalb '
+      'höher ausfallen.',
+    );
+    final TagesabschlussFinal ohne =
+        TagesabschlussFinal.fromJson(finalisiere().toJson()
+          ..remove('keinBelegMoeglichTids'));
+    expect(UebertragUmschlagInhalt.keinBelegHinweis(ohne, terminals), isNull);
   });
 }

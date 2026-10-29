@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 499: EC-Unterkacheln bleiben zu, außer die MA klappt sie auf:
+  die Prüfung vor Schritt 3 öffnet nicht mehr vorab alle (nur noch den
+  Beleg mit gefundenem Fehler), ebenso kein Aufklappen nach Scan oder
+  beim Laden. Mülleimer in der Unterkachel eines eingetragenen
+  Terminals setzt den Beleg auf den Anfangszustand zurück (TID bleibt),
+  zusätzliche Belege werden weiter entfernt. Dialog "Beleg fehlt": je
+  Terminal "manuell eingeben" (öffnet nur diese Unterkachel, Cursor im
+  EC-Gesamtbetrag). Hinweis "Kein Beleg … Differenz kann deshalb höher
+  ausfallen" jetzt auch in der Umschlag-Ansicht (SB, Verlauf) — fehlte
+  in 498 bei SB. Umschlag-Zeile "· kein Beleg". Tests.
+
 - Run 498: "Kein Beleg möglich" (Terminal kann keinen Kassenschnitt
   drucken). Der Dialog "Beleg fehlt" nennt jedes fehlende Terminal mit
   Häkchen "Kein Beleg möglich"; "Weiter" erst, wenn alle angehakt sind,
