@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 498: "Kein Beleg möglich" (Terminal kann keinen Kassenschnitt
+  drucken). Der Dialog "Beleg fehlt" nennt jedes fehlende Terminal mit
+  Häkchen "Kein Beleg möglich"; "Weiter" erst, wenn alle angehakt sind,
+  "Zurück" bleibt in Schritt 2. Die Unterkachel zeigt danach "Kein Beleg
+  möglich" mit "Aufheben", ein neuer Scan hebt es auf; Markierung im
+  Schritt-2-Entwurf (`keinBelegMoeglichTids`). An Flurbocash: Terminal
+  mit 0 in allen Kartenarten, ohne no_sales. Kommentar-Vermerke (auch
+  der 495a-Vermerk "0,00 € von Hand") stehen nicht mehr im Kommentarfeld,
+  sondern werden erst beim Senden an "note" angehängt
+  (`sendeVermerke` im Abschluss). Schritt 3: Hinweis unter der
+  Differenz. Nach "Eingaben löschen"/"Kartendaten löschen" wieder ein
+  Feld je Terminal. Unit- und Widget-Tests.
+
 - Run 497: EC-Kachel bei 2+ eingetragenen Terminals von Anfang an offen,
   je Terminal eine zugeklappte Unterkachel (Gerät + TID, Kamera orange
   bis ein Beleg erfasst ist), darunter immer "Weiteren Kassenschnitt

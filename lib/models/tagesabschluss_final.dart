@@ -55,6 +55,9 @@ class TagesabschlussFinal {
     // TIDs, für die der MA "heute keine Umsätze" bestätigt hat – seit
     // Run 492, für ältere gespeicherte Einträge null
     this.keineUmsaetzeTids,
+    // Seit Run 498, für ältere gespeicherte Einträge null
+    this.keinBelegMoeglichTids,
+    this.sendeVermerke,
   });
 
   final String kinoId;
@@ -127,6 +130,14 @@ class TagesabschlussFinal {
   // 0-Beträgen an Flurbocash, damit sichtbar ist, dass geprüft wurde.
   final List<String>? keineUmsaetzeTids;
 
+  // Terminals mit "Kein Beleg möglich" (Run 498): gehen mit 0-Beträgen,
+  // aber ohne no_sales an Flurbocash.
+  final List<String>? keinBelegMoeglichTids;
+
+  // Vermerke, die nur beim Senden an den Kommentar ("note") angehängt
+  // werden, für die MA unsichtbar (Run 498).
+  final List<String>? sendeVermerke;
+
   // Zeitpunkt des erfolgreichen Uploads an Flurbocash, oder null wenn
   // noch nicht gesendet – seit Run 387.
   final DateTime? gesendetAm;
@@ -177,6 +188,8 @@ class TagesabschlussFinal {
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       kinokasseKarteCent: kinokasseKarteCent,
       keineUmsaetzeTids: keineUmsaetzeTids,
+      keinBelegMoeglichTids: keinBelegMoeglichTids,
+      sendeVermerke: sendeVermerke,
     );
   }
 
@@ -241,6 +254,10 @@ class TagesabschlussFinal {
       if (kinokasseKarteCent != 0) 'kinokasseKarteCent': kinokasseKarteCent,
       if (keineUmsaetzeTids != null && keineUmsaetzeTids!.isNotEmpty)
         'keineUmsaetzeTids': keineUmsaetzeTids,
+      if (keinBelegMoeglichTids != null && keinBelegMoeglichTids!.isNotEmpty)
+        'keinBelegMoeglichTids': keinBelegMoeglichTids,
+      if (sendeVermerke != null && sendeVermerke!.isNotEmpty)
+        'sendeVermerke': sendeVermerke,
     };
   }
 
@@ -374,6 +391,16 @@ class TagesabschlussFinal {
       kinokasseKarteCent: (json['kinokasseKarteCent'] as num?)?.toInt() ?? 0,
       keineUmsaetzeTids: json['keineUmsaetzeTids'] is List
           ? (json['keineUmsaetzeTids'] as List<dynamic>)
+              .whereType<String>()
+              .toList()
+          : null,
+      keinBelegMoeglichTids: json['keinBelegMoeglichTids'] is List
+          ? (json['keinBelegMoeglichTids'] as List<dynamic>)
+              .whereType<String>()
+              .toList()
+          : null,
+      sendeVermerke: json['sendeVermerke'] is List
+          ? (json['sendeVermerke'] as List<dynamic>)
               .whereType<String>()
               .toList()
           : null,

@@ -22,6 +22,8 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
     required this.labels,
     this.geraeteNummer,
     this.keineUmsaetzeAktiv,
+    this.keinBelegMoeglich,
+    this.onKeinBelegAufheben,
     required this.betraegeCent,
     required this.tidUnleserlich,
     required this.scanLaeuft,
@@ -52,6 +54,10 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
   /// Beleg mit 0,00 € = "keine Umsätze" (Run 492, seit Run 495a ohne
   /// eigenen Knopf).
   final bool Function(int belegIndex)? keineUmsaetzeAktiv;
+
+  /// "Kein Beleg möglich" markiert (Run 498) + Aufheben.
+  final bool Function(int belegIndex)? keinBelegMoeglich;
+  final void Function(int belegIndex)? onKeinBelegAufheben;
   final List<int> betraegeCent;
   final bool Function(int belegIndex) tidUnleserlich;
   final bool scanLaeuft;
@@ -85,6 +91,8 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
               label: labels[i],
               geraeteNummer: geraeteNummer?.call(labels[i]),
               keineUmsaetzeAktiv: keineUmsaetzeAktiv?.call(i) ?? false,
+              keinBelegMoeglich: keinBelegMoeglich?.call(i) ?? false,
+              onKeinBelegAufheben: () => onKeinBelegAufheben?.call(i),
               betragCent: betraegeCent[i],
               tidUnleserlich: tidUnleserlich(i),
               scanLaeuft: scanLaeuft,
@@ -116,6 +124,8 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
     required this.label,
     this.geraeteNummer,
     this.keineUmsaetzeAktiv = false,
+    this.keinBelegMoeglich = false,
+    this.onKeinBelegAufheben,
     required this.betragCent,
     required this.tidUnleserlich,
     required this.scanLaeuft,
@@ -140,6 +150,8 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
   final String label;
   final String? geraeteNummer;
   final bool keineUmsaetzeAktiv;
+  final bool keinBelegMoeglich;
+  final VoidCallback? onKeinBelegAufheben;
   final int betragCent;
   final bool tidUnleserlich;
   final bool scanLaeuft;
@@ -402,6 +414,8 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                 ),
               ),
             ),
+            if (keinBelegMoeglich)
+              Schritt2KeinBelegZeile(onAufheben: onKeinBelegAufheben),
             // Sub-Kachel-Body
             if (aufgeklappt) ...<Widget>[
               const Divider(height: 1),
@@ -495,6 +509,43 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Markierung "Kein Beleg möglich" mit "Aufheben" (Run 498): Terminal
+/// konnte keinen Kassenschnitt drucken. Auch zugeklappt sichtbar.
+class Schritt2KeinBelegZeile extends StatelessWidget {
+  const Schritt2KeinBelegZeile({super.key, required this.onAufheben});
+
+  final VoidCallback? onAufheben;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 4, 4),
+      child: Row(
+        children: <Widget>[
+          const Expanded(
+            child: Text(
+              'Kein Beleg möglich',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppFarben.fokusFarbe,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: onAufheben,
+            style: TextButton.styleFrom(
+              minimumSize: const Size(0, 32),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            child: const Text('Aufheben'),
+          ),
+        ],
       ),
     );
   }

@@ -26,6 +26,19 @@ class Schritt2TerminalFelder {
         gesamtBetragText.trim().isEmpty;
   }
 
+  /// Kommentar-Vermerk beim Senden für ein Terminal mit "Kein Beleg
+  /// möglich" (Run 498), [nummer] = Gerätenummer aus den Einstellungen.
+  static String keinBelegVermerk(String tid, String? nummer) =>
+      nummer == null || nummer.isEmpty
+          ? 'Für Terminal (TID $tid) kein Beleg möglich'
+          : 'Für Terminal $nummer (TID $tid) kein Beleg möglich';
+
+  /// Kommentar-Vermerk beim Senden für 0,00 € von Hand statt Scan (Run
+  /// 495a, seit Run 498 erst beim Senden statt im Kommentarfeld).
+  static String scanVermerk(String tid) =>
+      'TID $tid: Beleg konnte nicht gescannt werden '
+      '– 0,00 € von Hand eingetragen.';
+
   /// Ziel-Feld für einen gescannten Beleg: das noch leere Feld mit
   /// derselben TID, egal welches Feld gerade offen war. Sonst bleibt es
   /// beim angetippten Feld [belegIndex] (bisheriges Verhalten).

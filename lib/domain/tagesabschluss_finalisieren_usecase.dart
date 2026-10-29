@@ -45,6 +45,9 @@ class TagesabschlussFinalisierenEingabe {
     this.kinokasseTid,
     // TIDs mit "heute keine Umsätze" (Run 492)
     this.keineUmsaetzeTids,
+    // TIDs mit "Kein Beleg möglich" + Vermerke nur für den Versand (Run 498)
+    this.keinBelegMoeglichTids,
+    this.sendeVermerke,
   });
 
   final String kinoId;
@@ -89,6 +92,8 @@ class TagesabschlussFinalisierenEingabe {
   // pro Kino, Run 486) – dessen Kartenumsatz kommt zum Kino SOLL dazu.
   final String? kinokasseTid;
   final List<String>? keineUmsaetzeTids;
+  final List<String>? keinBelegMoeglichTids;
+  final List<String>? sendeVermerke;
 }
 
 /// Fehler fuer einfache Validierungsprobleme beim Finalisieren.
@@ -270,7 +275,14 @@ class TagesabschlussFinalisierenUsecase {
           : null,
       kinokasseKarteCent: kinokasseKarteCent,
       keineUmsaetzeTids: _keineUmsaetzeTidsOhneBetrag(eingabe),
+      keinBelegMoeglichTids: _nichtLeerOderNull(eingabe.keinBelegMoeglichTids),
+      sendeVermerke: _nichtLeerOderNull(eingabe.sendeVermerke),
     );
+  }
+
+  static List<String>? _nichtLeerOderNull(List<String>? liste) {
+    if (liste == null || liste.isEmpty) return null;
+    return List<String>.from(liste);
   }
 
   /// Nur TIDs, für die tatsächlich 0 € erfasst sind (Run 492) — wurde

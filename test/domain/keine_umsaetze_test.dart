@@ -3,7 +3,7 @@ import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
 import 'package:kino_bar_app/models/tagesabschluss_final.dart';
 import 'package:kino_bar_app/models/terminal_eintrag.dart';
-import 'package:kino_bar_app/pages/tagesabschluss_schritt3_seite.dart';
+import 'package:kino_bar_app/pages/tagesabschluss_schritt2/controller/schritt2_terminal_felder.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/widgets/uebertrag_umschlag_inhalt.dart';
 
@@ -130,42 +130,38 @@ void main() {
     );
   });
 
-  group('Kommentar-Vermerk bei 0,00 € ohne Scan (Run 495a)', () {
+  group('Kommentar-Vermerk bei 0,00 € ohne Scan (Run 495a, seit 498 erst '
+      'beim Senden)', () {
     const String vermerk = 'TID 60561996: Beleg konnte nicht gescannt '
         'werden – 0,00 € von Hand eingetragen.';
 
+    test('Vermerk-Text unverändert', () {
+      expect(Schritt2TerminalFelder.scanVermerk('60561996'), vermerk);
+    });
+
     test('leerer Kommentar → nur der Vermerk', () {
       expect(
-        TagesabschlussSchritt3Seite.anmerkungMitScanVermerken(
-          '',
-          const <String>['60561996'],
-        ),
+        ApiUploadService.noteMitVermerken('', const <String>[vermerk]),
         vermerk,
       );
     });
 
-    test('Text der MA bleibt, Vermerk wird angehängt, nicht doppelt', () {
-      final String einmal =
-          TagesabschlussSchritt3Seite.anmerkungMitScanVermerken(
+    test('Text der MA bleibt, Vermerk wird angehängt, nicht doppelt '
+        '(z. B. alter Kommentar mit 495a-Vermerk im Text)', () {
+      final String einmal = ApiUploadService.noteMitVermerken(
         'Kasse 2 klemmt',
-        const <String>['60561996'],
+        const <String>[vermerk],
       );
       expect(einmal, 'Kasse 2 klemmt\n$vermerk');
       expect(
-        TagesabschlussSchritt3Seite.anmerkungMitScanVermerken(
-          einmal,
-          const <String>['60561996'],
-        ),
+        ApiUploadService.noteMitVermerken(einmal, const <String>[vermerk]),
         einmal,
       );
     });
 
-    test('keine TIDs → Kommentar unverändert', () {
+    test('keine Vermerke → Kommentar unverändert', () {
       expect(
-        TagesabschlussSchritt3Seite.anmerkungMitScanVermerken(
-          'Kasse 2 klemmt',
-          const <String>[],
-        ),
+        ApiUploadService.noteMitVermerken('Kasse 2 klemmt', const <String>[]),
         'Kasse 2 klemmt',
       );
     });

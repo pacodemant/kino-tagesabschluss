@@ -67,7 +67,8 @@ class TagesabschlussSchritt3Argumente {
     this.ecBelegeFotosBase64,
     this.ecBelegeFotosMediaTypen,
     this.keineUmsaetzeTids,
-    this.nichtGescannteKeineUmsaetzeTids,
+    this.keinBelegMoeglichTids,
+    this.sendeVermerke,
     this.zielSchrittBeimSprung,
   });
 
@@ -102,8 +103,10 @@ class TagesabschlussSchritt3Argumente {
   final List<String>? ecBelegeFotosMediaTypen;
   // TIDs mit "heute keine Umsätze" aus Schritt 2 (Run 492)
   final List<String>? keineUmsaetzeTids;
-  // Davon die TIDs, deren 0,00 € von Hand statt per Scan kamen (Run 495a)
-  final List<String>? nichtGescannteKeineUmsaetzeTids;
+  // TIDs mit "Kein Beleg möglich" aus Schritt 2 (Run 498)
+  final List<String>? keinBelegMoeglichTids;
+  // Vermerke, die erst beim Senden an den Kommentar kommen (Run 498)
+  final List<String>? sendeVermerke;
   /// Nur beim AppBar-Schritt-Sprung von Schritt 1/2 zu Schritt 4 gesetzt
   /// (Wert 4): sobald diese Seite aufgebaut ist, springt sie automatisch
   /// weiter zu Schritt 4 — ohne eigenes Gate, da "Barumsatz f. Umschlag
@@ -121,23 +124,6 @@ class TagesabschlussSchritt3Seite extends StatefulWidget {
   });
 
   static const String routenName = '/closure-step-3';
-
-  /// Hängt je TID ohne Scan (0,00 € von Hand, Run 495a) einen Vermerk an
-  /// den Kommentar an, ohne den Text der MA zu überschreiben; bereits
-  /// vorhandene Vermerke werden nicht doppelt angehängt.
-  static String anmerkungMitScanVermerken(
-    String anmerkung,
-    List<String> nichtGescannteTids,
-  ) {
-    String ergebnis = anmerkung.trimRight();
-    for (final String tid in nichtGescannteTids) {
-      final String vermerk = 'TID $tid: Beleg konnte nicht gescannt werden '
-          '– 0,00 € von Hand eingetragen.';
-      if (ergebnis.contains(vermerk)) continue;
-      ergebnis = ergebnis.isEmpty ? vermerk : '$ergebnis\n$vermerk';
-    }
-    return ergebnis;
-  }
 
   final TagesabschlussSchritt3Argumente argumente;
 
@@ -401,12 +387,35 @@ class _TagesabschlussSchritt3SeiteState
         ecBelegeFotosBase64: widget.argumente.ecBelegeFotosBase64,
         ecBelegeFotosMediaTypen: widget.argumente.ecBelegeFotosMediaTypen,
         keineUmsaetzeTids: widget.argumente.keineUmsaetzeTids,
+        keinBelegMoeglichTids: widget.argumente.keinBelegMoeglichTids,
+        sendeVermerke: widget.argumente.sendeVermerke,
         kinokasseTid: _kinokasseTid,
       ),
       jetzt: _erstellungszeitpunkt,
     );
     if (!mounted) return;
     setState(() => _abschlussVorschau = abschluss);
+  }
+
+  /// Hinweis unter der Differenz bei "Kein Beleg möglich" (Run 498),
+  /// sonst null.
+  String? _keinBelegHinweis() {
+    final List<String> tids =
+        widget.argumente.keinBelegMoeglichTids ?? const <String>[];
+    if (tids.isEmpty) return null;
+    final List<String> geraete = <String>[
+      for (final String tid in tids)
+        () {
+          for (final TerminalEintrag t in _terminals) {
+            if (t.tid == tid && t.nummer.isNotEmpty) {
+              return 'Gerät ${t.nummer} (TID $tid)';
+            }
+          }
+          return 'TID $tid';
+        }(),
+    ];
+    return 'Kein Beleg für ${geraete.join(', ')}: Die Differenz kann '
+        '${tids.length == 1 ? 'dessen' : 'deren'} Kartenumsatz enthalten.';
   }
 
   void _beiAnmerkungGeaendert(String wert) {
@@ -446,15 +455,6 @@ class _TagesabschlussSchritt3SeiteState
     _aktualisiereTagBereitsGesendet();
     if (devModusAktiv && _anmerkung.trim().isEmpty) {
       _anmerkung = _testdatenKennzeichenMitZeitstempel();
-      _anmerkungController.text = _anmerkung;
-    }
-    final String mitVermerken = TagesabschlussSchritt3Seite
-        .anmerkungMitScanVermerken(
-      _anmerkung,
-      widget.argumente.nichtGescannteKeineUmsaetzeTids ?? const <String>[],
-    );
-    if (mitVermerken != _anmerkung.trimRight()) {
-      _anmerkung = mitVermerken;
       _anmerkungController.text = _anmerkung;
     }
     _aktualisiereAbschlussVorschau();
@@ -1311,6 +1311,7 @@ class _TagesabschlussSchritt3SeiteState
           Schritt3DifferenzSection(
             differenzCent: differenzCent,
             differenzFarbe: differenzFarbe,
+            hinweis: _keinBelegHinweis(),
           ),
           ],
           Padding(

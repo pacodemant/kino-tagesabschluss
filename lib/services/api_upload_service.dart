@@ -464,6 +464,18 @@ class ApiUploadService {
         'no_sales': true,
       });
     }
+    // Run 498: "Kein Beleg möglich" (Terminal konnte keinen Kassenschnitt
+    // drucken) — 0 in allen Kartenarten, bewusst OHNE no_sales; explizit
+    // mitgesendet, damit eine Korrektur alte Werte überschreibt.
+    for (final String tid
+        in abrechnung.keinBelegMoeglichTids ?? const <String>[]) {
+      if (terminals.any((Map<String, dynamic> t) => t['tid'] == tid)) continue;
+      terminals.add(_terminalEintrag(tid, const <String, int>{}, null));
+    }
+    final String note = noteMitVermerken(
+      abrechnung.anmerkung ?? '',
+      abrechnung.sendeVermerke ?? const <String>[],
+    );
     if (korrekturVon != null) {
       final Set<String> aktuelleTids = terminals
           .map((Map<String, dynamic> t) => t['tid'] as String)
@@ -481,8 +493,7 @@ class ApiUploadService {
           if (korrekturVon != null)
             'settlement_number': korrekturVon.settlementNummer,
           'cash_total': abrechnung.barBestandAbzglWechselgeldCent,
-          if (abrechnung.anmerkung != null && abrechnung.anmerkung!.isNotEmpty)
-            'note': abrechnung.anmerkung,
+          if (note.isNotEmpty) 'note': note,
           // Yannik: unbekannte/nicht benötigte Felder werden serverseitig
           // ignoriert, kein Vertragsbruch falls FC "sent_at" (noch) nicht
           // auswertet.
@@ -491,6 +502,17 @@ class ApiUploadService {
         },
       ],
     };
+  }
+
+  /// Hängt die [vermerke] (Run 498, für die MA unsichtbar) zeilenweise an
+  /// den Kommentar der MA an; schon enthaltene Vermerke nicht doppelt.
+  static String noteMitVermerken(String anmerkung, List<String> vermerke) {
+    String ergebnis = anmerkung.trimRight();
+    for (final String vermerk in vermerke) {
+      if (ergebnis.contains(vermerk)) continue;
+      ergebnis = ergebnis.isEmpty ? vermerk : '$ergebnis\n$vermerk';
+    }
+    return ergebnis;
   }
 
   /// Vergleichswert ("Signatur") dessen, was Flurbocash bei einem Versand

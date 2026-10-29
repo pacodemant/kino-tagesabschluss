@@ -234,6 +234,10 @@ class _TagesabschlussSchritt2SeiteState
   /// landet im Feld seiner TID, Hinweis bei fehlendem Beleg.
   List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
 
+  /// TIDs mit "Kein Beleg möglich" (Run 498): Terminal konnte keinen
+  /// Kassenschnitt drucken. Im Entwurf gespeichert.
+  final Set<String> _keinBelegMoeglichTids = <String>{};
+
   @override
   void initState() {
     super.initState();
@@ -400,7 +404,10 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegLabels[i] = terminals[i].tid;
         _setzeControllerText(_ecBelegLabelController[i], terminals[i].tid);
         // Zugeklappt: Scannen geht direkt über den Kamera-Knopf im Titel.
-        if (terminals.length > 1) _ecUnterkachelAufgeklappt[i] = false;
+        if (terminals.length > 1) {
+          _ecUnterkachelAufgeklappt[i] = false;
+          _ecUnterkachelEditModus[i] = false;
+        }
       }
       // Run 497: EC-Kachel offen, damit alle Terminals (zugeklappt) als
       // zu scannende Belege sichtbar sind.
@@ -440,15 +447,49 @@ class _TagesabschlussSchritt2SeiteState
         _kartenartenGesamtBetragCent[j] == 0;
   }
 
+  /// Feld [j] ist als "Kein Beleg möglich" markiert (Run 498) und hat
+  /// weiterhin keinen Beleg — ein erfasster Betrag geht vor.
+  bool _keinBelegMoeglichAktiv(int j) {
+    final String tid = TidEingabe.bereinige(_ecBelegLabels[j]);
+    return tid.isNotEmpty &&
+        _keinBelegMoeglichTids.contains(tid) &&
+        _ecBelegeCent[j] == 0 &&
+        !_keineUmsaetzeAktiv(j);
+  }
+
+  /// Hebt "Kein Beleg möglich" für Feld [j] auf (Run 498).
+  void _keinBelegAufheben(int j) {
+    setState(() {
+      _keinBelegMoeglichTids.remove(TidEingabe.bereinige(_ecBelegLabels[j]));
+      _letzteAenderung = DateTime.now();
+    });
+    _speichereEntwurf();
+  }
+
   /// Feld [j] eines eingetragenen Terminals hat weder Betrag noch
-  /// 0,00 € → Beleg fehlt (Pflicht vor Schritt 3).
+  /// 0,00 € noch "Kein Beleg möglich" → Beleg fehlt (Pflicht vor
+  /// Schritt 3).
   bool _terminalBelegFehlt(int j) {
     final String tid = TidEingabe.bereinige(_ecBelegLabels[j]);
     return tid.isNotEmpty &&
         _terminals.any((TerminalEintrag t) => t.tid == tid) &&
         _ecBelegeCent[j] == 0 &&
-        !_keineUmsaetzeAktiv(j);
+        !_keineUmsaetzeAktiv(j) &&
+        !_keinBelegMoeglichAktiv(j);
   }
+
+  /// Vermerke, die erst beim Senden an den Kommentar kommen (Run 498):
+  /// 0,00 € von Hand (Run 495a) und "Kein Beleg möglich".
+  List<String> _sendeVermerke() => <String>[
+        for (final String tid in _nichtGescannteKeineUmsaetzeTids())
+          Schritt2TerminalFelder.scanVermerk(tid),
+        for (int j = 0; j < _ecBelegLabels.length; j++)
+          if (_keinBelegMoeglichAktiv(j))
+            Schritt2TerminalFelder.keinBelegVermerk(
+              TidEingabe.bereinige(_ecBelegLabels[j]),
+              _geraeteNummer(_ecBelegLabels[j]),
+            ),
+      ];
 
   /// "keine Umsätze"-TIDs, deren 0,00 € von Hand statt per Scan kamen —
   /// Schritt 3 vermerkt sie im Kommentar (Run 495a).
@@ -489,29 +530,74 @@ class _TagesabschlussSchritt2SeiteState
     // Run 497: nur die EC-Kachel öffnen; die Unterkacheln bleiben zu,
     // Gerät + TID und Kamera stehen im Titel.
     setState(() => _ecKachelAufgeklappt = true);
-    final String geraete = offen.map((int j) {
-      final String? nr = _geraeteNummer(_ecBelegLabels[j]);
-      return '${nr == null ? '' : 'Gerät $nr · '}TID ${_ecBelegLabels[j]}';
-    }).join('\n');
-    await showDialog<void>(
+    final List<String> offeneTids = <String>[
+      for (final int j in offen) TidEingabe.bereinige(_ecBelegLabels[j]),
+    ];
+    final Set<String> angehakt = <String>{};
+    final bool? weiter = await showDialog<bool>(
       context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: const Text('Beleg fehlt'),
-        content: Text(
-          'Kein Beleg erfasst für:\n$geraete\n\n'
-          'Bitte für jedes Terminal den Kassenschnitt scannen – auch '
-          'ohne Umsatz. Geht der Scan nicht, 0,00 € als EC-Gesamtbetrag '
-          'eintragen.',
-        ),
-        actions: <Widget>[
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('OK'),
+      builder: (BuildContext ctx) => StatefulBuilder(
+        builder: (BuildContext ctx, StateSetter setDialogState) =>
+            AlertDialog(
+          title: const Text('Beleg fehlt'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                const Text(
+                  'Bitte für jedes Terminal den Kassenschnitt scannen – '
+                  'auch ohne Umsatz. Geht der Scan nicht, 0,00 € als '
+                  'EC-Gesamtbetrag eintragen.\n\n'
+                  'Kein Beleg erfasst für:',
+                ),
+                for (final String tid in offeneTids) ...<Widget>[
+                  const SizedBox(height: 8),
+                  Text(
+                    '${_geraeteNummer(tid) == null ? '' : 'Gerät ${_geraeteNummer(tid)} · '}TID $tid',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  CheckboxListTile(
+                    key: ValueKey<String>('kein_beleg_$tid'),
+                    value: angehakt.contains(tid),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: const Text('Kein Beleg möglich'),
+                    onChanged: (bool? an) => setDialogState(() {
+                      if (an == true) {
+                        angehakt.add(tid);
+                      } else {
+                        angehakt.remove(tid);
+                      }
+                    }),
+                  ),
+                ],
+              ],
+            ),
           ),
-        ],
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: const Text('Zurück'),
+            ),
+            ElevatedButton(
+              onPressed: angehakt.length == offeneTids.length
+                  ? () => Navigator.of(ctx).pop(true)
+                  : null,
+              child: const Text('Weiter'),
+            ),
+          ],
+        ),
       ),
     );
-    return false;
+    if (weiter != true || !mounted) return false;
+    setState(() {
+      _keinBelegMoeglichTids.addAll(offeneTids);
+      _letzteAenderung = DateTime.now();
+    });
+    _speichereEntwurf();
+    return true;
   }
 
   Future<void> _ladeEntwurf() async {
@@ -633,6 +719,11 @@ class _TagesabschlussSchritt2SeiteState
         if (_scanHatStattgefunden.isNotEmpty) {
           _scanHatStattgefunden[0] = (scanRoh as bool?) ?? false;
         }
+      }
+      _keinBelegMoeglichTids.clear();
+      final Object? keinBelegRoh = daten['keinBelegMoeglichTids'];
+      if (keinBelegRoh is List<dynamic>) {
+        _keinBelegMoeglichTids.addAll(keinBelegRoh.whereType<String>());
       }
       _scanTerminalId = daten['scanTerminalId'] as String?;
       _scanDatum = daten['scanDatum'] as String?;
@@ -788,6 +879,7 @@ class _TagesabschlussSchritt2SeiteState
         'ecBelegeFotosBase64': List<String>.from(_ecBelegFotosBase64),
         'ecBelegeFotosMediaTypen': List<String>.from(_ecBelegFotosMediaTypen),
         'scanHatStattgefunden': List<bool>.from(_scanHatStattgefunden),
+        'keinBelegMoeglichTids': _keinBelegMoeglichTids.toList(),
         'scanTerminalId': _scanTerminalId,
         'scanDatum': _scanDatum,
         'scanUhrzeit': _scanUhrzeit,
@@ -976,7 +1068,12 @@ class _TagesabschlussSchritt2SeiteState
         for (int j = 0; j < _ecBelegLabels.length; j++)
           if (_keineUmsaetzeAktiv(j)) TidEingabe.bereinige(_ecBelegLabels[j]),
       ],
-      nichtGescannteKeineUmsaetzeTids: _nichtGescannteKeineUmsaetzeTids(),
+      keinBelegMoeglichTids: <String>[
+        for (int j = 0; j < _ecBelegLabels.length; j++)
+          if (_keinBelegMoeglichAktiv(j))
+            TidEingabe.bereinige(_ecBelegLabels[j]),
+      ],
+      sendeVermerke: _sendeVermerke(),
       terminalId: _scanTerminalId,
       belegNrVon: _scanBelegNrVon,
       belegNrBis: _scanBelegNrBis,
@@ -1001,6 +1098,7 @@ class _TagesabschlussSchritt2SeiteState
       _validierungAusgeloest = true;
       if (!_ecKachelAufgeklappt) _ecKachelAufgeklappt = true;
       for (int i = 0; i < _ecBelegController.length; i++) {
+        if (_keinBelegMoeglichAktiv(i)) continue;
         if (i < _ecUnterkachelAufgeklappt.length) {
           _ecUnterkachelAufgeklappt[i] = true;
         }
@@ -1050,7 +1148,8 @@ class _TagesabschlussSchritt2SeiteState
           fokus: _bistroSollFocusNode,
           bezeichnung: 'Bistro-Soll',
         ),
-      for (int i = 0; i < _ecBelegController.length; i++) ...<
+      for (int i = 0; i < _ecBelegController.length; i++)
+        if (!_keinBelegMoeglichAktiv(i)) ...<
           ({
             TextEditingController controller,
             FocusNode fokus,
@@ -1623,6 +1722,7 @@ class _TagesabschlussSchritt2SeiteState
   Future<void> _leereAlleFelder() async {
     FocusScope.of(context).unfocus();
     setState(() {
+      _keinBelegMoeglichTids.clear();
       _kinoSollCent = 0;
       _bistroSollCent = 0;
       _differenzAnfangsbestandCent = 0;
@@ -1769,6 +1869,10 @@ class _TagesabschlussSchritt2SeiteState
         final bool hatUnlesbareDaten =
             belegScanHatUnlesbareDaten(geprueftes, vorschauZeilen);
         setState(() {
+          // Run 498: ein neuer Scan hebt "Kein Beleg möglich" auf.
+          _keinBelegMoeglichTids
+            ..remove(TidEingabe.bereinige(_ecBelegLabels[belegIndex]))
+            ..remove(TidEingabe.bereinige(geprueftes.terminalId ?? ''));
           if (geprueftes.gesamtBetragCent != null) {
             _ecBelegeCent[belegIndex] = geprueftes.gesamtBetragCent!;
             _setzeControllerText(
@@ -2296,6 +2400,8 @@ class _TagesabschlussSchritt2SeiteState
       return;
     }
     await _leereAlleFelder();
+    // Run 498: wieder ein Feld je eingetragenem Terminal (Run 490/497).
+    if (mounted) await _bereiteTerminalFelderVor();
   }
 
   List<FocusNode> _fokusReihenfolgeSchritt2() {
@@ -2472,8 +2578,11 @@ class _TagesabschlussSchritt2SeiteState
       if (_metadatenAufgeklappt.isNotEmpty) _metadatenAufgeklappt[0] = false;
       if (_kartenartenGesamtBetragCent.isNotEmpty) _kartenartenGesamtBetragCent[0] = null;
       if (_kartenartenGesamtBetragController.isNotEmpty) _setzeControllerText(_kartenartenGesamtBetragController[0], '');
+      _keinBelegMoeglichTids.clear();
       _letzteAenderung = DateTime.now();
     });
+    // Run 498: wieder ein Feld je eingetragenem Terminal (Run 490/497).
+    await _bereiteTerminalFelderVor();
     _speichereEntwurf();
   }
 
@@ -2766,6 +2875,10 @@ class _TagesabschlussSchritt2SeiteState
                 onChanged: _beiEcBelegLabel1Geaendert,
                 onLoeschen: _ecBelegLabel1Loeschen,
               ),
+              if (_keinBelegMoeglichAktiv(0))
+                Schritt2KeinBelegZeile(
+                  onAufheben: () => _keinBelegAufheben(0),
+                ),
               if (_scanHatStattgefunden.isNotEmpty && _scanHatStattgefunden[0])
                 _baueMetadatenBlock(0),
               if (_zahlungsartZeilen.isNotEmpty &&
@@ -2785,6 +2898,8 @@ class _TagesabschlussSchritt2SeiteState
             labels: _ecBelegLabels,
             geraeteNummer: _geraeteNummer,
             keineUmsaetzeAktiv: _keineUmsaetzeAktiv,
+            keinBelegMoeglich: _keinBelegMoeglichAktiv,
+            onKeinBelegAufheben: _keinBelegAufheben,
             betraegeCent: _ecBelegeCent,
             tidUnleserlich: _subKachelTidUnleserlich,
             scanLaeuft: _scanLaeuft,
