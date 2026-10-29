@@ -368,7 +368,12 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                             : Icon(
                                 Icons.camera_alt,
                                 size: 18,
-                                color: (label.isNotEmpty || betragCent > 0)
+                                // Run 497: TID ist bei eingetragenen
+                                // Terminals vorausgefüllt — orange, bis
+                                // ein Beleg erfasst ist.
+                                color: (hatScanStattgefunden ||
+                                        betragCent > 0 ||
+                                        keineUmsaetzeAktiv)
                                     ? Colors.grey.shade400
                                     : AppFarben.fokusFarbe,
                               ),

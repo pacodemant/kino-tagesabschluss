@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 497: EC-Kachel bei 2+ eingetragenen Terminals von Anfang an offen,
+  je Terminal eine zugeklappte Unterkachel (Gerät + TID, Kamera orange
+  bis ein Beleg erfasst ist), darunter immer "Weiteren Kassenschnitt
+  hinzufügen". Nach einem Scan bleibt die Unterkachel zu (außer bei
+  TID-Problem oder unlesbaren Beträgen), ebenso nach Neustart aus dem
+  Entwurf. Dialog "Beleg fehlt" öffnet nur noch die EC-Kachel. Kopf-
+  Kamera und Leer-Hinweis nur noch im 1-Beleg-Modus. Widget-Tests.
+
 - Run 496: App-Geschwindigkeit, Teil 2. Schritt-2-Entwurf speichert die
   Belegfotos unter eigenem Key (`entwurf_schritt2_fotos_<kinoId>`) und
   nur, wenn sich ein Foto geändert hat; bisher wurden bei jedem

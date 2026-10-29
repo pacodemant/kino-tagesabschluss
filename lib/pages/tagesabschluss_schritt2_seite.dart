@@ -402,6 +402,9 @@ class _TagesabschlussSchritt2SeiteState
         // Zugeklappt: Scannen geht direkt über den Kamera-Knopf im Titel.
         if (terminals.length > 1) _ecUnterkachelAufgeklappt[i] = false;
       }
+      // Run 497: EC-Kachel offen, damit alle Terminals (zugeklappt) als
+      // zu scannende Belege sichtbar sind.
+      if (terminals.length > 1) _ecKachelAufgeklappt = true;
     });
   }
 
@@ -483,14 +486,9 @@ class _TagesabschlussSchritt2SeiteState
         if (_terminalBelegFehlt(j)) j,
     ];
     if (offen.isEmpty) return true;
-    setState(() {
-      _ecKachelAufgeklappt = true;
-      for (final int j in offen) {
-        if (j < _ecUnterkachelAufgeklappt.length) {
-          _ecUnterkachelAufgeklappt[j] = true;
-        }
-      }
-    });
+    // Run 497: nur die EC-Kachel öffnen; die Unterkacheln bleiben zu,
+    // Gerät + TID und Kamera stehen im Titel.
+    setState(() => _ecKachelAufgeklappt = true);
     final String geraete = offen.map((int j) {
       final String? nr = _geraeteNummer(_ecBelegLabels[j]);
       return '${nr == null ? '' : 'Gerät $nr · '}TID ${_ecBelegLabels[j]}';
@@ -616,6 +614,10 @@ class _TagesabschlussSchritt2SeiteState
         _ecBelegLabels[i] = ecBelegeLabelsListe[i];
         _ecBelegFotosBase64[i] = ecBelegeFotosBase64Liste[i];
         _ecBelegFotosMediaTypen[i] = ecBelegeFotosMediaTypenListe[i];
+        // Run 497: Unterkacheln mit TID nach dem Laden zugeklappt.
+        if (ecBelege.length > 1 && ecBelegeLabelsListe[i].isNotEmpty) {
+          _ecUnterkachelAufgeklappt[i] = false;
+        }
       }
       for (int i = 0; i < ausgabenBetraege.length; i++) {
         _ausgaben[i].betragCent = ausgabenBetraege[i];
@@ -1796,14 +1798,17 @@ class _TagesabschlussSchritt2SeiteState
             _setzeControllerText(_ecBelegLabelController[belegIndex], '');
             if (belegIndex == 0) _ecBelegLabel1Beruehrt = true;
           }
-          if (belegIndex < _ecUnterkachelAufgeklappt.length) {
-            _ecUnterkachelAufgeklappt[belegIndex] = true;
-          }
           if (belegIndex < _ecUnterkachelEditModus.length) {
             _ecUnterkachelEditModus[belegIndex] = false;
           }
           if (belegIndex < _ecBelegScanGescannt.length) {
             _ecBelegScanGescannt[belegIndex] = true;
+          }
+          // Run 497: nach dem Scan zugeklappt (Ergebnis stand im Dialog
+          // "Scan-Ergebnis prüfen"), außer die TID muss korrigiert werden.
+          if (belegIndex < _ecUnterkachelAufgeklappt.length) {
+            _ecUnterkachelAufgeklappt[belegIndex] =
+                _ecBelegHatTidProblem(belegIndex);
           }
           _scanDatum = _feldWertOderNull(geprueftes.datum);
           _scanUhrzeit = _feldWertOderNull(geprueftes.uhrzeit);
@@ -1824,6 +1829,9 @@ class _TagesabschlussSchritt2SeiteState
           _sortiereZahlungsartenNachBeleg(geprueftes.zahlungsarten, belegIndex);
           _preFillZahlungsartenFromScan(geprueftes, originalErgebnis, belegIndex);
           if (hatUnlesbareDaten || tidKonfigWarnung != null) {
+            if (belegIndex < _ecUnterkachelAufgeklappt.length) {
+              _ecUnterkachelAufgeklappt[belegIndex] = true;
+            }
             if (belegIndex < _ecUnterkachelEditModus.length) {
               _ecUnterkachelEditModus[belegIndex] = true;
             }
@@ -2799,6 +2807,7 @@ class _TagesabschlussSchritt2SeiteState
       onManuellEingebenTap: _manuellEingebenTap,
       scanLaeuft: _scanLaeuft,
       hatEcBelege: hatEcBelege,
+      einBelegModus: _ecBelegController.length == 1,
       belegeWithData: belegeWithData,
       ecGesamtCent: ecGesamtCent,
       onScanStarten: () => _starteEcBelegScan(),

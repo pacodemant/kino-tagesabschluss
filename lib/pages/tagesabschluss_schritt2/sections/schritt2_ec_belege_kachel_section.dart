@@ -18,6 +18,7 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
     required this.onManuellEingebenTap,
     required this.scanLaeuft,
     required this.hatEcBelege,
+    required this.einBelegModus,
     required this.belegeWithData,
     required this.ecGesamtCent,
     required this.onScanStarten,
@@ -34,6 +35,11 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
   final VoidCallback onManuellEingebenTap;
   final bool scanLaeuft;
   final bool hatEcBelege;
+
+  /// true = nur ein EC-Feld (ohne Unterkacheln). Im Mehrbeleg-Modus hat
+  /// jede Unterkachel ihren eigenen Kamera-Knopf; Kopf-Kamera und
+  /// Leer-Hinweis entfallen, der Hinzufügen-Knopf ist immer da (Run 497).
+  final bool einBelegModus;
   final int belegeWithData;
   final int ecGesamtCent;
   final VoidCallback onScanStarten;
@@ -111,7 +117,7 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (!hatEcBelege)
+                  if (!hatEcBelege && einBelegModus)
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppFarben.fokusFarbe,
@@ -166,7 +172,7 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-                  if (!hatEcBelege)
+                  if (!hatEcBelege && einBelegModus)
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),
                       child: Text.rich(
@@ -201,7 +207,7 @@ class Schritt2EcBelegeKachelSection extends StatelessWidget {
                   belegInhalt,
                   // Seit Run 491a unter der Liste: Belege stehen von 1 an
                   // oben, ein neuer Beleg erscheint direkt über dem Knopf.
-                  if (hatEcBelege)
+                  if (hatEcBelege || !einBelegModus)
                     Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: OutlinedButton(
