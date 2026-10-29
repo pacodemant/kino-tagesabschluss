@@ -94,5 +94,23 @@ void main() {
         expect(dekodiert.height, 50);
       },
     );
+
+    test(
+      'Run 500: zweiter Aufruf mit demselben Foto kommt aus dem Cache '
+      '(gleiches Ergebnis, ohne neu zu rechnen)',
+      () {
+        BelegFotoKomprimierung.leereCache();
+        final String original = base64BildMit(breite: 1200, hoehe: 900);
+        expect(BelegFotoKomprimierung.istVorbereitet(original), isFalse);
+        final String erst =
+            BelegFotoKomprimierung.komprimiereFuerVerlauf(original);
+        expect(BelegFotoKomprimierung.istVorbereitet(original), isTrue);
+        final Stopwatch sw = Stopwatch()..start();
+        final String zweit =
+            BelegFotoKomprimierung.komprimiereFuerVerlauf(original);
+        expect(identical(erst, zweit), isTrue);
+        expect(sw.elapsedMilliseconds, lessThan(50));
+      },
+    );
   });
 }

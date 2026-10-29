@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/utils/beleg_foto_komprimierung.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Deckt die Fehlerpfade von BelegScanService.scan() ab — http.post() ist
@@ -190,6 +191,47 @@ void main() {
           (BelegScanException e) => e.message,
           'message',
           contains('nicht eindeutig lesbar'),
+        ),
+      ),
+    );
+  });
+
+  test(
+      'Run 500: während des Scans wird das Foto schon für den Verlauf '
+      'vorbereitet (Schritt 3 muss nicht mehr rechnen)', () async {
+    BelegFotoKomprimierung.leereCache();
+    BelegScanService.httpPostUeberschreibung =
+        (Uri url, Map<String, String> headers, String body) async =>
+            http.Response(
+              anthropicAntwort(<String, dynamic>{
+                'kein_terminal_beleg': false,
+                'terminal_id': '12345678',
+                'gesamt_betrag_cent': 5000,
+                'zahlungsarten': <dynamic>[],
+              }),
+              200,
+            );
+    final ({
+      dynamic ergebnis,
+      String fotoBase64,
+      String fotoMediaType,
+    }) resultat = await BelegScanService.scan(fakeBild());
+    expect(BelegFotoKomprimierung.istVorbereitet(resultat.fotoBase64), isTrue);
+  });
+
+  test(
+      'Run 500: Netzwerkfehler während der Vorbereitung -> weiterhin '
+      'BelegScanException "Keine Internetverbindung"', () async {
+    BelegScanService.httpPostUeberschreibung =
+        (Uri url, Map<String, String> headers, String body) =>
+            Future<http.Response>.error(Exception('offline'));
+    await expectLater(
+      BelegScanService.scan(fakeBild()),
+      throwsA(
+        isA<BelegScanException>().having(
+          (BelegScanException e) => e.message,
+          'message',
+          contains('Keine Internetverbindung'),
         ),
       ),
     );

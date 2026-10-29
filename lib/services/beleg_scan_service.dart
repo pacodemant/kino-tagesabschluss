@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
+import 'package:kino_bar_app/utils/beleg_foto_komprimierung.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BelegScanException implements Exception {
@@ -149,13 +150,24 @@ class BelegScanService {
     }
     final http.Response response;
     try {
-      response = await (httpPostUeberschreibung ?? _echterHttpPost)(
+      final Future<http.Response> anfrage =
+          (httpPostUeberschreibung ?? _echterHttpPost)(
         Uri.parse(workerUrl),
         <String, String>{
           'content-type': 'application/json',
         },
         jsonEncode(requestBody),
-      );
+      )
+        // Fehler erst beim await unten auswerten, nicht als "unbehandelt"
+        // melden, falls die Anfrage während der Verkleinerung scheitert.
+        ..ignore();
+      // Run 500: Während die KI-Anfrage läuft, das Foto schon für den
+      // Verlauf verkleinern (blockiert im Browser einige Sekunden). Kurz
+      // warten, damit die Anfrage vorher wirklich abgeschickt ist; Schritt
+      // 3 findet das Ergebnis dann fertig vor.
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      BelegFotoKomprimierung.komprimiereFuerVerlauf(base64Bild);
+      response = await anfrage;
     } catch (_) {
       throw BelegScanException(
           'Keine Internetverbindung. Bitte Verbindung prüfen.');

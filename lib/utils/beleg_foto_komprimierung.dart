@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 
 /// Komprimiert ein Base64-kodiertes Belegfoto ausschließlich für die
@@ -25,10 +25,34 @@ class BelegFotoKomprimierung {
   static const int _maxKantenlaengePixel = 1000;
   static const int _jpegQualitaet = 70;
 
+  /// Bereits verkleinerte Fotos (Original -> Verlaufsfassung), Run 500.
+  /// Im Browser läuft die Verkleinerung im einzigen Dart-Thread und kostet
+  /// je Foto mehrere Sekunden (gemessen); sie wird deshalb schon während
+  /// des Beleg-Scans erledigt (BelegScanService.scan) und beim Speichern
+  /// in den Verlauf (Schritt 3) nur noch nachgeschlagen.
+  static final Map<String, String> _cache = <String, String>{};
+  static const int _cacheMax = 12;
+
   /// Gibt bei Dekodier-/Kodierfehlern (oder wenn die Komprimierung nicht
   /// kleiner wird als das Original) das Original unverändert zurück, damit
   /// ein Kompressionsfehler nie eine Speicherung verhindert.
   static String komprimiereFuerVerlauf(String base64Original) {
+    final String? bekannt = _cache[base64Original];
+    if (bekannt != null) return bekannt;
+    final String ergebnis = _komprimiere(base64Original);
+    if (_cache.length >= _cacheMax) _cache.remove(_cache.keys.first);
+    _cache[base64Original] = ergebnis;
+    return ergebnis;
+  }
+
+  @visibleForTesting
+  static void leereCache() => _cache.clear();
+
+  @visibleForTesting
+  static bool istVorbereitet(String base64Original) =>
+      _cache.containsKey(base64Original);
+
+  static String _komprimiere(String base64Original) {
     try {
       final Uint8List bytes = base64Decode(base64Original);
       final img.Image? bild = img.decodeImage(bytes);

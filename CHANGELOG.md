@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 500: Wechsel Schritt 2 -> 3 dauerte mit 3 Scans ca. 6 s (Paco,
+  Android). Ursache gemessen: die Verkleinerung der Belegfotos für den
+  Verlauf (package:image, im Browser im einzigen Dart-Thread) lief beim
+  Öffnen von Schritt 3 — Chrome-Testmodus ca. 8,6 s je Foto. Jetzt
+  läuft sie schon während des KI-Scans (Anfrage ist bereits
+  unterwegs), das Ergebnis liegt in einem Speicher-Cache
+  (BelegFotoKomprimierung, max. 12 Fotos); Schritt 3 schlägt nur nach
+  (gemessen 0 ms statt ca. 26 s für 3 Fotos). Nach einem App-Neuladen
+  zwischen Scan und Schritt 3 wird wie bisher beim Speichern gerechnet.
+  Tests.
+
 - Run 499: EC-Unterkacheln bleiben zu, außer die MA klappt sie auf:
   die Prüfung vor Schritt 3 öffnet nicht mehr vorab alle (nur noch den
   Beleg mit gefundenem Fehler), ebenso kein Aufklappen nach Scan oder
