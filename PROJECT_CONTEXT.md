@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.150+496 · Run 496
+Version: 0.9.155 · Run 501
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 496)
+## Laufender Entwicklungsstand (Run 501)
+
+- Run 501 Personalgetränke-Kachel (Schritt 1) entfernt, stattdessen
+  Pop-up "Alles erledigt?" beim Tippen auf "Umsätze eingeben"; einmal
+  pro Abrechnung, Flag `personalgetraenkeGebot` unverändert. Nicht bei
+  CO. Details siehe CHANGELOG.md.
 
 - Run 496 Belegfotos des Schritt-2-Entwurfs unter eigenem Hive-Key
   (`entwurf_schritt2_fotos_<kinoId>`), nur bei Änderung geschrieben —

@@ -16,7 +16,6 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt1/sections/schritt1_wec
 import 'package:kino_bar_app/pages/tagesabschluss_schritt1/ui/schritt1_zusammenfassung.dart'
     as schritt1_zusammenfassung;
 import 'package:kino_bar_app/services/abrechnung_speicher.dart';
-import 'package:kino_bar_app/widgets/personalgetraenke_kachel.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
 import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/wechselgeld_config_service.dart';
@@ -124,20 +123,33 @@ class _TagesabschlussSchritt1SeiteState
   bool _devModusAktiv = false;
   final ScrollController _scrollController = ScrollController();
 
-  // Personalgetränke-Kachel (seit Run 492d hier statt in Schritt 2):
-  // blockiert "Umsätze eingeben", bis abgehakt. Nicht bei CO (Run 372a).
+  // Personalgetränke-Rückfrage (seit Run 501 Pop-up beim Tippen auf
+  // "Umsätze eingeben" statt abzuhakender Kachel): einmal pro Abrechnung,
+  // Bestätigung wird im Entwurf gespeichert. Nicht bei CO (Run 372a).
   bool _personalgetraenkeGebot = false;
-  // Rot hervorheben, sobald "Umsätze eingeben" deswegen geblockt wurde
-  // (nicht persistiert).
-  bool _personalgetraenkeHinweisAktiv = false;
   bool get _zeigePersonalgetraenke => widget.kinoId != 'kino_04';
 
-  void _beiPersonalgetraenkeGeaendert(bool? v) {
-    setState(() {
-      _personalgetraenkeGebot = v ?? false;
-      if (_personalgetraenkeGebot) _personalgetraenkeHinweisAktiv = false;
-    });
-    _speichereEntwurf();
+  /// true = weiter zu Schritt 2. Fragt nur, solange noch nicht bestätigt.
+  Future<bool> _bestaetigePersonalgetraenke() async {
+    if (!_zeigePersonalgetraenke || _personalgetraenkeGebot) {
+      return true;
+    }
+    final bool? bestaetigt = await zeigeBestaetigungsDialog(
+      context,
+      titel: 'Alles erledigt?',
+      inhalt:
+          '• Personalgetränke gebont?\n'
+          '• Artikel gestundet?\n'
+          "• Denk' ans Kellnerportemonnaie.",
+      abbrechenText: 'Zurück',
+      bestaetigenText: 'Ja, weiter',
+    );
+    if (bestaetigt != true || !mounted) {
+      return false;
+    }
+    setState(() => _personalgetraenkeGebot = true);
+    await _speichereEntwurf();
+    return true;
   }
   final Schritt1ScrollHelper _scrollHelper = Schritt1ScrollHelper();
   final Random _zufall = Random();
@@ -420,7 +432,6 @@ class _TagesabschlussSchritt1SeiteState
         gespeicherteDaten: gespeicherteDaten,
       );
       _personalgetraenkeGebot = true;
-      _personalgetraenkeHinweisAktiv = false;
     });
     await _speichereEntwurf();
   }
@@ -1319,27 +1330,13 @@ class _TagesabschlussSchritt1SeiteState
             ],
             Expanded(
               child: ElevatedButton(
-                onPressed: () {
-                  if (_zeigePersonalgetraenke && !_personalgetraenkeGebot) {
-                    setState(() => _personalgetraenkeHinweisAktiv = true);
-                    if (_scrollController.hasClients) {
-                      _scrollController.animateTo(
-                        0,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeOutCubic,
-                      );
-                    }
-                    zeigeHinweisSnackBar(context, 'Personalgetränke gebont?');
+                onPressed: () async {
+                  if (!await _bestaetigePersonalgetraenke()) {
                     return;
                   }
                   _pruefeEingabenUndWeiterZuSchritt2();
                 },
-                style: (!_zeigePersonalgetraenke || _personalgetraenkeGebot)
-                    ? AppFarben.footerButtonStyle
-                    : ElevatedButton.styleFrom(
-                        backgroundColor: Colors.grey.shade600,
-                        foregroundColor: Colors.grey.shade300,
-                      ),
+                style: AppFarben.footerButtonStyle,
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Row(
@@ -1361,16 +1358,6 @@ class _TagesabschlussSchritt1SeiteState
         devToolsStickySichtbar: devToolsStickySichtbar,
         devToolsStickyHoehe: _devToolsStickyHoehe,
         devToolsPanel: _baueDevToolsPanel(),
-        personalgetraenkeSection: _zeigePersonalgetraenke
-            ? Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: PersonalgetraenkeKachel(
-                  gebont: _personalgetraenkeGebot,
-                  hervorgehoben: _personalgetraenkeHinweisAktiv,
-                  onChanged: _beiPersonalgetraenkeGeaendert,
-                ),
-              )
-            : null,
         alleZuklappenLink: Align(
           alignment: Alignment.centerRight,
           child: TextButton(
