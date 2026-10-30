@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 501b: Pop-up "Alles erledigt?" in Schritt 1 erscheint jetzt bei
+  jedem Tippen auf "Umsätze eingeben", nicht mehr nur einmal pro Tag
+  (vorher übersprungen, sobald im Tagesentwurf bestätigt). Key
+  `personalgetraenkeGebot` bleibt unverändert im Entwurf. Nicht bei CO.
 - Run 501a: Dev "Auto-Fill" in Schritt 1 setzt die Personalgetränke-
   Bestätigung nicht mehr auf true — das Pop-up "Alles erledigt?" lässt
   sich so auch nach Auto-Fill testen.
