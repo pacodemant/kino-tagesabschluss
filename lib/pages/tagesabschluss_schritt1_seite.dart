@@ -431,7 +431,6 @@ class _TagesabschlussSchritt1SeiteState
         synchronisiereControllerAusState: _synchronisiereControllerAusState,
         gespeicherteDaten: gespeicherteDaten,
       );
-      _personalgetraenkeGebot = true;
     });
     await _speichereEntwurf();
   }

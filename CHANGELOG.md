@@ -9,6 +9,9 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 501a: Dev "Auto-Fill" in Schritt 1 setzt die Personalgetränke-
+  Bestätigung nicht mehr auf true — das Pop-up "Alles erledigt?" lässt
+  sich so auch nach Auto-Fill testen.
 - Run 501: Personalgetränke-Kachel auf der Bargeld-Seite (Schritt 1)
   entfernt. Stattdessen erscheint beim Tippen auf "Umsätze eingeben
   (2/4)" einmal das Pop-up "Alles erledigt?" (Personalgetränke gebont?
