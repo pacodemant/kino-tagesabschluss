@@ -10,7 +10,6 @@ class Schritt1BodyContent extends StatelessWidget {
     required this.devToolsStickyHoehe,
     required this.devToolsPanel,
     required this.alleZuklappenLink,
-    this.personalgetraenkeSection,
     required this.scheineGruppe,
     required this.loseMuenzenGruppe,
     required this.rollenGruppe,
@@ -26,10 +25,6 @@ class Schritt1BodyContent extends StatelessWidget {
   final double devToolsStickyHoehe;
   final Widget devToolsPanel;
   final Widget alleZuklappenLink;
-
-  /// Erste Kachel der Bargeld-Seite (Run 492d), null = keine (CO,
-  /// Wechselgeld prüfen).
-  final Widget? personalgetraenkeSection;
   final Widget scheineGruppe;
   final Widget loseMuenzenGruppe;
   final Widget rollenGruppe;
@@ -67,7 +62,6 @@ class Schritt1BodyContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(12, 12, 12, bottomPadding),
             sliver: SliverList(
               delegate: SliverChildListDelegate(<Widget>[
-                ?personalgetraenkeSection,
                 alleZuklappenLink,
                 scheineGruppe,
                 loseMuenzenGruppe,

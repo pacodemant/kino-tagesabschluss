@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 501: Personalgetränke-Kachel auf der Bargeld-Seite (Schritt 1)
+  entfernt. Stattdessen erscheint beim Tippen auf "Umsätze eingeben
+  (2/4)" einmal das Pop-up "Alles erledigt?" (Personalgetränke gebont?
+  / Artikel gestundet? / Denk' ans Kellnerportemonnaie.) mit "Zurück"
+  und "Ja, weiter". Bestätigung wird wie bisher der Haken unter
+  `personalgetraenkeGebot` im Entwurf gespeichert (Key unverändert),
+  danach keine erneute Frage. Button nicht mehr grau. CO weiterhin
+  ohne. Rechenlogik unverändert.
 - Run 500: Wechsel Schritt 2 -> 3 dauerte mit 3 Scans ca. 6 s (Paco,
   Android). Ursache gemessen: die Verkleinerung der Belegfotos für den
   Verlauf (package:image, im Browser im einzigen Dart-Thread) lief beim
