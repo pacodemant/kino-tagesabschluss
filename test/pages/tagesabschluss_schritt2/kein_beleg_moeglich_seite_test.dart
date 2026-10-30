@@ -98,9 +98,10 @@ void main() {
   testWidgets('Start: EC-Kachel offen, drei Terminals sichtbar (Run 497)',
       (WidgetTester tester) async {
     await starteSeite(tester);
-    expect(find.text('Gerät 1 · TID 11111111'), findsOneWidget);
-    expect(find.text('Gerät 2 · TID 22222222'), findsOneWidget);
-    expect(find.text('Gerät 3 · TID 33333333'), findsOneWidget);
+    // Run 502: TID erst nach Erfassung, vorher "Beleg N".
+    expect(find.text('Beleg 1'), findsOneWidget);
+    expect(find.text('Beleg 2'), findsOneWidget);
+    expect(find.text('Beleg 3'), findsOneWidget);
     expect(find.text('+ Weiteren Kassenschnitt hinzufügen'), findsOneWidget);
   });
 

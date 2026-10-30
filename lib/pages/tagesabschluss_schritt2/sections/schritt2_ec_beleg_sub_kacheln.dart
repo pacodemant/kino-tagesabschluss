@@ -20,7 +20,7 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
     required this.labelController,
     required this.labelFocusNode,
     required this.labels,
-    this.geraeteNummer,
+    this.nochLeer,
     this.keineUmsaetzeAktiv,
     this.keinBelegMoeglich,
     this.onKeinBelegAufheben,
@@ -48,8 +48,9 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
   final List<FocusNode> labelFocusNode;
   final List<String> labels;
 
-  /// Gerätenummer zur TID aus den Einstellungen (Run 490), null = keine.
-  final String? Function(String label)? geraeteNummer;
+  /// Terminal-Kachel ohne erfassten Beleg (Run 502): Titel "Beleg N"
+  /// statt TID, damit man beim Scannen nicht zuordnen muss.
+  final bool Function(int belegIndex)? nochLeer;
 
   /// Beleg mit 0,00 € = "keine Umsätze" (Run 492, seit Run 495a ohne
   /// eigenen Knopf).
@@ -89,7 +90,7 @@ class Schritt2EcBelegSubKacheln extends StatelessWidget {
               labelController: labelController[i],
               labelFocusNode: labelFocusNode[i],
               label: labels[i],
-              geraeteNummer: geraeteNummer?.call(labels[i]),
+              nochLeer: nochLeer?.call(i) ?? false,
               keineUmsaetzeAktiv: keineUmsaetzeAktiv?.call(i) ?? false,
               keinBelegMoeglich: keinBelegMoeglich?.call(i) ?? false,
               onKeinBelegAufheben: () => onKeinBelegAufheben?.call(i),
@@ -122,7 +123,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
     required this.labelController,
     required this.labelFocusNode,
     required this.label,
-    this.geraeteNummer,
+    this.nochLeer = false,
     this.keineUmsaetzeAktiv = false,
     this.keinBelegMoeglich = false,
     this.onKeinBelegAufheben,
@@ -148,7 +149,7 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
   final TextEditingController labelController;
   final FocusNode labelFocusNode;
   final String label;
-  final String? geraeteNummer;
+  final bool nochLeer;
   final bool keineUmsaetzeAktiv;
   final bool keinBelegMoeglich;
   final VoidCallback? onKeinBelegAufheben;
@@ -167,6 +168,10 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
 
   bool get _labelIstLesbarUndBefuellt =>
       label.isNotEmpty && label.trim().toLowerCase() != 'unleserlich';
+
+  /// Titel zeigt die TID erst, wenn für die Kachel etwas erfasst ist
+  /// (Run 502), vorher "Beleg N".
+  bool get _zeigeTid => _labelIstLesbarUndBefuellt && !nochLeer;
 
   /// true, wenn dieser Beleg einen Betrag UND eine lesbare Terminal-ID
   /// hat, also vollständig und ohne offene Fehler eingelesen wurde —
@@ -317,15 +322,15 @@ class _Schritt2EcBelegSubKachel extends StatelessWidget {
                                       ],
                                       Expanded(
                                         child: Text(
-                                          _labelIstLesbarUndBefuellt
-                                              ? '${geraeteNummer != null ? 'Gerät $geraeteNummer' : '#${belegIndex + 1}'} · TID $label'
+                                          _zeigeTid
+                                              ? 'TID $label'
                                               : 'Beleg ${belegIndex + 1}',
                                           style: TextStyle(
                                             fontSize: 13,
                                             fontWeight: FontWeight.w600,
                                             color: tidUnleserlich
                                                 ? Colors.red.shade700
-                                                : (_labelIstLesbarUndBefuellt
+                                                : (_zeigeTid
                                                       ? Colors.black87
                                                       : Colors.grey.shade500),
                                           ),

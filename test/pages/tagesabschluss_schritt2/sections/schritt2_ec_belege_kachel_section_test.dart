@@ -6,8 +6,9 @@ import 'package:kino_bar_app/pages/tagesabschluss_schritt2/sections/schritt2_ec_
 import 'package:kino_bar_app/theme/app_farben.dart';
 
 /// Startzustand der EC-Kachel mit eingetragenen Terminals (Run 497): Kachel
-/// offen, je Terminal eine zugeklappte Unterkachel mit Gerät + TID und
-/// Kamera, darunter "Weiteren Kassenschnitt hinzufügen".
+/// offen, je Terminal eine zugeklappte Unterkachel ("Beleg N", seit Run
+/// 502 TID erst nach Erfassung) und Kamera, darunter "Weiteren
+/// Kassenschnitt hinzufügen".
 Widget _kachel({
   required List<String> labels,
   required List<bool> aufgeklappt,
@@ -52,8 +53,7 @@ Widget _kachel({
                   labelFocusNode:
                       List<FocusNode>.generate(n, (_) => FocusNode()),
                   labels: labels,
-                  geraeteNummer: (String l) =>
-                      '${labels.indexOf(l) + 1}',
+                  nochLeer: (int i) => !scan[i] && cent[i] == 0,
                   betraegeCent: cent,
                   tidUnleserlich: (_) => false,
                   scanLaeuft: false,
@@ -80,7 +80,7 @@ Color? _kameraFarbe(WidgetTester tester, int index) => tester
 
 void main() {
   testWidgets(
-    'Start mit 3 Terminals: Unterkacheln zugeklappt mit Gerät + TID, '
+    'Start mit 3 Terminals: Unterkacheln zugeklappt als "Beleg N", '
     'Kamera je Terminal, Hinzufügen-Knopf da, keine Kopf-Kamera',
     (WidgetTester tester) async {
       await tester.pumpWidget(_kachel(
@@ -88,9 +88,10 @@ void main() {
         aufgeklappt: <bool>[false, false, false],
       ));
 
-      expect(find.text('Gerät 1 · TID 11111111'), findsOneWidget);
-      expect(find.text('Gerät 2 · TID 22222222'), findsOneWidget);
-      expect(find.text('Gerät 3 · TID 33333333'), findsOneWidget);
+      expect(find.text('Beleg 1'), findsOneWidget);
+      expect(find.text('Beleg 2'), findsOneWidget);
+      expect(find.text('Beleg 3'), findsOneWidget);
+      expect(find.textContaining('TID'), findsNothing);
       expect(find.text('Zahlungsarten-Tabelle'), findsNothing);
       expect(find.byIcon(Icons.camera_alt), findsNWidgets(3));
       expect(find.byIcon(Icons.camera_alt_outlined), findsNothing);
@@ -140,4 +141,20 @@ void main() {
       expect(find.text('+ Weiteren Kassenschnitt hinzufügen'), findsNothing);
     },
   );
+
+  testWidgets('Run 502: erfasster Beleg zeigt TID statt "Beleg N"',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(_kachel(
+      labels: <String>['11111111', '22222222', '33333333'],
+      aufgeklappt: <bool>[false, false, false],
+      gescannt: <bool>[false, true, false],
+      betraegeCent: <int>[0, 12345, 0],
+    ));
+
+    expect(find.text('Beleg 1'), findsOneWidget);
+    expect(find.text('TID 22222222'), findsOneWidget);
+    expect(find.text('Beleg 2'), findsNothing);
+    expect(find.text('Beleg 3'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
 }

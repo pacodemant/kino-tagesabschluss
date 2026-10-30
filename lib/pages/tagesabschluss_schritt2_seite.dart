@@ -1929,12 +1929,33 @@ class _TagesabschlussSchritt2SeiteState
           return;
         }
         final BelegScanErgebnis geprueftes = ergebnis;
-        belegIndex = Schritt2TerminalFelder.zielIndex(
+        final int zielIndex = Schritt2TerminalFelder.zielIndex(
           gescannteTid: geprueftes.terminalId,
           belegIndex: belegIndex,
           labels: _ecBelegLabels,
           istLeer: _istLeererTerminalPlatz,
         );
+        if (Schritt2TerminalFelder.tidTauschen(
+          zielIndex: zielIndex,
+          belegIndex: belegIndex,
+          istLeer: _istLeererTerminalPlatz,
+        )) {
+          // Run 502: Beleg bleibt in der angetippten Kachel, die TIDs der
+          // beiden noch leeren Kacheln tauschen den Platz.
+          final int b = belegIndex;
+          setState(() {
+            final String tid = _ecBelegLabels[b];
+            _ecBelegLabels[b] = _ecBelegLabels[zielIndex];
+            _ecBelegLabels[zielIndex] = tid;
+            _setzeControllerText(_ecBelegLabelController[b], _ecBelegLabels[b]);
+            _setzeControllerText(
+              _ecBelegLabelController[zielIndex],
+              _ecBelegLabels[zielIndex],
+            );
+          });
+        } else {
+          belegIndex = zielIndex;
+        }
         final List<BelegScanZeilenVorschau> vorschauZeilen =
             _baueScanVorschauZeilen(geprueftes, belegIndex);
         final String? tidKonfigWarnung =
@@ -2978,7 +2999,8 @@ class _TagesabschlussSchritt2SeiteState
             labelController: _ecBelegLabelController,
             labelFocusNode: _ecBelegLabelFocusNode,
             labels: _ecBelegLabels,
-            geraeteNummer: _geraeteNummer,
+            nochLeer: (int j) =>
+                _istLeererTerminalPlatz(j) && !_keinBelegMoeglichAktiv(j),
             keineUmsaetzeAktiv: _keineUmsaetzeAktiv,
             keinBelegMoeglich: _keinBelegMoeglichAktiv,
             onKeinBelegAufheben: _keinBelegAufheben,

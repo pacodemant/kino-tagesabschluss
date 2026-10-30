@@ -89,4 +89,39 @@ void main() {
       }
     });
   });
+
+  group('tidTauschen (Run 502)', () {
+    test('beide Kacheln leer, Ziel woanders -> tauschen', () {
+      expect(
+        Schritt2TerminalFelder.tidTauschen(
+          zielIndex: 2,
+          belegIndex: 0,
+          istLeer: (_) => true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('Ziel = angetippte Kachel -> nicht tauschen', () {
+      expect(
+        Schritt2TerminalFelder.tidTauschen(
+          zielIndex: 1,
+          belegIndex: 1,
+          istLeer: (_) => true,
+        ),
+        isFalse,
+      );
+    });
+
+    test('angetippte Kachel schon erfasst -> nicht tauschen', () {
+      expect(
+        Schritt2TerminalFelder.tidTauschen(
+          zielIndex: 2,
+          belegIndex: 0,
+          istLeer: (int j) => j != 0,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

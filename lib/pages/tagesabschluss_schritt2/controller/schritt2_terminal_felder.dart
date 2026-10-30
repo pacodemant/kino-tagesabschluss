@@ -56,6 +56,16 @@ class Schritt2TerminalFelder {
     return belegIndex;
   }
 
+  /// true = Scan soll in der angetippten Kachel [belegIndex] bleiben
+  /// statt in [zielIndex] zu springen (Run 502): beide sind noch leere
+  /// Terminal-Kacheln, also tauschen nur ihre TIDs den Platz.
+  static bool tidTauschen({
+    required int zielIndex,
+    required int belegIndex,
+    required bool Function(int j) istLeer,
+  }) =>
+      zielIndex != belegIndex && istLeer(belegIndex) && istLeer(zielIndex);
+
   /// Dev-Auto-Fill (Run 491, ungleich seit 492a): verteilt die EC-
   /// Testsumme nach festen, deutlich verschiedenen Gewichten auf [anzahl]
   /// Terminals, der Rest-Cent geht an das erste. Mindestens ein Anteil,
