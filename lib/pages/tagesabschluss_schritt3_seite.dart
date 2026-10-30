@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
@@ -15,6 +16,7 @@ import 'package:kino_bar_app/theme/app_farben.dart';
 import 'package:kino_bar_app/widgets/help_button.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_header.dart';
 import 'package:kino_bar_app/widgets/tagesabschluss_scaffold.dart';
+import 'package:kino_bar_app/widgets/betrag_cent_eingabefeld.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_finalisieren_usecase.dart';
 import 'package:kino_bar_app/domain/usecases/speichere_tagesabschluss_usecase.dart';
 import 'package:kino_bar_app/config/feature_flags.dart';
@@ -213,6 +215,10 @@ class _TagesabschlussSchritt3SeiteState
   // Terminals aus den Einstellungen: EC1–EC3 im SB-Umschlag (Run 491c).
   List<TerminalEintrag> _terminals = const <TerminalEintrag>[];
 
+  // SB (Run 503): Kartenbetrag laut Kinokasse statt Terminalbetrag, über
+  // Antippen der grauen "davon"-Zeile gesetzt. null = Terminalbetrag.
+  int? _kinokasseKarteKorrekturCent;
+
   // Server-Antworten des letzten echten Versands dieser Sitzung (ensure +
   // settlements, seit Run 476 beide) — null, solange in dieser Sitzung
   // noch nicht wirklich gesendet wurde. Nur für den Dev-Tools-Button
@@ -336,6 +342,8 @@ class _TagesabschlussSchritt3SeiteState
     if (_anmerkung.isNotEmpty) {
       _anmerkungController.text = _anmerkung;
     }
+    _kinokasseKarteKorrekturCent =
+        (daten['kinokasseKarteKorrekturCent'] as num?)?.toInt();
   }
 
   Future<void> _speichereAnmerkungEntwurf() async {
@@ -344,6 +352,8 @@ class _TagesabschlussSchritt3SeiteState
       <String, dynamic>{
         'isoDatum': DatumsHelper.logischesIsoDatum(),
         if (_anmerkung.trim().isNotEmpty) 'anmerkung': _anmerkung.trim(),
+        if (_kinokasseKarteKorrekturCent != null)
+          'kinokasseKarteKorrekturCent': _kinokasseKarteKorrekturCent,
       },
     );
   }
@@ -390,11 +400,97 @@ class _TagesabschlussSchritt3SeiteState
         keinBelegMoeglichTids: widget.argumente.keinBelegMoeglichTids,
         sendeVermerke: widget.argumente.sendeVermerke,
         kinokasseTid: _kinokasseTid,
+        kinokasseKarteKorrekturCent: _kinokasseKarteKorrekturCent,
       ),
       jetzt: _erstellungszeitpunkt,
     );
     if (!mounted) return;
     setState(() => _abschlussVorschau = abschluss);
+  }
+
+  /// SB (Run 503): Kartenbetrag laut Kinokasse eingeben. Am Kino-Terminal
+  /// werden teils auch Getränke bezahlt, die schon im Bistro SOLL stecken;
+  /// im Kino SOLL zählt nur, was die Kinokasse als Karte zeigt.
+  Future<void> _kinokasseKarteKorrigieren() async {
+    final TagesabschlussFinal? vorschau = _abschlussVorschau;
+    if (vorschau == null) return;
+    final int terminalCent =
+        vorschau.kinokasseKarteTerminalCent ?? vorschau.kinokasseKarteCent;
+    final TextEditingController controller = TextEditingController(
+      text: TagesabschlussFormatierung.formatiereEuroEingabe(
+        vorschau.kinokasseKarteCent,
+      ),
+    );
+    // int = übernehmen, -1 = zurücksetzen, null = abbrechen.
+    final int? ergebnis = await showDialog<int>(
+      context: context,
+      builder: (BuildContext dialogContext) => AlertDialog(
+        title: const Text('Karte laut Kinokasse'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'Terminal: '
+              '${TagesabschlussFormatierung.formatiereEuro(terminalCent)}',
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: controller,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                CentWaehrungsEingabeFormatter(),
+              ],
+              decoration: const InputDecoration(
+                labelText: 'Kartenzahlungen laut Kinokasse',
+                suffixText: '€',
+              ),
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(-1),
+            child: const Text('Zurücksetzen'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(
+              TagesabschlussBerechnung.parseCentZiffern(controller.text),
+            ),
+            child: const Text('Übernehmen'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (ergebnis == null || !mounted) return;
+    _kinokasseKarteKorrekturCent = ergebnis < 0 ? null : ergebnis;
+    _aktualisiereAbschlussVorschau();
+    await _speichereAnmerkungEntwurf();
+    // Verlaufseintrag nachziehen, der Auto-Save lief schon beim Öffnen.
+    await _autoSaveErsterLauf;
+    if (!_autoSaveErledigt || _abschlussVorschau == null) return;
+    await LokalerSpeicher.ersetzeFinalenTagesabschluss(_abschlussVorschau!);
+    // Der Vermerk geht in den Kommentar an Flurbocash: Weicht das vom
+    // zuletzt Gesendeten ab, muss (erneut) gesendet werden können;
+    // passt es wieder (Zurücksetzen), bleibt es "gesendet".
+    final bool passt =
+        await LokalerSpeicher.markiereAlsGesendetFallsSignaturPasst(
+          kinoId: widget.argumente.kinoId,
+          createdAt: _abschlussVorschau!.createdAt,
+          aktuelleSignatur: _sendeSignatur(),
+          heutigesIsoDatum: DatumsHelper.logischesIsoDatum(),
+        );
+    if (!mounted) return;
+    setState(() {
+      _abrechnungGesendet = passt;
+      _apiUploadErledigt = passt;
+    });
   }
 
   void _beiAnmerkungGeaendert(String wert) {
@@ -1259,6 +1355,7 @@ class _TagesabschlussSchritt3SeiteState
             for (final List<Widget> zeilen in UebertragUmschlagInhalt.rahmen(
               vorschau,
               _terminals,
+              kinokasseKarteKorrigieren: _kinokasseKarteKorrigieren,
             ))
               Card(
                 margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),

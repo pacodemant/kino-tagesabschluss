@@ -9,6 +9,19 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 503: SB, Zwischenlösung (für MA unsichtbar): Werden am
+  Kino-Kartenterminal auch Getränke bezahlt, stecken diese doppelt im
+  Gesamt SOLL (Kino SOLL über den Terminalbetrag + Bistro SOLL). Auf
+  "Übertrag auf Umschlag" öffnet Antippen der grauen Zeile "davon
+  Kartenterminal <TID>" einen Dialog "Karte laut Kinokasse"
+  (Übernehmen/Zurücksetzen/Abbrechen). Der Betrag ersetzt den
+  Terminalbetrag in Kino SOLL, Gesamt SOLL und Differenz, IST bleibt.
+  Zeile heißt dann "davon Karte lt. Kinokasse". Beim Senden geht ein
+  Vermerk in den Kommentar (sendeVermerke). Neues optionales JSON-Feld
+  kinokasseKarteTerminalCent (Originalbetrag, nur bei Korrektur);
+  Korrektur im Schritt-3-Entwurf, Verlaufseintrag wird nachgezogen.
+  Tests.
+
 - Run 502: EC-Unterkacheln (Schritt 2, mehrere Terminals) zeigen statt
   "Gerät X · TID …" zunächst "Beleg 1", "Beleg 2", … — die Gerätenummer
   gibt es nur in der App, nicht am Terminal. Sobald für eine Kachel

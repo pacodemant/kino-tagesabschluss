@@ -185,10 +185,14 @@ class UebertragUmschlagInhalt {
   );
 
   /// Inhalt in Rahmen gegliedert (je Rahmen eine Liste von Zeilen).
+  /// [kinokasseKarteKorrigieren] (nur SB, Run 503): Antippen der grauen
+  /// "davon"-Zeile öffnet die Korrektur — bewusst ohne sichtbaren
+  /// Hinweis, für die MA unsichtbar.
   static List<List<Widget>> rahmen(
     TagesabschlussFinal a,
-    List<TerminalEintrag> terminals,
-  ) {
+    List<TerminalEintrag> terminals, {
+    VoidCallback? kinokasseKarteKorrigieren,
+  }) {
     final bool hatBistro = KinoRepository.nachId(a.kinoId)?.hatBistro ?? true;
     final bool sb = hatSbUmschlag(a.kinoId);
     final Widget differenz = InfoZeile(
@@ -249,10 +253,17 @@ class UebertragUmschlagInhalt {
       ],
       <Widget>[
         _zeile('+ Kino SOLL (f. Umschlag)', _euro(a.kinoSollUebertragCent)),
-        if (a.kinokasseKarteCent != 0)
-          KinokasseKarteHinweis(
-            kinokasseKarteCent: a.kinokasseKarteCent,
-            terminalTid: kinokasseTid(terminals),
+        // Auch bei Korrektur auf 0,00 € sichtbar, sonst nicht mehr
+        // erreichbar (Run 503).
+        if (a.kinokasseKarteCent != 0 || a.kinokasseKarteTerminalCent != null)
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: kinokasseKarteKorrigieren,
+            child: KinokasseKarteHinweis(
+              kinokasseKarteCent: a.kinokasseKarteCent,
+              terminalTid: kinokasseTid(terminals),
+              korrigiert: a.kinokasseKarteTerminalCent != null,
+            ),
           ),
         _zeile('+ BISTRO SOLL', _euro(a.bistroSollCent)),
         _zeile('- Ausgaben', _euro(a.ausgabenCent)),

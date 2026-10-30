@@ -68,9 +68,13 @@ class KinokasseKarteHinweis extends StatelessWidget {
     super.key,
     required this.kinokasseKarteCent,
     this.terminalTid,
+    this.korrigiert = false,
   });
 
   final int kinokasseKarteCent;
+
+  /// SB (Run 503): Betrag wurde auf den Wert laut Kinokasse korrigiert.
+  final bool korrigiert;
 
   /// SB (Run 493c): TID des KK-Terminals aus den Einstellungen, Text dann
   /// "davon Kartenterminal TID" ('' = keins markiert). null = bisheriger
@@ -85,9 +89,11 @@ class KinokasseKarteHinweis extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: Text(
-              terminalTid == null
-                  ? 'davon Karte Kinokasse'
-                  : 'davon Kartenterminal $terminalTid'.trimRight(),
+              korrigiert
+                  ? 'davon Karte lt. Kinokasse'
+                  : terminalTid == null
+                      ? 'davon Karte Kinokasse'
+                      : 'davon Kartenterminal $terminalTid'.trimRight(),
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ),

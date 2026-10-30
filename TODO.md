@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: Oktober 2026 · Run 502 · wird fortlaufend ergänzt
+Stand: Oktober 2026 · Run 503 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -618,6 +618,11 @@ Rechen- und Hilfslogik.
       Foto wiederholen.
 
 ### Einstellungen & Konfiguration *(Phase C)*
+
+- [ ] **Kino SOLL: Getränke am Kino-Terminal** (aus Run 503) Für SB gibt
+      es eine versteckte Korrektur "Karte laut Kinokasse" (Antippen der
+      grauen "davon"-Zeile auf "Übertrag auf Umschlag"). Offen: dauerhafte
+      Lösung, ggf. sichtbar für MA und für weitere Standorte.
 
 - [ ] **Kino SOLL: MA-Hinweis in Schritt 2?** (aus Run 486) Ob/wie MA
       erfahren, dass die App den Kartenumsatz der Kinokasse selbst

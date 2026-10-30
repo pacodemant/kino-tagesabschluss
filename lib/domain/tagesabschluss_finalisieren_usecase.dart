@@ -43,6 +43,8 @@ class TagesabschlussFinalisierenEingabe {
     this.ecBelegeFotosMediaTypen,
     // TID des am Kino-Kassensystem angeschlossenen Terminals (Run 486)
     this.kinokasseTid,
+    // SB: Kartenbetrag laut Kinokasse statt Terminalbetrag (Run 503)
+    this.kinokasseKarteKorrekturCent,
     // TIDs mit "heute keine Umsätze" (Run 492)
     this.keineUmsaetzeTids,
     // TIDs mit "Kein Beleg möglich" + Vermerke nur für den Versand (Run 498)
@@ -91,6 +93,10 @@ class TagesabschlussFinalisierenEingabe {
   // TID des am Kino-Kassensystem angeschlossenen Terminals (Einstellung
   // pro Kino, Run 486) – dessen Kartenumsatz kommt zum Kino SOLL dazu.
   final String? kinokasseTid;
+  // Kartenbetrag laut Kinokasse (Run 503): ersetzt im Kino SOLL den
+  // Terminalbetrag, wenn am Terminal auch Getränke bezahlt wurden (die
+  // stecken schon im Bistro SOLL). null = Terminalbetrag gilt.
+  final int? kinokasseKarteKorrekturCent;
   final List<String>? keineUmsaetzeTids;
   final List<String>? keinBelegMoeglichTids;
   final List<String>? sendeVermerke;
@@ -142,11 +148,18 @@ class TagesabschlussFinalisierenUsecase {
       eingabe.ecBelegeCent,
     );
 
-    final int kinokasseKarteCent = TagesabschlussBerechnung.kinokasseKarteCent(
-      ecBelegeCent: eingabe.ecBelegeCent,
-      ecBelegeLabels: eingabe.ecBelegeLabels,
-      kinokasseTid: eingabe.kinokasseTid,
-    );
+    final int kinokasseKarteTerminalCent =
+        TagesabschlussBerechnung.kinokasseKarteCent(
+          ecBelegeCent: eingabe.ecBelegeCent,
+          ecBelegeLabels: eingabe.ecBelegeLabels,
+          kinokasseTid: eingabe.kinokasseTid,
+        );
+    // Korrektur gleich dem Terminalbetrag zählt nicht als Korrektur.
+    final int? korrektur = eingabe.kinokasseKarteKorrekturCent;
+    final bool karteKorrigiert =
+        korrektur != null && korrektur != kinokasseKarteTerminalCent;
+    final int kinokasseKarteCent =
+        karteKorrigiert ? korrektur : kinokasseKarteTerminalCent;
 
     final int gesamtSollCent = TagesabschlussBerechnung.gesamtSollCent(
       kinoSollCent: eingabe.kinoSollCent,
@@ -274,10 +287,34 @@ class TagesabschlussFinalisierenUsecase {
           ? List<String>.from(eingabe.ecBelegeFotosMediaTypen!)
           : null,
       kinokasseKarteCent: kinokasseKarteCent,
+      kinokasseKarteTerminalCent:
+          karteKorrigiert ? kinokasseKarteTerminalCent : null,
       keineUmsaetzeTids: _keineUmsaetzeTidsOhneBetrag(eingabe),
       keinBelegMoeglichTids: _nichtLeerOderNull(eingabe.keinBelegMoeglichTids),
-      sendeVermerke: _nichtLeerOderNull(eingabe.sendeVermerke),
+      sendeVermerke: _nichtLeerOderNull(<String>[
+        ...?eingabe.sendeVermerke,
+        if (karteKorrigiert)
+          kinokasseKarteVermerk(
+            korrigiertCent: korrektur,
+            terminalCent: kinokasseKarteTerminalCent,
+            tid: eingabe.kinokasseTid,
+          ),
+      ]),
     );
+  }
+
+  /// Vermerk für den Kommentar an Flurbocash (Run 503), für die MA
+  /// unsichtbar (siehe sendeVermerke).
+  static String kinokasseKarteVermerk({
+    required int korrigiertCent,
+    required int terminalCent,
+    String? tid,
+  }) {
+    final String bereinigt = TidEingabe.bereinige(tid ?? '');
+    return 'Kino-Karte lt. Kinokasse '
+        '${TagesabschlussFormatierung.formatiereEuro(korrigiertCent)} statt '
+        'Terminal${bereinigt.isEmpty ? '' : ' $bereinigt'} '
+        '${TagesabschlussFormatierung.formatiereEuro(terminalCent)}';
   }
 
   static List<String>? _nichtLeerOderNull(List<String>? liste) {

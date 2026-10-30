@@ -52,6 +52,8 @@ class TagesabschlussFinal {
     // im Kino SOLL fuer den Uebertrag enthalten – seit Run 486, fuer
     // aeltere gespeicherte Einträge 0
     this.kinokasseKarteCent = 0,
+    // Seit Run 503, null = nicht korrigiert
+    this.kinokasseKarteTerminalCent,
     // TIDs, für die der MA "heute keine Umsätze" bestätigt hat – seit
     // Run 492, für ältere gespeicherte Einträge null
     this.keineUmsaetzeTids,
@@ -126,6 +128,12 @@ class TagesabschlussFinal {
   /// am Kino-Kassensystem angeschlossenen Terminals (Run 486).
   int get kinoSollUebertragCent => kinoSollCent + kinokasseKarteCent;
 
+  // SB (Run 503): Wurde der Kartenbetrag auf "Übertrag auf Umschlag" auf
+  // den Wert laut Kinokasse korrigiert (am Terminal auch Getränke
+  // bezahlt), steht hier der ursprüngliche Terminalbetrag und in
+  // kinokasseKarteCent der korrigierte. null = nicht korrigiert.
+  final int? kinokasseKarteTerminalCent;
+
   // Terminals mit bestätigt "heute keine Umsätze" (Run 492): gehen mit
   // 0-Beträgen an Flurbocash, damit sichtbar ist, dass geprüft wurde.
   final List<String>? keineUmsaetzeTids;
@@ -187,6 +195,7 @@ class TagesabschlussFinal {
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       kinokasseKarteCent: kinokasseKarteCent,
+      kinokasseKarteTerminalCent: kinokasseKarteTerminalCent,
       keineUmsaetzeTids: keineUmsaetzeTids,
       keinBelegMoeglichTids: keinBelegMoeglichTids,
       sendeVermerke: sendeVermerke,
@@ -252,6 +261,8 @@ class TagesabschlussFinal {
       if (ecBelegeFotosMediaTypen != null)
         'ecBelegeFotosMediaTypen': ecBelegeFotosMediaTypen,
       if (kinokasseKarteCent != 0) 'kinokasseKarteCent': kinokasseKarteCent,
+      if (kinokasseKarteTerminalCent != null)
+        'kinokasseKarteTerminalCent': kinokasseKarteTerminalCent,
       if (keineUmsaetzeTids != null && keineUmsaetzeTids!.isNotEmpty)
         'keineUmsaetzeTids': keineUmsaetzeTids,
       if (keinBelegMoeglichTids != null && keinBelegMoeglichTids!.isNotEmpty)
@@ -389,6 +400,8 @@ class TagesabschlussFinal {
       ecBelegeFotosBase64: ecBelegeFotosBase64,
       ecBelegeFotosMediaTypen: ecBelegeFotosMediaTypen,
       kinokasseKarteCent: (json['kinokasseKarteCent'] as num?)?.toInt() ?? 0,
+      kinokasseKarteTerminalCent:
+          (json['kinokasseKarteTerminalCent'] as num?)?.toInt(),
       keineUmsaetzeTids: json['keineUmsaetzeTids'] is List
           ? (json['keineUmsaetzeTids'] as List<dynamic>)
               .whereType<String>()

@@ -25,6 +25,8 @@ void main() {
       int? wechselgeldEntnahmeCent,
       String? wechselgeldEntnahmeGrund,
       String? kinokasseTid,
+      int? kinokasseKarteKorrekturCent,
+      List<String>? sendeVermerke,
     }) {
       return TagesabschlussFinalisierenEingabe(
         kinoId: kinoId,
@@ -51,6 +53,8 @@ void main() {
         wechselgeldEntnahmeCent: wechselgeldEntnahmeCent,
         wechselgeldEntnahmeGrund: wechselgeldEntnahmeGrund,
         kinokasseTid: kinokasseTid,
+        kinokasseKarteKorrekturCent: kinokasseKarteKorrekturCent,
+        sendeVermerke: sendeVermerke,
       );
     }
 
@@ -404,6 +408,81 @@ void main() {
         final TagesabschlussFinal alt = TagesabschlussFinal.fromJson(altJson);
         expect(alt.kinokasseKarteCent, 0);
         expect(alt.kinoSollUebertragCent, 5000);
+      });
+    });
+
+    // Run 503: Kartenbetrag laut Kinokasse statt Terminalbetrag (SB).
+    group('Korrektur Karte laut Kinokasse', () {
+      TagesabschlussFinal mitKorrektur(
+        int? korrekturCent, {
+        List<String>? sendeVermerke,
+      }) =>
+          usecase.finalisieren(
+            eingabe: eingabe(
+              ecBelegeLabels: <String>['60561994', '60561997'],
+              kinokasseTid: '60561997',
+              kinokasseKarteKorrekturCent: korrekturCent,
+              sendeVermerke: sendeVermerke,
+            ),
+          );
+
+      test('ersetzt Terminalbetrag in Kino SOLL, Gesamt SOLL und '
+          'Differenz, IST bleibt', () {
+        final TagesabschlussFinal ohne = mitKorrektur(null);
+        final TagesabschlussFinal mit = mitKorrektur(1000);
+
+        expect(ohne.kinokasseKarteCent, 1500);
+        expect(ohne.kinokasseKarteTerminalCent, isNull);
+
+        expect(mit.kinokasseKarteCent, 1000);
+        expect(mit.kinokasseKarteTerminalCent, 1500);
+        expect(mit.kinoSollUebertragCent, 6000);
+        expect(mit.gesamtSollCent, ohne.gesamtSollCent - 500);
+        expect(mit.gesamtIstCent, ohne.gesamtIstCent);
+        expect(mit.ecUmsatzGesamtCent, 4500);
+        expect(mit.differenzGesamtCent, ohne.differenzGesamtCent + 500);
+      });
+
+      test('Korrektur auf 0 gilt, gleich Terminalbetrag zählt nicht', () {
+        final TagesabschlussFinal null0 = mitKorrektur(0);
+        expect(null0.kinokasseKarteCent, 0);
+        expect(null0.kinokasseKarteTerminalCent, 1500);
+
+        final TagesabschlussFinal gleich = mitKorrektur(1500);
+        expect(gleich.kinokasseKarteCent, 1500);
+        expect(gleich.kinokasseKarteTerminalCent, isNull);
+        expect(gleich.sendeVermerke, isNull);
+      });
+
+      test('Vermerk wird an vorhandene Sendevermerke angehängt', () {
+        final TagesabschlussFinal mit = mitKorrektur(
+          1000,
+          sendeVermerke: <String>['Kein Beleg möglich: 60561994'],
+        );
+        expect(mit.sendeVermerke, <String>[
+          'Kein Beleg möglich: 60561994',
+          'Kino-Karte lt. Kinokasse 10,00 € statt Terminal 60561997 '
+              '15,00 €',
+        ]);
+      });
+
+      test('JSON: Terminalbetrag wird gespeichert und gelesen, alte '
+          'Einträge ohne Feld -> null', () {
+        final TagesabschlussFinal mit = mitKorrektur(1000);
+        final TagesabschlussFinal gelesen =
+            TagesabschlussFinal.fromJson(mit.toJson());
+        expect(gelesen.kinokasseKarteCent, 1000);
+        expect(gelesen.kinokasseKarteTerminalCent, 1500);
+        expect(
+          gelesen
+              .mitGesendetAm(DateTime(2026, 10, 31))
+              .kinokasseKarteTerminalCent,
+          1500,
+        );
+        expect(
+          mitKorrektur(null).toJson().containsKey('kinokasseKarteTerminalCent'),
+          isFalse,
+        );
       });
     });
   });
