@@ -5,5 +5,5 @@
 class AppVersion {
   const AppVersion._();
 
-  static const String text = 'Web App 0.9.155 · r501b';
+  static const String text = 'Web App 0.9.155 · r501c';
 }
