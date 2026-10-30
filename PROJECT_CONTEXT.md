@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.155 · Run 501
+Version: 0.9.156 · Run 502
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 501)
+## Laufender Entwicklungsstand (Run 502)
+
+- Run 502 EC-Unterkacheln heißen "Beleg 1/2/3", bis etwas erfasst ist;
+  danach "TID …" (ohne Gerätenummer). Scan landet in der angetippten
+  leeren Kachel (TIDs zweier leerer Kacheln werden getauscht).
+  Details siehe CHANGELOG.md.
 
 - Run 501 Personalgetränke-Kachel (Schritt 1) entfernt, stattdessen
   Pop-up "Alles erledigt?" beim Tippen auf "Umsätze eingeben"; einmal

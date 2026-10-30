@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 502: EC-Unterkacheln (Schritt 2, mehrere Terminals) zeigen statt
+  "Gerät X · TID …" zunächst "Beleg 1", "Beleg 2", … — die Gerätenummer
+  gibt es nur in der App, nicht am Terminal. Sobald für eine Kachel
+  etwas erfasst ist (Scan, 0,00 € von Hand, "Kein Beleg möglich"),
+  steht dort "TID …", nach Scan mit grünem Haken. Ein Scan landet in
+  der angetippten Kachel, auch wenn seine TID zu einer anderen noch
+  leeren Kachel gehörte: die TIDs der beiden leeren Kacheln tauschen
+  den Platz (Schritt2TerminalFelder.tidTauschen). "Beleg fehlt"-Dialog,
+  Sende-Vermerke, Beträge und Rechenlogik unverändert.
 - Run 501c: Run 501b zurückgenommen — Pop-up "Alles erledigt?" kommt
   wieder nur, solange am aktuellen Abrechnungstag (pro Kino) noch nicht
   mit "Ja, weiter" bestätigt wurde; nach dem 5-Uhr-Knick fragt es

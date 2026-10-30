@@ -79,7 +79,10 @@ void main() {
     );
     await warte(tester);
 
-    expect(find.text('Gerät 1 · TID 11111111'), findsOneWidget);
+    // Run 502: erfasster Beleg mit TID, leere Kacheln als "Beleg N".
+    expect(find.text('TID 11111111'), findsOneWidget);
+    expect(find.text('Beleg 2'), findsOneWidget);
+    expect(find.text('Beleg 3'), findsOneWidget);
     expect(find.text('123,45 €'), findsWidgets);
     // Nur die EC-Kachel selbst ist offen.
     expect(find.byIcon(Icons.expand_less), findsOneWidget);
@@ -89,9 +92,9 @@ void main() {
     await tester.tap(find.text('Löschen').last);
     await warte(tester);
 
-    expect(find.text('Gerät 1 · TID 11111111'), findsOneWidget);
-    expect(find.text('Gerät 2 · TID 22222222'), findsOneWidget);
-    expect(find.text('Gerät 3 · TID 33333333'), findsOneWidget);
+    expect(find.text('Beleg 1'), findsOneWidget);
+    expect(find.text('Beleg 2'), findsOneWidget);
+    expect(find.text('Beleg 3'), findsOneWidget);
     expect(find.text('123,45 €'), findsNothing);
     expect(find.byIcon(Icons.expand_less), findsOneWidget);
     final Map<String, dynamic>? entwurf = await tester
