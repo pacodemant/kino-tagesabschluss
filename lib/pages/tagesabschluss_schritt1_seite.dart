@@ -124,15 +124,17 @@ class _TagesabschlussSchritt1SeiteState
   final ScrollController _scrollController = ScrollController();
 
   // Personalgetränke-Rückfrage (seit Run 501 Pop-up beim Tippen auf
-  // "Umsätze eingeben" statt abzuhakender Kachel): seit Run 501b bei
-  // jedem Tippen. Bestätigung wird weiter im Entwurf gespeichert, aber
-  // nicht mehr zum Überspringen genutzt. Nicht bei CO (Run 372a).
+  // "Umsätze eingeben" statt abzuhakender Kachel): einmal pro Kino und
+  // Abrechnungstag (Run 501c) — die Bestätigung steht im Tagesentwurf,
+  // der am 5-Uhr-Knick wechselt (AbrechnungSpeicher/DatumsHelper).
+  // Nicht bei CO (Run 372a).
   bool _personalgetraenkeGebot = false;
   bool get _zeigePersonalgetraenke => widget.kinoId != 'kino_04';
 
-  /// true = weiter zu Schritt 2.
+  /// true = weiter zu Schritt 2. Fragt nur, solange heute noch nicht
+  /// bestätigt.
   Future<bool> _bestaetigePersonalgetraenke() async {
-    if (!_zeigePersonalgetraenke) {
+    if (!_zeigePersonalgetraenke || _personalgetraenkeGebot) {
       return true;
     }
     final bool? bestaetigt = await zeigeBestaetigungsDialog(

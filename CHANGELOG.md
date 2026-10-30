@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 501c: Run 501b zurückgenommen — Pop-up "Alles erledigt?" kommt
+  wieder nur, solange am aktuellen Abrechnungstag (pro Kino) noch nicht
+  mit "Ja, weiter" bestätigt wurde; nach dem 5-Uhr-Knick fragt es
+  wieder (Tagesentwurf-Key wechselt). Nicht bei CO.
 - Run 501b: Pop-up "Alles erledigt?" in Schritt 1 erscheint jetzt bei
   jedem Tippen auf "Umsätze eingeben", nicht mehr nur einmal pro Tag
   (vorher übersprungen, sobald im Tagesentwurf bestätigt). Key
