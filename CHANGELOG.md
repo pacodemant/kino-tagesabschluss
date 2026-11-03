@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 503a: .dev/flurbocash stuff/fragen_yannik.md aufgeräumt (nur
+  Doku). Antworten vom Termin 14.10. als beantwortet nach Teil 2
+  verschoben (1.9, 1.11, 2.1, 2.7, 2.11, 3.3, 7.1, 7.4, 8.1, 8.2),
+  dazu Pacos Stand vom 03.11.: 1.10 (SB/AT/CO senden), 5.3 (überall
+  "Schauburg-AP"), 7.2 (erst BT, dann GO), 7.3 (Schulung macht Paco).
+  Neu: 2.12 Kinokassen-Terminal mit manueller Eingabe, 1.12 vorge-
+  schlagene Smartphones, 8.3 eigene KI-API, 9.1 Stufenlicht Atlantis.
+  Offene Fragen gruppiert für den Termin am 04.11. (15 offen, 36
+  beantwortet).
+
 - Run 503: SB, Zwischenlösung (für MA unsichtbar): Werden am
   Kino-Kartenterminal auch Getränke bezahlt, stecken diese doppelt im
   Gesamt SOLL (Kino SOLL über den Terminalbetrag + Bistro SOLL). Auf
