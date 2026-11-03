@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 504: Texte. Verlauf-Detail: Kachel "Ergebnis" heißt jetzt
+  "Ergebnis/Differenz". "stunden/gestundet" durch "Schwund
+  buchen/gebucht" ersetzt (Paco: Stundungen gibt es in der Abrechnung
+  nicht, gemeint war immer Schwund): Pop-up "Alles erledigt?" in
+  Schritt 1 ("• Schwund gebucht?"), Kurzeinstieg (Überblick +
+  Schritt 1) und .dev/hilfetexte_kassenabrechnung.md (.docx/.rtf-
+  Kopien nicht angepasst).
+
 - Run 503b: Nur Doku. fragen_yannik.md: Antwort zu 2.7 ("nur
   Kinotickets, keine manuelle Eingabe") als Notiz mit unklarer Quelle
   gekennzeichnet (kam ohne Beleg in Run 486 in die Datei, Paco

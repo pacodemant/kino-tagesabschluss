@@ -36,7 +36,7 @@ Nach dem Öffnen der App seht ihr diesen Screen. Tippt auf
 diese vier Schritte führen:
 
 **1.** Alles **Bargeld zählen** (Personalgetränke bonieren, ggf.
-Produkte stunden, Kellnerportemonnaie nicht vergessen)
+Schwund buchen, Kellnerportemonnaie nicht vergessen)
 **2.** **Umsätze eingeben** (Kino, Bistro, Ausgaben,
 Kassenschnitte aller Terminals)
 **3.** Die von der App errechneten Daten wie gewohnt auf den
@@ -53,8 +53,8 @@ mehr rechnen und mit Geldscheinen jonglieren.
 [Screenshot: schritt1_bargeld.png]
 
 Zuerst zählt ihr das Bargeld. Denkt an das
-**Kellnerportemonnaie**, das Bonieren der **Personalgetränke**
-und ein etwaiges **Stunden** von Produkten sowie an eventuelle
+**Kellnerportemonnaie**, das Bonieren der **Personalgetränke**,
+das Buchen von etwaigem **Schwund** sowie an eventuelle
 Umschläge mit losem Kleingeld (unter Sonstiges).
 
 Für Scheine und Geldrollen tragt ihr nur die **Anzahl** ein, die

@@ -19,7 +19,7 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 ---
 
-## Inhalt: Offene Fragen (15)
+## Inhalt: Offene Fragen (17)
 
 **A. Für den Termin am 04.11.2026 (in Gesprächsreihenfolge)**
 
@@ -31,6 +31,8 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 - ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
 - ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
 - ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
+- ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen) *(neu)*
+- ⏳ [9.2 Cineville-Gäste trinken kaum etwas. Lohnt sich das?](#92-cineville-gäste-trinken-kaum-etwas) *(neu)*
 
 **B. Bereitet Paco selbst vor (kein Thema am 04.11.)**
 
@@ -145,7 +147,7 @@ prüft das am 03.11. vor Ort.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -162,7 +164,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -174,7 +176,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -202,7 +204,7 @@ und 3.3 (4×-Limit).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -238,7 +240,7 @@ fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -260,7 +262,7 @@ Scan-Kosten?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -284,7 +286,7 @@ Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
 > **Antwort (Paco, 03.11.):** 1. Die Schulung macht Paco.
 > 2. und 3. *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -321,7 +323,37 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 > dann speichern) schon umgestellt? Bis dahin kann eine 500 weiter
 > eine zweite Abrechnung erzeugen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
+
+---
+
+### 6.6 Schlafstörungen
+
+⏳ offen *(neu, 03.11., persönlich)*
+
+**Hintergrund:** Ich habe Schlafstörungen. Ohne sie wäre die App längst
+fertig.
+
+**Frage:** Persönliches Thema, kurz ansprechen.
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
+
+---
+
+### 9.2 Cineville-Gäste trinken kaum etwas
+
+⏳ offen *(neu, 03.11., nicht App-bezogen)*
+
+**Hintergrund:** Gäste, die mit Cineville kommen, trinken so gut wie nie
+etwas.
+
+**Frage:** Lohnt sich Cineville für das Kino?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -371,7 +403,7 @@ habe ich dann selbst Zugriff für Updates?
 > Variante muss Paco noch herausfinden und dann entscheiden. Kein
 > Thema für den Termin am 04.11.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -393,7 +425,7 @@ vergleichen.
 > *Stand 03.11. (Paco):* Das Kino wartet auf Pacos Eröffnungsangebot.
 > Erst das Angebot erstellen, dann besprechen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -407,7 +439,7 @@ Steuerbüro es inzwischen beurteilt?
 > **Antwort (teilweise):** Tom sagt: kein Problem. Beurteilung durch das
 > Steuerbüro *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -423,7 +455,7 @@ wird er mit der Vergütung (6.1) verrechnet?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -441,7 +473,7 @@ arbeite?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -464,7 +496,7 @@ Preisblatt und Übergabe liegen vor (.dev/verkauf/).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 
@@ -495,7 +527,7 @@ selbst die zuletzt eingereichte Abrechnung des Tages überschreibt?
 > starten alle Geräte dort leer, ohne gemerkte Nummern. Eine Korrektur
 > für einen Tag vor dem Umzug würde dann als neue Abrechnung angelegt.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-15)
+[↑ zum Inhalt](#inhalt-offene-fragen-17)
 
 ---
 

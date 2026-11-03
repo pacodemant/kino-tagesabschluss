@@ -142,7 +142,7 @@ class _TagesabschlussSchritt1SeiteState
       titel: 'Alles erledigt?',
       inhalt:
           '• Personalgetränke gebont?\n'
-          '• Artikel gestundet?\n'
+          '• Schwund gebucht?\n'
           "• Denk' ans Kellnerportemonnaie.",
       abbrechenText: 'Zurück',
       bestaetigenText: 'Ja, weiter',

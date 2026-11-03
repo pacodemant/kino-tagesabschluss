@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.157 · Run 503
+Version: 0.9.158 · Run 504
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 503)
+## Laufender Entwicklungsstand (Run 504)
+
+- Run 504 Texte: Verlauf-Kachel heißt "Ergebnis/Differenz";
+  "stunden/gestundet" überall durch "Schwund buchen/gebucht" ersetzt
+  (Pop-up "Alles erledigt?" in Schritt 1, Kurzeinstieg, Hilfetext).
 
 - Run 503 SB: Kartenbetrag im Kino SOLL versteckt auf den Wert laut
   Kinokasse korrigierbar (Getränke am Kino-Terminal). Optionales Feld

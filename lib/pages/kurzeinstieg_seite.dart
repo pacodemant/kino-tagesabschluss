@@ -338,7 +338,7 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                     SizedBox(height: 10),
                     _Absatz(
                       '**1.** Alles **Bargeld zählen** (Personalgetränke '
-                      'bonieren, ggf. Produkte stunden, Kellnerportemonnaie '
+                      'bonieren, ggf. Schwund buchen, Kellnerportemonnaie '
                       'nicht vergessen)\n'
                       '**2.** **Umsätze eingeben** (Kino, Bistro, Ausgaben, '
                       'Kassenschnitte aller Terminals)\n'
@@ -368,8 +368,8 @@ class _KurzeinstiegSeiteState extends State<KurzeinstiegSeite> {
                     _Absatz(
                       'Zuerst zählt ihr das Bargeld. Denkt an das '
                       '**Kellnerportemonnaie**, das Bonieren der '
-                      '**Personalgetränke** und ein etwaiges **Stunden** von '
-                      'Produkten sowie an eventuelle Umschläge mit losem '
+                      '**Personalgetränke**, das Buchen von etwaigem **Schwund** '
+                      'sowie an eventuelle Umschläge mit losem '
                       'Kleingeld (unter Sonstiges).',
                     ),
                     SizedBox(height: 10),

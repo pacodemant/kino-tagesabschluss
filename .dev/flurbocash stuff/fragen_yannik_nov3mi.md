@@ -1,25 +1,13 @@
-# Fragen an Yannik — Termin 04.11.2026
+# Fragen an Yannik — Termin Mittwoch, 04.11.2026, 11.00 Uhr
 
 Stand: 03.11.2026 (Run 503b) · Auszug aus `fragen_yannik.md`: nur die
 Fragen für den Termin am 04.11.2026, in Gesprächsreihenfolge.
-
-**So ist die Datei aufgebaut:**
-
-- Gleiches Schema wie `fragen_yannik.md`: zwei Inhaltsverzeichnisse,
-  **Offene Fragen** und **Beantwortete Fragen**.
-- Jeder Abschnitt: kurz der Hintergrund, dann **Frage**, direkt darunter
-  die **Antwort** (als Zitat abgesetzt). Dort steht „noch offen“ — beim
-  Termin einfach überschreiben.
-- Ist eine Frage beantwortet, wandert der Abschnitt in den Teil
-  „Beantwortete Fragen“ und der Link ins zweite Inhaltsverzeichnis.
-- Die Nummern sind dieselben wie in `fragen_yannik.md`. Nach dem Termin
-  die Antworten dorthin übernehmen (Hauptdatei bleibt die Quelle).
 
 ⏳ offen · ◐ teilweise geklärt · ✅ beantwortet · – entfällt/zurückgestellt
 
 ---
 
-## Inhalt: Offene Fragen (8)
+## Inhalt: Offene Fragen (10)
 
 1. ⏳ [2.12 Kinokassen-Terminal: doch manuelle Eingabe möglich?](#212-kartenterminal-an-der-kinokasse-doch-manuelle-eingabe) *(neu)*
 2. ⏳ [1.12 Hast du dir die vorgeschlagenen Smartphones angeschaut?](#112-vorgeschlagene-smartphones-für-die-kassen) *(neu)*
@@ -29,6 +17,8 @@ Fragen für den Termin am 04.11.2026, in Gesprächsreihenfolge.
 6. ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
 7. ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
 8. ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
+9. ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen) *(neu)*
+10. ⏳ [9.2 Cineville-Gäste trinken kaum etwas. Lohnt sich das?](#92-cineville-gäste-trinken-kaum-etwas) *(neu)*
 
 ## Inhalt: Beantwortete Fragen (0)
 
@@ -75,7 +65,7 @@ prüft das am 03.11. vor Ort.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -92,7 +82,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -104,7 +94,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -132,7 +122,7 @@ und 3.3 (4×-Limit).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -168,7 +158,7 @@ fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -190,7 +180,7 @@ Scan-Kosten?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -214,7 +204,7 @@ Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
 > **Antwort (Paco, 03.11.):** 1. Die Schulung macht Paco.
 > 2. und 3. *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
@@ -251,7 +241,37 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 > dann speichern) schon umgestellt? Bis dahin kann eine 500 weiter
 > eine zweite Abrechnung erzeugen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-8)
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
+
+---
+
+### 6.6 Schlafstörungen
+
+⏳ offen *(neu, 03.11., persönlich)*
+
+**Hintergrund:** Ich habe Schlafstörungen. Ohne sie wäre die App längst
+fertig.
+
+**Frage:** Persönliches Thema, kurz ansprechen.
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
+
+---
+
+### 9.2 Cineville-Gäste trinken kaum etwas
+
+⏳ offen *(neu, 03.11., nicht App-bezogen)*
+
+**Hintergrund:** Gäste, die mit Cineville kommen, trinken so gut wie nie
+etwas.
+
+**Frage:** Lohnt sich Cineville für das Kino?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-10)
 
 ---
 
