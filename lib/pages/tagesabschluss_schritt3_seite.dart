@@ -1356,6 +1356,7 @@ class _TagesabschlussSchritt3SeiteState
               vorschau,
               _terminals,
               kinokasseKarteKorrigieren: _kinokasseKarteKorrigieren,
+              mitMinusHinweis: true,
             ))
               Card(
                 margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),

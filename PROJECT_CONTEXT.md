@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.158 · Run 504
+Version: 0.9.159 · Run 505
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 504)
+## Laufender Entwicklungsstand (Run 505)
+
+- Run 505 Schritt 3: bei Differenz unter -30,00 € roter Prüfhinweis
+  unter der Differenz (Kellnerportemonnaie, Sonstiges, Scheine unter
+  der Münzgeldkassette). Regel in UebertragUmschlagInhalt.minusHinweis,
+  in rahmen() nur mit mitMinusHinweis (Übertrag-Seite/Verlauf ohne).
 
 - Run 504 Texte: Verlauf-Kachel heißt "Ergebnis/Differenz";
   "stunden/gestundet" überall durch "Schwund buchen/gebucht" ersetzt

@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 505: Schritt 3: Ist die Differenz kleiner als -30,00 € (genau
+  -30,00 € zählt nicht), steht darunter in Rot "Großes Minus? Prüfe:
+  Kellnerportemonnaie, Sonstiges (z. B. Umschläge mit Kleingeld),
+  Scheine unter der Münzgeldkassette." Für alle Standorte (SB-Layout
+  über rahmen(mitMinusHinweis: true)), nicht auf Übertrag-Seite und im
+  Verlauf. Wechselgeldentnahme bewusst nicht im Text (zu lang). Tests.
+
 - Run 504: Texte. Verlauf-Detail: Kachel "Ergebnis" heißt jetzt
   "Ergebnis/Differenz". "stunden/gestundet" durch "Schwund
   buchen/gebucht" ersetzt (Paco: Stundungen gibt es in der Abrechnung

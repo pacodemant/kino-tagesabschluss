@@ -32,6 +32,10 @@ class Schritt3DifferenzSection extends StatelessWidget {
           stil: InfoZeileStil.fuehrungslinie,
         ),
         if (hinweis != null) UebertragUmschlagInhalt.hinweisText(hinweis!),
+        if (UebertragUmschlagInhalt.minusHinweis(differenzCent) != null)
+          UebertragUmschlagInhalt.warnText(
+            UebertragUmschlagInhalt.minusHinweis(differenzCent)!,
+          ),
       ],
     );
   }

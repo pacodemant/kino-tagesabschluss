@@ -147,6 +147,31 @@ class UebertragUmschlagInhalt {
         'deshalb höher ausfallen.';
   }
 
+  /// Ab diesem Minus (strikt darunter) erscheint in Schritt 3 der rote
+  /// Prüfhinweis (Run 505): -30,00 € selbst zählt noch nicht.
+  static const int minusHinweisGrenzeCent = -3000;
+
+  /// Roter Prüfhinweis bei mehr als 30 € Minus, sonst null (Run 505).
+  /// Häufigste Ursache laut Paco: Kellnerportemonnaie vergessen.
+  static String? minusHinweis(int differenzCent) {
+    if (differenzCent >= minusHinweisGrenzeCent) return null;
+    return 'Großes Minus? Prüfe: Kellnerportemonnaie, Sonstiges (z. B. '
+        'Umschläge mit Kleingeld), Scheine unter der Münzgeldkassette.';
+  }
+
+  /// Roter Warntext unter der Differenz (Run 505).
+  static Widget warnText(String text) => Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 13,
+            color: AppFarben.differenzNegativ,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      );
+
   /// Hinweistext unter der Differenz (orange, Run 499).
   static Widget hinweisText(String text) => Padding(
         padding: const EdgeInsets.only(top: 6),
@@ -192,6 +217,8 @@ class UebertragUmschlagInhalt {
     TagesabschlussFinal a,
     List<TerminalEintrag> terminals, {
     VoidCallback? kinokasseKarteKorrigieren,
+    // Nur Schritt 3 (Run 505), nicht Übertrag-Seite/Verlauf.
+    bool mitMinusHinweis = false,
   }) {
     final bool hatBistro = KinoRepository.nachId(a.kinoId)?.hatBistro ?? true;
     final bool sb = hatSbUmschlag(a.kinoId);
@@ -207,9 +234,12 @@ class UebertragUmschlagInhalt {
       stil: InfoZeileStil.fuehrungslinie,
     );
     final String? hinweis = keinBelegHinweis(a, terminals);
+    final String? minus =
+        mitMinusHinweis ? minusHinweis(a.differenzGesamtCent) : null;
     final List<Widget> differenzRahmen = <Widget>[
       differenz,
       if (hinweis != null) hinweisText(hinweis),
+      if (minus != null) warnText(minus),
     ];
 
     if (!sb) {
