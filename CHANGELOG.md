@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 503b: Nur Doku. fragen_yannik.md: Antwort zu 2.7 ("nur
+  Kinotickets, keine manuelle Eingabe") als Notiz mit unklarer Quelle
+  gekennzeichnet (kam ohne Beleg in Run 486 in die Datei, Paco
+  erinnert sich nicht daran), 2.12 offen formuliert. Neue Datei
+  .dev/flurbocash stuff/fragen_yannik_nov3mi.md: nur die 8 Fragen für
+  den Termin am 04.11., gleiches Schema und gleiche Nummern.
+
 - Run 503a: .dev/flurbocash stuff/fragen_yannik.md aufgeräumt (nur
   Doku). Antworten vom Termin 14.10. als beantwortet nach Teil 2
   verschoben (1.9, 1.11, 2.1, 2.7, 2.11, 3.3, 7.1, 7.4, 8.1, 8.2),

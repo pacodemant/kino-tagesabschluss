@@ -69,7 +69,7 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 - ✅ [2.4a Wie kennzeichnen wir Testübertragungen im Dashboard?](#24a-testkennzeichnung-im-dashboard)
 - ✅ [2.5 Hat die Buchhaltung die SB-Testübertragungen geprüft?](#25-validierung-der-sb-testübertragungen)
 - ✅ [2.6 Welches Datum gilt für Nachtabrechnungen?](#26-datum-für-nachtabrechnungen-5-uhr-knick)
-- ✅ [2.7 SB: Kartenumsatz zum Kino-SOLL addieren — bleibt das so?](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren)
+- ◐ [2.7 SB: Kartenumsatz zum Kino-SOLL addieren — bleibt das so?](#27-sb-sonderfall-kartenumsatz-zum-kino-soll-addieren)
 - ✅ [2.11 Wie erscheinen Stornos am Terminal auf dem Kassenschnitt?](#211-storno-am-terminal)
 
 **3. Korrektur & Duplikate**
@@ -114,10 +114,11 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 ⏳ offen *(neu, 03.11.)*
 
-**Hintergrund:** Antwort vom 14.10. (2.7): Das Terminal an der
-SB-Kinokasse ist direkt ans Kassensystem angeschlossen, nur für
-Kinotickets & Co., nicht fürs Bistro, und eine manuelle Eingabe ist dort
-nicht möglich. Darauf bauen auf:
+**Hintergrund:** Laut einer Notiz zu 2.7 (14./15.10., Quelle unklar,
+Paco erinnert sich nicht daran) ist das Terminal an der SB-Kinokasse
+direkt ans Kassensystem angeschlossen, nur für Kinotickets & Co., nicht
+fürs Bistro, und eine manuelle Eingabe ist dort nicht möglich. Darauf
+bauen auf:
 
 - Run 486: Die App zählt den Kartenumsatz dieses Terminals automatisch
   zum Kino SOLL.
@@ -133,12 +134,14 @@ prüft das am 03.11. vor Ort.
 
 **Frage:**
 
-1. Ist die manuelle Eingabe an diesem Terminal gewollt, oder kann sie
+1. Ist an diesem Terminal eine manuelle Eingabe möglich? Sollen dort
+   nur Kinotickets & Co. laufen, oder auch Getränke/Bistro?
+2. Falls manuelle Eingabe möglich: Ist das gewollt, oder kann sie
    gesperrt werden?
-2. Falls sie bleibt: Wie sollen manuell eingegebene Beträge (z. B.
+3. Falls sie bleibt: Wie sollen manuell eingegebene Beträge (z. B.
    Getränke) behandelt werden? Die App kann sie auf dem Kassenschnitt
    nicht von Kinotickets unterscheiden.
-3. Gilt das auch für angeschlossene Terminals an anderen Standorten?
+4. Gilt das auch für angeschlossene Terminals an anderen Standorten?
 
 > **Antwort:** *noch offen*
 
@@ -849,7 +852,7 @@ Geschäftsdatum?
 
 ### 2.7 SB-Sonderfall: Kartenumsatz zum Kino-SOLL addieren
 
-✅ beantwortet (Termin 14.10.) — Nachfrage siehe 2.12
+◐ Notiz vorhanden, Quelle unklar — Nachfrage siehe 2.12
 
 **Hintergrund:** Eines der drei neuen SB-Terminals hat Yannik direkt ans
 Kinokassen-System angeschlossen, sodass man den Betrag nicht mehr
@@ -867,7 +870,14 @@ auf den Umschlag eintragen. Warum, ist mir nicht klar.
    addieren)? Dann bräuchte ich die TID des angeschlossenen Terminals.
 4. Kommen an anderen Standorten weitere angeschlossene Terminals dazu?
 
-> **Antwort (Termin 14.10.):** in App einbauen, Terminal an der Kasse nur für Kinotickets & Co., nicht für Bistro, keine manuelle Eingabe an diesem Gerät möglich.
+> **Notiz (14./15.10., Quelle unklar):** in App einbauen, Terminal an
+> der Kasse nur für Kinotickets & Co., nicht für Bistro, keine manuelle
+> Eingabe an diesem Gerät möglich.
+>
+> *Hinweis (03.11.):* Im Git-Verlauf taucht die Notiz erstmals in Run 486
+> (15.10.) auf, zusammen mit den anderen Stichworten vom Termin. Ob
+> Yannik das so gesagt hat, ist nicht belegt; Paco erinnert sich nicht.
+> Wird in 2.12 offen nachgefragt.
 
 [↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
 
