@@ -1,3 +1,3 @@
-last_run: 505
-next_run: 506
-last_run_title: Run 505: Roter Prüfhinweis bei mehr als 30 € Minus in Schritt 3
+last_run: 506
+next_run: 507
+last_run_title: Run 506: Grünes Badge "Gesendet" im Verlauf

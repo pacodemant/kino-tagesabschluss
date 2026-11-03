@@ -208,5 +208,41 @@ void main() {
     expect(find.text('Korrigiert'), findsNothing);
     expect(find.text('Noch nicht gesendet'), findsOneWidget);
   });
-}
 
+  testWidgets(
+      '"Gesendet"-Badge (Run 506): nur bei gesendetAm, schließt "Noch nicht '
+      'gesendet" aus, steht neben "Korrigiert"', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'flurbocash_settlement_kino_01_2026_08_26': jsonEncode(
+        <String, dynamic>{
+          'reportId': 70,
+          'settlementNummer': 1,
+          'korrigiert': true,
+        },
+      ),
+    });
+    await tester.pumpWidget(
+      MaterialApp(
+        home: VerlaufDetailSeite(
+          abschluss: abschluss(gesendetAm: DateTime(2026, 8, 26, 22, 5)),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Gesendet'), findsOneWidget);
+    expect(find.text('Korrigiert'), findsOneWidget);
+    expect(find.text('Noch nicht gesendet'), findsNothing);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: VerlaufDetailSeite(
+          key: UniqueKey(),
+          abschluss: abschluss(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Gesendet'), findsNothing);
+    expect(find.text('Noch nicht gesendet'), findsOneWidget);
+  });
+}

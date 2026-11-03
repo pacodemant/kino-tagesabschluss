@@ -9,6 +9,14 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 506: Verlauf-Liste und Verlauf-Detail zeigen bei bestätigt
+  gesendeten Einträgen (gesendetAm gesetzt) ein grünes Badge
+  "Gesendet". Bisher hieß "kein Badge" = gesendet, das war missver-
+  ständlich. Schließt "Noch nicht gesendet" aus, "Korrigiert" steht
+  bei korrigierten Tagen zusätzlich daneben. Außerdem von Paco
+  entfernt (nicht mehr benötigt): .dev/finale_codeueberpruefung.md,
+  .dev/hilfetexte_kassenabrechnung.docx/.rtf. Test.
+
 - Run 505: Schritt 3: Ist die Differenz kleiner als -30,00 € (genau
   -30,00 € zählt nicht), steht darunter in Rot "Großes Minus? Prüfe:
   Kellnerportemonnaie, Sonstiges (z. B. Umschläge mit Kleingeld),

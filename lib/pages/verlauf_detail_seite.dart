@@ -16,6 +16,7 @@ import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/storage/sende_protokoll.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/widgets/gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/korrigiert_badge.dart';
 import 'package:kino_bar_app/widgets/info_zeile.dart';
@@ -492,6 +493,10 @@ class _VerlaufDetailSeiteState extends State<VerlaufDetailSeite> {
                   if (_gesendetAm == null) ...<Widget>[
                     const SizedBox(width: 8),
                     const NichtGesendetBadge(),
+                  ],
+                  if (_gesendetAm != null) ...<Widget>[
+                    const SizedBox(width: 8),
+                    const GesendetBadge(),
                   ],
                   if (_gesendetAm != null && _korrigiert) ...<Widget>[
                     const SizedBox(width: 8),

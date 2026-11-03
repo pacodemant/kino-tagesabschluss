@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.159 · Run 505
+Version: 0.9.160 · Run 506
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -161,7 +161,11 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 505)
+## Laufender Entwicklungsstand (Run 506)
+
+- Run 506 Verlauf: grünes Badge "Gesendet" (GesendetBadge) bei
+  gesendetAm != null, Gegenstück zu "Noch nicht gesendet";
+  "Korrigiert" steht zusätzlich daneben.
 
 - Run 505 Schritt 3: bei Differenz unter -30,00 € roter Prüfhinweis
   unter der Differenz (Kellnerportemonnaie, Sonstiges, Scheine unter

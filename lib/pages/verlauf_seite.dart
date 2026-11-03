@@ -8,6 +8,7 @@ import 'package:kino_bar_app/services/admin_session.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
+import 'package:kino_bar_app/widgets/gesendet_badge.dart';
 import 'package:kino_bar_app/widgets/heute_badge.dart';
 import 'package:kino_bar_app/widgets/korrigiert_badge.dart';
 import 'package:kino_bar_app/widgets/loeschen_dialog.dart';
@@ -132,7 +133,9 @@ class _VerlaufSeiteState extends State<VerlaufSeite> {
                           Text(_deutschesDatum(eintrag.datum)),
                           if (istHeute) const HeuteBadge(),
                           if (eintrag.gesendetAm == null)
-                            const NichtGesendetBadge(),
+                            const NichtGesendetBadge()
+                          else
+                            const GesendetBadge(),
                           if (eintrag.gesendetAm != null &&
                               _korrigierteTage.contains(
                                 DatumsHelper.isoDatum(eintrag.datum),
