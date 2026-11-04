@@ -152,6 +152,8 @@ tatsächlich, an beiden Terminaltypen, aber unterschiedlich ausgewiesen:
   „davon“. Ob die 1,90 in den Kartenarten stecken oder zusätzlich
   belastet wurden, geht aus dem Beleg nicht hervor.
 
+![Trinkgeld auf Kassenschnitten: links Atlantis 60561998 ("davon Trinkgeld"), Mitte Scan-Ergebnis in der App, rechts Ostertor 60561995 (eigener Posten unter dem Saldo)](img/trinkgeld_belege.jpg)
+
 Außerdem hat Yannik in der MA-Gruppe (WhatsApp) beanstandet, dass das
 Team Trinkgeld versteuern muss, wenn es nicht als Trinkgeld deklariert
 ist.

@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 506d: Nur Doku. Belegfoto zu Frage 2.9 (Trinkgeld an beiden
+  Terminaltypen + Scan-Ergebnis) als .dev/flurbocash stuff/img/
+  trinkgeld_belege.jpg abgelegt (verkleinert, 1600 px) und in
+  fragen_yannik.md und fragen_yannik_nov3mi.md eingebunden.
+
 - Run 506c: Nur Doku. fragen_yannik_nov3mi.md: die lockeren Fragen
   9.1 (Stufenlicht), 6.6 (Schlafstörungen) und 9.2 (Cineville) als
   Gesprächseinstieg nach oben gezogen (Inhaltsliste und Fragenteil).
