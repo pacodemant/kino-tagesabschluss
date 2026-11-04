@@ -9,6 +9,11 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 506a: Nur Doku. Frage 2.10 (BT, zwei Abrechnungen pro Tag) aus
+  der Terminliste fragen_yannik_nov3mi.md genommen (jetzt 9 Fragen):
+  Paco klärt sie selbst anhand der BT-Abrechnungen. In
+  fragen_yannik.md bleibt sie offen, mit Notiz.
+
 - Run 506: Verlauf-Liste und Verlauf-Detail zeigen bei bestätigt
   gesendeten Einträgen (gesendetAm gesetzt) ein grünes Badge
   "Gesendet". Bisher hieß "kein Badge" = gesendet, das war missver-

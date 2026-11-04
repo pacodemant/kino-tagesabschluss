@@ -184,6 +184,10 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 ⏳ offen *(neu, 14.10.)*
 
+**Notiz (Paco, 04.11.):** Klärt sich wahrscheinlich, wenn Paco sich die
+Abrechnungen in der BT selbst ansieht. Yannik muss dazu vorerst nicht
+gefragt werden. Deshalb nicht im Termin am 04.11., bleibt aber offen.
+
 **Jetzt dringend:** BT ist der nächste Standort nach SB, AT und CO
 (7.2, Paco 03.11.). Das 4×-Limit (3.3) soll laut Termin 14.10.
 ignoriert werden.

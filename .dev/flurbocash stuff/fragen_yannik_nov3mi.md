@@ -2,23 +2,24 @@
 
 Stand: 03.11.2026 (Run 503b) · Auszug aus `fragen_yannik.md`: nur die
 Fragen für den Termin am 04.11.2026, in Gesprächsreihenfolge.
+2.10 (BT, zwei Abrechnungen) klärt Paco selbst anhand der BT-Abrechnungen,
+bleibt aber in `fragen_yannik.md` offen.
 
 ⏳ offen · ◐ teilweise geklärt · ✅ beantwortet · – entfällt/zurückgestellt
 
 ---
 
-## Inhalt: Offene Fragen (10)
+## Inhalt: Offene Fragen (9)
 
 1. ⏳ [2.12 Kinokassen-Terminal: doch manuelle Eingabe möglich?](#212-kartenterminal-an-der-kinokasse-doch-manuelle-eingabe) *(neu)*
 2. ⏳ [1.12 Hast du dir die vorgeschlagenen Smartphones angeschaut?](#112-vorgeschlagene-smartphones-für-die-kassen) *(neu)*
 3. ⏳ [9.1 Wie geht das Stufenlicht im Atlantis an?](#91-stufenlicht-im-atlantis) *(neu)*
-4. ⏳ [2.10 BT: zwei Abrechnungen pro Tag — Nr. 1 und 2, Kassenschnitt zurückgesetzt?](#210-bt-zwei-abrechnungen-pro-tag)
-5. ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — Missverständnis?](#29-trinkgeld-auf-dem-kassenschnitt)
-6. ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
-7. ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
-8. ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
-9. ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen) *(neu)*
-10. ⏳ [9.2 Cineville-Gäste trinken kaum etwas. Lohnt sich das?](#92-cineville-gäste-trinken-kaum-etwas) *(neu)*
+4. ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — Missverständnis?](#29-trinkgeld-auf-dem-kassenschnitt)
+5. ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
+6. ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
+7. ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
+8. ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen) *(neu)*
+9. ⏳ [9.2 Cineville-Gäste trinken kaum etwas. Lohnt sich das?](#92-cineville-gäste-trinken-kaum-etwas) *(neu)*
 
 ## Inhalt: Beantwortete Fragen (0)
 
@@ -65,7 +66,7 @@ prüft das am 03.11. vor Ort.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -82,7 +83,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -94,35 +95,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
-
----
-
-### 2.10 BT: zwei Abrechnungen pro Tag
-
-⏳ offen *(neu, 14.10.)*
-
-**Jetzt dringend:** BT ist der nächste Standort nach SB, AT und CO
-(7.2, Paco 03.11.). Das 4×-Limit (3.3) soll laut Termin 14.10.
-ignoriert werden.
-
-**Hintergrund:** In der BT wird mittags und am Tagesende abgerechnet, an
-denselben Terminals. Geplant ist: Mittag = FC-Abrechnung Nr. 1, Tagesende
-= nächste Nummer. Hängt an 2.1 (nur ein Eintrag pro TID und Abrechnung)
-und 3.3 (4×-Limit).
-
-**Frage:**
-
-1. Passt das so: zwei getrennte Abrechnungen pro Tag (Nr. 1 und 2)?
-2. Enthält der Kassenschnitt am Tagesende nur die Umsätze seit Mittag
-   (Terminal-Kassenschnitt setzt zurück)? Sonst würden die Mittagsumsätze
-   doppelt gezählt.
-3. Bargeld: Wird mittags das Bargeld komplett abgerechnet, und abends nur
-   der Rest seitdem?
-
-> **Antwort:** *noch offen*
-
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -158,7 +131,7 @@ fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -180,7 +153,7 @@ Scan-Kosten?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -204,7 +177,7 @@ Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
 > **Antwort (Paco, 03.11.):** 1. Die Schulung macht Paco.
 > 2. und 3. *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -241,7 +214,7 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 > dann speichern) schon umgestellt? Bis dahin kann eine 500 weiter
 > eine zweite Abrechnung erzeugen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -256,7 +229,7 @@ fertig.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
@@ -271,7 +244,7 @@ etwas.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-10)
+[↑ zum Inhalt](#inhalt-offene-fragen-9)
 
 ---
 
