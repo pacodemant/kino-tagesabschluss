@@ -9,6 +9,10 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 506c: Nur Doku. fragen_yannik_nov3mi.md: die lockeren Fragen
+  9.1 (Stufenlicht), 6.6 (Schlafstörungen) und 9.2 (Cineville) als
+  Gesprächseinstieg nach oben gezogen (Inhaltsliste und Fragenteil).
+
 - Run 506b: Nur Doku. Frage 2.9 (Trinkgeld) in fragen_yannik.md und
   fragen_yannik_nov3mi.md ergänzt: Belegbefund an beiden Terminal-
   typen ("davon Trinkgeld" enthalten vs. eigener Posten unter dem
