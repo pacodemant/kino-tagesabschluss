@@ -27,7 +27,7 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 - ⏳ [1.12 Hast du dir die vorgeschlagenen Smartphones angeschaut?](#112-vorgeschlagene-smartphones-für-die-kassen) *(neu)*
 - ⏳ [9.1 Wie geht das Stufenlicht im Atlantis an?](#91-stufenlicht-im-atlantis) *(neu)*
 - ⏳ [2.10 BT: zwei Abrechnungen pro Tag — Nr. 1 und 2, Kassenschnitt zurückgesetzt?](#210-bt-zwei-abrechnungen-pro-tag)
-- ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — Missverständnis?](#29-trinkgeld-auf-dem-kassenschnitt)
+- ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — wo deklarieren, Kasse oder Terminal?](#29-trinkgeld-auf-dem-kassenschnitt)
 - ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
 - ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
 - ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
@@ -224,6 +224,26 @@ per Karte, das Trinkgeld steht dann als eigener Posten auf dem
 Kassenschnitt. Die App erkennt es beim Scan und zeigt es nur an. Es
 fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 
+**Ergänzung (Paco, 04.11.):** Trinkgeld auf dem Kassenschnitt gibt es
+tatsächlich, an beiden Terminaltypen, aber unterschiedlich ausgewiesen:
+- Layout „Tagesabschluss“ (z. B. Atlantis, TID 60561998, 10.10.):
+  „davon Trinkgeld 0,60“ unter der Kartenart und unter der Summe, also
+  in Kartenumsatz und Summe **enthalten**.
+- Layout „Kassenschnitt“ (z. B. Ostertor, TID 60561995, 16.09.):
+  „Trinkgeld Anz 1 · 1,90 EUR“ **unter** dem Saldo Gesamt, ohne
+  „davon“. Ob die 1,90 in den Kartenarten stecken oder zusätzlich
+  belastet wurden, geht aus dem Beleg nicht hervor.
+
+Außerdem hat Yannik in der MA-Gruppe (WhatsApp) beanstandet, dass das
+Team Trinkgeld versteuern muss, wenn es nicht als Trinkgeld deklariert
+ist.
+
+**Bisherige Praxis:** Gast zahlt z. B. 10 € inkl. 1 € Trinkgeld. Am
+Terminal werden 10 € als normaler Betrag eingegeben (ohne
+Trinkgeld-Funktion), danach kommt 1 € bar aus der Kasse in die
+Trinkgeldschale. Wenn sich das ändern soll, müssen wir es den MA
+deutlich kommunizieren.
+
 **Frage:** Wie möchtest du Trinkgeld per Karte haben?
 
 1. **Grundsatz:** Sollen Gäste an den Terminals überhaupt Trinkgeld per
@@ -241,6 +261,19 @@ fließt nicht in Schritt 2 und wird nicht an FC geschickt.
 4. **Kassen-SOLL:** Trinkgeld ist kein Umsatz der Kasse. Ist dir das bei
    deinem Abgleich Kartenumsatz gegen Kassensystem schon aufgefallen, bzw.
    wie soll eine solche Abweichung erklärt werden?
+5. **Wo deklarieren – Kasse oder Terminal?** Wie soll Kartentrinkgeld
+   künftig korrekt als Trinkgeld erfasst werden?
+   - **am Terminal** über die Trinkgeld-Funktion (dann steht es auf dem
+     Kassenschnitt, siehe oben), oder
+   - **an der Kasse** (z. B. eigene Trinkgeld-Taste/-Buchung im
+     Kassensystem)?
+   - Bleibt es bei der Barentnahme aus der Kasse in die Trinkgeldschale,
+     und wie wird die dann belegt (die App müsste sie als Entnahme
+     kennen, vgl. Punkt 2)?
+   - Reicht die bisherige Praxis (Betrag inkl. Trinkgeld als normaler
+     Umsatz, Trinkgeld bar entnommen) steuerlich nicht aus? Falls nein:
+     Was genau sollen die MA ab wann anders machen? Das kommunizieren
+     wir dann gezielt an alle Standorte.
 
 > **Antwort:** *noch offen*
 

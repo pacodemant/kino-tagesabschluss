@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 506b: Nur Doku. Frage 2.9 (Trinkgeld) in fragen_yannik.md und
+  fragen_yannik_nov3mi.md ergänzt: Belegbefund an beiden Terminal-
+  typen ("davon Trinkgeld" enthalten vs. eigener Posten unter dem
+  Saldo, unklar), Yanniks WhatsApp-Hinweis zur Versteuerung, bisherige
+  Praxis (Betrag inkl. Trinkgeld, bar in die Trinkgeldschale) und neue
+  Teilfrage 5 "Wo deklarieren – Kasse oder Terminal?".
+
 - Run 506a: Nur Doku. Frage 2.10 (BT, zwei Abrechnungen pro Tag) aus
   der Terminliste fragen_yannik_nov3mi.md genommen (jetzt 9 Fragen):
   Paco klärt sie selbst anhand der BT-Abrechnungen. In
