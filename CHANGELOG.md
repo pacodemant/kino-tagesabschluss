@@ -9,6 +9,16 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 506e: Nur Doku. Termin mit Yannik vom 04.11. auf 11.11.
+  verschoben. fragen_yannik.md und fragen_yannik_nov3mi.md: neue Frage
+  7.5 (neuer Stichtag für den Go-Live, der 02.11. aus 7.1 ist
+  verstrichen). 1.10 (Live-Zugangsdaten) war fälschlich als
+  beantwortet markiert, jetzt wieder offen und nach Teil 1 verschoben,
+  ergänzt um die Live-URL/Port-666-Frage. 6.2 (Scheinselbständigkeit)
+  auf die Terminliste, weil sie die Form des Angebots (6.1) bestimmt.
+  Stand-Zeilen aktualisiert, 6.6-Anker an Pacos neue Überschrift
+  angepasst.
+
 - Run 506d: Nur Doku. Belegfoto zu Frage 2.9 (Trinkgeld an beiden
   Terminaltypen + Scan-Ergebnis) als .dev/flurbocash stuff/img/
   trinkgeld_belege.jpg abgelegt (verkleinert, 1600 px) und in

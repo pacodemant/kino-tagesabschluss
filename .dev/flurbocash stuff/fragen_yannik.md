@@ -1,6 +1,6 @@
 # Fragen an Yannik
 
-Stand: 03.11.2026 (Run 503a) · zentrale Tracking-Datei für alle Fragen an Yannik:
+Stand: 11.11.2026 (Run 506e) · zentrale Tracking-Datei für alle Fragen an Yannik:
 Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 **So ist die Datei aufgebaut:**
@@ -19,10 +19,12 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 ---
 
-## Inhalt: Offene Fragen (17)
+## Inhalt: Offene Fragen (20)
 
-**A. Für den Termin am 04.11.2026 (in Gesprächsreihenfolge)**
+**A. Für den Termin am 11.11.2026 (verschoben vom 04.11.)**
 
+- ⏳ [7.5 Neuer Stichtag für den Go-Live (02.11. verstrichen)?](#75-neuer-stichtag-für-den-go-live) *(neu)*
+- ◐ [1.10 Live-location_ids SB/AT/BT, Live-Keys, Live-URL?](#110-live-zugangsdaten-für-sb-at-bt)
 - ⏳ [2.12 Kinokassen-Terminal: doch manuelle Eingabe möglich?](#212-kartenterminal-an-der-kinokasse-doch-manuelle-eingabe) *(neu)*
 - ⏳ [1.12 Hast du dir die vorgeschlagenen Smartphones angeschaut?](#112-vorgeschlagene-smartphones-für-die-kassen) *(neu)*
 - ⏳ [9.1 Wie geht das Stufenlicht im Atlantis an?](#91-stufenlicht-im-atlantis) *(neu)*
@@ -33,12 +35,12 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 - ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
 - ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen) *(neu)*
 - ⏳ [9.2 Cineville-Gäste trinken kaum etwas. Lohnt sich das?](#92-cineville-gäste-trinken-kaum-etwas) *(neu)*
+- ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
 
-**B. Bereitet Paco selbst vor (kein Thema am 04.11.)**
+**B. Bereitet Paco selbst vor (kein Thema am 11.11.)**
 
 - ◐ [1.8 Kann die App jetzt auf den Kino-Server umziehen?](#18-app-hosting-auf-kino-server-statt-github-pages)
 - ⏳ [6.1 Wie hoch soll die Vergütung sein, nach welchem Modell?](#61-vergütung-yannik-höhemodell)
-- ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
 - ⏳ [6.3 Ich brauche wieder einen Vorschuss.](#63-vorschuss)
 - ⏳ [6.4 Kaffee-Flat, während ich in der BT an der App arbeite?](#64-kaffee-flat-in-der-bt)
 - ⏳ [6.5 Wer bekommt Zugriff auf Code und Repository, wenn ich ausfalle?](#65-übergabe-und-ausfallsicherheit)
@@ -47,7 +49,7 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 - ◐ [3.1 Abfrage, welche settlement_numbers schon belegt sind?](#31-leseweg-für-belegte-settlement_numbers)
 
-## Inhalt: Beantwortete Fragen (36)
+## Inhalt: Beantwortete Fragen (35)
 
 **1. Zugangsdaten & Einrichtung**
 
@@ -59,7 +61,6 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 - ✅ [1.6 Konfiguration zentral oder je Gerät?](#16-konfiguration-zentral-oder-je-gerät)
 - ✅ [1.7 Wer besorgt ein Android-Testgerät?](#17-android-testgerät)
 - ✅ [1.9 Terminal-Nummern fest mit den TIDs koppeln?](#19-terminal-nummern-fest-mit-tids-koppeln)
-- ✅ [1.10 Wie lauten die Live-location_ids und Live-Keys für SB, AT und BT?](#110-live-zugangsdaten-für-sb-at-bt)
 - ✅ [1.11 Android-Testgerät da? Bessere Kameras für die Kassen-Handys?](#111-geräte-an-den-kassen-kamera-android-testgerät)
 
 **2. Abrechnungsdaten & Format**
@@ -112,6 +113,71 @@ Flurbocash-Anbindung, Projektplanung, Vergütung und Persönliches.
 
 # Teil 1: Offene Fragen
 
+### 7.5 Neuer Stichtag für den Go-Live
+
+⏳ offen *(neu, 11.11.)*
+
+**Hintergrund:** Am 14.10. vereinbart: Go-Live für SB, CO und AT am
+02.11.2026, ab dann überträgt die App direkt ins echte Flurbocash (7.1).
+Der Termin ist verstrichen. Es fehlen noch die Live-Zugangsdaten (1.10):
+Live-location_ids für SB, AT und BT, die Live-API-Keys aller Standorte
+und die Live-URL. Danach müssen die Geräte noch eingerichtet und getestet
+werden.
+
+**Frage:**
+
+1. Welcher neue Stichtag gilt für SB, CO und AT?
+2. Bis wann kommen die Live-Zugangsdaten (1.10)?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
+
+---
+
+### 1.10 Live-Zugangsdaten für SB, AT, BT
+
+◐ teilweise geklärt — dringend für den Go-Live (7.5)
+
+**Hintergrund:** Die location_id ist nicht in Sandbox und Livesystem
+gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
+(**?** = fehlt noch):
+
+
+| Standort | Sandbox-ID      | Live-ID | Live-Key |
+| -------- | --------------- | ------- | -------- |
+| SB       | 1               | **?**   | **?**    |
+| AT       | 3               | **?**   | **?**    |
+| BT       | 4               | **?**   | **?**    |
+| GO       | 5               | 3       | **?**    |
+| CO       | 6               | 5       | **?**    |
+
+Quellen: SB/AT/BT aus der Mail vom 16.06. (Sandbox-Zugang, nur Sandbox-
+IDs; AT kann live nicht die 3 sein, die hat dort GO), GO/CO aus der Mail
+vom 08.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
+(nicht im Git).
+
+Seit Run 493 stehen die bekannten IDs im Code (kino.dart), ein Schalter
+"Livesystem" wählt die Umgebung, das Einstellungsfeld ist Override je
+Umgebung. Fehlende Live-IDs (SB/AT/BT) blockieren den Versand, bis sie
+im Code oder als Override stehen.
+
+**Frage:**
+
+1. Wie lauten die Live-location_ids für SB, AT und BT?
+2. Gibt es für das Livesystem eigene API-Keys pro Standort, und eine
+   eigene URL (1.1)? Läuft sie wieder über Port 666? Den sperrt das
+   Gäste-WLAN (5.3).
+
+> **Antwort (Termin 14.10.):** noch offen
+>
+> *Stand 11.11.:* Live-IDs gibt es nur für GO (3) und CO (5), aus der
+> Mail vom 08.10. Alles andere fehlt noch.
+
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
+
+---
+
 ### 2.12 Kartenterminal an der Kinokasse: doch manuelle Eingabe?
 
 ⏳ offen *(neu, 03.11.)*
@@ -147,7 +213,7 @@ prüft das am 03.11. vor Ort.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -164,7 +230,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -176,7 +242,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -208,7 +274,7 @@ und 3.3 (4×-Limit).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -279,7 +345,7 @@ deutlich kommunizieren.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -301,7 +367,7 @@ Scan-Kosten?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -325,7 +391,7 @@ Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
 > **Antwort (Paco, 03.11.):** 1. Die Schulung macht Paco.
 > 2. und 3. *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -362,7 +428,7 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 > dann speichern) schon umgestellt? Bis dahin kann eine 500 weiter
 > eine zweite Abrechnung erzeugen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -377,7 +443,7 @@ fertig.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -392,7 +458,7 @@ etwas.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -442,7 +508,7 @@ habe ich dann selbst Zugriff für Updates?
 > Variante muss Paco noch herausfinden und dann entscheiden. Kein
 > Thema für den Termin am 04.11.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -464,7 +530,7 @@ vergleichen.
 > *Stand 03.11. (Paco):* Das Kino wartet auf Pacos Eröffnungsangebot.
 > Erst das Angebot erstellen, dann besprechen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -472,13 +538,16 @@ vergleichen.
 
 ◐ teilweise geklärt — beim Termin nachfassen
 
+**Hintergrund:** Die Antwort bestimmt, in welcher Form ich das Angebot
+(6.1) überhaupt machen kann.
+
 **Frage:** Besteht ein Risiko der Scheinselbständigkeit? Hat das
 Steuerbüro es inzwischen beurteilt?
 
 > **Antwort (teilweise):** Tom sagt: kein Problem. Beurteilung durch das
 > Steuerbüro *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -494,7 +563,7 @@ wird er mit der Vergütung (6.1) verrechnet?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -512,7 +581,7 @@ arbeite?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -535,7 +604,7 @@ Preisblatt und Übergabe liegen vor (.dev/verkauf/).
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -566,7 +635,7 @@ selbst die zuletzt eingereichte Abrechnung des Tages überschreibt?
 > starten alle Geräte dort leer, ohne gemerkte Nummern. Eine Korrektur
 > für einen Tag vor dem Umzug würde dann als neue Abrechnung angelegt.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-17)
+[↑ zum Inhalt](#inhalt-offene-fragen-20)
 
 ---
 
@@ -589,7 +658,7 @@ gleichzeitig?
 
 > **Antwort:** Je Standort.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -621,7 +690,7 @@ weg, und welche TID hat GO?
 > Alte TIDs (Paco, 14.10.): bleiben in der App, bis sie an allen
 > Standorten korrekt läuft.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -636,7 +705,7 @@ weg, und welche TID hat GO?
 > Sandbox und Live. Gesamttabelle aller Standorte siehe
 > [1.10](#110-live-zugangsdaten-für-sb-at-bt).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -649,7 +718,7 @@ weg, und welche TID hat GO?
 > **Antwort:** Keine formelle Frage mehr — Paco klärt das jeweils vor Ort
 > bzw. fragt Yannik spontan per Messenger.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -662,7 +731,7 @@ weg, und welche TID hat GO?
 > **Antwort:** Paco richtet die Apps an den Standorten initial selbst ein.
 > Spätere Änderungen (API-Key, TID) direkt am Gerät, siehe 1.6.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -674,7 +743,7 @@ weg, und welche TID hat GO?
 
 > **Antwort:** Am Gerät vor Ort, nicht zentral von Yannik verwaltet.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -686,7 +755,7 @@ weg, und welche TID hat GO?
 
 > **Antwort:** Yannik kauft eins.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -709,46 +778,7 @@ die MA verständlich.
 
 > **Antwort (Termin 14.10.):** nein
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
-
----
-
-### 1.10 Live-Zugangsdaten für SB, AT, BT
-
-✅ beantwortet (Paco, 03.11.)
-
-**Hintergrund:** Die location_id ist nicht in Sandbox und Livesystem
-gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
-(**?** = fehlt noch):
-
-
-| Standort | Sandbox-ID      | Live-ID | Live-Key |
-| -------- | --------------- | ------- | -------- |
-| SB       | 1               | **?**   | **?**    |
-| AT       | 3               | **?**   | **?**    |
-| BT       | 4               | **?**   | **?**    |
-| GO       | 5               | 3       | **?**    |
-| CO       | 6               | 5       | **?**    |
-
-Quellen: SB/AT/BT aus der Mail vom 16.06. (Sandbox-Zugang, nur Sandbox-
-IDs; AT kann live nicht die 3 sein, die hat dort GO), GO/CO aus der Mail
-vom 08.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
-(nicht im Git).
-
-Seit Run 493 stehen die bekannten IDs im Code (kino.dart), ein Schalter
-"Livesystem" wählt die Umgebung, das Einstellungsfeld ist Override je
-Umgebung. Fehlende Live-IDs (SB/AT/BT) blockieren den Versand, bis sie
-im Code oder als Override stehen.
-
-**Frage:**
-
-1. Wie lauten die Live-location_ids für SB, AT und BT?
-2. Gibt es für das Livesystem eigene API-Keys pro Standort, und eine
-   eigene URL (1.1)?
-
-> **Antwort (Termin 14.10.):** noch offen
-
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -770,7 +800,7 @@ ist die Qualität Mist.“ Das Android-Testgerät wollte Yannik kaufen (1.7).
 
 > **Antwort (Termin 14.10.):** Qualität der Belege genügt, ignorieren.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -821,7 +851,7 @@ Dann ist die Frage womöglich schon vor dem Termin beantwortet.
 > nur den letzten Beleg dieser TID. Bewusst in Kauf genommen. Der
 > Blocker-Eintrag in TODO.md ist damit überholt.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -837,7 +867,7 @@ Dann ist die Frage womöglich schon vor dem Termin beantwortet.
 > Ergänzung (Mail 14.07.): „Deine Seite macht nur IST. Soll kommt erst
 > 12 Stunden später aus den Kassen direkt.“
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -850,7 +880,7 @@ Dann ist die Frage womöglich schon vor dem Termin beantwortet.
 > **Antwort:** Ja. Eigene JSON-Felder sind generell erlaubt, Feldnamen
 > frei wählbar. FC ignoriert sie, bis sie serverseitig implementiert sind.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -872,7 +902,7 @@ und enthält die Antwort immer die settlement_number?
 > Belegfotos, kommt eine 500 ohne settlement_number, obwohl die Werte
 > gespeichert sind — offen als 2.8.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -888,7 +918,7 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 > Ein Server-Zeitstempel entfällt (Paco, 30.09.): Die App schickt selbst
 > `sent_at` mit. (Empfangsbestätigung siehe 2.4.)
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -903,7 +933,7 @@ unterscheidbar machen? Und schickt ihr einen Empfangs-Zeitstempel mit?
 > Die realen AT-Abrechnungen vom 18. und 19.07. (meine Mail 19.07.) sind
 > nicht ausdrücklich geprüft worden.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -917,7 +947,7 @@ Geschäftsdatum?
 > **Antwort:** Ja, logisches Geschäftsdatum. Der Tageswechsel liegt aber
 > bei 5 Uhr, nicht bei 6 Uhr. In der App umgestellt.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -950,7 +980,7 @@ auf den Umschlag eintragen. Warum, ist mir nicht klar.
 > Yannik das so gesagt hat, ist nicht belegt; Paco erinnert sich nicht.
 > Wird in 2.12 offen nachgefragt.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -968,7 +998,7 @@ beachten?
 
 > **Antwort (Termin 14.10.):** ignorieren, kommt selten vor
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -986,7 +1016,7 @@ erfährt sie, welche settlement_number vergeben wurde?
 > Inhalt). FC liefert die vergebene Nummer in der PUT-Antwort mit
 > (`settlements[0].settlement_number`).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1002,7 +1032,7 @@ Abrechnung, Korrektur und versehentlichem Doppel-Versand? Wäre ein
 > settlement_number und `sent_at`, ob und wie FC das anzeigt, entscheidet
 > Yannik. Korrekturen kommen ohnehin meist am selben Abend.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1016,7 +1046,7 @@ Abrechnung, Korrektur und versehentlichem Doppel-Versand? Wäre ein
 > am selben Abend, die App erkennt `finalized: true` bzw. die 400 selbst.
 > Taucht im Ausfall-Kontext wieder auf, siehe 8.2.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1034,7 +1064,7 @@ doppelt bei FC landet (Doppel-Tap, Verbindungsabbruch)?
 > (Run 477). Falls doch Yanniks Einschätzung gewünscht: zurück zu den
 > offenen Fragen.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1053,7 +1083,7 @@ Abrechnung?
 
 > **Antwort (Termin 14.10.):** ignorieren
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1067,7 +1097,7 @@ Abrechnung?
 
 > **Antwort:** Nein, muss nur lesbar sein.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1080,7 +1110,7 @@ Abrechnung?
 > **Antwort:** base64 direkt im JSON, Feldname frei wählbar (z. B.
 > `beleg_foto_base64`). Keine maximale Dateigröße (Yannik, 26.08.).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1092,7 +1122,7 @@ Abrechnung?
 
 > **Antwort:** Nein, läuft über das Kommentarfeld (2.3).
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1107,7 +1137,7 @@ Abrechnung?
 > **Antwort (Paco, 26.08.):** Nein. Auch kein Mail-Fallback bei
 > Korrektur, 4×-Limit oder FC-Ausfall.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1119,7 +1149,7 @@ Abrechnung?
 
 > **Antwort:** Nein.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1142,7 +1172,7 @@ BT) für den Flurbocash-Zugriff vorgesehen bzw. freigegeben?
 > **Antwort (Paco, 03.11.):** Das WLAN soll demnächst an allen
 > Standorten gleich heißen, vermutlich „Schauburg-AP“.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1158,7 +1188,7 @@ angekommen ist, wenn die Verbindung mittendrin abbricht?
 > (löschbar außer Nr. 1). Erst nachfragen, wenn Duplikate in der Praxis
 > auffallen.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1178,8 +1208,10 @@ das echte Flurbocash senden statt an die Sandbox.
 Produktivstart aller Standorte oder je Standort?
 
 > **Antwort (Termin 14.10.):** 2.11.26 für SB, CO und AT, dann wird auch in FC direkt übertragen.
+>
+> *Nachtrag 11.11. (Paco):* Stichtag verstrichen, neuer Stichtag siehe 7.5.
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1199,7 +1231,7 @@ vorgeschlagene Reihenfolge, zum Gegenprüfen:
 
 > **Antwort (Termin 14.10.):** noch offen
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1216,7 +1248,7 @@ braucht (1.8).
 
 > **Antwort (Termin 14.10.):** kassenabrechnung
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1246,7 +1278,7 @@ Werte dann selbst ab.
 
 > **Antwort (Termin 14.10.):** MA muss manuell eingeben
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)
 
 ---
 
@@ -1271,4 +1303,4 @@ als Ausweichweg ist nicht vorgesehen (5.1).
 
 > **Antwort (Termin 14.10.):** im Verlauf suchen und am nächsten Tag senden
 
-[↑ zum Inhalt](#inhalt-beantwortete-fragen-36)
+[↑ zum Inhalt](#inhalt-beantwortete-fragen-35)

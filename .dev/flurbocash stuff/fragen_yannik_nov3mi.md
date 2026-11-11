@@ -1,7 +1,7 @@
-# Fragen an Yannik — Termin Mittwoch, 04.11.2026, 11.00 Uhr
+# Fragen an Yannik — Termin Mittwoch, 11.11.2026, 11.00 Uhr
 
-Stand: 03.11.2026 (Run 503b) · Auszug aus `fragen_yannik.md`: nur die
-Fragen für den Termin am 04.11.2026, in Gesprächsreihenfolge.
+Stand: 11.11.2026 (Run 506e) · Auszug aus `fragen_yannik.md`: nur die
+Fragen für den Termin am 11.11.2026, in Gesprächsreihenfolge.
 2.10 (BT, zwei Abrechnungen) klärt Paco selbst anhand der BT-Abrechnungen,
 bleibt aber in `fragen_yannik.md` offen.
 
@@ -9,17 +9,20 @@ bleibt aber in `fragen_yannik.md` offen.
 
 ---
 
-## Inhalt: Offene Fragen (9)
+## Inhalt: Offene Fragen (12)
 
 1. ⏳ [9.1 Wie geht das Stufenlicht im Atlantis an?](#91-stufenlicht-im-atlantis) *(neu)*
-2. ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen) *(neu)*
+2. ⏳ [6.6 Schlafstörungen (App wäre sonst längst fertig)](#66-schlafstörungen--temporärer-aber-akuter-abbau) *(neu)*
 3. ⏳ [9.2 Cineville-Gäste trinken kaum etwas. Lohnt sich das?](#92-cineville-gäste-trinken-kaum-etwas) *(neu)*
-4. ⏳ [2.12 Kinokassen-Terminal: doch manuelle Eingabe möglich?](#212-kartenterminal-an-der-kinokasse-doch-manuelle-eingabe) *(neu)*
-5. ⏳ [1.12 Hast du dir die vorgeschlagenen Smartphones angeschaut?](#112-vorgeschlagene-smartphones-für-die-kassen) *(neu)*
-6. ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — wo deklarieren, Kasse oder Terminal?](#29-trinkgeld-auf-dem-kassenschnitt)
-7. ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
-8. ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
-9. ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
+4. ⏳ [7.5 Neuer Stichtag für den Go-Live (02.11. verstrichen)?](#75-neuer-stichtag-für-den-go-live) *(neu)*
+5. ◐ [1.10 Live-location_ids SB/AT/BT, Live-Keys, Live-URL?](#110-live-zugangsdaten-für-sb-at-bt)
+6. ⏳ [2.12 Kinokassen-Terminal: doch manuelle Eingabe möglich?](#212-kartenterminal-an-der-kinokasse-doch-manuelle-eingabe) *(neu)*
+7. ⏳ [1.12 Hast du dir die vorgeschlagenen Smartphones angeschaut?](#112-vorgeschlagene-smartphones-für-die-kassen) *(neu)*
+8. ⏳ [2.9 Trinkgeld auf dem Kassenschnitt — wo deklarieren, Kasse oder Terminal?](#29-trinkgeld-auf-dem-kassenschnitt)
+9. ⏳ [8.3 Wann bekommt das Kino eine eigene KI-API für den Beleg-Scan?](#83-eigene-ki-api-für-den-beleg-scan) *(neu)*
+10. ◐ [7.3 Wer ist vor Ort Ansprechpartner, kommt eine Rundmail?](#73-einführung-schulung-und-ansprechpartner)
+11. ◐ [2.8 Option 1 (erst archivieren) schon umgesetzt?](#28-belegfoto-archivierung-scheitert-500-ohne-nummer)
+12. ◐ [6.2 Besteht ein Risiko der Scheinselbständigkeit?](#62-risiko-scheinselbständigkeit)
 
 ## Inhalt: Beantwortete Fragen (0)
 
@@ -35,26 +38,25 @@ bleibt aber in `fragen_yannik.md` offen.
 
 ⏳ offen *(neu, 03.11., nicht App-bezogen)*
 
-**Frage:** Wie geht das Stufenlicht im Atlantis an? Als ich es versucht habe und die Sicherung, über der ein PostIt "Stufenlicht" klebt, ging plötzlich das supergrelle Notfall-Licht an, das ganz helle.
+**Frage:** Wie geht das Stufenlicht im Atlantis an? Als ich es versucht habe und die Sicherung, über der ein PostIt "Stufenlicht" klebt, ging plötzlich das supergrelle Notfall-Licht an, das ganz helle. Dass ich es hätte mit dem Schalter links neben dem kleineren Sicherungskasten ausschalten können, habe ich in der Hektik (Film lief, Saal voll) nicht dran gedacht.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
-### 6.6 Schlafstörungen
+### 6.6 Schlafstörungen & temporärer, aber akuter Abbau
 
 ⏳ offen *(neu, 03.11., persönlich)*
 
-**Hintergrund:** Ich habe Schlafstörungen. Ohne sie wäre die App längst
-fertig.
+**Hintergrund:** Ich habe Schlafstörungen. Ohne sie läge längst mein Angebot auf dem Tisch und wäre die App längst fertig.
 
 **Frage:** Persönliches Thema, kurz ansprechen.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -69,7 +71,72 @@ etwas.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
+
+---
+
+### 7.5 Neuer Stichtag für den Go-Live
+
+⏳ offen *(neu, 11.11.)*
+
+**Hintergrund:** Am 14.10. vereinbart: Go-Live für SB, CO und AT am
+02.11.2026, ab dann überträgt die App direkt ins echte Flurbocash (7.1).
+Der Termin ist verstrichen. Es fehlen noch die Live-Zugangsdaten (1.10):
+Live-location_ids für SB, AT und BT, die Live-API-Keys aller Standorte
+und die Live-URL. Danach müssen die Geräte noch eingerichtet und getestet
+werden.
+
+**Frage:**
+
+1. Welcher neue Stichtag gilt für SB, CO und AT?
+2. Bis wann kommen die Live-Zugangsdaten (1.10)?
+
+> **Antwort:** *noch offen*
+
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
+
+---
+
+### 1.10 Live-Zugangsdaten für SB, AT, BT
+
+◐ teilweise geklärt — dringend für den Go-Live (7.5)
+
+**Hintergrund:** Die location_id ist nicht in Sandbox und Livesystem
+gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
+(**?** = fehlt noch):
+
+
+| Standort | Sandbox-ID      | Live-ID | Live-Key |
+| -------- | --------------- | ------- | -------- |
+| SB       | 1               | **?**   | **?**    |
+| AT       | 3               | **?**   | **?**    |
+| BT       | 4               | **?**   | **?**    |
+| GO       | 5               | 3       | **?**    |
+| CO       | 6               | 5       | **?**    |
+
+Quellen: SB/AT/BT aus der Mail vom 16.06. (Sandbox-Zugang, nur Sandbox-
+IDs; AT kann live nicht die 3 sein, die hat dort GO), GO/CO aus der Mail
+vom 08.10. Die Sandbox-Keys stehen in secrets/api_keys.txt
+(nicht im Git).
+
+Seit Run 493 stehen die bekannten IDs im Code (kino.dart), ein Schalter
+"Livesystem" wählt die Umgebung, das Einstellungsfeld ist Override je
+Umgebung. Fehlende Live-IDs (SB/AT/BT) blockieren den Versand, bis sie
+im Code oder als Override stehen.
+
+**Frage:**
+
+1. Wie lauten die Live-location_ids für SB, AT und BT?
+2. Gibt es für das Livesystem eigene API-Keys pro Standort, und eine
+   eigene URL (1.1)? Läuft sie wieder über Port 666? Den sperrt das
+   Gäste-WLAN (5.3).
+
+> **Antwort (Termin 14.10.):** noch offen
+>
+> *Stand 11.11.:* Live-IDs gibt es nur für GO (3) und CO (5), aus der
+> Mail vom 08.10. Alles andere fehlt noch.
+
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -108,7 +175,7 @@ prüft das am 03.11. vor Ort.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -125,7 +192,7 @@ geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -197,7 +264,7 @@ deutlich kommunizieren.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -218,7 +285,7 @@ Service-URL umgestellt.
 
 > **Antwort:** *noch offen*
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -242,7 +309,7 @@ Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
 > **Antwort (Paco, 03.11.):** 1. Die Schulung macht Paco.
 > 2. und 3. *noch offen*.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
@@ -279,7 +346,25 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 > dann speichern) schon umgestellt? Bis dahin kann eine 500 weiter
 > eine zweite Abrechnung erzeugen.
 
-[↑ zum Inhalt](#inhalt-offene-fragen-9)
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
+
+---
+
+### 6.2 Risiko Scheinselbständigkeit
+
+◐ teilweise geklärt — beim Termin nachfassen
+
+**Hintergrund:** Die Antwort bestimmt, in welcher Form ich das Angebot
+(6.1) überhaupt machen kann. Dazu kurz sagen: Das Angebot kommt bis
+[Datum eintragen].
+
+**Frage:** Besteht ein Risiko der Scheinselbständigkeit? Hat das
+Steuerbüro es inzwischen beurteilt?
+
+> **Antwort (teilweise):** Tom sagt: kein Problem. Beurteilung durch das
+> Steuerbüro *noch offen*.
+
+[↑ zum Inhalt](#inhalt-offene-fragen-12)
 
 ---
 
