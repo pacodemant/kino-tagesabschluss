@@ -1,6 +1,6 @@
 # Fragen an Yannik — Termin Mittwoch, 11.11.2026, 11.00 Uhr
 
-Stand: 11.11.2026 (Run 506e) · Auszug aus `fragen_yannik.md`: nur die
+Stand: 11.11.2026 (Run 506f) · Auszug aus `fragen_yannik.md`: nur die
 Fragen für den Termin am 11.11.2026, in Gesprächsreihenfolge.
 2.10 (BT, zwei Abrechnungen) klärt Paco selbst anhand der BT-Abrechnungen,
 bleibt aber in `fragen_yannik.md` offen.
@@ -85,13 +85,16 @@ Der Termin ist verstrichen. Es fehlen noch die Live-Zugangsdaten (1.10):
 Live-location_ids für SB, AT und BT, die Live-API-Keys aller Standorte
 und die Live-URL. Danach müssen die Geräte noch eingerichtet und getestet
 werden.
+Außerdem hat Paco das Scharfstellen am 20.10. selbst verschoben, um
+vorher das Datenmanagement der App zu optimieren (Mail 20.10., umgesetzt
+in Run 495–500).
 
 **Frage:**
 
 1. Welcher neue Stichtag gilt für SB, CO und AT?
 2. Bis wann kommen die Live-Zugangsdaten (1.10)?
 
-> **Antwort:** *noch offen*
+> **Antwort:** Erster Montag im Januar 2027
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -106,13 +109,13 @@ gleich (laut Yannik nicht mehr einfach änderbar). Stand aller Standorte
 (**?** = fehlt noch):
 
 
-| Standort | Sandbox-ID      | Live-ID | Live-Key |
-| -------- | --------------- | ------- | -------- |
-| SB       | 1               | **?**   | **?**    |
-| AT       | 3               | **?**   | **?**    |
-| BT       | 4               | **?**   | **?**    |
-| GO       | 5               | 3       | **?**    |
-| CO       | 6               | 5       | **?**    |
+| Standort | Sandbox-ID | Live-ID | Live-Key |
+| -------- | ---------- | ------- | -------- |
+| SB       | 1          | *1*     | **?**    |
+| AT       | 3          | **3**   | **?**    |
+| BT       | 4          | 4       | **?**    |
+| GO       | 5          | 2       | **?**    |
+| CO       | 6          | 5       | **?**    |
 
 Quellen: SB/AT/BT aus der Mail vom 16.06. (Sandbox-Zugang, nur Sandbox-
 IDs; AT kann live nicht die 3 sein, die hat dort GO), GO/CO aus der Mail
@@ -135,6 +138,8 @@ im Code oder als Override stehen.
 >
 > *Stand 11.11.:* Live-IDs gibt es nur für GO (3) und CO (5), aus der
 > Mail vom 08.10. Alles andere fehlt noch.
+>
+> Jedes Kino hat einen Live-Key, die sollten irgenwo in den Projektdaten stehen. Ansonsten noch mal Yannik fragen, ob er sie noch mal senden kann.
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -173,7 +178,7 @@ prüft das am 03.11. vor Ort.
    nicht von Kinotickets unterscheiden.
 4. Gilt das auch für angeschlossene Terminals an anderen Standorten?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *checkt Yannik
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -184,13 +189,26 @@ prüft das am 03.11. vor Ort.
 ⏳ offen *(neu, 03.11.)*
 
 **Hintergrund:** Paco hat Yannik Smartphones für die Kassen
-vorgeschlagen. Zu 1.11 hieß es am 14.10. noch, die Qualität der
-Belegfotos genüge. Zielplattform bleibt Android (PWA).
+vorgeschlagen (Mail 30.10.: Galaxy A37 5G oder Motorola Edge 70 Fusion,
+je ca. 280 €, bisher unbeantwortet). Zu 1.11 hieß es am 14.10. noch, die
+Qualität der Belegfotos genüge. Zielplattform bleibt Android (PWA).
 
-**Frage:** Hast du dir die vorgeschlagenen Smartphones angeschaut? Wie
-geht es weiter: Wer entscheidet, wer bestellt, für welche Standorte?
+Stand (Paco, 11.11.): Yannik will für jeden Standort ein Smartphone
+besorgen. Die SB hat schon eines. Ob sie trotzdem ein neues bekommt,
+entscheidet Yannik (bei mehreren Geräten fällt eins mehr kaum ins
+Gewicht). Die anderen Standorte brauchen auf jeden Fall eins.
 
-> **Antwort:** *noch offen*
+Zu beachten: Die Kassen-Handys sind gleichzeitig Ticketleser für
+E-Tickets (TODO.md, Offline-Punkt). Neue Geräte müssen also auch die
+Ticketleser-App können.
+
+**Frage:**
+
+1. Welches Modell nimmst du, und bis wann sind die Geräte da?
+2. Bekommt die SB auch ein neues?
+3. Läuft die Ticketleser-App auf dem gewählten Modell?
+
+> **Antwort:** bestellt Yannik
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -231,6 +249,14 @@ Trinkgeld-Funktion), danach kommt 1 € bar aus der Kasse in die
 Trinkgeldschale. Wenn sich das ändern soll, müssen wir es den MA
 deutlich kommunizieren.
 
+**Hinweis (11.11.):** In Pacos Mail an Yannik vom 09.10. steht: „Wir
+wurden ja über die neuen Terminals informiert und dass wir digital
+gezahltes Trinkgeld auch eingeben sollen, damit ihr das nicht versteuern
+müsst. Das habe ich gemacht ...“ Yannik hat dem nicht widersprochen.
+Teilfrage 1 (ja) und 5 (am Terminal) sind damit wohl schon beantwortet,
+beim Termin nur bestätigen lassen: „Trinkgeld per Karte immer über die
+Trinkgeld-Funktion am Terminal, richtig?“ Wirklich offen bleiben 2–4.
+
 **Frage:** Wie möchtest du Trinkgeld per Karte haben?
 
 1. **Grundsatz:** Sollen Gäste an den Terminals überhaupt Trinkgeld per
@@ -262,7 +288,7 @@ deutlich kommunizieren.
      Was genau sollen die MA ab wann anders machen? Das kommunizieren
      wir dann gezielt an alle Standorte.
 
-> **Antwort:** *noch offen*
+> **Antwort:** *nur in BT via Terminal*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -283,7 +309,7 @@ Service-URL umgestellt.
 
 **Frage:** Wann richtet ihr den API-Zugang ein?
 
-> **Antwort:** *noch offen*
+> **Antwort:** *macht Yannik*
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -308,6 +334,15 @@ Kurzanleitung lesen Mello und Wolfgang gegen (30.09.).
 
 > **Antwort (Paco, 03.11.):** 1. Die Schulung macht Paco.
 > 2. und 3. *noch offen*.
+>
+> *Zu 3 (11.11.):* Yannik (08.09.): Eine verpflichtende Einführung ist
+> für ihn ok, aber vorher mit Mello sprechen. Paco hat am 09.10.
+> angeboten, den Termin selbst an alle in der SB zu kommunizieren,
+> bisher ohne Antwort. Eigentliche Frage also: Wer kommuniziert, und
+> hat Mello zugestimmt?
+>
+> Ansprechpartnerin in GO: Maike
+
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 
@@ -345,6 +380,10 @@ Foto fehlt“ erkennen und sich die Nummer merken kann.
 > *Nachfrage (03.11.):* Hast du die Reihenfolge (erst archivieren,
 > dann speichern) schon umgestellt? Bis dahin kann eine 500 weiter
 > eine zweite Abrechnung erzeugen.
+>
+> Macht Yannik jetzt
+
+
 
 [↑ zum Inhalt](#inhalt-offene-fragen-12)
 

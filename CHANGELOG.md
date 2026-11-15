@@ -9,6 +9,23 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 507: Stückelung Barumsatz: Kupfergeld wird nur noch bis zum
+  Betrag angesetzt, der nach den Scheinen noch fehlt (wie beim Silber),
+  der Rest des Kupfers bleibt im Wechselgeld. Vorher immer der gesamte
+  Kupferbestand, die Überzahlung wurde durch Kappen auf 0 verschluckt
+  (Fall von Paco: Rest 0,11 €, Kupfer 0,31 € -> Umschlag 0,20 € zu
+  viel). Kupfer 0,00 € wird ausgegraut. Drei neue Widget-Tests
+  (Kupfer > Rest, Kupfer < Rest, kein Rest).
+
+- Run 506f: Nur Doku. Abgleich der Terminliste 11.11. mit Mails und
+  Projektdateien, Funde in fragen_yannik.md und fragen_yannik_nov3mi.md
+  eingetragen: 1.12 Smartphones (Mail 30.10., Yannik will je Standort
+  ein Gerät, SB entscheidet er, Ticketleser-Hinweis, neue Teilfragen),
+  2.9 Hinweis auf Pacos Mail 09.10. (Trinkgeld am Terminal eingeben,
+  Teilfragen 1/5 nur bestätigen), 7.5 Verschiebung auch durch Paco
+  (Mail 20.10., Run 495–500), 7.3 Teilfrage 3 (Yannik 08.09., Pacos
+  Angebot 09.10.). 2.12-Prüfergebnis in der Hauptdatei nachgezogen.
+
 - Run 506e: Nur Doku. Termin mit Yannik vom 04.11. auf 11.11.
   verschoben. fragen_yannik.md und fragen_yannik_nov3mi.md: neue Frage
   7.5 (neuer Stichtag für den Go-Live, der 02.11. aus 7.1 ist

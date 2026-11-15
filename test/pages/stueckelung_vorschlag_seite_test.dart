@@ -96,4 +96,92 @@ void main() {
       );
     },
   );
+
+  // Run 507: Kupfergeld wurde immer komplett angesetzt, auch wenn nach den
+  // Scheinen weniger Cent fehlten (gemeldeter Fall: Soll 1.905,11 €, Rest
+  // 0,11 €, Kupfer 0,31 € -> Umschlag 0,20 € zu viel).
+  group('Kupfergeld höchstens so viel wie nach den Scheinen fehlt', () {
+    // Liefert den Betrag-Text in derselben Zeile wie [bezeichnung].
+    Finder betragInZeile(String bezeichnung, String betrag) => find.descendant(
+      of: find.ancestor(of: find.text(bezeichnung), matching: find.byType(Row)),
+      matching: find.text(betrag),
+    );
+
+    Future<void> zeigeSeite(
+      WidgetTester tester, {
+      required int sollCent,
+      required Map<String, int> loseMuenzen,
+    }) async {
+      await setzeIphoneBreite(tester);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StueckelungVorschlagSeite(
+            argumente: StueckelungVorschlagArgumente(
+              barBestandAbzglWechselgeldCent: sollCent,
+              stueckzahlen: const <String, int>{'note_50': 29, 'note_5': 63},
+              loseMuenzenNachArtCent: loseMuenzen,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('Kupfer > Rest: nur der Rest kommt in den Umschlag', (
+      WidgetTester tester,
+    ) async {
+      // 29x50 + 1x5 = 1.455,00 €, Rest 0,11 €; Kupfer 0,31 €.
+      await zeigeSeite(
+        tester,
+        sollCent: 145511,
+        loseMuenzen: const <String, int>{
+          'coin_5c': 25,
+          'coin_2c': 6,
+          'coin_50c': 100,
+        },
+      );
+
+      expect(betragInZeile('Kupfergeld', '0,11 €'), findsOneWidget);
+      expect(
+        betragInZeile('Münzgeld (ohne Kupfer)', '0,00 €'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Nicht abdeckbar'), findsNothing);
+    });
+
+    testWidgets('Kupfer < Rest: Kupfer komplett, Silber deckt den Rest', (
+      WidgetTester tester,
+    ) async {
+      // Rest 0,80 €; Kupfer 0,31 €, Silber 1,00 € -> Silber 0,49 €.
+      await zeigeSeite(
+        tester,
+        sollCent: 145580,
+        loseMuenzen: const <String, int>{
+          'coin_5c': 25,
+          'coin_2c': 6,
+          'coin_50c': 100,
+        },
+      );
+
+      expect(betragInZeile('Kupfergeld', '0,31 €'), findsOneWidget);
+      expect(
+        betragInZeile('Münzgeld (ohne Kupfer)', '0,49 €'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Nicht abdeckbar'), findsNothing);
+    });
+
+    testWidgets('kein Rest nach den Scheinen: Kupfer 0,00 €', (
+      WidgetTester tester,
+    ) async {
+      await zeigeSeite(
+        tester,
+        sollCent: 145500,
+        loseMuenzen: const <String, int>{'coin_5c': 25},
+      );
+
+      expect(betragInZeile('Kupfergeld', '0,00 €'), findsOneWidget);
+      expect(find.textContaining('Nicht abdeckbar'), findsNothing);
+    });
+  });
 }

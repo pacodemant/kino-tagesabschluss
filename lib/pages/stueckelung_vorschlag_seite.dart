@@ -231,17 +231,25 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
       silberCent += widget.argumente.loseMuenzenNachArtCent[id] ?? 0;
     }
 
+    // Kupfer wird vor dem Silber genommen (soll bevorzugt in den Umschlag),
+    // aber höchstens so viel, wie nach den Scheinen noch fehlt — wie bei
+    // Scheinen und Silber. Der Rest des Kupfers bleibt im Wechselgeld.
+    // Vor Run 507 wurde immer der gesamte Kupferbestand angesetzt (Beispiel:
+    // Rest 0,11 €, Kupfer 0,31 € -> Umschlag 0,20 € zu viel).
     final bool hatKupfer = kupferCent > 0;
     if (hatKupfer) {
+      final int kupferGenommen = restCent > 0
+          ? (kupferCent < restCent ? kupferCent : restCent)
+          : 0;
       zeilen.add(
         _ErgebnisZeile.betragzeile(
           bezeichnung: 'Kupfergeld',
-          betragCent: kupferCent,
+          betragCent: kupferGenommen,
           rot: true,
+          ausgegraut: kupferGenommen == 0,
         ),
       );
-      restCent -= kupferCent;
-      if (restCent < 0) restCent = 0;
+      restCent -= kupferGenommen;
     }
 
     final int silberGenommen = restCent > 0
