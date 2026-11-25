@@ -10,9 +10,6 @@ class GetraenkeConfigService extends RemoteConfigServiceBasis<List<String>> {
 
   final String kinoId;
 
-  static const String _baseRawUrl =
-      'https://raw.githubusercontent.com/pacodemant/kino-tagesabschluss/master/config/';
-
   String get _dateiname {
     switch (kinoId) {
       case 'kino_03':
@@ -27,13 +24,9 @@ class GetraenkeConfigService extends RemoteConfigServiceBasis<List<String>> {
   String get _assetPath => 'config/$_dateiname';
 
   @override
-  String get remoteUrl => '$_baseRawUrl$_dateiname';
-  @override
   String get localKey => 'getraenke_$kinoId';
   @override
   String get localDateKey => 'getraenke_${kinoId}_date';
-  @override
-  String get updateAvailableKey => 'getraenke_update_available_$kinoId';
   @override
   String get logTag => 'GetraenkeConfig/$kinoId';
 

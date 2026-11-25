@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: November 2026 · Run 508 · wird fortlaufend ergänzt
+Stand: November 2026 · Run 509 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -265,16 +265,6 @@ FC, parallele EC-Listen in Schritt 2) hier nur verwiesen.
       Beide Funktionen sind ungetestet.
 
 ### D — Netzwerk ohne Zeitlimit
-
-- [ ] **D2 HOCH: App-Start hängt am Internet** main.dart wartet VOR
-      `runApp()` nacheinander auf bis zu vier Abrufe von
-      raw.githubusercontent.com (Getränkelisten SB/AT/CO + Wechselgeld,
-      `initOnAppStart()`), bei jedem Start — auch wenn nur auf Updates
-      geprüft wird — und ohne Zeitlimit
-      (remote_config_service_basis.dart:118). Langsames oder hängendes
-      Netz (schwaches WLAN, Captive Portal) = weißer Bildschirm bzw.
-      App startet gar nicht. Fix klein: Abrufe nach dem Start im
-      Hintergrund, parallel, mit Timeout.
 
 ### E — Gleiche Regel/Status an mehreren Stellen
 

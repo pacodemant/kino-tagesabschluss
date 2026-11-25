@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
 import 'remote_config_service_basis.dart';
 
 class WechselgeldConfigService
@@ -7,14 +10,9 @@ class WechselgeldConfigService
   const WechselgeldConfigService();
 
   @override
-  String get remoteUrl =>
-      'https://raw.githubusercontent.com/pacodemant/kino-tagesabschluss/master/config/wechselgeld.txt';
-  @override
   String get localKey => 'wechselgeld_config';
   @override
   String get localDateKey => 'wechselgeld_config_date';
-  @override
-  String get updateAvailableKey => 'wechselgeld_update_available';
   @override
   String get logTag => 'WechselgeldConfig';
 
@@ -53,6 +51,21 @@ class WechselgeldConfigService
     return geparst.map(
       (String k, dynamic v) => MapEntry<String, int>(k, (v as num).toInt()),
     );
+  }
+
+  /// Mitgelieferte Startwerte (seit Run 509, vorher nur per Abruf aus
+  /// dem GitHub-Repo). Ein in den Einstellungen eingetragener
+  /// Wechselgeld-Sollwert hat weiterhin Vorrang.
+  @override
+  Future<(String, Map<String, int>)?> assetFallback() async {
+    try {
+      final String inhalt =
+          await rootBundle.loadString('config/wechselgeld.txt');
+      return parseInhalt(inhalt);
+    } catch (fehler) {
+      debugPrint('[$logTag] Startwerte nicht ladbar: $fehler');
+      return null;
+    }
   }
 
   Future<int> getWechselgeldBetrag(String kinoName) async {

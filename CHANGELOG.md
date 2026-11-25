@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 509: App-Start ohne Internet. Getränkelisten und Wechselgeld-
+  beträge werden nicht mehr aus dem GitHub-Repo geholt (vorher bis zu
+  4 Abrufe vor runApp() ohne Zeitlimit, Audit D2); leeres Gerät
+  übernimmt die mitgelieferte Startliste, vorhandene (vor Ort
+  eingetragene) Werte bleiben. Wechselgeld bekommt dafür
+  config/wechselgeld.txt als Asset. Ungenutzte Update-Prüfung entfernt.
+  4 neue Tests. Browser-Test (scripts/e2e) teilweise an die Oberfläche
+  seit Run 492 angepasst (Reparatur läuft weiter).
+
 - Run 508: Nur Doku. Go-Live-Plan `.dev/golive_plan.md` angelegt
   (Paco-Freigabe "go Plan, Variante a", 25.11.): Arbeitsvereinbarung,
   Phasen mit Status, Paco-Aufgaben, Mail-Entwurf an Yannik. Veraltete

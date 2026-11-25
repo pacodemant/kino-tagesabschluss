@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.161 · Run 508
+Version: 0.9.162 · Run 509
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -158,7 +158,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 508)
+## Laufender Entwicklungsstand (Run 509)
+
+- Run 509 Konfig: kein Netzabruf mehr beim Start; GetraenkeConfigService/
+  WechselgeldConfigService übernehmen bei leerem Gerät nur die
+  mitgelieferte Startliste (Assets), Vorrang für vor Ort eingetragene
+  Werte.
 
 - Run 508 Go-Live-Plan: `.dev/golive_plan.md` ist Einstiegspunkt für
   den Go-Live SB/AT/CO (Status, Paco-Aufgaben, Mail an Yannik).

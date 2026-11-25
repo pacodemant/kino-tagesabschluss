@@ -115,6 +115,25 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ---
 
+## 🟠 Audit Run 494: versteckte Problemstellen (2026-10-25)
+
+### D — Netzwerk ohne Zeitlimit
+
+- [x] **D2 HOCH: App-Start hängt am Internet** main.dart wartet VOR
+      `runApp()` nacheinander auf bis zu vier Abrufe von
+      raw.githubusercontent.com (Getränkelisten SB/AT/CO + Wechselgeld,
+      `initOnAppStart()`), bei jedem Start — auch wenn nur auf Updates
+      geprüft wird — und ohne Zeitlimit
+      (remote_config_service_basis.dart:118). Langsames oder hängendes
+      Netz (schwaches WLAN, Captive Portal) = weißer Bildschirm bzw.
+      App startet gar nicht. Fix klein: Abrufe nach dem Start im
+      Hintergrund, parallel, mit Timeout.
+      ERLEDIGT (Run 509), anders als geplant: Abruf ganz entfernt statt
+      Timeout. Getränkeliste/Wechselgeld kommen nur noch aus der
+      mitgelieferten Startliste; vor Ort eingetragene Werte haben Vorrang.
+
+---
+
 ## 🟢 Kleine Fixes (je < 1h, direkt umsetzbar)
 
 - [x] **Sonstiges-Zeilen (Schritt 1): Label-Feld breiter, Betrag-Feld
