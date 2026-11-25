@@ -1,10 +1,13 @@
 # TODO — kino_bar_app
-Stand: November 2026 · Run 507 · wird fortlaufend ergänzt
+Stand: November 2026 · Run 508 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
 abgeglichen, daher hält diese Datei nur die offenen Punkte schlank.
 Neu erledigte Punkte beim nächsten Archivierungs-Run dorthin verschieben.
+
+**Go-Live (seit 25.11.2026):** Reihenfolge und Status stehen in
+`.dev/golive_plan.md` – dort zuerst nachsehen.
 
 **Aktueller Fokus (Paco, seit 2026-08-30):** korrekte Dateneingabe durch
 die MA und klare Benutzerführung (damit MA nicht durch die App irritiert
@@ -23,19 +26,6 @@ um Durcheinander zu vermeiden.
       Sandbox bekannt: https://sandbox.flurbocash.c137-prime.de:666
       (wird aktuell für alle Tests genutzt). Ob das auch die
       Produktiv-URL ist oder Yannik später eine andere gibt: offen.
-
-- [ ] **Mehrere Kassenschnitte gleicher TID — Datenverlust bei FC**
-      WARTEND auf `.dev/flurbocash stuff/fragen_yannik.md` 2.1
-      (dringend). Paco sah am 27.08.2026 im FC-Dashboard bei mehreren
-      EC-Belegen gleicher TID nur einen Beleg; Yannik antwortete:
-      "Pro TID und Settlement kann es nur einen Kassenschnitt geben."
-      Die App schickt seit Run 399a3 trotzdem je Beleg einen eigenen
-      `terminals[]`-Eintrag (`ApiUploadService._terminalsListe()`,
-      Gruppierung nach `belegIndex`) — FC behält dann vermutlich nur
-      den letzten, die Beträge der übrigen fehlen. Vorab selbst in der
-      Sandbox prüfen (zwei Belege gleicher TID senden, im
-      FC-Webinterface nachsehen). Falls bestätigt: wieder pro TID
-      summieren; offen ist, wie mehrere Fotos derselben TID mitgehen.
 
 - [ ] **Weitere Abrechnungsfelder** Kino-Soll, Bistro-Soll, Ausgaben,
       Differenz werden laut Yannik NICHT benötigt (Flurbocash zieht

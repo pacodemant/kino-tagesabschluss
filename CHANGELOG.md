@@ -9,6 +9,15 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 508: Nur Doku. Go-Live-Plan `.dev/golive_plan.md` angelegt
+  (Paco-Freigabe "go Plan, Variante a", 25.11.): Arbeitsvereinbarung,
+  Phasen mit Status, Paco-Aufgaben, Mail-Entwurf an Yannik. Veraltete
+  Doku korrigiert: TODO-Punkt "Mehrere Kassenschnitte gleicher TID"
+  nach TODO_ERLEDIGT (Yannik 14.10.: ignorieren); PROJECT_CONTEXT
+  Versionierung (app_version.dart), 5-Uhr- statt 4-Uhr-Knick, Bar Tabak,
+  ApiUploadService. CLAUDE.md: Plan-Datei beim Session-Start lesen.
+  Rückkehrpunkt-Tag v0.9.161-r507 gesetzt.
+
 - Run 507: Stückelung Barumsatz: Kupfergeld wird nur noch bis zum
   Betrag angesetzt, der nach den Scheinen noch fehlt (wie beim Silber),
   der Rest des Kupfers bleibt im Wechselgeld. Vorher immer der gesamte

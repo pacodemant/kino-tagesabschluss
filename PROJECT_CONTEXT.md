@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.161 · Run 507
+Version: 0.9.161 · Run 508
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -32,7 +32,7 @@ Zielplattform: Web (iOS-Safari als primäre Testumgebung, PWA-fähig).
     lib/domain/             → Berechnungslogik, UseCases
     lib/widgets/            → Wiederverwendbare UI-Widgets
     lib/theme/              → AppFarben (appBarRot #7B0000 u. a.)
-    lib/utils/              → DatumsHelper (4-Uhr-Knick-Logik),
+    lib/utils/              → DatumsHelper (5-Uhr-Knick-Logik),
                               FeldNavigationHelper (Next-Button,
                               Tab/Pfeiltasten-Feldnavigation),
                               BelegFotoKomprimierung (seit Run 451,
@@ -101,7 +101,7 @@ Zwei Ebenen, kein Backend:
 | SharedPreferences             | Dev-Modus, Auto-Fill, Wechselgeld-Sollwert, `flurbocash_location_id_[kinoId]`, `standort_modus` (Admin-Betriebsmodus, fest eingestelltes Kino oder "Alle") |
 
 Geldberechnung intern **in Cent** (niemals ändern).  
-Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`).
+Logischer Abrechnungstag: 5-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`).
 
 ### Kinos / Standorte
 
@@ -109,13 +109,13 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
     kino_02  Gondel
     kino_03  Atlantis
     kino_04  Cinema Ostertor
-    kino_05  Bar Tabak  (komplex, noch nicht implementiert)
+    kino_05  Bar Tabak  (2 Abrechnungen/Tag, nicht im ersten Go-Live)
 
 ### Services
 
 - `BelegScanService` — EC-Beleg fotografieren, via Claude AI analysieren → `BelegScanErgebnis` (Betrag, terminal_id, Datum)
-- `ApiUploadService` — Upload an Flurbocash-API (2-Call-Flow: ensure + settlements) — **wartet auf IT-Infos**
-- `AbrechnungSpeicher` — Entwürfe mit 4-Uhr-Datum-Logik persistieren
+- `ApiUploadService` — Upload an Flurbocash-API (2-Call-Flow: ensure + settlements), Sandbox produktiv getestet, Livesystem je Kino per Schalter (seit Run 493)
+- `AbrechnungSpeicher` — Entwürfe mit 5-Uhr-Datum-Logik persistieren
 - `GetraenkeConfigService` / `WechselgeldConfigService` — Asset-Konfig laden & cachen
 - `ZahlungsartenConfigService` — Kartenarten aus `config/zahlungsarten.txt`
 - `TerminalIdsConfigService` — Terminals pro Standort (TID, Nr., KK), seit
@@ -151,17 +151,19 @@ Logischer Abrechnungstag: 4-Uhr-Knick (`DatumsHelper.logischerAbrechnungsTag()`)
 
 ## Versionierung
 
-Versionsstring in ZWEI Dateien immer synchron halten:
-
-    lib/pages/startmenue_seite.dart   (ca. Zeile 128)
-    lib/pages/kinoauswahl_seite.dart  (ca. Zeile 68)
-
-Format: `'Web App X.X.X · rNNN @ GitHub:'`  
+Versionsstring nur noch in `lib/config/app_version.dart`
+(`AppVersion.text`, seit Run 373), Format `'Web App X.X.X · rNNN'`,
+dazu `version:` in pubspec.yaml. Details: AGENTS.md, Versionierung.
 Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht r275).
 
 ---
 
-## Laufender Entwicklungsstand (Run 507)
+## Laufender Entwicklungsstand (Run 508)
+
+- Run 508 Go-Live-Plan: `.dev/golive_plan.md` ist Einstiegspunkt für
+  den Go-Live SB/AT/CO (Status, Paco-Aufgaben, Mail an Yannik).
+  Lokal Flutter 3.50.1, GitHub-Build 3.44.0: pubspec.lock und
+  analysis_options.yaml lokal geändert, aber nicht committen.
 
 - Run 507 Stückelung: Kupfergeld nur noch bis zum Restbetrag nach den
   Scheinen (min(Kupfer, Rest), wie Silber), Rest bleibt im Wechselgeld.

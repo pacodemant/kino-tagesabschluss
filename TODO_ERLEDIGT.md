@@ -8,6 +8,22 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🔴 Blockiert — wartet auf IT (Yannik)
 
+- [x] **Mehrere Kassenschnitte gleicher TID — Datenverlust bei FC**
+      WARTEND auf `.dev/flurbocash stuff/fragen_yannik.md` 2.1
+      (dringend). Paco sah am 27.08.2026 im FC-Dashboard bei mehreren
+      EC-Belegen gleicher TID nur einen Beleg; Yannik antwortete:
+      "Pro TID und Settlement kann es nur einen Kassenschnitt geben."
+      Die App schickt seit Run 399a3 trotzdem je Beleg einen eigenen
+      `terminals[]`-Eintrag (`ApiUploadService._terminalsListe()`,
+      Gruppierung nach `belegIndex`) — FC behält dann vermutlich nur
+      den letzten, die Beträge der übrigen fehlen. Vorab selbst in der
+      Sandbox prüfen (zwei Belege gleicher TID senden, im
+      FC-Webinterface nachsehen). Falls bestätigt: wieder pro TID
+      summieren; offen ist, wie mehrere Fotos derselben TID mitgehen.
+      ERLEDIGT ohne Code-Änderung (Run 508): Yannik, Termin 14.10.:
+      "ignorieren, kommt zu selten vor" (fragen_yannik.md 2.1). App
+      schickt weiter je Beleg einen eigenen terminals[]-Eintrag.
+
 - [x] **Registrierte TIDs pro Standort** Welche Terminal-IDs sind in
       Flurbocash für welchen Standort hinterlegt?
       Beantwortet (Mails Yannik 26.08., 02.10. und 08.10.2026): neue

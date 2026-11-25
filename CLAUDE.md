@@ -28,3 +28,6 @@ Dateiverweise darin als Klartext `datei.dart:zeile` (kein Markdown-Link — in C
 Führe zu Beginn jeder neuen Session aus:
     flutter clean
     flutter pub get
+
+Solange der Go-Live läuft: danach `.dev/golive_plan.md` lesen. Dort
+stehen Status, nächster Schritt und was gerade von Paco gebraucht wird.
