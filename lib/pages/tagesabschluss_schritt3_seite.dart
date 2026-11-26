@@ -250,7 +250,18 @@ class _TagesabschlussSchritt3SeiteState
 
   // true = Versand wurde versucht, aber (noch) nicht als erfolgreich
   // bestätigt (echter Fehlschlag oder CORS-Fallback ohne Bestätigung).
-  bool get _sendenNichtBestaetigt => _uploadVersucht && !_abrechnungGesendet;
+  // Während des Uploads bewusst false (Run 512): vorher war das Icon schon
+  // rot, solange noch auf die Serverantwort gewartet wurde.
+  bool get _sendenNichtBestaetigt =>
+      _uploadVersucht && !_abrechnungGesendet && !_apiUploadLaeuft;
+
+  // Signatur dessen, was zuletzt bestätigt an FC gesendet wurde (Run 512),
+  // nur im Speicher dieser Seite. Ändert sich danach etwas, das FC bekommt
+  // (z. B. der Kommentar), wird der Haken sofort zurückgenommen und der
+  // Button bietet "Korrektur an Büro senden" an — vorher wurde nur beim
+  // Öffnen der Seite verglichen, die Korrektur ging nicht raus.
+  String? _gesendeteSignatur;
+  bool _gleicheMitGesendetemAbNachUpload = false;
 
   // true = beim letzten Senden war der Online-Versand auf diesem Gerät
   // ausgeschaltet (Run 511) — steuert nur die Texte der Hinweise.
@@ -501,12 +512,31 @@ class _TagesabschlussSchritt3SeiteState
       _abrechnungGesendet = passt;
       _apiUploadErledigt = passt;
     });
+    if (passt) _gesendeteSignatur = _sendeSignatur();
   }
 
   void _beiAnmerkungGeaendert(String wert) {
     _anmerkung = wert;
     _aktualisiereAbschlussVorschau();
     _speichereAnmerkungEntwurf();
+    _gleicheMitGesendetemAb();
+  }
+
+  /// Run 512: Passt der aktuelle Stand nicht mehr zum zuletzt bestätigt
+  /// Gesendeten, Haken zurücknehmen (Button wird "Korrektur an Büro
+  /// senden", Icon grau); passt er wieder, Haken wieder setzen.
+  void _gleicheMitGesendetemAb() {
+    final String? gesendet = _gesendeteSignatur;
+    if (gesendet == null || _apiUploadLaeuft) return;
+    final bool passt = _sendeSignatur() == gesendet;
+    if (passt == _abrechnungGesendet && passt == _apiUploadErledigt) return;
+    setState(() {
+      _abrechnungGesendet = passt;
+      _apiUploadErledigt = passt;
+      // Kein "nicht bestätigt" (rot): es wurde ja bestätigt gesendet, nur
+      // die neue Änderung steht noch aus.
+      _uploadVersucht = false;
+    });
   }
 
   /// Liest, ob für diesen Abrechnungstag schon bestätigt gesendet wurde
@@ -572,6 +602,7 @@ class _TagesabschlussSchritt3SeiteState
             _abrechnungGesendet = true;
             _apiUploadErledigt = true;
           });
+          _gesendeteSignatur = aktuelleSignatur;
         }
         if (gespeicherteSignatur != null &&
             gespeicherteSignatur == aktuelleSignatur) {
@@ -748,10 +779,14 @@ class _TagesabschlussSchritt3SeiteState
         _uploadVersucht = true;
       });
     }
+    // Stand, der tatsächlich gesendet wird (Run 512) — falls während des
+    // Uploads noch am Kommentar getippt wird.
+    final String signaturBeimSenden = _sendeSignatur();
     try {
       _letztesUploadErgebnis = await (widget.uploadUeberschreibung ??
           ApiUploadService.upload)(_abschlussVorschau!);
       _apiUploadErledigt = true;
+      _gesendeteSignatur = signaturBeimSenden;
       await SendeProtokoll.eintragen('Versand erfolgreich (Schritt 3)');
       // Bewusst nicht mounted-gated: diese Aufrufe persistieren den
       // Sende-Status lokal und müssen auch dann laufen, wenn die Seite
@@ -772,6 +807,9 @@ class _TagesabschlussSchritt3SeiteState
           _abrechnungGesendet = true;
           _tagBereitsGesendet = true;
         });
+        // Während des Uploads geänderter Kommentar: gleich wieder
+        // "Korrektur" anbieten (nach dem Erfolgs-Popup unten wirksam).
+        _gleicheMitGesendetemAbNachUpload = true;
         // Popup mit Pflicht-Bestätigung statt SnackBar (Run 437,
         // TODO.md "Sendebestätigung ... als Popup statt Snackbar") —
         // kann nicht übersehen/weggewischt werden wie eine SnackBar.
@@ -853,6 +891,10 @@ class _TagesabschlussSchritt3SeiteState
     } finally {
       if (mounted) {
         setState(() => _apiUploadLaeuft = false);
+        if (_gleicheMitGesendetemAbNachUpload) {
+          _gleicheMitGesendetemAbNachUpload = false;
+          _gleicheMitGesendetemAb();
+        }
       }
     }
   }
@@ -1314,6 +1356,22 @@ class _TagesabschlussSchritt3SeiteState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
+                  if (_gesendeteSignatur != null && !_abrechnungGesendet) {
+                    // Run 512: früher bestätigt gesendet, aber danach noch
+                    // geändert — weiter geht's, aber einmal erinnern.
+                    zeigeInfoDialog(
+                      context,
+                      titel: 'Änderung noch nicht gesendet',
+                      inhalt: const Text(
+                        'Du hast nach dem Senden noch etwas geändert. Tippe '
+                        'auf "Korrektur an Büro senden", damit das Büro die '
+                        'Änderung bekommt.',
+                      ),
+                    ).then((_) {
+                      if (mounted) _navigiereZuSchritt4();
+                    });
+                    return;
+                  }
                   if (!_abrechnungGesendet &&
                       !_uploadVersucht &&
                       !_devModusAktiv) {
@@ -1447,9 +1505,20 @@ class _TagesabschlussSchritt3SeiteState
                   Text(
                     _autoSaveLaeuft
                         ? 'Wird gespeichert...'
-                        : _sendenButtonText,
+                        : (_apiUploadLaeuft
+                            ? 'Wird gesendet...'
+                            : _sendenButtonText),
                   ),
                   const SizedBox(width: 8),
+                  if (_apiUploadLaeuft)
+                    // Run 512: Fortschritt statt (rotem) Status-Icon,
+                    // Vorbild "Wird gesendet..." im Verlauf-Detail.
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else
                   Icon(
                     // Grün = bestätigt erfolgreich gesendet. Rot (Run
                     // 448, Paco-Wunsch) = versucht, aber nicht bestätigt

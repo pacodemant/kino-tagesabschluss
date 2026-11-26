@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.164 · Run 511
+Version: 0.9.165 · Run 512
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -158,7 +158,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 511)
+## Laufender Entwicklungsstand (Run 512)
+
+- Run 512 Schritt 3: `_gesendeteSignatur` (nur im Speicher) = zuletzt
+  bestätigt gesendeter Stand; `_gleicheMitGesendetemAb()` bei jeder
+  Kommentar-Änderung. `_sendenNichtBestaetigt` ist während des Uploads
+  false, Button zeigt dann Ladekreis.
 
 - Run 511 Versand aus: Schritt 3 behandelt FeatureFlags.apiUploadAktiv
   == false wie "nicht bestätigt" (_uploadVersucht, markiereVersand-

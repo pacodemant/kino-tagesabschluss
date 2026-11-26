@@ -1,6 +1,6 @@
 # Go-Live-Plan SB / AT / CO
 
-Stand: 26.11.2026 · Run 511 · Regie: Claude Code
+Stand: 26.11.2026 · Run 512 · Regie: Claude Code
 
 Diese Datei ist der Einstiegspunkt für jede Session. Claude liest sie
 zuerst, aktualisiert den Status nach jedem Schritt und hält oben fest,
@@ -52,7 +52,7 @@ was gerade von Paco gebraucht wird.
 | 509 | App-Start ohne Internet: Abruf von Getränkeliste/Wechselgeld aus dem Repo entfällt (Werte werden live vor Ort von Hand eingetragen, mitgelieferte Liste bleibt Startwert). Behebt Audit D2. | erledigt |
 | 510 | Sendeablauf an Flurbocash mit Tests absichern (Erstversand, Korrektur, Fehlerfälle), Audit G1 + Zeitlimit 90 s | erledigt (18 Tests, kein Fehler gefunden) |
 | 511 | Online-Versand aus → App meldet NIE "gesendet" (Paco-Vorgabe 25.11.); dazu Hinweis, wenn ein Handy unvollständig eingerichtet ist | erledigt |
-| 512 | Sendestatus: kein rotes Icon während des Sendens; geänderter Kommentar nach dem Senden geht als Korrektur raus | offen |
+| 512 | Sendestatus: kein rotes Icon während des Sendens; geänderter Kommentar nach dem Senden geht als Korrektur raus | erledigt |
 | 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); Zeitlimit beim Belegscan (hängt sonst endlos); echte Belegfotos aus .dev/ entfernen (ohne History-Rewrite, Repo wird später privat) | offen |
 | 514 | Einrichtungs-Checkliste für die Handys (eine Seite, zum Abhaken vor Ort) | offen |
 
@@ -94,6 +94,12 @@ was gerade von Paco gebraucht wird.
   90 s die Meldung statt endlosem Ladekreis? (Run 510)
 
 ## Nach dem Go-Live (bewusst zurückgestellt)
+
+- ZU PRÜFEN (Fund Run 512, nicht verifiziert): Bekommt der
+  Verlaufseintrag einen Kommentar, der erst NACH dem Öffnen von
+  Schritt 3 getippt wird? Auto-Save läuft beim Öffnen, Kommentar-
+  Änderungen speichern nur den Entwurf. Flurbocash bekommt den
+  richtigen Kommentar (note), betroffen wäre nur die lokale Anzeige.
 
 - Eigene Admin-PIN pro Gerät (Audit A3)
 - Flutter-Version in deploy.yml anheben

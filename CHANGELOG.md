@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 512: Sendestatus Schritt 3. Während des Sendens "Wird
+  gesendet..." mit Ladekreis statt rotem Fehler-Icon (rot erst bei
+  Fehlschlag). Kommentar nach dem Senden geändert: Haken verschwindet
+  sofort, Button "Korrektur an Büro senden", Korrektur geht raus
+  (vorher "bereits gesendet", Änderung ging verloren); beim Weitergehen
+  zu Schritt 4 einmalige Erinnerung. 2 neue Widget-Tests.
+
 - Run 511: Online-Versand aus -> nie mehr "gesendet" (Paco-Vorgabe
   25.11.). Schritt 3 setzt dann keine Sendebestätigung/keinen grünen
   Haken mehr, sondern zeigt "Nicht ans Büro gesendet" (nur auf dem

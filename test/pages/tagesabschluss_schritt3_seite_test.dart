@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -330,5 +331,99 @@ void main() {
       speicher.getKeys().where((String k) => k.contains('sende_bestaetigung')),
       isEmpty,
     );
+  });
+
+  testWidgets(
+      'Während des Sendens (Run 512): Ladekreis statt rotem Fehler-Icon',
+      (WidgetTester tester) async {
+    final Completer<FlurbocashUploadErgebnis> antwort =
+        Completer<FlurbocashUploadErgebnis>();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TagesabschlussSchritt3Seite(
+          argumente: argumente(),
+          autoSaveUeberschreibung: autoSaveErfolgFake,
+          uploadUeberschreibung: (TagesabschlussFinal _) => antwort.future,
+          lokalerSendeMerkerUeberschreibung: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await sendeVersuchen(tester);
+
+    expect(find.text('Wird gesendet...'), findsOneWidget);
+    expect(find.byIcon(Icons.error), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    antwort.complete(const FlurbocashUploadErgebnis());
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Abrechnung gesendet'), findsOneWidget);
+  });
+
+  testWidgets(
+      'Kommentar nach dem Senden geändert (Run 512): Haken weg, Button '
+      '"Korrektur an Büro senden", zweiter Upload geht raus',
+      (WidgetTester tester) async {
+    int uploads = 0;
+    String? letzteNote;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TagesabschlussSchritt3Seite(
+          argumente: argumente(),
+          autoSaveUeberschreibung: autoSaveErfolgFake,
+          uploadUeberschreibung: (TagesabschlussFinal a) async {
+            uploads++;
+            letzteNote = a.anmerkung;
+            return const FlurbocashUploadErgebnis();
+          },
+          lokalerSendeMerkerUeberschreibung: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await sendeVersuchen(tester);
+    await tester.tap(find.text('Verstanden'));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.tapAt(const Offset(5, 5)); // "Was möchtest du ..." zu
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Abrechnung an Büro senden'), findsOneWidget);
+
+    // Die Eingabe speichert den Kommentar-Entwurf in echtes Hive — das
+    // muss in echter Zeit laufen, sonst hängt der Test (siehe Kopf).
+    await tester.runAsync(() async {
+      await tester.enterText(find.byType(TextField).last, 'Schein vergessen');
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    // Fokus raus, sonst blinkt der Cursor und pumpAndSettle() endet nie.
+    FocusManager.instance.primaryFocus?.unfocus();
+    for (int i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(find.text('Korrektur an Büro senden'), findsOneWidget);
+    expect(find.byIcon(Icons.error), findsNothing);
+
+    await tester.tap(find.text('Korrektur an Büro senden'));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    // Titel "Korrektur senden?" hängt an der bei FC gemerkten Abrechnung,
+    // die der Test-Upload nicht anlegt — hier zählt nur: es wird gesendet.
+    expect(find.textContaining('senden?'), findsOneWidget);
+    await tester.tap(find.text('Senden'));
+    for (int i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+
+    expect(uploads, 2);
+    expect(letzteNote, 'Schein vergessen');
   });
 }

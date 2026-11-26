@@ -67,6 +67,41 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟠 Sendestatus & Belegfotos (Analyse Handnotizen, Run 493d)
 
+- [x] **Rotes Icon schon während des Sendens** (Notiz 1) BESTEHT.
+      `_doApiUpload()` setzt zu Beginn `_uploadVersucht = true`; der
+      Getter `_sendenNichtBestaetigt` (= versucht und noch nicht
+      gesendet) ist damit während des laufenden Uploads wahr → Icon
+      `Icons.error` rot (tagesabschluss_schritt3_seite.dart, Icon im
+      Senden-Button). Gewünscht: während des Sendens ein
+      Fortschritts-Kreis (Vorbild: verlauf_detail_seite.dart hat das
+      schon, "Wird gesendet..."), rot erst bei Fehlschlag. Fix klein:
+      Bedingung um `!_apiUploadLaeuft` ergänzen + Kreis anzeigen.
+      ERLEDIGT (Run 512): Ladekreis + "Wird gesendet..." im Button,
+      rot erst nach Fehlschlag (Getter ohne _apiUploadLaeuft). Widget-Test.
+
+- [x] **Kommentar nach dem Senden ändern → keine Korrektur möglich**
+      (Notiz 9) BESTEHT, Teilaspekt. Wird nach erfolgreichem Senden
+      auf derselben Schritt-3-Seite noch der Kommentar geändert (geht
+      als `note` an FC), bleibt `_apiUploadErledigt` true: Button zeigt
+      weiter "Abrechnung an Büro senden" + grünen Haken, Antippen
+      zeigt "Du hast die Abrechnung bereits gesendet." — die Korrektur
+      geht nicht raus (per Widget-Test bestätigt). Ursache: der
+      Signatur-Vergleich läuft nur beim Öffnen der Seite, nicht nach
+      Änderungen auf der Seite. Hinweis: Änderungen an Werten, die FC
+      gar nicht bekommt (Kino-/Bistro-SOLL, Ausgaben, Differenz im
+      Anfangsbestand), führen bewusst zu "bereits gesendet" (Run 482)
+      — evtl. war das Pacos Beobachtung; Paco erinnert sich nicht mehr
+      (2026-10-23), der Kommentar-Fall bleibt trotzdem ein echter Bug.
+      Zusätzlich wird nach einem verlorenen Sende-Merker (erster Punkt
+      oben) fälschlich "Korrektur an Büro senden" angeboten.
+      ERLEDIGT (Run 512): Vergleich mit der zuletzt gesendeten Signatur
+      bei jeder Kommentar-Änderung (_gleicheMitGesendetemAb), Button wird
+      "Korrektur an Büro senden", Erinnerung beim Weitergehen zu Schritt 4.
+      Widget-Test. Der Teil "verlorener Sende-Merker" gehört zum Punkt
+      "Gesendet-Status aus einer Quelle" und bleibt dort offen.
+
+
+
 - [x] **Sende-Signatur enthält Belegfotos in voller Auflösung →
       Speicher voll → Gesendet-Status geht verloren** (Notiz 8/12)
       BESTEHT. `_sendeSignatur()` (tagesabschluss_schritt3_seite.dart)
