@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.166 · Run 513
+Version: 0.9.167 · Run 514
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -158,7 +158,10 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 513)
+## Laufender Entwicklungsstand (Run 514)
+
+- Run 514: Einrichtungs-Checkliste .dev/einrichtung_checkliste.md;
+  GeraeteEinrichtung prüft zusätzlich den Dev-Modus.
 
 - Run 513: BelegScanService.zeitlimit (60 s), API-Key-Feld obscureText.
 

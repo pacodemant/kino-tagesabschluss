@@ -54,6 +54,16 @@ void main() {
     expect(await GeraeteEinrichtung.fehlendePunkte('kino_01'), isEmpty);
   });
 
+  test('Dev-Modus an zählt als Mangel (Run 514)', () async {
+    await vollstaendigEingerichtet('kino_01');
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    await speicher.setBool('dev_modus_aktiv', true);
+
+    expect(await GeraeteEinrichtung.fehlendePunkte('kino_01'), <String>[
+      GeraeteEinrichtung.devModusAn,
+    ]);
+  });
+
   test('SB im Livesystem ohne Live-Adresse und Live-location_id', () async {
     await vollstaendigEingerichtet('kino_01');
     await ApiUploadService.speichereLiveModus('kino_01', true);

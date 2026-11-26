@@ -1,6 +1,7 @@
 import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/services/api_upload_service.dart';
 import 'package:kino_bar_app/services/beleg_scan_service.dart';
+import 'package:kino_bar_app/services/dev_modus.dart';
 import 'package:kino_bar_app/services/terminal_ids_config_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,12 +11,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 class GeraeteEinrichtung {
   const GeraeteEinrichtung._();
 
-  static const String versandAus = 'Online-Versand ist ausgeschaltet';
-  static const String urlFehlt = 'Flurbocash-Adresse fehlt';
+  // Texte nennen die Beschriftung in den Einstellungen, damit man weiß,
+  // wo man nachbessern muss (Run 514).
+  static const String versandAus = 'Schalter "Flurbocash-Anbindung" ist aus';
+  static const String urlFehlt = 'Upload-URL fehlt';
   static const String apiKeyFehlt = 'API-Key fehlt';
-  static const String locationIdFehlt = 'Standortnummer (location_id) fehlt';
-  static const String tidsFehlen = 'Kartenterminals (TIDs) fehlen';
-  static const String belegScanFehlt = 'Belegscan-Adresse fehlt';
+  static const String locationIdFehlt = 'location_id fehlt';
+  static const String tidsFehlen = 'TIDs fehlen';
+  static const String belegScanFehlt = 'Belegscan-Service-URL fehlt';
+  // Run 514: Dev-Modus schreibt "testdaten" in den Kommentar an FC.
+  static const String devModusAn = 'Dev-Modus (Auto-Fill) ist an';
 
   /// Was für [kinoId] auf diesem Gerät noch fehlt, in Einrichtungs-
   /// Reihenfolge. Leere Liste = fertig eingerichtet. Ob Sandbox oder
@@ -49,6 +54,7 @@ class GeraeteEinrichtung {
     if ((await BelegScanService.ladeWorkerUrl()).isEmpty) {
       fehlend.add(belegScanFehlt);
     }
+    if (await DevModus.istAktiv()) fehlend.add(devModusAn);
     return fehlend;
   }
 }

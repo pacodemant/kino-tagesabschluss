@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 514: Einrichtungs-Checkliste `.dev/einrichtung_checkliste.md`
+  (Kassen-Handy für den Go-Live, zum Abhaken vor Ort). Startmenü-
+  Hinweis nennt jetzt die Beschriftungen aus den Einstellungen
+  ("Flurbocash-Anbindung", "Upload-URL" ...) und meldet zusätzlich
+  einen eingeschalteten Dev-Modus (der schreibt "testdaten" in den
+  Kommentar an FC). 1 neuer Test.
+
 - Run 513: API-Key-Feld in den Einstellungen verdeckt (wie Passwort,
   ohne Autokorrektur/Vorschläge). Belegscan mit Zeitlimit 60 s (vorher
   endlos "in Arbeit …"), danach Hinweis "nochmal versuchen oder

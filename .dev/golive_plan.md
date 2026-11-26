@@ -1,6 +1,6 @@
 # Go-Live-Plan SB / AT / CO
 
-Stand: 26.11.2026 · Run 513 · Regie: Claude Code
+Stand: 26.11.2026 · Run 514 · Regie: Claude Code
 
 Diese Datei ist der Einstiegspunkt für jede Session. Claude liest sie
 zuerst, aktualisiert den Status nach jedem Schritt und hält oben fest,
@@ -54,7 +54,7 @@ was gerade von Paco gebraucht wird.
 | 511 | Online-Versand aus → App meldet NIE "gesendet" (Paco-Vorgabe 25.11.); dazu Hinweis, wenn ein Handy unvollständig eingerichtet ist | erledigt |
 | 512 | Sendestatus: kein rotes Icon während des Sendens; geänderter Kommentar nach dem Senden geht als Korrektur raus | erledigt |
 | 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); Zeitlimit beim Belegscan (hängt sonst endlos); ~~echte Belegfotos aus .dev/ entfernen~~ entfällt (wirkungslos bei öffentlicher Historie, gelöst durch privates Repo) | erledigt |
-| 514 | Einrichtungs-Checkliste für die Handys (eine Seite, zum Abhaken vor Ort) | offen |
+| 514 | Einrichtungs-Checkliste für die Handys (eine Seite, zum Abhaken vor Ort) | erledigt: `.dev/einrichtung_checkliste.md` |
 
 ## Hinweise für den Wiedereinstieg
 
@@ -102,6 +102,8 @@ was gerade von Paco gebraucht wird.
   richtigen Kommentar (note), betroffen wäre nur die lokale Anzeige.
 
 - Eigene Admin-PIN pro Gerät (Audit A3)
+- Feld "Anthropic API-Key" (Einstellungen → Belegscan) wird gespeichert,
+  aber nirgends benutzt: entfernen.
 - Flutter-Version in deploy.yml anheben
 - Übrige Audit-Punkte aus TODO.md (B, C, E, F, G2)
 
