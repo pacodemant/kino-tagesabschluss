@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: November 2026 · Run 512 · wird fortlaufend ergänzt
+Stand: November 2026 · Run 513 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -155,6 +155,10 @@ FC, parallele EC-Listen in Schritt 2) hier nur verwiesen.
       bereinigen (Neuschreiben + Force-Push, betrifft alle Klone) oder
       nur künftig sauber halten? Ggf. mit Yannik klären, wie kritisch
       öffentlich bekannte TIDs sind.
+      ENTSCHIEDEN (Paco, 25.11.2026): Repo wird nach dem Umzug auf den
+      Kino-Server privat (siehe .dev/golive_plan.md). Damit ist auch die
+      Historie nicht mehr öffentlich; kein Neuschreiben, Dateien bis dahin
+      nicht extra entfernen (bringt bei öffentlicher Historie nichts).
 
 - [ ] **A3 MITTEL: Admin-PIN im Code** `1929` fest in
       einstellungen_seite.dart:436 und in CHANGELOG.md,
@@ -698,8 +702,9 @@ Rechen- und Hilfslogik.
       erfolgreichen Senden.
       TEILWEISE ERLEDIGT (Run 510): FC-Anfragen haben ein Zeitlimit von
       90 s (ApiUploadService.zeitlimit), danach Meldung wie bei
-      fehlendem Netz ("nicht sicher übertragen", erneut senden). Offen:
-      Zeitlimit beim Belegscan, die beiden Kommentar-Vermerke.
+      fehlendem Netz ("nicht sicher übertragen", erneut senden).
+      Run 513: Belegscan-Zeitlimit 60 s (BelegScanService.zeitlimit) mit
+      Hinweis auf manuelle Eingabe. Offen: die beiden Kommentar-Vermerke.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.

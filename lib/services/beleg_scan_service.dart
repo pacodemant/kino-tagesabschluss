@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -101,6 +102,12 @@ class BelegScanService {
     String body,
   )? httpPostUeberschreibung;
 
+  /// Höchstwartezeit für die KI-Antwort (seit Run 513, vorher ohne
+  /// Limit: antwortete der Dienst nicht, blieb "in Arbeit …" endlos
+  /// stehen). Ein Scan dauert üblicherweise 5–20 s.
+  @visibleForTesting
+  static Duration zeitlimit = const Duration(seconds: 60);
+
   static Future<http.Response> _echterHttpPost(
     Uri url,
     Map<String, String> headers,
@@ -167,7 +174,11 @@ class BelegScanService {
       // 3 findet das Ergebnis dann fertig vor.
       await Future<void>.delayed(const Duration(milliseconds: 100));
       BelegFotoKomprimierung.komprimiereFuerVerlauf(base64Bild);
-      response = await anfrage;
+      response = await anfrage.timeout(zeitlimit);
+    } on TimeoutException {
+      throw BelegScanException(
+          'Der Belegscan antwortet gerade nicht. Bitte nochmal versuchen '
+          'oder die Beträge manuell eingeben.');
     } catch (_) {
       throw BelegScanException(
           'Keine Internetverbindung. Bitte Verbindung prüfen.');

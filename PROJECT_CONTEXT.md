@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.165 · Run 512
+Version: 0.9.166 · Run 513
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -158,7 +158,9 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 512)
+## Laufender Entwicklungsstand (Run 513)
+
+- Run 513: BelegScanService.zeitlimit (60 s), API-Key-Feld obscureText.
 
 - Run 512 Schritt 3: `_gesendeteSignatur` (nur im Speicher) = zuletzt
   bestätigt gesendeter Stand; `_gleicheMitGesendetemAb()` bei jeder

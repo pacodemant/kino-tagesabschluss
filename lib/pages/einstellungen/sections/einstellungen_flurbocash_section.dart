@@ -114,6 +114,11 @@ class EinstellungenFlurbocashSection extends StatelessWidget {
                   TextField(
                     controller: flurbocashApiKeyController,
                     focusNode: flurbocashApiKeyFocusNode,
+                    // Run 513: verdeckt wie ein Passwort, damit der Key
+                    // nicht beim Blick aufs Handy abgelesen werden kann.
+                    obscureText: true,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     decoration: const InputDecoration(
                       labelText: 'API-Key',
                       isDense: true,

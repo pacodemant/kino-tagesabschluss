@@ -1,6 +1,6 @@
 # Go-Live-Plan SB / AT / CO
 
-Stand: 26.11.2026 · Run 512 · Regie: Claude Code
+Stand: 26.11.2026 · Run 513 · Regie: Claude Code
 
 Diese Datei ist der Einstiegspunkt für jede Session. Claude liest sie
 zuerst, aktualisiert den Status nach jedem Schritt und hält oben fest,
@@ -53,7 +53,7 @@ was gerade von Paco gebraucht wird.
 | 510 | Sendeablauf an Flurbocash mit Tests absichern (Erstversand, Korrektur, Fehlerfälle), Audit G1 + Zeitlimit 90 s | erledigt (18 Tests, kein Fehler gefunden) |
 | 511 | Online-Versand aus → App meldet NIE "gesendet" (Paco-Vorgabe 25.11.); dazu Hinweis, wenn ein Handy unvollständig eingerichtet ist | erledigt |
 | 512 | Sendestatus: kein rotes Icon während des Sendens; geänderter Kommentar nach dem Senden geht als Korrektur raus | erledigt |
-| 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); Zeitlimit beim Belegscan (hängt sonst endlos); echte Belegfotos aus .dev/ entfernen (ohne History-Rewrite, Repo wird später privat) | offen |
+| 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); Zeitlimit beim Belegscan (hängt sonst endlos); ~~echte Belegfotos aus .dev/ entfernen~~ entfällt (wirkungslos bei öffentlicher Historie, gelöst durch privates Repo) | erledigt |
 | 514 | Einrichtungs-Checkliste für die Handys (eine Seite, zum Abhaken vor Ort) | offen |
 
 ## Hinweise für den Wiedereinstieg

@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 513: API-Key-Feld in den Einstellungen verdeckt (wie Passwort,
+  ohne Autokorrektur/Vorschläge). Belegscan mit Zeitlimit 60 s (vorher
+  endlos "in Arbeit …"), danach Hinweis "nochmal versuchen oder
+  manuell eingeben". 1 neuer Test. Geplantes Entfernen der echten
+  Belegfotos aus .dev/ entfällt: bei öffentlicher Git-Historie wirkungs-
+  los, gelöst wird es durch das private Repo nach dem Umzug.
+
 - Run 512: Sendestatus Schritt 3. Während des Sendens "Wird
   gesendet..." mit Ladekreis statt rotem Fehler-Icon (rot erst bei
   Fehlschlag). Kommentar nach dem Senden geändert: Haken verschwindet

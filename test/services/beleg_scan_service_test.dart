@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -39,6 +40,26 @@ void main() {
     // diesem Test einen späteren Test (oder im schlimmsten Fall einen
     // echten Lauf in derselben Isolate) beeinflussen.
     BelegScanService.httpPostUeberschreibung = null;
+    BelegScanService.zeitlimit = const Duration(seconds: 60);
+  });
+
+  test('Dienst antwortet nicht -> Zeitlimit, Hinweis auf manuelle Eingabe '
+      '(Run 513)', () async {
+    BelegScanService.zeitlimit = const Duration(milliseconds: 200);
+    BelegScanService.httpPostUeberschreibung =
+        (Uri url, Map<String, String> headers, String body) =>
+            Completer<http.Response>().future;
+
+    await expectLater(
+      BelegScanService.scan(fakeBild()),
+      throwsA(
+        isA<BelegScanException>().having(
+          (BelegScanException e) => e.message,
+          'message',
+          contains('manuell eingeben'),
+        ),
+      ),
+    );
   });
 
   test(
