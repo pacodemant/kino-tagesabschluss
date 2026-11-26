@@ -1,6 +1,6 @@
 # Go-Live-Plan SB / AT / CO
 
-Stand: 26.11.2026 · Run 510 · Regie: Claude Code
+Stand: 26.11.2026 · Run 511 · Regie: Claude Code
 
 Diese Datei ist der Einstiegspunkt für jede Session. Claude liest sie
 zuerst, aktualisiert den Status nach jedem Schritt und hält oben fest,
@@ -51,20 +51,17 @@ was gerade von Paco gebraucht wird.
 | 508 | Diese Plan-Datei, veraltete Doku korrigiert | erledigt |
 | 509 | App-Start ohne Internet: Abruf von Getränkeliste/Wechselgeld aus dem Repo entfällt (Werte werden live vor Ort von Hand eingetragen, mitgelieferte Liste bleibt Startwert). Behebt Audit D2. | erledigt |
 | 510 | Sendeablauf an Flurbocash mit Tests absichern (Erstversand, Korrektur, Fehlerfälle), Audit G1 + Zeitlimit 90 s | erledigt (18 Tests, kein Fehler gefunden) |
-| 511 | Online-Versand aus → App meldet NIE "gesendet" (Paco-Vorgabe 25.11.); dazu Hinweis, wenn ein Handy unvollständig eingerichtet ist | offen |
+| 511 | Online-Versand aus → App meldet NIE "gesendet" (Paco-Vorgabe 25.11.); dazu Hinweis, wenn ein Handy unvollständig eingerichtet ist | erledigt |
 | 512 | Sendestatus: kein rotes Icon während des Sendens; geänderter Kommentar nach dem Senden geht als Korrektur raus | offen |
 | 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); Zeitlimit beim Belegscan (hängt sonst endlos); echte Belegfotos aus .dev/ entfernen (ohne History-Rewrite, Repo wird später privat) | offen |
 | 514 | Einrichtungs-Checkliste für die Handys (eine Seite, zum Abhaken vor Ort) | offen |
 
-## Laufende Nebenarbeit (Wiedereinstieg)
+## Hinweise für den Wiedereinstieg
 
-- Browser-Test scripts/e2e/szenario_wechselgeldentnahme.js wird an die
-  Oberfläche seit Run 492 angepasst (uncommittet). Stand: Schritt 1
-  und 2 laufen durch, Schritt 3 scheitert an veralteten Texten
-  ("Gesamt Soll", "bar IST", "Differenz Kassenabrechnung").
-  Aufruf: flutter build web --release, dann cd scripts/e2e && npm test.
-- Beobachtung für Run 511: Schritt 3 zeigt in frischem Browser schon
-  VOR dem Senden einen grauen Haken im Senden-Knopf. Prüfen.
+- Browser-Test: `flutter build web --release`, dann
+  `cd scripts/e2e && npm test` (ca. 1,5 Min.). Seit Run 511 wieder
+  vollständig grün. Achtung: einmal war build/web direkt nach dem Bauen
+  verschwunden (Ursache unklar, evtl. VS Code); dann einfach neu bauen.
 - flutter analyze: 114 Infos "material.dart deprecated" kommen nur von
   Flutter 3.50.1 lokal, nicht von uns. Ignorieren bis Flutter-Upgrade.
 
@@ -91,7 +88,10 @@ was gerade von Paco gebraucht wird.
 
 ## Handy-Test-Termin (wird gesammelt)
 
-- (noch leer)
+- Startmenü: Zeigt das SB-Handy "Handy nicht fertig eingerichtet"?
+  Antippen, Liste notieren (sagt, was dort noch fehlt). (Run 511)
+- Android: Schritt 3 senden mit schlechtem Netz – kommt nach spätestens
+  90 s die Meldung statt endlosem Ladekreis? (Run 510)
 
 ## Nach dem Go-Live (bewusst zurückgestellt)
 

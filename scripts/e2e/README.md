@@ -47,8 +47,13 @@ dann die Punkte anhand eines Screenshots neu bestimmen.
 
 - Desktop-Chrome in Handy-Größe, kein echtes Android-Gerät (Tastatur und Touch
   verhalten sich anders).
-- Kein Versand an Flurbocash: im frischen Browser ist nichts konfiguriert,
-  "Senden" speichert nur lokal.
+- Kein Versand an Flurbocash: im frischen Browser ist nichts konfiguriert
+  (Online-Versand aus). Seit Run 511 prüft der Test genau das: Hinweis
+  "Handy nicht fertig eingerichtet" auf dem Startmenü und "Nicht ans Büro
+  gesendet" statt "gesendet" in Schritt 3 und 4.
+- Stand der Oberfläche: Run 511 (zuletzt angepasst an Pop-up "Alles
+  erledigt?", Kupfer unter "Lose Münzen", EC-Eingabe über "manuell
+  eingeben").
 - Testdaten gelten für den Standort Schauburg mit Wechselgeld-Sollwert 1.400 €
   aus der Konfiguration. Ändert sich der Sollwert, die Zahlen im Szenario
   anpassen.

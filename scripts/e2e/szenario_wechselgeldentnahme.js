@@ -20,7 +20,9 @@ const L = require('./lib');
 const KLICK = {
   entnahmeBetrag: [290, 420],  // Schritt 1, ganz unten gescrollt, Schalter an
   entnahmeGrund: [195, 455],
-  ecGesamt: [308, 705],        // Schritt 2, EC-Belege manuell, Feld "Gesamt"
+  ecGesamt: [275, 722],        // Schritt 2, EC manuell, ganz unten gescrollt, "Gesamt"
+  ecFertig: [44, 753],         // Schritt 2, EC manuell, Link "Fertig."
+  ecManuell: [207, 464],       // Schritt 2, Link "manuell eingeben" (Run 497+)
   morgenBetrag: [290, 630],    // Prüfseite oben, Schalter "Notiz gefunden" an
 };
 
@@ -44,8 +46,12 @@ module.exports = async function szenario({ page, ctx }) {
   // ---- Schritt 1 -----------------------------------------------------------
   console.log('Schritt 1: Bargeld zählen, Wechselgeldentnahme');
   await L.klicke(page, 'Schauburg (SB)');
+  // Frischer Browser = nichts eingerichtet -> Hinweis auf dem Startmenü (Run 511)
+  await L.pruefe(page, 'Startmenü: Hinweis "nicht fertig eingerichtet"', [
+    'Handy nicht fertig eingerichtet – antippen',
+  ]);
   await L.klicke(page, 'Kassenabrechnung (4 Schritte)');
-  await L.pruefe(page, 'Schritt 1 ist offen', ['Bargeld zählen', 'Kupfermünzen (1, 2, 5 ct)']);
+  await L.pruefe(page, 'Schritt 1 ist offen', ['Bargeld zählen', '1 ct']);
   for (const anzahl of ['9', '8', '20', '10', '0']) {
     await L.tippeWeiter(page, anzahl);
   }
@@ -75,25 +81,30 @@ module.exports = async function szenario({ page, ctx }) {
   // ---- Schritt 2 -----------------------------------------------------------
   console.log('Schritt 2: Umsätze');
   await L.klicke(page, 'Umsätze eingeben (2/4)', { warte: 1500 });
+  await L.klicke(page, 'Ja, weiter', { warte: 1500 });   // Pop-up "Alles erledigt?" (Run 501)
   await L.klicke(page, 'Bestätigen', { warte: 2500 });   // Rückfrage "Eingaben unvollständig"
+  await L.foto(page, 'schritt2_start');
   await page.keyboard.type('90000');                     // Kino SOLL
   await page.keyboard.press('Enter');
   await page.waitForTimeout(500);
   await page.keyboard.type('40000');                     // Bistro SOLL
   await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
-  await L.klickeEnthaelt(page, 'Personalgetränke gebont?');
-  await L.klicke(page, 'Übertrag auf Umschlag (3/4)', { warte: 1500 });
-  await L.pruefe(page, 'Schritt 2: Terminal-ID ist Pflicht', ['Terminal-ID']);
-  await L.klicke(page, 'Ändern', { warte: 1500 });       // EC-Belege manuell
+  await page.mouse.click(...KLICK.ecManuell);
+  await page.waitForTimeout(1500);
   await L.tippeWeiter(page, '54017635');                 // Terminal-ID
   await L.tippeWeiter(page, '30000');                    // Girocard 300 €
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(500);
+  await L.scrolleNachUnten(page);
   await page.mouse.click(...KLICK.ecGesamt);
   await page.waitForTimeout(400);
   await page.keyboard.type('30000');                     // Gesamt 300 €
   await page.keyboard.press('Escape');
   await page.waitForTimeout(500);
-
+  await page.mouse.click(...KLICK.ecFertig);
+  await page.waitForTimeout(1000);
+  await L.foto(page, 'schritt2_ec');
   // ---- Schritt 3 -----------------------------------------------------------
   console.log('Schritt 3: Übertrag auf Umschlag');
   await L.klicke(page, 'Übertrag auf Umschlag (3/4)', { warte: 2500 });
@@ -101,11 +112,16 @@ module.exports = async function szenario({ page, ctx }) {
   await L.pruefe(
     page,
     'Schritt 3: bar IST enthält die Wechselgeldentnahme, Differenz 0',
-    ['Gesamt Soll', '1.300,00 €', 'bar IST', '1.000,00 €', 'Gesamt IST', 'Differenz Kassenabrechnung', '0,00 €'],
+    ['Gesamt SOLL', '1.300,00 €', 'EC1 IST', '300,00 €', 'BAR IST', '1.000,00 €', 'Gesamt IST', 'Differenz', '0,00 €'],
   );
   await L.klicke(page, 'Abrechnung an Büro senden', { warte: 2000 });
   await L.pruefe(page, 'Schritt 3: Senden-Rückfrage', ['Abrechnung senden?', 'Gesamt SOLL', '1.300,00 €']);
-  await L.klicke(page, 'Senden', { warte: 4500 });
+  await L.klicke(page, 'Senden', { warte: 2500 });
+  // Frischer Browser: Online-Versand aus -> nie "gesendet" (Run 511)
+  await L.pruefe(page, 'Schritt 3: Versand aus wird ehrlich gemeldet', [
+    'Nicht ans Büro gesendet', 'NICHT im Büro angekommen',
+  ], ['Abrechnung gesendet']);
+  await L.klicke(page, 'Verstanden', { warte: 2000 });
   await L.pruefe(page, 'Schritt 3: nach dem Senden erscheint die Auswahl', [
     'Was möchtest du als nächstes tun?', 'Wechselgeldkasse prüfen', 'Barumsatz f. Umschlag stückeln',
   ]);
@@ -117,7 +133,11 @@ module.exports = async function szenario({ page, ctx }) {
   await L.pruefe(page, 'Schritt 4: Stückelung teilt 1.000 € Barumsatz auf', [
     'Bareinnahmen Stückelung: 1.000,00 €',
   ]);
-  await L.klicke(page, '… fertig.', { warte: 2500 });
+  await L.klicke(page, '… fertig.', { warte: 2000 });
+  await L.pruefe(page, 'Schritt 4: Erinnerung beim Verlassen, Versand aus', [
+    'Nicht ans Büro gesendet',
+  ]);
+  await L.klicke(page, 'Verstanden', { warte: 2500 });
   await L.pruefe(page, 'Startmenü nach der Abrechnung', ['Kassenabrechnung (4 Schritte)', 'Wechselgeld prüfen']);
 
   // ---- Wechselgeldprüfung am selben Tag (Abend-Modus) ---------------------

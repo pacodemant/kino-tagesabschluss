@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kino_bar_app/config/feature_flags.dart';
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/domain/usecases/stueckelung_konfiguration.dart';
 import 'package:kino_bar_app/models/kassenzeile.dart';
@@ -725,13 +726,25 @@ class _StueckelungVorschlagSeiteState extends State<StueckelungVorschlagSeite> {
                     // auf diese Seite) — Paco-Wunsch: soll beim
                     // Verlassen nochmal im Popup auffallen, damit der
                     // spätere erneute Versand nicht vergessen wird.
+                    // Run 511: Bei ausgeschaltetem Online-Versand hilft
+                    // "später nochmal versuchen" nicht — dann ehrlich
+                    // sagen, dass nichts im Büro ankommt.
+                    final bool versandAn = await FeatureFlags.apiUploadAktiv();
+                    if (!context.mounted) return;
                     await zeigeInfoDialog(
                       context,
-                      titel: 'Versand nicht bestätigt',
-                      inhalt: const Text(
-                        'Denk daran: Die Abrechnung wurde noch nicht '
-                        'erfolgreich an die Zentrale übertragen. Bitte '
-                        'den Versand später noch einmal versuchen.',
+                      titel: versandAn
+                          ? 'Versand nicht bestätigt'
+                          : 'Nicht ans Büro gesendet',
+                      inhalt: Text(
+                        versandAn
+                            ? 'Denk daran: Die Abrechnung wurde noch nicht '
+                                'erfolgreich an die Zentrale übertragen. Bitte '
+                                'den Versand später noch einmal versuchen.'
+                            : 'Denk daran: Der Online-Versand ist auf diesem '
+                                'Handy ausgeschaltet. Die Abrechnung ist NICHT '
+                                'im Büro angekommen. Bitte gib der Leitung '
+                                'Bescheid.',
                       ),
                     );
                   }

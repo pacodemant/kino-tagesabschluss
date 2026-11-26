@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.163 · Run 510
+Version: 0.9.164 · Run 511
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -158,7 +158,13 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 510)
+## Laufender Entwicklungsstand (Run 511)
+
+- Run 511 Versand aus: Schritt 3 behandelt FeatureFlags.apiUploadAktiv
+  == false wie "nicht bestätigt" (_uploadVersucht, markiereVersand-
+  NichtBestaetigt), nie Sendebestätigung. Neuer Service
+  `GeraeteEinrichtung` (lib/services/geraete_einrichtung.dart), genutzt
+  vom Startmenü-Hinweis, später von der Einrichtungs-Checkliste.
 
 - Run 510 ApiUploadService: `testClient` (nur Tests) und `zeitlimit`
   (90 s je Anfrage, TimeoutException -> "Zeitüberschreitung", zählt in

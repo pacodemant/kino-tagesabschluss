@@ -9,6 +9,17 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 511: Online-Versand aus -> nie mehr "gesendet" (Paco-Vorgabe
+  25.11.). Schritt 3 setzt dann keine Sendebestätigung/keinen grünen
+  Haken mehr, sondern zeigt "Nicht ans Büro gesendet" (nur auf dem
+  Handy gespeichert, Leitung informieren), rotes Icon in Schritt 3 und
+  auf der Startseite; Weg zu Schritt 4 bleibt frei, Erinnerung dort mit
+  passendem Text. Neu: GeraeteEinrichtung.fehlendePunkte() und roter
+  Hinweis "Handy nicht fertig eingerichtet – antippen" auf dem
+  Startmenü (Versand aus, Adresse, API-Key, location_id, TIDs,
+  Belegscan-Adresse). 5 neue Tests. Browser-Test scripts/e2e wieder
+  vollständig lauffähig (an Oberfläche seit Run 492 angepasst).
+
 - Run 510: Sendeablauf an Flurbocash abgesichert. Test-Einstieg
   `ApiUploadService.testClient` (Normalbetrieb unverändert), 18 neue
   Tests für den kompletten Ablauf upload() (Audit G1), kein Fehler

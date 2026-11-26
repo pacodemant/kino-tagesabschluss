@@ -12,6 +12,7 @@ import 'package:kino_bar_app/pages/uebertrag_umschlag_seite.dart';
 import 'package:kino_bar_app/pages/verlauf_seite.dart';
 import 'package:kino_bar_app/pages/getraenke_auffuellen_seite.dart';
 import 'package:kino_bar_app/pages/wechselgeld_pruefen_seite.dart';
+import 'package:kino_bar_app/services/geraete_einrichtung.dart';
 import 'package:kino_bar_app/storage/lokaler_speicher.dart';
 import 'package:kino_bar_app/utils/datums_helper.dart';
 import 'package:kino_bar_app/utils/route_observer.dart';
@@ -39,6 +40,8 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
   String? _standortModus;
   bool _abrechnungHeuteGesendet = false;
   bool _versandHeuteNichtBestaetigt = false;
+  // Was auf diesem Gerät für den Standort noch fehlt (Run 511).
+  List<String> _fehlendeEinrichtung = const <String>[];
 
   Kino get kino => widget.kino;
 
@@ -76,6 +79,12 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
         await _pruefeAbrechnungHeuteGesendet();
     final bool versandHeuteNichtBestaetigt =
         await _pruefeVersandHeuteNichtBestaetigt();
+    List<String> fehlendeEinrichtung = const <String>[];
+    try {
+      fehlendeEinrichtung = await GeraeteEinrichtung.fehlendePunkte(kino.id);
+    } catch (_) {
+      // Nur ein Hinweis — darf das Startmenü nie blockieren.
+    }
     if (!mounted) {
       return;
     }
@@ -95,6 +104,7 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
       _standortModus = standortModus;
       _abrechnungHeuteGesendet = abrechnungHeuteGesendet;
       _versandHeuteNichtBestaetigt = versandHeuteNichtBestaetigt;
+      _fehlendeEinrichtung = fehlendeEinrichtung;
     });
   }
 
@@ -123,6 +133,51 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
       return false;
     }
     return gespeichertesDatum == DatumsHelper.logischesIsoDatum();
+  }
+
+  /// Roter Hinweis, wenn das Gerät nicht fertig eingerichtet ist (Run
+  /// 511). Eine Zeile, Details per Antippen — damit er auch auf kleinen
+  /// Handys nichts vom Startmenü verdrängt.
+  Widget _einrichtungsHinweis(BuildContext context) {
+    return InkWell(
+      onTap: () => showDialog<void>(
+        context: context,
+        builder: (BuildContext dialogContext) => AlertDialog(
+          title: const Text('Handy nicht fertig eingerichtet'),
+          content: Text(
+            '${_fehlendeEinrichtung.map((String p) => '• $p').join('\n')}'
+            '\n\nSo kommen Abrechnungen eventuell nicht im Büro an. '
+            'Bitte gib der Leitung Bescheid.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          children: <Widget>[
+            Icon(Icons.error, color: Colors.red.shade700, size: 20),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Handy nicht fertig eingerichtet – antippen',
+                style: TextStyle(
+                  color: Colors.red.shade700,
+                  fontWeight: FontWeight.w600,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.red.shade700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _oeffneTagesabschlussSchritt1(BuildContext context) {
@@ -242,7 +297,10 @@ class _StartmenueSeiteState extends State<StartmenueSeite> with RouteAware {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                const SizedBox(height: 8),
+                if (_fehlendeEinrichtung.isNotEmpty)
+                  _einrichtungsHinweis(context)
+                else
+                  const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => _oeffneTagesabschlussSchritt1(context),
                   style: ElevatedButton.styleFrom(

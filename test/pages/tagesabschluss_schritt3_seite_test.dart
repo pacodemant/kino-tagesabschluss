@@ -296,5 +296,39 @@ void main() {
     expect(find.text('Korrektur gesendet'), findsOneWidget);
     expect(find.text('Abrechnung gesendet'), findsNothing);
   });
-}
 
+  testWidgets(
+      'Online-Versand aus (Run 511): kein Upload, kein "gesendet", '
+      'stattdessen "Nicht ans Büro gesendet"', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues(<String, Object>{
+      'dev_api_upload_aktiv': false,
+    });
+    int uploads = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: TagesabschlussSchritt3Seite(
+          argumente: argumente(),
+          autoSaveUeberschreibung: autoSaveErfolgFake,
+          uploadUeberschreibung: (TagesabschlussFinal _) async {
+            uploads++;
+            return const FlurbocashUploadErgebnis();
+          },
+          lokalerSendeMerkerUeberschreibung: () async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await sendeVersuchen(tester);
+
+    expect(uploads, 0);
+    expect(find.text('Nicht ans Büro gesendet'), findsOneWidget);
+    expect(find.textContaining('NICHT im Büro angekommen'), findsOneWidget);
+    expect(find.text('Abrechnung gesendet'), findsNothing);
+    final SharedPreferences speicher = await SharedPreferences.getInstance();
+    expect(
+      speicher.getKeys().where((String k) => k.contains('sende_bestaetigung')),
+      isEmpty,
+    );
+  });
+}

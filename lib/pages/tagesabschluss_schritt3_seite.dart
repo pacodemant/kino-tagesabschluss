@@ -252,6 +252,16 @@ class _TagesabschlussSchritt3SeiteState
   // bestätigt (echter Fehlschlag oder CORS-Fallback ohne Bestätigung).
   bool get _sendenNichtBestaetigt => _uploadVersucht && !_abrechnungGesendet;
 
+  // true = beim letzten Senden war der Online-Versand auf diesem Gerät
+  // ausgeschaltet (Run 511) — steuert nur die Texte der Hinweise.
+  bool _versandAusgeschaltet = false;
+
+  static const String _nichtGesendetTitel = 'Nicht ans Büro gesendet';
+  static const String _versandAusText =
+      'Der Online-Versand ist auf diesem Handy ausgeschaltet. Die '
+      'Abrechnung ist nur hier gespeichert und NICHT im Büro angekommen.'
+      '\n\nBitte gib der Leitung Bescheid.';
+
   @override
   void initState() {
     super.initState();
@@ -995,14 +1005,30 @@ class _TagesabschlussSchritt3SeiteState
           return;
         }
       } else {
-        // Kein Online-Versand für dieses Kino aktiv — "gesendet" meint
-        // hier nur die bereits erfolgte lokale Speicherung.
-        setState(() => _abrechnungGesendet = true);
-        await LokalerSpeicher.speichereSendeBestaetigung(
+        // Online-Versand auf diesem Gerät aus. Bis Run 510 galt das hier
+        // als "gesendet" (grüner Haken, Sendebestätigung), obwohl nichts
+        // im Büro ankam. Seit Run 511 (Paco-Vorgabe 25.11.2026): nie
+        // "gesendet" melden, sondern wie ein nicht bestätigter Versand
+        // behandeln (rotes Icon hier und auf der Startseite) und klar
+        // sagen, dass die Abrechnung nur auf dem Handy liegt. Der Weg zu
+        // Schritt 4 bleibt frei (über _uploadVersucht).
+        setState(() {
+          _uploadVersucht = true;
+          _versandAusgeschaltet = true;
+        });
+        await SendeProtokoll.eintragen(
+          'Online-Versand AUS: Abrechnung nur lokal gespeichert '
+          '(Schritt 3)',
+        );
+        await LokalerSpeicher.markiereVersandNichtBestaetigt(
           widget.argumente.kinoId,
-          _sendeSignatur(),
           isoDatum: DatumsHelper.logischesIsoDatum(),
-          zeitpunkt: DateTime.now(),
+        );
+        if (!mounted) return;
+        await zeigeInfoDialog(
+          context,
+          titel: _nichtGesendetTitel,
+          inhalt: const Text(_versandAusText),
         );
         if (!mounted) return;
       }
@@ -1304,11 +1330,15 @@ class _TagesabschlussSchritt3SeiteState
                     // SnackBar) daran erinnern, später erneut zu senden.
                     zeigeInfoDialog(
                       context,
-                      titel: 'Versand nicht bestätigt',
-                      inhalt: const Text(
-                        'Die Abrechnung wurde noch nicht erfolgreich an '
-                        'die Zentrale übertragen. Bitte den Versand '
-                        'später noch einmal versuchen.',
+                      titel: _versandAusgeschaltet
+                          ? _nichtGesendetTitel
+                          : 'Versand nicht bestätigt',
+                      inhalt: Text(
+                        _versandAusgeschaltet
+                            ? _versandAusText
+                            : 'Die Abrechnung wurde noch nicht erfolgreich '
+                                'an die Zentrale übertragen. Bitte den '
+                                'Versand später noch einmal versuchen.',
                       ),
                     ).then((_) {
                       if (mounted) _navigiereZuSchritt4();
