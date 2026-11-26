@@ -1,7 +1,7 @@
 # Project Context
 
 Projekt: Flutter-App „Schauburg Tagesabschluss"  
-Version: 0.9.162 · Run 509
+Version: 0.9.163 · Run 510
 
 Zweck: Unterstützung des Kino-Tagesabschlusses (Kassen- und Bargeldzählung)
 für mehrere Standorte der Schauburg GmbH.
@@ -158,7 +158,12 @@ Bei Sub-Runs (275a) den Buchstaben in den Versionsstring eintragen (r275a, nicht
 
 ---
 
-## Laufender Entwicklungsstand (Run 509)
+## Laufender Entwicklungsstand (Run 510)
+
+- Run 510 ApiUploadService: `testClient` (nur Tests) und `zeitlimit`
+  (90 s je Anfrage, TimeoutException -> "Zeitüberschreitung", zählt in
+  isCorsArtFehler als unklarer Ausgang). Ablauf-Tests in
+  test/services/api_upload_ablauf_test.dart.
 
 - Run 509 Konfig: kein Netzabruf mehr beim Start; GetraenkeConfigService/
   WechselgeldConfigService übernehmen bei leerem Gerät nur die

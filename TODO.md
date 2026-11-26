@@ -1,5 +1,5 @@
 # TODO — kino_bar_app
-Stand: November 2026 · Run 509 · wird fortlaufend ergänzt
+Stand: November 2026 · Run 510 · wird fortlaufend ergänzt
 
 Erledigte Punkte stehen nicht mehr hier, sondern in TODO_ERLEDIGT.md
 (gleiche Abschnittsstruktur) — sie werden bei jedem Run per Read
@@ -299,16 +299,6 @@ FC, parallele EC-Listen in Schritt 2) hier nur verwiesen.
 Messung (flutter test --coverage, 2026-10-25): 35 % der Zeilen in
 lib/ werden von Tests ausgeführt; die 289 Tests prüfen vor allem
 Rechen- und Hilfslogik.
-
-- [ ] **G1 HOCH: Der eigentliche Sendeablauf ist ungetestet**
-      `ApiUploadService.upload()` (Erstversand, Korrektur per
-      settlement_number, Fallback "Abrechnung existiert nicht mehr",
-      Zuordnung merken) läuft in keinem Test (2 von 33 Zeilen),
-      `_ensure()`, `_settlements()`, `_pruefeStatus()` (Fehlertexte je
-      HTTP-Code) gar nicht — weil `http.post/put` direkt aufgerufen
-      wird. Fix: Einstieg für einen Test-HTTP-Client schaffen, dann
-      Tests für alle Fälle. Sollte VOR dem Umbau des Sendestatus
-      kommen.
 
 - [ ] **G2 MITTEL: Ganze Seiten ohne Test** Startseite (grüner/roter
       Haken), Verlauf-Liste, Einstellungen (TID/API-Key-Eingabe, Reset),
@@ -732,6 +722,10 @@ Rechen- und Hilfslogik.
       vom Server), später erneut gesendet."
       Hinweis: Der FC-Vermerk erreicht FC erst mit dem nächsten
       erfolgreichen Senden.
+      TEILWEISE ERLEDIGT (Run 510): FC-Anfragen haben ein Zeitlimit von
+      90 s (ApiUploadService.zeitlimit), danach Meldung wie bei
+      fehlendem Netz ("nicht sicher übertragen", erneut senden). Offen:
+      Zeitlimit beim Belegscan, die beiden Kommentar-Vermerke.
 
 - [ ] **Bar Tabak: 2-Settlement-Logik** Beide Abrechnungen teilen eine
       `report_id`. Zweiter Call muss `settlement_number: 2` setzen.

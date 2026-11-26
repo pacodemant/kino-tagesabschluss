@@ -9,6 +9,13 @@ unbegrenzt wächst — sie wird vor jedem Eintrag vollständig gelesen.
 
 ## Unreleased
 
+- Run 510: Sendeablauf an Flurbocash abgesichert. Test-Einstieg
+  `ApiUploadService.testClient` (Normalbetrieb unverändert), 18 neue
+  Tests für den kompletten Ablauf upload() (Audit G1), kein Fehler
+  gefunden. Neu: Zeitlimit 90 s je FC-Anfrage (vorher endloser
+  Ladekreis bei hängendem Netz); danach dieselbe Meldung wie bei
+  fehlendem Netz, Daten bleiben gespeichert, erneut senden möglich.
+
 - Run 509: App-Start ohne Internet. Getränkelisten und Wechselgeld-
   beträge werden nicht mehr aus dem GitHub-Repo geholt (vorher bis zu
   4 Abrufe vor runApp() ohne Zeitlimit, Audit D2); leeres Gerät

@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:kino_bar_app/domain/tagesabschluss_berechnung.dart';
 import 'package:kino_bar_app/models/beleg_scan_ergebnis.dart';
@@ -14,6 +16,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiUploadService {
   ApiUploadService._();
+
+  /// Nur für Tests (seit Run 510): ersetzt die HTTP-Aufrufe, damit der
+  /// komplette Sendeablauf ([upload]) ohne echten Server geprüft werden
+  /// kann. null (Normalbetrieb) = direkte http.post/http.put-Aufrufe wie
+  /// bisher.
+  @visibleForTesting
+  static http.Client? testClient;
+
+  /// Höchstwartezeit je Anfrage an Flurbocash (seit Run 510, vorher ohne
+  /// Limit: bei hängendem WLAN drehte sich der Ladekreis endlos). 90 s
+  /// reichen auch für mehrere Belegfotos bei schwachem Netz. Danach gilt
+  /// der Versand als "nicht bestätigt" (wie bei fehlendem Netz, siehe
+  /// [isCorsArtFehler]) — er kann trotzdem angekommen sein.
+  @visibleForTesting
+  static Duration zeitlimit = const Duration(seconds: 90);
+
+  static const String _zeitlimitText =
+      'Keine Antwort von Flurbocash (Zeitüberschreitung).';
 
   static const String apiUploadUrlPrefKey = 'api_upload_url';
 
@@ -548,15 +568,16 @@ class ApiUploadService {
   ) async {
     final Uri uri = Uri.parse('$baseUrl/api/daily-reports/ensure');
     final http.Response response;
+    final Map<String, String> headers = _headers(apiKey);
+    final String daten = jsonEncode(ensureBody(abrechnung, locationId));
     try {
-      response = await http.post(
-        uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
-        body: jsonEncode(ensureBody(abrechnung, locationId)),
-      );
+      final http.Client? client = testClient;
+      response = await (client != null
+              ? client.post(uri, headers: headers, body: daten)
+              : http.post(uri, headers: headers, body: daten))
+          .timeout(zeitlimit);
+    } on TimeoutException {
+      throw Exception(_zeitlimitText);
     } catch (e) {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
     }
@@ -573,15 +594,16 @@ class ApiUploadService {
     final Uri uri =
         Uri.parse('$baseUrl/api/daily-reports/$reportId/settlements');
     final http.Response response;
+    final Map<String, String> headers = _headers(apiKey);
+    final String daten = jsonEncode(body);
     try {
-      response = await http.put(
-        uri,
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'X-API-Key': apiKey,
-        },
-        body: jsonEncode(body),
-      );
+      final http.Client? client = testClient;
+      response = await (client != null
+              ? client.put(uri, headers: headers, body: daten)
+              : http.put(uri, headers: headers, body: daten))
+          .timeout(zeitlimit);
+    } on TimeoutException {
+      throw Exception(_zeitlimitText);
     } catch (e) {
       throw Exception('Keine Verbindung zur Flurbocash-API. ($e)');
     }
@@ -735,6 +757,11 @@ class ApiUploadService {
     };
   }
 
+  static Map<String, String> _headers(String apiKey) => <String, String>{
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      };
+
   static void _pruefeStatus(http.Response response) {
     final int code = response.statusCode;
     if (code >= 200 && code < 300) return;
@@ -799,7 +826,9 @@ class ApiUploadService {
     final String text = e.toString().toLowerCase();
     return text.contains('failed to fetch') ||
         text.contains('networkerror') ||
-        text.contains('load failed');
+        text.contains('load failed') ||
+        // Run 510: Zeitlimit abgelaufen — Ausgang ebenso unklar.
+        text.contains('zeitüberschreitung');
   }
 }
 

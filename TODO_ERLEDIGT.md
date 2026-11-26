@@ -117,6 +117,23 @@ Bei Bedarf hier weiter ergänzen, wenn Punkte in TODO.md abgehakt werden.
 
 ## 🟠 Audit Run 494: versteckte Problemstellen (2026-10-25)
 
+- [x] **G1 HOCH: Der eigentliche Sendeablauf ist ungetestet**
+      `ApiUploadService.upload()` (Erstversand, Korrektur per
+      settlement_number, Fallback "Abrechnung existiert nicht mehr",
+      Zuordnung merken) läuft in keinem Test (2 von 33 Zeilen),
+      `_ensure()`, `_settlements()`, `_pruefeStatus()` (Fehlertexte je
+      HTTP-Code) gar nicht — weil `http.post/put` direkt aufgerufen
+      wird. Fix: Einstieg für einen Test-HTTP-Client schaffen, dann
+      Tests für alle Fälle. Sollte VOR dem Umbau des Sendestatus
+      kommen.
+      ERLEDIGT (Run 510): Test-Einstieg ApiUploadService.testClient,
+      18 Tests in test/services/api_upload_ablauf_test.dart (Erstversand,
+      Korrektur, fremde report_id, Fallback gelöschte Abrechnung, 2xx ohne
+      Nummer, HTTP 400/401/403/404/500/502, kein Netz, Zeitlimit, fehlende
+      URL, falsche TID, Livemodus CO/SB). Kein Fehler im Ablauf gefunden.
+
+
+
 ### D — Netzwerk ohne Zeitlimit
 
 - [x] **D2 HOCH: App-Start hängt am Internet** main.dart wartet VOR

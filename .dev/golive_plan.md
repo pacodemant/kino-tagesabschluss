@@ -1,6 +1,6 @@
 # Go-Live-Plan SB / AT / CO
 
-Stand: 25.11.2026 · Run 509 · Regie: Claude Code
+Stand: 26.11.2026 · Run 510 · Regie: Claude Code
 
 Diese Datei ist der Einstiegspunkt für jede Session. Claude liest sie
 zuerst, aktualisiert den Status nach jedem Schritt und hält oben fest,
@@ -50,10 +50,10 @@ was gerade von Paco gebraucht wird.
 |-----|--------|--------|
 | 508 | Diese Plan-Datei, veraltete Doku korrigiert | erledigt |
 | 509 | App-Start ohne Internet: Abruf von Getränkeliste/Wechselgeld aus dem Repo entfällt (Werte werden live vor Ort von Hand eingetragen, mitgelieferte Liste bleibt Startwert). Behebt Audit D2. | erledigt |
-| 510 | Sendeablauf an Flurbocash mit Tests absichern (Erstversand, Korrektur, Fehlerfälle), Audit G1 | IN ARBEIT: Test-Einstieg `ApiUploadService.testClient` eingebaut (uncommittet, analyze ok), Tests fehlen noch |
+| 510 | Sendeablauf an Flurbocash mit Tests absichern (Erstversand, Korrektur, Fehlerfälle), Audit G1 + Zeitlimit 90 s | erledigt (18 Tests, kein Fehler gefunden) |
 | 511 | Online-Versand aus → App meldet NIE "gesendet" (Paco-Vorgabe 25.11.); dazu Hinweis, wenn ein Handy unvollständig eingerichtet ist | offen |
 | 512 | Sendestatus: kein rotes Icon während des Sendens; geänderter Kommentar nach dem Senden geht als Korrektur raus | offen |
-| 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); echte Belegfotos aus .dev/ entfernen (ohne History-Rewrite, Repo wird später privat) | offen |
+| 513 | API-Key-Feld in den Einstellungen verdeckt (wie Passwort); Zeitlimit beim Belegscan (hängt sonst endlos); echte Belegfotos aus .dev/ entfernen (ohne History-Rewrite, Repo wird später privat) | offen |
 | 514 | Einrichtungs-Checkliste für die Handys (eine Seite, zum Abhaken vor Ort) | offen |
 
 ## Laufende Nebenarbeit (Wiedereinstieg)
