@@ -1,6 +1,6 @@
 # Go-Live-Plan SB / AT / CO
 
-Stand: 26.11.2026 · Run 514 · Regie: Claude Code
+Stand: 26.11.2026 · Run 514b · Regie: Claude Code
 
 Diese Datei ist der Einstiegspunkt für jede Session. Claude liest sie
 zuerst, aktualisiert den Status nach jedem Schritt und hält oben fest,
@@ -11,19 +11,27 @@ was gerade von Paco gebraucht wird.
 ## ▶ Was gerade von Paco gebraucht wird
 
 Phase 1 (Claude) ist abgeschlossen (Runs 508–514). Jetzt hängt alles an
-Phase 2:
+Phase 2.
+
+**Stichtag Go-Live: Montag, 4. Januar 2027** (Yanniks Antwort in
+.dev/flurbocash stuff/fragen_yannik_nov3mi.md, "Erster Montag im
+Januar 2027"). Rechnung rückwärts: Mail an Yannik möglichst bald,
+damit er Server + Live-Keys bis ca. Mitte Dezember schafft und
+vor dem 4.1. ein echter Testversand in der SB möglich ist.
 
 1. **Mail an Yannik senden** – noch nicht raus (Stand 26.11., Postfach
    geprüft). Entwurf unten im Abschnitt "Mail an Yannik", kopieren und
    absenden. Das ist der Engpass für den Go-Live.
-2. **Ausgabenlimit im Anthropic-Konto setzen** (Belegscan-Kosten,
-   Audit A1): console.anthropic.com → Settings → Limits → monatliches
-   Limit, z. B. 20 $. Ca. 5 Minuten.
-3. **Entscheidung GitHub-Build:** Seit 25.11. scheitert die
+2. **Entscheidung GitHub-Build:** Seit 25.11. scheitert die
    Veröffentlichung der Test-App oft ("No artifacts named
    github-pages"). Vorschlag: in .github/workflows/deploy.yml
    `actions/upload-pages-artifact@v3` → `@v5` (eine Zeile). Antwort
    "ja Build" genügt.
+
+Erledigt: Ausgabenlimit Anthropic (Paco, Prepaid-Guthaben je 5 €,
+nachladen von Hand). Folge im Live-Betrieb: Ist das Guthaben leer,
+scheitert der Belegscan an allen Standorten gleichzeitig; Beträge
+lassen sich dann manuell eintippen, die Abrechnung geht nicht verloren.
 
 ---
 
