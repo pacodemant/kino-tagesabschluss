@@ -10,13 +10,20 @@ was gerade von Paco gebraucht wird.
 
 ## ▶ Was gerade von Paco gebraucht wird
 
-1. **Mail an Yannik senden**: Entwurf unten (Abschnitt "Mail an
-   Yannik"), einfach kopieren und absenden.
+Phase 1 (Claude) ist abgeschlossen (Runs 508–514). Jetzt hängt alles an
+Phase 2:
+
+1. **Mail an Yannik senden** – noch nicht raus (Stand 26.11., Postfach
+   geprüft). Entwurf unten im Abschnitt "Mail an Yannik", kopieren und
+   absenden. Das ist der Engpass für den Go-Live.
 2. **Ausgabenlimit im Anthropic-Konto setzen** (Belegscan-Kosten,
    Audit A1): console.anthropic.com → Settings → Limits → monatliches
    Limit, z. B. 20 $. Ca. 5 Minuten.
-3. Sonst nichts. Phase 1 erledigt Claude allein. Handy-Tests werden
-   gesammelt und kommen als ein Test-Termin.
+3. **Entscheidung GitHub-Build:** Seit 25.11. scheitert die
+   Veröffentlichung der Test-App oft ("No artifacts named
+   github-pages"). Vorschlag: in .github/workflows/deploy.yml
+   `actions/upload-pages-artifact@v3` → `@v5` (eine Zeile). Antwort
+   "ja Build" genügt.
 
 ---
 
